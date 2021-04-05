@@ -21,4 +21,7 @@ Players need to install the Fabric mod for Voice Chat to work, but for players w
 - Priority speaking. Like in Discord, allows you to bind a separate push-to-talk button with a greater, adjustable distance. Requires permission. 
 
 ## Other features
-- [W]
+- Select output and input devices.
+- Mute players on the on client or on the server.
+- Choose between Push to Talk or Voice Activation.
+- Indicators for players without mod installed.
