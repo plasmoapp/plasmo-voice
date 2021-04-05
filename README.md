@@ -20,7 +20,8 @@ Players need to install the Fabric mod for Voice Chat to work, but for players w
 
 ## Other features
 - Select output and input devices.
-- Mute players on the client or the server.
+- Server muting with chat commands.
+- 
 - Choose between Push to Talk or Voice Activation.
 - Indicators for players without the mod installed.
 - Everything is configurable with config and permissions.
