@@ -1,4 +1,7 @@
 # Plasmo Voice Chat
+
+
+## How does it work? 
 The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrifice Spigot plugins and the convenience of players who don't use mods. Besides that, it's just a great proximity voice chat with 3D audio and lots of features.
 
 Installing Plasmo Voice on the server is as easy as installing any other Spigot plugin. Installing mod on the client is optional and you can join the server without it.
@@ -11,10 +14,7 @@ Players need to install the Fabric mod for Voice Chat to work, but for players w
 - [GitHub]()
 - [FAQ]()
 - [Wiki]()
-
-
-## How does it work? 
-
+- 
 ## Made for big role-playing events
 - Data is compressed with **Opus codec.** Which means low traffic usage and higher quality. Tested with 100 players talking at once.
 - Change **voice chat distance** on the go, so players can adjust it when in crowded places.
