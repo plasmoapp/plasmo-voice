@@ -25,6 +25,9 @@ Players need to install the Fabric mod for Voice Chat to work, but for players w
 - Indicators for players without the mod installed.
 - Everything is configurable with config and permissions.
 
+## HUD Icons
+![https://imgur.com/sIa05nk.png]()
+
 ## Downloads
 Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric mod. Mind the difference when installing Plasmo Voice.
 - [Releases](http://github.com/prism/Prism/releases)
