@@ -43,7 +43,7 @@ Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric mod. Min
 
 
 ## Wiki
-[How to Install, FAQ, Config, Commands, Permssions, Troubleshoting and more at Plasmo Voice wiki.]()
+[How to Install, FAQ, Config, Commands, Permssions, Troubleshoting and more at Plasmo Voice Wiki.]()
 
 ## Credit
 
