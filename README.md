@@ -37,4 +37,4 @@ Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric mod. Min
 - [Releases](http://github.com/prism/Prism/releases)
 
 ## Credit
-Plasmo Voice is based on [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) by [henkelmax](https://github.com/henkelmax) and [Gibly's Voice Chat](https://github.com/Icosider/GlibysVoiceChat)
+Plasmo Voice is based on [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) and [Gibly's Voice Chat](https://github.com/Icosider/GlibysVoiceChat)
