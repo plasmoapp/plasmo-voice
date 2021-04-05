@@ -1,5 +1,5 @@
 # Plasmo Voice Chat
-The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrifice Spigot plugins and the convenience of players who don't use mods. Besides that, it's just a great proximity voice chat with 3D audio and lots of features.
+The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrifice Spigot plugins and the convenience of players who don't use mods. Besides that, it's just a great proximity voice chat with 3D audio and lots of features. And you can install it on your Spigot server as easy as installing any other plugin.
 
 ## Links
 - [CurseForge]()
