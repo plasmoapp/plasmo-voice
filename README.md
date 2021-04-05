@@ -54,7 +54,11 @@ Make sure to rebind the push-to-talk key to something you're used to. Also, chec
 
 
 ## Wiki
-[How to Install, FAQ, Config, Commands, Permssions, Troubleshoting and more at Plasmo Voice Wiki.](https://github.com/plasmoapp/plasmo-voice/wiki)
+- [Wiki](https://github.com/plasmoapp/plasmo-voice/wiki/)
+- [How to install Server](https://github.com/plasmoapp/plasmo-voice/wiki/How-to-install-Server)
+- [How to install Client](https://github.com/plasmoapp/plasmo-voice/wiki/How-to-install-Client)
+- [Commands & permissions](https://github.com/plasmoapp/plasmo-voice/wiki/Commands-&-permissions)
+- [Troubleshooting and FAQ](https://github.com/plasmoapp/plasmo-voice/wiki/Troubleshooting-&-FAQ)
 
 ## Credits
 
