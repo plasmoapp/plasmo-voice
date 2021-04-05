@@ -41,6 +41,17 @@ Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric mod. Min
 - [Plasmo Voice Client on CurseForge](http://github.com/prism/Prism/releases)
 - [Releases](http://github.com/prism/Prism/releases)
 
+## Default key bindings
+
+Name | Default Key
+----- | -----
+Open voice settings | `V`
+Push-to-talk button | `Left Alt` 
+Priority Push-to-talk button | `none` 
+Mute your microphone | `M`
+
+Make sure to rebind the push-to-talk key to something you're used to. Also, check out voice settings by pressing `V`. Go into the Audio tab and make sure you have the right devices selected. Test your mic by pressing the `Enable microphone testing` button.
+
 
 ## Wiki
 [How to Install, FAQ, Config, Commands, Permssions, Troubleshoting and more at Plasmo Voice Wiki.](https://github.com/plasmoapp/plasmo-voice/wiki)
