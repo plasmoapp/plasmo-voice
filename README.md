@@ -26,7 +26,7 @@ Players need to install the Fabric mod for Voice Chat to work, but for players w
 - Everything is configurable with config and permissions.
 
 ## HUD Icons
-![](https://imgur.com/htDeZva.png)
+![](https://imgur.com/PiM8Cxm.png)
 
 ## Configuration Menu
 ![](https://imgur.com/Fm2YtZz.png)
