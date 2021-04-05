@@ -6,8 +6,6 @@ The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrific
 - [Spigot]()
 - [GitHub]()
 - [FAQ]()
-
-How to install and use Plasmo Voice
 - [Wiki]()
 
 
