@@ -62,5 +62,4 @@ Make sure to rebind the push-to-talk key to something you're used to. Also, chec
 
 ## Credits
 
-- Plasmo Voice is based on [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) and [Gibly's Voice Chat](https://github.com/Icosider/GlibysVoiceChat)
 - Originaly made for [Plasmo](https://mc.plo.su)
