@@ -1,0 +1,49 @@
+udp:
+  ip: 0.0.0.0
+  port: 60606
+
+# Supported sample rates:
+# 8000
+# 12000
+# 24000
+# 48000
+sample_rate: 48000
+
+# Voice distance
+distances:
+  - 8
+  - 16
+  - 24
+# Default voice distance
+# If 0 distance will be first element from distances
+default_distance: 16
+
+# Max priority distance
+# 0 = infinite
+max_priority_distance: 0
+
+# Example:
+# Voice distance is 16
+# Fade distance will be 16/8=2
+# Should be int >= 1
+fade_divisor: 8
+priority_fade_divisor: 8
+
+disable_voice_activation: false
+
+messages:
+  prefix: "&6[Plasmo Voice]&7 "
+  list: "Clients: %s"
+  player_not_found: "Player not found"
+  muted: "%s muted"
+  not_muted: "%s not muted"
+  unmuted: "%s unmuted"
+  reconnect_sent: "Reconnect packet sent"
+  reloaded: "Config reloaded"
+
+  help:
+    mute: "Usage: /vmute <player> [duration in seconds, default is 0]"
+    unmute: "Usage: /vunmute <player>"
+
+# do not touch
+config_version: 1.0.0

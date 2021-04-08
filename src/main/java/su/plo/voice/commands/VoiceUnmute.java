@@ -1,0 +1,53 @@
+package su.plo.voice.commands;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
+import su.plo.voice.PlasmoVoice;
+import su.plo.voice.common.entities.MutedEntity;
+import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
+import su.plo.voice.listeners.PluginChannelListener;
+
+import java.util.List;
+
+public class VoiceUnmute implements TabExecutor {
+    @Override
+    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+        if(args.length == 0) {
+            sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("help.unmute"));
+            return true;
+        }
+
+        OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
+        if(player.getFirstPlayed() == 0) {
+            sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("player_not_found"));
+            return true;
+        }
+
+        MutedEntity muted = PlasmoVoice.muted.get(player.getUniqueId());
+        if(muted == null) {
+            sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("not_muted"), player.getName()));
+            return true;
+        }
+
+        if(muted.to > 0 && muted.to < System.currentTimeMillis()) {
+            PlasmoVoice.muted.remove(muted.uuid);
+            sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("not_muted"), player.getName()));
+            return true;
+        }
+
+        PlasmoVoice.muted.remove(muted.uuid);
+
+        PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()));
+
+        sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("unmuted"), player.getName()));
+        return true;
+    }
+
+    @Override
+    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
+        return null;
+    }
+}

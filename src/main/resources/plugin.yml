@@ -1,0 +1,37 @@
+name: PlasmoVoice
+version: ${project.version}
+main: su.plo.voice.PlasmoVoice
+api-version: 1.16
+authors: [ Apehum ]
+
+commands:
+  vmute:
+    permission: voice.mute
+  unvmute:
+    permission: voice.unmute
+  vreload:
+    permission: voice.reload
+  vreconnect:
+    permission: voice.reconnect
+    aliases:
+      - vrc
+  vlist:
+    permission: voice.list
+
+permissions:
+  voice.list:
+    default: true
+  voice.priority:
+    default: op
+  voice.reconnect:
+    default: true
+  voice.reload:
+    default: op
+  voice.mute:
+    default: op
+  voice.unmute:
+    default: op
+  voice.speak:
+    default: true
+  voice.activation:
+    default: true
