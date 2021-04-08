@@ -33,7 +33,7 @@ public final class PlasmoVoice extends JavaPlugin {
     public static final String rawMinVersion = "0.0.6";
     public static final int minVersion = calculateVersion(rawMinVersion);
 
-    public static final String downloadLink = String.format("https://rp.plo.su/plasmovoice-%s.jar", rawVersion);
+    public static final String downloadLink = String.format("https://github.com/plasmoapp/plasmo-voice/releases/tag/%s", rawVersion);
     public static ConcurrentHashMap<UUID, MutedEntity> muted = new ConcurrentHashMap<>();
     public static Gson gson = new Gson();
 
