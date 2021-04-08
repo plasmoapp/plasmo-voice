@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "plasmo_voice",
+    "version": "${version}",
+    "name": "PlasmoVoice",
+    "description": "Proximity voice сhat mod for Spigot Minecraft servers",
+    "authors": [
+        "Plasmo"
+    ],
+    "contact": {
+        "homepage": "https://github.com/plasmoapp/plasmo-voice",
+        "sources": "https://github.com/plasmoapp/plasmo-voice",
+        "issues": "https://github.com/plasmoapp/plasmo-voice/issues"
+    },
+    "license": "MIT",
+    "icon": "assets/plasmo_voice/icon.png",
+    "environment": "client",
+    "entrypoints": {
+        "client": [
+            "su.plo.voice.client.VoiceClient"
+        ],
+        "main": [
+            "su.plo.voice.Voice"
+        ]
+    },
+    "mixins": [
+        "voice.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=0.10.8"
+    }
+}
