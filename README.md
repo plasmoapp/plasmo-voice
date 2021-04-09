@@ -61,5 +61,5 @@ Make sure to rebind the push-to-talk key to something you're used to. Also, chec
 - [Troubleshooting and FAQ](https://github.com/plasmoapp/plasmo-voice/wiki/Troubleshooting-&-FAQ)
 
 ## Credits
-
+- Plasmo Voice is based on [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) by [henkelmax](https://github.com/henkelmax)
 - Originaly made for [Plasmo](https://mc.plo.su)
