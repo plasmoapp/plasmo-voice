@@ -2,7 +2,7 @@
     "schemaVersion": 1,
     "id": "plasmo_voice",
     "version": "${version}",
-    "name": "PlasmoVoice",
+    "name": "Plasmo Voice",
     "description": "Proximity voice сhat mod for Spigot Minecraft servers",
     "authors": [
         "Plasmo"
