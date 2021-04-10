@@ -11,6 +11,7 @@ public class SocketClientUDP {
     private final InetAddress address;
     private final int port;
     private long keepAlive;
+    private long sentKeepAlive;
 
     public SocketClientUDP(Player player, InetAddress address, int port) {
         this.player = player;
@@ -23,8 +24,16 @@ public class SocketClientUDP {
         return this.keepAlive;
     }
 
+    public long getSentKeepAlive() {
+        return this.sentKeepAlive;
+    }
+
     public void setKeepAlive(long time) {
         this.keepAlive = time;
+    }
+
+    public void setSentKeepAlive(long time) {
+        this.sentKeepAlive = time;
     }
 
     public Player getPlayer() {

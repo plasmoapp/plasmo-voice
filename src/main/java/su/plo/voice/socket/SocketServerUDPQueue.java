@@ -64,6 +64,11 @@ public class SocketServerUDPQueue extends Thread {
                     continue;
                 }
 
+                if(message.getPacket() instanceof PingPacket) {
+                    client.setKeepAlive(System.currentTimeMillis());
+                    continue;
+                }
+
                 // server mute
                 if(PlasmoVoice.muted.containsKey(player.getUniqueId())) {
                     MutedEntity e = PlasmoVoice.muted.get(player.getUniqueId());
@@ -111,8 +116,6 @@ public class SocketServerUDPQueue extends Thread {
 
                     VoiceEndServerPacket serverPacket = new VoiceEndServerPacket(player.getUniqueId());
                     SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
-                } else if(message.getPacket() instanceof PingPacket) {
-                    client.setKeepAlive(System.currentTimeMillis());
                 }
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
@@ -125,10 +128,10 @@ public class SocketServerUDPQueue extends Thread {
         PingPacket keepAlive = new PingPacket();
         List<Player> connectionsToDrop = new ArrayList<>(SocketServerUDP.clients.size());
         for (SocketClientUDP connection : SocketServerUDP.clients.values()) {
-            if (timestamp - connection.getKeepAlive() >= 1000 * 30L) {
+            if (timestamp - connection.getKeepAlive() >= 15000L) {
                 connectionsToDrop.add(connection.getPlayer());
-            } else if (timestamp - connection.getKeepAlive() >= 1000) {
-                connection.setKeepAlive(timestamp);
+            } else if (timestamp - connection.getSentKeepAlive() >= 1000L) {
+                connection.setSentKeepAlive(timestamp);
                 SocketServerUDP.sendTo(PacketUDP.write(keepAlive), connection);
             }
         }
