@@ -1,5 +1,5 @@
 ![](https://imgur.com/TcdCDat.png)
-# Plasmo Voice Chat
+# Plasmo Voice Chat ![](https://cf.way2muchnoise.eu/467028.svg) ![](https://cf.way2muchnoise.eu/versions/467028.svg)
 The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrifice Spigot plugins and the convenience of players who don't use mods. Besides that, it's just a great proximity voice chat with 3D audio and lots of features.
 
 Installing Plasmo Voice on the server is as easy as installing any other Spigot plugin. Installing mod on the client is optional and you can join the server without it.
