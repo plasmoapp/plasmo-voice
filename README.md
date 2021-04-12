@@ -4,7 +4,7 @@ The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrific
 
 Installing Plasmo Voice on the server is as easy as installing any other Spigot plugin. Installing mod on the client is optional and you can join the server without it.
 
-Players need to install the Fabric mod for Voice Chat to work, but for players without any mods installed nothing will change. They are still able to join and play as usual. Forge client coming soon. 
+Players need to install the Fabric or Forge mod for Voice Chat to work, but for players without any mods installed nothing will change. They are still able to join and play as usual.
 
 ## Links
 - [CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
@@ -36,7 +36,7 @@ Players need to install the Fabric mod for Voice Chat to work, but for players w
 ![](https://imgur.com/Fm2YtZz.png)
 
 ## Download
-Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric mod. Mind the difference when installing Plasmo Voice.
+Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric OR Forge mod. There is a different file for each version, check files on CurseForge and choose the right one. Mind the difference when installing Plasmo Voice.
 - [Plasmo Voice Server on Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
 - [Plasmo Voice Client on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
