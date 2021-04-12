@@ -41,6 +41,10 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerRegisterChannel(PlayerRegisterChannelEvent e) {
+        if(!SocketServerUDP.started) { // send connect packet only if socket started
+            return;
+        }
+
         if(e.getChannel().equals("plasmo:voice")) {
             reconnectPlayer(e.getPlayer());
         }

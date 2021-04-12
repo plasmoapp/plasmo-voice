@@ -2,6 +2,7 @@ package su.plo.voice;
 
 import com.google.gson.Gson;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.PluginCommand;
@@ -84,7 +85,11 @@ public final class PlasmoVoice extends JavaPlugin {
         getCommand("vlist").setExecutor(new VoiceList());
 
         // Plugin metrics
-        new Metrics(this, 10928);
+        Metrics metrics = new Metrics(this, 10928);
+        metrics.addCustomChart(new SingleLineChart("players_with_forge_mod", () ->
+                (int) SocketServerUDP.clients.values().stream().filter(s -> s.getType().equals("forge")).count()));
+        metrics.addCustomChart(new SingleLineChart("players_with_fabric_mod", () ->
+                (int) SocketServerUDP.clients.values().stream().filter(s -> s.getType().equals("fabric")).count()));
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerListener.reconnectPlayer(player);
@@ -141,6 +146,8 @@ public final class PlasmoVoice extends JavaPlugin {
         }
         int defaultDistance = config.getInt("default_distance");
         if(defaultDistance == 0) {
+            defaultDistance = distances.get(0);
+        } else if(!distances.contains(defaultDistance)) {
             defaultDistance = distances.get(0);
         }
 

@@ -41,7 +41,8 @@ public class SocketServerUDPQueue extends Thread {
                     });
 
                     if(player.get() != null) {
-                        SocketClientUDP sock = new SocketClientUDP(player.get(), message.getAddress(), message.getPort());
+                        String type = player.get().getListeningPluginChannels().contains("fml:handshake") ? "forge" : "fabric";
+                        SocketClientUDP sock = new SocketClientUDP(player.get(), type, message.getAddress(), message.getPort());
 
                         if(!SocketServerUDP.clients.containsKey(player.get())) {
                             SocketServerUDP.clients.put(player.get(), sock);

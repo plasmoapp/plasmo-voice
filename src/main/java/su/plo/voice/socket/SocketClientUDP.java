@@ -12,9 +12,11 @@ public class SocketClientUDP {
     private final int port;
     private long keepAlive;
     private long sentKeepAlive;
+    private String type;
 
-    public SocketClientUDP(Player player, InetAddress address, int port) {
+    public SocketClientUDP(Player player, String type, InetAddress address, int port) {
         this.player = player;
+        this.type = type;
         this.address = address;
         this.port = port;
         this.keepAlive = System.currentTimeMillis();
@@ -38,6 +40,10 @@ public class SocketClientUDP {
 
     public Player getPlayer() {
         return player;
+    }
+
+    public String getType() {
+        return type;
     }
 
     public InetAddress getAddress() {
