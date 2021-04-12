@@ -1,15 +1,13 @@
 package su.plo.voice.sound;
 
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.client.VoiceClient;
 
 import javax.sound.sampled.*;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataLines {
-
-    @Nullable
     public static TargetDataLine getMicrophone() {
         String micName = VoiceClient.config.microphone;
         if (micName != null) {
@@ -21,7 +19,6 @@ public class DataLines {
         return getDefaultMicrophone();
     }
 
-    @Nullable
     public static SourceDataLine getSpeaker() {
         String speakerName = VoiceClient.config.speaker;
         if (speakerName != null) {
@@ -33,17 +30,14 @@ public class DataLines {
         return getDefaultSpeaker();
     }
 
-    @Nullable
     public static TargetDataLine getDefaultMicrophone() {
         return getDefaultDevice(TargetDataLine.class);
     }
 
-    @Nullable
     public static SourceDataLine getDefaultSpeaker() {
         return getDefaultDevice(SourceDataLine.class);
     }
 
-    @Nullable
     public static <T> T getDefaultDevice(Class<T> lineClass) {
         DataLine.Info info = new DataLine.Info(lineClass, null);
         try {
@@ -53,24 +47,28 @@ public class DataLines {
         }
     }
 
-    @Nullable
     public static TargetDataLine getMicrophoneByName(String name) {
         return getDeviceByName(TargetDataLine.class, name);
     }
 
-    @Nullable
     public static SourceDataLine getSpeakerByName(String name) {
         return getDeviceByName(SourceDataLine.class, name);
     }
 
-    @Nullable
     public static <T> T getDeviceByName(Class<T> lineClass, String name) {
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
         for (Mixer.Info mixerInfo : mixers) {
             Mixer mixer = AudioSystem.getMixer(mixerInfo);
             Line.Info lineInfo = new Line.Info(lineClass);
             if (mixer.isLineSupported(lineInfo)) {
-                if (mixerInfo.getName().equals(name)) {
+                String deviceName;
+                try { // fix russian names KKomrade
+                    deviceName = new String(mixerInfo.getName().getBytes("Windows-1252"), "Windows-1251");
+                } catch (UnsupportedEncodingException ignored) {
+                    deviceName = mixerInfo.getName();
+                }
+
+                if (deviceName.equals(name)) {
                     try {
                         return lineClass.cast(mixer.getLine(lineInfo));
                     } catch (Exception ignored) {}
@@ -95,10 +93,15 @@ public class DataLines {
             Mixer mixer = AudioSystem.getMixer(mixerInfo);
             Line.Info lineInfo = new Line.Info(lineClass);
             if (mixer.isLineSupported(lineInfo)) {
-                names.add(mixerInfo.getName());
+                String name;
+                try { // fix russian names KKomrade
+                    name = new String(mixerInfo.getName().getBytes("Windows-1252"), "Windows-1251");
+                } catch (UnsupportedEncodingException ignored) {
+                    name = mixerInfo.getName();
+                }
+                names.add(name);
             }
         }
         return names;
     }
-
 }

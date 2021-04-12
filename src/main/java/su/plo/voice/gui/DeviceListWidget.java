@@ -32,7 +32,7 @@ public class DeviceListWidget extends ElementListWidget<DeviceListWidget.DeviceE
         RenderSystem.enableScissor((int)((double)this.getRowLeft() * d),
                 (int)((double)(this.top) * d),
                 (int)((double)(this.getScrollbarPositionX() + 6) * d),
-                (int)((double)(161) * d));
+                (int)((double)(160) * d));
         super.render(matrices, mouseX, mouseY, delta);
         RenderSystem.disableScissor();
         int x = this.left - 2;

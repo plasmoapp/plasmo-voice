@@ -68,9 +68,7 @@ task sourcesJar(type: Jar, dependsOn: classes) {
     from sourceSets.main.allSource
 }
 
-jar {
-    from "LICENSE"
-}
+jar {}
 
 //shadowJar {
 //    configurations = [project.configurations.shadow]

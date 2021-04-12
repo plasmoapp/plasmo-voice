@@ -140,7 +140,6 @@ public class VoiceClient implements ClientModInitializer {
                 return;
             }
 
-
             if(socketUDP == null || serverConfig == null) {
                 // Voice not available
                 if(menuKey.wasPressed()) {
