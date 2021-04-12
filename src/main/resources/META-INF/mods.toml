@@ -1,0 +1,29 @@
+modLoader="javafml"
+loaderVersion="[35,)"
+license="All rights reserved"
+issueTrackerURL="https://github.com/plasmoapp/plasmo-voice/issues"
+[[mods]]
+modId="plasmovoice"
+version="${file.jarVersion}"
+displayName="Plasmo Voice" #mandatory
+# A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional
+displayURL="https://github.com/plasmoapp/plasmo-voice"
+# A file name (in the root of the mod JAR) containing a logo for display
+logoFile="icon.png" #optional
+# A text field displayed in the mod UI
+#credits="Thanks for this example mod goes to Java" #optional
+authors="Apehum"
+description="Proximity voice сhat mod for Spigot Minecraft servers"
+[[dependencies.plasmovoice]]
+    modId="forge"
+    mandatory=true
+    versionRange="[35,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.plasmovoice]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.16.4,1.17)"
+    ordering="NONE"
+    side="BOTH"

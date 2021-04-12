@@ -1,0 +1,47 @@
+{
+    "key.plasmo_voice.ptt": "即按即说按键",
+    "key.plasmo_voice.priority_ptt": "高优先级即按即说按键",
+    "key.plasmo_voice.settings": "打开语音设置",
+    "key.plasmo_voice.mute": "麦克风静音",
+    "key.plasmo_voice": "Plasmo Voice",
+
+    "gui.plasmo_voice.title": "语言设置",
+    "gui.plasmo_voice.voice_chat_volume": "语音聊天音量: %s",
+    "gui.plasmo_voice.mic_amplification": "麦克风音量增幅: %s",
+    "gui.plasmo_voice.back": "返回",
+    "gui.plasmo_voice.close": "关闭",
+    "gui.plasmo_voice.occlusion": "环境语音遮挡",
+    "gui.plasmo_voice.show_icons": "图标显示",
+    "gui.plasmo_voice.show_icons_hud": "HUD",
+    "gui.plasmo_voice.show_icons_always": "总是开启",
+    "gui.plasmo_voice.show_icons_hidden": "隐藏",
+    "gui.plasmo_voice.on": "开启",
+    "gui.plasmo_voice.off": "关闭",
+
+    "gui.plasmo_voice.select": "选择",
+    "gui.plasmo_voice.no_mic": "未找到麦克风",
+
+    "gui.plasmo_voice.select_mic": "选择一个麦克风驱动",
+    "gui.plasmo_voice.select_speaker": "选择一个输出驱动",
+
+    "gui.plasmo_voice.mic_test_unavailable": "麦克风测试不可用",
+    "gui.plasmo_voice.mic_test_on": "启用麦克风测试",
+    "gui.plasmo_voice.mic_test_off": "关闭麦克风测试",
+
+    "gui.plasmo_voice.distance": "语音接收距离: %d",
+    "gui.plasmo_voice.general": "总览",
+    "gui.plasmo_voice.audio": "音频",
+    "gui.plasmo_voice.activation_type": "语音接收类型",
+    "gui.plasmo_voice.activation_type_ptt": "即按即说",
+    "gui.plasmo_voice.activation_type_voice": "声音检测",
+    "gui.plasmo_voice.voice_activation": "声音检测阀值: %d",
+    "gui.plasmo_voice.not_available": "Plasmo Voice 尚未在该服务器上安装",
+
+    "message.plasmo_voice.min_version": "§6[Plasmo Voice]§7 版本已过时。目前受支持的最小版本号为 %s",
+    "message.plasmo_voice.version_not_supported": "§6[Plasmo Voice]§7 版本尚未受到支持。当前受支持的版本为 %s",
+    "message.plasmo_voice.new_version_available": "§6[Plasmo Voice]§7 有新版本可供下载 [%s§7]。点我: %s",
+
+    "commands.plasmo_voice.min_priority_distance": "§6[Plasmo Voice]§7 高优先级语音距离必须大于 %d",
+    "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 高优先级语音距离必须小于 %d",
+    "commands.plasmo_voice.priority_distance_set": "§6[Plasmo Voice]§7 高优先级语音距离目前为 %d"
+}

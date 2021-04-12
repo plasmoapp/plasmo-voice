@@ -1,0 +1,47 @@
+{
+    "key.plasmo_voice.ptt": "Кнопка Push-to-talk",
+    "key.plasmo_voice.priority_ptt": "Кнопка Push-to-talk (приоритетный режим)",
+    "key.plasmo_voice.settings": "Окрыть настройки голосового чата",
+    "key.plasmo_voice.mute": "Выключить микрофон",
+    "key.plasmo_voice": "Plasmo Voice",
+
+    "gui.plasmo_voice.title": "Настройки голосового чата",
+    "gui.plasmo_voice.voice_chat_volume": "Громкость голосового чата: %s",
+    "gui.plasmo_voice.mic_amplification": "Усиление микрофона: %s",
+    "gui.plasmo_voice.back": "Назад",
+    "gui.plasmo_voice.close": "Закрыть",
+    "gui.plasmo_voice.occlusion": "Затухание звука через блоки",
+    "gui.plasmo_voice.show_icons": "Показывать иконки",
+    "gui.plasmo_voice.show_icons_hud": "Вместе с HUD",
+    "gui.plasmo_voice.show_icons_always": "Всегда",
+    "gui.plasmo_voice.show_icons_hidden": "Скрыть",
+    "gui.plasmo_voice.on": "Вкл",
+    "gui.plasmo_voice.off": "Выкл",
+
+    "gui.plasmo_voice.select": "Выбрать",
+    "gui.plasmo_voice.no_mic": "Микрофон не найден",
+
+    "gui.plasmo_voice.select_mic": "Выбрать микрофон",
+    "gui.plasmo_voice.select_speaker": "Выбрать устройство вывода",
+
+    "gui.plasmo_voice.mic_test_unavailable": "Тест микрофона недоступен",
+    "gui.plasmo_voice.mic_test_on": "Включить тестирование микрофона",
+    "gui.plasmo_voice.mic_test_off": "Выключить тестирование микрофона",
+
+    "gui.plasmo_voice.distance": "Дистанция: %d",
+    "gui.plasmo_voice.general": "Основные",
+    "gui.plasmo_voice.audio": "Аудио",
+    "gui.plasmo_voice.activation_type": "Режим ввода",
+    "gui.plasmo_voice.activation_type_ptt": "Активация по нажатию",
+    "gui.plasmo_voice.activation_type_voice": "Активация по голосу",
+    "gui.plasmo_voice.voice_activation": "Порог активации по голосу: %d",
+    "gui.plasmo_voice.not_available": "Plasmo Voice не установлен на этом сервере",
+
+    "message.plasmo_voice.min_version": "§6[Plasmo Voice]§7 Версия устарела. Минимальная поддерживаемая версия: %s",
+    "message.plasmo_voice.version_not_supported": "§6[Plasmo Voice]§7 Версия пока не поддерживается. Текущая поддерживаемая версия: %s",
+    "message.plasmo_voice.new_version_available": "§6[Plasmo Voice]§7 Доступна новая версия [%s§7]. Скачать: %s",
+
+    "commands.plasmo_voice.min_priority_distance": "§6[Plasmo Voice]§7 Дистанция приоритетного режима должна быть больше %d",
+    "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 Дистанция приоритетного режима должна быть меньше %d",
+    "commands.plasmo_voice.priority_distance_set": "§6[Plasmo Voice]§7 Дистанция приоритетного установлена на %d"
+}

@@ -1,0 +1,15 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "su.plo.voice.mixin",
+    "compatibilityLevel": "JAVA_8",
+    "refmap": "plasmovoice.refmap.json",
+    "mixins": [
+        "MixinClientPlayNetHandler",
+        "MixinFilterListEntry",
+        "MixinCommandSource"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
