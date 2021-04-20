@@ -19,6 +19,7 @@ public class VoiceSettingsScreen extends BackgroundScreen {
     private final AtomicReference<AbstractButton> general = new AtomicReference<>();
     private final AtomicReference<AbstractButton> audio = new AtomicReference<>();
 
+    private MicTestButton testButton;
     private double mic;
 
     public VoiceSettingsScreen() {
@@ -29,20 +30,19 @@ public class VoiceSettingsScreen extends BackgroundScreen {
     }
 
     @Override
-    public void onClose() {
-        super.onClose();
-        Voice.config.save();
-    }
-
-    @Override
     public void removed() {
         super.removed();
+
         Voice.config.save();
+        testButton.close();
     }
 
     @Override
     protected void init() {
         super.init();
+
+        this.testButton = new MicTestButton(guiLeft + 10, guiTop + 165, xSize - 20, 20,
+                (mic) -> this.mic = mic);
 
         // tabs
         general.set(new Button(guiLeft + 10, guiTop + 10, (xSize / 2) - 12, 20,
@@ -74,10 +74,6 @@ public class VoiceSettingsScreen extends BackgroundScreen {
         } else {
             renderTab1();
         }
-
-//        addButton(new Button(guiLeft + 10, guiTop + 70, xSize - 20, 20, new TranslatableText("plasmo_voice.select_mic"), button -> {
-//            client.openScreen(new SelectMicrophoneScreen());
-//        }));
     }
 
     private void renderTab0() {
@@ -154,8 +150,7 @@ public class VoiceSettingsScreen extends BackgroundScreen {
         addButton(activation);
 
         addButton(new VoiceActivationSlider(guiLeft + 10, guiTop + 115, xSize - 20));
-        addButton(new MicTestButton(guiLeft + 10, guiTop + 165, xSize - 20, 20,
-                (mic) -> this.mic = mic));
+        addButton(this.testButton);
 
         addButton(new Button(guiLeft + 10, guiTop + 195, xSize - 20, 20, new TranslationTextComponent("gui.plasmo_voice.close"), button -> {
             client.setScreen(null);

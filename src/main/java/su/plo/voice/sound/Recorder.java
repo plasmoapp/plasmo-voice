@@ -15,6 +15,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 public class Recorder implements Runnable {
     public static int mtuSize = 900;
@@ -44,23 +45,28 @@ public class Recorder implements Runnable {
         }
 
         if(this.thread != null) {
-            this.running = false;
-            synchronized (this) {
-                try {
-                    this.wait();
-                } catch (InterruptedException ignored) {}
-            }
+            this.waitForClose().thenRun(() -> {
+                format = new AudioFormat(rate, 16, 1, true, false);
+                stereoFormat = new AudioFormat(rate, 16, 2, true, false);
+                sampleRate = rate;
+                frameSize = (sampleRate / 1000) * 2 * 20;
+
+                this.encoder.close();
+                this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
+
+                this.start();
+            });
+        } else {
+            format = new AudioFormat(rate, 16, 1, true, false);
+            stereoFormat = new AudioFormat(rate, 16, 2, true, false);
+            sampleRate = rate;
+            frameSize = (sampleRate / 1000) * 2 * 20;
+
+            this.encoder.close();
+            this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
+
+            this.start();
         }
-
-        format = new AudioFormat(rate, 16, 1, true, false);
-        stereoFormat = new AudioFormat(rate, 16, 2, true, false);
-        sampleRate = rate;
-        frameSize = (sampleRate / 1000) * 2 * 20;
-
-        this.encoder.close();
-        this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
-
-        this.start();
     }
 
     public void close() {
@@ -77,7 +83,7 @@ public class Recorder implements Runnable {
         }
 
         synchronized (this) {
-            this.notify();
+            this.notifyAll();
         }
     }
 
@@ -280,15 +286,30 @@ public class Recorder implements Runnable {
 
     public void start() {
         if(this.thread != null) {
+            this.waitForClose().thenRun(() -> {
+                this.thread = new Thread(this, "Input Device Recorder");
+                this.thread.start();
+            });
+        } else {
+            this.thread = new Thread(this, "Input Device Recorder");
+            this.thread.start();
+        }
+    }
+
+    public CompletableFuture<Void> waitForClose() {
+        return CompletableFuture.runAsync(() -> {
             this.running = false;
             synchronized (this) {
                 try {
-                    this.wait();
+                    this.wait(1000L); // wait for 1 sec and just ignore it if notify not called
                 } catch (InterruptedException ignored) {}
             }
-        }
 
-        this.thread = new Thread(this, "Input Device Recorder");
-        this.thread.start();
+            if(this.thread != null) {
+                if (!this.thread.isInterrupted()) {
+                    this.thread.interrupt();
+                }
+            }
+        });
     }
 }

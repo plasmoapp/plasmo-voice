@@ -1,6 +1,7 @@
 package su.plo.voice.socket;
 
 import su.plo.voice.Voice;
+import su.plo.voice.sound.ThreadSoundQueue;
 
 public class SocketClientPing extends Thread {
     private final SocketClientUDP socketUDP;
@@ -16,6 +17,9 @@ public class SocketClientPing extends Thread {
 
         while(!this.socketUDP.isClosed()) {
             try {
+                SocketClientUDPQueue.audioChannels.values().stream().filter(ThreadSoundQueue::canKill).forEach(ThreadSoundQueue::closeAndKill);
+                SocketClientUDPQueue.audioChannels.entrySet().removeIf(entry -> entry.getValue().isClosed());
+
                 this.socketUDP.checkTimeout();
                 Thread.sleep(1000L);
             } catch (InterruptedException ignored) {}

@@ -29,6 +29,14 @@ public class MicTestButton extends AbstractButton {
         updateText();
     }
 
+    public void close() {
+        if(thread != null) {
+            thread.close();
+        }
+
+        micActive = false;
+    }
+
     @Override
     public void onPress() {
         if(micActive) {
@@ -111,7 +119,7 @@ public class MicTestButton extends AbstractButton {
                 Voice.recorder.running = false;
                 synchronized (Voice.recorder) {
                     try {
-                        Voice.recorder.wait();
+                        Voice.recorder.wait(1000L);
                     } catch (InterruptedException ignored) {}
                 }
             }

@@ -58,6 +58,10 @@ public class OpusDecoder {
     }
 
     public void close() {
+        if(this.closed) {
+            return;
+        }
+
         this.closed = true;
         Voice.LOGGER.info("Close opus decoder");
         Opus.INSTANCE.opus_decoder_destroy(opusDecoder);
