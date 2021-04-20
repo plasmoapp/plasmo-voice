@@ -52,9 +52,6 @@ public class SocketClientUDPQueue extends Thread {
                     } else {
                         ch.addQueue(voicePacket);
                     }
-
-                    audioChannels.values().stream().filter(ThreadSoundQueue::canKill).forEach(ThreadSoundQueue::closeAndKill);
-                    audioChannels.entrySet().removeIf(entry -> entry.getValue().isClosed());
                 } else if(message.getPacket() instanceof VoiceEndServerPacket) {
                     VoiceEndServerPacket voicePacket = (VoiceEndServerPacket) message.getPacket();
 

@@ -49,7 +49,7 @@ public class VoiceClient implements ClientModInitializer {
     static {
         AudioNatives.ensureOpus();
     }
-    public static Recorder recorder = new Recorder();
+    public final static Recorder recorder = new Recorder();
 
     public static boolean muted = false;
     public static boolean speaking = false;

@@ -1,6 +1,8 @@
 package su.plo.voice.sound;
 
 import com.sun.jna.ptr.PointerByReference;
+import su.plo.voice.Voice;
+import su.plo.voice.client.VoiceClient;
 import su.plo.voice.utils.Utils;
 import tomp2p.opuswrapper.Opus;
 
@@ -11,6 +13,7 @@ import java.nio.ShortBuffer;
 
 public class OpusEncoder {
     protected PointerByReference opusEncoder;
+    protected boolean closed;
     protected int sampleRate;
     protected int frameSize;
     protected int maxPayloadSize;
@@ -48,6 +51,12 @@ public class OpusEncoder {
     }
 
     public void close() {
+        if(this.closed) {
+            return;
+        }
+
+        this.closed = true;
+        VoiceClient.LOGGER.info("Close opus encoder");
         Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
     }
 

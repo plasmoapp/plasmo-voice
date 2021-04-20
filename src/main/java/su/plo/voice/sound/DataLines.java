@@ -3,7 +3,6 @@ package su.plo.voice.sound;
 import su.plo.voice.client.VoiceClient;
 
 import javax.sound.sampled.*;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -61,12 +60,13 @@ public class DataLines {
             Mixer mixer = AudioSystem.getMixer(mixerInfo);
             Line.Info lineInfo = new Line.Info(lineClass);
             if (mixer.isLineSupported(lineInfo)) {
-                String deviceName;
-                try { // fix russian names KKomrade
-                    deviceName = new String(mixerInfo.getName().getBytes("Windows-1252"), "Windows-1251");
-                } catch (UnsupportedEncodingException ignored) {
-                    deviceName = mixerInfo.getName();
-                }
+                String deviceName = mixerInfo.getName();
+                // todo fix
+//                try { // fix russian names KKomrade
+//                    deviceName = new String(mixerInfo.getName().getBytes("Windows-1252"), "Windows-1251");
+//                } catch (UnsupportedEncodingException ignored) {
+//                    deviceName = mixerInfo.getName();
+//                }
 
                 if (deviceName.equals(name)) {
                     try {
@@ -93,13 +93,14 @@ public class DataLines {
             Mixer mixer = AudioSystem.getMixer(mixerInfo);
             Line.Info lineInfo = new Line.Info(lineClass);
             if (mixer.isLineSupported(lineInfo)) {
-                String name;
-                try { // fix russian names KKomrade
-                    name = new String(mixerInfo.getName().getBytes("Windows-1252"), "Windows-1251");
-                } catch (UnsupportedEncodingException ignored) {
-                    name = mixerInfo.getName();
-                }
-                names.add(name);
+                names.add(mixerInfo.getName());
+                // todo fix
+//                try { // fix russian names KKomrade
+//                    name = new String(mixerInfo.getName().getBytes("Windows-1252"), "Windows-1251");
+//                } catch (UnsupportedEncodingException ignored) {
+//                    name = mixerInfo.getName();
+//                }
+//                names.add(name);
             }
         }
         return names;

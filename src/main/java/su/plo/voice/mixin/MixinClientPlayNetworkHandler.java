@@ -5,6 +5,7 @@ import com.google.common.io.ByteStreams;
 import io.netty.buffer.Unpooled;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayNetworkHandler;
+import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.network.ClientConnection;
 import net.minecraft.network.PacketByteBuf;
 import net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket;
@@ -142,8 +143,17 @@ public abstract class MixinClientPlayNetworkHandler {
                 } else if(pkt instanceof ClientDisconnectedPacket) {
                     ClientDisconnectedPacket connected = (ClientDisconnectedPacket) pkt;
 
+                    System.out.println(connected.getClient());
+
                     VoiceClient.serverConfig.clients.remove(connected.getClient());
                     VoiceClient.serverConfig.mutedClients.remove(connected.getClient());
+
+                    final ClientPlayerEntity player = MinecraftClient.getInstance().player;
+                    if(player != null) {
+                        if(connected.getClient().equals(player.getUuid())) {
+                            VoiceClient.disconnect();
+                        }
+                    }
                 }
             } catch (IOException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();

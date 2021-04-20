@@ -27,7 +27,6 @@ public class VoiceHud {
         if(VoiceClient.socketUDP.ping.timedOut) {
             client.getTextureManager().bindTexture(VoiceClient.MICS);
 
-
             inGameHud.drawTexture(matrixStack,
                     (client.getWindow().getScaledWidth()/2)-8,
                     client.getWindow().getScaledHeight()-54,

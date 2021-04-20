@@ -11,7 +11,7 @@ import java.nio.ShortBuffer;
 
 public class OpusDecoder {
     protected PointerByReference opusDecoder;
-    protected  boolean closed;
+    protected boolean closed;
     protected int sampleRate;
     protected int frameSize;
     protected int maxPayloadSize;
@@ -59,9 +59,12 @@ public class OpusDecoder {
     }
 
     public void close() {
+        if(this.closed) {
+            return;
+        }
+
         this.closed = true;
         VoiceClient.LOGGER.info("Close opus decoder");
         Opus.INSTANCE.opus_decoder_destroy(opusDecoder);
     }
-
 }

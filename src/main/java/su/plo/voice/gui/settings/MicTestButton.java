@@ -26,6 +26,14 @@ public class MicTestButton extends ButtonWidget {
         updateText();
     }
 
+    public void close() {
+        if(thread != null) {
+            thread.close();
+        }
+
+        micActive = false;
+    }
+
     @Override
     public void onPress() {
         if(micActive) {
@@ -108,7 +116,7 @@ public class MicTestButton extends ButtonWidget {
                 VoiceClient.recorder.running = false;
                 synchronized (VoiceClient.recorder) {
                     try {
-                        VoiceClient.recorder.wait();
+                        VoiceClient.recorder.wait(1000L);
                     } catch (InterruptedException ignored) {}
                 }
             }

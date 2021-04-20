@@ -88,6 +88,8 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
             this.muteHideButton.visible = !this.muteShowButton.visible;
 
             this.customButtons = ImmutableList.of(this.muteHideButton, this.muteShowButton);
+        } else {
+            this.customButtons = ImmutableList.of();
         }
     }
 
