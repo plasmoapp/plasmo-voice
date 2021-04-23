@@ -11,6 +11,7 @@ Players need to install the Fabric or Forge mod for Voice Chat to work, but for 
 - [Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
 - [GitHub](https://github.com/plasmoapp/plasmo-voice/)
 - [Wiki](https://github.com/plasmoapp/plasmo-voice/wiki/)
+- [Discord](https://discord.gg/uueEqzwCJJ)
 
 ## Made for big role-playing events
 - Data is compressed with **Opus Сodec.** Which means low traffic usage and higher quality. Tested with 100 players talking at once.
