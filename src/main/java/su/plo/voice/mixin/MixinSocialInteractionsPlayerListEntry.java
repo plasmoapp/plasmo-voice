@@ -36,7 +36,7 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
     @Shadow private boolean offline;
     private ButtonWidget muteShowButton;
     private ButtonWidget muteHideButton;
-    private List<Element> customButtons;
+    private List<Element> customButtons = ImmutableList.of();
 
     private static final Text field_26905;
     private static final Text field_26906;
@@ -88,8 +88,6 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
             this.muteHideButton.visible = !this.muteShowButton.visible;
 
             this.customButtons = ImmutableList.of(this.muteHideButton, this.muteShowButton);
-        } else {
-            this.customButtons = ImmutableList.of();
         }
     }
 
