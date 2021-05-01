@@ -36,7 +36,7 @@ public abstract class MixinFilterListEntry {
     @Shadow private boolean isRemoved;
     private Button muteShowButton;
     private Button muteHideButton;
-    private List<Widget> customButtons;
+    private List<Widget> customButtons = ImmutableList.of();;
 
     private static final ITextComponent HIDDEN = (new TranslationTextComponent("gui.socialInteractions.status_hidden")).withStyle(TextFormatting.ITALIC);
     private static final ITextComponent BLOCKED = (new TranslationTextComponent("gui.socialInteractions.status_blocked")).withStyle(TextFormatting.ITALIC);
@@ -88,8 +88,6 @@ public abstract class MixinFilterListEntry {
             this.muteHideButton.visible = !this.muteShowButton.visible;
 
             this.customButtons = ImmutableList.of(this.muteHideButton, this.muteShowButton);
-        } else {
-            this.customButtons = ImmutableList.of();
         }
     }
 
