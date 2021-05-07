@@ -24,7 +24,7 @@ public class SocketServerUDP extends Thread {
     }
 
     public static void sendToNearbyPlayers(Packet packet, Player player, double maxDistance) {
-        double maxDistanceSquared = maxDistance * maxDistance;
+        double maxDistanceSquared = maxDistance * maxDistance * 1.25F;
 
         byte[] bytes;
         try {

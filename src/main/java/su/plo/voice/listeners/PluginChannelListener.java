@@ -12,6 +12,7 @@ import su.plo.voice.PlasmoVoiceConfig;
 import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.Packet;
 import su.plo.voice.common.packets.tcp.*;
+import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.socket.SocketServerUDP;
 
 import java.io.IOException;
@@ -65,9 +66,13 @@ public class PluginChannelListener implements PluginMessageListener {
                 SocketServerUDP.clients.forEach((p, c) -> clients.add(p.getUniqueId()));
 
                 List<MutedEntity> muted = new ArrayList<>();
-                PlasmoVoice.muted.forEach((uuid, m) -> muted.add(m));
+                PlasmoVoice.muted.forEach((uuid, m) -> muted.add(new MutedEntity(m.uuid, m.to)));
 
-                MutedEntity playerMuted = PlasmoVoice.muted.get(player.getUniqueId());
+                ServerMutedEntity serverPlayerMuted = PlasmoVoice.muted.get(player.getUniqueId());
+                MutedEntity playerMuted = null;
+                if (serverPlayerMuted != null) {
+                    playerMuted = new MutedEntity(serverPlayerMuted.uuid, serverPlayerMuted.to);
+                }
                 if(!player.hasPermission("voice.speak")) {
                     playerMuted = new MutedEntity(player.getUniqueId(), 0L);
                 }

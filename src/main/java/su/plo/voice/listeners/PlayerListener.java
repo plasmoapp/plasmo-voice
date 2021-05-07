@@ -9,6 +9,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.packets.tcp.ClientDisconnectedPacket;
+import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.common.packets.tcp.PacketTCP;
 import su.plo.voice.common.packets.tcp.ServerConnectPacket;
 import su.plo.voice.socket.SocketClientUDP;
@@ -21,6 +22,17 @@ import java.util.UUID;
 public class PlayerListener implements Listener {
     public static HashMap<UUID, UUID> playerToken = new HashMap<>();
 
+    public PlayerListener() {
+        Bukkit.getScheduler().runTaskTimerAsynchronously(PlasmoVoice.getInstance(), () -> {
+            PlasmoVoice.muted.forEach((uuid, muted) -> {
+                if(muted.to > 0 && muted.to < System.currentTimeMillis()) {
+                    PlasmoVoice.muted.remove(uuid);
+                    PluginChannelListener.sendToClients(new ClientUnmutedPacket(muted.uuid));
+                }
+            });
+        }, 0L, 100L);
+    }
+
     public static void reconnectPlayer(Player player) {
         UUID token = UUID.randomUUID();
         playerToken.put(player.getUniqueId(), token);
@@ -28,8 +40,10 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
                 byte[] pkt = PacketTCP.write(new ServerConnectPacket(token.toString(),
-                        PlasmoVoice.getInstance().config.ip,
-                        PlasmoVoice.getInstance().config.port,
+                        PlasmoVoice.getInstance().config.proxyIp != null
+                            ? PlasmoVoice.getInstance().config.proxyIp : PlasmoVoice.getInstance().config.ip,
+                        PlasmoVoice.getInstance().config.proxyPort != 0
+                                ? PlasmoVoice.getInstance().config.proxyPort : PlasmoVoice.getInstance().config.port,
                         player.hasPermission("voice.priority")));
 
                 player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
@@ -75,8 +89,8 @@ public class PlayerListener implements Listener {
 
         try {
             if(clientUDP != null) {
-                PluginChannelListener.sendToClients(new ClientDisconnectedPacket(player.getUniqueId()));
                 clientUDP.close();
+                PluginChannelListener.sendToClients(new ClientDisconnectedPacket(player.getUniqueId()));
             }
         } catch (Exception ex) {
             ex.printStackTrace();

@@ -6,6 +6,8 @@ import java.util.List;
 public class PlasmoVoiceConfig {
     public final String ip;
     public final int port;
+    public final String proxyIp;
+    public final int proxyPort;
     public final int sampleRate;
     public final HashSet<Integer> distances = new HashSet<>();
     public final int maxDistance;
@@ -16,11 +18,14 @@ public class PlasmoVoiceConfig {
     public final boolean disableVoiceActivation;
 
     public PlasmoVoiceConfig(String ip, int port,
+                             String proxyIp, int proxyPort,
                              int sampleRate, List<Integer> distances, int defaultDistance,
                              int maxPriorityDistance, boolean disableVoiceActivation,
                              int fadeDivisor, int priorityFadeDivisor) {
         this.ip = ip;
         this.port = port;
+        this.proxyIp = proxyIp;
+        this.proxyPort = proxyPort;
         this.sampleRate = sampleRate;
         this.distances.addAll(distances);
         this.maxDistance = distances.get(distances.size() - 1);

@@ -3,9 +3,9 @@ package su.plo.voice.socket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
-import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.common.packets.udp.*;
+import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.listeners.PlayerListener;
 import su.plo.voice.listeners.PluginChannelListener;
 
@@ -72,7 +72,7 @@ public class SocketServerUDPQueue extends Thread {
 
                 // server mute
                 if(PlasmoVoice.muted.containsKey(player.getUniqueId())) {
-                    MutedEntity e = PlasmoVoice.muted.get(player.getUniqueId());
+                    ServerMutedEntity e = PlasmoVoice.muted.get(player.getUniqueId());
                     if(e == null) {
                         continue;
                     }
@@ -82,7 +82,7 @@ public class SocketServerUDPQueue extends Thread {
                     } else {
                         PlasmoVoice.muted.remove(e.uuid);
 
-                        Bukkit.getScheduler().runTask(PlasmoVoice.getInstance(), () -> {
+                        Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
                             PluginChannelListener.sendToClients(new ClientUnmutedPacket(e.uuid));
                         });
                     }

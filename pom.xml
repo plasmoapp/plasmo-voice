@@ -6,7 +6,7 @@
 
     <groupId>plasmovoice</groupId>
     <artifactId>plasmovoice-server</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>jar</packaging>
 
     <name>PlasmoVoice</name>

@@ -5,9 +5,11 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.PlasmoVoice;
-import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
+import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.listeners.PluginChannelListener;
 
 import java.util.List;
@@ -26,7 +28,7 @@ public class VoiceUnmute implements TabExecutor {
             return true;
         }
 
-        MutedEntity muted = PlasmoVoice.muted.get(player.getUniqueId());
+        ServerMutedEntity muted = PlasmoVoice.muted.get(player.getUniqueId());
         if(muted == null) {
             sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("not_muted"), player.getName()));
             return true;
@@ -47,7 +49,7 @@ public class VoiceUnmute implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
+    public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String alias, @NotNull String[] args) {
         return null;
     }
 }

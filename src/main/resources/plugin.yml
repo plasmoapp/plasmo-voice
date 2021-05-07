@@ -7,8 +7,10 @@ authors: [ Apehum ]
 commands:
   vmute:
     permission: voice.mute
-  unvmute:
+  vunmute:
     permission: voice.unmute
+  vmutelist:
+    permission: voice.mutelist
   vreload:
     permission: voice.reload
   vreconnect:
@@ -30,6 +32,8 @@ permissions:
   voice.mute:
     default: op
   voice.unmute:
+    default: op
+  voice.mutelist:
     default: op
   voice.speak:
     default: true

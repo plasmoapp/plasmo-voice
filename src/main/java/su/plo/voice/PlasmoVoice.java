@@ -11,8 +11,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import su.plo.voice.commands.*;
-import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.data.DataEntity;
+import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.listeners.PlayerListener;
 import su.plo.voice.listeners.PluginChannelListener;
 import su.plo.voice.socket.SocketServerUDP;
@@ -35,7 +35,7 @@ public final class PlasmoVoice extends JavaPlugin {
     public static final int minVersion = calculateVersion(rawMinVersion);
 
     public static final String downloadLink = String.format("https://github.com/plasmoapp/plasmo-voice/releases/tag/%s", rawVersion);
-    public static ConcurrentHashMap<UUID, MutedEntity> muted = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, ServerMutedEntity> muted = new ConcurrentHashMap<>();
     public static Gson gson = new Gson();
 
     private SocketServerUDP socketServerUDP;
@@ -76,9 +76,12 @@ public final class PlasmoVoice extends JavaPlugin {
         // Unmute command
         VoiceUnmute voiceUnmute = new VoiceUnmute();
 
-        PluginCommand voiceUnmuteCommand = getCommand("unvmute");
+        PluginCommand voiceUnmuteCommand = getCommand("vunmute");
         voiceUnmuteCommand.setExecutor(voiceUnmute);
         voiceUnmuteCommand.setTabCompleter(voiceUnmute);
+
+        // Voice mute list
+        getCommand("vmutelist").setExecutor(new VoiceMuteList());
 
         getCommand("vreload").setExecutor(new VoiceReload());
         getCommand("vreconnect").setExecutor(new VoiceReconnect());
@@ -165,6 +168,8 @@ public final class PlasmoVoice extends JavaPlugin {
 
         this.config = new PlasmoVoiceConfig(config.getString("udp.ip"),
                 config.getInt("udp.port"),
+                config.getString("udp.proxy_ip"),
+                config.getInt("udp.proxy_port"),
                 sampleRate,
                 distances,
                 defaultDistance,
@@ -180,7 +185,7 @@ public final class PlasmoVoice extends JavaPlugin {
                     new FileReader(this.getDataFolder().getPath() + "/data.json"));
             DataEntity data = gson.fromJson(bufferedReader, DataEntity.class);
             if(data != null) {
-                for(MutedEntity e : data.muted) {
+                for(ServerMutedEntity e : data.muted) {
                     muted.put(e.uuid, e);
                 }
             }
@@ -190,11 +195,7 @@ public final class PlasmoVoice extends JavaPlugin {
     private void saveData() {
         try {
             try(Writer w = new FileWriter(this.getDataFolder().getPath() + "/data.json")) {
-                List<MutedEntity> list = new ArrayList<>();
-                muted.forEach((ignored, m) -> {
-                    list.add(m);
-                });
-
+                List<ServerMutedEntity> list = new ArrayList<>(muted.values());
                 w.write(gson.toJson(new DataEntity(list)));
             }
         } catch (IOException e) {
@@ -204,8 +205,6 @@ public final class PlasmoVoice extends JavaPlugin {
 
     // Get message with prefix from config
     public String getMessagePrefix(String name) {
-        String prefix = this.getPrefix();
-
         // Get message or use default value
         String message = this.getConfig().getString("messages." + name);
         if(message == null) {
@@ -214,7 +213,20 @@ public final class PlasmoVoice extends JavaPlugin {
             message = ChatColor.translateAlternateColorCodes('&', message);
         }
 
-        return prefix + message;
+        return this.getPrefix() + message;
+    }
+
+    // Get message from config
+    public String getMessage(String name) {
+        // Get message or use default value
+        String message = this.getConfig().getString("messages." + name);
+        if(message == null) {
+            message = "";
+        } else {
+            message = ChatColor.translateAlternateColorCodes('&', message);
+        }
+
+        return message;
     }
 
     // Get plugin prefix from config

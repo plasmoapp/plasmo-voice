@@ -1,13 +1,11 @@
 package su.plo.voice.data;
 
-import su.plo.voice.common.entities.MutedEntity;
-
 import java.util.List;
 
 public class DataEntity {
-    public final List<MutedEntity> muted;
+    public final List<ServerMutedEntity> muted;
 
-    public DataEntity(List<MutedEntity> muted) {
+    public DataEntity(List<ServerMutedEntity> muted) {
         this.muted = muted;
     }
 }
