@@ -140,7 +140,7 @@ public class VoiceClient implements ClientModInitializer {
                 return;
             }
 
-            if(socketUDP == null || serverConfig == null) {
+            if(!VoiceClient.connected()) {
                 // Voice not available
                 if(menuKey.wasPressed()) {
                     MinecraftClient.getInstance().openScreen(new VoiceNotAvailableScreen(new TranslatableText("gui.plasmo_voice.not_available"), client));
@@ -213,5 +213,17 @@ public class VoiceClient implements ClientModInitializer {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean connected() {
+        if (socketUDP == null) {
+            return false;
+        }
+
+        if (serverConfig == null) {
+            return false;
+        }
+
+        return socketUDP.authorized;
     }
 }

@@ -32,6 +32,7 @@ public class SocketClientUDPQueue extends Thread {
                     if(!socket.authorized) {
                         VoiceClient.LOGGER.info("Connected to UDP");
                         socket.authorized = true;
+                        VoiceClient.recorder.start();
                     }
                 } else if(message.getPacket() instanceof VoiceServerPacket) {
                     VoiceServerPacket voicePacket = (VoiceServerPacket) message.getPacket();

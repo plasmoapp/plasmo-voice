@@ -22,16 +22,15 @@ public abstract class MixinPlayerEntityRenderer extends LivingEntityRenderer<Abs
 
     @Inject(method = "render", at = @At(value = "HEAD"))
     public void render(AbstractClientPlayerEntity player, float f, float g, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int i, CallbackInfo ci) {
-        if(VoiceClient.socketUDP == null || VoiceClient.serverConfig == null) {
+        if(!VoiceClient.connected()) {
             return;
         }
 
-        // не знаю что это, но вроде нужно
         double d = this.dispatcher.getSquaredDistanceToCamera(player);
         if (d > 4096.0D) {
             return;
         }
 
-        CustomEntityRenderer.entityRender(player, matrices, this.hasLabel(player), vertexConsumerProvider, i);
+        CustomEntityRenderer.entityRender(player, d, matrices, this.hasLabel(player), vertexConsumerProvider, i);
     }
 }

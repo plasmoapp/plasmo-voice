@@ -52,7 +52,9 @@ public class Recorder implements Runnable {
                 this.encoder.close();
                 this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
 
-                this.start();
+                if(VoiceClient.connected()) {
+                    this.start();
+                }
             });
         } else {
             format = new AudioFormat(rate, 16, 1, true, false);
@@ -63,7 +65,9 @@ public class Recorder implements Runnable {
             this.encoder.close();
             this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
 
-            this.start();
+            if(VoiceClient.connected()) {
+                this.start();
+            }
         }
     }
 
@@ -114,7 +118,7 @@ public class Recorder implements Runnable {
                 break;
             }
 
-            if(VoiceClient.socketUDP == null || VoiceClient.serverConfig == null) {
+            if(!VoiceClient.connected()) {
                 this.running = false;
                 break;
             }
@@ -253,7 +257,7 @@ public class Recorder implements Runnable {
     }
 
     private void sendPacket(byte[] raw) {
-        if(VoiceClient.socketUDP == null) {
+        if(!VoiceClient.connected()) {
             this.running = false;
             return;
         }
@@ -273,7 +277,7 @@ public class Recorder implements Runnable {
     }
 
     private void sendEndPacket() {
-        if(VoiceClient.socketUDP == null) {
+        if(!VoiceClient.connected()) {
             this.running = false;
             return;
         }

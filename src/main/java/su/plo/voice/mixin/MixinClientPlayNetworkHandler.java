@@ -97,7 +97,7 @@ public abstract class MixinClientPlayNetworkHandler {
                     ConfigPacket config = (ConfigPacket) pkt;
                     VoiceClient.serverConfig.update(config);
 
-                    if(VoiceClient.socketUDP == null) {
+                    if(!VoiceClient.connected()) {
                         VoiceClient.socketUDP = new SocketClientUDP();
                         VoiceClient.socketUDP.start();
                     }
@@ -142,8 +142,6 @@ public abstract class MixinClientPlayNetworkHandler {
                     VoiceClient.serverConfig.clients.add(connected.getClient());
                 } else if(pkt instanceof ClientDisconnectedPacket) {
                     ClientDisconnectedPacket connected = (ClientDisconnectedPacket) pkt;
-
-                    System.out.println(connected.getClient());
 
                     VoiceClient.serverConfig.clients.remove(connected.getClient());
                     VoiceClient.serverConfig.mutedClients.remove(connected.getClient());

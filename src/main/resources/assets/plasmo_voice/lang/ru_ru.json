@@ -21,8 +21,8 @@
     "gui.plasmo_voice.select": "Выбрать",
     "gui.plasmo_voice.no_mic": "Микрофон не найден",
 
-    "gui.plasmo_voice.select_mic": "Выбрать микрофон",
-    "gui.plasmo_voice.select_speaker": "Выбрать устройство вывода",
+    "gui.plasmo_voice.select_mic": "Микрофон",
+    "gui.plasmo_voice.select_speaker": "Устройство вывода",
 
     "gui.plasmo_voice.mic_test_unavailable": "Тест микрофона недоступен",
     "gui.plasmo_voice.mic_test_on": "Включить тестирование микрофона",
