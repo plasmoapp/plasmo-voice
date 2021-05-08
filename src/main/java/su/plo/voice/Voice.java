@@ -143,4 +143,16 @@ public class Voice {
             e.printStackTrace();
         }
     }
+
+    public static boolean connected() {
+        if (socketUDP == null) {
+            return false;
+        }
+
+        if (serverConfig == null) {
+            return false;
+        }
+
+        return socketUDP.authorized;
+    }
 }

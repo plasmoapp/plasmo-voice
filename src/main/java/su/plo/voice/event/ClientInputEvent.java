@@ -38,7 +38,7 @@ public class ClientInputEvent {
             }
         }
 
-        if(Voice.socketUDP == null || Voice.serverConfig == null) {
+        if(!Voice.connected()) {
             if(Voice.menuKey.consumeClick()) {
                 minecraft.setScreen(new VoiceNotAvailableScreen(new TranslationTextComponent("gui.plasmo_voice.not_available"), minecraft));
             }

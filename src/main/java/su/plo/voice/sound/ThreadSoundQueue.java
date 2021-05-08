@@ -117,6 +117,8 @@ public class ThreadSoundQueue extends Thread {
                 }
                 PlayerEntity player = minecraft.level.getPlayerByUUID(this.from);
                 if(player == null) {
+                    lastSequenceNumber = -1L;
+                    lastOcclusion = -1;
                     continue;
                 }
 
@@ -126,6 +128,11 @@ public class ThreadSoundQueue extends Thread {
                 float percentage = 1F;
 
                 int maxDistance = packet.getDistance();
+                if(distance > maxDistance) {
+                    lastSequenceNumber = -1L;
+                    lastOcclusion = -1;
+                    continue;
+                }
                 int fadeDistance = packet.getDistance() > Voice.serverConfig.maxDistance
                         ? maxDistance / Voice.serverConfig.priorityFadeDivisor
                         : maxDistance / Voice.serverConfig.fadeDivisor;
@@ -155,11 +162,13 @@ public class ThreadSoundQueue extends Thread {
 
                 if (lastSequenceNumber >= 0) {
                     int packetsToCompensate = (int) (packet.getSequenceNumber() - (lastSequenceNumber + 1));
-                    for (int i = 0; i < packetsToCompensate; i++) {
-                        if (speaker.available() < Recorder.frameSize) {
-                            break;
+                    if(packetsToCompensate < 10) {
+                        for (int i = 0; i < packetsToCompensate; i++) {
+                            if (speaker.available() < Recorder.frameSize) {
+                                break;
+                            }
+                            writeToSpeaker(opusDecoder.decode(null), player, maxDistance);
                         }
-                        writeToSpeaker(opusDecoder.decode(null), player, maxDistance);
                     }
                 }
 

@@ -102,7 +102,7 @@ public abstract class MixinClientPlayNetHandler {
                     ConfigPacket config = (ConfigPacket) pkt;
                     Voice.serverConfig.update(config);
 
-                    if(Voice.socketUDP == null) {
+                    if(!Voice.connected()) {
                         Voice.socketUDP = new SocketClientUDP();
                         Voice.socketUDP.start();
                     }

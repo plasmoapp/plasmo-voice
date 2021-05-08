@@ -31,7 +31,7 @@ public class RenderEvent {
 
     @SubscribeEvent
     public void onRenderName(RenderNameplateEvent event) {
-        if(Voice.socketUDP == null || Voice.serverConfig == null) {
+        if(!Voice.connected()) {
             return;
         }
         if (!(event.getEntity() instanceof PlayerEntity)) {
@@ -41,10 +41,17 @@ public class RenderEvent {
             return;
         }
 
+        double d = event.getEntityRenderer().getDispatcher().distanceToSqr(event.getEntity());
+        if (d > 4096.0D) {
+            return;
+        }
+
         PlayerRenderer renderer = (PlayerRenderer) event.getEntityRenderer();
         PlayerEntity player = (PlayerEntity) event.getEntity();
 
-        CustomEntityRenderer.entityRender((PlayerEntity) event.getEntity(), event.getMatrixStack(),
+        CustomEntityRenderer.entityRender((PlayerEntity) event.getEntity(),
+                d,
+                event.getMatrixStack(),
                 shouldShowName(renderer, player),
                 event.getRenderTypeBuffer(), event.getPackedLight());
     }

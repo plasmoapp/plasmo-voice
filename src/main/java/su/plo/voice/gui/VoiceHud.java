@@ -1,6 +1,7 @@
 package su.plo.voice.gui;
 
 import com.mojang.blaze3d.matrix.MatrixStack;
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.IngameGui;
 import net.minecraft.entity.player.PlayerEntity;
@@ -10,7 +11,7 @@ public class VoiceHud {
     private final Minecraft client = Minecraft.getInstance();
 
     public void render() {
-        if(Voice.socketUDP == null || Voice.serverConfig == null) {
+        if(!Voice.connected()) {
             return;
         }
 
@@ -21,6 +22,7 @@ public class VoiceHud {
         if (player == null) return;
 
         if(Voice.socketUDP.ping.timedOut) {
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
             client.getTextureManager().bind(Voice.MICS);
 
             inGameHud.blit(matrixStack,
@@ -34,6 +36,7 @@ public class VoiceHud {
         }
 
         if(Voice.serverConfig.mutedClients.containsKey(player.getUUID()) || Voice.muted) {
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
             client.getTextureManager().bind(Voice.MICS);
 
             inGameHud.blit(matrixStack,
@@ -44,7 +47,9 @@ public class VoiceHud {
                     16,
                     16);
         } else if(Voice.speaking) {
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
             client.getTextureManager().bind(Voice.MICS);
+
             if(Voice.speakingPriority) {
                 inGameHud.blit(matrixStack,
                         (client.getWindow().getGuiScaledWidth()/2)-8,
