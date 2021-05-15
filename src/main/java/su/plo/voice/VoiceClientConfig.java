@@ -1,5 +1,6 @@
 package su.plo.voice;
 
+import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
 
 import java.io.*;
@@ -9,6 +10,7 @@ public class VoiceClientConfig {
     public HashMap<String, VoiceClientServerConfig> servers = new HashMap<>();
     public boolean occlusion = false;
     public int showIcons = 0;
+    public MicrophoneIconPosition micIconPosition = MicrophoneIconPosition.BOTTOM_CENTER;
     public boolean voiceActivation = false;
     public double voiceActivationThreshold = 0.0D;
     public double voiceVolume = 1.0D;
@@ -34,9 +36,10 @@ public class VoiceClientConfig {
                     this.servers = config.servers;
                     this.voiceActivation = config.voiceActivation;
                     this.voiceActivationThreshold = config.voiceActivationThreshold;
+                    this.micIconPosition = config.micIconPosition;
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
+            } catch (FileNotFoundException ignored) {} catch (JsonSyntaxException e) {
+                configFile.delete();
             }
         }
     }

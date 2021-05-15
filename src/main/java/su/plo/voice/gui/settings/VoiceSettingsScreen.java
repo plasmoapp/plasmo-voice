@@ -78,7 +78,7 @@ public class VoiceSettingsScreen extends BackgroundScreen {
 
     private void renderTab0() {
         this.tab = 0;
-        this.ySize = 175;
+        this.ySize = 200;
         this.buttons.clear();
         this.children.clear();
 
@@ -105,9 +105,15 @@ public class VoiceSettingsScreen extends BackgroundScreen {
             button.setMessage(new TranslationTextComponent("gui.plasmo_voice.show_icons").append(": ").append(onOff(Voice.config.showIcons, new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})));
         }));
 
-        addButton(new DistanceSlider(guiLeft + 10, guiTop + 115, xSize - 20));
+        addButton(new Button(guiLeft + 10, guiTop + 115, xSize - 20, 20,
+                new TranslationTextComponent("gui.plasmo_voice.mic_icon_pos").append(": ").append(Voice.config.micIconPosition.translate()),
+                (button) -> {
+                    client.setScreen(new MicIconPositionScreen(this));
+                }));
 
-        addButton(new Button(guiLeft + 10, guiTop + 145, xSize - 20, 20, new TranslationTextComponent("gui.plasmo_voice.close"), button -> {
+        addButton(new DistanceSlider(guiLeft + 10, guiTop + 140, xSize - 20));
+
+        addButton(new Button(guiLeft + 10, guiTop + 170, xSize - 20, 20, new TranslationTextComponent("gui.plasmo_voice.close"), button -> {
             client.setScreen(null);
         }));
     }

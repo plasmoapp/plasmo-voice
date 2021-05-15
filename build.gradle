@@ -21,7 +21,7 @@ apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'eclipse'
 apply plugin: 'maven-publish'
 
-version = '1.0.5'
+version = '1.0.6'
 group = "su.plo.voice" // http://maven.apache.org/guides/mini/guide-naming-conventions.html
 archivesBaseName = 'plasmovoice-forge'
 
