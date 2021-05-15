@@ -195,9 +195,7 @@ public class VoiceClient implements ClientModInitializer {
                 } catch (JsonSyntaxException j) {
                     dataFile.delete();
                 }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            } catch (FileNotFoundException ignored) {}
         }
     }
 

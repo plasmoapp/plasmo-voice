@@ -30,8 +30,8 @@ public class VoiceHud {
             client.getTextureManager().bindTexture(VoiceClient.MICS);
 
             inGameHud.drawTexture(matrixStack,
-                    (client.getWindow().getScaledWidth()/2)-8,
-                    client.getWindow().getScaledHeight()-54,
+                    VoiceClient.config.micIconPosition.getX(client),
+                    VoiceClient.config.micIconPosition.getY(client),
                     0,
                     16,
                     16,
@@ -44,8 +44,8 @@ public class VoiceHud {
             client.getTextureManager().bindTexture(VoiceClient.MICS);
 
             inGameHud.drawTexture(matrixStack,
-                    (client.getWindow().getScaledWidth()/2)-8,
-                    client.getWindow().getScaledHeight()-54,
+                    VoiceClient.config.micIconPosition.getX(client),
+                    VoiceClient.config.micIconPosition.getY(client),
                     16,
                     0,
                     16,
@@ -56,16 +56,16 @@ public class VoiceHud {
 
             if(VoiceClient.speakingPriority) {
                 inGameHud.drawTexture(matrixStack,
-                        (client.getWindow().getScaledWidth()/2)-8,
-                        client.getWindow().getScaledHeight()-54,
+                        VoiceClient.config.micIconPosition.getX(client),
+                        VoiceClient.config.micIconPosition.getY(client),
                         16,
                         16,
                         16,
                         16);
             } else {
                 inGameHud.drawTexture(matrixStack,
-                        (client.getWindow().getScaledWidth()/2)-8,
-                        client.getWindow().getScaledHeight()-54,
+                        VoiceClient.config.micIconPosition.getX(client),
+                        VoiceClient.config.micIconPosition.getY(client),
                         0,
                         0,
                         16,

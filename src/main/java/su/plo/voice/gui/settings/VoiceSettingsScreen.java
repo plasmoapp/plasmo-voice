@@ -22,7 +22,7 @@ public class VoiceSettingsScreen extends BackgroundScreen {
     private double mic;
 
     public VoiceSettingsScreen() {
-        super(new TranslatableText("gui.plasmo_voice.title"), 248, 180, TEXTURE, false);
+        super(new TranslatableText("gui.plasmo_voice.title"), 248, 200, TEXTURE, false);
         this.client = MinecraftClient.getInstance();
 
         VoiceClient.config.save();
@@ -77,7 +77,7 @@ public class VoiceSettingsScreen extends BackgroundScreen {
 
     private void renderTab0() {
         this.tab = 0;
-        this.ySize = 175;
+        this.ySize = 200;
         this.buttons.clear();
         this.children.clear();
 
@@ -104,9 +104,15 @@ public class VoiceSettingsScreen extends BackgroundScreen {
             button.setMessage(new TranslatableText("gui.plasmo_voice.show_icons").append(": ").append(onOff(VoiceClient.config.showIcons, new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})));
         }));
 
-        addButton(new DistanceSlider(guiLeft + 10, guiTop + 115, xSize - 20));
+        addButton(new ButtonWidget(guiLeft + 10, guiTop + 115, xSize - 20, 20,
+                new TranslatableText("gui.plasmo_voice.mic_icon_pos").append(": ").append(VoiceClient.config.micIconPosition.translate()),
+                (button) -> {
+            client.openScreen(new MicIconPositionScreen(this));
+        }));
 
-        addButton(new ButtonWidget(guiLeft + 10, guiTop + 145, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
+        addButton(new DistanceSlider(guiLeft + 10, guiTop + 140, xSize - 20));
+
+        addButton(new ButtonWidget(guiLeft + 10, guiTop + 170, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
             client.openScreen(null);
         }));
     }
