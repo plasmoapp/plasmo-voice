@@ -16,7 +16,7 @@ public class VoiceNotAvailableScreen extends BackgroundScreen {
     protected void init() {
         super.init();
 
-        addButton(new ButtonWidget(guiLeft + 10, guiTop + client.textRenderer.fontHeight + 20, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
+        addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + client.textRenderer.fontHeight + 20, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
             client.openScreen(null);
         }));
     }

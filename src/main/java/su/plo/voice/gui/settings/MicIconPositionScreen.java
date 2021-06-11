@@ -44,38 +44,38 @@ public class MicIconPositionScreen extends Screen {
         int offset = 25;
         int buttonWidth = 100;
 
-        addButton(new ButtonWidget(offset, offset, buttonWidth, 20,
+        addDrawableChild(new ButtonWidget(offset, offset, buttonWidth, 20,
                 MicrophoneIconPosition.TOP_LEFT.translate(), (button) -> {
             VoiceClient.config.micIconPosition = MicrophoneIconPosition.TOP_LEFT;
             this.client.openScreen(parent);
         }));
 
-        addButton(new ButtonWidget((this.width / 2) - (buttonWidth / 2), offset, buttonWidth, 20,
+        addDrawableChild(new ButtonWidget((this.width / 2) - (buttonWidth / 2), offset, buttonWidth, 20,
                 MicrophoneIconPosition.TOP_CENTER.translate(), (button) -> {
             VoiceClient.config.micIconPosition = MicrophoneIconPosition.TOP_CENTER;
             this.client.openScreen(parent);
         }));
 
-        addButton(new ButtonWidget(this.width - offset - buttonWidth, offset, buttonWidth, 20,
+        addDrawableChild(new ButtonWidget(this.width - offset - buttonWidth, offset, buttonWidth, 20,
                 MicrophoneIconPosition.TOP_RIGHT.translate(), (button) -> {
             VoiceClient.config.micIconPosition = MicrophoneIconPosition.TOP_RIGHT;
             this.client.openScreen(parent);
         }));
 
 
-        addButton(new ButtonWidget(offset, this.height - 20 - offset, buttonWidth, 20,
+        addDrawableChild(new ButtonWidget(offset, this.height - 20 - offset, buttonWidth, 20,
                 MicrophoneIconPosition.BOTTOM_LEFT.translate(), (button) -> {
             VoiceClient.config.micIconPosition = MicrophoneIconPosition.BOTTOM_LEFT;
             this.client.openScreen(parent);
         }));
 
-        addButton(new ButtonWidget((this.width / 2) - (buttonWidth / 2), this.height - 20 - offset, buttonWidth, 20,
+        addDrawableChild(new ButtonWidget((this.width / 2) - (buttonWidth / 2), this.height - 20 - offset, buttonWidth, 20,
                 MicrophoneIconPosition.BOTTOM_CENTER.translate(), (button) -> {
             VoiceClient.config.micIconPosition = MicrophoneIconPosition.BOTTOM_CENTER;
             this.client.openScreen(parent);
         }));
 
-        addButton(new ButtonWidget(this.width - offset - buttonWidth, this.height - 20 - offset, buttonWidth, 20,
+        addDrawableChild(new ButtonWidget(this.width - offset - buttonWidth, this.height - 20 - offset, buttonWidth, 20,
                 MicrophoneIconPosition.BOTTOM_RIGHT.translate(), (button) -> {
             VoiceClient.config.micIconPosition = MicrophoneIconPosition.BOTTOM_RIGHT;
             this.client.openScreen(parent);

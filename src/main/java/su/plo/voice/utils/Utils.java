@@ -2,7 +2,7 @@ package su.plo.voice.utils;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
-import net.minecraft.client.options.Perspective;
+import net.minecraft.client.option.Perspective;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
 import org.apache.commons.lang3.tuple.ImmutablePair;

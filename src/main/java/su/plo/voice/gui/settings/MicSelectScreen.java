@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -41,7 +42,7 @@ public class MicSelectScreen extends BackgroundScreen {
             })));
         }
 
-        addButton(new ButtonWidget(guiLeft + 7, guiTop + ySize - 30, xSize - 14, 20,
+        addDrawableChild(new ButtonWidget(guiLeft + 7, guiTop + ySize - 30, xSize - 14, 20,
                 new TranslatableText("gui.plasmo_voice.back"), button -> {
             this.client.openScreen(parent);
         }));
@@ -50,8 +51,9 @@ public class MicSelectScreen extends BackgroundScreen {
     public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
         this.renderBackground(matrices);
 
-        RenderSystem.color4f(1F, 1F, 1F, 1F);
-        client.getTextureManager().bindTexture(TEXTURE);
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        RenderSystem.setShaderTexture(0, TEXTURE);
 
         // header
         drawTexture(matrices, guiLeft, guiTop, 0, 0, xSize, headerHeight, 512, 512);
@@ -74,10 +76,10 @@ public class MicSelectScreen extends BackgroundScreen {
         // footer
         drawTexture(matrices, guiLeft, guiTop + ySize - footerHeight, 0, 190, xSize, footerHeight, 512, 512);
 
-        client.getTextureManager().bindTexture(VoiceSettingsScreen.TEXTURE);
+        RenderSystem.setShaderTexture(0, VoiceSettingsScreen.TEXTURE);
         drawTexture(matrices, guiLeft, guiTop + ySize - 40, 0, 160, xSize, 40, 512, 512);
 
-        client.getTextureManager().bindTexture(TEXTURE);
+        RenderSystem.setShaderTexture(0, TEXTURE);
         drawTexture(matrices, guiLeft, guiTop + ySize - 41, 0, 192, xSize, 1, 512, 512);
 
         super.render(matrices, mouseX, mouseY, delta);

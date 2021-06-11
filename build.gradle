@@ -1,11 +1,11 @@
 plugins {
-    id 'fabric-loom' version '0.6-SNAPSHOT'
+    id 'fabric-loom' version '0.8-SNAPSHOT'
     id 'maven-publish'
     id "com.github.johnrengelman.shadow" version "5.2.0"
 }
 
-sourceCompatibility = JavaVersion.VERSION_1_8
-targetCompatibility = JavaVersion.VERSION_1_8
+sourceCompatibility = JavaVersion.VERSION_16
+targetCompatibility = JavaVersion.VERSION_16
 
 archivesBaseName = project.archives_base_name
 version = project.mod_version
@@ -20,12 +20,12 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation(include("net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"))
 
-    modImplementation(include("net.fabricmc.fabric-api:fabric-api-base:0.1.3+12a8474cfa"))
-    modImplementation(include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.2.0+74cc3b203a"))
-    modImplementation(include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.1+f404f3be02"))
-    modImplementation(include("net.fabricmc.fabric-api:fabric-rendering-v1:1.3.1+f8ac1db295"))
-    modImplementation(include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.3.1+facf3bbf95"))
-    modImplementation(include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.1+bb687600bd"))
+    modImplementation(include("net.fabricmc.fabric-api:fabric-api-base:0.3.0+c88702897d"))
+    modImplementation(include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.4.4+a02b4463d5"))
+    modImplementation(include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.4+a02b4463d5"))
+    modImplementation(include("net.fabricmc.fabric-api:fabric-rendering-v1:1.6.0+a02b4463d5"))
+    modImplementation(include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.7+b7ab6121d5"))
+    modImplementation(include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.1+bb687600d1"))
 
     implementation(include("su.plo.voice:common:1.0.0"))
     implementation(include("club.minnced:opus-java:1.0.4"))
@@ -41,15 +41,14 @@ repositories {
 }
 
 processResources {
-    inputs.property "version", project.version
-
-    from(sourceSets.main.resources.srcDirs) {
-        include "fabric.mod.json"
-        expand "version": project.version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version,
+                "loader_version": project.loader_version,
+                "fabric_version": project.fabric_version
     }
 
-    from(sourceSets.main.resources.srcDirs) {
-        exclude "fabric.mod.json"
+    filesMatching("compatibility.properties") {
+        expand "mod_compatibility_version": project.mod_compatibility_version
     }
 }
 

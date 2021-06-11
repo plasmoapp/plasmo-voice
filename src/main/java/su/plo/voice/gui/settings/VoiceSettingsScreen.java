@@ -1,7 +1,9 @@
 package su.plo.voice.gui.settings;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.widget.ButtonWidget;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
@@ -78,21 +80,20 @@ public class VoiceSettingsScreen extends BackgroundScreen {
     private void renderTab0() {
         this.tab = 0;
         this.ySize = 200;
-        this.buttons.clear();
-        this.children.clear();
+        this.clearChildren();
 
-        addButton(general.get());
-        addButton(audio.get());
+        addDrawableChild(general.get());
+        addDrawableChild(audio.get());
 
-        addButton(new VoiceVolumeSlider(guiLeft + 10, guiTop + 40, xSize - 20));
+        addDrawableChild(new VoiceVolumeSlider(guiLeft + 10, guiTop + 40, xSize - 20));
 
-        addButton(new ButtonWidget(guiLeft + 10, guiTop + 65, xSize - 20, 20,
+        addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 65, xSize - 20, 20,
                 new TranslatableText("gui.plasmo_voice.occlusion").append(": ").append(onOff(VoiceClient.config.occlusion, "gui.plasmo_voice.on", "gui.plasmo_voice.off")), button -> {
             VoiceClient.config.occlusion = !VoiceClient.config.occlusion;
             button.setMessage(new TranslatableText("gui.plasmo_voice.occlusion").append(": ").append(onOff(VoiceClient.config.occlusion, "gui.plasmo_voice.on", "gui.plasmo_voice.off")));
         }));
 
-        addButton(new ButtonWidget(guiLeft + 10, guiTop + 90, xSize - 20, 20,
+        addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 90, xSize - 20, 20,
                 new TranslatableText("gui.plasmo_voice.show_icons").append(": ").append(onOff(VoiceClient.config.showIcons, new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})), button -> {
             if(VoiceClient.config.showIcons == 0) {
                 VoiceClient.config.showIcons = 1;
@@ -104,15 +105,15 @@ public class VoiceSettingsScreen extends BackgroundScreen {
             button.setMessage(new TranslatableText("gui.plasmo_voice.show_icons").append(": ").append(onOff(VoiceClient.config.showIcons, new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})));
         }));
 
-        addButton(new ButtonWidget(guiLeft + 10, guiTop + 115, xSize - 20, 20,
+        addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 115, xSize - 20, 20,
                 new TranslatableText("gui.plasmo_voice.mic_icon_pos").append(": ").append(VoiceClient.config.micIconPosition.translate()),
                 (button) -> {
             client.openScreen(new MicIconPositionScreen(this));
         }));
 
-        addButton(new DistanceSlider(guiLeft + 10, guiTop + 140, xSize - 20));
+        addDrawableChild(new DistanceSlider(guiLeft + 10, guiTop + 140, xSize - 20));
 
-        addButton(new ButtonWidget(guiLeft + 10, guiTop + 170, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
+        addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 170, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
             client.openScreen(null);
         }));
     }
@@ -120,20 +121,19 @@ public class VoiceSettingsScreen extends BackgroundScreen {
     private void renderTab1() {
         this.tab = 1;
         this.ySize = 225;
-        this.buttons.clear();
-        this.children.clear();
+        this.clearChildren();
 
-        addButton(general.get());
-        addButton(audio.get());
+        addDrawableChild(general.get());
+        addDrawableChild(audio.get());
 
-        addButton(new MicAmplificationSlider(guiLeft + 10, guiTop + 40, xSize - 20));
+        addDrawableChild(new MicAmplificationSlider(guiLeft + 10, guiTop + 40, xSize - 20));
 
-        addButton(new ButtonWidget(general.get().x, guiTop + 65, general.get().getWidth(), 20,
+        addDrawableChild(new ButtonWidget(general.get().x, guiTop + 65, general.get().getWidth(), 20,
                 new TranslatableText("gui.plasmo_voice.select_mic"), button -> {
             client.openScreen(new MicSelectScreen(this));
         }));
 
-        addButton(new ButtonWidget(audio.get().x, guiTop + 65, audio.get().getWidth(), 20,
+        addDrawableChild(new ButtonWidget(audio.get().x, guiTop + 65, audio.get().getWidth(), 20,
                 new TranslatableText("gui.plasmo_voice.select_speaker"), button -> {
             client.openScreen(new SpeakerSelectScreen(this));
         }));
@@ -152,12 +152,12 @@ public class VoiceSettingsScreen extends BackgroundScreen {
             activation.active = false;
         }
 
-        addButton(activation);
+        addDrawableChild(activation);
 
-        addButton(new VoiceActivationSlider(guiLeft + 10, guiTop + 115, xSize - 20));
-        addButton(this.testButton);
+        addDrawableChild(new VoiceActivationSlider(guiLeft + 10, guiTop + 115, xSize - 20));
+        addDrawableChild(this.testButton);
 
-        addButton(new ButtonWidget(guiLeft + 10, guiTop + 195, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
+        addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 195, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
             client.openScreen(null);
         }));
     }
@@ -175,7 +175,10 @@ public class VoiceSettingsScreen extends BackgroundScreen {
         super.render(matrices, mouseX, mouseY, delta);
 
         if(tab == 1) {
-            client.getTextureManager().bindTexture(TEXTURE);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+            RenderSystem.setShaderTexture(0, TEXTURE);
+
             drawTexture(matrices, guiLeft + 10, guiTop + 140, 0, 218, xSize - 20, 20, 512, 512);
             drawTexture(matrices, guiLeft + 11, guiTop + 141, 0, 200, (int) ((xSize - 18) * mic), 18, 512, 512);
 

@@ -5,6 +5,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawableHelper;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.Selectable;
 import net.minecraft.client.gui.widget.ElementListWidget;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.text.LiteralText;
@@ -22,8 +23,8 @@ public class DeviceListWidget extends ElementListWidget<DeviceListWidget.DeviceE
     public DeviceListWidget(MinecraftClient client, int width, int height, int top, Text title) {
         super(client, width, height, top, top + height - 12, 24);
         this.title = title;
-        this.method_31322(false);
-        this.method_31323(false);
+        this.setRenderBackground(false);
+        this.setRenderHorizontalShadows(false);
     }
 
     @Override
@@ -97,6 +98,11 @@ public class DeviceListWidget extends ElementListWidget<DeviceListWidget.DeviceE
         public boolean mouseClicked(double mouseX, double mouseY, int button) {
             this.onSelect.onSelect(this.device);
             return true;
+        }
+
+        @Override
+        public List<? extends Selectable> method_37025() {
+            return null;
         }
 
         public interface SelectAction {

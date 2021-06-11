@@ -3,6 +3,7 @@ package su.plo.voice.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.hud.InGameHud;
+import net.minecraft.client.render.GameRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.player.PlayerEntity;
 import su.plo.voice.client.VoiceClient;
@@ -26,8 +27,9 @@ public class VoiceHud {
         if (player == null) return;
 
         if(VoiceClient.socketUDP.ping.timedOut) {
-            RenderSystem.color4f(1F, 1F, 1F, 1F);
-            client.getTextureManager().bindTexture(VoiceClient.MICS);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+            RenderSystem.setShaderTexture(0, VoiceClient.MICS);
 
             inGameHud.drawTexture(matrixStack,
                     VoiceClient.config.micIconPosition.getX(client),
@@ -40,8 +42,9 @@ public class VoiceHud {
         }
 
         if(VoiceClient.serverConfig.mutedClients.containsKey(player.getUuid()) || VoiceClient.muted) {
-            RenderSystem.color4f(1F, 1F, 1F, 1F);
-            client.getTextureManager().bindTexture(VoiceClient.MICS);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+            RenderSystem.setShaderTexture(0, VoiceClient.MICS);
 
             inGameHud.drawTexture(matrixStack,
                     VoiceClient.config.micIconPosition.getX(client),
@@ -51,8 +54,9 @@ public class VoiceHud {
                     16,
                     16);
         } else if(VoiceClient.speaking) {
-            RenderSystem.color4f(1F, 1F, 1F, 1F);
-            client.getTextureManager().bindTexture(VoiceClient.MICS);
+            RenderSystem.setShader(GameRenderer::getPositionTexShader);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+            RenderSystem.setShaderTexture(0, VoiceClient.MICS);
 
             if(VoiceClient.speakingPriority) {
                 inGameHud.drawTexture(matrixStack,
