@@ -7,10 +7,14 @@ import su.plo.voice.common.packets.udp.PacketUDP;
 
 import java.io.IOException;
 import java.net.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SocketServerUDP extends Thread {
     public static final ConcurrentHashMap<Player, SocketClientUDP> clients = new ConcurrentHashMap<>();
+    public static final Map<UUID, Long> talking = new HashMap<>();
     private final SocketAddress addr;
 
     public static boolean started;
@@ -95,7 +99,13 @@ public class SocketServerUDP extends Thread {
                 synchronized (this.queue) {
                     this.queue.notify();
                 }
-            } catch (SocketException ignored) {} catch (Exception e) {
+            } catch (IOException | InstantiationException e) { // bad packet? just ignore it 4HEad
+                if(PlasmoVoice.getInstance().getConfig().getBoolean("debug")) {
+                    e.printStackTrace();
+                }
+            }
+              catch (Exception e) {
+
                 e.printStackTrace();
             }
         }

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.packets.tcp.ClientMutedPacket;
 import su.plo.voice.data.ServerMutedEntity;
+import su.plo.voice.events.PlayerVoiceMuteEvent;
 import su.plo.voice.listeners.PluginChannelListener;
 
 import java.util.ArrayList;
@@ -101,6 +102,7 @@ public class VoiceMute implements TabExecutor {
                 )
         );
 
+        Bukkit.getPluginManager().callEvent(new PlayerVoiceMuteEvent(player, duration));
         return true;
     }
 

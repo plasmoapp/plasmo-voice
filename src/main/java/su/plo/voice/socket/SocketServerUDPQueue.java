@@ -6,6 +6,8 @@ import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.common.packets.udp.*;
 import su.plo.voice.data.ServerMutedEntity;
+import su.plo.voice.events.PlayerEndSpeakEvent;
+import su.plo.voice.events.PlayerStartSpeakEvent;
 import su.plo.voice.listeners.PlayerListener;
 import su.plo.voice.listeners.PluginChannelListener;
 
@@ -102,6 +104,8 @@ public class SocketServerUDPQueue extends Thread {
                                     packet.getDistance()
                             );
                             SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
+                        } else {
+                            continue;
                         }
                     } else {
                         VoiceServerPacket serverPacket = new VoiceServerPacket(packet.getData(),
@@ -112,11 +116,22 @@ public class SocketServerUDPQueue extends Thread {
                         SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
                     }
 
+                    if(!SocketServerUDP.talking.containsKey(player.getUniqueId())) {
+                        SocketServerUDP.talking.put(player.getUniqueId(), System.currentTimeMillis());
+                        Bukkit.getPluginManager().callEvent(new PlayerStartSpeakEvent(player));
+                    } else {
+                        SocketServerUDP.talking.put(player.getUniqueId(), System.currentTimeMillis());
+                    }
                 } else if(message.getPacket() instanceof VoiceEndClientPacket) {
                     VoiceEndClientPacket packet = (VoiceEndClientPacket) message.getPacket();
 
                     VoiceEndServerPacket serverPacket = new VoiceEndServerPacket(player.getUniqueId());
                     SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
+
+                    if(SocketServerUDP.talking.containsKey(player.getUniqueId())) {
+                        SocketServerUDP.talking.remove(player.getUniqueId());
+                        Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(player));
+                    }
                 }
             } catch (InterruptedException | IOException e) {
                 e.printStackTrace();
@@ -129,6 +144,13 @@ public class SocketServerUDPQueue extends Thread {
         PingPacket keepAlive = new PingPacket();
         List<Player> connectionsToDrop = new ArrayList<>(SocketServerUDP.clients.size());
         for (SocketClientUDP connection : SocketServerUDP.clients.values()) {
+            if(SocketServerUDP.talking.containsKey(connection.getPlayer().getUniqueId())) {
+                if(timestamp - SocketServerUDP.talking.get(connection.getPlayer().getUniqueId()) > 250L) {
+                    SocketServerUDP.talking.remove(connection.getPlayer().getUniqueId());
+                    Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(connection.getPlayer()));
+                }
+            }
+
             if (timestamp - connection.getKeepAlive() >= 15000L) {
                 connectionsToDrop.add(connection.getPlayer());
             } else if (timestamp - connection.getSentKeepAlive() >= 1000L) {

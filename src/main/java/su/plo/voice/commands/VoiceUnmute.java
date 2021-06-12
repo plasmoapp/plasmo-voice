@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.data.ServerMutedEntity;
+import su.plo.voice.events.PlayerVoiceUnmuteEvent;
 import su.plo.voice.listeners.PluginChannelListener;
 
 import java.util.List;
@@ -45,6 +46,8 @@ public class VoiceUnmute implements TabExecutor {
         PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()));
 
         sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("unmuted"), player.getName()));
+
+        Bukkit.getPluginManager().callEvent(new PlayerVoiceUnmuteEvent(player));
         return true;
     }
 

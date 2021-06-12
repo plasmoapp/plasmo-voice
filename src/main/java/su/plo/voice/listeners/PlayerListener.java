@@ -41,7 +41,7 @@ public class PlayerListener implements Listener {
             try {
                 byte[] pkt = PacketTCP.write(new ServerConnectPacket(token.toString(),
                         PlasmoVoice.getInstance().config.proxyIp != null
-                            ? PlasmoVoice.getInstance().config.proxyIp : PlasmoVoice.getInstance().config.ip,
+                                ? PlasmoVoice.getInstance().config.proxyIp : PlasmoVoice.getInstance().config.ip,
                         PlasmoVoice.getInstance().config.proxyPort != 0
                                 ? PlasmoVoice.getInstance().config.proxyPort : PlasmoVoice.getInstance().config.port,
                         player.hasPermission("voice.priority")));
