@@ -15,6 +15,7 @@ import su.plo.voice.common.packets.tcp.*;
 import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.socket.SocketServerUDP;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
@@ -63,7 +64,11 @@ public class PluginChannelListener implements PluginMessageListener {
                 player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
 
                 List<UUID> clients = new ArrayList<>();
-                SocketServerUDP.clients.forEach((p, c) -> clients.add(p.getUniqueId()));
+                SocketServerUDP.clients.forEach((p, c) -> {
+                    if(player.canSee(p)) {
+                        clients.add(p.getUniqueId());
+                    }
+                });
 
                 List<MutedEntity> muted = new ArrayList<>();
                 PlasmoVoice.muted.forEach((uuid, m) -> muted.add(new MutedEntity(m.uuid, m.to)));
@@ -80,7 +85,7 @@ public class PluginChannelListener implements PluginMessageListener {
                 pkt = PacketTCP.write(new ClientsListPacket(clients, muted));
                 player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
 
-                sendToClients(new ClientConnectedPacket(player.getUniqueId(), playerMuted), player.getUniqueId());
+                sendToClients(new ClientConnectedPacket(player.getUniqueId(), playerMuted), player.getUniqueId(), player);
 
                 PlasmoVoice.logger.info(String.format("New client: %s v%s", player.getName(), version));
             }
@@ -89,14 +94,20 @@ public class PluginChannelListener implements PluginMessageListener {
         }
     }
 
-    public static void sendToClients(Packet packet) {
+    public static void sendToClients(Packet packet, @Nullable Player sender) {
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
                 byte[] pkt = PacketTCP.write(packet);
                 Enumeration<Player> it = SocketServerUDP.clients.keys();
                 while (it.hasMoreElements()) {
                     Player player = it.nextElement();
-                    player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
+                    if(sender != null) {
+                        if(player.canSee(sender)) {
+                            player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
+                        }
+                    } else {
+                        player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
+                    }
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -104,7 +115,7 @@ public class PluginChannelListener implements PluginMessageListener {
         });
     }
 
-    public static void sendToClients(Packet packet, UUID except) {
+    public static void sendToClients(Packet packet, UUID except, @Nullable Player sender) {
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
                 byte[] pkt = PacketTCP.write(packet);
@@ -112,7 +123,13 @@ public class PluginChannelListener implements PluginMessageListener {
                 while (it.hasMoreElements()) {
                     Player player = it.nextElement();
                     if(!player.getUniqueId().equals(except)) {
-                        player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
+                        if(sender != null) {
+                            if(player.canSee(sender)) {
+                                player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
+                            }
+                        } else {
+                            player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
+                        }
                     }
                 }
             } catch (IOException e) {

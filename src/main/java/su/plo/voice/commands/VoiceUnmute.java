@@ -5,6 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.PlasmoVoice;
@@ -43,7 +44,10 @@ public class VoiceUnmute implements TabExecutor {
 
         PlasmoVoice.muted.remove(muted.uuid);
 
-        PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()));
+        Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
+        if(onlinePlayer != null) {
+            PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()), onlinePlayer);
+        }
 
         sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("unmuted"), player.getName()));
 

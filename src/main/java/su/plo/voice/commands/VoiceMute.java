@@ -89,7 +89,7 @@ public class VoiceMute implements TabExecutor {
         ServerMutedEntity serverMuted = new ServerMutedEntity(player.getUniqueId(), duration, reason);
         PlasmoVoice.muted.put(player.getUniqueId(), serverMuted);
 
-        PluginChannelListener.sendToClients(new ClientMutedPacket(serverMuted.uuid, serverMuted.to));
+        PluginChannelListener.sendToClients(new ClientMutedPacket(serverMuted.uuid, serverMuted.to), player);
         sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("muted"), player.getName()));
 
         player.sendMessage((duration > 0

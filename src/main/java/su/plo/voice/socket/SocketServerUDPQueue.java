@@ -85,7 +85,7 @@ public class SocketServerUDPQueue extends Thread {
                         PlasmoVoice.muted.remove(e.uuid);
 
                         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
-                            PluginChannelListener.sendToClients(new ClientUnmutedPacket(e.uuid));
+                            PluginChannelListener.sendToClients(new ClientUnmutedPacket(e.uuid), player);
                         });
                     }
                 }

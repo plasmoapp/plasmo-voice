@@ -27,7 +27,10 @@ public class PlayerListener implements Listener {
             PlasmoVoice.muted.forEach((uuid, muted) -> {
                 if(muted.to > 0 && muted.to < System.currentTimeMillis()) {
                     PlasmoVoice.muted.remove(uuid);
-                    PluginChannelListener.sendToClients(new ClientUnmutedPacket(muted.uuid));
+                    Player player = Bukkit.getPlayer(uuid);
+                    if(player != null) {
+                        PluginChannelListener.sendToClients(new ClientUnmutedPacket(muted.uuid), player);
+                    }
                 }
             });
         }, 0L, 100L);
@@ -90,7 +93,7 @@ public class PlayerListener implements Listener {
         try {
             if(clientUDP != null) {
                 clientUDP.close();
-                PluginChannelListener.sendToClients(new ClientDisconnectedPacket(player.getUniqueId()));
+                PluginChannelListener.sendToClients(new ClientDisconnectedPacket(player.getUniqueId()), player);
             }
         } catch (Exception ex) {
             ex.printStackTrace();
