@@ -163,7 +163,7 @@ public class SocketServerUDPQueue extends Thread {
 
             PlasmoVoice.logger.info(player.getName() + " UDP timed out");
 
-            PlasmoVoice.logger.info(player.getName() + " sended reconnect packet");
+            PlasmoVoice.logger.info(player.getName() + " sent reconnect packet");
             PlayerListener.reconnectPlayer(player);
         }
     }
