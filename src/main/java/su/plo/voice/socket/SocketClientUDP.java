@@ -93,7 +93,7 @@ public class SocketClientUDP extends Thread {
                 }
             }
         } catch (SocketException e) {
-            if(!e.getMessage().equals("socket closed")) {
+            if(!e.getMessage().equals("Socket closed")) {
                 e.printStackTrace();
             }
         } catch (IOException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {

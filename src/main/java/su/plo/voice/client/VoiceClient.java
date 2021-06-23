@@ -26,7 +26,6 @@ import su.plo.voice.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.socket.SocketClientUDP;
 import su.plo.voice.socket.SocketClientUDPQueue;
-import su.plo.voice.sound.AudioNatives;
 import su.plo.voice.sound.Recorder;
 import su.plo.voice.sound.ThreadSoundQueue;
 
@@ -46,9 +45,6 @@ public class VoiceClient implements ClientModInitializer {
     public static HashSet<UUID> clientMutedClients = new HashSet<>();
 
     public static SocketClientUDP socketUDP;
-    static {
-        AudioNatives.ensureOpus();
-    }
     public final static Recorder recorder = new Recorder();
 
     public static boolean muted = false;

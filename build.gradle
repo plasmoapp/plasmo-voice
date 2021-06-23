@@ -1,7 +1,7 @@
 plugins {
     id 'fabric-loom' version '0.8-SNAPSHOT'
     id 'maven-publish'
-    id "com.github.johnrengelman.shadow" version "5.2.0"
+    id "com.github.johnrengelman.shadow" version "7.0.0"
 }
 
 sourceCompatibility = JavaVersion.VERSION_16
@@ -27,10 +27,11 @@ dependencies {
     modImplementation(include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.7+b7ab6121d5"))
     modImplementation(include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.1+bb687600d1"))
 
-    implementation(include("su.plo.voice:common:1.0.0"))
-    implementation(include("club.minnced:opus-java:1.0.4"))
-    implementation(include("club.minnced:opus-java-api:1.0.5"))
-    implementation(include("club.minnced:opus-java-natives:1.0.5"))
+    implementation "su.plo.voice:common:1.0.0"
+    shadow "su.plo.voice:common:1.0.0"
+
+    implementation "su.plo.voice:opus:1.1.0"
+    shadow "su.plo.voice:opus:1.1.0"
 }
 
 repositories {
@@ -92,4 +93,15 @@ publishing {
         // uncomment to publish to the local maven
         // mavenLocal()
     }
+}
+
+shadowJar {
+    configurations = [project.configurations.shadow]
+    classifier 'shadow-dev'
+    relocate 'com.sun.jna', "com.sun.jna"
+}
+
+remapJar {
+    dependsOn shadowJar
+    input.set shadowJar.archiveFile.get()
 }
