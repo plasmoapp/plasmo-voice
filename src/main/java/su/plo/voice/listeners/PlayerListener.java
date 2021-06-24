@@ -76,14 +76,14 @@ public class PlayerListener implements Listener {
                     PlasmoVoice.getInstance().config.port));
         }
 
-        Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
-            if(!SocketServerUDP.clients.containsKey(player)) {
-                if(PlasmoVoice.getInstance().config.clientModRequired) {
+        if(PlasmoVoice.getInstance().config.clientModRequired) {
+            Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
+                if (!SocketServerUDP.clients.containsKey(player)) {
                     PlasmoVoice.logger.info(String.format("Player: %s does not have the mod installed!", player.getName()));
-                    player.kickPlayer(PlasmoVoice.getInstance().getConfig().getString("messages.mod_missing_kick_message"));
+                    player.kickPlayer(PlasmoVoice.getInstance().getMessage("mod_missing_kick_message"));
                 }
-            }
-        }, PlasmoVoice.getInstance().config.clientModCheckTimeout);
+            }, PlasmoVoice.getInstance().config.clientModCheckTimeout);
+        }
     }
 
     @EventHandler
