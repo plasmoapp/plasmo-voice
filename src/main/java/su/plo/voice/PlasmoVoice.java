@@ -166,6 +166,12 @@ public final class PlasmoVoice extends JavaPlugin {
             return;
         }
 
+        int clientModCheckTimeout = config.getInt("client_mod_check_timeout");
+        if(clientModCheckTimeout < 20) {
+            PlasmoVoice.logger.warning("Client mod check timeout cannot be < 20 ticks");
+            return;
+        }
+
         this.config = new PlasmoVoiceConfig(config.getString("udp.ip"),
                 config.getInt("udp.port"),
                 config.getString("udp.proxy_ip"),
@@ -176,7 +182,9 @@ public final class PlasmoVoice extends JavaPlugin {
                 config.getInt("max_priority_distance"),
                 config.getBoolean("disable_voice_activation"),
                 fadeDivisor,
-                priorityFadeDivisor);
+                priorityFadeDivisor,
+                config.getBoolean("client_mod_required"),
+                clientModCheckTimeout);
     }
 
     private void loadData() {

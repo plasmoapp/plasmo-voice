@@ -31,6 +31,12 @@ priority_fade_divisor: 8
 
 disable_voice_activation: false
 
+# Kick players if they attempt to join without the client mod installed
+client_mod_required: false
+# Wait this many ticks before kicking players if they don't have the mod installed
+# Value should not be set lower than 1 second (20 ticks)
+client_mod_check_timeout: 60
+
 messages:
   prefix: "&6[Plasmo Voice]&7 "
   list: "Clients ({count}/{online_players}): {players}"
@@ -54,6 +60,7 @@ messages:
     weeks: "for %s w"
   reconnect_sent: "Reconnect packet sent"
   reloaded: "Config reloaded"
+  mod_missing_kick_message: "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client"
 
   help:
     mute: "Usage: /vmute <player> [duration] [reason]"
