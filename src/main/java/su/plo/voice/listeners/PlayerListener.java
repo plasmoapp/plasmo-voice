@@ -75,6 +75,15 @@ public class PlayerListener implements Listener {
                     String.format("Voice chat is installed but doesn't work. Check if port %d UDP is open.",
                     PlasmoVoice.getInstance().config.port));
         }
+
+        if(PlasmoVoice.getInstance().config.clientModRequired) {
+            Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
+                if (!SocketServerUDP.clients.containsKey(player)) {
+                    PlasmoVoice.logger.info(String.format("Player: %s does not have the mod installed!", player.getName()));
+                    player.kickPlayer(PlasmoVoice.getInstance().getMessage("mod_missing_kick_message"));
+                }
+            }, PlasmoVoice.getInstance().config.clientModCheckTimeout);
+        }
     }
 
     @EventHandler
