@@ -27,6 +27,6 @@
         "voice.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=0.10.8"
+        "fabricloader": ">=${loader_version}"
     }
 }

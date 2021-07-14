@@ -14,7 +14,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
@@ -102,10 +101,10 @@ public class VoiceClient implements ClientModInitializer {
                         .executes(ctx -> {
                             if(VoiceClient.getClientConfig().isWhitelist()) {
                                 // send disabled
-                                ctx.getSource().getPlayer().sendMessage(new LiteralText("выкл"), false);
+                                ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_off"), false);
                             } else {
                                 // send enabled
-                                ctx.getSource().getPlayer().sendMessage(new LiteralText("вкл"), false);
+                                ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_on"), false);
                             }
 
                             VoiceClient.getClientConfig().setWhitelist(!VoiceClient.getClientConfig().isWhitelist());
