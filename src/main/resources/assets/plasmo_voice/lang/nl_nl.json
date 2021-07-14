@@ -1,0 +1,58 @@
+{
+    "key.plasmo_voice.ptt": "push-to-talk knop",
+    "key.plasmo_voice.priority_ptt": "Prioriteit spreken push-to-talk knop",
+    "key.plasmo_voice.settings": "Open spraak instellingen",
+    "key.plasmo_voice.mute": "Microfoon dempen",
+    "key.plasmo_voice": "Plasmo Voice",
+
+    "gui.plasmo_voice.title": "Spraak Instellingen",
+    "gui.plasmo_voice.voice_chat_volume": "Volume voice chat: %s",
+    "gui.plasmo_voice.mic_amplification": "Microfoon versterking: %s",
+    "gui.plasmo_voice.back": "Terug",
+    "gui.plasmo_voice.close": "Sluiten",
+    "gui.plasmo_voice.occlusion": "Sound occlusion",
+    "gui.plasmo_voice.show_icons": "Iconen tonen",
+    "gui.plasmo_voice.show_icons_hud": "HUD",
+    "gui.plasmo_voice.show_icons_always": "Altijd",
+    "gui.plasmo_voice.show_icons_hidden": "Verborgen",
+    "gui.plasmo_voice.on": "Aan",
+    "gui.plasmo_voice.off": "Uit",
+    "gui.plasmo_voice.mic_icon_pos": "Mic icoon positie",
+    "gui.plasmo_voice.mic_icon_pos_choose": "Kies icoon positie",
+    "gui.plasmo_voice.mic_icon_pos_top_left": "Linksboven",
+    "gui.plasmo_voice.mic_icon_pos_top_center": "Midden bovenaan",
+    "gui.plasmo_voice.mic_icon_pos_top_right": "Rechtsboven",
+    "gui.plasmo_voice.mic_icon_pos_bottom_left": "Linksonder",
+    "gui.plasmo_voice.mic_icon_pos_bottom_center": "Midden onder",
+    "gui.plasmo_voice.mic_icon_pos_bottom_right": "Rechtsonder",
+
+    "gui.plasmo_voice.select": "Selecteer",
+    "gui.plasmo_voice.no_mic": "Microfoon niet gevonden",
+
+    "gui.plasmo_voice.select_mic": "Selecteer microfoon",
+    "gui.plasmo_voice.select_speaker": "Selecteer uitvoerapparaat",
+
+    "gui.plasmo_voice.mic_test_unavailable": "Microfoontest niet beschikbaar",
+    "gui.plasmo_voice.mic_test_on": "Microfoon testen inschakelen",
+    "gui.plasmo_voice.mic_test_off": "Microfoon testen uitschakelen",
+
+    "gui.plasmo_voice.distance": "Spraak afstand: %d",
+    "gui.plasmo_voice.general": "Algemeen",
+    "gui.plasmo_voice.audio": "Audio",
+    "gui.plasmo_voice.activation_type": "Activeringstype",
+    "gui.plasmo_voice.activation_type_ptt": "Push-to-talk",
+    "gui.plasmo_voice.activation_type_voice": "Stem",
+    "gui.plasmo_voice.voice_activation": "Stemactivatie drempel: %d",
+    "gui.plasmo_voice.not_available": "Plasmo Voice is niet geïnstalleerd op deze server",
+
+    "message.plasmo_voice.min_version": "§6[Plasmo Voice]§7 Versie is verouderd. Minimaal ondersteunde versie is %s",
+    "message.plasmo_voice.version_not_supported": "§6[Plasmo Voice]§7 Versie wordt nog niet ondersteund. De huidige ondersteunde versie is %s",
+    "message.plasmo_voice.new_version_available": "§6[Plasmo Voice]§7 Nieuwe versie beschikbaar [%s§7]. Downloaden: %s",
+
+    "commands.plasmo_voice.whitelist_on": "Alles dempen is ingeschakeld.",
+    "commands.plasmo_voice.whitelist_off": "Alles dempen is uitgeschakeld.",
+
+    "commands.plasmo_voice.min_priority_distance": "§6[Plasmo Voice]§7 Spraak prioriteit afstand moet groter zijn dan %d",
+    "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 Spraak prioriteit afstand moet minder zijn dan %d",
+    "commands.plasmo_voice.priority_distance_set": "§6[Plasmo Voice]§7 Spraak prioriteit afstand is nu %d"
+}
