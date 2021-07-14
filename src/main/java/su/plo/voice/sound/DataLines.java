@@ -8,7 +8,7 @@ import java.util.List;
 
 public class DataLines {
     public static TargetDataLine getMicrophone() {
-        String micName = VoiceClient.config.microphone;
+        String micName = VoiceClient.getClientConfig().getMicrophone();
         if (micName != null) {
             TargetDataLine mic = getMicrophoneByName(micName);
             if (mic != null) {
@@ -19,7 +19,7 @@ public class DataLines {
     }
 
     public static SourceDataLine getSpeaker() {
-        String speakerName = VoiceClient.config.speaker;
+        String speakerName = VoiceClient.getClientConfig().getSpeaker();
         if (speakerName != null) {
             SourceDataLine speaker = getSpeakerByName(speakerName);
             if (speaker != null) {

@@ -1,9 +1,8 @@
 package su.plo.voice.client;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.JsonReader;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import lombok.Getter;
+import lombok.Setter;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -15,12 +14,12 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.text.LiteralText;
 import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.glfw.GLFW;
-import su.plo.voice.data.DataEntity;
 import su.plo.voice.gui.VoiceHud;
 import su.plo.voice.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.gui.settings.VoiceSettingsScreen;
@@ -29,41 +28,46 @@ import su.plo.voice.socket.SocketClientUDPQueue;
 import su.plo.voice.sound.Recorder;
 import su.plo.voice.sound.ThreadSoundQueue;
 
-import java.io.*;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Environment(EnvType.CLIENT)
 public class VoiceClient implements ClientModInitializer {
-    public static final Identifier MICS = new Identifier("plasmo_voice", "textures/gui/mics.png");
-    public static final Identifier SPEAKER_ICON = new Identifier("plasmo_voice", "textures/gui/speaker.png");
-    public static final Identifier SPEAKER_PRIORITY = new Identifier("plasmo_voice", "textures/gui/speaker_priority.png");
-    public static final Identifier SPEAKER_MUTED = new Identifier("plasmo_voice", "textures/gui/speaker_muted.png");
-    public static final Identifier SPEAKER_WARNING = new Identifier("plasmo_voice", "textures/gui/speaker_warning.png");
+    public static final Logger LOGGER = LogManager.getLogger("Plasmo Voice");
 
-    public static VoiceClientConfig config;
-    public static VoiceServerConfig serverConfig;
-    public static HashSet<UUID> clientMutedClients = new HashSet<>();
+    @Getter
+    private static VoiceClientConfig clientConfig;
+    @Setter @Getter
+    private static VoiceServerConfig serverConfig;
 
+    // ???
     public static SocketClientUDP socketUDP;
     public final static Recorder recorder = new Recorder();
 
-    public static boolean muted = false;
-    public static boolean speaking = false;
-    public static boolean speakingPriority = false;
+    @Setter @Getter
+    private static boolean muted = false;
+    @Setter @Getter
+    private static boolean speaking = false;
+    @Setter @Getter
+    private static boolean speakingPriority = false;
 
+    // key bindings
     public static KeyBinding pushToTalk;
     public static KeyBinding priorityPushToTalk;
     public static KeyBinding menuKey;
     public static KeyBinding muteKey;
     public static Set<Integer> mouseKeyPressed = new HashSet<>();
 
-    public final static Gson gson = new Gson();
-    public static final Logger LOGGER = LogManager.getLogger("Plasmo Voice");
+    // icons
+    public static final Identifier MICS = new Identifier("plasmo_voice", "textures/gui/mics.png");
+    public static final Identifier SPEAKER_ICON = new Identifier("plasmo_voice", "textures/gui/speaker.png");
+    public static final Identifier SPEAKER_PRIORITY = new Identifier("plasmo_voice", "textures/gui/speaker_priority.png");
+    public static final Identifier SPEAKER_MUTED = new Identifier("plasmo_voice", "textures/gui/speaker_muted.png");
+    public static final Identifier SPEAKER_WARNING = new Identifier("plasmo_voice", "textures/gui/speaker_warning.png");
 
     @Override
     public void onInitializeClient() {
-        config = new VoiceClientConfig();
-        config.load();
+        clientConfig = VoiceClientConfig.read();
 
         pushToTalk = KeyBindingHelper.registerKeyBinding(
                 new KeyBinding("key.plasmo_voice.ptt",
@@ -93,40 +97,65 @@ public class VoiceClient implements ClientModInitializer {
                         "key.plasmo_voice")
         );
 
-        readDataFile();
-        saveDataFile();
-
         ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("vc")
+                .then(ClientCommandManager.literal("muteall")
+                        .executes(ctx -> {
+                            if(VoiceClient.getClientConfig().isWhitelist()) {
+                                // send disabled
+                                ctx.getSource().getPlayer().sendMessage(new LiteralText("выкл"), false);
+                            } else {
+                                // send enabled
+                                ctx.getSource().getPlayer().sendMessage(new LiteralText("вкл"), false);
+                            }
+
+                            VoiceClient.getClientConfig().setWhitelist(!VoiceClient.getClientConfig().isWhitelist());
+                            VoiceClient.getClientConfig().save();
+                            return 1;
+                        }))
                 .then(ClientCommandManager.literal("priority-distance")
                         .executes(ctx -> {
-                            ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.priority_distance_set", VoiceClient.serverConfig.priorityDistance), false);
+                            ctx.getSource().getPlayer().sendMessage(
+                                    new TranslatableText("commands.plasmo_voice.priority_distance_set",
+                                            VoiceClient.getServerConfig().getPriorityDistance()
+                                    ), false);
                             return 1;
                         })
                         .then(ClientCommandManager.argument("distance", IntegerArgumentType.integer())
                                 .executes(ctx -> {
                                     int distance = IntegerArgumentType.getInteger(ctx, "distance");
-                                    if(distance <= VoiceClient.serverConfig.maxDistance) {
-                                        ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.min_priority_distance", VoiceClient.serverConfig.maxDistance), false);
+                                    if(distance <= VoiceClient.getServerConfig().getMaxDistance()) {
+                                        ctx.getSource().getPlayer().sendMessage(
+                                                new TranslatableText("commands.plasmo_voice.min_priority_distance",
+                                                        VoiceClient.getServerConfig().getMaxDistance()
+                                                ), false);
                                         return 1;
                                     }
 
-                                    if(distance > VoiceClient.serverConfig.maxPriorityDistance) {
-                                        ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.max_priority_distance", VoiceClient.serverConfig.maxPriorityDistance), false);
+                                    if(distance > VoiceClient.getServerConfig().getMaxPriorityDistance()) {
+                                        ctx.getSource().getPlayer().sendMessage(
+                                                new TranslatableText("commands.plasmo_voice.max_priority_distance",
+                                                        VoiceClient.getServerConfig().getMaxPriorityDistance()
+                                                ), false);
                                         return 1;
                                     }
 
                                     VoiceClientServerConfig serverConfig;
-                                    if(VoiceClient.config.servers.containsKey(VoiceClient.serverConfig.ip)) {
-                                        serverConfig = VoiceClient.config.servers.get(VoiceClient.serverConfig.ip);
+                                    if(VoiceClient.getClientConfig().getServers()
+                                            .containsKey(VoiceClient.getServerConfig().getIp())) {
+                                        serverConfig = VoiceClient.getClientConfig().getServers()
+                                                .get(VoiceClient.getServerConfig().getIp());
                                     } else {
                                         serverConfig = new VoiceClientServerConfig();
                                     }
 
-                                    serverConfig.priorityDistance = (short) distance;
-                                    VoiceClient.serverConfig.priorityDistance = (short) distance;
-                                    VoiceClient.config.servers.put(VoiceClient.serverConfig.ip, serverConfig);
-                                    VoiceClient.config.save();
-                                    ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.priority_distance_set", distance), false);
+                                    serverConfig.setPriorityDistance((short) distance);
+                                    VoiceClient.getServerConfig().setPriorityDistance((short) distance);
+                                    VoiceClient.getClientConfig().getServers().put(VoiceClient.getServerConfig().getIp(), serverConfig);
+                                    VoiceClient.getClientConfig().save();
+                                    ctx.getSource().getPlayer().sendMessage(
+                                            new TranslatableText("commands.plasmo_voice.priority_distance_set",
+                                                    distance
+                                            ), false);
                                     return 1;
                                 }))));
 
@@ -136,10 +165,12 @@ public class VoiceClient implements ClientModInitializer {
                 return;
             }
 
-            if(!VoiceClient.connected()) {
+            if(!VoiceClient.isConnected()) {
                 // Voice not available
                 if(menuKey.wasPressed()) {
-                    MinecraftClient.getInstance().openScreen(new VoiceNotAvailableScreen(new TranslatableText("gui.plasmo_voice.not_available"), client));
+                    MinecraftClient.getInstance().setScreen(new VoiceNotAvailableScreen(
+                            new TranslatableText("gui.plasmo_voice.not_available"), client)
+                    );
                 }
 
                 return;
@@ -151,15 +182,14 @@ public class VoiceClient implements ClientModInitializer {
 
             if(menuKey.wasPressed()) {
                 if(MinecraftClient.getInstance().currentScreen instanceof VoiceSettingsScreen) {
-                    MinecraftClient.getInstance().openScreen(null);
+                    MinecraftClient.getInstance().setScreen(null);
                 } else {
-                    MinecraftClient.getInstance().openScreen(new VoiceSettingsScreen());
+                    MinecraftClient.getInstance().setScreen(new VoiceSettingsScreen());
                 }
             }
         });
 
         VoiceHud voiceHud = new VoiceHud();
-
         HudRenderCallback.EVENT.register((__, ___) -> {
             voiceHud.render();
         });
@@ -170,7 +200,7 @@ public class VoiceClient implements ClientModInitializer {
             VoiceClient.socketUDP.close();
         }
 
-        VoiceClient.recorder.running = false;
+        VoiceClient.recorder.setRunning(false);
         VoiceClient.serverConfig = null;
 
         SocketClientUDPQueue.talking.clear();
@@ -178,38 +208,7 @@ public class VoiceClient implements ClientModInitializer {
         SocketClientUDPQueue.audioChannels.clear();
     }
 
-    public static void readDataFile() {
-        File dataFile = new File("config/PlasmoVoice/data.json");
-        if(dataFile.exists()) {
-            try {
-                JsonReader reader = new JsonReader(new FileReader(dataFile));
-                try {
-                    DataEntity data = gson.fromJson(reader, DataEntity.class);
-                    if(data != null) {
-                        clientMutedClients.addAll(data.mutedClients);
-                    }
-                } catch (JsonSyntaxException j) {
-                    dataFile.delete();
-                }
-            } catch (FileNotFoundException ignored) {}
-        }
-    }
-
-    public static void saveDataFile() {
-        File configDir = new File("config/PlasmoVoice");
-        configDir.mkdirs();
-
-        try {
-            try(Writer w = new FileWriter("config/PlasmoVoice/data.json")) {
-                List<UUID> list = new ArrayList<>(clientMutedClients);
-                w.write(gson.toJson(new DataEntity(list)));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static boolean connected() {
+    public static boolean isConnected() {
         if (socketUDP == null) {
             return false;
         }

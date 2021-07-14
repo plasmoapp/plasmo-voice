@@ -16,7 +16,7 @@ public class SocketClientAuth extends Thread {
     public void run() {
         while(!socket.authorized && !socket.isClosed()) {
             try {
-                this.socket.send(new AuthPacket(VoiceClient.serverConfig.secret));
+                this.socket.send(new AuthPacket(VoiceClient.getServerConfig().getSecret()));
 
                 Thread.sleep(2000);
             } catch (IOException e) {

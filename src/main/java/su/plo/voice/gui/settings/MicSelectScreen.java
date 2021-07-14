@@ -33,9 +33,9 @@ public class MicSelectScreen extends BackgroundScreen {
 
         for(String device : DataLines.getMicrophoneNames()) {
             this.deviceListWidget.children().add(new DeviceListWidget.DeviceEntry(this.client, device, (mic -> {
-                VoiceClient.config.microphone = mic;
-                VoiceClient.config.save();
-                this.client.openScreen(this.parent);
+                VoiceClient.getClientConfig().setMicrophone(mic);
+                VoiceClient.getClientConfig().save();
+                this.client.setScreen(this.parent);
 
                 // restart mic thread
                 VoiceClient.recorder.start();
@@ -44,7 +44,7 @@ public class MicSelectScreen extends BackgroundScreen {
 
         addDrawableChild(new ButtonWidget(guiLeft + 7, guiTop + ySize - 30, xSize - 14, 20,
                 new TranslatableText("gui.plasmo_voice.back"), button -> {
-            this.client.openScreen(parent);
+            this.client.setScreen(parent);
         }));
     }
 

@@ -101,7 +101,7 @@ public class DeviceListWidget extends ElementListWidget<DeviceListWidget.DeviceE
         }
 
         @Override
-        public List<? extends Selectable> method_37025() {
+        public List<? extends Selectable> selectableChildren() {
             return null;
         }
 

@@ -11,7 +11,10 @@ import su.plo.voice.sound.Recorder;
 import su.plo.voice.utils.Utils;
 import tomp2p.opuswrapper.Opus;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
+import javax.sound.sampled.TargetDataLine;
 
 public class MicTestButton extends ButtonWidget {
     public static boolean micActive;
@@ -95,13 +98,13 @@ public class MicTestButton extends ButtonWidget {
             if (speaker == null) {
                 throw new LineUnavailableException("No speaker");
             }
-            speaker.open(Recorder.format);
+            speaker.open(Recorder.getFormat());
             speaker.start();
 
             gainControl = (FloatControl) speaker.getControl(FloatControl.Type.MASTER_GAIN);
 
-            encoder = new OpusEncoder(Recorder.sampleRate, Recorder.frameSize, Recorder.mtuSize, Opus.OPUS_APPLICATION_VOIP);
-            decoder = new OpusDecoder(Recorder.sampleRate, Recorder.frameSize, Recorder.mtuSize);
+            encoder = new OpusEncoder(Recorder.getSampleRate(), Recorder.getFrameSize(), Recorder.getMtuSize(), Opus.OPUS_APPLICATION_VOIP);
+            decoder = new OpusDecoder(Recorder.getSampleRate(), Recorder.getFrameSize(), Recorder.getMtuSize());
 
             updateLastRender();
         }
@@ -112,8 +115,8 @@ public class MicTestButton extends ButtonWidget {
 
         @Override
         public void run() {
-            if(VoiceClient.recorder.thread != null) {
-                VoiceClient.recorder.running = false;
+            if(VoiceClient.recorder.getThread() != null) {
+                VoiceClient.recorder.setRunning(false);
                 synchronized (VoiceClient.recorder) {
                     try {
                         VoiceClient.recorder.wait(1000L);
@@ -122,13 +125,13 @@ public class MicTestButton extends ButtonWidget {
             }
 
             try {
-                mic.open(Recorder.format);
+                mic.open(Recorder.getFormat());
             } catch (LineUnavailableException e) {
                 e.printStackTrace();
             }
             mic.start();
 
-            int blockSize = Recorder.frameSize;
+            int blockSize = Recorder.getFrameSize();
             byte[] normBuffer = new byte[blockSize];
 
             while (running) {
@@ -143,12 +146,18 @@ public class MicTestButton extends ButtonWidget {
                     break;
                 }
 
-                Utils.adjustVolumeMono(normBuffer, (float) VoiceClient.config.microphoneAmplification);
+                Utils.adjustVolumeMono(normBuffer, (float) VoiceClient.getClientConfig().getMicrophoneAmplification());
                 micListener.onMicValue(Utils.dbToPerc(Utils.getHighestAudioLevel(normBuffer)));
 
                 byte[] encoded = encoder.encode(normBuffer);
 
-                gainControl.setValue(Math.min(Math.max(Utils.percentageToDB((float) VoiceClient.config.voiceVolume), gainControl.getMinimum()), gainControl.getMaximum()));
+                gainControl.setValue(Math.min(
+                        Math.max(
+                                Utils.percentageToDB((float) VoiceClient.getClientConfig().getVoiceVolume()),
+                                gainControl.getMinimum()
+                        ),
+                        gainControl.getMaximum()
+                ));
 
                 byte[] decoded = decoder.decode(encoded);
                 speaker.write(decoded, 0, decoded.length);

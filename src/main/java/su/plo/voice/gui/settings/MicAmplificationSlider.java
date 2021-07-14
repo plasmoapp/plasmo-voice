@@ -9,7 +9,7 @@ public class MicAmplificationSlider extends SliderWidget {
     private static final float MAXIMUM = 4F;
 
     public MicAmplificationSlider(int x, int y, int width) {
-        super(x, y, width, 20, LiteralText.EMPTY, VoiceClient.config.microphoneAmplification / MAXIMUM);
+        super(x, y, width, 20, LiteralText.EMPTY, VoiceClient.getClientConfig().getMicrophoneAmplification() / MAXIMUM);
         this.updateMessage();
     }
 
@@ -19,6 +19,6 @@ public class MicAmplificationSlider extends SliderWidget {
     }
 
     protected void applyValue() {
-        VoiceClient.config.microphoneAmplification = this.value * MAXIMUM;
+        VoiceClient.getClientConfig().setMicrophoneAmplification(this.value * MAXIMUM);
     }
 }

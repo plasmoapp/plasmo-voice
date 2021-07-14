@@ -14,6 +14,8 @@ group = project.maven_group
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    // todo use official mojang mappings for easily porting to forge
+    // mappings minecraft.officialMojangMappings()
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
 
@@ -32,6 +34,12 @@ dependencies {
 
     implementation "su.plo.voice:opus:1.1.0"
     shadow "su.plo.voice:opus:1.1.0"
+
+    compileOnly 'org.projectlombok:lombok:1.18.20'
+    annotationProcessor 'org.projectlombok:lombok:1.18.20'
+
+    testCompileOnly 'org.projectlombok:lombok:1.18.20'
+    testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
 
 repositories {
@@ -98,7 +106,6 @@ publishing {
 shadowJar {
     configurations = [project.configurations.shadow]
     classifier 'shadow-dev'
-    relocate 'com.sun.jna', "com.sun.jna"
 }
 
 remapJar {

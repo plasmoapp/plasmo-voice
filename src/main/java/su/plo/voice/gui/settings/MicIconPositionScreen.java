@@ -34,7 +34,7 @@ public class MicIconPositionScreen extends Screen {
     @Override
     public void onClose() {
         super.onClose();
-        this.client.openScreen(parent);
+        this.client.setScreen(parent);
     }
 
     @Override
@@ -46,39 +46,39 @@ public class MicIconPositionScreen extends Screen {
 
         addDrawableChild(new ButtonWidget(offset, offset, buttonWidth, 20,
                 MicrophoneIconPosition.TOP_LEFT.translate(), (button) -> {
-            VoiceClient.config.micIconPosition = MicrophoneIconPosition.TOP_LEFT;
-            this.client.openScreen(parent);
+            VoiceClient.getClientConfig().setMicIconPosition(MicrophoneIconPosition.TOP_LEFT);
+            this.client.setScreen(parent);
         }));
 
         addDrawableChild(new ButtonWidget((this.width / 2) - (buttonWidth / 2), offset, buttonWidth, 20,
                 MicrophoneIconPosition.TOP_CENTER.translate(), (button) -> {
-            VoiceClient.config.micIconPosition = MicrophoneIconPosition.TOP_CENTER;
-            this.client.openScreen(parent);
+            VoiceClient.getClientConfig().setMicIconPosition(MicrophoneIconPosition.TOP_CENTER);
+            this.client.setScreen(parent);
         }));
 
         addDrawableChild(new ButtonWidget(this.width - offset - buttonWidth, offset, buttonWidth, 20,
                 MicrophoneIconPosition.TOP_RIGHT.translate(), (button) -> {
-            VoiceClient.config.micIconPosition = MicrophoneIconPosition.TOP_RIGHT;
-            this.client.openScreen(parent);
+            VoiceClient.getClientConfig().setMicIconPosition(MicrophoneIconPosition.TOP_RIGHT);
+            this.client.setScreen(parent);
         }));
 
 
         addDrawableChild(new ButtonWidget(offset, this.height - 20 - offset, buttonWidth, 20,
                 MicrophoneIconPosition.BOTTOM_LEFT.translate(), (button) -> {
-            VoiceClient.config.micIconPosition = MicrophoneIconPosition.BOTTOM_LEFT;
-            this.client.openScreen(parent);
+            VoiceClient.getClientConfig().setMicIconPosition(MicrophoneIconPosition.BOTTOM_LEFT);
+            this.client.setScreen(parent);
         }));
 
         addDrawableChild(new ButtonWidget((this.width / 2) - (buttonWidth / 2), this.height - 20 - offset, buttonWidth, 20,
                 MicrophoneIconPosition.BOTTOM_CENTER.translate(), (button) -> {
-            VoiceClient.config.micIconPosition = MicrophoneIconPosition.BOTTOM_CENTER;
-            this.client.openScreen(parent);
+            VoiceClient.getClientConfig().setMicIconPosition(MicrophoneIconPosition.BOTTOM_CENTER);
+            this.client.setScreen(parent);
         }));
 
         addDrawableChild(new ButtonWidget(this.width - offset - buttonWidth, this.height - 20 - offset, buttonWidth, 20,
                 MicrophoneIconPosition.BOTTOM_RIGHT.translate(), (button) -> {
-            VoiceClient.config.micIconPosition = MicrophoneIconPosition.BOTTOM_RIGHT;
-            this.client.openScreen(parent);
+            VoiceClient.getClientConfig().setMicIconPosition(MicrophoneIconPosition.BOTTOM_RIGHT);
+            this.client.setScreen(parent);
         }));
     }
 }

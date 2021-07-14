@@ -23,6 +23,5 @@ public abstract class MixinMinecraftClient {
         VoiceClient.LOGGER.info("Disconnect from " + this.getCurrentServerEntry().address);
 
         VoiceClient.disconnect();
-        VoiceClient.saveDataFile();
     }
 }

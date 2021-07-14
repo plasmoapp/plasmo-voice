@@ -37,11 +37,11 @@ public class SocketClientUDPQueue extends Thread {
                 } else if(message.getPacket() instanceof VoiceServerPacket) {
                     VoiceServerPacket voicePacket = (VoiceServerPacket) message.getPacket();
 
-                    if(VoiceClient.clientMutedClients.contains(voicePacket.getFrom())) {
+                    if(VoiceClient.getClientConfig().isMuted(voicePacket.getFrom())) {
                         continue;
                     }
 
-                    talking.put(voicePacket.getFrom(), voicePacket.getDistance() > VoiceClient.serverConfig.maxDistance);
+                    talking.put(voicePacket.getFrom(), voicePacket.getDistance() > VoiceClient.getServerConfig().getMaxDistance());
 
                     ThreadSoundQueue ch = audioChannels.get(voicePacket.getFrom());
                     if(ch == null) {
@@ -56,7 +56,7 @@ public class SocketClientUDPQueue extends Thread {
                 } else if(message.getPacket() instanceof VoiceEndServerPacket) {
                     VoiceEndServerPacket voicePacket = (VoiceEndServerPacket) message.getPacket();
 
-                    if(VoiceClient.clientMutedClients.contains(voicePacket.getFrom())) {
+                    if(VoiceClient.getClientConfig().isMuted(voicePacket.getFrom())) {
                         continue;
                     }
 
@@ -65,7 +65,9 @@ public class SocketClientUDPQueue extends Thread {
                     ThreadSoundQueue ch = audioChannels.get(voicePacket.getFrom());
                     if(ch != null) {
                         ch.addQueue(new VoiceServerPacket(new byte[0], voicePacket.getFrom(), ch.lastSequenceNumber + 1,
-                                VoiceClient.speakingPriority ? VoiceClient.serverConfig.priorityDistance : VoiceClient.serverConfig.distance));
+                                VoiceClient.isSpeakingPriority()
+                                        ? VoiceClient.getServerConfig().getPriorityDistance()
+                                        : VoiceClient.getServerConfig().getDistance()));
                     }
                 } else if(message.getPacket() instanceof PingPacket) {
                     this.socket.keepAlive = System.currentTimeMillis();

@@ -1,5 +1,7 @@
 package su.plo.voice.sound;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.InputUtil;
@@ -11,26 +13,35 @@ import su.plo.voice.gui.settings.MicTestButton;
 import su.plo.voice.utils.Utils;
 import tomp2p.opuswrapper.Opus;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.TargetDataLine;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class Recorder implements Runnable {
-    public static int mtuSize = 900;
-    public static int sampleRate = 24000;
-    public static int frameSize = (sampleRate / 1000) * 2 * 20;
-    public static AudioFormat format = new AudioFormat(sampleRate, 16, 1, true, false);
-    public static AudioFormat stereoFormat = new AudioFormat(sampleRate, 16, 2, true, false);
+    @Getter
+    private static final int mtuSize = 900;
+    @Getter
+    private static int sampleRate = 24000;
+    @Getter
+    private static int frameSize = (sampleRate / 1000) * 2 * 20;
+    @Getter
+    private static AudioFormat format = new AudioFormat(sampleRate, 16, 1, true, false);
+    @Getter
+    private static AudioFormat stereoFormat = new AudioFormat(sampleRate, 16, 2, true, false);
 
-    private long sequenceNumber = 0L;
-    public boolean running;
-    public Thread thread;
-
-    private long lastSpeak;
-    private byte[] lastBuffer;
+    @Setter @Getter
+    private boolean running;
+    @Getter
+    private Thread thread;
 
     private TargetDataLine mic;
     private OpusEncoder encoder;
+
+    private long sequenceNumber = 0L;
+    private long lastSpeak;
+    private byte[] lastBuffer;
 
     public Recorder() {
         this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
@@ -52,7 +63,7 @@ public class Recorder implements Runnable {
                 this.encoder.close();
                 this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
 
-                if(VoiceClient.connected()) {
+                if(VoiceClient.isConnected()) {
                     this.start();
                 }
             });
@@ -65,7 +76,7 @@ public class Recorder implements Runnable {
             this.encoder.close();
             this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
 
-            if(VoiceClient.connected()) {
+            if(VoiceClient.isConnected()) {
                 this.start();
             }
         }
@@ -118,7 +129,7 @@ public class Recorder implements Runnable {
                 break;
             }
 
-            if(!VoiceClient.connected()) {
+            if(!VoiceClient.isConnected()) {
                 this.running = false;
                 break;
             }
@@ -132,16 +143,18 @@ public class Recorder implements Runnable {
             }
 
             // muted
-            if((VoiceClient.serverConfig.mutedClients.containsKey(player.getUuid()) || VoiceClient.muted)) {
-                VoiceClient.speaking = false;
-                VoiceClient.speakingPriority = false;
+            if((VoiceClient.getServerConfig().getMuted().containsKey(player.getUuid()) || VoiceClient.isMuted())) {
+                VoiceClient.setSpeaking(false);
+                VoiceClient.setSpeakingPriority(false);
+
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException ignored) {}
                 continue;
             }
 
-            if(!VoiceClient.config.voiceActivation || VoiceClient.serverConfig.disableVoiceActivation) {
+            if(!VoiceClient.getClientConfig().isVoiceActivation() ||
+                    VoiceClient.getServerConfig().isVoiceActivationDisabled()) {
                 pushToTalk();
             } else {
                 voiceActivation();
@@ -154,51 +167,40 @@ public class Recorder implements Runnable {
     private void voiceActivation() {
         InputUtil.Key priorityPushToTalkKey = KeyBindingHelper.getBoundKeyOf(VoiceClient.priorityPushToTalk);
 
-        boolean priorityPressed = keyPressed(priorityPushToTalkKey) && VoiceClient.serverConfig.hasPriority
-                && VoiceClient.serverConfig.priorityDistance > VoiceClient.serverConfig.maxDistance;
+        boolean priorityPressed = keyPressed(priorityPushToTalkKey) && VoiceClient.getServerConfig().isPriority()
+                && VoiceClient.getServerConfig().getPriorityDistance() > VoiceClient.getServerConfig().getMaxDistance();
 
-        if(!VoiceClient.speakingPriority && priorityPressed) {
-            VoiceClient.speakingPriority = true;
-        } else if(VoiceClient.speaking && VoiceClient.speakingPriority && !priorityPressed) {
-            VoiceClient.speakingPriority = false;
+        if(!VoiceClient.isSpeakingPriority() && priorityPressed) {
+            VoiceClient.setSpeakingPriority(true);
+        } else if(VoiceClient.isSpeaking() && VoiceClient.isSpeakingPriority() && !priorityPressed) {
+            VoiceClient.setSpeakingPriority(false);
         }
 
-        int blockSize = frameSize;
-        byte[] normBuffer = new byte[blockSize];
+        byte[] normBuffer = readBuffer();
+        assert normBuffer != null;
 
-        mic.start();
-
-        int read = mic.read(normBuffer, 0, blockSize);
-        if (read == -1) {
-            return;
-        }
-
-        Utils.adjustVolumeMono(normBuffer, (float) VoiceClient.config.microphoneAmplification);
-
-        int offset = Utils.getActivationOffset(normBuffer, VoiceClient.config.voiceActivationThreshold);
+        int offset = Utils.getActivationOffset(normBuffer, VoiceClient.getClientConfig().getVoiceActivationThreshold());
         if(offset > 0) {
             this.lastSpeak = System.currentTimeMillis();
 
-            if(!VoiceClient.speaking) {
-                VoiceClient.speaking = true;
+            if(!VoiceClient.isSpeaking()) {
+                VoiceClient.setSpeaking(true);
                 if(this.lastBuffer != null) {
                     this.sendPacket(lastBuffer);
                 }
                 this.sendPacket(normBuffer);
                 return;
             }
-        } else if(VoiceClient.speaking && System.currentTimeMillis() - lastSpeak > 500L) {
-            VoiceClient.speaking = false;
-            VoiceClient.speakingPriority = false;
-//            mic.stop();
-//            mic.flush();
+        } else if(VoiceClient.isSpeaking() && System.currentTimeMillis() - lastSpeak > 500L) {
+            VoiceClient.setSpeaking(false);
+            VoiceClient.setSpeakingPriority(false);
 
             this.sendPacket(normBuffer);
             this.sendEndPacket();
             return;
         }
 
-        if(VoiceClient.speaking) {
+        if(VoiceClient.isSpeaking()) {
             this.sendPacket(normBuffer);
         }
 
@@ -209,25 +211,25 @@ public class Recorder implements Runnable {
         InputUtil.Key pushToTalkKey = KeyBindingHelper.getBoundKeyOf(VoiceClient.pushToTalk);
         InputUtil.Key priorityPushToTalkKey = KeyBindingHelper.getBoundKeyOf(VoiceClient.priorityPushToTalk);
 
-        boolean priorityPressed = keyPressed(priorityPushToTalkKey) && VoiceClient.serverConfig.hasPriority
-                && VoiceClient.serverConfig.priorityDistance > VoiceClient.serverConfig.maxDistance;
+        boolean priorityPressed = keyPressed(priorityPushToTalkKey) && VoiceClient.getServerConfig().isPriority()
+                && VoiceClient.getServerConfig().getPriorityDistance() > VoiceClient.getServerConfig().getMaxDistance();
         boolean pushToTalkPressed = keyPressed(pushToTalkKey) || priorityPressed;
 
-        if(!VoiceClient.speakingPriority && priorityPressed) {
-            VoiceClient.speakingPriority = true;
-        } else if(VoiceClient.speaking && VoiceClient.speakingPriority && !priorityPressed && pushToTalkPressed) {
-            VoiceClient.speakingPriority = false;
+        if(!VoiceClient.isSpeakingPriority() && priorityPressed) {
+            VoiceClient.setSpeakingPriority(true);
+        } else if(VoiceClient.isSpeaking() && VoiceClient.isSpeakingPriority() && !priorityPressed && pushToTalkPressed) {
+            VoiceClient.setSpeakingPriority(false);
         }
 
-        if(pushToTalkPressed && !VoiceClient.speaking) {
-            VoiceClient.speaking = true;
+        if(pushToTalkPressed && !VoiceClient.isSpeaking()) {
+            VoiceClient.setSpeaking(true);
             mic.flush();
             this.lastSpeak = System.currentTimeMillis();
         } else if(pushToTalkPressed) {
             this.lastSpeak = System.currentTimeMillis();
-        } else if(VoiceClient.speaking && System.currentTimeMillis() - lastSpeak > 350L) {
-            VoiceClient.speaking = false;
-            VoiceClient.speakingPriority = false;
+        } else if(VoiceClient.isSpeaking() && System.currentTimeMillis() - lastSpeak > 350L) {
+            VoiceClient.setSpeaking(false);
+            VoiceClient.setSpeakingPriority(false);
             mic.stop();
             mic.flush();
 
@@ -235,29 +237,35 @@ public class Recorder implements Runnable {
             return;
         }
 
-        if(!VoiceClient.speaking) {
+        if(!VoiceClient.isSpeaking()) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException ignored) {}
             return;
         }
 
+        byte[] normBuffer = readBuffer();
+        assert normBuffer != null;
+        this.sendPacket(normBuffer);
+    }
 
+    private byte[] readBuffer() {
         int blockSize = frameSize;
         byte[] normBuffer = new byte[blockSize];
 
         mic.start();
         int read = mic.read(normBuffer, 0, blockSize);
         if (read == -1) {
-            return;
+            return null;
         }
 
-        Utils.adjustVolumeMono(normBuffer, (float) VoiceClient.config.microphoneAmplification);
-        this.sendPacket(normBuffer);
+        Utils.adjustVolumeMono(normBuffer, (float) VoiceClient.getClientConfig().getMicrophoneAmplification());
+
+        return normBuffer;
     }
 
     private void sendPacket(byte[] raw) {
-        if(!VoiceClient.connected()) {
+        if(!VoiceClient.isConnected()) {
             this.running = false;
             return;
         }
@@ -265,9 +273,9 @@ public class Recorder implements Runnable {
         try {
             if(!VoiceClient.socketUDP.isClosed()) {
                 VoiceClient.socketUDP.send(new VoiceClientPacket(encoder.encode(raw), sequenceNumber++,
-                        VoiceClient.speakingPriority
-                                ? VoiceClient.serverConfig.priorityDistance
-                                : VoiceClient.serverConfig.distance));
+                        VoiceClient.isSpeakingPriority()
+                                ? VoiceClient.getServerConfig().getPriorityDistance()
+                                : VoiceClient.getServerConfig().getDistance()));
             } else {
                 this.running = false;
             }
@@ -277,7 +285,7 @@ public class Recorder implements Runnable {
     }
 
     private void sendEndPacket() {
-        if(!VoiceClient.connected()) {
+        if(!VoiceClient.isConnected()) {
             this.running = false;
             return;
         }

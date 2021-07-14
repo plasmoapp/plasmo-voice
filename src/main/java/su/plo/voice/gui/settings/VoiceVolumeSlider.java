@@ -7,7 +7,7 @@ import su.plo.voice.client.VoiceClient;
 
 public class VoiceVolumeSlider extends SliderWidget {
     public VoiceVolumeSlider(int x, int y, int width) {
-        super(x, y, width, 20, LiteralText.EMPTY, VoiceClient.config.voiceVolume / 2.0D);
+        super(x, y, width, 20, LiteralText.EMPTY, VoiceClient.getClientConfig().getVoiceVolume() / 2.0D);
         this.updateMessage();
     }
 
@@ -16,6 +16,6 @@ public class VoiceVolumeSlider extends SliderWidget {
     }
 
     protected void applyValue() {
-        VoiceClient.config.voiceVolume = this.value * 2.0D;
+        VoiceClient.getClientConfig().setVoiceVolume(this.value * 2.0D);
     }
 }

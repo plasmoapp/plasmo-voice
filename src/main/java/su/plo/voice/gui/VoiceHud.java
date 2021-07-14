@@ -16,7 +16,7 @@ public class VoiceHud {
     }
 
     public void render() {
-        if(!VoiceClient.connected()) {
+        if(!VoiceClient.isConnected()) {
             return;
         }
 
@@ -32,8 +32,8 @@ public class VoiceHud {
             RenderSystem.setShaderTexture(0, VoiceClient.MICS);
 
             inGameHud.drawTexture(matrixStack,
-                    VoiceClient.config.micIconPosition.getX(client),
-                    VoiceClient.config.micIconPosition.getY(client),
+                    VoiceClient.getClientConfig().getMicIconPosition().getX(client),
+                    VoiceClient.getClientConfig().getMicIconPosition().getY(client),
                     0,
                     16,
                     16,
@@ -41,35 +41,35 @@ public class VoiceHud {
             return;
         }
 
-        if(VoiceClient.serverConfig.mutedClients.containsKey(player.getUuid()) || VoiceClient.muted) {
+        if(VoiceClient.isMuted()) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
             RenderSystem.setShaderTexture(0, VoiceClient.MICS);
 
             inGameHud.drawTexture(matrixStack,
-                    VoiceClient.config.micIconPosition.getX(client),
-                    VoiceClient.config.micIconPosition.getY(client),
+                    VoiceClient.getClientConfig().getMicIconPosition().getX(client),
+                    VoiceClient.getClientConfig().getMicIconPosition().getY(client),
                     16,
                     0,
                     16,
                     16);
-        } else if(VoiceClient.speaking) {
+        } else if(VoiceClient.isSpeaking()) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
             RenderSystem.setShaderTexture(0, VoiceClient.MICS);
 
-            if(VoiceClient.speakingPriority) {
+            if(VoiceClient.isSpeakingPriority()) {
                 inGameHud.drawTexture(matrixStack,
-                        VoiceClient.config.micIconPosition.getX(client),
-                        VoiceClient.config.micIconPosition.getY(client),
+                        VoiceClient.getClientConfig().getMicIconPosition().getX(client),
+                        VoiceClient.getClientConfig().getMicIconPosition().getY(client),
                         16,
                         16,
                         16,
                         16);
             } else {
                 inGameHud.drawTexture(matrixStack,
-                        VoiceClient.config.micIconPosition.getX(client),
-                        VoiceClient.config.micIconPosition.getY(client),
+                        VoiceClient.getClientConfig().getMicIconPosition().getX(client),
+                        VoiceClient.getClientConfig().getMicIconPosition().getY(client),
                         0,
                         0,
                         16,

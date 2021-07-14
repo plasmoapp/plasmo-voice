@@ -12,20 +12,24 @@ import java.util.Comparator;
 public class DistanceSlider extends SliderWidget {
     public DistanceSlider(int x, int y, int width) {
         super(x, y, width, 20, LiteralText.EMPTY,
-                (float) VoiceClient.serverConfig.distances.indexOf((int) VoiceClient.serverConfig.distance)
-                        / (float) (VoiceClient.serverConfig.distances.size() - 1));
+                (float) VoiceClient.getServerConfig().getDistances().indexOf((int) VoiceClient.getServerConfig().getDistance())
+                        / (float) (VoiceClient.getServerConfig().getDistances().size() - 1));
         this.updateMessage();
     }
 
     private double adjust(double value) {
-        return MathHelper.clamp(value, VoiceClient.serverConfig.minDistance, VoiceClient.serverConfig.maxDistance);
+        return MathHelper.clamp(value, VoiceClient.getServerConfig().getMinDistance(), VoiceClient.getServerConfig().getMaxDistance());
     }
 
     public int getValue(double ratio) {
-        double value = this.adjust(MathHelper.lerp(MathHelper.clamp(ratio, 0.0D, 1.0D), VoiceClient.serverConfig.minDistance, VoiceClient.serverConfig.maxDistance));
+        double value = this.adjust(MathHelper.lerp(
+                MathHelper.clamp(ratio, 0.0D, 1.0D),
+                VoiceClient.getServerConfig().getMinDistance(),
+                VoiceClient.getServerConfig().getMaxDistance()
+        ));
 
-        return VoiceClient.serverConfig.distances.stream()
-                .min(Comparator.comparingInt(i -> Math.abs(i - (int) value))).orElseGet(() -> (int) VoiceClient.serverConfig.minDistance);
+        return VoiceClient.getServerConfig().getDistances().stream()
+                .min(Comparator.comparingInt(i -> Math.abs(i - (int) value))).orElseGet(() -> (int) VoiceClient.getServerConfig().getMinDistance());
     }
 
     protected void updateMessage() {
@@ -35,14 +39,14 @@ public class DistanceSlider extends SliderWidget {
     protected void applyValue() {
         int value = this.getValue(this.value);
         VoiceClientServerConfig serverConfig;
-        if(VoiceClient.config.servers.containsKey(VoiceClient.serverConfig.ip)) {
-            serverConfig = VoiceClient.config.servers.get(VoiceClient.serverConfig.ip);
+        if(VoiceClient.getClientConfig().getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
+            serverConfig = VoiceClient.getClientConfig().getServers().get(VoiceClient.getServerConfig().getIp());
         } else {
             serverConfig = new VoiceClientServerConfig();
         }
 
-        serverConfig.distance = (short) value;
-        VoiceClient.serverConfig.distance = (short) value;
-        VoiceClient.config.servers.put(VoiceClient.serverConfig.ip, serverConfig);
+        serverConfig.setDistance((short) value);
+        VoiceClient.getServerConfig().setDistance((short) value);
+        VoiceClient.getClientConfig().getServers().put(VoiceClient.getServerConfig().getIp(), serverConfig);
     }
 }
