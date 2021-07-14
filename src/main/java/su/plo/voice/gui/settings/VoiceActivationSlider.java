@@ -8,7 +8,7 @@ import su.plo.voice.utils.Utils;
 
 public class VoiceActivationSlider extends SliderWidget {
     public VoiceActivationSlider(int x, int y, int width) {
-        super(x, y, width, 20, LiteralText.EMPTY, Utils.dbToPerc(VoiceClient.config.voiceActivationThreshold));
+        super(x, y, width, 20, LiteralText.EMPTY, Utils.dbToPerc(VoiceClient.getClientConfig().getVoiceActivationThreshold()));
         this.updateMessage();
     }
 
@@ -17,6 +17,6 @@ public class VoiceActivationSlider extends SliderWidget {
     }
 
     protected void applyValue() {
-        VoiceClient.config.voiceActivationThreshold = Utils.percToDb(this.value);
+        VoiceClient.getClientConfig().setVoiceActivationThreshold(Utils.percToDb(this.value));
     }
 }

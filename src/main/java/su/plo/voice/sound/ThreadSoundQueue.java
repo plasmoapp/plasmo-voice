@@ -10,7 +10,8 @@ import su.plo.voice.gui.settings.MicTestButton;
 import su.plo.voice.socket.SocketClientUDPQueue;
 import su.plo.voice.utils.Utils;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.FloatControl;
+import javax.sound.sampled.SourceDataLine;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -30,7 +31,7 @@ public class ThreadSoundQueue extends Thread {
         this.from = from;
         this.lastPacketTime = System.currentTimeMillis() - 300L;
         this.lastSequenceNumber = -1L;
-        this.opusDecoder = new OpusDecoder(Recorder.sampleRate, Recorder.frameSize, Recorder.mtuSize);
+        this.opusDecoder = new OpusDecoder(Recorder.getSampleRate(), Recorder.getFrameSize(), Recorder.getMtuSize());
     }
 
     public boolean canKill() {
@@ -74,7 +75,7 @@ public class ThreadSoundQueue extends Thread {
                 VoiceClient.LOGGER.error("Failed to open speaker");
                 return;
             }
-            speaker.open(Recorder.stereoFormat);
+            speaker.open(Recorder.getStereoFormat());
             gainControl = (FloatControl) speaker.getControl(FloatControl.Type.MASTER_GAIN);
         } catch (Throwable e) {
             e.printStackTrace();
@@ -111,7 +112,7 @@ public class ThreadSoundQueue extends Thread {
                 // Filling the speaker with silence for one packet size
                 // to build a small buffer to compensate for network latency
                 if (speaker.getBufferSize() - speaker.available() <= 0) {
-                    byte[] data = new byte[Math.min(Recorder.frameSize * 6, speaker.getBufferSize() - Recorder.frameSize)];
+                    byte[] data = new byte[Math.min(Recorder.getFrameSize() * 6, speaker.getBufferSize() - Recorder.getFrameSize())];
                     speaker.write(data, 0, data.length);
                 }
                 PlayerEntity player = minecraft.world.getPlayerByUuid(this.from);
@@ -132,15 +133,15 @@ public class ThreadSoundQueue extends Thread {
                     lastOcclusion = -1;
                     continue;
                 }
-                int fadeDistance = packet.getDistance() > VoiceClient.serverConfig.maxDistance
-                        ? maxDistance / VoiceClient.serverConfig.priorityFadeDivisor
-                        : maxDistance / VoiceClient.serverConfig.fadeDivisor;
+                int fadeDistance = packet.getDistance() > VoiceClient.getServerConfig().getMaxDistance()
+                        ? maxDistance / VoiceClient.getServerConfig().getPriorityFadeDivisor()
+                        : maxDistance / VoiceClient.getServerConfig().getFadeDivisor();
 
                 if (distance > fadeDistance) {
                     percentage = 1F - (Math.min((distance - fadeDistance) / (maxDistance - fadeDistance), 1F));
                 }
 
-                if(VoiceClient.config.occlusion) {
+                if(VoiceClient.getClientConfig().isOcclusion()) {
                     double occlusion = Occlusion.getOccludedPercent(player.world, clientPlayer, player.getPos());
                     if(lastOcclusion >= 0) {
                         if(occlusion > lastOcclusion) {
@@ -157,13 +158,19 @@ public class ThreadSoundQueue extends Thread {
                     }
                 }
 
-                gainControl.setValue(Math.min(Math.max(Utils.percentageToDB(percentage * (float) VoiceClient.config.voiceVolume), gainControl.getMinimum()), gainControl.getMaximum()));
+                gainControl.setValue(Math.min(
+                        Math.max(
+                                Utils.percentageToDB(percentage * (float) VoiceClient.getClientConfig().getVoiceVolume()),
+                                gainControl.getMinimum()
+                        ),
+                        gainControl.getMaximum()
+                ));
 
                 if (lastSequenceNumber >= 0) {
                     int packetsToCompensate = (int) (packet.getSequenceNumber() - (lastSequenceNumber + 1));
                     if(packetsToCompensate < 10) {
                         for (int i = 0; i < packetsToCompensate; i++) {
-                            if (speaker.available() < Recorder.frameSize) {
+                            if (speaker.available() < Recorder.getFrameSize()) {
                                 break;
                             }
                             writeToSpeaker(opusDecoder.decode(null), player, maxDistance);

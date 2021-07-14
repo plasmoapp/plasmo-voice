@@ -1,7 +1,9 @@
 package su.plo.voice.client;
 
-// client server config 5Head naming
+import lombok.Data;
+
+@Data
 public class VoiceClientServerConfig {
-    public short distance;
-    public short priorityDistance;
+    private short distance;
+    private short priorityDistance;
 }

@@ -27,14 +27,14 @@ public class VoiceSettingsScreen extends BackgroundScreen {
         super(new TranslatableText("gui.plasmo_voice.title"), 248, 200, TEXTURE, false);
         this.client = MinecraftClient.getInstance();
 
-        VoiceClient.config.save();
+        VoiceClient.getClientConfig().save();
     }
 
     @Override
     public void removed() {
         super.removed();
 
-        VoiceClient.config.save();
+        VoiceClient.getClientConfig().save();
         testButton.close();
     }
 
@@ -88,33 +88,27 @@ public class VoiceSettingsScreen extends BackgroundScreen {
         addDrawableChild(new VoiceVolumeSlider(guiLeft + 10, guiTop + 40, xSize - 20));
 
         addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 65, xSize - 20, 20,
-                new TranslatableText("gui.plasmo_voice.occlusion").append(": ").append(onOff(VoiceClient.config.occlusion, "gui.plasmo_voice.on", "gui.plasmo_voice.off")), button -> {
-            VoiceClient.config.occlusion = !VoiceClient.config.occlusion;
-            button.setMessage(new TranslatableText("gui.plasmo_voice.occlusion").append(": ").append(onOff(VoiceClient.config.occlusion, "gui.plasmo_voice.on", "gui.plasmo_voice.off")));
+                new TranslatableText("gui.plasmo_voice.occlusion").append(": ").append(onOff(VoiceClient.getClientConfig().isOcclusion(), "gui.plasmo_voice.on", "gui.plasmo_voice.off")), button -> {
+            VoiceClient.getClientConfig().setOcclusion(!VoiceClient.getClientConfig().isOcclusion());
+            button.setMessage(new TranslatableText("gui.plasmo_voice.occlusion").append(": ").append(onOff(VoiceClient.getClientConfig().isOcclusion(), "gui.plasmo_voice.on", "gui.plasmo_voice.off")));
         }));
 
         addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 90, xSize - 20, 20,
-                new TranslatableText("gui.plasmo_voice.show_icons").append(": ").append(onOff(VoiceClient.config.showIcons, new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})), button -> {
-            if(VoiceClient.config.showIcons == 0) {
-                VoiceClient.config.showIcons = 1;
-            } else if(VoiceClient.config.showIcons == 1) {
-                VoiceClient.config.showIcons = 2;
-            } else if(VoiceClient.config.showIcons == 2) {
-                VoiceClient.config.showIcons = 0;
-            }
-            button.setMessage(new TranslatableText("gui.plasmo_voice.show_icons").append(": ").append(onOff(VoiceClient.config.showIcons, new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})));
+                new TranslatableText("gui.plasmo_voice.show_icons").append(": ").append(onOff(VoiceClient.getClientConfig().getShowIcons(), new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})), button -> {
+            VoiceClient.getClientConfig().setShowIcons((VoiceClient.getClientConfig().getShowIcons() + 1) % 3);
+            button.setMessage(new TranslatableText("gui.plasmo_voice.show_icons").append(": ").append(onOff(VoiceClient.getClientConfig().getShowIcons(), new String[]{"gui.plasmo_voice.show_icons_hud", "gui.plasmo_voice.show_icons_always", "gui.plasmo_voice.show_icons_hidden"})));
         }));
 
         addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 115, xSize - 20, 20,
-                new TranslatableText("gui.plasmo_voice.mic_icon_pos").append(": ").append(VoiceClient.config.micIconPosition.translate()),
+                new TranslatableText("gui.plasmo_voice.mic_icon_pos").append(": ").append(VoiceClient.getClientConfig().getMicIconPosition().translate()),
                 (button) -> {
-            client.openScreen(new MicIconPositionScreen(this));
+            client.setScreen(new MicIconPositionScreen(this));
         }));
 
         addDrawableChild(new DistanceSlider(guiLeft + 10, guiTop + 140, xSize - 20));
 
         addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 170, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
-            client.openScreen(null);
+            client.setScreen(null);
         }));
     }
 
@@ -130,25 +124,25 @@ public class VoiceSettingsScreen extends BackgroundScreen {
 
         addDrawableChild(new ButtonWidget(general.get().x, guiTop + 65, general.get().getWidth(), 20,
                 new TranslatableText("gui.plasmo_voice.select_mic"), button -> {
-            client.openScreen(new MicSelectScreen(this));
+            client.setScreen(new MicSelectScreen(this));
         }));
 
         addDrawableChild(new ButtonWidget(audio.get().x, guiTop + 65, audio.get().getWidth(), 20,
                 new TranslatableText("gui.plasmo_voice.select_speaker"), button -> {
-            client.openScreen(new SpeakerSelectScreen(this));
+            client.setScreen(new SpeakerSelectScreen(this));
         }));
 
         ButtonWidget activation = new ButtonWidget(guiLeft + 10, guiTop + 90, xSize - 20, 20,
                 new TranslatableText("gui.plasmo_voice.activation_type").append(": ")
-                        .append(onOff(VoiceClient.config.voiceActivation && !VoiceClient.serverConfig.disableVoiceActivation,
+                        .append(onOff(VoiceClient.getClientConfig().isVoiceActivation() && !VoiceClient.getServerConfig().isVoiceActivationDisabled(),
                                 "gui.plasmo_voice.activation_type_voice", "gui.plasmo_voice.activation_type_ptt")), button -> {
-            VoiceClient.config.voiceActivation = !VoiceClient.config.voiceActivation;
+            VoiceClient.getClientConfig().setVoiceActivation(!VoiceClient.getClientConfig().isVoiceActivation());
             button.setMessage(new TranslatableText("gui.plasmo_voice.activation_type").append(": ")
-                    .append(onOff(VoiceClient.config.voiceActivation && !VoiceClient.serverConfig.disableVoiceActivation,
+                    .append(onOff(VoiceClient.getClientConfig().isVoiceActivation() && !VoiceClient.getServerConfig().isVoiceActivationDisabled(),
                             "gui.plasmo_voice.activation_type_voice", "gui.plasmo_voice.activation_type_ptt")));
         });
 
-        if(VoiceClient.serverConfig.disableVoiceActivation) {
+        if(VoiceClient.getServerConfig().isVoiceActivationDisabled()) {
             activation.active = false;
         }
 
@@ -158,7 +152,7 @@ public class VoiceSettingsScreen extends BackgroundScreen {
         addDrawableChild(this.testButton);
 
         addDrawableChild(new ButtonWidget(guiLeft + 10, guiTop + 195, xSize - 20, 20, new TranslatableText("gui.plasmo_voice.close"), button -> {
-            client.openScreen(null);
+            client.setScreen(null);
         }));
     }
 
@@ -182,8 +176,8 @@ public class VoiceSettingsScreen extends BackgroundScreen {
             drawTexture(matrices, guiLeft + 10, guiTop + 140, 0, 218, xSize - 20, 20, 512, 512);
             drawTexture(matrices, guiLeft + 11, guiTop + 141, 0, 200, (int) ((xSize - 18) * mic), 18, 512, 512);
 
-            if(VoiceClient.config.voiceActivation && !VoiceClient.serverConfig.disableVoiceActivation) {
-                int pos = (int) ((xSize - 21) * Utils.dbToPerc(VoiceClient.config.voiceActivationThreshold));
+            if(VoiceClient.getClientConfig().isVoiceActivation()) {
+                int pos = (int) ((xSize - 21) * Utils.dbToPerc(VoiceClient.getClientConfig().getVoiceActivationThreshold()));
                 drawTexture(matrices, guiLeft + 10 + pos, guiTop + 140, 0, 218, 1, 20, 512, 512);
             }
         }

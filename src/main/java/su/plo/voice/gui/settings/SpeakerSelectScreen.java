@@ -35,9 +35,9 @@ public class SpeakerSelectScreen extends BackgroundScreen {
 
         for(String device : DataLines.getSpeakerNames()) {
             this.deviceListWidget.children().add(new DeviceListWidget.DeviceEntry(this.client, device, (speaker -> {
-                VoiceClient.config.speaker = speaker;
-                VoiceClient.config.save();
-                this.client.openScreen(this.parent);
+                VoiceClient.getClientConfig().setSpeaker(speaker);
+                VoiceClient.getClientConfig().save();
+                this.client.setScreen(this.parent);
 
                 // close all sound threads
                 SocketClientUDPQueue.talking.clear();
@@ -48,7 +48,7 @@ public class SpeakerSelectScreen extends BackgroundScreen {
 
         addDrawableChild(new ButtonWidget(guiLeft + 7, guiTop + ySize - 30, xSize - 14, 20,
                 new TranslatableText("gui.plasmo_voice.back"), button -> {
-            this.client.openScreen(parent);
+            this.client.setScreen(parent);
         }));
     }
 

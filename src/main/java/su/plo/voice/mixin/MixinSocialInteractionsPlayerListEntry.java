@@ -46,7 +46,7 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void onConstructed(CallbackInfo ci) {
-        if(VoiceClient.serverConfig == null) {
+        if(VoiceClient.getServerConfig() == null) {
             return;
         }
 
@@ -54,9 +54,9 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
 
         if (!client.player.getGameProfile().getId().equals(uuid) &&
                 !socialInteractionsManager.isPlayerBlocked(uuid) &&
-                VoiceClient.serverConfig.clients.contains(uuid)) {
+                VoiceClient.getServerConfig().getClients().contains(uuid)) {
             this.muteHideButton = new TexturedButtonWidget(0, 0, 20, 20, 0, 32, 20, VoiceClient.MICS, 256, 256, (buttonWidget) -> {
-                VoiceClient.clientMutedClients.add(uuid);
+                VoiceClient.getClientConfig().mute(uuid);
                 this.muteShowButton.visible = true;
                 this.muteHideButton.visible = false;
             }, (buttonWidget, matrixStack, i, j) -> {
@@ -71,7 +71,7 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
 
             }, new TranslatableText("gui.socialInteractions.hide"));
             this.muteShowButton = new TexturedButtonWidget(0, 0, 20, 20, 20, 32, 20, VoiceClient.MICS, 256, 256, (buttonWidget) -> {
-                VoiceClient.clientMutedClients.remove(uuid);
+                VoiceClient.getClientConfig().unmute(uuid);
                 this.muteShowButton.visible = false;
                 this.muteHideButton.visible = true;
             }, (buttonWidget, matrixStack, i, j) -> {
@@ -84,7 +84,7 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
 //                }
 
             }, new TranslatableText("gui.socialInteractions.show"));
-            this.muteShowButton.visible = VoiceClient.clientMutedClients.contains(uuid);
+            this.muteShowButton.visible = VoiceClient.getClientConfig().isMuted(uuid);
             this.muteHideButton.visible = !this.muteShowButton.visible;
 
             this.customButtons = ImmutableList.of(this.muteHideButton, this.muteShowButton);
@@ -109,7 +109,8 @@ public abstract class MixinSocialInteractionsPlayerListEntry extends ElementList
      */
     @Overwrite
     private Text getStatusText() {
-        boolean bl = this.client.getSocialInteractionsManager().isPlayerHidden(this.uuid) || VoiceClient.clientMutedClients.contains(this.uuid);
+        boolean bl = this.client.getSocialInteractionsManager().isPlayerHidden(this.uuid) ||
+                VoiceClient.getClientConfig().isMuted(this.uuid);
         boolean bl2 = this.client.getSocialInteractionsManager().isPlayerBlocked(this.uuid);
         if (bl2 && this.offline) {
             return field_26909;

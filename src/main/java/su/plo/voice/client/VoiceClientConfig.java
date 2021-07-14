@@ -1,47 +1,68 @@
 package su.plo.voice.client;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.google.gson.stream.JsonReader;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
+import su.plo.voice.data.DataEntity;
 
 import java.io.*;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.UUID;
 
+@Data
 public class VoiceClientConfig {
-    public HashMap<String, VoiceClientServerConfig> servers = new HashMap<>();
-    public boolean occlusion = false;
-    public int showIcons = 0;
-    public MicrophoneIconPosition micIconPosition = MicrophoneIconPosition.BOTTOM_CENTER;
-    public boolean voiceActivation = false;
-    public double voiceActivationThreshold = 0.0D;
-    public double voiceVolume = 1.0D;
-    public double microphoneAmplification = 1.0D;
-    public String microphone;
-    public String speaker;
+    private final static Gson gson = new Gson();
+
+    @Setter(AccessLevel.PRIVATE)
+    private HashMap<String, VoiceClientServerConfig> servers = new HashMap<>();
+    private boolean occlusion = false;
+    private int showIcons = 0;
+    private MicrophoneIconPosition micIconPosition = MicrophoneIconPosition.BOTTOM_CENTER;
+    private boolean voiceActivation = false;
+    private double voiceActivationThreshold = 0.0D;
+    private double voiceVolume = 1.0D;
+    private double microphoneAmplification = 1.0D;
+    private String microphone;
+    private String speaker;
+    private boolean whitelist = false;
+
+    // Stores in another file
+    @Setter(AccessLevel.PRIVATE)
+    private transient HashSet<UUID> muted = new HashSet<>();
+    @Setter(AccessLevel.PRIVATE)
+    private transient HashSet<UUID> whitelisted = new HashSet<>();
 
     public VoiceClientConfig() {}
 
-    public void load() {
+    public static VoiceClientConfig read() {
+        VoiceClientConfig config = null;
         File configFile = new File("config/PlasmoVoice/config.json");
         if(configFile.exists()) {
             try {
                 JsonReader reader = new JsonReader(new FileReader(configFile));
-                VoiceClientConfig config = VoiceClient.gson.fromJson(reader, VoiceClientConfig.class);
-                if(config != null) {
-                    this.voiceVolume = config.voiceVolume;
-                    this.microphoneAmplification = config.microphoneAmplification;
-                    this.microphone = config.microphone;
-                    this.speaker = config.speaker;
-                    this.occlusion = config.occlusion;
-                    this.showIcons = config.showIcons;
-                    this.servers = config.servers;
-                    this.voiceActivation = config.voiceActivation;
-                    this.voiceActivationThreshold = config.voiceActivationThreshold;
-                    this.micIconPosition = config.micIconPosition;
-                }
+                config = gson.fromJson(reader, VoiceClientConfig.class);
             } catch (FileNotFoundException ignored) {} catch (JsonSyntaxException e) {
                 configFile.delete();
             }
         }
+
+        if(config == null) {
+            config = new VoiceClientConfig();
+        }
+
+        DataEntity data = DataEntity.read();
+        if(data.mutedClients != null) {
+            config.muted = data.mutedClients;
+        }
+        if(data.whitelisted != null) {
+            config.whitelisted = data.whitelisted;
+        }
+
+        return config;
     }
 
     public void save() {
@@ -52,11 +73,38 @@ public class VoiceClientConfig {
 
             try {
                 try(Writer w = new FileWriter("config/PlasmoVoice/config.json")) {
-                    w.write(VoiceClient.gson.toJson(this));
+                    w.write(gson.toJson(this));
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             }
+
+            (new DataEntity(muted, whitelisted)).save();
         }).start();
+    }
+
+    // mute stuff
+    public boolean isMuted(UUID uuid) {
+        if(whitelist) {
+            return !whitelisted.contains(uuid);
+        } else {
+            return muted.contains(uuid);
+        }
+    }
+
+    public void mute(UUID uuid) {
+        if(whitelist) {
+            whitelisted.remove(uuid);
+        } else {
+            muted.add(uuid);
+        }
+    }
+
+    public void unmute(UUID uuid) {
+        if(whitelist) {
+            whitelisted.add(uuid);
+        } else {
+            muted.remove(uuid);
+        }
     }
 }

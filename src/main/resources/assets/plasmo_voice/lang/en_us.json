@@ -49,6 +49,9 @@
     "message.plasmo_voice.version_not_supported": "§6[Plasmo Voice]§7 Version is not supported yet. Current supported version is %s",
     "message.plasmo_voice.new_version_available": "§6[Plasmo Voice]§7 New version available [%s§7]. Download: %s",
 
+    "commands.plasmo_voice.whitelist_on": "Mute all is enabled.",
+    "commands.plasmo_voice.whitelist_off": "Mute all is disabled.",
+
     "commands.plasmo_voice.min_priority_distance": "§6[Plasmo Voice]§7 Voice priority distance must be greater than %d",
     "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 Voice priority distance must be less than %d",
     "commands.plasmo_voice.priority_distance_set": "§6[Plasmo Voice]§7 Voice priority distance now is %d"

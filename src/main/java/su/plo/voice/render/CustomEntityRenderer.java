@@ -19,7 +19,7 @@ public class CustomEntityRenderer {
     private static final MinecraftClient client = MinecraftClient.getInstance();
 
     public static void entityRender(PlayerEntity player, double distance, MatrixStack matrices, boolean hasLabel, VertexConsumerProvider vertexConsumers, int light) {
-        if(VoiceClient.config.showIcons == 2) {
+        if(VoiceClient.getClientConfig().getShowIcons() == 2) {
             return;
         }
 
@@ -31,19 +31,20 @@ public class CustomEntityRenderer {
             return;
         }
 
-        if(player.isInvisibleTo(MinecraftClient.getInstance().player) || (client.options.hudHidden && VoiceClient.config.showIcons == 0)) {
+        if(player.isInvisibleTo(MinecraftClient.getInstance().player) ||
+                (client.options.hudHidden && VoiceClient.getClientConfig().getShowIcons() == 0)) {
             return;
         }
 
-        if(VoiceClient.serverConfig.clients.contains(player.getUuid())) {
-            if(VoiceClient.clientMutedClients.contains(player.getUuid())) {
+        if(VoiceClient.getServerConfig().getClients().contains(player.getUuid())) {
+            if(VoiceClient.getClientConfig().isMuted(player.getUuid())) {
                 renderIcon(VoiceClient.SPEAKER_MUTED, player, distance, matrices, hasLabel, vertexConsumers, light);
-            } else if (VoiceClient.serverConfig.mutedClients.containsKey(player.getUuid())) {
-                MutedEntity muted = VoiceClient.serverConfig.mutedClients.get(player.getUuid());
+            } else if (VoiceClient.getServerConfig().getMuted().containsKey(player.getUuid())) {
+                MutedEntity muted = VoiceClient.getServerConfig().getMuted().get(player.getUuid());
                 if(muted.to == 0 || muted.to > System.currentTimeMillis()) {
                     renderIcon(VoiceClient.SPEAKER_MUTED, player, distance, matrices, hasLabel, vertexConsumers, light);
                 } else {
-                    VoiceClient.serverConfig.mutedClients.remove(muted.uuid);
+                    VoiceClient.getServerConfig().getMuted().remove(muted.uuid);
                 }
             } else if(SocketClientUDPQueue.talking.containsKey(player.getUuid())) {
                 if(SocketClientUDPQueue.talking.get(player.getUuid())) {

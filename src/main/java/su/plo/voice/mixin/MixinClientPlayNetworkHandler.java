@@ -40,7 +40,7 @@ import java.util.List;
 public abstract class MixinClientPlayNetworkHandler {
     @Shadow public abstract ClientConnection getConnection();
 
-    @Shadow private MinecraftClient client;
+    @Shadow @Final private MinecraftClient client;
 
     @Shadow @Final private ClientConnection connection;
 
@@ -87,23 +87,23 @@ public abstract class MixinClientPlayNetworkHandler {
 
                     VoiceClient.LOGGER.info("Connecting to " + client.getCurrentServerEntry().address);
 
-                    VoiceClient.serverConfig = new VoiceServerConfig(connect.getToken(), ip,
-                            connect.getPort(), connect.hasPriority());
+                    VoiceClient.setServerConfig(new VoiceServerConfig(connect.getToken(), ip,
+                            connect.getPort(), connect.hasPriority()));
 
                     this.connection.send(
                             new CustomPayloadC2SPacket(Voice.PLASMO_VOICE,
                                 new PacketByteBuf(Unpooled.wrappedBuffer(PacketTCP.write(new ClientConnectPacket(connect.getToken(), Voice.version))))));
                 } else if(pkt instanceof ConfigPacket) {
                     ConfigPacket config = (ConfigPacket) pkt;
-                    VoiceClient.serverConfig.update(config);
+                    VoiceClient.getServerConfig().update(config);
 
-                    if(!VoiceClient.connected()) {
+                    if(!VoiceClient.isConnected()) {
                         VoiceClient.socketUDP = new SocketClientUDP();
                         VoiceClient.socketUDP.start();
                     }
                 } else if(pkt instanceof ClientMutedPacket) {
                     ClientMutedPacket muted = (ClientMutedPacket) pkt;
-                    VoiceClient.serverConfig.mutedClients.put(muted.getClient(), new MutedEntity(muted.getClient(), muted.getTo()));
+                    VoiceClient.getServerConfig().getMuted().put(muted.getClient(), new MutedEntity(muted.getClient(), muted.getTo()));
                     ThreadSoundQueue queue = SocketClientUDPQueue.audioChannels.get(muted.getClient());
                     if(queue != null) {
                         queue.closeAndKill();
@@ -113,22 +113,22 @@ public abstract class MixinClientPlayNetworkHandler {
                     VoiceClient.LOGGER.info(muted.getClient().toString() + " muted");
                 } else if(pkt instanceof ClientUnmutedPacket) {
                     ClientUnmutedPacket unmuted = (ClientUnmutedPacket) pkt;
-                    VoiceClient.serverConfig.mutedClients.remove(unmuted.getClient());
+                    VoiceClient.getServerConfig().getMuted().remove(unmuted.getClient());
 
                     VoiceClient.LOGGER.info(unmuted.getClient().toString() + " unmuted");
                 } else if(pkt instanceof ClientsListPacket) {
                     ClientsListPacket list = (ClientsListPacket) pkt;
 
-                    VoiceClient.serverConfig.mutedClients.clear();
-                    VoiceClient.serverConfig.clients.clear();
+                    VoiceClient.getServerConfig().getMuted().clear();
+                    VoiceClient.getServerConfig().getClients().clear();
 
                     List<String> mutedList = new ArrayList<>();
 
                     for(MutedEntity muted : list.getMuted()) {
                         mutedList.add(muted.uuid.toString());
-                        VoiceClient.serverConfig.mutedClients.put(muted.uuid, muted);
+                        VoiceClient.getServerConfig().getMuted().put(muted.uuid, muted);
                     }
-                    VoiceClient.serverConfig.clients.addAll(list.getClients());
+                    VoiceClient.getServerConfig().getClients().addAll(list.getClients());
 
                     VoiceClient.LOGGER.info("Clients: " + list.getClients().toString());
                     VoiceClient.LOGGER.info("Muted clients: " + mutedList);
@@ -136,15 +136,15 @@ public abstract class MixinClientPlayNetworkHandler {
                     ClientConnectedPacket connected = (ClientConnectedPacket) pkt;
                     if(connected.getMuted() != null) {
                         MutedEntity muted = connected.getMuted();
-                        VoiceClient.serverConfig.mutedClients.put(muted.uuid, muted);
+                        VoiceClient.getServerConfig().getMuted().put(muted.uuid, muted);
                     }
 
-                    VoiceClient.serverConfig.clients.add(connected.getClient());
+                    VoiceClient.getServerConfig().getClients().add(connected.getClient());
                 } else if(pkt instanceof ClientDisconnectedPacket) {
                     ClientDisconnectedPacket connected = (ClientDisconnectedPacket) pkt;
 
-                    VoiceClient.serverConfig.clients.remove(connected.getClient());
-                    VoiceClient.serverConfig.mutedClients.remove(connected.getClient());
+                    VoiceClient.getServerConfig().getClients().remove(connected.getClient());
+                    VoiceClient.getServerConfig().getMuted().remove(connected.getClient());
 
                     final ClientPlayerEntity player = MinecraftClient.getInstance().player;
                     if(player != null) {

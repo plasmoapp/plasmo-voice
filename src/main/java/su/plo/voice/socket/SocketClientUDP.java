@@ -23,8 +23,8 @@ public class SocketClientUDP extends Thread {
     public long keepAlive;
 
     public SocketClientUDP() throws IOException {
-        this.addr = InetAddress.getByName(VoiceClient.serverConfig.ip);
-        this.port = VoiceClient.serverConfig.port;
+        this.addr = InetAddress.getByName(VoiceClient.getServerConfig().getIp());
+        this.port = VoiceClient.getServerConfig().getPort();
         this.socket = new DatagramSocket();
         this.socket.setTrafficClass(0x04); // IPTOS_RELIABILITY
 
