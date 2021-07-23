@@ -90,7 +90,7 @@ public class PlayerListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
 
-        playerToken.remove(player);
+        playerToken.remove(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             disconnectClient(player);
         });
