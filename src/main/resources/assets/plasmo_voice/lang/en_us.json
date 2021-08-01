@@ -7,6 +7,7 @@
 
     "gui.plasmo_voice.title": "Voice Settings",
     "gui.plasmo_voice.voice_chat_volume": "Voice chat volume: %s",
+    "gui.plasmo_voice.player_volume": "Player volume: %s",
     "gui.plasmo_voice.mic_amplification": "Microphone amplification: %s",
     "gui.plasmo_voice.back": "Back",
     "gui.plasmo_voice.close": "Close",

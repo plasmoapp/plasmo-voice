@@ -41,7 +41,7 @@ public class VoiceHud {
             return;
         }
 
-        if(VoiceClient.isMuted()) {
+        if(VoiceClient.isMuted() || VoiceClient.getServerConfig().getMuted().containsKey(player.getUuid())) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
             RenderSystem.setShaderTexture(0, VoiceClient.MICS);

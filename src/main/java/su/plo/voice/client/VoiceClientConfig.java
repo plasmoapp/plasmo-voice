@@ -19,6 +19,8 @@ public class VoiceClientConfig {
 
     @Setter(AccessLevel.PRIVATE)
     private HashMap<String, VoiceClientServerConfig> servers = new HashMap<>();
+    @Setter(AccessLevel.PRIVATE)
+    private HashMap<UUID, Double> playerVolumes = new HashMap<>();
     private boolean occlusion = false;
     private int showIcons = 0;
     private MicrophoneIconPosition micIconPosition = MicrophoneIconPosition.BOTTOM_CENTER;
@@ -98,6 +100,7 @@ public class VoiceClientConfig {
         } else {
             muted.add(uuid);
         }
+        save();
     }
 
     public void unmute(UUID uuid) {
@@ -106,5 +109,10 @@ public class VoiceClientConfig {
         } else {
             muted.remove(uuid);
         }
+        save();
+    }
+
+    public double getPlayerVolume(UUID uuid) {
+        return voiceVolume * playerVolumes.getOrDefault(uuid, 1.0D);
     }
 }

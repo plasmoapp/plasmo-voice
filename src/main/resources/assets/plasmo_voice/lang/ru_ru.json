@@ -7,6 +7,7 @@
 
     "gui.plasmo_voice.title": "Настройки голосового чата",
     "gui.plasmo_voice.voice_chat_volume": "Громкость голосового чата: %s",
+    "gui.plasmo_voice.player_volume": "Громкость игрока: %s",
     "gui.plasmo_voice.mic_amplification": "Усиление микрофона: %s",
     "gui.plasmo_voice.back": "Назад",
     "gui.plasmo_voice.close": "Закрыть",

@@ -100,10 +100,8 @@ public class VoiceClient implements ClientModInitializer {
                 .then(ClientCommandManager.literal("muteall")
                         .executes(ctx -> {
                             if(VoiceClient.getClientConfig().isWhitelist()) {
-                                // send disabled
                                 ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_off"), false);
                             } else {
-                                // send enabled
                                 ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_on"), false);
                             }
 

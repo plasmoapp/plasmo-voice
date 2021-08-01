@@ -160,7 +160,7 @@ public class ThreadSoundQueue extends Thread {
 
                 gainControl.setValue(Math.min(
                         Math.max(
-                                Utils.percentageToDB(percentage * (float) VoiceClient.getClientConfig().getVoiceVolume()),
+                                Utils.percentageToDB(percentage * (float) VoiceClient.getClientConfig().getPlayerVolume(this.from)),
                                 gainControl.getMinimum()
                         ),
                         gainControl.getMaximum()
