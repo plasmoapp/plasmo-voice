@@ -1,5 +1,6 @@
 package su.plo.voice.listeners;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -80,7 +81,7 @@ public class PlayerListener implements Listener {
             Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
                 if (!SocketServerUDP.clients.containsKey(player)) {
                     PlasmoVoice.logger.info(String.format("Player: %s does not have the mod installed!", player.getName()));
-                    player.kickPlayer(PlasmoVoice.getInstance().getMessage("mod_missing_kick_message"));
+                    player.kick(Component.text(PlasmoVoice.getInstance().getMessage("mod_missing_kick_message")));
                 }
             }, PlasmoVoice.getInstance().config.clientModCheckTimeout);
         }

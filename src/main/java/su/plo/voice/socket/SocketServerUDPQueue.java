@@ -97,7 +97,7 @@ public class SocketServerUDPQueue extends Thread {
                     }
 
                     if(packet.getDistance() > PlasmoVoice.getInstance().config.maxDistance) {
-                        if(player.hasPermission("voice.priority") && packet.getDistance() <= PlasmoVoice.getInstance().config.maxPriorityDistance) {
+                        if (player.hasPermission("voice.priority") && packet.getDistance() <= PlasmoVoice.getInstance().config.maxPriorityDistance) {
                             VoiceServerPacket serverPacket = new VoiceServerPacket(packet.getData(),
                                     player.getUniqueId(),
                                     packet.getSequenceNumber(),

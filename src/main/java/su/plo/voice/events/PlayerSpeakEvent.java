@@ -4,6 +4,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
+import su.plo.voice.common.packets.Packet;
 
 public class PlayerSpeakEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
