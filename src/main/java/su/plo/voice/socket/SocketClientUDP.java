@@ -1,17 +1,21 @@
 package su.plo.voice.socket;
 
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
 
 import java.net.InetAddress;
 
+@Data
 public class SocketClientUDP {
-
     private final Player player;
     private final InetAddress address;
     private final int port;
     private long keepAlive;
     private long sentKeepAlive;
+    @Setter(AccessLevel.PROTECTED)
     private String type;
 
     public SocketClientUDP(Player player, String type, InetAddress address, int port) {
@@ -22,41 +26,11 @@ public class SocketClientUDP {
         this.keepAlive = System.currentTimeMillis();
     }
 
-    public long getKeepAlive() {
-        return this.keepAlive;
-    }
-
-    public long getSentKeepAlive() {
-        return this.sentKeepAlive;
-    }
-
-    public void setKeepAlive(long time) {
-        this.keepAlive = time;
-    }
-
-    public void setSentKeepAlive(long time) {
-        this.sentKeepAlive = time;
-    }
-
-    public Player getPlayer() {
-        return player;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public InetAddress getAddress() {
-        return address;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
     public void close() {
-        if(SocketServerUDP.clients.containsKey(player)) {
-            PlasmoVoice.logger.info("Remove client UDP: " + this.player.getName());
+        if (SocketServerUDP.clients.containsKey(player)) {
+            if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+                PlasmoVoice.getVoiceLogger().info("Remove client UDP: " + this.player.getName());
+            }
             SocketServerUDP.clients.remove(player);
         }
     }

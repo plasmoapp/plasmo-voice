@@ -10,7 +10,6 @@ import su.plo.voice.socket.SocketServerUDP;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 public class VoiceList implements CommandExecutor {
@@ -21,7 +20,7 @@ public class VoiceList implements CommandExecutor {
                 .collect(Collectors.toList());
 
         List<String> clientsToRemove = new ArrayList<>();
-        if(sender instanceof Player) {
+        if (sender instanceof Player) {
             for (Player currentPlayer : Bukkit.getOnlinePlayers()) {
                 if (!((Player) sender).canSee(currentPlayer)) {
                     clientsToRemove.add(currentPlayer.getName());

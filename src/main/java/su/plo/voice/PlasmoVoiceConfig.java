@@ -1,23 +1,26 @@
 package su.plo.voice;
 
+import lombok.Data;
+
 import java.util.HashSet;
 import java.util.List;
 
+@Data
 public class PlasmoVoiceConfig {
-    public final String ip;
-    public final int port;
-    public final String proxyIp;
-    public final int proxyPort;
-    public final int sampleRate;
-    public final HashSet<Integer> distances = new HashSet<>();
-    public final int maxDistance;
-    public final int defaultDistance;
-    public final short maxPriorityDistance;
-    public final int fadeDivisor;
-    public final int priorityFadeDivisor;
-    public final boolean disableVoiceActivation;
-    public final boolean clientModRequired;
-    public final int clientModCheckTimeout;
+    private final String ip;
+    private final int port;
+    private final String proxyIp;
+    private final int proxyPort;
+    private final int sampleRate;
+    private final HashSet<Integer> distances = new HashSet<>();
+    private final int maxDistance;
+    private final int defaultDistance;
+    private final short maxPriorityDistance;
+    private final int fadeDivisor;
+    private final int priorityFadeDivisor;
+    private final boolean disableVoiceActivation;
+    private final boolean clientModRequired;
+    private final int clientModCheckTimeout;
 
     public PlasmoVoiceConfig(String ip, int port,
                              String proxyIp, int proxyPort,

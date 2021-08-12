@@ -1,6 +1,7 @@
 package su.plo.voice;
 
 import com.google.gson.Gson;
+import lombok.Getter;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
@@ -15,6 +16,7 @@ import su.plo.voice.data.DataEntity;
 import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.listeners.PlayerListener;
 import su.plo.voice.listeners.PluginChannelListener;
+import su.plo.voice.placeholders.PlaceholderPlasmoVoice;
 import su.plo.voice.socket.SocketServerUDP;
 
 import java.io.*;
@@ -25,8 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public final class PlasmoVoice extends JavaPlugin {
+    @Getter
     private static PlasmoVoice instance;
-    public static Logger logger;
+    @Getter
+    private static Logger voiceLogger;
 
     public static final String rawVersion = "1.0.0";
     public static final int version = calculateVersion(rawVersion);
@@ -39,16 +43,13 @@ public final class PlasmoVoice extends JavaPlugin {
     public static Gson gson = new Gson();
 
     private SocketServerUDP socketServerUDP;
-    public PlasmoVoiceConfig config;
-
-    public static PlasmoVoice getInstance() {
-        return instance;
-    }
+    @Getter
+    private PlasmoVoiceConfig voiceConfig;
 
     @Override
     public void onEnable() {
         instance = this;
-        logger = getLogger();
+        voiceLogger = super.getLogger();
 
         // save default config
         saveDefaultConfig();
@@ -60,7 +61,7 @@ public final class PlasmoVoice extends JavaPlugin {
         this.getServer().getMessenger().registerIncomingPluginChannel(this, "plasmo:voice", new PluginChannelListener());
         this.getServer().getMessenger().registerOutgoingPluginChannel(this, "plasmo:voice");
 
-        socketServerUDP = new SocketServerUDP(config.ip, config.port);
+        socketServerUDP = new SocketServerUDP(voiceConfig.getIp(), voiceConfig.getPort());
         socketServerUDP.start();
 
         // add listener
@@ -87,6 +88,11 @@ public final class PlasmoVoice extends JavaPlugin {
         getCommand("vreconnect").setExecutor(new VoiceReconnect());
         getCommand("vlist").setExecutor(new VoiceList());
 
+        // Register placeholders
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceholderPlasmoVoice().register();
+        }
+
         // Plugin metrics
         Metrics metrics = new Metrics(this, 10928);
         metrics.addCustomChart(new SingleLineChart("players_with_forge_mod", () ->
@@ -97,17 +103,17 @@ public final class PlasmoVoice extends JavaPlugin {
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerListener.reconnectPlayer(player);
 
-            if(player.isOp() && !SocketServerUDP.started) {
+            if (player.isOp() && !SocketServerUDP.started) {
                 player.sendMessage(PlasmoVoice.getInstance().getPrefix() +
                         String.format("Voice chat is installed but doesn't work. Check if port %d UDP is open.",
-                                PlasmoVoice.getInstance().config.port));
+                                voiceConfig.getPort()));
             }
         }
     }
 
     @Override
     public void onDisable() {
-        if(socketServerUDP != null) {
+        if (socketServerUDP != null) {
             socketServerUDP.close();
             socketServerUDP.interrupt();
         }
@@ -122,7 +128,8 @@ public final class PlasmoVoice extends JavaPlugin {
             ver += Integer.parseInt(version[0]) * 1000;
             ver += Integer.parseInt(version[1]) * 100;
             ver += Integer.parseInt(version[2]);
-        } catch (NumberFormatException ignored) {}
+        } catch (NumberFormatException ignored) {
+        }
 
         return ver;
     }
@@ -131,48 +138,47 @@ public final class PlasmoVoice extends JavaPlugin {
         FileConfiguration config = getConfig();
         Configuration def = getConfig().getDefaults();
 
-
-        if(!def.getString("config_version").equals(config.getString("config_version"))) {
-            PlasmoVoice.logger.warning("Config outdated. Check https://github.com/plasmoapp/plasmo-voice/wiki/How-to-install-Server for new config.");
+        if (!def.getString("config_version").equals(config.getString("config_version"))) {
+            voiceLogger.warning("Config outdated. Check https://github.com/plasmoapp/plasmo-voice/wiki/How-to-install-Server for new config.");
         }
 
         int sampleRate = config.getInt("sample_rate");
         if (sampleRate != 8000 && sampleRate != 12000 && sampleRate != 24000 && sampleRate != 48000) {
-            PlasmoVoice.logger.warning("Sample rate cannot be " + sampleRate);
+            voiceLogger.warning("Sample rate cannot be " + sampleRate);
             return;
         }
 
         List<Integer> distances = config.getIntegerList("distances");
-        if(distances.size() == 0) {
-            PlasmoVoice.logger.warning("Distances cannot be empty");
+        if (distances.size() == 0) {
+            voiceLogger.warning("Distances cannot be empty");
             return;
         }
         int defaultDistance = config.getInt("default_distance");
-        if(defaultDistance == 0) {
+        if (defaultDistance == 0) {
             defaultDistance = distances.get(0);
-        } else if(!distances.contains(defaultDistance)) {
+        } else if (!distances.contains(defaultDistance)) {
             defaultDistance = distances.get(0);
         }
 
         int fadeDivisor = config.getInt("fade_divisor");
-        if(fadeDivisor <= 0) {
-            PlasmoVoice.logger.warning("Fade distance cannot be <= 0");
+        if (fadeDivisor <= 0) {
+            voiceLogger.warning("Fade distance cannot be <= 0");
             return;
         }
 
         int priorityFadeDivisor = config.getInt("priority_fade_divisor");
-        if(priorityFadeDivisor <= 0) {
-            PlasmoVoice.logger.warning("Priority fade distance cannot be <= 0");
+        if (priorityFadeDivisor <= 0) {
+            voiceLogger.warning("Priority fade distance cannot be <= 0");
             return;
         }
 
         int clientModCheckTimeout = config.getInt("client_mod_check_timeout");
-        if(clientModCheckTimeout < 20) {
-            PlasmoVoice.logger.warning("Client mod check timeout cannot be < 20 ticks");
+        if (clientModCheckTimeout < 20) {
+            voiceLogger.warning("Client mod check timeout cannot be < 20 ticks");
             return;
         }
 
-        this.config = new PlasmoVoiceConfig(config.getString("udp.ip"),
+        this.voiceConfig = new PlasmoVoiceConfig(config.getString("udp.ip"),
                 config.getInt("udp.port"),
                 config.getString("udp.proxy_ip"),
                 config.getInt("udp.proxy_port"),
@@ -192,17 +198,18 @@ public final class PlasmoVoice extends JavaPlugin {
             BufferedReader bufferedReader = new BufferedReader(
                     new FileReader(this.getDataFolder().getPath() + "/data.json"));
             DataEntity data = gson.fromJson(bufferedReader, DataEntity.class);
-            if(data != null) {
-                for(ServerMutedEntity e : data.muted) {
-                    muted.put(e.uuid, e);
+            if (data != null) {
+                for (ServerMutedEntity e : data.getMuted()) {
+                    muted.put(e.getUuid(), e);
                 }
             }
-        } catch (FileNotFoundException ignored) {}
+        } catch (FileNotFoundException ignored) {
+        }
     }
 
     private void saveData() {
         try {
-            try(Writer w = new FileWriter(this.getDataFolder().getPath() + "/data.json")) {
+            try (Writer w = new FileWriter(this.getDataFolder().getPath() + "/data.json")) {
                 List<ServerMutedEntity> list = new ArrayList<>(muted.values());
                 w.write(gson.toJson(new DataEntity(list)));
             }
@@ -214,8 +221,8 @@ public final class PlasmoVoice extends JavaPlugin {
     // Get message with prefix from config
     public String getMessagePrefix(String name) {
         // Get message or use default value
-        String message = this.getConfig().getString("messages." + name);
-        if(message == null) {
+        String message = getConfig().getString("messages." + name);
+        if (message == null) {
             message = "";
         } else {
             message = ChatColor.translateAlternateColorCodes('&', message);
@@ -227,8 +234,8 @@ public final class PlasmoVoice extends JavaPlugin {
     // Get message from config
     public String getMessage(String name) {
         // Get message or use default value
-        String message = this.getConfig().getString("messages." + name);
-        if(message == null) {
+        String message = getConfig().getString("messages." + name);
+        if (message == null) {
             message = "";
         } else {
             message = ChatColor.translateAlternateColorCodes('&', message);
@@ -239,6 +246,6 @@ public final class PlasmoVoice extends JavaPlugin {
 
     // Get plugin prefix from config
     public String getPrefix() {
-        return ChatColor.translateAlternateColorCodes('&', this.getConfig().getString("messages.prefix"));
+        return ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix"));
     }
 }

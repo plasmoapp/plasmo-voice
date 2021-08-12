@@ -1,11 +1,12 @@
 package su.plo.voice.data;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.List;
 
+@Data
+@AllArgsConstructor
 public class DataEntity {
-    public final List<ServerMutedEntity> muted;
-
-    public DataEntity(List<ServerMutedEntity> muted) {
-        this.muted = muted;
-    }
+    private final List<ServerMutedEntity> muted;
 }

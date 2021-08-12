@@ -3,6 +3,8 @@ version: ${project.version}
 main: su.plo.voice.PlasmoVoice
 api-version: 1.16
 authors: [ Apehum ]
+softdepend:
+  - PlaceholderAPI
 
 commands:
   vmute:

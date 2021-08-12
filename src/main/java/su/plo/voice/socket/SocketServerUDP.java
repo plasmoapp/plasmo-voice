@@ -39,13 +39,13 @@ public class SocketServerUDP extends Thread {
         }
 
         SocketServerUDP.clients.forEach((p, sock) -> {
-            if(!player.getUniqueId().equals(p.getUniqueId())) {
-                if(maxDistanceSquared > 0) {
-                    if(!player.getLocation().getWorld().getName().equals(p.getLocation().getWorld().getName())) {
+            if (!player.getUniqueId().equals(p.getUniqueId())) {
+                if (maxDistanceSquared > 0) {
+                    if (!player.getLocation().getWorld().getName().equals(p.getLocation().getWorld().getName())) {
                         return;
                     }
 
-                    if(player.getLocation().distanceSquared(p.getLocation()) > maxDistanceSquared) {
+                    if (player.getLocation().distanceSquared(p.getLocation()) > maxDistanceSquared) {
                         return;
                     }
                 }
@@ -71,7 +71,7 @@ public class SocketServerUDP extends Thread {
     }
 
     public void close() {
-        if(socket != null) {
+        if (socket != null) {
             socket.close();
             queue.close();
         }
@@ -83,15 +83,15 @@ public class SocketServerUDP extends Thread {
             socket.setTrafficClass(0x04); // IPTOS_RELIABILITY
         } catch (SocketException e) {
             e.printStackTrace();
-            PlasmoVoice.logger.info(String.format("Failed to bind socket. Check if port %d UDP is open",
-                    PlasmoVoice.getInstance().config.port));
+            PlasmoVoice.getVoiceLogger().info(String.format("Failed to bind socket. Check if port %d UDP is open",
+                    PlasmoVoice.getInstance().getVoiceConfig().getPort()));
             return;
         }
 
         started = true;
-        PlasmoVoice.logger.info("Voice UDP server started on " + addr.toString());
+        PlasmoVoice.getVoiceLogger().info("Voice UDP server started on " + addr.toString());
 
-        while(!socket.isClosed()) {
+        while (!socket.isClosed()) {
             try {
                 PacketUDP message = PacketUDP.read(socket);
                 this.queue.queue.offer(message);
@@ -100,11 +100,10 @@ public class SocketServerUDP extends Thread {
                     this.queue.notify();
                 }
             } catch (IOException | InstantiationException e) { // bad packet? just ignore it 4HEad
-                if(PlasmoVoice.getInstance().getConfig().getBoolean("debug")) {
+                if (PlasmoVoice.getInstance().getConfig().getBoolean("debug")) {
                     e.printStackTrace();
                 }
-            }
-              catch (Exception e) {
+            } catch (Exception e) {
 
                 e.printStackTrace();
             }

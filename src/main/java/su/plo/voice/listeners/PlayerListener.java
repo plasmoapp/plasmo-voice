@@ -25,11 +25,11 @@ public class PlayerListener implements Listener {
     public PlayerListener() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(PlasmoVoice.getInstance(), () -> {
             PlasmoVoice.muted.forEach((uuid, muted) -> {
-                if(muted.to > 0 && muted.to < System.currentTimeMillis()) {
+                if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
                     PlasmoVoice.muted.remove(uuid);
                     Player player = Bukkit.getPlayer(uuid);
-                    if(player != null) {
-                        PluginChannelListener.sendToClients(new ClientUnmutedPacket(muted.uuid), player);
+                    if (player != null) {
+                        PluginChannelListener.sendToClients(new ClientUnmutedPacket(muted.getUuid()), player);
                     }
                 }
             });
@@ -43,10 +43,12 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
                 byte[] pkt = PacketTCP.write(new ServerConnectPacket(token.toString(),
-                        PlasmoVoice.getInstance().config.proxyIp != null
-                                ? PlasmoVoice.getInstance().config.proxyIp : PlasmoVoice.getInstance().config.ip,
-                        PlasmoVoice.getInstance().config.proxyPort != 0
-                                ? PlasmoVoice.getInstance().config.proxyPort : PlasmoVoice.getInstance().config.port,
+                        PlasmoVoice.getInstance().getVoiceConfig().getProxyIp() != null
+                                ? PlasmoVoice.getInstance().getVoiceConfig().getProxyIp()
+                                : PlasmoVoice.getInstance().getVoiceConfig().getIp(),
+                        PlasmoVoice.getInstance().getVoiceConfig().getProxyPort() != 0
+                                ? PlasmoVoice.getInstance().getVoiceConfig().getProxyPort()
+                                : PlasmoVoice.getInstance().getVoiceConfig().getPort(),
                         player.hasPermission("voice.priority")));
 
                 player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
@@ -58,11 +60,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerRegisterChannel(PlayerRegisterChannelEvent e) {
-        if(!SocketServerUDP.started) { // send connect packet only if socket started
+        if (!SocketServerUDP.started) { // send connect packet only if socket started
             return;
         }
 
-        if(e.getChannel().equals("plasmo:voice")) {
+        if (e.getChannel().equals("plasmo:voice")) {
             reconnectPlayer(e.getPlayer());
         }
     }
@@ -70,19 +72,21 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player player = e.getPlayer();
-        if(player.isOp() && !SocketServerUDP.started) {
+        if (player.isOp() && !SocketServerUDP.started) {
             player.sendMessage(PlasmoVoice.getInstance().getPrefix() +
                     String.format("Voice chat is installed but doesn't work. Check if port %d UDP is open.",
-                    PlasmoVoice.getInstance().config.port));
+                            PlasmoVoice.getInstance().getVoiceConfig().getPort()));
         }
 
-        if(PlasmoVoice.getInstance().config.clientModRequired) {
+        if (PlasmoVoice.getInstance().getVoiceConfig().isClientModRequired()) {
             Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
                 if (!SocketServerUDP.clients.containsKey(player)) {
-                    PlasmoVoice.logger.info(String.format("Player: %s does not have the mod installed!", player.getName()));
+                    if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+                        PlasmoVoice.getVoiceLogger().info(String.format("Player: %s does not have the mod installed!", player.getName()));
+                    }
                     player.kickPlayer(PlasmoVoice.getInstance().getMessage("mod_missing_kick_message"));
                 }
-            }, PlasmoVoice.getInstance().config.clientModCheckTimeout);
+            }, PlasmoVoice.getInstance().getVoiceConfig().getClientModCheckTimeout());
         }
     }
 
@@ -100,7 +104,7 @@ public class PlayerListener implements Listener {
         SocketClientUDP clientUDP = SocketServerUDP.clients.get(player);
 
         try {
-            if(clientUDP != null) {
+            if (clientUDP != null) {
                 clientUDP.close();
                 PluginChannelListener.sendToClients(new ClientDisconnectedPacket(player.getUniqueId()), player);
             }

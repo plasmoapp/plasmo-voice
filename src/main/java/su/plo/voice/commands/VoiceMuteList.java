@@ -22,12 +22,12 @@ public class VoiceMuteList implements CommandExecutor {
         sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("muted_list"));
         PlasmoVoice.muted.forEach((uuid, muted) -> {
             OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
-            String expires = muted.to > 0
-                    ? new SimpleDateFormat(PlasmoVoice.getInstance().getMessage("mute_expires_format")).format(new Date(muted.to))
+            String expires = muted.getTo() > 0
+                    ? new SimpleDateFormat(PlasmoVoice.getInstance().getMessage("mute_expires_format")).format(new Date(muted.getTo()))
                     : PlasmoVoice.getInstance().getMessage("mute_expires_never");
-            String reason = muted.reason == null
+            String reason = muted.getReason() == null
                     ? PlasmoVoice.getInstance().getMessage("mute_no_reason")
-                    : muted.reason;
+                    : muted.getReason();
             sender.sendMessage(PlasmoVoice.getInstance().getMessage("muted_list_entry")
                     .replace("{player}", player.getName())
                     .replace("{expires}", expires)

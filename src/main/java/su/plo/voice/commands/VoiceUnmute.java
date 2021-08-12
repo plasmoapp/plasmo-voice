@@ -19,33 +19,33 @@ import java.util.List;
 public class VoiceUnmute implements TabExecutor {
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if(args.length == 0) {
+        if (args.length == 0) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("help.unmute"));
             return true;
         }
 
         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-        if(player.getFirstPlayed() == 0) {
+        if (player.getFirstPlayed() == 0) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("player_not_found"));
             return true;
         }
 
         ServerMutedEntity muted = PlasmoVoice.muted.get(player.getUniqueId());
-        if(muted == null) {
+        if (muted == null) {
             sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("not_muted"), player.getName()));
             return true;
         }
 
-        if(muted.to > 0 && muted.to < System.currentTimeMillis()) {
-            PlasmoVoice.muted.remove(muted.uuid);
+        if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
+            PlasmoVoice.muted.remove(muted.getUuid());
             sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("not_muted"), player.getName()));
             return true;
         }
 
-        PlasmoVoice.muted.remove(muted.uuid);
+        PlasmoVoice.muted.remove(muted.getUuid());
 
         Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
-        if(onlinePlayer != null) {
+        if (onlinePlayer != null) {
             PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()), onlinePlayer);
         }
 

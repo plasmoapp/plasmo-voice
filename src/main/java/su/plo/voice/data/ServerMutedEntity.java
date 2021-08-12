@@ -1,15 +1,14 @@
 package su.plo.voice.data;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+
 import java.util.UUID;
 
+@Data
+@AllArgsConstructor
 public class ServerMutedEntity {
-    public final UUID uuid;
-    public final Long to;
-    public final String reason;
-
-    public ServerMutedEntity(UUID uuid, Long to, String reason) {
-        this.uuid = uuid;
-        this.to = to;
-        this.reason = reason;
-    }
+    private final UUID uuid;
+    private final Long to;
+    private final String reason;
 }

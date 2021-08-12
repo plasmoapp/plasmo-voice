@@ -32,21 +32,21 @@ public class SocketServerUDPQueue extends Thread {
                     continue;
                 }
 
-                if(message.getPacket() instanceof AuthPacket) {
+                if (message.getPacket() instanceof AuthPacket) {
                     AuthPacket packet = (AuthPacket) message.getPacket();
                     AtomicReference<Player> player = new AtomicReference<>();
 
                     PlayerListener.playerToken.forEach((p, t) -> {
-                        if(t.toString().equals(packet.getToken())) {
+                        if (t.toString().equals(packet.getToken())) {
                             player.set(Bukkit.getPlayer(p));
                         }
                     });
 
-                    if(player.get() != null) {
+                    if (player.get() != null) {
                         String type = player.get().getListeningPluginChannels().contains("fml:handshake") ? "forge" : "fabric";
                         SocketClientUDP sock = new SocketClientUDP(player.get(), type, message.getAddress(), message.getPort());
 
-                        if(!SocketServerUDP.clients.containsKey(player.get())) {
+                        if (!SocketServerUDP.clients.containsKey(player.get())) {
                             SocketServerUDP.clients.put(player.get(), sock);
                         }
 
@@ -67,37 +67,38 @@ public class SocketServerUDPQueue extends Thread {
                     continue;
                 }
 
-                if(message.getPacket() instanceof PingPacket) {
+                if (message.getPacket() instanceof PingPacket) {
                     client.setKeepAlive(System.currentTimeMillis());
                     continue;
                 }
 
                 // server mute
-                if(PlasmoVoice.muted.containsKey(player.getUniqueId())) {
+                if (PlasmoVoice.muted.containsKey(player.getUniqueId())) {
                     ServerMutedEntity e = PlasmoVoice.muted.get(player.getUniqueId());
-                    if(e == null) {
+                    if (e == null) {
                         continue;
                     }
 
-                    if(e.to == 0 || e.to > System.currentTimeMillis()) {
+                    if (e.getTo() == 0 || e.getTo() > System.currentTimeMillis()) {
                         continue;
                     } else {
-                        PlasmoVoice.muted.remove(e.uuid);
+                        PlasmoVoice.muted.remove(e.getUuid());
 
                         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
-                            PluginChannelListener.sendToClients(new ClientUnmutedPacket(e.uuid), player);
+                            PluginChannelListener.sendToClients(new ClientUnmutedPacket(e.getUuid()), player);
                         });
                     }
                 }
 
-                if(message.getPacket() instanceof VoiceClientPacket) {
+                if (message.getPacket() instanceof VoiceClientPacket) {
                     VoiceClientPacket packet = (VoiceClientPacket) message.getPacket();
-                    if(!player.hasPermission("voice.speak")) {
+                    if (!player.hasPermission("voice.speak")) {
                         continue;
                     }
 
-                    if(packet.getDistance() > PlasmoVoice.getInstance().config.maxDistance) {
-                        if(player.hasPermission("voice.priority") && packet.getDistance() <= PlasmoVoice.getInstance().config.maxPriorityDistance) {
+                    if (packet.getDistance() > PlasmoVoice.getInstance().getVoiceConfig().getMaxDistance()) {
+                        if (player.hasPermission("voice.priority") &&
+                                packet.getDistance() <= PlasmoVoice.getInstance().getVoiceConfig().getMaxPriorityDistance()) {
                             VoiceServerPacket serverPacket = new VoiceServerPacket(packet.getData(),
                                     player.getUniqueId(),
                                     packet.getSequenceNumber(),
@@ -116,19 +117,19 @@ public class SocketServerUDPQueue extends Thread {
                         SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
                     }
 
-                    if(!SocketServerUDP.talking.containsKey(player.getUniqueId())) {
+                    if (!SocketServerUDP.talking.containsKey(player.getUniqueId())) {
                         SocketServerUDP.talking.put(player.getUniqueId(), System.currentTimeMillis());
                         Bukkit.getPluginManager().callEvent(new PlayerStartSpeakEvent(player));
                     } else {
                         SocketServerUDP.talking.put(player.getUniqueId(), System.currentTimeMillis());
                     }
-                } else if(message.getPacket() instanceof VoiceEndClientPacket) {
+                } else if (message.getPacket() instanceof VoiceEndClientPacket) {
                     VoiceEndClientPacket packet = (VoiceEndClientPacket) message.getPacket();
 
                     VoiceEndServerPacket serverPacket = new VoiceEndServerPacket(player.getUniqueId());
                     SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
 
-                    if(SocketServerUDP.talking.containsKey(player.getUniqueId())) {
+                    if (SocketServerUDP.talking.containsKey(player.getUniqueId())) {
                         SocketServerUDP.talking.remove(player.getUniqueId());
                         Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(player));
                     }
@@ -144,8 +145,8 @@ public class SocketServerUDPQueue extends Thread {
         PingPacket keepAlive = new PingPacket();
         List<Player> connectionsToDrop = new ArrayList<>(SocketServerUDP.clients.size());
         for (SocketClientUDP connection : SocketServerUDP.clients.values()) {
-            if(SocketServerUDP.talking.containsKey(connection.getPlayer().getUniqueId())) {
-                if(timestamp - SocketServerUDP.talking.get(connection.getPlayer().getUniqueId()) > 250L) {
+            if (SocketServerUDP.talking.containsKey(connection.getPlayer().getUniqueId())) {
+                if (timestamp - SocketServerUDP.talking.get(connection.getPlayer().getUniqueId()) > 250L) {
                     SocketServerUDP.talking.remove(connection.getPlayer().getUniqueId());
                     Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(connection.getPlayer()));
                 }
@@ -161,9 +162,11 @@ public class SocketServerUDPQueue extends Thread {
         for (Player player : connectionsToDrop) {
             PlayerListener.disconnectClient(player);
 
-            PlasmoVoice.logger.info(player.getName() + " UDP timed out");
+            if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+                PlasmoVoice.getVoiceLogger().info(player.getName() + " UDP timed out");
+                PlasmoVoice.getVoiceLogger().info(player.getName() + " sent reconnect packet");
+            }
 
-            PlasmoVoice.logger.info(player.getName() + " sent reconnect packet");
             PlayerListener.reconnectPlayer(player);
         }
     }

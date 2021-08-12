@@ -21,7 +21,7 @@ public class VoiceReload implements CommandExecutor {
         PlasmoVoice.getInstance().reloadConfig();
         PlasmoVoice.getInstance().updateConfig();
 
-        PlasmoVoiceConfig config = PlasmoVoice.getInstance().config;
+        PlasmoVoiceConfig config = PlasmoVoice.getInstance().getVoiceConfig();
 
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
@@ -29,13 +29,13 @@ public class VoiceReload implements CommandExecutor {
                 while (it.hasMoreElements()) {
                     Player player = it.nextElement();
 
-                    byte[] pkt = PacketTCP.write(new ConfigPacket(config.sampleRate,
-                            new ArrayList<>(config.distances),
-                            config.defaultDistance,
-                            config.maxPriorityDistance,
-                            config.disableVoiceActivation || !player.hasPermission("voice.activation"),
-                            config.fadeDivisor,
-                            config.priorityFadeDivisor));
+                    byte[] pkt = PacketTCP.write(new ConfigPacket(config.getSampleRate(),
+                            new ArrayList<>(config.getDistances()),
+                            config.getDefaultDistance(),
+                            config.getMaxPriorityDistance(),
+                            config.isDisableVoiceActivation() || !player.hasPermission("voice.activation"),
+                            config.getFadeDivisor(),
+                            config.getPriorityFadeDivisor()));
 
                     player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
                 }

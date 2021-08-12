@@ -37,6 +37,9 @@ client_mod_required: false
 # Value should not be set lower than 1 second (20 ticks)
 client_mod_check_timeout: 60
 
+# Disable connection logs (New client, Remove client, client timed out)
+disable_logs: false
+
 messages:
   prefix: "&6[Plasmo Voice]&7 "
   list: "Clients ({count}/{online_players}): {players}"
@@ -67,4 +70,4 @@ messages:
     unmute: "Usage: /vunmute <player>"
 
 # do not touch
-config_version: 1.0.1
+config_version: 1.0.2

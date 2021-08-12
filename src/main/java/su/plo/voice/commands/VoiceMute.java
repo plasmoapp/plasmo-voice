@@ -24,13 +24,13 @@ public class VoiceMute implements TabExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
-        if(args.length == 0) {
+        if (args.length == 0) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("help.mute"));
             return true;
         }
 
         Player player = Bukkit.getPlayer(args[0]);
-        if(player == null) {
+        if (player == null) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("player_not_found"));
             return true;
         }
@@ -89,7 +89,7 @@ public class VoiceMute implements TabExecutor {
         ServerMutedEntity serverMuted = new ServerMutedEntity(player.getUniqueId(), duration, reason);
         PlasmoVoice.muted.put(player.getUniqueId(), serverMuted);
 
-        PluginChannelListener.sendToClients(new ClientMutedPacket(serverMuted.uuid, serverMuted.to), player);
+        PluginChannelListener.sendToClients(new ClientMutedPacket(serverMuted.getUuid(), serverMuted.getTo()), player);
         sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("muted"), player.getName()));
 
         player.sendMessage((duration > 0

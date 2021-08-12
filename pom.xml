@@ -74,6 +74,10 @@
             <url>https://repo.dmulloy2.net/nexus/repository/public/</url>
         </repository>
         <repository>
+            <id>placeholderapi</id>
+            <url>https://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+        </repository>
+        <repository>
             <id>plasmo-repo</id>
             <url>https://repo.plo.su</url>
         </repository>
@@ -95,6 +99,18 @@
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
             <version>1.16.5-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>me.clip</groupId>
+            <artifactId>placeholderapi</artifactId>
+            <version>2.10.10</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.20</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
