@@ -9,19 +9,28 @@ import su.plo.voice.common.packets.Packet;
 import java.io.IOException;
 
 @AllArgsConstructor
-public class VoiceEndClientPacket implements Packet {
+public class AudioDirectPacket implements Packet {
     @Getter
-    private short distance;
+    private byte[] data;
+    @Getter
+    private long sequenceNumber;
 
-    public VoiceEndClientPacket() {}
+    public AudioDirectPacket() {
+    }
 
     @Override
     public void read(ByteArrayDataInput buf) throws IOException {
-        this.distance = buf.readShort();
+        int length = buf.readInt();
+        byte[] data = new byte[length];
+        buf.readFully(data);
+        this.data = data;
+        this.sequenceNumber = buf.readLong();
     }
 
     @Override
     public void write(ByteArrayDataOutput buf) throws IOException {
-        buf.writeShort(distance);
+        buf.writeInt(data.length);
+        buf.write(data);
+        buf.writeLong(sequenceNumber);
     }
 }

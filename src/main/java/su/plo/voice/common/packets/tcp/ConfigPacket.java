@@ -2,63 +2,33 @@ package su.plo.voice.common.packets.tcp;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import su.plo.voice.common.packets.Packet;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
+@AllArgsConstructor
 public class ConfigPacket implements Packet {
+    @Getter
     private int sampleRate;
+    @Getter
     private final List<Integer> distances;
+    @Getter
     private int defaultDistance;
+    @Getter
     private int maxPriorityDistance;
+    @Getter
     private int fadeDivisor;
+    @Getter
     private int priorityFadeDivisor;
+    @Getter
     private boolean disableVoiceActivation;
 
     public ConfigPacket() {
         this.distances = new ArrayList<>();
-    }
-
-    public ConfigPacket(int sampleRate, List<Integer> distances, int defaultDistance, int maxPriorityDistance,
-                        boolean disableVoiceActivation, int fadeDivisor, int priorityFadeDivisor) {
-        this.sampleRate = sampleRate;
-        this.distances = distances;
-        this.defaultDistance = defaultDistance;
-        this.maxPriorityDistance = maxPriorityDistance;
-        this.fadeDivisor = fadeDivisor;
-        this.priorityFadeDivisor = priorityFadeDivisor;
-        this.disableVoiceActivation = disableVoiceActivation;
-    }
-
-    public int getSampleRate() {
-        return sampleRate;
-    }
-
-    public List<Integer> getDistances() {
-        return distances;
-    }
-
-    public int getDefaultDistance() {
-        return defaultDistance;
-    }
-
-    public int getFadeDivisor() {
-        return fadeDivisor;
-    }
-
-    public int getPriorityFadeDivisor() {
-        return priorityFadeDivisor;
-    }
-
-    public int getMaxPriorityDistance() {
-        return maxPriorityDistance;
-    }
-
-    public boolean isDisableVoiceActivation() {
-        return disableVoiceActivation;
     }
 
     @Override

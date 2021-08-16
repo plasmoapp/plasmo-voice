@@ -10,5 +10,4 @@ public interface Packet {
     void read(ByteArrayDataInput buf) throws IOException;
 
     void write(ByteArrayDataOutput buf) throws IOException;
-
 }

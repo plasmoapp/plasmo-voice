@@ -9,15 +9,20 @@ import su.plo.voice.common.packets.Packet;
 import java.io.IOException;
 
 @AllArgsConstructor
-public class VoiceClientPacket implements Packet {
+public class AudioSourcePacket implements Packet {
     @Getter
     private byte[] data;
     @Getter
     private long sequenceNumber;
     @Getter
-    private short distance;
+    private double x;
+    @Getter
+    private double y;
+    @Getter
+    private double z;
 
-    public VoiceClientPacket() {}
+    public AudioSourcePacket() {
+    }
 
     @Override
     public void read(ByteArrayDataInput buf) throws IOException {
@@ -25,15 +30,19 @@ public class VoiceClientPacket implements Packet {
         byte[] data = new byte[length];
         buf.readFully(data);
         this.data = data;
-        this.distance = buf.readShort();
         this.sequenceNumber = buf.readLong();
+        this.x = buf.readDouble();
+        this.y = buf.readDouble();
+        this.z = buf.readDouble();
     }
 
     @Override
     public void write(ByteArrayDataOutput buf) throws IOException {
         buf.writeInt(data.length);
         buf.write(data);
-        buf.writeShort(distance);
         buf.writeLong(sequenceNumber);
+        buf.writeDouble(x);
+        buf.writeDouble(y);
+        buf.writeDouble(z);
     }
 }
