@@ -12,16 +12,18 @@ import su.plo.voice.client.VoiceClient;
 
 @Mixin(MinecraftClient.class)
 public abstract class MixinMinecraftClient {
-    @Shadow public abstract @Nullable ServerInfo getCurrentServerEntry();
+    @Shadow
+    public abstract @Nullable ServerInfo getCurrentServerEntry();
 
     @Inject(at = @At("HEAD"), method = "disconnect()V")
     public void onDisconnect(CallbackInfo info) {
-        if(this.getCurrentServerEntry() == null) {
+        if (this.getCurrentServerEntry() == null) {
             return;
         }
 
         VoiceClient.LOGGER.info("Disconnect from " + this.getCurrentServerEntry().address);
 
+        VoiceClient.getClientConfig().save();
         VoiceClient.disconnect();
     }
 }

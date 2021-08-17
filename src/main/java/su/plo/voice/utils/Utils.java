@@ -1,12 +1,20 @@
 package su.plo.voice.utils;
 
+import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.Perspective;
+import net.minecraft.entity.ai.TargetPredicate;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Box;
 import net.minecraft.util.math.Vec2f;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
+
+import java.util.List;
 
 // https://github.com/henkelmax/simple-voice-chat/blob/master/src/main/java/de/maxhenkel/voicechat/voice/common/Utils.java
 public class Utils {
@@ -148,5 +156,27 @@ public class Utils {
 
     private static float angle(Vec2f vec1, Vec2f vec2) {
         return (float) Math.toDegrees(Math.atan2(vec1.x * vec2.x + vec1.y * vec2.y, vec1.x * vec2.y - vec1.y * vec2.x));
+    }
+
+    public static PlayerEntity getPlayerBySight(World world, PlayerEntity player) {
+        Vec3d playerPos = player.getEyePos();
+        Vec3d rotVector = player.getRotationVector();
+
+        for (int i = 0; i < 16; i++) {
+            playerPos = playerPos.add(rotVector);
+            BlockState state = world.getBlockState(new BlockPos(playerPos));
+            if (!state.isAir() && state.getMaterial().isSolid()) {
+                break;
+            }
+
+
+            List<PlayerEntity> players = world.getPlayers(TargetPredicate.DEFAULT, player,
+                    Box.of(playerPos.subtract(0, 1, 0), 1, 2, 1));
+            if (players.size() > 0) {
+                return players.get(0);
+            }
+        }
+
+        return null;
     }
 }

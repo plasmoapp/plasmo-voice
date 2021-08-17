@@ -1,10 +1,10 @@
 {
     "key.plasmo_voice.ptt": "Кнопка Push-to-talk",
-    "key.plasmo_voice.priority_ptt": "Кнопка Push-to-talk (приоритетный режим)",
-    "key.plasmo_voice.settings": "Окрыть настройки голосового чата",
+    "key.plasmo_voice.priority_ptt": "PTT (Приоритетный режим)",
+    "key.plasmo_voice.settings": "Настройки голосового чата",
     "key.plasmo_voice.mute": "Выключить микрофон",
+    "key.plasmo_voice.volume": "Кнопка + скролл - громкость игрока",
     "key.plasmo_voice": "Plasmo Voice",
-
     "gui.plasmo_voice.title": "Настройки голосового чата",
     "gui.plasmo_voice.voice_chat_volume": "Громкость голосового чата: %s",
     "gui.plasmo_voice.player_volume": "Громкость игрока: %s",

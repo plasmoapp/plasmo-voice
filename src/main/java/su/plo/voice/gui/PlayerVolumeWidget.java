@@ -14,14 +14,14 @@ public class PlayerVolumeWidget extends SliderWidget {
 
     public PlayerVolumeWidget(UUID uuid) {
         super(0, 0, 0, 20,
-                new TranslatableText("gui.plasmo_voice.player_volume", (int)(VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(uuid, 1.0D) * 100.0D) + "%"),
+                new TranslatableText("gui.plasmo_voice.player_volume", (int) (Math.round(VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(uuid, 1.0D) * 100.0D)) + "%"),
                 VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(uuid, 1.0D) / 2.0D);
         this.uuid = uuid;
     }
 
     @Override
     protected void updateMessage() {
-        this.setMessage(new TranslatableText("gui.plasmo_voice.player_volume", (int)(this.value * 200.0D) + "%"));
+        this.setMessage(new TranslatableText("gui.plasmo_voice.player_volume", (int) Math.round(this.value * 200.0D) + "%"));
     }
 
     @Override

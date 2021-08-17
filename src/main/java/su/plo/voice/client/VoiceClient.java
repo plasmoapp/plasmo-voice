@@ -36,18 +36,22 @@ public class VoiceClient implements ClientModInitializer {
 
     @Getter
     private static VoiceClientConfig clientConfig;
-    @Setter @Getter
+    @Setter
+    @Getter
     private static VoiceServerConfig serverConfig;
 
     // ???
     public static SocketClientUDP socketUDP;
     public final static Recorder recorder = new Recorder();
 
-    @Setter @Getter
+    @Setter
+    @Getter
     private static boolean muted = false;
-    @Setter @Getter
+    @Setter
+    @Getter
     private static boolean speaking = false;
-    @Setter @Getter
+    @Setter
+    @Getter
     private static boolean speakingPriority = false;
 
     // key bindings
@@ -55,6 +59,7 @@ public class VoiceClient implements ClientModInitializer {
     public static KeyBinding priorityPushToTalk;
     public static KeyBinding menuKey;
     public static KeyBinding muteKey;
+    public static KeyBinding volumeKey;
     public static Set<Integer> mouseKeyPressed = new HashSet<>();
 
     // icons
@@ -96,10 +101,17 @@ public class VoiceClient implements ClientModInitializer {
                         "key.plasmo_voice")
         );
 
+        volumeKey = KeyBindingHelper.registerKeyBinding(
+                new KeyBinding("key.plasmo_voice.volume",
+                        InputUtil.Type.KEYSYM,
+                        InputUtil.UNKNOWN_KEY.getCode(),
+                        "key.plasmo_voice")
+        );
+
         ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("vc")
                 .then(ClientCommandManager.literal("muteall")
                         .executes(ctx -> {
-                            if(VoiceClient.getClientConfig().isWhitelist()) {
+                            if (VoiceClient.getClientConfig().isWhitelist()) {
                                 ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_off"), false);
                             } else {
                                 ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_on"), false);
@@ -120,7 +132,7 @@ public class VoiceClient implements ClientModInitializer {
                         .then(ClientCommandManager.argument("distance", IntegerArgumentType.integer())
                                 .executes(ctx -> {
                                     int distance = IntegerArgumentType.getInteger(ctx, "distance");
-                                    if(distance <= VoiceClient.getServerConfig().getMaxDistance()) {
+                                    if (distance <= VoiceClient.getServerConfig().getMaxDistance()) {
                                         ctx.getSource().getPlayer().sendMessage(
                                                 new TranslatableText("commands.plasmo_voice.min_priority_distance",
                                                         VoiceClient.getServerConfig().getMaxDistance()
@@ -128,7 +140,7 @@ public class VoiceClient implements ClientModInitializer {
                                         return 1;
                                     }
 
-                                    if(distance > VoiceClient.getServerConfig().getMaxPriorityDistance()) {
+                                    if (distance > VoiceClient.getServerConfig().getMaxPriorityDistance()) {
                                         ctx.getSource().getPlayer().sendMessage(
                                                 new TranslatableText("commands.plasmo_voice.max_priority_distance",
                                                         VoiceClient.getServerConfig().getMaxPriorityDistance()
@@ -137,7 +149,7 @@ public class VoiceClient implements ClientModInitializer {
                                     }
 
                                     VoiceClientServerConfig serverConfig;
-                                    if(VoiceClient.getClientConfig().getServers()
+                                    if (VoiceClient.getClientConfig().getServers()
                                             .containsKey(VoiceClient.getServerConfig().getIp())) {
                                         serverConfig = VoiceClient.getClientConfig().getServers()
                                                 .get(VoiceClient.getServerConfig().getIp());
@@ -158,13 +170,13 @@ public class VoiceClient implements ClientModInitializer {
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             final PlayerEntity player = client.player;
-            if(player == null) {
+            if (player == null) {
                 return;
             }
 
-            if(!VoiceClient.isConnected()) {
+            if (!VoiceClient.isConnected()) {
                 // Voice not available
-                if(menuKey.wasPressed()) {
+                if (menuKey.wasPressed()) {
                     MinecraftClient.getInstance().setScreen(new VoiceNotAvailableScreen(
                             new TranslatableText("gui.plasmo_voice.not_available"), client)
                     );
@@ -173,12 +185,12 @@ public class VoiceClient implements ClientModInitializer {
                 return;
             }
 
-            if(muteKey.wasPressed()) {
+            if (muteKey.wasPressed()) {
                 muted = !muted;
             }
 
-            if(menuKey.wasPressed()) {
-                if(MinecraftClient.getInstance().currentScreen instanceof VoiceSettingsScreen) {
+            if (menuKey.wasPressed()) {
+                if (MinecraftClient.getInstance().currentScreen instanceof VoiceSettingsScreen) {
                     MinecraftClient.getInstance().setScreen(null);
                 } else {
                     MinecraftClient.getInstance().setScreen(new VoiceSettingsScreen());
@@ -193,7 +205,7 @@ public class VoiceClient implements ClientModInitializer {
     }
 
     public static void disconnect() {
-        if(VoiceClient.socketUDP != null) {
+        if (VoiceClient.socketUDP != null) {
             VoiceClient.socketUDP.close();
         }
 

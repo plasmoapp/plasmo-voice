@@ -32,8 +32,8 @@ dependencies {
     implementation "su.plo.voice:common:1.0.0"
     shadow "su.plo.voice:common:1.0.0"
 
-    implementation "su.plo.voice:opus:1.1.0"
-    shadow "su.plo.voice:opus:1.1.0"
+    implementation "su.plo.voice:opus:1.1.1"
+    shadow "su.plo.voice:opus:1.1.1"
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
@@ -47,6 +47,7 @@ repositories {
         url "https://repo.plo.su"
     }
     jcenter()
+    mavenLocal()
 }
 
 processResources {
