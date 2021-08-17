@@ -32,9 +32,9 @@ public final class PlasmoVoice extends JavaPlugin {
     @Getter
     private static Logger voiceLogger;
 
+    // protocol version
     public static final String rawVersion = "1.0.0";
     public static final int version = calculateVersion(rawVersion);
-
     public static final String rawMinVersion = "0.0.6";
     public static final int minVersion = calculateVersion(rawMinVersion);
 

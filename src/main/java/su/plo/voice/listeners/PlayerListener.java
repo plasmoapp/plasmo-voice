@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRegisterChannelEvent;
+import org.bukkit.scheduler.BukkitTask;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.packets.tcp.ClientDisconnectedPacket;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
@@ -20,6 +21,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class PlayerListener implements Listener {
+    private final HashMap<UUID, BukkitTask> kickTimeouts = new HashMap<>();
     public static HashMap<UUID, UUID> playerToken = new HashMap<>();
 
     public PlayerListener() {
@@ -60,11 +62,14 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerRegisterChannel(PlayerRegisterChannelEvent e) {
-        if (!SocketServerUDP.started) { // send connect packet only if socket started
-            return;
-        }
-
         if (e.getChannel().equals("plasmo:voice")) {
+            Player player = e.getPlayer();
+
+            if (kickTimeouts.containsKey(player.getUniqueId())) {
+                kickTimeouts.get(player.getUniqueId()).cancel();
+                kickTimeouts.remove(player.getUniqueId());
+            }
+
             reconnectPlayer(e.getPlayer());
         }
     }
@@ -79,20 +84,25 @@ public class PlayerListener implements Listener {
         }
 
         if (PlasmoVoice.getInstance().getVoiceConfig().isClientModRequired()) {
-            Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
+            kickTimeouts.put(player.getUniqueId(), Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
                 if (!SocketServerUDP.clients.containsKey(player)) {
                     if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                         PlasmoVoice.getVoiceLogger().info(String.format("Player: %s does not have the mod installed!", player.getName()));
                     }
                     player.kickPlayer(PlasmoVoice.getInstance().getMessage("mod_missing_kick_message"));
                 }
-            }, PlasmoVoice.getInstance().getVoiceConfig().getClientModCheckTimeout());
+            }, PlasmoVoice.getInstance().getVoiceConfig().getClientModCheckTimeout()));
         }
     }
 
     @EventHandler
     public void onPlayerQuit(PlayerQuitEvent e) {
         Player player = e.getPlayer();
+
+        if (kickTimeouts.containsKey(player.getUniqueId())) {
+            kickTimeouts.get(player.getUniqueId()).cancel();
+            kickTimeouts.remove(player.getUniqueId());
+        }
 
         playerToken.remove(player.getUniqueId());
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
