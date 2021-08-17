@@ -25,6 +25,9 @@ public class PlayerVolumeHandler {
         if (action == 1) {
             if (client.player != null) {
                 focusedPlayer = Utils.getPlayerBySight(client.player.getEntityWorld(), client.player);
+                if (focusedPlayer != null && !VoiceClient.getServerConfig().getClients().contains(focusedPlayer.getUuid())) {
+                    focusedPlayer = null;
+                }
             }
         } else if (action == 0) {
             focusedPlayer = null;
