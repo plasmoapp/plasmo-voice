@@ -32,8 +32,8 @@ dependencies {
     implementation "su.plo.voice:common:1.0.0"
     shadow "su.plo.voice:common:1.0.0"
 
-    implementation "su.plo.voice:opus:1.1.1"
-    shadow "su.plo.voice:opus:1.1.1"
+    implementation "su.plo.voice:opus:1.1.2"
+    shadow "su.plo.voice:opus:1.1.2"
 
     compileOnly 'org.projectlombok:lombok:1.18.20'
     annotationProcessor 'org.projectlombok:lombok:1.18.20'
@@ -107,6 +107,9 @@ publishing {
 shadowJar {
     configurations = [project.configurations.shadow]
     classifier 'shadow-dev'
+    dependencies {
+        exclude(dependency('net.java.dev.jna:jna'))
+    }
 }
 
 remapJar {
