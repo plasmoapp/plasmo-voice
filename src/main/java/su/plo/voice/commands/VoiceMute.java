@@ -19,7 +19,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VoiceMute implements TabExecutor {
-    private final Pattern pattern = Pattern.compile("([0-9]*)([mhdw])?");
+    private final Pattern pattern = Pattern.compile("([0-9]*)([mhdwu])?");
     private final Pattern integerPattern = Pattern.compile("^([0-9]*)$");
 
     @Override
@@ -64,6 +64,10 @@ public class VoiceMute implements TabExecutor {
                             case "w":
                                 durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.weeks"), duration);
                                 duration *= 604800;
+                                break;
+                            case "u":
+                                duration = duration - System.currentTimeMillis()/1000;
+                                durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.seconds"), duration);
                                 break;
                             default:
                                 durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.seconds"), duration);
