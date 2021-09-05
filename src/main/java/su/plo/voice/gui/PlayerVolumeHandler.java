@@ -23,7 +23,7 @@ public class PlayerVolumeHandler {
 
     public static boolean onButton(int action) {
         if (action == 1) {
-            if (client.player != null) {
+            if (client.player != null && VoiceClient.isConnected()) {
                 focusedPlayer = Utils.getPlayerBySight(client.player.getEntityWorld(), client.player);
                 if (focusedPlayer != null && !VoiceClient.getServerConfig().getClients().contains(focusedPlayer.getUuid())) {
                     focusedPlayer = null;

@@ -4,7 +4,6 @@ import net.minecraft.block.BlockState;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.client.option.Perspective;
-import net.minecraft.entity.ai.TargetPredicate;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Box;
@@ -13,8 +12,6 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.ImmutablePair;
 import org.apache.commons.lang3.tuple.Pair;
-
-import java.util.List;
 
 // https://github.com/henkelmax/simple-voice-chat/blob/master/src/main/java/de/maxhenkel/voicechat/voice/common/Utils.java
 public class Utils {
@@ -169,11 +166,12 @@ public class Utils {
                 break;
             }
 
-
-            List<PlayerEntity> players = world.getPlayers(TargetPredicate.DEFAULT, player,
-                    Box.of(playerPos.subtract(0, 1, 0), 1, 2, 1));
-            if (players.size() > 0) {
-                return players.get(0);
+            Box box = Box.of(playerPos.subtract(0, 1, 0), 1, 2, 1);
+            for (PlayerEntity playerEntity : world.getPlayers()) {
+                if (box.contains(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ()) &&
+                        !playerEntity.isInvisibleTo(player)) {
+                    return playerEntity;
+                }
             }
         }
 

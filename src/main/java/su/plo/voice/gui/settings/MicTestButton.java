@@ -46,6 +46,8 @@ public class MicTestButton extends ButtonWidget {
             micActive = false;
         } else {
             try {
+                VoiceClient.setSpeaking(false);
+                VoiceClient.setSpeakingPriority(false);
                 thread = new VoiceThread();
                 thread.start();
             } catch (LineUnavailableException e) {
@@ -90,10 +92,7 @@ public class MicTestButton extends ButtonWidget {
             this.running = true;
             setDaemon(true);
 
-            mic = DataLines.getMicrophone();
-            if (mic == null) {
-                throw new LineUnavailableException("No microphone");
-            }
+            mic = VoiceClient.recorder.getMicrophone();
             speaker = DataLines.getSpeaker();
             if (speaker == null) {
                 throw new LineUnavailableException("No speaker");
@@ -115,24 +114,10 @@ public class MicTestButton extends ButtonWidget {
 
         @Override
         public void run() {
-            if(VoiceClient.recorder.getThread() != null) {
-                VoiceClient.recorder.setRunning(false);
-                synchronized (VoiceClient.recorder) {
-                    try {
-                        VoiceClient.recorder.wait(1000L);
-                    } catch (InterruptedException ignored) {}
-                }
-            }
-
-            try {
-                mic.open(Recorder.getFormat());
-            } catch (LineUnavailableException e) {
-                e.printStackTrace();
-            }
-            mic.start();
-
             int blockSize = Recorder.getFrameSize();
             byte[] normBuffer = new byte[blockSize];
+
+            mic.start();
 
             while (running) {
                 if (System.currentTimeMillis() - lastRender > 500L) {
@@ -171,10 +156,7 @@ public class MicTestButton extends ButtonWidget {
             speaker.close();
             mic.stop();
             mic.flush();
-            mic.close();
             micListener.onMicValue(0D);
-
-            VoiceClient.recorder.start();
         }
     }
 
