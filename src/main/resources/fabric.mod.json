@@ -17,16 +17,16 @@
     "environment": "client",
     "entrypoints": {
         "client": [
-            "su.plo.voice.client.VoiceClient"
-        ],
-        "main": [
-            "su.plo.voice.Voice"
+            "su.plo.voice.client.VoiceClientFabric"
         ]
     },
     "mixins": [
-        "voice.mixins.json"
+        "plasmovoice.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=${loader_version}"
+    },
+    "suggests": {
+        "soundphysics": "*"
     }
 }

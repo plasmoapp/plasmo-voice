@@ -1,52 +1,46 @@
 package su.plo.voice.client;
 
-import com.mojang.brigadier.arguments.IntegerArgumentType;
 import lombok.Getter;
 import lombok.Setter;
-import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.option.KeyBinding;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.text.TranslatableText;
-import net.minecraft.util.Identifier;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.lwjgl.glfw.GLFW;
-import su.plo.voice.gui.VoiceHud;
-import su.plo.voice.gui.settings.VoiceNotAvailableScreen;
-import su.plo.voice.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.socket.SocketClientUDP;
-import su.plo.voice.socket.SocketClientUDPQueue;
-import su.plo.voice.sound.Recorder;
-import su.plo.voice.sound.ThreadSoundQueue;
+import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.VoiceServerConfig;
+import su.plo.voice.client.gui.PlayerVolumeHandler;
+import su.plo.voice.client.gui.VoiceSettingsScreen;
+import su.plo.voice.client.socket.SocketClientUDP;
+import su.plo.voice.client.socket.SocketClientUDPQueue;
+import su.plo.voice.client.sound.AbstractSoundQueue;
+import su.plo.voice.client.sound.Recorder;
+import su.plo.voice.client.sound.openal.CustomSoundEngine;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.UUID;
 
-@Environment(EnvType.CLIENT)
-public class VoiceClient implements ClientModInitializer {
+public class VoiceClient {
+    public static final ResourceLocation PLASMO_VOICE = new ResourceLocation("plasmo:voice");
+    public static final String VERSION = "1.1.0";
+    public static final String PROTOCOL_VERSION = "1.0.0";
     public static final Logger LOGGER = LogManager.getLogger("Plasmo Voice");
+    public static final UUID NIL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
     @Getter
     private static VoiceClientConfig clientConfig;
+    @Getter
+    private static VoiceClientConfig.ConfigKeyBindings keyBindings;
     @Setter
     @Getter
     private static VoiceServerConfig serverConfig;
 
     // ???
     public static SocketClientUDP socketUDP;
-    public final static Recorder recorder = new Recorder();
-
-    @Setter
+    public static Recorder recorder;
     @Getter
-    private static boolean muted = false;
+    public static CustomSoundEngine soundEngine;
+
     @Setter
     @Getter
     private static boolean speaking = false;
@@ -55,166 +49,94 @@ public class VoiceClient implements ClientModInitializer {
     private static boolean speakingPriority = false;
 
     // key bindings
-    public static KeyBinding pushToTalk;
-    public static KeyBinding priorityPushToTalk;
-    public static KeyBinding menuKey;
-    public static KeyBinding muteKey;
-    public static KeyBinding volumeKey;
-    public static Set<Integer> mouseKeyPressed = new HashSet<>();
+    public static KeyMapping menuKey;
 
     // icons
-    public static final Identifier MICS = new Identifier("plasmo_voice", "textures/gui/mics.png");
-    public static final Identifier SPEAKER_ICON = new Identifier("plasmo_voice", "textures/gui/speaker.png");
-    public static final Identifier SPEAKER_PRIORITY = new Identifier("plasmo_voice", "textures/gui/speaker_priority.png");
-    public static final Identifier SPEAKER_MUTED = new Identifier("plasmo_voice", "textures/gui/speaker_muted.png");
-    public static final Identifier SPEAKER_WARNING = new Identifier("plasmo_voice", "textures/gui/speaker_warning.png");
+    public static final ResourceLocation ICONS = new ResourceLocation("plasmo_voice", "textures/gui/icons.png");
 
-    @Override
-    public void onInitializeClient() {
+    public void initialize() {
+        Minecraft minecraft = Minecraft.getInstance();
         clientConfig = VoiceClientConfig.read();
+        keyBindings = clientConfig.keyBindings;
+        recorder = new Recorder();
 
-        pushToTalk = KeyBindingHelper.registerKeyBinding(
-                new KeyBinding("key.plasmo_voice.ptt",
-                        InputUtil.Type.KEYSYM,
-                        GLFW.GLFW_KEY_LEFT_ALT,
-                        "key.plasmo_voice")
-        );
-
-        priorityPushToTalk = KeyBindingHelper.registerKeyBinding(
-                new KeyBinding("key.plasmo_voice.priority_ptt",
-                        InputUtil.Type.KEYSYM,
-                        GLFW.GLFW_KEY_UNKNOWN,
-                        "key.plasmo_voice")
-        );
-
-        menuKey = KeyBindingHelper.registerKeyBinding(
-                new KeyBinding("key.plasmo_voice.settings",
-                        InputUtil.Type.KEYSYM,
-                        GLFW.GLFW_KEY_V,
-                        "key.plasmo_voice")
-        );
-
-        muteKey = KeyBindingHelper.registerKeyBinding(
-                new KeyBinding("key.plasmo_voice.mute",
-                        InputUtil.Type.KEYSYM,
-                        GLFW.GLFW_KEY_M,
-                        "key.plasmo_voice")
-        );
-
-        volumeKey = KeyBindingHelper.registerKeyBinding(
-                new KeyBinding("key.plasmo_voice.volume",
-                        InputUtil.Type.KEYSYM,
-                        InputUtil.UNKNOWN_KEY.getCode(),
-                        "key.plasmo_voice")
-        );
-
-        ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("vc")
-                .then(ClientCommandManager.literal("muteall")
-                        .executes(ctx -> {
-                            if (VoiceClient.getClientConfig().isWhitelist()) {
-                                ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_off"), false);
-                            } else {
-                                ctx.getSource().getPlayer().sendMessage(new TranslatableText("commands.plasmo_voice.whitelist_on"), false);
-                            }
-
-                            VoiceClient.getClientConfig().setWhitelist(!VoiceClient.getClientConfig().isWhitelist());
-                            VoiceClient.getClientConfig().save();
-                            return 1;
-                        }))
-                .then(ClientCommandManager.literal("priority-distance")
-                        .executes(ctx -> {
-                            ctx.getSource().getPlayer().sendMessage(
-                                    new TranslatableText("commands.plasmo_voice.priority_distance_set",
-                                            VoiceClient.getServerConfig().getPriorityDistance()
-                                    ), false);
-                            return 1;
-                        })
-                        .then(ClientCommandManager.argument("distance", IntegerArgumentType.integer())
-                                .executes(ctx -> {
-                                    int distance = IntegerArgumentType.getInteger(ctx, "distance");
-                                    if (distance <= VoiceClient.getServerConfig().getMaxDistance()) {
-                                        ctx.getSource().getPlayer().sendMessage(
-                                                new TranslatableText("commands.plasmo_voice.min_priority_distance",
-                                                        VoiceClient.getServerConfig().getMaxDistance()
-                                                ), false);
-                                        return 1;
-                                    }
-
-                                    if (distance > VoiceClient.getServerConfig().getMaxPriorityDistance()) {
-                                        ctx.getSource().getPlayer().sendMessage(
-                                                new TranslatableText("commands.plasmo_voice.max_priority_distance",
-                                                        VoiceClient.getServerConfig().getMaxPriorityDistance()
-                                                ), false);
-                                        return 1;
-                                    }
-
-                                    VoiceClientServerConfig serverConfig;
-                                    if (VoiceClient.getClientConfig().getServers()
-                                            .containsKey(VoiceClient.getServerConfig().getIp())) {
-                                        serverConfig = VoiceClient.getClientConfig().getServers()
-                                                .get(VoiceClient.getServerConfig().getIp());
-                                    } else {
-                                        serverConfig = new VoiceClientServerConfig();
-                                    }
-
-                                    serverConfig.setPriorityDistance((short) distance);
-                                    VoiceClient.getServerConfig().setPriorityDistance((short) distance);
-                                    VoiceClient.getClientConfig().getServers().put(VoiceClient.getServerConfig().getIp(), serverConfig);
-                                    VoiceClient.getClientConfig().save();
-                                    ctx.getSource().getPlayer().sendMessage(
-                                            new TranslatableText("commands.plasmo_voice.priority_distance_set",
-                                                    distance
-                                            ), false);
-                                    return 1;
-                                }))));
-
-        ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            final PlayerEntity player = client.player;
-            if (player == null) {
-                return;
+        keyBindings.action.get().setOnPress(PlayerVolumeHandler::onButton);
+        keyBindings.muteMicrophone.get().setOnPress(action -> {
+            if (action == 1) {
+                clientConfig.microphoneMuted.invert();
             }
+        });
+        keyBindings.increaseDistance.get().setOnPress(action -> {
+            if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
+                VoiceClientConfig.ServerConfig serverConfig;
+                if(clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
+                    serverConfig = clientConfig.getServers().get(VoiceClient.getServerConfig().getIp());
+                    int index = (getServerConfig().getDistances().indexOf(serverConfig.distance.get()) + 1) % getServerConfig().getDistances().size();
+                    int value = getServerConfig().getDistances().get(index);
+                    serverConfig.distance.set(value);
+                    getServerConfig().setDistance((short) value);
 
-            if (!VoiceClient.isConnected()) {
-                // Voice not available
-                if (menuKey.wasPressed()) {
-                    MinecraftClient.getInstance().setScreen(new VoiceNotAvailableScreen(
-                            new TranslatableText("gui.plasmo_voice.not_available"), client)
-                    );
-                }
-
-                return;
-            }
-
-            if (muteKey.wasPressed()) {
-                muted = !muted;
-            }
-
-            if (menuKey.wasPressed()) {
-                if (MinecraftClient.getInstance().currentScreen instanceof VoiceSettingsScreen) {
-                    MinecraftClient.getInstance().setScreen(null);
-                } else {
-                    MinecraftClient.getInstance().setScreen(new VoiceSettingsScreen());
+                    minecraft.gui.setOverlayMessage(
+                            new TranslatableComponent("message.plasmo_voice.distance_changed",
+                                    value
+                            ), false);
                 }
             }
         });
+        keyBindings.decreaseDistance.get().setOnPress(action -> {
+            if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
+                VoiceClientConfig.ServerConfig serverConfig;
+                if(clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
+                    serverConfig = clientConfig.getServers().get(VoiceClient.getServerConfig().getIp());
+                    int index = getServerConfig().getDistances().indexOf(serverConfig.distance.get()) - 1;
+                    if (index < 0) {
+                        index = getServerConfig().getDistances().size() - 1;
+                    }
+                    int value = getServerConfig().getDistances().get(index);
+                    serverConfig.distance.set(value);
+                    getServerConfig().setDistance((short) value);
 
-        VoiceHud voiceHud = new VoiceHud();
-        HudRenderCallback.EVENT.register((__, ___) -> {
-            voiceHud.render();
+                    minecraft.gui.setOverlayMessage(
+                            new TranslatableComponent("message.plasmo_voice.distance_changed",
+                                    value
+                            ), false);
+                }
+            }
+        });
+        keyBindings.occlusion.get().setOnPress(action -> {
+            if (action == 1 && minecraft.player != null && !soundEngine.isSoundPhysics() && VoiceClient.isConnected()) {
+                clientConfig.occlusion.invert();
+
+                if (clientConfig.occlusion.get()) {
+                    minecraft.gui.setOverlayMessage(
+                            new TranslatableComponent("message.plasmo_voice.occlusion_changed",
+                                    new TranslatableComponent("gui.plasmo_voice.on")
+                            ), false);
+                } else {
+                    minecraft.gui.setOverlayMessage(
+                            new TranslatableComponent("message.plasmo_voice.occlusion_changed",
+                                    new TranslatableComponent("gui.plasmo_voice.off")
+                            ), false);
+                }
+            }
         });
     }
 
     public static void disconnect() {
-        if (VoiceClient.socketUDP != null) {
-            VoiceClient.socketUDP.close();
+        if (socketUDP != null) {
+            socketUDP.close();
         }
 
-        VoiceClient.recorder.setRunning(false);
-        VoiceClient.serverConfig = null;
+        recorder.setRunning(false);
+        serverConfig = null;
 
         SocketClientUDPQueue.talking.clear();
-        SocketClientUDPQueue.audioChannels.values().forEach(ThreadSoundQueue::closeAndKill);
+        SocketClientUDPQueue.audioChannels.values().forEach(AbstractSoundQueue::closeAndKill);
         SocketClientUDPQueue.audioChannels.clear();
+    }
+
+    public static boolean isMicrophoneLoopback() {
+        return Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen && screen.getSpeaker() != null;
     }
 
     public static boolean isConnected() {
