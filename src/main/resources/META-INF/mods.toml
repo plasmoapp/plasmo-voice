@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[35,)"
+loaderVersion="[37,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/plasmoapp/plasmo-voice/issues"
 [[mods]]
@@ -18,12 +18,12 @@ description="Proximity voice сhat mod for Spigot Minecraft servers"
 [[dependencies.plasmovoice]]
     modId="forge"
     mandatory=true
-    versionRange="[35,)"
+    versionRange="[37,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.plasmovoice]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.16.4,1.17)"
+    versionRange="[1.17.1]"
     ordering="NONE"
     side="BOTH"
