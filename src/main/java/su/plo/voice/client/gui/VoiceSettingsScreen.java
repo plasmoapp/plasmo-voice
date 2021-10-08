@@ -21,12 +21,15 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.VoiceClient;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.particle.BlockDustParticle2D;
 import su.plo.voice.client.gui.tabs.*;
 import su.plo.voice.client.gui.widgets.MicrophoneThresholdWidget;
+import su.plo.voice.client.sound.Compressor;
+import su.plo.voice.client.sound.openal.CustomSource;
 import su.plo.voice.client.utils.AudioUtils;
 
 import javax.sound.sampled.FloatControl;
@@ -61,15 +64,18 @@ public class VoiceSettingsScreen extends Screen {
     // mic test
     @Getter
     private double microphoneValue = 0.0D;
-    @Setter
     @Getter
-    private SourceDataLine speaker;
-    @Setter
+    private double microphoneDB = 0.0D;
     @Getter
-    private FloatControl gainControl;
+    private double highestDB = -127.0D;
+    private long lastUpdate = 0L;
 
-    // todo compressor
-//    private final Compressor compressor = new Compressor();
+    @Setter
+    @Getter
+    private CustomSource source;
+
+    @Getter
+    private final Compressor compressor = new Compressor();
 
     // tooltips
     @Setter
@@ -103,28 +109,33 @@ public class VoiceSettingsScreen extends Screen {
     }
 
     public void setMicrophoneValue(byte[] buffer) {
-        // todo compressor
-//        if (VoiceClient.getClientConfig().compressor.get()) {
-//            compressor.compress(buffer);
-//        }
-
-        double value = AudioUtils.dbToPerc(AudioUtils.getHighestAudioLevel(buffer));
-        if (value > microphoneValue) {
-            microphoneValue = value;
-        } else {
-            microphoneValue = Math.max(value - 0.01D, value);
+        if (VoiceClient.getClientConfig().compressor.get()) {
+            buffer = compressor.compress(buffer);
         }
 
-        if (speaker != null) {
-            gainControl.setValue(Math.min(
-                    Math.max(
-                            AudioUtils.percentageToDB(VoiceClient.getClientConfig().voiceVolume.get().floatValue() - 0.1F),
-                            gainControl.getMinimum()
-                    ),
-                    gainControl.getMaximum()
-            ));
+        microphoneDB = AudioUtils.getHighestAudioLevel(buffer);
+        if (microphoneDB > highestDB) {
+            highestDB = microphoneDB;
+            lastUpdate = System.currentTimeMillis();
+        } else if (System.currentTimeMillis() - lastUpdate > 1000L) {
+            highestDB = microphoneDB;
+        }
+        double value = 1 - (microphoneDB / -60);
 
-            speaker.write(buffer, 0, buffer.length);
+        if (microphoneDB > -60 && value > microphoneValue) {
+            // -60 0
+            microphoneValue = 1 - (microphoneDB / -60);
+        } else {
+            microphoneValue = Math.max(microphoneValue - 0.02D, 0.0F);
+        }
+
+        if (source != null) {
+            byte[] finalBuffer = buffer;
+            VoiceClient.getSoundEngine().runInContext(() -> {
+                source.setPosition(new Vec3(0, 0, 0));
+                source.setVolume(VoiceClient.getClientConfig().voiceVolume.get().floatValue());
+                source.write(finalBuffer);
+            });
         }
     }
 
@@ -150,8 +161,10 @@ public class VoiceSettingsScreen extends Screen {
     public void removed() {
         super.removed();
 
-        this.speaker = null;
-        this.gainControl = null;
+        VoiceClient.getSoundEngine().runInContext(() -> {
+            source.close();
+            this.source = null;
+        });
 
         VoiceClient.getClientConfig().save();
     }
@@ -160,7 +173,7 @@ public class VoiceSettingsScreen extends Screen {
     protected void init() {
         super.init();
 
-        VoiceClientConfig config = VoiceClient.getClientConfig();
+        ClientConfig config = VoiceClient.getClientConfig();
 
         this.titleWidth = font.width(title);
         clearWidgets();
@@ -258,6 +271,17 @@ public class VoiceSettingsScreen extends Screen {
         this.tabWidgets.put(tabButtons.get(0), new GeneralTabWidget(client, this));
     }
 
+    public void closeSpeaker() {
+        for (TabWidget tab : tabWidgets.values()) {
+            for (TabWidget.Entry entry : tab.children()) {
+                if (entry instanceof TabWidget.OptionEntry &&
+                        entry.children().get(0) instanceof MicrophoneThresholdWidget microphoneTest) {
+                    microphoneTest.closeSpeaker();
+                }
+            }
+        }
+    }
+
     private void addTab(Component text, TabWidget drawable) {
         int textWidth = font.width(text) + 16;
         Button button = new Button(0, 0, textWidth, 20,
@@ -269,14 +293,7 @@ public class VoiceSettingsScreen extends Screen {
             }
             aboutWidget.setScrollAmount(0);
 
-            for (TabWidget tab : tabWidgets.values()) {
-                for (TabWidget.Entry entry : tab.children()) {
-                    if (entry instanceof TabWidget.ConfigEntry &&
-                            entry.children().get(0) instanceof MicrophoneThresholdWidget microphoneTest) {
-                        microphoneTest.closeSpeaker();
-                    }
-                }
-            }
+            this.closeSpeaker();
         });
         tabButtons.add(button);
         tabWidgets.put(button, drawable);
@@ -483,5 +500,7 @@ public class VoiceSettingsScreen extends Screen {
         if (this.tooltip != null) {
             this.renderComponentTooltip(matrices, this.tooltip, mouseX, mouseY);
         }
+
+//        this.drawString(matrices, minecraft.font, roflanDebugText, 16, 64, 16777215);
     }
 }

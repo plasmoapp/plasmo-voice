@@ -14,7 +14,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Data
-public class VoiceServerConfig {
+public class ServerSettings {
     private String secret;
     private String ip;
     private int port;
@@ -35,7 +35,7 @@ public class VoiceServerConfig {
     private boolean priority;
     private boolean voiceActivationDisabled;
 
-    public VoiceServerConfig(String secret, String ip, int port, boolean hasPriority) {
+    public ServerSettings(String secret, String ip, int port, boolean hasPriority) {
         this.secret = secret;
         this.ip = ip;
         this.port = port;
@@ -55,7 +55,7 @@ public class VoiceServerConfig {
         this.defaultDistance = (short) config.getDefaultDistance();
 
         if(VoiceClient.getClientConfig().getServers().containsKey(ip)) {
-            VoiceClientConfig.ServerConfig serverConfig = VoiceClient.getClientConfig().getServers().get(ip);
+            ClientConfig.ServerConfig serverConfig = VoiceClient.getClientConfig().getServers().get(ip);
             serverConfig.distance.setDefault((int) this.defaultDistance);
             serverConfig.priorityDistance.setDefault(Math.min(this.maxPriorityDistance, this.maxDistance * 2));
 
@@ -75,7 +75,7 @@ public class VoiceServerConfig {
             this.distance = (short) config.getDefaultDistance();
             this.priorityDistance = (short) Math.min(this.maxPriorityDistance, this.maxDistance * 2);
 
-            VoiceClientConfig.ServerConfig serverConfig = new VoiceClientConfig.ServerConfig();
+            ClientConfig.ServerConfig serverConfig = new ClientConfig.ServerConfig();
             serverConfig.distance.setDefault(config.getDefaultDistance());
             serverConfig.priorityDistance.setDefault(Math.min(this.maxPriorityDistance, this.maxDistance * 2));
 

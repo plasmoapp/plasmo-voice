@@ -1,43 +1,47 @@
 package su.plo.voice.client.sound;
 
+import su.plo.voice.client.VoiceClient;
+import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.utils.AudioUtils;
 
+// todo priority sidechain
 public class Compressor {
+    private static final float compressorSlope = 1.0F - (1.0F / 10.0F);
+    private static final float outputGain = AudioUtils.dbToMul(0.0F);
+    private static final float attackTime = 6F;
+    private static final float releaseTime = 60F;
+
+    private final Limiter limiter = new Limiter();
+
     private float[] envelopeBuf = new float[0];
     private float envelope;
 
-    public void compress(byte[] audio) {
-        short[] samples = new short[audio.length / 2];
-        float[] audioFloats = new float[samples.length];
-        for (int i = 0; i < audio.length; i += 2) {
-            samples[i / 2] = AudioUtils.bytesToShort(audio[i], audio[i + 1]);
-            audioFloats[i / 2] = ((float)samples[i / 2]) / 0x8000;
-        }
+    public synchronized void update() {
+        this.envelopeBuf = new float[0];
+        this.envelope = 0.0F;
+        this.limiter.update();
+    }
+
+    public synchronized byte[] compress(byte[] audio) {
+        float[] audioFloats = AudioUtils.bytesToFloats(audio);
 
         analyzeEnvelope(audioFloats);
         process(audioFloats);
 
-        for (int i = 0; i < audio.length; i += 2) {
-            short audioSample = (short) (audioFloats[i / 2] * 0x8000);
+        limiter.limit(audioFloats);
 
-            audio[i] = (byte) audioSample;
-            audio[i + 1] = (byte) (audioSample >> 8);
-        }
+        return AudioUtils.floatsToBytes(audioFloats);
     }
 
-    private void analyzeEnvelope(float[] samples) {
-        if (envelopeBuf.length < samples.length) {
-            float[] newBuf = new float[samples.length];
-            System.arraycopy(this.envelopeBuf, 0, newBuf, 0, this.envelopeBuf.length);
-            this.envelopeBuf = newBuf;
-        }
+    private synchronized void analyzeEnvelope(float[] samples) {
+        this.envelopeBuf = new float[samples.length];
 
-        float attackGain = AudioUtils.gainCoefficient(Recorder.getSampleRate(), 6F / 1000F);
-        float releaseGain = AudioUtils.gainCoefficient(Recorder.getSampleRate(), 60F / 1000F);
+        float attackGain = AudioUtils.gainCoefficient(Recorder.getSampleRate(), attackTime / 1000F);
+        float releaseGain = AudioUtils.gainCoefficient(Recorder.getSampleRate(), releaseTime / 1000F);
 
         float env = this.envelope;
-        for (int i = 0; i < samples.length; i += 1) {
-            float envIn = samples[i];
+        for (int i = 0; i < samples.length; i++) {
+            float envIn = Math.abs(samples[i]);
             if (env < envIn) {
                 env = envIn + attackGain * (env - envIn);
             } else {
@@ -49,25 +53,24 @@ public class Compressor {
         this.envelope = envelopeBuf[samples.length - 1];
     }
 
-    private void process(float[] samples) {
-        float limiterSlope = 1.0F;
-
-        float compressorSlope = 1.0F - (1.0F / 10.0F);
-        float outputGain = AudioUtils.dbToMul(0.0F);
+    private synchronized void process(float[] samples) {
+        float compressorThreshold = VoiceClient.getClientConfig().compressorThreshold.get();
+//        float limiterThreshold = VoiceClient.getClientConfig().limiterThreshold.get();
 
         for (int i = 0; i < samples.length; i++) {
             float envDB = AudioUtils.mulToDB(this.envelopeBuf[i]);
 
-            float compressorGain = compressorSlope * (-18.0f - envDB);
-            compressorGain = AudioUtils.dbToMul(compressorGain);
+            float compressorGain = compressorSlope * (compressorThreshold - envDB);
+            compressorGain = AudioUtils.dbToMul(Math.min(0, compressorGain));
 
-//            samples[i] *= compressorGain * outputGain;
+//            VoiceSettingsScreen.roflanDebugText = String.valueOf(compressorGain);
 
+            samples[i] *= compressorGain * outputGain;
 
-            float limiterGain = limiterSlope * (-6.0F - envDB);
-            limiterGain = AudioUtils.dbToMul(limiterGain);
-
-            samples[i] *= limiterGain * outputGain;
+//            float limiterGain = limiterSlope * (limiterThreshold - envDB);
+//            limiterGain = AudioUtils.dbToMul(Math.min(0, limiterGain));
+//
+//            samples[i] *= limiterGain * outputGain;
         }
     }
 }

@@ -11,7 +11,7 @@ import su.plo.voice.client.VoiceClient;
 public abstract class MixinSoundEngine {
     @Inject(method = "init", at = @At("HEAD"))
     private void init(CallbackInfo ci) {
-        VoiceClient.getSoundEngine().init(false);
+        VoiceClient.getSoundEngine().init();
     }
 
     @Inject(method = "cleanup", at = @At("RETURN"))

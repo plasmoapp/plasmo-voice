@@ -10,7 +10,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import su.plo.voice.client.VoiceClient;
-import su.plo.voice.client.config.VoiceServerConfig;
+import su.plo.voice.client.config.ServerSettings;
 import su.plo.voice.client.gui.VoiceNotAvailableScreen;
 import su.plo.voice.client.socket.SocketClientUDP;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
@@ -61,7 +61,7 @@ public class VoiceNetworkHandler {
 
                 VoiceClient.LOGGER.info("Connecting to " + client.getCurrentServer().ip);
 
-                VoiceClient.setServerConfig(new VoiceServerConfig(packet.getToken(), ip,
+                VoiceClient.setServerConfig(new ServerSettings(packet.getToken(), ip,
                         packet.getPort(), packet.hasPriority()));
 
                 responseSender.sendPacket(new ServerboundCustomPayloadPacket(VoiceClient.PLASMO_VOICE,

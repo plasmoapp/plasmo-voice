@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.widgets;
 
+import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
@@ -11,7 +12,9 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
+import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
+import su.plo.voice.client.gui.VoiceSettingsScreen;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -23,9 +26,13 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
     private final List<Component> elements;
     private final int elementHeight = 16;
     private final Consumer<Integer> onSelect;
+    private final VoiceSettingsScreen parent;
+    private final boolean tooltip;
 
-    public DropDownWidget(int x, int y, int width, int height, Component message, List<Component> elements, Consumer<Integer> onSelect) {
+    public DropDownWidget(VoiceSettingsScreen parent, int x, int y, int width, int height, Component message, List<Component> elements, boolean tooltip, Consumer<Integer> onSelect) {
         super(x, y, width - 2, height - 1, message);
+        this.tooltip = tooltip;
+        this.parent = parent;
         this.textRenderer = client.font;
         this.elements = elements;
         this.onSelect = onSelect;
@@ -95,6 +102,7 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
 
     @Override
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
+        RenderSystem.enableDepthTest();
         fill(matrices, this.x, this.y, this.x + this.width + 1, this.y + this.height + 1, -6250336);
         fill(matrices, this.x + 1, this.y + 1, this.x + this.width, this.y + this.height, -16777216);
 
@@ -104,7 +112,8 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
                 (float)this.x + 5, (float)this.y + 1 + (this.height - 8) / 2, 14737632);
 
         if (open) {
-            if (this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) {
+            if ((this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) &&
+                    (parent.getHeaderHeight() + this.height + 1 + (elements.size() * (elementHeight + 1)) < client.getWindow().getGuiScaledHeight())) {
                 int elementY = this.y + 1 - (elements.size() * (elementHeight + 1));
 
                 for (Component element : elements) {
@@ -116,6 +125,9 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
                     fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -16777216);
                     if ((mouseX >= x && mouseX <= x + width) &&
                             (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
+                        if (tooltip && this.textRenderer.width(element) > (this.width - 10)) {
+                            parent.setTooltip(ImmutableList.of(element));
+                        }
                         fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -13487566);
                     }
                     this.textRenderer.drawShadow(matrices, orderedText(client, element, this.width - 10),
@@ -138,6 +150,9 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
                     fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -16777216);
                     if ((mouseX >= x && mouseX <= x + width) &&
                             (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
+                        if (tooltip && this.textRenderer.width(element) > (this.width - 10)) {
+                            parent.setTooltip(ImmutableList.of(element));
+                        }
                         fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -13487566);
                     }
                     this.textRenderer.drawShadow(matrices, orderedText(client, element, this.width - 10),

@@ -11,7 +11,7 @@ import su.plo.voice.client.VoiceClient;
 
 @Mixin(KeyboardHandler.class)
 public abstract class MixinKeyboardHandler {
-    @Inject(at = @At("HEAD"), method = "keyPress", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "keyPress")
     private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
         if (action == 1) {
             VoiceClient.getClientConfig().keyBindings.onKeyDown(InputConstants.Type.KEYSYM.getOrCreate(key));

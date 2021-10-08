@@ -14,7 +14,7 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.tabs.KeyBindingsTabWidget;
 import su.plo.voice.client.utils.TextUtils;
 
@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
 
 public class KeyBindWidget extends Button {
     private final KeyBindingsTabWidget parent;
-    private final VoiceClientConfig.KeyBindingConfigEntry entry;
+    private final ClientConfig.KeyBindingConfigEntry entry;
     private final List<InputConstants.Key> pressedKeys = new ArrayList<>();
 
-    public KeyBindWidget(KeyBindingsTabWidget parent, int x, int y, int width, int height, VoiceClientConfig.KeyBindingConfigEntry entry) {
+    public KeyBindWidget(KeyBindingsTabWidget parent, int x, int y, int width, int height, ClientConfig.KeyBindingConfigEntry entry) {
         super(x, y, width, height, TextComponent.EMPTY, button -> {});
         this.parent = parent;
         this.entry = entry;

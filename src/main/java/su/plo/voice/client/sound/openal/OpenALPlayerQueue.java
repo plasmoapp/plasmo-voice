@@ -8,6 +8,7 @@ import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Occlusion;
+import su.plo.voice.client.utils.AudioUtils;
 import su.plo.voice.common.packets.udp.VoiceServerPacket;
 
 import java.util.UUID;
@@ -26,6 +27,7 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
         this.source = VoiceClient.getSoundEngine().createSource();
         this.source.setPitch(1.0F);
         this.source.setLooping(false);
+        this.source.setRelative(false);
         if (VoiceClient.getClientConfig().directionalSources.get()) {
             this.source.setAngle(VoiceClient.getClientConfig().directionalSourcesAngle.get());
         }
@@ -55,7 +57,7 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
                     continue;
                 }
 
-                if(minecraft.screen instanceof VoiceSettingsScreen screen && screen.getSpeaker() != null) {
+                if(minecraft.screen instanceof VoiceSettingsScreen screen && screen.getSource() != null) {
                     continue;
                 }
 
@@ -113,7 +115,7 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
 
                 if (lastSequenceNumber >= 0) {
                     int packetsToCompensate = (int) (packet.getSequenceNumber() - (lastSequenceNumber + 1));
-                    if (packetsToCompensate > 0) {
+                    if (packetsToCompensate <= 4) {
                         for (int i = 0; i < packetsToCompensate; i++) {
                             this.source.write(opusDecoder.decode(null));
                         }
@@ -121,6 +123,9 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
                 }
 
                 byte[] decoded = opusDecoder.decode(packet.getData());
+                if (VoiceClient.getClientConfig().compressor.get()) {
+                    decoded = compressor.compress(decoded);
+                }
 
                 this.source.write(decoded);
 

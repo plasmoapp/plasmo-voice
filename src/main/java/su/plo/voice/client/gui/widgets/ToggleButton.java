@@ -7,13 +7,14 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.config.entries.BooleanConfigEntry;
 
 public class ToggleButton extends AbstractWidget {
     private final ToggleButton.PressAction action;
-    private final VoiceClientConfig.BooleanConfigEntry toggled;
+    private final BooleanConfigEntry toggled;
 
-    public ToggleButton(int x, int y, int width, int height, VoiceClientConfig.BooleanConfigEntry toggled, ToggleButton.PressAction action) {
+    public ToggleButton(int x, int y, int width, int height, BooleanConfigEntry toggled, ToggleButton.PressAction action) {
         super(x, y, width, height, toggled.get() ? new TranslatableComponent("gui.plasmo_voice.on") : new TranslatableComponent("gui.plasmo_voice.off"));
         this.toggled = toggled;
         this.action = action;

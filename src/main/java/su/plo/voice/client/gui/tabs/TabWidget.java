@@ -16,11 +16,12 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.widgets.DropDownWidget;
 import su.plo.voice.client.gui.widgets.KeyBindWidget;
 import su.plo.voice.client.gui.widgets.NumberTextFieldWidget;
+import su.plo.voice.config.entries.ConfigEntry;
 
 import java.util.Collections;
 import java.util.List;
@@ -148,7 +149,7 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
         TabWidget.Entry entry = this.getDynamicEntryAtPosition(mouseX, mouseY);
 
         for (TabWidget.Entry e : children()) {
-            if (entry != e && e instanceof TabWidget.ConfigEntry) {
+            if (entry != e && e instanceof OptionEntry) {
                 if (e.children().get(0) instanceof NumberTextFieldWidget) {
                     if (e.mouseClicked(mouseX, mouseY, button)) {
                         this.setFocused(e);
@@ -191,7 +192,7 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
         TabWidget.Entry entry = this.getDynamicEntryAtPosition(mouseX, mouseY);
 
         for (TabWidget.Entry e : children()) {
-            if (entry != e && e instanceof TabWidget.ConfigEntry) {
+            if (entry != e && e instanceof OptionEntry) {
                 if (e.children().get(0) instanceof KeyBindWidget) {
                     e.mouseReleased(mouseX, mouseY, button);
                 }
@@ -279,18 +280,18 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
         }
     }
 
-    public class ConfigEntry extends TabWidget.Entry {
+    public class OptionEntry extends TabWidget.Entry {
         private final Component text;
         private final List<Component> tooltip;
         private final AbstractWidget element;
         private final Button resetButton;
-        private final VoiceClientConfig.ConfigEntry entry;
+        private final ConfigEntry entry;
 
-        public ConfigEntry(Component text, AbstractWidget element, VoiceClientConfig.ConfigEntry entry, ResetAction action) {
+        public OptionEntry(Component text, AbstractWidget element, ConfigEntry entry, ResetAction action) {
             this(text, element, entry, null, action);
         }
 
-        public ConfigEntry(Component text, AbstractWidget element, VoiceClientConfig.ConfigEntry entry, List<Component> tooltip, ResetAction action) {
+        public OptionEntry(Component text, AbstractWidget element, ConfigEntry entry, List<Component> tooltip, ResetAction action) {
             super(24);
             this.text = text;
             this.element = element;

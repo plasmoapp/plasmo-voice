@@ -15,7 +15,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.VoiceHud;
 import su.plo.voice.client.gui.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
@@ -36,7 +36,7 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
                 new KeyMapping("key.plasmo_voice.settings",
                         InputConstants.Type.KEYSYM,
                         GLFW.GLFW_KEY_V,
-                        "key.plasmo_voice")
+                        "Plasmo Voice")
         );
 
         VoiceNetworkHandler network = new VoiceNetworkHandler();
@@ -82,13 +82,13 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
                                         return 1;
                                     }
 
-                                    VoiceClientConfig.ServerConfig serverConfig;
+                                    ClientConfig.ServerConfig serverConfig;
                                     if (getClientConfig().getServers()
                                             .containsKey(getServerConfig().getIp())) {
                                         serverConfig = getClientConfig().getServers()
                                                 .get(getServerConfig().getIp());
                                     } else {
-                                        serverConfig = new VoiceClientConfig.ServerConfig();
+                                        serverConfig = new ClientConfig.ServerConfig();
                                         serverConfig.distance.setDefault((int) getServerConfig().getDefaultDistance());
                                         getClientConfig().getServers().put(getServerConfig().getIp(), serverConfig);
                                     }
@@ -104,6 +104,8 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
                                 }))));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            tick();
+
             final LocalPlayer player = client.player;
             if (player == null) {
                 return;
@@ -115,9 +117,11 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
                     VoiceNotAvailableScreen screen = new VoiceNotAvailableScreen();
                     if (socketUDP != null) {
                         if (socketUDP.ping.timedOut) {
-                            screen.setCannotConnect();
+                            screen.setConnecting();
                         } else if (!socketUDP.authorized) {
                             screen.setConnecting();
+                        } else {
+                            screen.setCannotConnect();
                         }
                     }
                     client.setScreen(screen);

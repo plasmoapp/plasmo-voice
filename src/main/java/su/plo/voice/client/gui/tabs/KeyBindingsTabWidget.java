@@ -4,7 +4,7 @@ import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.TranslatableComponent;
 import su.plo.voice.client.VoiceClient;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.widgets.KeyBindWidget;
 
@@ -17,13 +17,13 @@ public class KeyBindingsTabWidget extends TabWidget {
     public KeyBindingsTabWidget(Minecraft client, VoiceSettingsScreen parent) {
         super(client, parent);
 
-        VoiceClientConfig config = VoiceClient.getClientConfig();
+        ClientConfig config = VoiceClient.getClientConfig();
 
         for (String category : config.keyBindings.categories) {
-            List<VoiceClientConfig.KeyBindingConfigEntry> keyBindings = config.keyBindings.categoryEntries.get(category);
+            List<ClientConfig.KeyBindingConfigEntry> keyBindings = config.keyBindings.categoryEntries.get(category);
             this.addEntry(new CategoryEntry(new TranslatableComponent(category)));
-            for (VoiceClientConfig.KeyBindingConfigEntry keyBinding : keyBindings) {
-                this.addEntry(new ConfigEntry(
+            for (ClientConfig.KeyBindingConfigEntry keyBinding : keyBindings) {
+                this.addEntry(new OptionEntry(
                         keyBinding.get().getTranslation(),
                         new KeyBindWidget(this, 0, 0, 97, 20, keyBinding),
                         keyBinding,
@@ -44,7 +44,7 @@ public class KeyBindingsTabWidget extends TabWidget {
     public void onClose() {
         this.focusedBinding = null;
         for (Entry entry : children()) {
-            if (entry instanceof ConfigEntry &&
+            if (entry instanceof OptionEntry &&
                     entry.children().get(0) instanceof KeyBindWidget keyBindWidget) {
                 keyBindWidget.updateValue();
             }

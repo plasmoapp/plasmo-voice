@@ -1,24 +1,45 @@
 package su.plo.voice.client.utils;
 
 public class AudioUtils {
+    public static byte[] shortsToBytes(short[] shorts) {
+        byte[] bytes = new byte[shorts.length * 2];
+
+        for (int i = 0; i < bytes.length; i += 2) {
+            byte[] sample = shortToBytes(shorts[i / 2]);
+            bytes[i] = sample[0];
+            bytes[i + 1] = sample[1];
+        }
+
+        return bytes;
+    }
+
+    public static float[] bytesToFloats(byte[] bytes) {
+        float[] floats = new float[bytes.length / 2];
+        for (int i = 0; i < bytes.length; i += 2) {
+            floats[i / 2] = ((float) AudioUtils.bytesToShort(bytes[i], bytes[i + 1])) / 0x8000;
+        }
+
+        return floats;
+    }
+
+    public static byte[] floatsToBytes(float[] floats) {
+        byte[] bytes = new byte[floats.length * 2];
+        for (int i = 0; i < bytes.length; i += 2) {
+            short audioSample = (short) (floats[i / 2] * 0x8000);
+
+            bytes[i] = (byte) audioSample;
+            bytes[i + 1] = (byte) (audioSample >> 8);
+        }
+
+        return bytes;
+    }
+
     public static short bytesToShort(byte b1, byte b2) {
         return (short) (((b2 & 0xFF) << 8) | (b1 & 0xFF));
     }
 
     public static byte[] shortToBytes(short s) {
         return new byte[]{(byte) (s & 0xFF), (byte) ((s >> 8) & 0xFF)};
-    }
-
-    public static double dbToPerc(double db) {
-        return (db + 127D) / 127D;
-    }
-
-    public static double percToDb(double perc) {
-        return (perc * 127D) - 127D;
-    }
-
-    public static float percentageToDB(float percentage) {
-        return (float) (10D * Math.log(percentage));
     }
 
     public static float mulToDB(float mul) {
@@ -78,14 +99,9 @@ public class AudioUtils {
         return db;
     }
 
-    public static void adjustVolume(byte[] audio, float volume) {
-        for (int i = 0; i < audio.length; i += 2) {
-            short audioSample = bytesToShort(audio[i], audio[i + 1]);
-
-            audioSample = (short) (audioSample * volume);
-
-            audio[i] = (byte) audioSample;
-            audio[i + 1] = (byte) (audioSample >> 8);
+    public static void adjustVolume(short[] audio, float volume) {
+        for (int i = 0; i < audio.length; i++) {
+            audio[i] *= volume;
         }
     }
 }

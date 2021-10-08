@@ -1,5 +1,6 @@
 package su.plo.voice.client;
 
+import com.google.common.collect.Queues;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.KeyMapping;
@@ -8,8 +9,8 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import su.plo.voice.client.config.VoiceClientConfig;
-import su.plo.voice.client.config.VoiceServerConfig;
+import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.ServerSettings;
 import su.plo.voice.client.gui.PlayerVolumeHandler;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.socket.SocketClientUDP;
@@ -18,6 +19,7 @@ import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Recorder;
 import su.plo.voice.client.sound.openal.CustomSoundEngine;
 
+import java.util.Queue;
 import java.util.UUID;
 
 public class VoiceClient {
@@ -27,13 +29,15 @@ public class VoiceClient {
     public static final Logger LOGGER = LogManager.getLogger("Plasmo Voice");
     public static final UUID NIL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
 
+    private static final Queue<Runnable> runTasksLater = Queues.newConcurrentLinkedQueue();
+
     @Getter
-    private static VoiceClientConfig clientConfig;
+    private static ClientConfig clientConfig;
     @Getter
-    private static VoiceClientConfig.ConfigKeyBindings keyBindings;
+    private static ClientConfig.ConfigKeyBindings keyBindings;
     @Setter
     @Getter
-    private static VoiceServerConfig serverConfig;
+    private static ServerSettings serverConfig;
 
     // ???
     public static SocketClientUDP socketUDP;
@@ -54,9 +58,19 @@ public class VoiceClient {
     // icons
     public static final ResourceLocation ICONS = new ResourceLocation("plasmo_voice", "textures/gui/icons.png");
 
+    public static void runNextTick(Runnable runnable) {
+        runTasksLater.add(runnable);
+    }
+
+    public static void tick() {
+        while (!runTasksLater.isEmpty()) {
+            runTasksLater.poll().run();
+        }
+    }
+
     public void initialize() {
         Minecraft minecraft = Minecraft.getInstance();
-        clientConfig = VoiceClientConfig.read();
+        clientConfig = ClientConfig.read();
         keyBindings = clientConfig.keyBindings;
         recorder = new Recorder();
 
@@ -68,7 +82,7 @@ public class VoiceClient {
         });
         keyBindings.increaseDistance.get().setOnPress(action -> {
             if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
-                VoiceClientConfig.ServerConfig serverConfig;
+                ClientConfig.ServerConfig serverConfig;
                 if(clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
                     serverConfig = clientConfig.getServers().get(VoiceClient.getServerConfig().getIp());
                     int index = (getServerConfig().getDistances().indexOf(serverConfig.distance.get()) + 1) % getServerConfig().getDistances().size();
@@ -85,7 +99,7 @@ public class VoiceClient {
         });
         keyBindings.decreaseDistance.get().setOnPress(action -> {
             if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
-                VoiceClientConfig.ServerConfig serverConfig;
+                ClientConfig.ServerConfig serverConfig;
                 if(clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
                     serverConfig = clientConfig.getServers().get(VoiceClient.getServerConfig().getIp());
                     int index = getServerConfig().getDistances().indexOf(serverConfig.distance.get()) - 1;
@@ -136,7 +150,7 @@ public class VoiceClient {
     }
 
     public static boolean isMicrophoneLoopback() {
-        return Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen && screen.getSpeaker() != null;
+        return Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen && screen.getSource() != null;
     }
 
     public static boolean isConnected() {
@@ -148,6 +162,6 @@ public class VoiceClient {
             return false;
         }
 
-        return socketUDP.authorized;
+        return socketUDP.authorized && !socketUDP.ping.timedOut;
     }
 }
