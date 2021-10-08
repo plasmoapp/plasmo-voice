@@ -6,22 +6,22 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
+import su.plo.voice.client.sound.openal.CaptureDevice;
 import su.plo.voice.client.sound.opus.OpusEncoder;
 import su.plo.voice.client.utils.AudioUtils;
 import su.plo.voice.common.packets.udp.VoiceClientPacket;
 import su.plo.voice.common.packets.udp.VoiceEndClientPacket;
+import su.plo.voice.rnnoise.Bytes;
 import su.plo.voice.rnnoise.Denoiser;
 import tomp2p.opuswrapper.Opus;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
 import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class Recorder implements Runnable {
     @Getter
-    private static final int mtuSize = 900;
+    private static final int mtuSize = 1024;
     @Getter
     private static int sampleRate = 24000;
     @Getter
@@ -37,10 +37,13 @@ public class Recorder implements Runnable {
     @Getter
     private Thread thread;
 
-    @Getter
-    private TargetDataLine microphone;
+    private final CaptureDevice microphone;
     private OpusEncoder encoder;
+
+    // RNNoise
     private Denoiser denoiser;
+    // Limiter to fix RNNoise clipping
+    private final Limiter limiter = new Limiter(-6.0F);
 
     private long sequenceNumber = 0L;
     private long lastSpeak;
@@ -49,7 +52,7 @@ public class Recorder implements Runnable {
     private final Minecraft client = Minecraft.getInstance();
 
     public Recorder() {
-        this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
+        this.microphone = new CaptureDevice();
         if (VoiceClient.getClientConfig().rnNoise.get()) {
             this.denoiser = new Denoiser();
         }
@@ -79,7 +82,9 @@ public class Recorder implements Runnable {
                 sampleRate = rate;
                 frameSize = (sampleRate / 1000) * 2 * 20;
 
-                this.encoder.close();
+                if (this.encoder != null) {
+                    this.encoder.close();
+                }
                 this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
 
                 if (VoiceClient.isConnected()) {
@@ -92,7 +97,9 @@ public class Recorder implements Runnable {
             sampleRate = rate;
             frameSize = (sampleRate / 1000) * 2 * 20;
 
-            this.encoder.close();
+            if (this.encoder != null) {
+                this.encoder.close();
+            }
             this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
 
             if (VoiceClient.isConnected()) {
@@ -109,12 +116,10 @@ public class Recorder implements Runnable {
             this.encoder.close();
         }
 
-        if (microphone != null) {
+        if (microphone.isOpen()) {
             microphone.stop();
-            microphone.flush();
             microphone.close();
             thread = null;
-            microphone = null;
         }
 
         synchronized (this) {
@@ -123,7 +128,7 @@ public class Recorder implements Runnable {
     }
 
     public void run() {
-        if (microphone != null) {
+        if (microphone.isOpen()) {
             synchronized (this) {
                 try {
                     this.wait();
@@ -132,17 +137,9 @@ public class Recorder implements Runnable {
             }
         }
 
-        microphone = DataLines.getMicrophone();
-        if (microphone == null) {
-            VoiceClient.LOGGER.error("Failed to open mic");
-            return;
-        }
-
-        try {
-            microphone.open(format);
-        } catch (LineUnavailableException e) {
-            e.printStackTrace();
-            return;
+        microphone.open();
+        if (this.encoder == null || this.encoder.isClosed()) {
+            this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
         }
 
         this.running = true;
@@ -192,7 +189,9 @@ public class Recorder implements Runnable {
                 && VoiceClient.getServerConfig().getPriorityDistance() > VoiceClient.getServerConfig().getMaxDistance();
 
         byte[] normBuffer = readBuffer();
-        assert normBuffer != null;
+        if (normBuffer == null) {
+            return;
+        }
 
         if (VoiceClient.isMicrophoneLoopback()) {
             if (VoiceClient.isSpeaking()) {
@@ -256,15 +255,16 @@ public class Recorder implements Runnable {
 
         if (pushToTalkPressed && !VoiceClient.isSpeaking() && !VoiceClient.isMicrophoneLoopback()) {
             VoiceClient.setSpeaking(true);
-            microphone.flush();
             this.lastSpeak = System.currentTimeMillis();
         } else if (pushToTalkPressed && !VoiceClient.isMicrophoneLoopback()) {
             this.lastSpeak = System.currentTimeMillis();
         } else if (VoiceClient.isSpeaking() && (System.currentTimeMillis() - lastSpeak > 350L || VoiceClient.isMicrophoneLoopback())) {
             VoiceClient.setSpeaking(false);
             VoiceClient.setSpeakingPriority(false);
-            microphone.stop();
-            microphone.flush();
+
+            if (client.screen instanceof VoiceSettingsScreen) {
+                readBuffer();
+            }
 
             this.sendEndPacket();
             return;
@@ -283,9 +283,9 @@ public class Recorder implements Runnable {
         }
 
         byte[] normBuffer = readBuffer();
-        assert normBuffer != null;
-
-        this.sendPacket(normBuffer);
+        if (normBuffer != null) {
+            this.sendPacket(normBuffer);
+        }
     }
 
     private byte[] readBuffer() {
@@ -294,19 +294,26 @@ public class Recorder implements Runnable {
                 return null;
             }
 
-            int blockSize = frameSize;
-            byte[] normBuffer = new byte[blockSize];
-
             microphone.start();
-            int read = microphone.read(normBuffer, 0, blockSize);
-            if (read == -1) {
+
+            if (microphone.available() < (frameSize / 2)) {
                 return null;
             }
 
-            AudioUtils.adjustVolume(normBuffer, VoiceClient.getClientConfig().microphoneAmplification.get().floatValue());
+            short[] shortsBuffer = new short[frameSize / 2];
+
+            microphone.read(shortsBuffer);
+
+            AudioUtils.adjustVolume(shortsBuffer, VoiceClient.getClientConfig().microphoneAmplification.get().floatValue());
+
+            byte[] normBuffer = AudioUtils.shortsToBytes(shortsBuffer);
 
             if (this.denoiser != null) {
-                normBuffer = this.denoiser.process(normBuffer);
+                float[] floats = AudioUtils.bytesToFloats(normBuffer);
+                limiter.limit(floats);
+                floats = Bytes.toFloatArray(AudioUtils.floatsToBytes(floats));
+
+                normBuffer = Bytes.toByteArray(this.denoiser.process(floats));
             }
 
             if (client.screen instanceof VoiceSettingsScreen screen) {

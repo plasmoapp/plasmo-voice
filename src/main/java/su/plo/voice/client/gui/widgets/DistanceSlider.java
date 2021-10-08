@@ -7,7 +7,7 @@ import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import su.plo.voice.client.VoiceClient;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
 
 import java.util.Comparator;
 
@@ -49,7 +49,7 @@ public class DistanceSlider extends AbstractSliderButton {
 
     protected void applyValue() {
         int value = this.getValue(this.value);
-        VoiceClientConfig.ServerConfig serverConfig;
+        ClientConfig.ServerConfig serverConfig;
         if(VoiceClient.getClientConfig().getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
             serverConfig = VoiceClient.getClientConfig().getServers().get(VoiceClient.getServerConfig().getIp());
             serverConfig.distance.set(value);

@@ -33,6 +33,7 @@
 
 
     "gui.plasmo_voice.general.audio": "Audio",
+    "gui.plasmo_voice.general.output_device": "Output device",
     "gui.plasmo_voice.general.voice_chat_volume": "Voice chat volume",
     "gui.plasmo_voice.general.voice_chat_volume.tooltip_1": "Turning volume to more than 100%",
     "gui.plasmo_voice.general.voice_chat_volume.tooltip_2": "may cause distortion.",
@@ -132,14 +133,27 @@
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_3": "",
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_4": "360 is like if the option is disabled.",
 
-    "gui.plasmo_voice.advanced.visual": "Visual",
-    "gui.plasmo_voice.advanced.visual.distance": "Visualise voice distance",
-    "gui.plasmo_voice.advanced.visual.distance.join": "Show voice distance on join",
+    "gui.plasmo_voice.advanced.compressor": "Compressor & Limiter",
+    "gui.plasmo_voice.advanced.compressor.tooltip_1": "Makes loud volume quiter,",
+    "gui.plasmo_voice.advanced.compressor.tooltip_2": "saving your ears from loud noises.",
+    "gui.plasmo_voice.advanced.compressor.tooltip_3": "",
+    "gui.plasmo_voice.advanced.compressor.tooltip_4": "Applies to the players you hear.",
+    "gui.plasmo_voice.advanced.compressor.threshold": "Compressor threshold",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_1": "Makes volume quieter if volume",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_2": "surpasses the threshold.",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_3": "",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_4": "Recommended value: from -16 dB to -6 dB",
+    "gui.plasmo_voice.advanced.limiter.threshold": "Limiter threshold",
+    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_1": "Volume can't surpass this threshold.",
+    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_2": "",
+    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_3": "Recommended value: -6 dB",
 
-    "gui.plasmo_voice.advanced.ui": "UI",
-    "gui.plasmo_voice.advanced.ui.priority": "Separate priority volume",
-    "gui.plasmo_voice.advanced.ui.priority.tooltip_1": "In the general tab there will be",
-    "gui.plasmo_voice.advanced.ui.priority.tooltip_2": "two volume sliders, instead of one",
+    "gui.plasmo_voice.advanced.visual_ui": "Visual & UI",
+    "gui.plasmo_voice.advanced.visual_ui.distance": "Visualise voice distance",
+    "gui.plasmo_voice.advanced.visual_ui.distance.join": "Show voice distance on join",
+    "gui.plasmo_voice.advanced.visual_ui.priority": "Separate priority volume",
+    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_1": "In the general tab there will be",
+    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_2": "two volume sliders, instead of one",
 
 
     "gui.plasmo_voice.hotkeys": "Hotkeys",

@@ -1,4 +1,4 @@
-package su.plo.voice.client;
+package su.plo.voice;
 
 import com.google.common.collect.Queues;
 import lombok.Getter;
@@ -162,6 +162,6 @@ public class VoiceClient {
             return false;
         }
 
-        return socketUDP.authorized;
+        return socketUDP.authorized && !socketUDP.ping.timedOut;
     }
 }

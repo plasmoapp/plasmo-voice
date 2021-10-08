@@ -33,6 +33,7 @@
 
 
     "gui.plasmo_voice.general.audio": "Аудио",
+    "gui.plasmo_voice.general.output_device": "Устройство вывода",
     "gui.plasmo_voice.general.voice_chat_volume": "Громкость голосового чата",
     "gui.plasmo_voice.general.voice_chat_volume.tooltip_1": "Громкость больше 100% может вызвать",
     "gui.plasmo_voice.general.voice_chat_volume.tooltip_2": "перегрузки",
@@ -132,14 +133,29 @@
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_3": "источники. 360 градусов это как если направленные",
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_4": "источники не включены.",
 
-    "gui.plasmo_voice.advanced.visual": "Визуальные",
-    "gui.plasmo_voice.advanced.visual.distance": "Визуализировать дистанцию",
-    "gui.plasmo_voice.advanced.visual.distance.join": "Показывать дистанцию при входе",
 
-    "gui.plasmo_voice.advanced.ui": "Интерфейс",
-    "gui.plasmo_voice.advanced.ui.priority": "Разделить громкость",
-    "gui.plasmo_voice.advanced.ui.priority.tooltip_1": "В вкладке \"Основные\" будет 2 слайдера",
-    "gui.plasmo_voice.advanced.ui.priority.tooltip_2": "громкости вместо одного.",
+    "gui.plasmo_voice.advanced.compressor": "Компрессор и лимитер",
+    "gui.plasmo_voice.advanced.compressor.tooltip_1": "Делает громкие звуки тише,",
+    "gui.plasmo_voice.advanced.compressor.tooltip_2": "спасает ваши уши от громких звуков.",
+    "gui.plasmo_voice.advanced.compressor.tooltip_3": "",
+    "gui.plasmo_voice.advanced.compressor.tooltip_4": "Применяется к игрокам, которых слышите вы",
+    "gui.plasmo_voice.advanced.compressor.threshold": "Порог компрессора",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_1": "Делает звук тише, если он",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_2": "переходит через порог.",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_3": "",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_4": "Рекомендованное значение: от -16 dB до -6 dB",
+    "gui.plasmo_voice.advanced.limiter.threshold": "Порог лимитера",
+    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_1": "Звук не может быть громче порога лимитера.",
+    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_2": "",
+    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_3": "Рекомендованное значение: -6 dB",
+
+
+    "gui.plasmo_voice.advanced.visual_ui": "Визуальные и интерфейс",
+    "gui.plasmo_voice.advanced.visual_ui.distance": "Визуализировать дистанцию",
+    "gui.plasmo_voice.advanced.visual_ui.distance.join": "Показывать дистанцию при входе",
+    "gui.plasmo_voice.advanced.visual_ui.priority": "Разделить громкость",
+    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_1": "Во вкладке \"Основные\" будет 2 слайдера",
+    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_2": "громкости вместо одного.",
 
 
     "gui.plasmo_voice.hotkeys": "Клавиши",

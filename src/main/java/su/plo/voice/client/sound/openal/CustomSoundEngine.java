@@ -11,12 +11,16 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.*;
 import su.plo.voice.client.VoiceClient;
+import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.client.sound.AbstractSoundQueue;
+import su.plo.voice.client.sound.Recorder;
 
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.Collections;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -35,28 +39,36 @@ public class CustomSoundEngine {
     private boolean hrtfSupported;
     @Getter
     protected boolean soundPhysics;
-    private ScheduledExecutorService executor;
+    private final ScheduledExecutorService executor;
 
     public CustomSoundEngine() {
         this.listener = new Listener();
+        this.executor = Executors.newScheduledThreadPool(1);
     }
 
-    public void toggleHRTF() {
-        // kill all queues to prevent possible problems
+    public void restart() {
         SocketClientUDPQueue.audioChannels
                 .values()
                 .forEach(AbstractSoundQueue::closeAndKill);
         SocketClientUDPQueue.audioChannels.clear();
 
-        VoiceClient.getSoundEngine().close();
-        new Thread(() -> VoiceClient.getSoundEngine().init(true)).start();
+        this.close();
+        this.init();
     }
 
     public CustomSource createSource() {
-        return CustomSource.create();
+        return this.initialized ? CustomSource.create() : null;
     }
 
-    public void init(boolean inThread) {
+    public void runInContext(Runnable runnable) {
+        executor.submit(runnable);
+    }
+
+    public void init() {
+        this.runInContext(this::initSync);
+    }
+
+    public void initSync() {
         this.preInit();
 
         this.devicePointer = openDevice();
@@ -68,11 +80,7 @@ public class CustomSoundEngine {
         } else {
             this.contextPointer = ALC10.alcCreateContext(this.devicePointer, (IntBuffer) null);
 
-            if(!inThread) {
-                ALC10.alcMakeContextCurrent(this.contextPointer);
-            } else {
-                EXTThreadLocalContext.alcSetThreadContext(this.contextPointer);
-            }
+            EXTThreadLocalContext.alcSetThreadContext(this.contextPointer);
 
             ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
             AlUtil.checkErrors("Initialization");
@@ -121,10 +129,6 @@ public class CustomSoundEngine {
         this.initialized = true;
         this.postInit();
 
-        executor = Executors.newScheduledThreadPool(1);
-        executor.schedule(() -> {
-            EXTThreadLocalContext.alcSetThreadContext(this.contextPointer);
-        }, 0L, TimeUnit.MILLISECONDS);
         executor.scheduleAtFixedRate(() -> {
             Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
             Vec3 vec3d = camera.getPosition();
@@ -135,32 +139,21 @@ public class CustomSoundEngine {
             listener.setListenerOrientation(vector3f, vector3f2);
         }, 0L, 5L, TimeUnit.MILLISECONDS);
 
-        if(inThread) {
-            EXTThreadLocalContext.alcSetThreadContext(0L);
-        }
-
         synchronized (this) {
             this.notifyAll();
         }
     }
 
-    private static long openDevice() {
-        for(int i = 0; i < 3; ++i) {
-            long l = ALC10.alcOpenDevice((ByteBuffer)null);
-            if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
-                return l;
-            }
-        }
-
-        throw new IllegalStateException("Failed to open OpenAL device");
-    }
-
-    public void close() {
+    public synchronized void close() {
         if (this.initialized) {
-            this.executor.schedule(() -> {
+            this.executor.submit(() -> {
+                if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen) {
+                    screen.closeSpeaker();
+                }
+
                 EXTThreadLocalContext.alcSetThreadContext(0L);
-                this.executor.shutdown();
-            }, 0L, TimeUnit.MILLISECONDS);
+            });
+
             this.initialized = false;
             ALC10.alcDestroyContext(this.contextPointer);
             if (this.devicePointer != 0L) {
@@ -170,6 +163,100 @@ public class CustomSoundEngine {
             this.contextPointer = 0L;
             this.devicePointer = 0L;
         }
+    }
+
+    // devices
+    private long openDevice() {
+        try {
+            return openDevice(getCurrentDevice());
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+
+        throw new IllegalStateException("Failed to open OpenAL device");
+    }
+
+    private long openDevice(String deviceName) {
+        long l;
+        if (deviceName == null) {
+            // default device
+            l = ALC10.alcOpenDevice((ByteBuffer)null);
+        } else {
+            l = ALC10.alcOpenDevice(deviceName);
+        }
+
+        if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
+            return l;
+        }
+
+        throw new IllegalStateException("Failed to open OpenAL device");
+    }
+
+    public static String getCurrentDevice() {
+        String deviceName = VoiceClient.getClientConfig().speaker.get();
+        List<String> devices = getDevices();
+        if (deviceName == null || !devices.contains(deviceName)) {
+            deviceName = getDefaultDevice();
+        }
+
+        return deviceName;
+    }
+
+    public static String getDefaultDevice() {
+        return ALC11.alcGetString(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
+    }
+
+    public static List<String> getDevices() {
+        return ALUtil.getStringList(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
+    }
+
+    // capturing devices
+    public static long openCaptureDevice() {
+        try {
+            return openCaptureDevice(getCurrentCaptureDevice());
+        } catch (IllegalStateException e) {
+            e.printStackTrace();
+        }
+
+        throw new IllegalStateException("Failed to open OpenAL capture device");
+    }
+
+    private static long openCaptureDevice(String deviceName) {
+        long l;
+        if (deviceName == null) {
+            // default device
+            l = ALC11.alcCaptureOpenDevice((ByteBuffer)null, Recorder.getSampleRate(), AL11.AL_FORMAT_MONO16, Recorder.getFrameSize());
+        } else {
+            l = ALC11.alcCaptureOpenDevice(deviceName, Recorder.getSampleRate(), AL11.AL_FORMAT_MONO16, Recorder.getFrameSize());
+        }
+
+        if (l != 0L && !AlUtil.checkAlcErrors(l, "Open capture device")) {
+            return l;
+        }
+
+        throw new IllegalStateException("Failed to open OpenAL device");
+    }
+
+    public static String getCurrentCaptureDevice() {
+        String deviceName = VoiceClient.getClientConfig().microphone.get();
+        List<String> devices = getCaptureDevices();
+        if (deviceName == null || !devices.contains(deviceName)) {
+            deviceName = getDefaultCaptureDevice();
+        }
+
+        return deviceName;
+    }
+
+    public static String getDefaultCaptureDevice() {
+        String deviceName = ALC11.alcGetString(0L, ALC11.ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
+        AlUtil.checkErrors("Get default capture");
+        return deviceName;
+    }
+
+    public static List<String> getCaptureDevices() {
+        List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
+        AlUtil.checkErrors("Get capture devices");
+        return devices == null ? Collections.emptyList() : devices;
     }
 
     public void preInit() {

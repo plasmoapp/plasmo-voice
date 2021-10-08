@@ -28,6 +28,8 @@ public abstract class AbstractSoundQueue extends Thread {
     protected final OpusDecoder opusDecoder;
     protected double lastOcclusion = -1;
 
+    protected final Compressor compressor = new Compressor();
+
     public AbstractSoundQueue(UUID from) {
         this.from = from;
         this.lastPacketTime = System.currentTimeMillis() - 300L;

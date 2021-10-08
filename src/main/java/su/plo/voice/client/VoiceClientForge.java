@@ -10,11 +10,8 @@ import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import net.minecraftforge.fmllegacy.network.NetworkRegistry;
 import net.minecraftforge.fmllegacy.network.simple.SimpleChannel;
 import org.lwjgl.glfw.GLFW;
-import su.plo.voice.client.config.VoiceServerConfig;
-import su.plo.voice.client.event.ClientInputEvent;
-import su.plo.voice.client.event.ClientNetworkEvent;
-import su.plo.voice.client.event.RenderEvent;
-import su.plo.voice.client.event.VoiceChatCommandEvent;
+import su.plo.voice.client.config.ServerSettings;
+import su.plo.voice.client.event.*;
 import su.plo.voice.client.network.VoiceNetworkPacket;
 import su.plo.voice.client.socket.SocketClientUDP;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
@@ -38,6 +35,7 @@ public class VoiceClientForge extends VoiceClient {
     public VoiceClientForge() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);
         MinecraftForge.EVENT_BUS.register(new ClientInputEvent());
+        MinecraftForge.EVENT_BUS.register(new ClientTickEvent());
         MinecraftForge.EVENT_BUS.register(new ClientNetworkEvent());
         MinecraftForge.EVENT_BUS.register(new RenderEvent());
         MinecraftForge.EVENT_BUS.register(new VoiceChatCommandEvent());
@@ -149,7 +147,7 @@ public class VoiceClientForge extends VoiceClient {
 
                     VoiceClientForge.LOGGER.info("Connecting to " + Minecraft.getInstance().getCurrentServer().ip);
 
-                    VoiceClientForge.setServerConfig(new VoiceServerConfig(msg.getToken(), ip,
+                    VoiceClientForge.setServerConfig(new ServerSettings(msg.getToken(), ip,
                             msg.getPort(), msg.hasPriority()));
 
                     CHANNEL.sendToServer(new ClientConnectPacket(msg.getToken(), VoiceClientForge.PROTOCOL_VERSION));
@@ -159,6 +157,6 @@ public class VoiceClientForge extends VoiceClient {
         CHANNEL.registerMessage(7, ClientConnectPacket.class, VoiceNetworkPacket::writeToBuf,
                 buf -> (ClientConnectPacket) VoiceNetworkPacket.readFromBuf(buf, new ClientConnectPacket()), null);
 
-        new Thread(() -> soundEngine.init(true)).start();
+        soundEngine.init();
     }
 }

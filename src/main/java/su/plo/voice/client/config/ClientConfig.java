@@ -13,15 +13,17 @@ import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.tabs.KeyBindingsTabWidget;
+import su.plo.voice.config.AbstractConfig;
+import su.plo.voice.config.entries.*;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.lang.reflect.Type;
 import java.util.*;
 
 // govnokod
-public class VoiceClientConfig {
-    private static final Gson gson;
-
+public class ClientConfig extends AbstractConfig {
     static {
         GsonBuilder builder = new GsonBuilder();
         builder.setPrettyPrinting();
@@ -52,11 +54,12 @@ public class VoiceClientConfig {
 
     // voice
     public BooleanConfigEntry voiceActivation = new BooleanConfigEntry();
-    public DoubleConfigEntry voiceActivationThreshold = new DoubleConfigEntry(0, 1);
+    public DoubleConfigEntry voiceActivationThreshold = new DoubleConfigEntry(-60, 0);
 
     // microphone
     public DoubleConfigEntry microphoneAmplification = new DoubleConfigEntry(0, 2);
     public StringConfigEntry microphone = new StringConfigEntry();
+    public StringConfigEntry speaker = new StringConfigEntry();
     public BooleanConfigEntry rnNoise = new BooleanConfigEntry();
     public BooleanConfigEntry microphoneMuted = new BooleanConfigEntry();
 
@@ -64,6 +67,10 @@ public class VoiceClientConfig {
     public BooleanConfigEntry hrtf = new BooleanConfigEntry();
     public BooleanConfigEntry directionalSources = new BooleanConfigEntry();
     public IntegerConfigEntry directionalSourcesAngle = new IntegerConfigEntry(100, 360);
+
+    public BooleanConfigEntry compressor = new BooleanConfigEntry();
+    public IntegerConfigEntry compressorThreshold = new IntegerConfigEntry(-60, 0);
+    public IntegerConfigEntry limiterThreshold = new IntegerConfigEntry(-60, 0);
 
     // visual
     public BooleanConfigEntry visualizeDistance = new BooleanConfigEntry();
@@ -79,19 +86,55 @@ public class VoiceClientConfig {
     @Getter
     private transient HashSet<UUID> whitelisted = new HashSet<>();
 
-    public VoiceClientConfig() {
+    public ClientConfig() {
+    }
+
+    public static ClientConfig read() {
+        ClientConfig config = null;
+        File configFile = new File("config/PlasmoVoice/config.json");
+        if(configFile.exists()) {
+            try {
+                JsonReader reader = new JsonReader(new FileReader(configFile));
+                config = gson.fromJson(reader, ClientConfig.class);
+            } catch (FileNotFoundException ignored) {} catch (JsonSyntaxException e) {
+                configFile.delete();
+            }
+        }
+
+        if(config == null) {
+            config = new ClientConfig();
+        }
+
+        // config defaults
+        config.setupDefaults();
+
+        ClientData data = ClientData.read();
+        if(data.mutedClients != null) {
+            config.muted = data.mutedClients;
+        }
+        if(data.whitelisted != null) {
+            config.whitelisted = data.whitelisted;
+        }
+
+        return config;
+    }
+
+    @Override
+    public void save() {
+        super.save();
+        (new ClientData(muted, whitelisted)).save();
     }
 
     public ServerConfig getCurrentServerConfig() {
         return servers.get(VoiceClient.getServerConfig().getIp());
     }
 
-    private void setupDefaults() {
+    protected void setupDefaults() {
         occlusion.setDefault(false);
         showIcons.setDefault(0, 0, 2);
         micIconPosition.setDefault(MicrophoneIconPosition.BOTTOM_CENTER);
         voiceActivation.setDefault(false);
-        voiceActivationThreshold.setDefault(-40, -100, 0);
+        voiceActivationThreshold.setDefault(-30, -60, 0);
         voiceVolume.setDefault(1, 0, 2);
         priorityVolume.setDefault(1, 0, 2);
         microphoneAmplification.setDefault(1, 0, 2);
@@ -104,56 +147,11 @@ public class VoiceClientConfig {
         directionalSourcesAngle.setDefault(145, 100, 360);
         visualizeDistance.setDefault(true);
         showPriorityVolume.setDefault(true);
+        compressor.setDefault(true);
+        compressorThreshold.setDefault(-10, -60, 0);
+        limiterThreshold.setDefault(-6, -60, 0);
 
         keyBindings.setupDefaults();
-    }
-
-    public static VoiceClientConfig read() {
-        VoiceClientConfig config = null;
-        File configFile = new File("config/PlasmoVoice/config.json");
-        if(configFile.exists()) {
-            try {
-                JsonReader reader = new JsonReader(new FileReader(configFile));
-                config = gson.fromJson(reader, VoiceClientConfig.class);
-            } catch (FileNotFoundException ignored) {} catch (JsonSyntaxException e) {
-                configFile.delete();
-            }
-        }
-
-        if(config == null) {
-            config = new VoiceClientConfig();
-        }
-
-        // config defaults
-        config.setupDefaults();
-
-        DataEntity data = DataEntity.read();
-        if(data.mutedClients != null) {
-            config.muted = data.mutedClients;
-        }
-        if(data.whitelisted != null) {
-            config.whitelisted = data.whitelisted;
-        }
-
-        return config;
-    }
-
-    public void save() {
-        // async write
-        new Thread(() -> {
-            File configDir = new File("config/PlasmoVoice");
-            configDir.mkdirs();
-
-            try {
-                try(Writer w = new FileWriter("config/PlasmoVoice/config.json")) {
-                    w.write(gson.toJson(this));
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            (new DataEntity(muted, whitelisted)).save();
-        }).start();
     }
 
     // mute stuff
@@ -197,41 +195,6 @@ public class VoiceClientConfig {
     public static class ServerConfig {
         public IntegerConfigEntry distance = new IntegerConfigEntry(0, Short.MAX_VALUE);
         public IntegerConfigEntry priorityDistance = new IntegerConfigEntry(0, Short.MAX_VALUE);
-    }
-
-    public static class ConfigEntry<E> {
-        protected transient E defaultValue = null;
-        protected E value = null;
-
-        ConfigEntry() {
-        }
-
-        public void reset() {
-            this.value = this.defaultValue;
-        }
-
-        public boolean isDefault() {
-            return Objects.equals(defaultValue, value);
-        }
-
-        public void set(E value) {
-            this.value = value;
-        }
-
-        public void setDefault(E value) {
-            this.defaultValue = value;
-            if (this.value == null) {
-                this.value = value;
-            }
-        }
-
-        public E getDefault() {
-            return defaultValue;
-        }
-
-        public E get() {
-            return value;
-        }
     }
 
     public static class ConfigKeyBindings {
@@ -474,136 +437,6 @@ public class VoiceClientConfig {
 
         public interface KeyBindingPress {
             void onPress(int action);
-        }
-    }
-
-    public static class BooleanConfigEntry extends ConfigEntry<Boolean> implements JsonDeserializer<BooleanConfigEntry>,
-            JsonSerializer<BooleanConfigEntry> {
-        public void invert() {
-            this.set(!this.get());
-        }
-
-        @Override
-        public BooleanConfigEntry deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            BooleanConfigEntry entry = new BooleanConfigEntry();
-            try {
-                entry.set(json.getAsBoolean());
-            } catch (UnsupportedOperationException ignored) {}
-            return entry;
-        }
-
-        @Override
-        public JsonElement serialize(BooleanConfigEntry src, Type typeOfSrc, JsonSerializationContext context) {
-            return src.get() == null ? null : new JsonPrimitive(src.get());
-        }
-    }
-
-    public static class StringConfigEntry extends ConfigEntry<String> implements JsonDeserializer<StringConfigEntry>,
-            JsonSerializer<StringConfigEntry> {
-        @Override
-        public StringConfigEntry deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            StringConfigEntry entry = new StringConfigEntry();
-            try {
-                entry.set(json.getAsString());
-            } catch (UnsupportedOperationException ignored) {}
-            return entry;
-        }
-
-        @Override
-        public JsonElement serialize(StringConfigEntry src, Type typeOfSrc, JsonSerializationContext context) {
-            return src.get() == null ? null : new JsonPrimitive(src.get());
-        }
-    }
-
-    public static class DoubleConfigEntry extends ConfigEntry<Double> implements JsonDeserializer<DoubleConfigEntry>,
-            JsonSerializer<DoubleConfigEntry> {
-        @Getter
-        private double min;
-        @Getter
-        private double max;
-
-        DoubleConfigEntry(double min, double max) {
-            this.min = min;
-            this.max = max;
-        }
-
-        @Override
-        public void set(Double value) {
-            if (min != max && min > 0) {
-                super.set(Math.max(Math.min(value, max), min));
-            } else {
-                super.set(value);
-            }
-        }
-
-        public void setDefault(double value, double min, double max) {
-            super.setDefault(value);
-            this.min = min;
-            this.max = max;
-        }
-
-        @Override
-        public DoubleConfigEntry deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            DoubleConfigEntry entry = new DoubleConfigEntry(0, 0);
-            try {
-                entry.set(json.getAsDouble());
-            } catch (UnsupportedOperationException ignored) {}
-            return entry;
-        }
-
-        @Override
-        public JsonElement serialize(DoubleConfigEntry src, Type typeOfSrc, JsonSerializationContext context) {
-            return src.get() == null ? null : new JsonPrimitive(src.get());
-        }
-    }
-
-    public static class IntegerConfigEntry extends ConfigEntry<Integer> implements JsonDeserializer<IntegerConfigEntry>,
-            JsonSerializer<IntegerConfigEntry> {
-        @Getter
-        private int min;
-        @Getter
-        private int max;
-
-        IntegerConfigEntry(int min, int max) {
-            this.min = min;
-            this.max = max;
-        }
-
-        public void increment() {
-            this.set((this.get() + 1) % (this.getMax() + 1));
-        }
-
-        public void decrement() {
-            this.set(this.get() - 1 < this.getMin() ? this.getMax() : this.get() - 1);
-        }
-
-        @Override
-        public void set(Integer value) {
-            if (min != max && min > 0) {
-                super.set(Math.max(Math.min(value, max), min));
-            } else {
-                super.set(value);
-            }
-        }
-
-        public void setDefault(int value, int min, int max) {
-            super.setDefault(value);
-            this.min = min;
-            this.max = max;
-        }
-
-        @Override
-        public IntegerConfigEntry deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
-            IntegerConfigEntry entry = new IntegerConfigEntry(0, 0);
-            try {
-                entry.set(json.getAsInt());
-            } catch (UnsupportedOperationException ignored) {}
-            return entry;
-        }
-
-        @Override
-        public JsonElement serialize(IntegerConfigEntry src, Type typeOfSrc, JsonSerializationContext context) {
-            return src.get() == null ? null : new JsonPrimitive(src.get());
         }
     }
 

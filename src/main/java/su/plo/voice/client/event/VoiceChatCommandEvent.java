@@ -19,7 +19,7 @@ import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import su.plo.voice.client.VoiceClientForge;
 import su.plo.voice.client.commands.ForgeClientCommandSource;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.config.ClientConfig;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -135,13 +135,13 @@ public class VoiceChatCommandEvent {
                                         return 1;
                                     }
 
-                                    VoiceClientConfig.ServerConfig serverConfig;
+                                    ClientConfig.ServerConfig serverConfig;
                                     if (VoiceClientForge.getClientConfig().getServers()
                                             .containsKey(VoiceClientForge.getServerConfig().getIp())) {
                                         serverConfig = VoiceClientForge.getClientConfig().getServers()
                                                 .get(VoiceClientForge.getServerConfig().getIp());
                                     } else {
-                                        serverConfig = new VoiceClientConfig.ServerConfig();
+                                        serverConfig = new ClientConfig.ServerConfig();
                                         serverConfig.distance.setDefault((int) VoiceClientForge.getServerConfig().getDefaultDistance());
                                         VoiceClientForge.getClientConfig().getServers().put(VoiceClientForge.getServerConfig().getIp(), serverConfig);
                                     }

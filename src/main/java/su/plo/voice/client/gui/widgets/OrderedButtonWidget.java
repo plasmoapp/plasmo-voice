@@ -14,12 +14,12 @@ public class OrderedButtonWidget extends Button {
     private final Minecraft client = Minecraft.getInstance();
     private FormattedCharSequence orderedText;
 
-    public OrderedButtonWidget(int x, int y, int width, int height, FormattedCharSequence message, Button.OnPress onPress) {
+    public OrderedButtonWidget(int x, int y, int width, int height, FormattedCharSequence message, OnPress onPress) {
         super(x, y, width, height, new TextComponent("Pepega"), onPress);
         this.orderedText = message;
     }
 
-    public OrderedButtonWidget(int x, int y, int width, int height, FormattedCharSequence message, Button.OnPress onPress, Button.OnTooltip tooltipSupplier) {
+    public OrderedButtonWidget(int x, int y, int width, int height, FormattedCharSequence message, OnPress onPress, OnTooltip tooltipSupplier) {
         super(x, y, width, height, TextComponent.EMPTY, onPress, tooltipSupplier);
         this.orderedText = message;
     }

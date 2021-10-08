@@ -17,7 +17,7 @@ public abstract class MixinMouseHandler {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @Inject(at = @At("HEAD"), method = "onPress", cancellable = true)
+    @Inject(at = @At("HEAD"), method = "onPress")
     private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
         if (action == 1) {
             VoiceClientForge.getClientConfig().keyBindings.onKeyDown(InputConstants.Type.MOUSE.getOrCreate(button));

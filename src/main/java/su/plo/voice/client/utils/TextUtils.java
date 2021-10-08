@@ -10,12 +10,33 @@ import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class TextUtils {
+    private static final Pattern DEVICE_NAME = Pattern.compile("^(?:OpenAL.+ on )?(.*)$");
+
     public static List<Component> multiLine(String translation, int lines) {
         List<Component> list = new ArrayList<>();
         for (int i = 1; i < (lines + 1); i++) {
             list.add(new TranslatableComponent(translation + "_" + i));
+        }
+
+        return list;
+    }
+
+    public static String formatAlDeviceName(String deviceName) {
+        Matcher matcher = DEVICE_NAME.matcher(deviceName);
+        if (!matcher.matches()) {
+            return deviceName;
+        }
+        return matcher.group(1);
+    }
+
+    public static List<Component> formatAlDeviceNames(List<String> elements) {
+        List<Component> list = new ArrayList<>();
+        for (String element : elements) {
+            list.add(new TextComponent(formatAlDeviceName(element)));
         }
 
         return list;

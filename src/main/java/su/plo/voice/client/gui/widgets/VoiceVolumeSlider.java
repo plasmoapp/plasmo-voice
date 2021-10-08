@@ -2,12 +2,12 @@ package su.plo.voice.client.gui.widgets;
 
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.TextComponent;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.config.entries.DoubleConfigEntry;
 
 public class VoiceVolumeSlider extends AbstractSliderButton {
-    private final VoiceClientConfig.DoubleConfigEntry entry;
+    private final DoubleConfigEntry entry;
 
-    public VoiceVolumeSlider(int x, int y, int width, VoiceClientConfig.DoubleConfigEntry entry) {
+    public VoiceVolumeSlider(int x, int y, int width, DoubleConfigEntry entry) {
         super(x, y, width, 20, TextComponent.EMPTY, entry.get() / 2.0D);
         this.entry = entry;
         this.updateMessage();

@@ -1,25 +1,44 @@
 package su.plo.voice.client.gui.widgets;
 
 import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TextComponent;
-import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.config.entries.IntegerConfigEntry;
 
 public class ConfigIntegerSlider extends AbstractSliderButton {
-    private final VoiceClientConfig.IntegerConfigEntry entry;
+    private final IntegerConfigEntry entry;
+    private final Component suffix;
+    private final UpdateAction onUpdate;
 
-    public ConfigIntegerSlider(int x, int y, int width, VoiceClientConfig.IntegerConfigEntry entry) {
+    public ConfigIntegerSlider(int x, int y, int width, Component suffix, IntegerConfigEntry entry, UpdateAction onUpdate) {
         super(x, y, width, 20, TextComponent.EMPTY, 0.0D);
+        this.onUpdate = onUpdate;
+        this.suffix = suffix;
         this.entry = entry;
         this.updateValue();
         this.updateMessage();
     }
 
+    public ConfigIntegerSlider(int x, int y, int width, IntegerConfigEntry entry) {
+        this(x, y, width, null, entry, null);
+    }
+
     public void updateValue() {
         this.value = (double) (entry.get() - entry.getMin()) / (entry.getMax() - entry.getMin());
+        if (this.onUpdate != null) {
+            this.onUpdate.onUpdate(this.value);
+        }
+        this.updateMessage();
     }
 
     protected void updateMessage() {
-        this.setMessage(new TextComponent(String.valueOf((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin()))));
+        if (suffix != null) {
+            this.setMessage(new TextComponent(String.valueOf((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin())))
+                    .append(new TextComponent(" "))
+                    .append(suffix));
+        } else {
+            this.setMessage(new TextComponent(String.valueOf((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin()))));
+        }
     }
 
     public boolean isHovered() {
@@ -28,5 +47,9 @@ public class ConfigIntegerSlider extends AbstractSliderButton {
 
     protected void applyValue() {
         entry.set((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin()));
+    }
+
+    public interface UpdateAction {
+        void onUpdate(double value);
     }
 }

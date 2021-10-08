@@ -13,13 +13,8 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
-import su.plo.voice.client.sound.DataLines;
-import su.plo.voice.client.sound.Recorder;
-import su.plo.voice.client.utils.AudioUtils;
+import su.plo.voice.client.sound.openal.CustomSource;
 
-import javax.sound.sampled.FloatControl;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
 import java.util.List;
 
 public class MicrophoneThresholdWidget extends AbstractSliderButton {
@@ -29,9 +24,9 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
     private List<ImageButton> microphoneTest;
 
     public MicrophoneThresholdWidget(int x, int y, int width, boolean slider, VoiceSettingsScreen parent) {
-        super(x, y, width - 23, 20, TextComponent.EMPTY, AudioUtils.dbToPerc(VoiceClient.getClientConfig().voiceActivationThreshold.get()));
+        super(x, y, width - 23, 20, TextComponent.EMPTY, 0.0D);
         this.slider = slider;
-        this.updateMessage();
+        this.updateValue();
 
         ImageButton speakerHide = new ImageButton(0, 0, 20, 20, 0, 72, 20,
                 VoiceClient.ICONS, 256, 256, button -> {
@@ -43,21 +38,11 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
             this.microphoneTest.get(0).visible = true;
             this.microphoneTest.get(1).visible = false;
 
-            try {
-                SourceDataLine speaker = DataLines.getDefaultSpeaker();
-                if (speaker == null) {
-                    throw new LineUnavailableException("No speaker");
-                }
-                speaker.open(Recorder.getFormat());
-                speaker.start();
-
-                FloatControl gainControl = (FloatControl) speaker.getControl(FloatControl.Type.MASTER_GAIN);
-
-                parent.setSpeaker(speaker);
-                parent.setGainControl(gainControl);
-            } catch (LineUnavailableException e) {
-                e.printStackTrace();
-            }
+            VoiceClient.getSoundEngine().runInContext(() -> {
+                CustomSource source = VoiceClient.getSoundEngine().createSource();
+                source.setRelative(true);
+                parent.setSource(source);
+            });
         });
 
         speakerHide.visible = false;
@@ -69,26 +54,25 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
         this.microphoneTest.get(0).visible = false;
         this.microphoneTest.get(1).visible = true;
 
-        if (parent.getSpeaker() != null) {
-            parent.getSpeaker().stop();
-            parent.getSpeaker().flush();
-            parent.getSpeaker().close();
-            parent.setSpeaker(null);
-            parent.setGainControl(null);
+        if (parent.getSource() != null) {
+            VoiceClient.getSoundEngine().runInContext(() -> {
+                parent.getSource().close();
+                parent.setSource(null);
+            });
         }
     }
 
     public void updateValue() {
-        this.value = AudioUtils.dbToPerc(VoiceClient.getClientConfig().voiceActivationThreshold.get());
+        this.value = 1 - (Math.max(-60, VoiceClient.getClientConfig().voiceActivationThreshold.get()) / -60);
         this.updateMessage();
     }
 
     protected void updateMessage() {
-        this.setMessage(new TextComponent(Math.round(AudioUtils.percToDb(this.value)) + " dB"));
+        this.setMessage(new TextComponent(Math.round((1 - this.value) * -60) + " dB"));
     }
 
     protected void applyValue() {
-        VoiceClient.getClientConfig().voiceActivationThreshold.set(AudioUtils.percToDb(this.value));
+        VoiceClient.getClientConfig().voiceActivationThreshold.set((double) Math.round((1 - this.value) * -60));
     }
 
     @Override
@@ -139,6 +123,9 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
             int j = this.active ? 16777215 : 10526880;
             drawCenteredString(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
         }
+
+        //            drawCenteredString(matrices, textRenderer, new TextComponent(String.format("%.2f dB", parent.getHighestDB())),
+        //            this.x + this.width / 2, this.y + (this.height - 8) / 2, 16777215);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         for (Button button : this.microphoneTest) {
