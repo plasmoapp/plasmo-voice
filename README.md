@@ -1,46 +1,63 @@
-![](https://imgur.com/TcdCDat.png)
-# Plasmo Voice Chat ![](https://cf.way2muchnoise.eu/467028.svg) ![](https://cf.way2muchnoise.eu/versions/467028.svg)
+![https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client](http://cf.way2muchnoise.eu/full_467028_downloads.svg)
+![https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client](http://cf.way2muchnoise.eu/versions/467028_all.svg)
+![https://discord.gg/uueEqzwCJJ](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)
+<div align="center">
+  <img src="https://imgur.com/TcdCDat.png"> 
+  <h1>Plasmo Voice Chat</h1>
+  <div>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">CurseForge</a> | <a href="https://www.spigotmc.org/resources/plasmo-voice-   server.91064/">Spigot</a> | <a href="https://github.com/plasmoapp/plasmo-voice">GitHub</a> | <a href="https://github.com/plasmoapp/plasmo-voice/wiki">Wiki</a> | <a href="https://discord.com/invite/uueEqzwCJJ">Discord</a>
+  </div>
+</div>
+
+## Proximity voice chat for Spigot servers
 The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrifice Spigot plugins and the convenience of players who don't use mods. Besides that, it's just a great proximity voice chat with 3D audio and lots of features.
 
 Installing Plasmo Voice on the server is as easy as installing any other Spigot plugin. Installing mod on the client is optional and you can join the server without it.
 
-Players need to install the Fabric or Forge mod for Voice Chat to work, but for players without any mods installed nothing will change. They are still able to join and play as usual.
+Players need to install the Fabric or Forge mod on the client for the voice chat to work. Players without the mod are still able to join and play as usual.
 
-## Links
-- [CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
-- [Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
-- [GitHub](https://github.com/plasmoapp/plasmo-voice/)
-- [Wiki](https://github.com/plasmoapp/plasmo-voice/wiki/)
-- [Discord](https://discord.gg/uueEqzwCJJ)
+## Features
+![](https://imgur.com/9MZIepC.png)
+![](https://imgur.com/AtOUfTr.png)
+![](https://imgur.com/CGEVrre.png)
+![](https://imgur.com/DRmG6qP.png)
+<img src="https://imgur.com/xygj7kJ.png" width="1280px">
+<img src="https://imgur.com/yF7CGLv.png" width="1280px">
 
-## Made for big role-playing events
-- Data is compressed with **Opus Сodec.** Which means low traffic usage and higher quality. Tested with 100 players talking at once.
-- Change **voice chat distance** on the go, so players can adjust it when in crowded places.
-- You can enable an **experimental sound-occlusion feature**, which will muffle the sound if blocks are in the way. Great for situations where different players are talking in rooms close to each other. 
-- **Priority speaking**. Like in Discord, allows you to bind a separate push-to-talk button with a greater, adjustable distance. Requires permission. 
+## Client features
+- **RNNoise noise reduction.**
+- **OpenAL sound engine, great audio positioning.**
+- **Compressor & Limiter.** Makes loud volume quieter, saving your ears from loud noises.
+- **Compatibility with [Sound Physics](https://www.curseforge.com/minecraft/mc-mods/sound-physics-fabric).**
+- **Change voice chat distance.**
+- **Optional sound-occlusion.** Muffles the sound if blocks are in the way.
+- **Priority speaking.** Bind a separate push-to-talk button with a greater, adjustable distance. Requires permission.
+- **Select output and input devices.**
+- **Choose between Push to Talk or Voice Activation.**
+- **Optional Directional Sources.** Makes the sound source quieter if it's not looking directly at you.
+- **Choose the position of the GUI icons and toggle the visibility of the player icons.**
+- **Mute and change the volume of the players in the Minecraft social menu.**
+- **Hold `RBM` while looking at the player, and then use the scroll wheel to adjust the volume.**
 
-## Other features
-- Select output and input devices.
-- Server muting with chat commands.
-- Client muting integrated with Minecraft social menu.
-- Choose between Push to Talk or Voice Activation.
-- Indicators for players without the mod installed.
-- Everything is configurable with config and permissions.
+![](https://imgur.com/56clKq4.png)
 
-## HUD Icons
-![](https://imgur.com/PiM8Cxm.png)
+## Server features
 
-## Player Icons
-![](https://imgur.com/Wf5aFLF.png)
-
-## Configuration Menu
-![](https://imgur.com/Fm2YtZz.png)
+- **Opus Сodec.** Low traffic usage and higher quality.
+- **Configurable voice distance.**
+- **Server muting with chat commands.**
+- **Option to kick players who don't have the client mod installed.**
+- **Permissions for priority, speaking, voice activation, and muting.**
+- **Placeholder API support.**
+- **Vanish support.**
+- **Proxy support.**
 
 ## Download
 Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric OR Forge mod. There is a different file for each version, check files on CurseForge and choose the right one. Mind the difference when installing Plasmo Voice.
 - [Plasmo Voice Server on Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
 - [Plasmo Voice Client on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
+
 
 ## Default key bindings
 
@@ -51,7 +68,7 @@ Push-to-talk button | `Left Alt`
 Priority Push-to-talk button | `none` 
 Mute your microphone | `M`
 
-Make sure to rebind the push-to-talk key to something you're used to. Also, check out voice settings by pressing `V`. Go into the Audio tab and make sure you have the right devices selected. Test your mic by pressing the `Enable microphone testing` button.
+Check out voice settings by pressing `V`. Make sure you have the right devices selected and your microphone is working.
 
 
 ## Wiki
@@ -62,5 +79,5 @@ Make sure to rebind the push-to-talk key to something you're used to. Also, chec
 - [Troubleshooting and FAQ](https://github.com/plasmoapp/plasmo-voice/wiki/Troubleshooting-&-FAQ)
 
 ## Credits
-- Plasmo Voice is based on [Simple Voice Chat](https://github.com/henkelmax/simple-voice-chat) by [henkelmax](https://github.com/henkelmax)
+- Used to contain audio engine implementation and menu textures from [**Simple Voice Chat**](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat), but since the 1.1.0 version, it no longer does.
 - Originaly made for [Plasmo](https://mc.plo.su)
