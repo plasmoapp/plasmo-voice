@@ -51,6 +51,8 @@ Players need to install the Fabric or Forge mod on the client for the voice chat
 
 ![](https://imgur.com/56clKq4.png)
 
+Check out voice settings by pressing `V`. Make sure you have the right devices selected and your microphone is working.
+
 ## Server features
 
 - **Opus Сodec.** Low traffic usage and higher quality.
@@ -67,19 +69,6 @@ Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric or Forge
 - [Plasmo Voice Server on Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
 - [Plasmo Voice Client on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
-
-
-## Default key bindings
-
-Name | Default Key
------ | -----
-Open voice settings | `V`
-Push-to-talk button | `Left Alt` 
-Priority Push-to-talk button | `none` 
-Mute your microphone | `M`
-
-Check out voice settings by pressing `V`. Make sure you have the right devices selected and your microphone is working.
-
 
 ## Wiki
 - [Wiki](https://github.com/plasmoapp/plasmo-voice/wiki/)
