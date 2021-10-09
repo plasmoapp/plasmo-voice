@@ -1,11 +1,21 @@
-![https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client](http://cf.way2muchnoise.eu/full_467028_downloads.svg)
-![https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client](http://cf.way2muchnoise.eu/versions/467028_all.svg)
-![https://discord.gg/uueEqzwCJJ](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)
+[![](http://cf.way2muchnoise.eu/full_467028_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
+[![](http://cf.way2muchnoise.eu/versions/467028_all.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
+[![](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
+[![](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases)
+
 <div align="center">
   <img src="https://imgur.com/TcdCDat.png"> 
   <h1>Plasmo Voice Chat</h1>
   <div>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">CurseForge</a> | <a href="https://www.spigotmc.org/resources/plasmo-voice-   server.91064/">Spigot</a> | <a href="https://github.com/plasmoapp/plasmo-voice">GitHub</a> | <a href="https://github.com/plasmoapp/plasmo-voice/wiki">Wiki</a> | <a href="https://discord.com/invite/uueEqzwCJJ">Discord</a>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">CurseForge</a>
+    <span> | </span>
+    <a href="https://www.spigotmc.org/resources/plasmo-voice-server.91064/">Spigot</a>
+    <span> | </span>
+    <a href="https://github.com/plasmoapp/plasmo-voice">GitHub</a>
+    <span> | </span>
+    <a href="https://github.com/plasmoapp/plasmo-voice/wiki">Wiki</a>
+    <span> | </span>
+    <a href="https://discord.com/invite/uueEqzwCJJ">Discord</a>
   </div>
 </div>
 
@@ -53,7 +63,7 @@ Players need to install the Fabric or Forge mod on the client for the voice chat
 - **Proxy support.**
 
 ## Download
-Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric OR Forge mod. There is a different file for each version, check files on CurseForge and choose the right one. Mind the difference when installing Plasmo Voice.
+Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric or Forge mod. There is a different file for each version, check files on CurseForge and choose the right one. Mind the difference when installing Plasmo Voice.
 - [Plasmo Voice Server on Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
 - [Plasmo Voice Client on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
