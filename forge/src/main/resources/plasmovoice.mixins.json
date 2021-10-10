@@ -1,0 +1,21 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "su.plo.voice.client.mixin",
+    "compatibilityLevel": "JAVA_16",
+    "refmap": "plasmovoice-forge-refmap.json",
+    "mixins": [
+        "MixinClientSuggestionProvider",
+        "MixinKeyboardHandler",
+        "MixinLevelRenderer",
+        "MixinMinecraft",
+        "MixinMouseHandler",
+        "MixinPlayerEntry",
+        "MixinPlayerRenderer",
+        "MixinSkinManager",
+        "MixinSoundEngine"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}
