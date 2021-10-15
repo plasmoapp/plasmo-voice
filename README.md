@@ -61,6 +61,8 @@ Check out voice settings by pressing `V`. Make sure you have the right devices s
 - **Server muting with chat commands.**
 - **Option to kick players who don't have the client mod installed.**
 - **Permissions for priority, speaking, voice activation, and muting.**
+- **Permissions work on Fabric & Forge with the /vperms command.**
+- **Voice chat works in singleplayer and when using the Open to LAN feature.**
 - **Placeholder API support.**
 - **Vanish support.**
 - **Proxy support.**
