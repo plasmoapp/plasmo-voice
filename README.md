@@ -4,8 +4,7 @@
 [![](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases)
 
 <div align="center">
-  <img src="https://imgur.com/TcdCDat.png"> 
-  <h1>Plasmo Voice Chat</h1>
+  <img src="https://imgur.com/3ccgCRz.png"> 
   <div>
     <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">CurseForge</a>
     <span> | </span>
@@ -19,12 +18,14 @@
   </div>
 </div>
 
-## Proximity voice chat for Spigot servers
-The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrifice Spigot plugins and the convenience of players who don't use mods. Besides that, it's just a great proximity voice chat with 3D audio and lots of features.
-
-Installing Plasmo Voice on the server is as easy as installing any other Spigot plugin. Installing mod on the client is optional and you can join the server without it.
+## Available for Spigot, Fabric, and Forge
+Spigot and Fabric servers are compatible with both Fabric and Forge clients. Forge server is for Forge clients only.
 
 Players need to install the Fabric or Forge mod on the client for the voice chat to work. Players without the mod are still able to join and play as usual.
+
+![](https://i.imgur.com/nE34app.png)
+
+*Assuming Plasmo Voice is installed on both client and the server*
 
 ## Features
 ![](https://imgur.com/9MZIepC.png)
@@ -39,7 +40,7 @@ Players need to install the Fabric or Forge mod on the client for the voice chat
 - **OpenAL sound engine, great audio positioning.**
 - **Compressor & Limiter.** Makes loud volume quieter, saving your ears from loud noises.
 - **Compatibility with [Sound Physics](https://www.curseforge.com/minecraft/mc-mods/sound-physics-fabric).**
-- **Change voice chat distance.**
+- **Change voice chat distance.**
 - **Optional sound-occlusion.** Muffles the sound if blocks are in the way.
 - **Priority speaking.** Bind a separate push-to-talk button with a greater, adjustable distance. Requires permission.
 - **Select output and input devices.**
@@ -55,19 +56,21 @@ Check out voice settings by pressing `V`. Make sure you have the right devices s
 
 ## Server features
 
-- **Opus Сodec.** Low traffic usage and higher quality.
+- **Opus Сodec.** Low traffic usage and higher quality.
 - **Configurable voice distance.**
 - **Server muting with chat commands.**
 - **Option to kick players who don't have the client mod installed.**
 - **Permissions for priority, speaking, voice activation, and muting.**
+- **Permissions work on Fabric & Forge with the /vperms command.**
+- **Voice chat works in singleplayer and when using the Open to LAN feature.**
 - **Placeholder API support.**
 - **Vanish support.**
 - **Proxy support.**
 
 ## Download
-Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric or Forge mod. There is a different file for each version, check files on CurseForge and choose the right one. Mind the difference when installing Plasmo Voice.
+
 - [Plasmo Voice Server on Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
-- [Plasmo Voice Client on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
+- [Plasmo Voice on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
 
 ## Wiki
