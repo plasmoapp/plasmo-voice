@@ -66,9 +66,9 @@ Check out voice settings by pressing `V`. Make sure you have the right devices s
 - **Proxy support.**
 
 ## Download
-Plasmo Voice Server is a Spigot plugin. Plasmo Voice Client is a Fabric or Forge mod. There is a different file for each version, check files on CurseForge and choose the right one. Mind the difference when installing Plasmo Voice.
+
 - [Plasmo Voice Server on Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
-- [Plasmo Voice Client on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
+- [Plasmo Voice on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
 
 ## Wiki
