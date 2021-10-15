@@ -1,6 +1,6 @@
 udp:
   ip: 0.0.0.0
-  port: 60606
+  port: 0
 
 # Supported sample rates:
 # 8000
@@ -21,6 +21,21 @@ default_distance: 16
 # Max priority distance
 # 0 = infinite
 max_priority_distance: 0
+
+# default: Everyone have permission by default
+# op: Only operators have permission
+# Use /vperms command to give permissions to non-operators
+permissions:
+  "voice.list": default
+  "voice.reconnect": default
+  "voice.speak": default
+  "voice.activation": default
+  "voice.priority": op
+  "voice.mute": op
+  "voice.unmute": op
+  "voice.mutelist": op
+  "voice.reload": op
+  "voice.permissions": op
 
 # Example:
 # Voice distance is 16
@@ -64,6 +79,14 @@ messages:
   reconnect_sent: "Reconnect packet sent"
   reloaded: "Config reloaded"
   mod_missing_kick_message: "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client"
+
+  permissions:
+    not_found: "Permission not found"
+    already: "{player} already has {permission} ({value})"
+    set: "Set {permission} to {value} for {player}"
+    no_permission: "{player} does not have {permission}"
+    unset: "Unset {permission} for {player}"
+    check: "{player} permission check for {permission}: {value}"
 
   help:
     mute: "Usage: /vmute <player> [duration] [reason]"

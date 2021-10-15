@@ -58,6 +58,12 @@ public class OpusDecoder {
         return outData;
     }
 
+    public void reset() {
+        if (!this.closed) {
+            Opus.INSTANCE.opus_decoder_ctl(opusDecoder, Opus.INSTANCE.OPUS_RESET_STATE);
+        }
+    }
+
     public void close() {
         if(this.closed) {
             return;

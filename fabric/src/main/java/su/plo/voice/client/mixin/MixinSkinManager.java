@@ -5,7 +5,6 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.Util;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.texture.HttpTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -45,12 +44,15 @@ public class MixinSkinManager implements IPlayerSkinProvider {
                 File file2 = new File(file, string);
                 if (file2.exists()) {
                     if (System.currentTimeMillis() - file2.lastModified() < 86400L) {
-                        HttpTexture playerSkinTexture = new HttpTexture(file2, texture.getUrl(), DefaultPlayerSkin.getDefaultSkin(), false, () -> {
-                            if (callback != null) {
-                                callback.onSkinTextureAvailable(MinecraftProfileTexture.Type.CAPE, identifier, texture);
-                            }
+
+                        RenderSystem.recordRenderCall(() -> {
+                            HttpTexture playerSkinTexture = new HttpTexture(file2, texture.getUrl(), DefaultPlayerSkin.getDefaultSkin(), false, () -> {
+                                if (callback != null) {
+                                    callback.onSkinTextureAvailable(MinecraftProfileTexture.Type.CAPE, identifier, texture);
+                                }
+                            });
+                            this.textureManager.register(identifier, playerSkinTexture);
                         });
-                        this.textureManager.register(identifier, playerSkinTexture);
                         return;
                     } else {
                         file2.delete();
@@ -63,15 +65,13 @@ public class MixinSkinManager implements IPlayerSkinProvider {
                 connection.setUseCaches(false);
 
                 if (connection.getResponseCode() == 200) {
-                    Minecraft.getInstance().execute(() -> {
-                        RenderSystem.recordRenderCall(() -> {
-                            HttpTexture playerSkinTexture = new HttpTexture(file2, texture.getUrl(), DefaultPlayerSkin.getDefaultSkin(), false, () -> {
-                                if (callback != null) {
-                                    callback.onSkinTextureAvailable(MinecraftProfileTexture.Type.CAPE, identifier, texture);
-                                }
-                            });
-                            this.textureManager.register(identifier, playerSkinTexture);
+                    RenderSystem.recordRenderCall(() -> {
+                        HttpTexture playerSkinTexture = new HttpTexture(file2, texture.getUrl(), DefaultPlayerSkin.getDefaultSkin(), false, () -> {
+                            if (callback != null) {
+                                callback.onSkinTextureAvailable(MinecraftProfileTexture.Type.CAPE, identifier, texture);
+                            }
                         });
+                        this.textureManager.register(identifier, playerSkinTexture);
                     });
 
                     // todo optifine

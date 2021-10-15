@@ -1,0 +1,90 @@
+udp:
+  ip: 0.0.0.0
+  port: 0
+
+# Supported sample rates:
+# 8000
+# 12000
+# 24000
+# 48000
+sample_rate: 48000
+
+# Voice distance
+distances:
+  - 8
+  - 16
+  - 24
+# Default voice distance
+# If 0 distance will be first element from distances
+default_distance: 16
+
+# Max priority distance
+# 0 = infinite
+max_priority_distance: 0
+
+# default: Everyone have permission by default
+# op: Only operators have permission
+# Use /vperms command to give permissions to non-operators
+permissions:
+  "voice.list": default
+  "voice.reconnect": default
+  "voice.speak": default
+  "voice.activation": default
+  "voice.priority": op
+  "voice.mute": op
+  "voice.unmute": op
+  "voice.mutelist": op
+  "voice.reload": op
+  "voice.permissions": op
+
+# Example:
+# Voice distance is 16
+# Fade distance will be 16/8=2
+# Should be int >= 1
+fade_divisor: 8
+priority_fade_divisor: 8
+
+disable_voice_activation: false
+
+# Disable connection logs (New client, Remove client, client timed out)
+disable_logs: true
+
+messages:
+  prefix: "&6[Plasmo Voice]&7 "
+  list: "Clients ({count}/{online_players}): {players}"
+  player_not_found: "Player not found"
+  muted: "%s muted"
+  not_muted: "%s not muted"
+  unmuted: "%s unmuted"
+  muted_list: "Muted players:"
+  muted_list_entry: "&7&l{player}&7, expires: {expires}. Reason: {reason}"
+  muted_list_empty: "No players are muted"
+  mute_expires_format: "yyyy.MM.dd 'at' HH:mm:ss"
+  mute_expires_never: "never"
+  player_muted_perm: "You've been permanently muted in voice chat. Reason: {reason}"
+  player_muted: "You've been muted in voice chat {duration}. Reason: {reason}"
+  mute_no_reason: "not specified"
+  mute_durations:
+    seconds: "for %s sec"
+    minutes: "for %s min"
+    hours: "for %s h"
+    days: "for %s d"
+    weeks: "for %s w"
+  reconnect_sent: "Reconnect packet sent"
+  reloaded: "Config reloaded"
+  mod_missing_kick_message: "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client"
+
+  permissions:
+    not_found: "Permission not found"
+    already: "{player} already has {permission} ({value})"
+    set: "Set {permission} to {value} for {player}"
+    no_permission: "{player} does not have {permission}"
+    unset: "Unset {permission} for {player}"
+    check: "{player} permission check for {permission}: {value}"
+
+  help:
+    mute: "Usage: /vmute <player> [duration] [reason]"
+    unmute: "Usage: /vunmute <player>"
+
+# do not touch
+config_version: 1.0.2

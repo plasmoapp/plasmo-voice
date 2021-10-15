@@ -62,9 +62,9 @@ public class SocketClientUDPQueue extends Thread {
                         VoiceClient.recorder.start();
 
                         if (client.screen instanceof VoiceNotAvailableScreen) {
-                            VoiceClient.runNextTick(() -> {
-                                client.setScreen(new VoiceSettingsScreen());
-                            });
+                            client.execute(() ->
+                                client.setScreen(new VoiceSettingsScreen())
+                            );
                         }
                     }
                 } else if (message.getPacket() instanceof VoiceServerPacket packet) {

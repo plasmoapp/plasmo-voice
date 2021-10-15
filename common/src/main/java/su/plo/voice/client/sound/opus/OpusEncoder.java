@@ -52,8 +52,14 @@ public class OpusEncoder {
         return audio;
     }
 
+    public void reset() {
+        if (!this.closed) {
+            Opus.INSTANCE.opus_encoder_ctl(opusEncoder, Opus.INSTANCE.OPUS_RESET_STATE);
+        }
+    }
+
     public void close() {
-        if(this.closed) {
+        if (this.closed) {
             return;
         }
 

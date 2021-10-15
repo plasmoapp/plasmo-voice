@@ -1,5 +1,6 @@
 package su.plo.voice.client.sound.openal;
 
+import lombok.SneakyThrows;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL10;
@@ -19,6 +20,9 @@ public class CustomSource {
     private final int format;
     private final LinkedList<Integer> freeBuffers = new LinkedList<>();
     protected Vec3 pos;
+
+    private long lastEnvCalculated;
+    private Vec3 lastEnvPos;
 
     @Nullable
     static CustomSource create() {
@@ -60,12 +64,19 @@ public class CustomSource {
         }
     }
 
-    public void prePlay() {
-    }
-
+    @SneakyThrows
     public void play() {
         if (pos == null) {
             return;
+        }
+
+        if (CustomSoundEngine.soundPhysicsPlaySound != null) {
+            if (System.currentTimeMillis() - lastEnvCalculated > 1000 ||
+                    (lastEnvPos != null && lastEnvPos.distanceTo(pos) > 1)) {
+                CustomSoundEngine.soundPhysicsPlaySound.invoke(null, pos.x(), pos.y(), pos.z(), pointer);
+                lastEnvPos = pos;
+                lastEnvCalculated = System.currentTimeMillis();
+            }
         }
 
         if (this.getSourceState() != AL10.AL_PLAYING) {

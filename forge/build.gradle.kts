@@ -37,6 +37,10 @@ dependencies {
         isTransitive = false
     }
 
+    // YAML for server config
+    implementation("org.yaml:snakeyaml:1.29")
+    "shadowCommon"("org.yaml:snakeyaml:1.29")
+
     // Plasmo Voice protocol
     implementation("su.plo.voice:common:1.0.0")
     "shadowCommon"("su.plo.voice:common:1.0.0")

@@ -16,13 +16,15 @@ public abstract class MixinMinecraft {
 
     @Shadow @Nullable public abstract ServerData getCurrentServer();
 
+    @Shadow public abstract boolean isLocalServer();
+
     @Inject(at = @At("HEAD"), method = "clearLevel()V")
     public void onDisconnect(CallbackInfo info) {
-        if (this.getCurrentServer() == null) {
+        if (this.getCurrentServer() == null && !this.isLocalServer()) {
             return;
         }
 
-        VoiceClientForge.LOGGER.info("Disconnect from " + this.getCurrentServer().ip);
+        VoiceClientForge.LOGGER.info("Disconnect from " + (getCurrentServer() == null ? "localhost" : getCurrentServer().ip));
 
         VoiceClientForge.getClientConfig().save();
         VoiceClientForge.disconnect();

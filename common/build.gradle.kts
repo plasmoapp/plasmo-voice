@@ -17,6 +17,9 @@ dependencies {
     testCompileOnly("org.projectlombok:lombok:1.18.20")
     testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
 
+    // YAML for server config
+    compileOnly("org.yaml:snakeyaml:1.29")
+
     // Plasmo Voice protocol
     compileOnly("su.plo.voice:common:1.0.0")
 

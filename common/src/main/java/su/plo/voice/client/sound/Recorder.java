@@ -150,6 +150,8 @@ public class Recorder implements Runnable {
                 break;
             }
 
+            byte[] normBuffer = readBuffer();
+
             if (!VoiceClient.isConnected()) {
                 this.running = false;
                 break;
@@ -161,37 +163,32 @@ public class Recorder implements Runnable {
                 VoiceClient.setSpeaking(false);
                 VoiceClient.setSpeakingPriority(false);
 
-                if (client.screen instanceof VoiceSettingsScreen) {
-                    readBuffer();
-                } else {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (InterruptedException ignored) {
-                    }
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException ignored) {
                 }
+                continue;
+            }
+
+            if (normBuffer == null) {
                 continue;
             }
 
             if (!VoiceClient.getClientConfig().voiceActivation.get() ||
                     VoiceClient.getServerConfig().isVoiceActivationDisabled()) {
-                pushToTalk();
+                pushToTalk(normBuffer);
             } else {
-                voiceActivation();
+                voiceActivation(normBuffer);
             }
         }
 
         this.close();
     }
 
-    private void voiceActivation() {
+    private void voiceActivation(byte[] normBuffer) {
         boolean priorityPressed = VoiceClient.getClientConfig().keyBindings.pushToTalk.get().isPressed()
                 && VoiceClient.getServerConfig().isPriority()
                 && VoiceClient.getServerConfig().getPriorityDistance() > VoiceClient.getServerConfig().getMaxDistance();
-
-        byte[] normBuffer = readBuffer();
-        if (normBuffer == null) {
-            return;
-        }
 
         if (VoiceClient.isMicrophoneLoopback()) {
             if (VoiceClient.isSpeaking()) {
@@ -238,7 +235,7 @@ public class Recorder implements Runnable {
         this.lastBuffer = normBuffer;
     }
 
-    private void pushToTalk() {
+    private void pushToTalk(byte[] normBuffer) {
         boolean priorityPressed = VoiceClient.getClientConfig().keyBindings.priorityPushToTalk.get().isPressed()
                 && VoiceClient.getServerConfig().isPriority()
                 && VoiceClient.getServerConfig().getPriorityDistance() > VoiceClient.getServerConfig().getMaxDistance();
@@ -282,10 +279,7 @@ public class Recorder implements Runnable {
             return;
         }
 
-        byte[] normBuffer = readBuffer();
-        if (normBuffer != null) {
-            this.sendPacket(normBuffer);
-        }
+        this.sendPacket(normBuffer);
     }
 
     private byte[] readBuffer() {
@@ -356,6 +350,8 @@ public class Recorder implements Runnable {
             this.running = false;
             return;
         }
+
+        this.encoder.reset();
 
         if (!VoiceClient.socketUDP.isClosed()) {
             try {

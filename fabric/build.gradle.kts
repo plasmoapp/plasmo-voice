@@ -52,6 +52,10 @@ dependencies {
     implementation("su.plo.voice:common:1.0.0")
     "shadowCommon"("su.plo.voice:common:1.0.0")
 
+    // YAML for server config
+    implementation("org.yaml:snakeyaml:1.29")
+    "shadowCommon"("org.yaml:snakeyaml:1.29")
+
     // Opus
     implementation("su.plo.voice:opus:1.1.2")
     "shadowCommon"("su.plo.voice:opus:1.1.2")

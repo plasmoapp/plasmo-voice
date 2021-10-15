@@ -14,13 +14,15 @@ import su.plo.voice.client.VoiceClient;
 public abstract class MixinMinecraft {
     @Shadow @Nullable public abstract ServerData getCurrentServer();
 
+    @Shadow public abstract boolean isLocalServer();
+
     @Inject(at = @At("HEAD"), method = "clearLevel()V")
     public void onDisconnect(CallbackInfo info) {
-        if (this.getCurrentServer() == null) {
+        if (this.getCurrentServer() == null && !this.isLocalServer()) {
             return;
         }
 
-        VoiceClient.LOGGER.info("Disconnect from " + this.getCurrentServer().ip);
+        VoiceClient.LOGGER.info("Disconnect from " + (getCurrentServer() == null ? "localhost" : getCurrentServer().ip));
 
         VoiceClient.getClientConfig().save();
         VoiceClient.disconnect();

@@ -19,7 +19,7 @@
         "client": [
             "su.plo.voice.client.VoiceClientFabric"
         ],
-        "server": [
+        "main": [
             "su.plo.voice.server.VoiceServerFabric"
         ]
     },

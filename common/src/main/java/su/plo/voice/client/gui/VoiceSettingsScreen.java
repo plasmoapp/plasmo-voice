@@ -175,6 +175,7 @@ public class VoiceSettingsScreen extends Screen {
 
         this.titleWidth = font.width(title);
         clearWidgets();
+        // todo optimization
         addTab(new TranslatableComponent("gui.plasmo_voice.general"), new GeneralTabWidget(client, this));
         addTab(new TranslatableComponent("gui.plasmo_voice.advanced"), new AdvancedTabWidget(client, this));
         addTab(new TranslatableComponent("gui.plasmo_voice.hotkeys"), new KeyBindingsTabWidget(client, this));

@@ -13,21 +13,15 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.TranslatableComponent;
-import net.minecraft.resources.ResourceLocation;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.VoiceHud;
 import su.plo.voice.client.gui.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
-import su.plo.voice.client.network.VoiceNetworkHandler;
-import su.plo.voice.client.sound.SoundEngineFabric;
+import su.plo.voice.client.network.ClientNetworkHandlerFabric;
 
 @Environment(EnvType.CLIENT)
 public class VoiceClientFabric extends VoiceClient implements ClientModInitializer {
-    static {
-        soundEngine = new SoundEngineFabric();
-    }
-
     @Override
     public void onInitializeClient() {
         super.initialize();
@@ -39,8 +33,8 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
                         "Plasmo Voice")
         );
 
-        VoiceNetworkHandler network = new VoiceNetworkHandler();
-        ClientPlayNetworking.registerGlobalReceiver(new ResourceLocation("plasmo:voice"), network::handle);
+        ClientNetworkHandlerFabric network = new ClientNetworkHandlerFabric();
+        ClientPlayNetworking.registerGlobalReceiver(PLASMO_VOICE, network::handle);
 
         ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("vc")
                 .then(ClientCommandManager.literal("muteall")
@@ -104,8 +98,6 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
                                 }))));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            tick();
-
             final LocalPlayer player = client.player;
             if (player == null) {
                 return;

@@ -1,6 +1,5 @@
 package su.plo.voice.client;
 
-import com.google.common.collect.Queues;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.KeyMapping;
@@ -19,17 +18,14 @@ import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Recorder;
 import su.plo.voice.client.sound.openal.CustomSoundEngine;
 
-import java.util.Queue;
 import java.util.UUID;
 
 public class VoiceClient {
     public static final ResourceLocation PLASMO_VOICE = new ResourceLocation("plasmo:voice");
-    public static final String VERSION = "1.1.0";
+    public static final String VERSION = "1.2.0";
     public static final String PROTOCOL_VERSION = "1.0.0";
     public static final Logger LOGGER = LogManager.getLogger("Plasmo Voice");
-    public static final UUID NIL_UUID = UUID.fromString("00000000-0000-0000-0000-000000000000");
-
-    private static final Queue<Runnable> runTasksLater = Queues.newConcurrentLinkedQueue();
+    public static final UUID NIL_UUID = new UUID(0, 0);
 
     @Getter
     private static ClientConfig clientConfig;
@@ -43,7 +39,7 @@ public class VoiceClient {
     public static SocketClientUDP socketUDP;
     public static Recorder recorder;
     @Getter
-    public static CustomSoundEngine soundEngine;
+    public static final CustomSoundEngine soundEngine = new CustomSoundEngine();
 
     @Setter
     @Getter
@@ -57,16 +53,6 @@ public class VoiceClient {
 
     // icons
     public static final ResourceLocation ICONS = new ResourceLocation("plasmo_voice", "textures/gui/icons.png");
-
-    public static void runNextTick(Runnable runnable) {
-        runTasksLater.add(runnable);
-    }
-
-    public static void tick() {
-        while (!runTasksLater.isEmpty()) {
-            runTasksLater.poll().run();
-        }
-    }
 
     public void initialize() {
         Minecraft minecraft = Minecraft.getInstance();

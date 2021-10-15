@@ -52,7 +52,7 @@ public class SocketClientUDP extends Thread {
             if (client.screen instanceof VoiceNotAvailableScreen screen) {
                 screen.setConnecting();
             } else if (client.screen instanceof VoiceSettingsScreen) {
-                VoiceClient.runNextTick(() -> {
+                client.execute(() -> {
                     VoiceNotAvailableScreen screen = new VoiceNotAvailableScreen();
                     screen.setConnecting();
                     client.setScreen(screen);
@@ -68,7 +68,7 @@ public class SocketClientUDP extends Thread {
             if (client.screen instanceof VoiceNotAvailableScreen screen) {
                 screen.setCannotConnect();
             } else if (client.screen instanceof VoiceSettingsScreen) {
-                VoiceClient.runNextTick(() -> {
+                client.execute(() -> {
                     VoiceNotAvailableScreen screen = new VoiceNotAvailableScreen();
                     screen.setCannotConnect();
                     client.setScreen(screen);
@@ -83,9 +83,9 @@ public class SocketClientUDP extends Thread {
 
     public void close() {
         if (client.screen instanceof VoiceSettingsScreen) {
-            VoiceClient.runNextTick(() -> {
-                client.setScreen(new VoiceNotAvailableScreen());
-            });
+            client.execute(() ->
+                client.setScreen(new VoiceNotAvailableScreen())
+            );
         }
 
         VoiceClient.LOGGER.info("UDP closed");
