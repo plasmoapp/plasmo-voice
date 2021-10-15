@@ -4,8 +4,7 @@
 [![](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases)
 
 <div align="center">
-  <img src="https://imgur.com/TcdCDat.png"> 
-  <h1>Plasmo Voice Chat</h1>
+  <img src="https://imgur.com/3ccgCRz.png"> 
   <div>
     <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">CurseForge</a>
     <span> | </span>
@@ -19,12 +18,14 @@
   </div>
 </div>
 
-## Proximity voice chat for Spigot servers
-The main feature of Plasmo Voice is server-side made with Spigot. Don't sacrifice Spigot plugins and the convenience of players who don't use mods. Besides that, it's just a great proximity voice chat with 3D audio and lots of features.
-
-Installing Plasmo Voice on the server is as easy as installing any other Spigot plugin. Installing mod on the client is optional and you can join the server without it.
+## Available for Spigot, Fabric, and Forge
+Spigot and Fabric servers are compatible with both Fabric and Forge clients. Forge server is for Forge clients only.
 
 Players need to install the Fabric or Forge mod on the client for the voice chat to work. Players without the mod are still able to join and play as usual.
+
+![](https://i.imgur.com/nE34app.png)
+
+*Assuming Plasmo Voice is installed on both client and the server*
 
 ## Features
 ![](https://imgur.com/9MZIepC.png)
