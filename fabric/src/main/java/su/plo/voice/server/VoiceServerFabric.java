@@ -26,7 +26,7 @@ public class VoiceServerFabric extends VoiceServer implements ModInitializer {
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> this.close());
 
         S2CPlayChannelEvents.REGISTER.register((handler, sender, server, channels) ->
-            network.handleRegisterChannels(channels, handler.player)
+                network.handleRegisterChannels(channels, handler.player)
         );
         ServerPlayNetworking.registerGlobalReceiver(VoiceServer.PLASMO_VOICE, ((ServerNetworkHandlerFabric) network)::handle);
 

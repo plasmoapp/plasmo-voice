@@ -58,14 +58,12 @@ public class Recorder implements Runnable {
         }
     }
 
-    public void toggleRnNoise() {
-        synchronized (this) {
-            if (this.denoiser != null) {
-                this.denoiser.close();
-                this.denoiser = null;
-            } else {
-                this.denoiser = new Denoiser();
-            }
+    public synchronized void toggleRnNoise() {
+        if (this.denoiser != null) {
+            this.denoiser.close();
+            this.denoiser = null;
+        } else {
+            this.denoiser = new Denoiser();
         }
     }
 

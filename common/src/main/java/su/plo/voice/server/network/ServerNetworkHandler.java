@@ -8,7 +8,6 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import su.plo.voice.client.VoiceClient;
 import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.Packet;
 import su.plo.voice.common.packets.tcp.*;
@@ -186,7 +185,7 @@ public abstract class ServerNetworkHandler {
     }
 
     public static void sendTo(Packet packet, ServerPlayer player) throws IOException {
-        player.connection.send(new ClientboundCustomPayloadPacket(VoiceClient.PLASMO_VOICE,
+        player.connection.send(new ClientboundCustomPayloadPacket(VoiceServer.PLASMO_VOICE,
                 new FriendlyByteBuf(Unpooled.wrappedBuffer(PacketTCP.write(packet)))));
     }
 
@@ -201,7 +200,7 @@ public abstract class ServerNetworkHandler {
                         ServerPlayer player = PlayerManager.getByUUID(uuid);
 
                         player.connection.send(new ClientboundCustomPayloadPacket(
-                                VoiceClient.PLASMO_VOICE,
+                                VoiceServer.PLASMO_VOICE,
                                 new FriendlyByteBuf(Unpooled.wrappedBuffer(pkt))));
                     }
                 }
