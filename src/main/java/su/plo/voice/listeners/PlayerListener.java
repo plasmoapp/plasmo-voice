@@ -26,9 +26,9 @@ public class PlayerListener implements Listener {
 
     public PlayerListener() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(PlasmoVoice.getInstance(), () -> {
-            PlasmoVoice.muted.forEach((uuid, muted) -> {
+            PlasmoVoice.getInstance().getMutedMap().forEach((uuid, muted) -> {
                 if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
-                    PlasmoVoice.muted.remove(uuid);
+                    PlasmoVoice.getInstance().getMutedMap().remove(uuid);
                     Player player = Bukkit.getPlayer(uuid);
                     if (player != null) {
                         PluginChannelListener.sendToClients(new ClientUnmutedPacket(muted.getUuid()), player);
@@ -86,7 +86,7 @@ public class PlayerListener implements Listener {
         if (PlasmoVoice.getInstance().getVoiceConfig().isClientModRequired()) {
             kickTimeouts.put(player.getUniqueId(), Bukkit.getScheduler().runTaskLater(PlasmoVoice.getInstance(), () -> {
                 if (!SocketServerUDP.clients.containsKey(player)) {
-                    if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+                    if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                         PlasmoVoice.getVoiceLogger().info(String.format("Player: %s does not have the mod installed!", player.getName()));
                     }
                     player.kickPlayer(PlasmoVoice.getInstance().getMessage("mod_missing_kick_message"));

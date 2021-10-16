@@ -3,30 +3,41 @@ package su.plo.voice;
 import com.google.gson.Gson;
 import lombok.Getter;
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.commands.*;
+import su.plo.voice.common.packets.tcp.ClientMutedPacket;
+import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.data.DataEntity;
 import su.plo.voice.data.ServerMutedEntity;
+import su.plo.voice.events.PlayerVoiceMuteEvent;
+import su.plo.voice.events.PlayerVoiceUnmuteEvent;
 import su.plo.voice.listeners.PlayerListener;
 import su.plo.voice.listeners.PluginChannelListener;
 import su.plo.voice.placeholders.PlaceholderPlasmoVoice;
+import su.plo.voice.socket.SocketClientUDP;
 import su.plo.voice.socket.SocketServerUDP;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
-public final class PlasmoVoice extends JavaPlugin {
+public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
     @Getter
     private static PlasmoVoice instance;
     @Getter
@@ -39,7 +50,7 @@ public final class PlasmoVoice extends JavaPlugin {
     public static final int minVersion = calculateVersion(rawMinVersion);
 
     public static final String downloadLink = String.format("https://github.com/plasmoapp/plasmo-voice/releases/tag/%s", rawVersion);
-    public static ConcurrentHashMap<UUID, ServerMutedEntity> muted = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<UUID, ServerMutedEntity> muted = new ConcurrentHashMap<>();
     public static Gson gson = new Gson();
 
     private SocketServerUDP socketServerUDP;
@@ -99,6 +110,7 @@ public final class PlasmoVoice extends JavaPlugin {
                 (int) SocketServerUDP.clients.values().stream().filter(s -> s.getType().equals("forge")).count()));
         metrics.addCustomChart(new SingleLineChart("players_with_fabric_mod", () ->
                 (int) SocketServerUDP.clients.values().stream().filter(s -> s.getType().equals("fabric")).count()));
+        metrics.addCustomChart(new SimplePie("server_type", () -> "Spigot"));
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             PlayerListener.reconnectPlayer(player);
@@ -109,6 +121,8 @@ public final class PlasmoVoice extends JavaPlugin {
                                 voiceConfig.getPort()));
             }
         }
+
+        Bukkit.getServicesManager().register(PlasmoVoiceAPI.class, this, this, ServicePriority.Normal);
     }
 
     @Override
@@ -178,8 +192,14 @@ public final class PlasmoVoice extends JavaPlugin {
             return;
         }
 
-        this.voiceConfig = new PlasmoVoiceConfig(config.getString("udp.ip"),
-                config.getInt("udp.port"),
+        int udpPort = config.getInt("udp.port");
+        if (udpPort == 0) {
+            udpPort = getServer().getPort();
+        }
+
+        this.voiceConfig = new PlasmoVoiceConfig(
+                config.getString("udp.ip"),
+                udpPort,
                 config.getString("udp.proxy_ip"),
                 config.getInt("udp.proxy_port"),
                 sampleRate,
@@ -190,7 +210,8 @@ public final class PlasmoVoice extends JavaPlugin {
                 fadeDivisor,
                 priorityFadeDivisor,
                 config.getBoolean("client_mod_required"),
-                clientModCheckTimeout);
+                clientModCheckTimeout
+        );
     }
 
     private void loadData() {
@@ -247,5 +268,129 @@ public final class PlasmoVoice extends JavaPlugin {
     // Get plugin prefix from config
     public String getPrefix() {
         return ChatColor.translateAlternateColorCodes('&', getConfig().getString("messages.prefix"));
+    }
+
+    @Override
+    public void mute(UUID playerUUID, long duration, DurationUnit durationUnit, @Nullable String reason, boolean silent) {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(playerUUID);
+        if (player.getFirstPlayed() == 0) {
+            throw new NullPointerException("Player not found");
+        }
+
+        if (duration > 0 && durationUnit == null) {
+            throw new NullPointerException("durationUnit cannot be null if duration > 0");
+        }
+
+        String durationMessage = durationUnit == null ? "" : durationUnit.format(duration);
+        if (duration > 0) {
+            duration = durationUnit.multiply(duration);
+            duration += System.currentTimeMillis();
+        }
+
+        ServerMutedEntity serverMuted = new ServerMutedEntity(player.getUniqueId(), duration, reason);
+        PlasmoVoice.muted.put(player.getUniqueId(), serverMuted);
+
+        Player onlinePlayer = Bukkit.getPlayer(playerUUID);
+        if (onlinePlayer != null) {
+            PluginChannelListener.sendToClients(new ClientMutedPacket(serverMuted.getUuid(), serverMuted.getTo()), onlinePlayer);
+
+            if (!silent) {
+                onlinePlayer.sendMessage((duration > 0
+                        ? PlasmoVoice.getInstance().getMessagePrefix("player_muted")
+                        : PlasmoVoice.getInstance().getMessagePrefix("player_muted_perm"))
+                        .replace("{duration}", durationMessage)
+                        .replace("{reason}", reason != null
+                                ? reason
+                                : PlasmoVoice.getInstance().getMessage("mute_no_reason")
+                        )
+                );
+            }
+        }
+
+        Bukkit.getPluginManager().callEvent(new PlayerVoiceMuteEvent(player, duration));
+    }
+
+    @Override
+    public boolean unmute(UUID playerUUID, boolean silent) {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(playerUUID);
+        if (player.getFirstPlayed() == 0) {
+            return false;
+        }
+
+        ServerMutedEntity muted = PlasmoVoice.muted.get(player.getUniqueId());
+        if (muted == null) {
+            return false;
+        }
+
+        if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
+            PlasmoVoice.muted.remove(muted.getUuid());
+            return false;
+        }
+
+        PlasmoVoice.muted.remove(muted.getUuid());
+
+        Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
+        if (onlinePlayer != null) {
+            PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()), onlinePlayer);
+        }
+
+        Bukkit.getPluginManager().callEvent(new PlayerVoiceUnmuteEvent(player));
+        return true;
+    }
+
+    @Override
+    public boolean isMuted(UUID playerUUID) {
+        ServerMutedEntity e = PlasmoVoice.muted.get(playerUUID);
+        if (e == null) {
+            return false;
+        }
+
+        if (e.getTo() == 0 || e.getTo() > System.currentTimeMillis()) {
+            return true;
+        } else {
+            PlasmoVoice.muted.remove(e.getUuid());
+
+            Player player = Bukkit.getPlayer(playerUUID);
+            if (player != null) {
+                Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
+                    PluginChannelListener.sendToClients(new ClientUnmutedPacket(e.getUuid()), player);
+                });
+            }
+
+            return false;
+        }
+    }
+
+    @Override
+    public Map<UUID, ServerMutedEntity> getMutedMap() {
+        return muted;
+    }
+
+    @Override
+    public boolean hasVoiceChat(UUID player) {
+        return SocketServerUDP.clients.entrySet()
+                .stream()
+                .anyMatch(entry -> entry.getKey().getUniqueId().equals(player));
+    }
+
+    @Nullable
+    @Override
+    public String getPlayerModLoader(UUID player) {
+        return SocketServerUDP.clients
+                .values()
+                .stream()
+                .filter(c -> c.getPlayer().getUniqueId().equals(player))
+                .findFirst()
+                .map(SocketClientUDP::getType)
+                .orElse(null);
+    }
+
+    @Override
+    public List<UUID> getPlayers() {
+        return SocketServerUDP.clients
+                .values()
+                .stream()
+                .map(client -> client.getPlayer().getUniqueId())
+                .collect(Collectors.toList());
     }
 }

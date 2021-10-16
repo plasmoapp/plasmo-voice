@@ -28,7 +28,7 @@ public class SocketClientUDP {
 
     public void close() {
         if (SocketServerUDP.clients.containsKey(player)) {
-            if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+            if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                 PlasmoVoice.getVoiceLogger().info("Remove client UDP: " + this.player.getName());
             }
             SocketServerUDP.clients.remove(player);

@@ -1,6 +1,6 @@
 udp:
   ip: 0.0.0.0
-  port: 60606
+  port: 0
 
 # Supported sample rates:
 # 8000
@@ -38,7 +38,7 @@ client_mod_required: false
 client_mod_check_timeout: 60
 
 # Disable connection logs (New client, Remove client, client timed out)
-disable_logs: false
+disable_logs: true
 
 messages:
   prefix: "&6[Plasmo Voice]&7 "

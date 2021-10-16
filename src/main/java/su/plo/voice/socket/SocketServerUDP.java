@@ -45,7 +45,11 @@ public class SocketServerUDP extends Thread {
                         return;
                     }
 
-                    if (player.getLocation().distanceSquared(p.getLocation()) > maxDistanceSquared) {
+                    try {
+                        if (player.getLocation().distanceSquared(p.getLocation()) > maxDistanceSquared) {
+                            return;
+                        }
+                    } catch (IllegalArgumentException ignored) {
                         return;
                     }
                 }
@@ -73,7 +77,7 @@ public class SocketServerUDP extends Thread {
     public void close() {
         if (socket != null) {
             socket.close();
-            queue.close();
+            queue.interrupt();
         }
     }
 
@@ -99,12 +103,11 @@ public class SocketServerUDP extends Thread {
                 synchronized (this.queue) {
                     this.queue.notify();
                 }
-            } catch (IOException | InstantiationException e) { // bad packet? just ignore it 4HEad
+            } catch (IOException | InstantiationException | IllegalStateException e) { // bad packet? just ignore it 4HEad
                 if (PlasmoVoice.getInstance().getConfig().getBoolean("debug")) {
                     e.printStackTrace();
                 }
             } catch (Exception e) {
-
                 e.printStackTrace();
             }
         }

@@ -7,10 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
-import su.plo.voice.common.packets.tcp.ClientMutedPacket;
-import su.plo.voice.data.ServerMutedEntity;
-import su.plo.voice.events.PlayerVoiceMuteEvent;
-import su.plo.voice.listeners.PluginChannelListener;
+import su.plo.voice.PlasmoVoiceAPI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -35,7 +32,7 @@ public class VoiceMute implements TabExecutor {
             return true;
         }
 
-        String durationMessage = PlasmoVoice.getInstance().getMessage("mute_durations.permanent");
+        PlasmoVoiceAPI.DurationUnit durationUnit = null;
         long duration = 0;
         if (args.length > 1) {
             if (!args[1].startsWith("perm")) {
@@ -50,39 +47,30 @@ public class VoiceMute implements TabExecutor {
 
                         switch (type) {
                             case "m":
-                                durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.minutes"), duration);
-                                duration *= 60;
+                                durationUnit = PlasmoVoiceAPI.DurationUnit.MINUTES;
                                 break;
                             case "h":
-                                durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.hours"), duration);
-                                duration *= 3600;
+                                durationUnit = PlasmoVoiceAPI.DurationUnit.HOURS;
                                 break;
                             case "d":
-                                durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.days"), duration);
-                                duration *= 86400;
+                                durationUnit = PlasmoVoiceAPI.DurationUnit.DAYS;
                                 break;
                             case "w":
-                                durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.weeks"), duration);
-                                duration *= 604800;
+                                durationUnit = PlasmoVoiceAPI.DurationUnit.WEEKS;
                                 break;
                             case "u":
-                                duration = duration - System.currentTimeMillis()/1000;
-                                durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.seconds"), duration);
+                                duration = duration - System.currentTimeMillis() / 1000L;
+                                durationUnit = PlasmoVoiceAPI.DurationUnit.TIMESTAMP;
                                 break;
                             default:
-                                durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.seconds"), duration);
+                                durationUnit = PlasmoVoiceAPI.DurationUnit.SECONDS;
                                 break;
                         }
                     } else {
-                        durationMessage = String.format(PlasmoVoice.getInstance().getMessage("mute_durations.seconds"), duration);
+                        durationUnit = PlasmoVoiceAPI.DurationUnit.SECONDS;
                     }
                 }
             }
-        }
-
-        if (duration > 0) {
-            duration *= 1000;
-            duration += System.currentTimeMillis();
         }
 
         String reason = null;
@@ -90,23 +78,9 @@ public class VoiceMute implements TabExecutor {
             reason = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
         }
 
-        ServerMutedEntity serverMuted = new ServerMutedEntity(player.getUniqueId(), duration, reason);
-        PlasmoVoice.muted.put(player.getUniqueId(), serverMuted);
-
-        PluginChannelListener.sendToClients(new ClientMutedPacket(serverMuted.getUuid(), serverMuted.getTo()), player);
         sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("muted"), player.getName()));
 
-        player.sendMessage((duration > 0
-                ? PlasmoVoice.getInstance().getMessagePrefix("player_muted")
-                : PlasmoVoice.getInstance().getMessagePrefix("player_muted_perm"))
-                .replace("{duration}", durationMessage)
-                .replace("{reason}", reason != null
-                        ? reason
-                        : PlasmoVoice.getInstance().getMessage("mute_no_reason")
-                )
-        );
-
-        Bukkit.getPluginManager().callEvent(new PlayerVoiceMuteEvent(player, duration));
+        PlasmoVoice.getInstance().mute(player.getUniqueId(), duration, durationUnit, reason, false);
         return true;
     }
 

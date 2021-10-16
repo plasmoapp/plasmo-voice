@@ -3,13 +3,10 @@ package su.plo.voice.socket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
-import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.common.packets.udp.*;
-import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerEndSpeakEvent;
 import su.plo.voice.events.PlayerStartSpeakEvent;
 import su.plo.voice.listeners.PlayerListener;
-import su.plo.voice.listeners.PluginChannelListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -20,10 +17,9 @@ import java.util.concurrent.atomic.AtomicReference;
 
 public class SocketServerUDPQueue extends Thread {
     public LinkedBlockingQueue<PacketUDP> queue = new LinkedBlockingQueue<>();
-    public boolean running = true;
 
     public void run() {
-        while (running) {
+        while (!this.isInterrupted()) {
             try {
                 this.keepAlive();
 
@@ -73,21 +69,8 @@ public class SocketServerUDPQueue extends Thread {
                 }
 
                 // server mute
-                if (PlasmoVoice.muted.containsKey(player.getUniqueId())) {
-                    ServerMutedEntity e = PlasmoVoice.muted.get(player.getUniqueId());
-                    if (e == null) {
-                        continue;
-                    }
-
-                    if (e.getTo() == 0 || e.getTo() > System.currentTimeMillis()) {
-                        continue;
-                    } else {
-                        PlasmoVoice.muted.remove(e.getUuid());
-
-                        Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
-                            PluginChannelListener.sendToClients(new ClientUnmutedPacket(e.getUuid()), player);
-                        });
-                    }
+                if (PlasmoVoice.getInstance().isMuted(player.getUniqueId())) {
+                    continue;
                 }
 
                 if (message.getPacket() instanceof VoiceClientPacket) {
@@ -134,8 +117,10 @@ public class SocketServerUDPQueue extends Thread {
                         Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(player));
                     }
                 }
-            } catch (InterruptedException | IOException e) {
+            } catch (IOException e) {
                 e.printStackTrace();
+            } catch (InterruptedException ignored) {
+                break;
             }
         }
     }
@@ -162,16 +147,12 @@ public class SocketServerUDPQueue extends Thread {
         for (Player player : connectionsToDrop) {
             PlayerListener.disconnectClient(player);
 
-            if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+            if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                 PlasmoVoice.getVoiceLogger().info(player.getName() + " UDP timed out");
                 PlasmoVoice.getVoiceLogger().info(player.getName() + " sent reconnect packet");
             }
 
             PlayerListener.reconnectPlayer(player);
         }
-    }
-
-    public void close() {
-        this.running = false;
     }
 }

@@ -1,15 +1,15 @@
 package su.plo.voice.events;
 
-import org.bukkit.entity.Player;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 public class PlayerVoiceMuteEvent extends Event {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
-    private final Player player;
+    private final OfflinePlayer player;
     private final Long to;
 
-    public PlayerVoiceMuteEvent(Player player, long duration) {
+    public PlayerVoiceMuteEvent(OfflinePlayer player, long duration) {
         this.player = player;
         this.to = duration;
     }
@@ -18,7 +18,7 @@ public class PlayerVoiceMuteEvent extends Event {
         return to;
     }
 
-    public Player getPlayer() {
+    public OfflinePlayer getPlayer() {
         return this.player;
     }
 

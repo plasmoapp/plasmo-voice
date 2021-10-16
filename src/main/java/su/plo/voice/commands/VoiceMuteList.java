@@ -14,13 +14,13 @@ import java.util.Date;
 public class VoiceMuteList implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (PlasmoVoice.muted.size() == 0) {
+        if (PlasmoVoice.getInstance().getMutedMap().size() == 0) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("muted_list_empty"));
             return true;
         }
 
         sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("muted_list"));
-        PlasmoVoice.muted.forEach((uuid, muted) -> {
+        PlasmoVoice.getInstance().getMutedMap().forEach((uuid, muted) -> {
             OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
             String expires = muted.getTo() > 0
                     ? new SimpleDateFormat(PlasmoVoice.getInstance().getMessage("mute_expires_format")).format(new Date(muted.getTo()))

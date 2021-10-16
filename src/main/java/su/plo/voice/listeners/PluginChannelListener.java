@@ -71,9 +71,10 @@ public class PluginChannelListener implements PluginMessageListener {
                 });
 
                 List<MutedEntity> muted = new ArrayList<>();
-                PlasmoVoice.muted.forEach((uuid, m) -> muted.add(new MutedEntity(m.getUuid(), m.getTo())));
+                PlasmoVoice.getInstance().getMutedMap()
+                        .forEach((uuid, m) -> muted.add(new MutedEntity(m.getUuid(), m.getTo())));
 
-                ServerMutedEntity serverPlayerMuted = PlasmoVoice.muted.get(player.getUniqueId());
+                ServerMutedEntity serverPlayerMuted = PlasmoVoice.getInstance().getMutedMap().get(player.getUniqueId());
                 MutedEntity playerMuted = null;
                 if (serverPlayerMuted != null) {
                     playerMuted = new MutedEntity(serverPlayerMuted.getUuid(), serverPlayerMuted.getTo());
@@ -87,7 +88,7 @@ public class PluginChannelListener implements PluginMessageListener {
 
                 sendToClients(new ClientConnectedPacket(player.getUniqueId(), playerMuted), player.getUniqueId(), player);
 
-                if (PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+                if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                     PlasmoVoice.getVoiceLogger().info(String.format("New client: %s v%s", player.getName(), version));
                 }
             }
