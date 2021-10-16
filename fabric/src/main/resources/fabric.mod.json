@@ -3,7 +3,7 @@
     "id": "plasmo_voice",
     "version": "${version}",
     "name": "Plasmo Voice",
-    "description": "Proximity voice сhat mod for Spigot Minecraft servers",
+    "description": "A proximity voice chat mod with audio positioning and lots of features",
     "authors": [
         "Plasmo"
     ],
@@ -12,7 +12,7 @@
         "sources": "https://github.com/plasmoapp/plasmo-voice",
         "issues": "https://github.com/plasmoapp/plasmo-voice/issues"
     },
-    "license": "MIT",
+    "license": "All rights reserved",
     "icon": "assets/plasmo_voice/icon.png",
     "environment": "*",
     "entrypoints": {

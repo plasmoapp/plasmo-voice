@@ -19,10 +19,6 @@ public class Limiter {
         this.threshold = null;
     }
 
-    public synchronized void update() {
-        this.envelope = 0.0F;
-    }
-
     public synchronized void limit(float[] audioFloats) {
         analyzeEnvelope(audioFloats);
         process(audioFloats);
@@ -49,7 +45,12 @@ public class Limiter {
     }
 
     private synchronized void process(float[] samples) {
-        float limiterThreshold = VoiceClient.getClientConfig().limiterThreshold.get();
+        float limiterThreshold;
+        if (this.threshold != null) {
+            limiterThreshold = this.threshold;
+        } else {
+            limiterThreshold = VoiceClient.getClientConfig().limiterThreshold.get();
+        }
 
         for (int i = 0; i < samples.length; i++) {
             float envDB = AudioUtils.mulToDB(this.envelopeBuf[i]);

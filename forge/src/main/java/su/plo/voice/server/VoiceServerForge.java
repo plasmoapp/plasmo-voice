@@ -20,10 +20,6 @@ public class VoiceServerForge extends VoiceServer {
         network = new ServerNetworkHandlerForge();
     }
 
-    public VoiceServerForge() {
-        ((ServerNetworkHandlerForge) network).register();
-    }
-
     @Override
     protected void start() {
         network.start();

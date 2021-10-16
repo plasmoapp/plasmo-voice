@@ -15,12 +15,6 @@ public class Compressor {
     private float[] envelopeBuf = new float[0];
     private float envelope;
 
-    public synchronized void update() {
-        this.envelopeBuf = new float[0];
-        this.envelope = 0.0F;
-        this.limiter.update();
-    }
-
     public synchronized byte[] compress(byte[] audio) {
         float[] audioFloats = AudioUtils.bytesToFloats(audio);
 

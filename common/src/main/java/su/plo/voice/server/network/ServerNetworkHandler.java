@@ -146,7 +146,7 @@ public abstract class ServerNetworkHandler {
         sendToClients(new ClientConnectedPacket(player.getUUID(), playerMuted), player.getUUID());
 
         if (!VoiceServer.getInstance().getConfig().getBoolean("disable_logs")) {
-            VoiceServer.LOGGER.info(String.format("New client: %s v%s", player.getName(), version));
+            VoiceServer.LOGGER.info(String.format("New client: %s v%s", player.getGameProfile().getName(), version));
         }
     }
 

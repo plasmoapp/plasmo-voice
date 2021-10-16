@@ -1,60 +1,38 @@
 package su.plo.voice.client.network;
 
-import su.plo.voice.VoiceForge;
+import com.google.common.io.ByteArrayDataInput;
+import com.google.common.io.ByteStreams;
+import net.minecraft.network.Connection;
+import net.minecraft.network.FriendlyByteBuf;
+import su.plo.voice.common.packets.Packet;
 import su.plo.voice.common.packets.tcp.*;
 
-import java.io.IOException;
-
 public class ClientNetworkHandlerForge extends ClientNetworkHandler {
-    public void register() {
-        VoiceForge.CHANNEL.registerMessage(0, ClientsListPacket.class, VoiceNetworkPacket::writeToBuf,
-                buf -> (ClientsListPacket) VoiceNetworkPacket.readFromBuf(buf, new ClientsListPacket()), (msg, ctx) -> {
-                    this.handle(msg);
-                    ctx.get().setPacketHandled(true);
-                });
+    public void handle(Connection connection, FriendlyByteBuf buf) {
+        try {
+            byte[] data = new byte[buf.readableBytes()];
+            buf.duplicate().readBytes(data);
+            ByteArrayDataInput in = ByteStreams.newDataInput(data);
 
-        VoiceForge.CHANNEL.registerMessage(1, ClientMutedPacket.class, VoiceNetworkPacket::writeToBuf,
-                buf -> (ClientMutedPacket) VoiceNetworkPacket.readFromBuf(buf, new ClientMutedPacket()), (msg, ctx) -> {
-                    this.handle(msg);
-                    ctx.get().setPacketHandled(true);
-                });
-
-        VoiceForge.CHANNEL.registerMessage(2, ClientUnmutedPacket.class, VoiceNetworkPacket::writeToBuf,
-                buf -> (ClientUnmutedPacket) VoiceNetworkPacket.readFromBuf(buf, new ClientUnmutedPacket()), (msg, ctx) -> {
-                    this.handle(msg);
-                    ctx.get().setPacketHandled(true);
-                });
-
-        VoiceForge.CHANNEL.registerMessage(3, ClientConnectedPacket.class, VoiceNetworkPacket::writeToBuf,
-                buf -> (ClientConnectedPacket) VoiceNetworkPacket.readFromBuf(buf, new ClientConnectedPacket()), (msg, ctx) -> {
-                    this.handle(msg);
-                    ctx.get().setPacketHandled(true);
-                });
-
-        VoiceForge.CHANNEL.registerMessage(4, ClientDisconnectedPacket.class, VoiceNetworkPacket::writeToBuf,
-                buf -> (ClientDisconnectedPacket) VoiceNetworkPacket.readFromBuf(buf, new ClientDisconnectedPacket()), (msg, ctx) -> {
-                    this.handle(msg);
-                    ctx.get().setPacketHandled(true);
-                });
-
-        VoiceForge.CHANNEL.registerMessage(5, ConfigPacket.class, VoiceNetworkPacket::writeToBuf,
-                buf -> (ConfigPacket) VoiceNetworkPacket.readFromBuf(buf, new ConfigPacket()), (msg, ctx) -> {
-                    try {
-                        this.handle(msg);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    ctx.get().setPacketHandled(true);
-                });
-
-        VoiceForge.CHANNEL.registerMessage(6, ServerConnectPacket.class, VoiceNetworkPacket::writeToBuf,
-                buf -> (ServerConnectPacket) VoiceNetworkPacket.readFromBuf(buf, new ServerConnectPacket()), (msg, ctx) -> {
-                    try {
-                        this.handle(msg, ctx.get().getNetworkManager());
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                    ctx.get().setPacketHandled(true);
-                });
+            Packet pkt = PacketTCP.read(in);
+            // not good implementation, but with the current protocol (v1.0.0) I can't do something with it
+            if (pkt instanceof ServerConnectPacket packet) {
+                this.handle(packet, connection);
+            } else if (pkt instanceof ConfigPacket packet) {
+                this.handle(packet);
+            } else if (pkt instanceof ClientMutedPacket packet) {
+                this.handle(packet);
+            } else if (pkt instanceof ClientUnmutedPacket packet) {
+                this.handle(packet);
+            } else if (pkt instanceof ClientsListPacket packet) {
+                this.handle(packet);
+            } else if (pkt instanceof ClientConnectedPacket packet) {
+                this.handle(packet);
+            } else if (pkt instanceof ClientDisconnectedPacket packet) {
+                this.handle(packet);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

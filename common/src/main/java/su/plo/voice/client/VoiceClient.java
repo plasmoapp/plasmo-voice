@@ -22,8 +22,8 @@ import java.util.UUID;
 
 public class VoiceClient {
     public static final ResourceLocation PLASMO_VOICE = new ResourceLocation("plasmo:voice");
-    public static final String VERSION = "1.2.0";
     public static final String PROTOCOL_VERSION = "1.0.0";
+    public static final String VERSION = "1.2.2";
     public static final Logger LOGGER = LogManager.getLogger("Plasmo Voice");
     public static final UUID NIL_UUID = new UUID(0, 0);
 
