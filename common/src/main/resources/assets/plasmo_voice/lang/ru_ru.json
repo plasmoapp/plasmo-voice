@@ -42,9 +42,9 @@
     "gui.plasmo_voice.general.occlusion.tooltip_1": "Отправляет луч от игрока к каждому источнику,",
     "gui.plasmo_voice.general.occlusion.tooltip_2": "звука, и заглушает его, если луч проходит через блоки.",
     "gui.plasmo_voice.general.occlusion.tooltip_3": "",
-    "gui.plasmo_voice.general.occlusion.tooltip_4": "Полезно, если вы не хотите слышать людей через",
-    "gui.plasmo_voice.general.occlusion.tooltip_5": "стены. Но иногда работает криво, поэтому лучше не",
-    "gui.plasmo_voice.general.occlusion.tooltip_6": "включать, если вам это не нужно.",
+    "gui.plasmo_voice.general.occlusion.tooltip_4": "Полезно, если вы не хотите слышать людей в",
+    "gui.plasmo_voice.general.occlusion.tooltip_5": "других комнатах. Но иногда работает криво, поэтому лучше не",
+    "gui.plasmo_voice.general.occlusion.tooltip_6": "включать, если вам это не сильно нужно.",
 
     "gui.plasmo_voice.general.microphone": "Микрофон",
     "gui.plasmo_voice.general.microphone.volume": "Громкость микрофона",
@@ -74,8 +74,8 @@
     "gui.plasmo_voice.general.activation.threshold.tooltip_4": "переходит через порог активации только",
     "gui.plasmo_voice.general.activation.threshold.tooltip_5": "когда вы говорите.",
     "gui.plasmo_voice.general.activation.threshold.tooltip_6": "",
-    "gui.plasmo_voice.general.activation.threshold.tooltip_7": "Нажмите на иконку, чтобы включить тестрирование",
-    "gui.plasmo_voice.general.activation.threshold.tooltip_8": "тестрирование микрофона и услышать ваш голос.",
+    "gui.plasmo_voice.general.activation.threshold.tooltip_7": "Нажмите на иконку, чтобы включить тестирование",
+    "gui.plasmo_voice.general.activation.threshold.tooltip_8": "тестирование микрофона и услышать ваш голос.",
 
 
     "gui.plasmo_voice.general.icons": "Иконки",
@@ -134,7 +134,7 @@
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_4": "источники не включены.",
 
 
-    "gui.plasmo_voice.advanced.compressor": "Компрессор и лимитер",
+    "gui.plasmo_voice.advanced.compressor": "Компрессор и лимитер", 
     "gui.plasmo_voice.advanced.compressor.tooltip_1": "Делает громкие звуки тише,",
     "gui.plasmo_voice.advanced.compressor.tooltip_2": "спасает ваши уши от громких звуков.",
     "gui.plasmo_voice.advanced.compressor.tooltip_3": "",
@@ -162,7 +162,7 @@
 
 
     "gui.plasmo_voice.about.made_by": "%s сделан",
-    "gui.plasmo_voice.about.huix": "Концепт и Дизайн",
+    "gui.plasmo_voice.about.huix": "Концепт и Дизайн", // KEKW
     "gui.plasmo_voice.about.programming": "Код",
     "gui.plasmo_voice.about.artist": "Художник",
     "gui.plasmo_voice.about.translator": "%s перевод",
@@ -178,7 +178,7 @@
     "gui.plasmo_voice.cannot_connect_to_udp_3": "%s",
 
     "message.plasmo_voice.min_version": "§6[Plasmo Voice]§7 Версия устарела. Минимальная поддерживаемая версия: %s",
-    "message.plasmo_voice.version_not_supported": "§6[Plasmo Voice]§7 Эта версия ещё не поддерживается. Последняя поддерживаемая версия: %s",
+    "message.plasmo_voice.version_not_supported": "§6[Plasmo Voice]§7 Эта версия не поддерживается. Последняя поддерживаемая версия: %s",
     "message.plasmo_voice.new_version_available": "§6[Plasmo Voice]§7 Доступна новая версия  [%s§7]. Скачать: %s",
 
     "message.plasmo_voice.distance_changed": "Дистанция: %d",
@@ -187,7 +187,7 @@
     "commands.plasmo_voice.whitelist_on": "Мут всех включён.",
     "commands.plasmo_voice.whitelist_off": "Мут всех выключен.",
 
-    "commands.plasmo_voice.min_priority_distance": "§6[Plasmo Voice]§7 Приоритетная дистанция должна быть больше %d",
-    "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 Приоритетная дистанция должны быть меньше%d",
-    "commands.plasmo_voice.priority_distance_set": "§6[Plasmo Voice]§7 Приоритетная дистанция установлена на %d"
+    "commands.plasmo_voice.min_priority_distance": "§6[Plasmo Voice]§7 Дистанция приоритетного голосового чата должна быть выше %d",
+    "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 Дистанция приоритетного голосового чата должна быть меньше%d",
+    "commands.plasmo_voice.priority_distance_set": "§6[Plasmo Voice]§7 Дистанция приоритетного голосового чата установлена на %d"
 }
