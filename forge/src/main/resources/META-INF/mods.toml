@@ -1,5 +1,5 @@
 modLoader="javafml"
-loaderVersion="[36,)"
+loaderVersion="[35,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/plasmoapp/plasmo-voice/issues"
 [[mods]]
@@ -18,7 +18,7 @@ description="A proximity voice chat mod with audio positioning and lots of featu
 [[dependencies.plasmovoice]]
     modId="forge"
     mandatory=true
-    versionRange="[36,)"
+    versionRange="[35,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.plasmovoice]]

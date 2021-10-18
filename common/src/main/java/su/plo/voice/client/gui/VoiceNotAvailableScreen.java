@@ -70,8 +70,7 @@ public class VoiceNotAvailableScreen extends BackgroundScreen {
     @Override
     protected void init() {
         super.init();
-
-        addWidget(button);
+        addButton(button);
     }
 
     @Override
