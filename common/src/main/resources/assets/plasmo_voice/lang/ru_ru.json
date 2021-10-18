@@ -66,7 +66,7 @@
     "gui.plasmo_voice.general.activation.type.tooltip_4": "когда громкость микрофона перейдет через",
     "gui.plasmo_voice.general.activation.type.tooltip_5": "порог активации",
     "gui.plasmo_voice.general.activation.ptt": "Push-to-talk",
-    "gui.plasmo_voice.general.activation.voice": "Активация голосом",
+    "gui.plasmo_voice.general.activation.voice": "Голосом",
     "gui.plasmo_voice.general.activation.threshold": "Порог активации",
     "gui.plasmo_voice.general.activation.threshold.tooltip_1": "Работает только при активации голосом",
     "gui.plasmo_voice.general.activation.threshold.tooltip_2": "",
@@ -74,8 +74,8 @@
     "gui.plasmo_voice.general.activation.threshold.tooltip_4": "переходит через порог активации только",
     "gui.plasmo_voice.general.activation.threshold.tooltip_5": "когда вы говорите.",
     "gui.plasmo_voice.general.activation.threshold.tooltip_6": "",
-    "gui.plasmo_voice.general.activation.threshold.tooltip_7": "Нажмите на иконку, чтобы включить тестрирование",
-    "gui.plasmo_voice.general.activation.threshold.tooltip_8": "тестрирование микрофона и услышать ваш голос.",
+    "gui.plasmo_voice.general.activation.threshold.tooltip_7": "Нажмите на иконку, чтобы включить тестирование",
+    "gui.plasmo_voice.general.activation.threshold.tooltip_8": "микрофона и услышать ваш голос.",
 
 
     "gui.plasmo_voice.general.icons": "Иконки",
@@ -179,7 +179,7 @@
 
     "message.plasmo_voice.min_version": "§6[Plasmo Voice]§7 Версия устарела. Минимальная поддерживаемая версия: %s",
     "message.plasmo_voice.version_not_supported": "§6[Plasmo Voice]§7 Эта версия ещё не поддерживается. Последняя поддерживаемая версия: %s",
-    "message.plasmo_voice.new_version_available": "§6[Plasmo Voice]§7 Доступна новая версия  [%s§7]. Скачать: %s",
+    "message.plasmo_voice.new_version_available": "§6[Plasmo Voice]§7 Доступна новая версия [%s§7]. Скачать: %s",
 
     "message.plasmo_voice.distance_changed": "Дистанция: %d",
     "message.plasmo_voice.occlusion_changed": "Заглушение звука через блоки: %s",
@@ -188,6 +188,6 @@
     "commands.plasmo_voice.whitelist_off": "Мут всех выключен.",
 
     "commands.plasmo_voice.min_priority_distance": "§6[Plasmo Voice]§7 Приоритетная дистанция должна быть больше %d",
-    "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 Приоритетная дистанция должны быть меньше%d",
+    "commands.plasmo_voice.max_priority_distance": "§6[Plasmo Voice]§7 Приоритетная дистанция должны быть меньше %d",
     "commands.plasmo_voice.priority_distance_set": "§6[Plasmo Voice]§7 Приоритетная дистанция установлена на %d"
 }
