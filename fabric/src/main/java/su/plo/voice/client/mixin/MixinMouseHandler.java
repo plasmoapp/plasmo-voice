@@ -19,6 +19,10 @@ public abstract class MixinMouseHandler {
 
     @Inject(at = @At("HEAD"), method = "onPress")
     private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
+        if (VoiceClient.getClientConfig() == null) {
+            return;
+        }
+
         if (action == 1) {
             VoiceClient.getClientConfig().keyBindings.onKeyDown(InputConstants.Type.MOUSE.getOrCreate(button));
         } else if (action == 0) {

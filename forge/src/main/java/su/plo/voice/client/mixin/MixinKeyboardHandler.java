@@ -13,6 +13,10 @@ import su.plo.voice.client.VoiceClient;
 public abstract class MixinKeyboardHandler {
     @Inject(at = @At("HEAD"), method = "keyPress")
     private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+        if (VoiceClient.getClientConfig() == null) {
+            return;
+        }
+
         if (action == 1) {
             VoiceClient.getClientConfig().keyBindings.onKeyDown(InputConstants.Type.KEYSYM.getOrCreate(key));
         } else if (action == 0) {
