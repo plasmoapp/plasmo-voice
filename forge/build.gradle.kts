@@ -95,7 +95,7 @@ tasks {
     remapJar {
         dependsOn(getByName<ShadowJar>("shadowJar"))
         input.set(shadowJar.get().archiveFile)
-        archiveBaseName.set("plasmovoice-forge")
+        archiveBaseName.set("plasmovoice-forge-${minecraftVersion}")
     }
 
 //    jar {

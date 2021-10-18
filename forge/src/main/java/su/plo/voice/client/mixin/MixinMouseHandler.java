@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import su.plo.voice.client.VoiceClientForge;
+import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.PlayerVolumeHandler;
 
 @Mixin(MouseHandler.class)
@@ -20,9 +20,9 @@ public abstract class MixinMouseHandler {
     @Inject(at = @At("HEAD"), method = "onPress")
     private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
         if (action == 1) {
-            VoiceClientForge.getClientConfig().keyBindings.onKeyDown(InputConstants.Type.MOUSE.getOrCreate(button));
-        } else {
-            VoiceClientForge.getClientConfig().keyBindings.onKeyUp(InputConstants.Type.MOUSE.getOrCreate(button));
+            VoiceClient.getClientConfig().keyBindings.onKeyDown(InputConstants.Type.MOUSE.getOrCreate(button));
+        } else if (action == 0) {
+            VoiceClient.getClientConfig().keyBindings.onKeyUp(InputConstants.Type.MOUSE.getOrCreate(button));
         }
     }
 
