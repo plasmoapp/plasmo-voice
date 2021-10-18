@@ -6,9 +6,9 @@
     "key.plasmo_voice.mute_chat": "Выключить голосовой чат",
     "key.plasmo_voice.action": "Кнопка действия",
 
-    "key.plasmo_voice.distance": "Дистанция",
-    "key.plasmo_voice.distance.increase": "Увеличить дистанцию голоса",
-    "key.plasmo_voice.distance.decrease": "Уменьшить дистанцию голоса",
+    "key.plasmo_voice.distance": "Дистанция голоса",
+    "key.plasmo_voice.distance.increase": "Увеличить дистанцию",
+    "key.plasmo_voice.distance.decrease": "Уменьшить дистанцию",
 
     "key.plasmo_voice.occlusion": "Затухание звука через блоки",
     "key.plasmo_voice.occlusion.toggle": "Вкл/выкл затухание звука",
