@@ -27,7 +27,8 @@ public class SocketServerUDPQueue extends Thread {
                     continue;
                 }
 
-                if (message.getPacket() instanceof AuthPacket packet) {
+                if (message.getPacket() instanceof AuthPacket) {
+                    AuthPacket packet = (AuthPacket) message.getPacket();
                     AtomicReference<ServerPlayer> player = new AtomicReference<>();
 
                     ServerNetworkHandler.playerToken.forEach((uuid, t) -> {
@@ -68,7 +69,8 @@ public class SocketServerUDPQueue extends Thread {
                     continue;
                 }
 
-                if (message.getPacket() instanceof VoiceClientPacket packet) {
+                if (message.getPacket() instanceof VoiceClientPacket) {
+                    VoiceClientPacket packet = (VoiceClientPacket) message.getPacket();
                     if (!VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.speak")) {
                         continue;
                     }
@@ -91,7 +93,8 @@ public class SocketServerUDPQueue extends Thread {
                         );
                         SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
                     }
-                } else if (message.getPacket() instanceof VoiceEndClientPacket packet) {
+                } else if (message.getPacket() instanceof VoiceEndClientPacket) {
+                    VoiceEndClientPacket packet = (VoiceEndClientPacket) message.getPacket();
                     VoiceEndServerPacket serverPacket = new VoiceEndServerPacket(player.getUUID());
                     SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
                 }

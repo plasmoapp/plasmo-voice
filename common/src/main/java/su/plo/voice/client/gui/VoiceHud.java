@@ -4,7 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.entity.player.Player;
 import su.plo.voice.client.VoiceClient;
 
@@ -23,9 +22,8 @@ public class VoiceHud {
         if (player == null) return;
 
         if(VoiceClient.socketUDP.ping.timedOut) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, VoiceClient.ICONS);
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
+            client.getTextureManager().bind(VoiceClient.ICONS);
 
             inGameHud.blit(matrixStack,
                     VoiceClient.getClientConfig().micIconPosition.get().getX(client),
@@ -38,9 +36,8 @@ public class VoiceHud {
         }
 
         if(VoiceClient.getClientConfig().speakerMuted.get()) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, VoiceClient.ICONS);
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
+            client.getTextureManager().bind(VoiceClient.ICONS);
 
             inGameHud.blit(matrixStack,
                     VoiceClient.getClientConfig().micIconPosition.get().getX(client),
@@ -50,9 +47,8 @@ public class VoiceHud {
                     16,
                     16);
         } else if(VoiceClient.getClientConfig().microphoneMuted.get() || VoiceClient.getServerConfig().getMuted().containsKey(player.getUUID())) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, VoiceClient.ICONS);
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
+            client.getTextureManager().bind(VoiceClient.ICONS);
 
             inGameHud.blit(matrixStack,
                     VoiceClient.getClientConfig().micIconPosition.get().getX(client),
@@ -62,9 +58,8 @@ public class VoiceHud {
                     16,
                     16);
         } else if(VoiceClient.isSpeaking()) {
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, VoiceClient.ICONS);
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
+            client.getTextureManager().bind(VoiceClient.ICONS);
 
             if(VoiceClient.isSpeakingPriority()) {
                 inGameHud.blit(matrixStack,

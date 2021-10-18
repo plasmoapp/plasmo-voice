@@ -21,9 +21,10 @@ public class KeyBindingsTabWidget extends TabWidget {
 
         for (String category : config.keyBindings.categories) {
             List<ClientConfig.KeyBindingConfigEntry> keyBindings = config.keyBindings.categoryEntries.get(category);
-            this.addEntry(new CategoryEntry(new TranslatableComponent(category)));
+            this.addEntry(new CategoryEntry(this, new TranslatableComponent(category)));
             for (ClientConfig.KeyBindingConfigEntry keyBinding : keyBindings) {
                 this.addEntry(new OptionEntry(
+                        this,
                         keyBinding.get().getTranslation(),
                         new KeyBindWidget(this, 0, 0, 97, 20, keyBinding),
                         keyBinding,
@@ -45,8 +46,8 @@ public class KeyBindingsTabWidget extends TabWidget {
         this.focusedBinding = null;
         for (Entry entry : children()) {
             if (entry instanceof OptionEntry &&
-                    entry.children().get(0) instanceof KeyBindWidget keyBindWidget) {
-                keyBindWidget.updateValue();
+                    entry.children().get(0) instanceof KeyBindWidget) {
+                ((KeyBindWidget) entry.children().get(0)).updateValue();
             }
         }
         super.onClose();

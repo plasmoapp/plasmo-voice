@@ -13,14 +13,13 @@ import su.plo.voice.server.VoiceServerForge;
 
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class MixinServerGamePacketListenerImpl {
-    @Shadow public abstract ServerPlayer getPlayer();
-
+    @Shadow public ServerPlayer player;
     private static final ResourceLocation register = new ResourceLocation("minecraft:register");
 
     @Inject(method = "handleCustomPayload", at = @At("HEAD"))
     public void handleCustomPayload(ServerboundCustomPayloadPacket packet, CallbackInfo ci) {
-        if (packet.getIdentifier().equals(register)) {
-            VoiceServerForge.onChannelRegister(packet, this.getPlayer());
+        if (packet.getName().equals(register)) {
+            VoiceServerForge.onChannelRegister(packet, this.player);
         }
     }
 }

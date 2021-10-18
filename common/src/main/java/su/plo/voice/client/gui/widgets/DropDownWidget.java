@@ -7,8 +7,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
@@ -18,7 +16,7 @@ import su.plo.voice.client.gui.VoiceSettingsScreen;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DropDownWidget extends AbstractWidget implements Widget, NarratableEntry {
+public class DropDownWidget extends AbstractWidget implements Widget {
     private boolean open;
     private final Minecraft client = Minecraft.getInstance();
     private final Font textRenderer;
@@ -174,10 +172,5 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
         } else {
             return text.getVisualOrderText();
         }
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
     }
 }

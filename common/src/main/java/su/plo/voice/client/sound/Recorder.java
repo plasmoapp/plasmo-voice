@@ -308,8 +308,8 @@ public class Recorder implements Runnable {
                 normBuffer = Bytes.toByteArray(this.denoiser.process(floats));
             }
 
-            if (client.screen instanceof VoiceSettingsScreen screen) {
-                screen.setMicrophoneValue(normBuffer);
+            if (client.screen instanceof VoiceSettingsScreen) {
+                ((VoiceSettingsScreen) client.screen).setMicrophoneValue(normBuffer);
             }
 
             return normBuffer;

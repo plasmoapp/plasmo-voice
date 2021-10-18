@@ -6,8 +6,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
-import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import su.plo.voice.server.commands.CommandManager;
 import su.plo.voice.server.network.ServerNetworkHandlerForge;
 
@@ -60,15 +60,15 @@ public class VoiceServerForge extends VoiceServer {
 
     @SubscribeEvent
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer player) {
-            network.handleJoin(player);
+        if (event.getPlayer() instanceof ServerPlayer) {
+            network.handleJoin(((ServerPlayer) event.getPlayer()));
         }
     }
 
     @SubscribeEvent
     public void onPlayerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer player) {
-            network.handleQuit(player);
+        if (event.getPlayer() instanceof ServerPlayer) {
+            network.handleQuit(((ServerPlayer) event.getPlayer()));
         }
     }
 

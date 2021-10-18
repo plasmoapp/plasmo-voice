@@ -23,7 +23,7 @@ import java.util.UUID;
 public class VoiceClient {
     public static final ResourceLocation PLASMO_VOICE = new ResourceLocation("plasmo:voice");
     public static final String PROTOCOL_VERSION = "1.0.0";
-    public static final String VERSION = "1.2.2";
+    public static final String VERSION = "1.2.3";
     public static final Logger LOGGER = LogManager.getLogger("Plasmo Voice");
     public static final UUID NIL_UUID = new UUID(0, 0);
 
@@ -104,7 +104,7 @@ public class VoiceClient {
             }
         });
         keyBindings.occlusion.get().setOnPress(action -> {
-            if (action == 1 && minecraft.player != null && !soundEngine.isSoundPhysics() && VoiceClient.isConnected()) {
+            if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
                 clientConfig.occlusion.invert();
 
                 if (clientConfig.occlusion.get()) {
@@ -136,7 +136,8 @@ public class VoiceClient {
     }
 
     public static boolean isMicrophoneLoopback() {
-        return Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen && screen.getSource() != null;
+        return (Minecraft.getInstance().screen instanceof VoiceSettingsScreen) &&
+                ((VoiceSettingsScreen) Minecraft.getInstance().screen).getSource() != null;
     }
 
     public static boolean isConnected() {

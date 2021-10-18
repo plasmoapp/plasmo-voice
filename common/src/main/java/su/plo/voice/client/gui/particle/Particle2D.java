@@ -2,10 +2,8 @@ package su.plo.voice.client.gui.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.core.particles.ParticleGroup;
 import net.minecraft.world.phys.AABB;
 
-import java.util.Optional;
 import java.util.Random;
 
 public abstract class Particle2D {
@@ -184,9 +182,5 @@ public abstract class Particle2D {
 
     public void setBoundingBox(AABB boundingBox) {
         this.boundingBox = boundingBox;
-    }
-
-    public Optional<ParticleGroup> getGroup() {
-        return Optional.empty();
     }
 }

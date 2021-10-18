@@ -34,14 +34,19 @@ architectury {
     common(true)
 }
 
+configurations {
+    create("dev")
+}
+
+tasks {
+    artifacts {
+        add("dev", jar)
+    }
+}
+
 repositories {
     maven {
         url = uri("https://repo.plo.su")
     }
     mavenLocal()
-}
-
-val sourcesJar = tasks.create<Jar>("sourcesJar") {
-    archiveClassifier.set("sources")
-    from(sourceSets["main"].allSource)
 }

@@ -4,7 +4,6 @@ import lombok.SneakyThrows;
 import net.minecraft.world.entity.player.Player;
 import org.lwjgl.openal.EXTThreadLocalContext;
 import su.plo.voice.client.VoiceClient;
-import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Occlusion;
 import su.plo.voice.common.packets.udp.VoiceServerPacket;
@@ -56,7 +55,7 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
                 continue;
             }
 
-            if(minecraft.screen instanceof VoiceSettingsScreen screen && screen.getSource() != null) {
+            if(VoiceClient.isMicrophoneLoopback()) {
                 continue;
             }
 
@@ -86,7 +85,7 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
                     ? maxDistance / VoiceClient.getServerConfig().getPriorityFadeDivisor()
                     : maxDistance / VoiceClient.getServerConfig().getFadeDivisor();
 
-            if(!VoiceClient.getSoundEngine().isSoundPhysics() && VoiceClient.getClientConfig().occlusion.get()) {
+            if(VoiceClient.getClientConfig().occlusion.get()) {
                 double occlusion = Occlusion.getOccludedPercent(player.level, clientPlayer, player.position());
                 if(lastOcclusion >= 0) {
                     if(occlusion > lastOcclusion) {

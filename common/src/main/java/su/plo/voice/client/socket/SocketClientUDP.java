@@ -49,8 +49,8 @@ public class SocketClientUDP extends Thread {
         if (System.currentTimeMillis() - this.keepAlive > 7000L) {
             this.ping.timedOut = true;
 
-            if (client.screen instanceof VoiceNotAvailableScreen screen) {
-                screen.setConnecting();
+            if (client.screen instanceof VoiceNotAvailableScreen) {
+                ((VoiceNotAvailableScreen) client.screen).setConnecting();
             } else if (client.screen instanceof VoiceSettingsScreen) {
                 client.execute(() -> {
                     VoiceNotAvailableScreen screen = new VoiceNotAvailableScreen();
@@ -65,8 +65,8 @@ public class SocketClientUDP extends Thread {
             VoiceClient.LOGGER.info("UDP timed out");
             VoiceClient.disconnect();
 
-            if (client.screen instanceof VoiceNotAvailableScreen screen) {
-                screen.setCannotConnect();
+            if (client.screen instanceof VoiceNotAvailableScreen) {
+                ((VoiceNotAvailableScreen) client.screen).setCannotConnect();
             } else if (client.screen instanceof VoiceSettingsScreen) {
                 client.execute(() -> {
                     VoiceNotAvailableScreen screen = new VoiceNotAvailableScreen();
@@ -124,7 +124,7 @@ public class SocketClientUDP extends Thread {
                 }
             }
         } catch (SocketException e) {
-            if(!e.getMessage().equals("Socket closed")) {
+            if(!e.getMessage().equalsIgnoreCase("socket closed")) {
                 e.printStackTrace();
             }
         } catch (IOException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {

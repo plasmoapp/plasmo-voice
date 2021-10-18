@@ -2,20 +2,20 @@ package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.world.phys.Vec3;
+import org.lwjgl.opengl.GL11;
 import su.plo.voice.client.VoiceClient;
 
 public class SphereRenderer {
     private static final SphereRenderer INSTANCE = new SphereRenderer();
     private static final int stack = 18;
     private static final int slice = 36;
-
-    private final BufferBuilder bufferBuilder = new BufferBuilder(2097152);
-    private final VertexBuffer vertexBuffer = new VertexBuffer();
 
     private int alpha = 150;
     private float radius = 8.0F;
@@ -60,8 +60,10 @@ public class SphereRenderer {
 
         Vec3 cameraPos = client.gameRenderer.getMainCamera().getPosition();
         Vec3 center = client.player.position();
-        
-        bufferBuilder.begin(VertexFormat.Mode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        bufferBuilder.begin(GL11.GL_TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
         int r = this.priority ? 255 : 0;
         int g = this.priority ? 165 : 160;
@@ -97,9 +99,6 @@ public class SphereRenderer {
             }
         }
 
-        bufferBuilder.end();
-        vertexBuffer.uploadLater(bufferBuilder);
-
         RenderSystem.disableTexture();
         RenderSystem.disableCull();
         RenderSystem.enableDepthTest();
@@ -110,21 +109,19 @@ public class SphereRenderer {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
                 GlStateManager.SourceFactor.ONE, GlStateManager.DestFactor.ZERO);
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        RenderSystem.color4f(1F, 1F, 1F, 1F);
 
         matrices.pushPose();
         RenderSystem.lineWidth(1f);
 
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-
-        vertexBuffer.drawWithShader(matrices.last().pose(), matrix4f, GameRenderer.getPositionColorShader());
+        tesselator.end();
 
         matrices.popPose();
 
 
         RenderSystem.polygonOffset(0f, 0f);
         RenderSystem.disablePolygonOffset();
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        RenderSystem.color4f(1F, 1F, 1F, 1F);
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
         RenderSystem.enableCull();

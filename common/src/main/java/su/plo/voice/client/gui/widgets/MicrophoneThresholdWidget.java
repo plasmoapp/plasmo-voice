@@ -8,7 +8,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.Mth;
 import su.plo.voice.client.VoiceClient;
@@ -99,9 +98,8 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
     @Override
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
         Font textRenderer = client.font;
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        client.getTextureManager().bind(WIDGETS_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
         int i = this.getYImage(this.isHovered());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
@@ -110,11 +108,11 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
         blit(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 
         if (parent.getMicrophoneValue() > 0.95D) {
-            RenderSystem.setShaderColor(1.0F, 0.0F, 0.0F, this.alpha);
+            RenderSystem.color4f(1.0F, 0.0F, 0.0F, this.alpha);
         } else if (parent.getMicrophoneValue() > 0.7D) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 0.0F, this.alpha);
+            RenderSystem.color4f(1.0F, 1.0F, 0.0F, this.alpha);
         } else {
-            RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, this.alpha);
+            RenderSystem.color4f(0.0F, 1.0F, 0.0F, this.alpha);
         }
         blit(matrices, this.x + 1, this.y + 1, 1, 47, (int) ((this.width - 2) * parent.getMicrophoneValue()), this.height - 2);
 
@@ -127,7 +125,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
         //            drawCenteredString(matrices, textRenderer, new TextComponent(String.format("%.2f dB", parent.getHighestDB())),
         //            this.x + this.width / 2, this.y + (this.height - 8) / 2, 16777215);
 
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
         for (Button button : this.microphoneTest) {
             button.x = this.x + this.width + 2;
             button.y = this.y;

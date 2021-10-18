@@ -1,11 +1,11 @@
-import net.fabricmc.loom.LoomGradleExtension
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
 
 val minecraftVersion: String by rootProject
 
 plugins {
     java
-    id("architectury-plugin") version("3.3-SNAPSHOT")
-    id("dev.architectury.loom") version("0.7.4-SNAPSHOT") apply(false)
+    id("architectury-plugin") version("3.4-SNAPSHOT")
+    id("dev.architectury.loom") version("0.10.0-SNAPSHOT") apply(false)
     id("com.github.johnrengelman.shadow") version("7.0.0") apply(false)
 }
 
@@ -16,10 +16,8 @@ architectury {
 subprojects {
     apply(plugin = "dev.architectury.loom")
 
-    configure<LoomGradleExtension> {
+    configure<LoomGradleExtensionAPI> {
         silentMojangMappingsLicense()
-        mixinConfig("plasmovoice.mixins.json")
-        useFabricMixin = true
     }
 }
 
@@ -28,15 +26,19 @@ allprojects {
     apply(plugin = "architectury-plugin")
     apply(plugin = "com.github.johnrengelman.shadow")
 
-//    java { toolchain { languageVersion.set(JavaLanguageVersion.of(16)) } }
-
     tasks.withType<JavaCompile>().configureEach {
-        options.encoding = "UTF-8"
-        options.release.set(16)
+        with(options) {
+            encoding = "UTF-8"
+            release.set(8)
+        }
     }
 
     repositories {
         mavenCentral()
         mavenLocal()
+    }
+
+    java {
+        withSourcesJar()
     }
 }

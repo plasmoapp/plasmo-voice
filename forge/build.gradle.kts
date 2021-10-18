@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
 
 val minecraftVersion: String by rootProject
 val forgeVersion: String by rootProject
@@ -14,6 +15,14 @@ architectury {
     forge()
 }
 
+configure<LoomGradleExtensionAPI> {
+    silentMojangMappingsLicense()
+
+    forge {
+        mixinConfig("plasmovoice.mixins.json")
+    }
+}
+
 base {
     archivesBaseName = "plasmovoice"
 }
@@ -27,10 +36,10 @@ dependencies {
 
     "forge"("net.minecraftforge:forge:${forgeVersion}")
 
-    implementation(project(":common")) {
+    implementation(project(":common", "dev")) {
         isTransitive = false
     }
-    project.configurations.getByName("developmentForge")(project(":common")) {
+    project.configurations.getByName("developmentForge")(project(":common", "dev")) {
         isTransitive = false
     }
     "shadowCommon"(project(":common", "transformProductionFabric")) {
@@ -45,13 +54,17 @@ dependencies {
     implementation("su.plo.voice:common:1.0.0")
     "shadowCommon"("su.plo.voice:common:1.0.0")
 
+    // YAML for server config
+    implementation("org.yaml:snakeyaml:1.29")
+    "shadowCommon"("org.yaml:snakeyaml:1.29")
+
     // Opus
-    implementation("su.plo.voice:opus:1.1.2")
-    "shadowCommon"("su.plo.voice:opus:1.1.2")
+    implementation("su.plo.voice:opus:1.1.2-old-jna")
+    "shadowCommon"("su.plo.voice:opus:1.1.2-old-jna")
 
     // RNNoise
-    implementation("su.plo.voice:rnnoise:1.0.0")
-    "shadowCommon"("su.plo.voice:rnnoise:1.0.0")
+    implementation("su.plo.voice:rnnoise:1.0.0-old-jna")
+    "shadowCommon"("su.plo.voice:rnnoise:1.0.0-old-jna")
 
     compileOnly("org.projectlombok:lombok:1.18.20")
     annotationProcessor("org.projectlombok:lombok:1.18.20")
@@ -69,8 +82,8 @@ repositories {
 }
 
 tasks {
-    java {
-        withSourcesJar()
+    jar {
+        classifier = "dev"
     }
 
     processResources {
@@ -85,6 +98,7 @@ tasks {
 
     shadowJar {
         configurations = listOf(project.configurations.getByName("shadowCommon"))
+        classifier = "dev-shadow"
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
@@ -93,25 +107,10 @@ tasks {
     }
 
     remapJar {
-        dependsOn(getByName<ShadowJar>("shadowJar"))
         input.set(shadowJar.get().archiveFile)
-        archiveBaseName.set("plasmovoice-forge")
+        dependsOn(getByName<ShadowJar>("shadowJar"))
+        archiveBaseName.set("plasmovoice-forge-${minecraftVersion}")
     }
-
-//    jar {
-//        manifest {
-//            attributes(mutableMapOf(
-//                "Specification-Title" to "plasmovoice",
-//                "Specification-Vendor" to "Plasmo",
-//                "Specification-Version" to "1",
-//                "Implementation-Title" to "Plasmo Voice",
-//                "Implementation-Version" to modVersion,
-//                "Implementation-Vendor" to "`Plasmo`",
-//                "Implementation-Timestamp" to DateTimeFormatter.ISO_INSTANT.format(Instant.now()),
-//                "MixinConfigs" to "plasmovoice.mixins.json"
-//            ))
-//        }
-//    }
 
     build {
         doLast {

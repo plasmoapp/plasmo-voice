@@ -26,27 +26,27 @@ dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
     mappings(loom.officialMojangMappings())
 
-    implementation(project(":common")) {
+    implementation(project(":common", "dev")) {
         isTransitive = false
     }
-    project.configurations.getByName("developmentFabric")(project(":common")) {
+    project.configurations.getByName("developmentFabric")(project(":common", "dev")) {
         isTransitive = false
     }
     "shadowCommon"(project(":common", "transformProductionFabric")) {
         isTransitive = false
     }
 
-    modApi("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
+    modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
     modApi("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
 
     // Fabric API jar-in-jar
-    include("net.fabricmc.fabric-api:fabric-api-base:0.3.0+c88702897d")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-networking-api-v1:1.0.14+6eb8b35a88")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.4.4+a02b4463d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.4+a02b4463d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-rendering-v1:1.6.0+a02b4463d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.7+b7ab6121d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.1+bb687600d1")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-api-base:0.3.0+f74f7c7d7d")
+    include("net.fabricmc.fabric-api:fabric-networking-api-v1:1.0.4+f74f7c7d7d")
+    include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.2.1+ca58154a7d")
+    include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.4+9354966b7d")
+    include("net.fabricmc.fabric-api:fabric-rendering-v1:1.6.0+2868a2287d")
+    include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.7+f74f7c7d7d")
+    include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.2+f74f7c7d7d")
 
     // Plasmo Voice protocol
     implementation("su.plo.voice:common:1.0.0")
@@ -80,8 +80,8 @@ repositories {
 }
 
 tasks {
-    java {
-        withSourcesJar()
+    jar {
+        classifier = "dev"
     }
 
     processResources {
@@ -96,17 +96,17 @@ tasks {
 
     shadowJar {
         configurations = listOf(project.configurations.getByName("shadowCommon"))
+        classifier = "dev-shadow"
 
         dependencies {
-            exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
         }
     }
 
     remapJar {
-        dependsOn(getByName<ShadowJar>("shadowJar"))
         input.set(shadowJar.get().archiveFile)
-        archiveBaseName.set("plasmovoice-fabric")
+        dependsOn(getByName<ShadowJar>("shadowJar"))
+        archiveBaseName.set("plasmovoice-fabric-${minecraftVersion}")
     }
 
     build {

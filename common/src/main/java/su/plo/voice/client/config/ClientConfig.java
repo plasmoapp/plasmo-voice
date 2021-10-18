@@ -283,9 +283,10 @@ public class ClientConfig {
         }
 
         private boolean isKeyBindOpened() {
-            if (client.screen instanceof VoiceSettingsScreen screen) {
-                if (screen.getActiveTab() instanceof KeyBindingsTabWidget tabWidget) {
-                    return tabWidget.getFocusedBinding() != null;
+            if (client.screen instanceof VoiceSettingsScreen) {
+                VoiceSettingsScreen screen = (VoiceSettingsScreen) client.screen;
+                if (screen.getActiveTab() instanceof KeyBindingsTabWidget) {
+                    return ((KeyBindingsTabWidget) screen.getActiveTab()).getFocusedBinding() != null;
                 }
             }
 

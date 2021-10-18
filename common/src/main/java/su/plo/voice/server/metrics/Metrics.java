@@ -2,6 +2,7 @@ package su.plo.voice.server.metrics;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonReader;
 import net.minecraft.DetectedVersion;
 import net.minecraft.server.MinecraftServer;
 import org.apache.logging.log4j.LogManager;
@@ -14,7 +15,6 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.*;
 import java.util.concurrent.Callable;
 import java.util.concurrent.Executors;
@@ -71,7 +71,8 @@ public class Metrics {
         }
         final MetricsConfig config;
         try {
-            config = gson.fromJson(Files.readString(configFile), MetricsConfig.class);
+            JsonReader reader = new JsonReader(new FileReader(configFile.toFile()));
+            config = gson.fromJson(reader, MetricsConfig.class);
         } catch (IOException e) {
             LOGGER.warn("Failed to read bstats config, creating one...", e);
             writeConfig(configFile, new MetricsConfig());
@@ -82,8 +83,8 @@ public class Metrics {
     }
 
     private void writeConfig(Path configFile, MetricsConfig config) {
-        try {
-            Files.writeString(configFile, gson.toJson(config), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.SYNC);
+        try (Writer w = new FileWriter(configFile.toFile())) {
+            w.write(gson.toJson(config));
         } catch (IOException e) {
             LOGGER.error("Unable to create a new config", e);
             throw new RuntimeException(e);
@@ -819,7 +820,13 @@ public class Metrics {
          * allow a raw string inputs for methods like {@link JsonObjectBuilder#appendField(String,
          * JsonObject)}.
          */
-        public record JsonObject(String value) {
+        public static class JsonObject {
+
+            private final String value;
+
+            private JsonObject(String value) {
+                this.value = value;
+            }
 
             @Override
             public String toString() {

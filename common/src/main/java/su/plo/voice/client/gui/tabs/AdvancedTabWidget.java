@@ -25,8 +25,8 @@ public class AdvancedTabWidget extends TabWidget {
                 });
         rnNoise.active = Denoiser.platformSupported();
 
-        this.addEntry(new CategoryEntry(new TranslatableComponent("gui.plasmo_voice.advanced.noise_reduction")));
-        this.addEntry(new OptionEntry(
+        this.addEntry(new CategoryEntry(this, new TranslatableComponent("gui.plasmo_voice.advanced.noise_reduction")));
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.rnnoise"),
                 rnNoise,
                 config.rnNoise,
@@ -36,7 +36,7 @@ public class AdvancedTabWidget extends TabWidget {
                     ((ToggleButton) element).updateValue();
                 })
         );
-        this.addEntry(new OptionEntry(
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.microphone_testing"),
                 new MicrophoneThresholdWidget(0, 0, 97, false, parent),
                 null,
@@ -44,8 +44,8 @@ public class AdvancedTabWidget extends TabWidget {
         );
 
 
-        this.addEntry(new CategoryEntry(new TranslatableComponent("gui.plasmo_voice.advanced.compressor")));
-        this.addEntry(new OptionEntry(
+        this.addEntry(new CategoryEntry(this, new TranslatableComponent("gui.plasmo_voice.advanced.compressor")));
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.compressor"),
                 new ToggleButton(0, 0, 97, 20, config.compressor,
                         toggled -> {}),
@@ -55,7 +55,7 @@ public class AdvancedTabWidget extends TabWidget {
                     ((ToggleButton) element).updateValue();
                 })
         );
-        this.addEntry(new OptionEntry(
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.compressor.threshold"),
                 new ConfigIntegerSlider(0, 0, 97, new TextComponent("dB"), config.compressorThreshold, null),
                 VoiceClient.getClientConfig().compressorThreshold,
@@ -64,7 +64,7 @@ public class AdvancedTabWidget extends TabWidget {
                     ((ConfigIntegerSlider) element).updateValue();
                 })
         );
-        this.addEntry(new OptionEntry(
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.limiter.threshold"),
                 new ConfigIntegerSlider(0, 0, 97, new TextComponent("dB"), config.limiterThreshold, null),
                 VoiceClient.getClientConfig().limiterThreshold,
@@ -80,8 +80,8 @@ public class AdvancedTabWidget extends TabWidget {
                 toggled -> directionalSourcesAngle.active = toggled);
         directionalSourcesAngle.active = config.directionalSources.get();
 
-        this.addEntry(new CategoryEntry(new TranslatableComponent("gui.plasmo_voice.advanced.engine")));
-        this.addEntry(new OptionEntry(
+        this.addEntry(new CategoryEntry(this, new TranslatableComponent("gui.plasmo_voice.advanced.engine")));
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.hrtf"),
                 new ToggleButton(0, 0, 97, 20, config.hrtf,
                         toggled -> VoiceClient.getSoundEngine().restart()),
@@ -92,7 +92,7 @@ public class AdvancedTabWidget extends TabWidget {
                     ((ToggleButton) element).updateValue();
                 })
         );
-        this.addEntry(new OptionEntry(
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.directional_sources"),
                 directionalSources,
                 config.directionalSources,
@@ -105,7 +105,7 @@ public class AdvancedTabWidget extends TabWidget {
                     ((ToggleButton) element).updateValue();
                 })
         );
-        this.addEntry(new OptionEntry(
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.directional_sources_angle"),
                 directionalSourcesAngle,
                 config.directionalSourcesAngle,
@@ -119,8 +119,8 @@ public class AdvancedTabWidget extends TabWidget {
         );
 
 
-        this.addEntry(new CategoryEntry(new TranslatableComponent("gui.plasmo_voice.advanced.visual_ui")));
-        this.addEntry(new OptionEntry(
+        this.addEntry(new CategoryEntry(this, new TranslatableComponent("gui.plasmo_voice.advanced.visual_ui")));
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.visual_ui.distance"),
                 new ToggleButton(0, 0, 97, 20, config.visualizeDistance,
                         toggled -> {}),
@@ -129,7 +129,7 @@ public class AdvancedTabWidget extends TabWidget {
                     ((ToggleButton) element).updateValue();
                 })
         );
-        this.addEntry(new OptionEntry(
+        this.addEntry(new OptionEntry(this,
                 new TranslatableComponent("gui.plasmo_voice.advanced.visual_ui.priority"),
                 new ToggleButton(0, 0, 97, 20, config.showPriorityVolume,
                         toggled -> {

@@ -59,8 +59,8 @@ public class DistanceSlider extends AbstractSliderButton {
 
     @Override
     protected void renderBg(PoseStack matrices, Minecraft client, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        client.getTextureManager().bind(WIDGETS_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
         int i = (this.isHovered() ? 2 : 1) * 20;
 
         float stepValue = (float) VoiceClient.getServerConfig().getDistances().indexOf((int) VoiceClient.getServerConfig().getDistance()) / ((float) maxSteps - 1);

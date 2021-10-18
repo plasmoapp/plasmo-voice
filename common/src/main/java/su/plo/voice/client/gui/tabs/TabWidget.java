@@ -2,20 +2,20 @@ package su.plo.voice.client.gui.tabs;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ContainerObjectSelectionList;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
-import net.minecraft.client.gui.narration.NarratedElementType;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
+import org.lwjgl.opengl.GL11;
 import su.plo.voice.client.config.entries.ConfigEntry;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.widgets.DropDownWidget;
@@ -232,17 +232,16 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
                     r = this.x0 + this.width / 2 - o / 2;
                     int q = this.x0 + this.width / 2 + o / 2;
                     RenderSystem.disableTexture();
-                    RenderSystem.setShader(GameRenderer::getPositionShader);
                     float f = this.isFocused() ? 1.0F : 0.5F;
-                    RenderSystem.setShaderColor(f, f, f, 1.0F);
-                    bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+                    RenderSystem.color4f(f, f, f, 1.0F);
+                    bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION);
                     bufferBuilder.vertex((double)r, (double)(m + n + 2), 0.0D).endVertex();
                     bufferBuilder.vertex((double)q, (double)(m + n + 2), 0.0D).endVertex();
                     bufferBuilder.vertex((double)q, (double)(m - 2), 0.0D).endVertex();
                     bufferBuilder.vertex((double)r, (double)(m - 2), 0.0D).endVertex();
                     tessellator.end();
-                    RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
-                    bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+                    RenderSystem.color4f(0.0F, 0.0F, 0.0F, 1.0F);
+                    bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION);
                     bufferBuilder.vertex((double)(r + 1), (double)(m + n + 1), 0.0D).endVertex();
                     bufferBuilder.vertex((double)(q - 1), (double)(m + n + 1), 0.0D).endVertex();
                     bufferBuilder.vertex((double)(q - 1), (double)(m - 1), 0.0D).endVertex();
@@ -279,23 +278,25 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
         }
     }
 
-    public class OptionEntry extends Entry {
+    public static class OptionEntry extends Entry {
         private final Component text;
         private final List<Component> tooltip;
         private final AbstractWidget element;
         private final Button resetButton;
         private final ConfigEntry entry;
+        private final TabWidget parent;
 
-        public OptionEntry(Component text, AbstractWidget element, ConfigEntry entry, ResetAction action) {
-            this(text, element, entry, null, action);
+        public OptionEntry(TabWidget parent, Component text, AbstractWidget element, ConfigEntry entry, ResetAction action) {
+            this(parent, text, element, entry, null, action);
         }
 
-        public OptionEntry(Component text, AbstractWidget element, ConfigEntry entry, List<Component> tooltip, ResetAction action) {
+        public OptionEntry(TabWidget parent, Component text, AbstractWidget element, ConfigEntry entry, List<Component> tooltip, ResetAction action) {
             super(24);
             this.text = text;
             this.element = element;
             this.entry = entry;
             this.tooltip = tooltip;
+            this.parent = parent;
 
             this.resetButton = new Button(0, 0, 46, 20, new TranslatableComponent("controls.reset"), button -> {
                 if (entry != null) {
@@ -310,8 +311,8 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
         @Override
         public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int elementY = y + entryHeight - 4;
-            Objects.requireNonNull(TabWidget.this.minecraft.font);
-            TabWidget.this.minecraft.font.drawShadow(matrices, this.text, x, (float)(elementY - 9 - 1), 16777215);
+            Objects.requireNonNull(parent.minecraft.font);
+            parent.minecraft.font.drawShadow(matrices, this.text, x, (float)(elementY - 9 - 1), 16777215);
 
             element.x = x + entryWidth - 147;
             element.y = y;
@@ -323,7 +324,7 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
             resetButton.render(matrices, mouseX, mouseY, tickDelta);
 
             if (hovered && mouseX < (element.x - 4)) {
-                TabWidget.this.setTooltip(tooltip);
+                parent.setTooltip(tooltip);
             }
         }
 
@@ -343,40 +344,38 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
             return super.mouseReleased(mouseX, mouseY, button);
         }
 
-        @Override
-        public List<? extends NarratableEntry> narratables() {
-            return ImmutableList.of(this.element, this.resetButton);
-        }
-
         public interface ResetAction {
             void onReset(Button resetButton, AbstractWidget element);
         }
     }
 
-    public class CategoryEntry extends Entry {
+    public static class CategoryEntry extends Entry {
         final Component text;
         private final int textWidth;
-        private int color = 16777215;
+        private static final int color = 16777215;
+        private final TabWidget parent;
 
-        public CategoryEntry(Component text) {
+        public CategoryEntry(TabWidget parent, Component text) {
             super(24);
             this.text = text;
-            this.textWidth = TabWidget.this.minecraft.font.width(this.text);
+            this.textWidth = parent.minecraft.font.width(this.text);
+            this.parent = parent;
         }
 
-        public CategoryEntry(Component text, int height) {
+        public CategoryEntry(TabWidget parent, Component text, int height) {
             super(height);
             this.text = text;
-            this.textWidth = TabWidget.this.minecraft.font.width(this.text);
+            this.textWidth = parent.minecraft.font.width(this.text);
+            this.parent = parent;
         }
 
         @Override
         public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            float elementX = (float)(TabWidget.this.minecraft.screen.width / 2 - this.textWidth / 2);
+            float elementX = (float)(parent.minecraft.screen.width / 2 - this.textWidth / 2);
             int elementY = y + entryHeight - 4;
-            Objects.requireNonNull(TabWidget.this.minecraft.font);
+            Objects.requireNonNull(parent.minecraft.font);
 
-            TabWidget.this.minecraft.font.drawShadow(matrices, this.text, elementX, (float)(elementY - 9 - 1), color);
+            parent.minecraft.font.drawShadow(matrices, this.text, elementX, (float)(elementY - 9 - 1), color);
         }
 
         @Override
@@ -388,19 +387,5 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
         public List<? extends GuiEventListener> children() {
             return Collections.emptyList();
         }
-
-        @Override
-        public List<? extends NarratableEntry> narratables() {
-            return ImmutableList.of(new NarratableEntry() {
-                public NarrationPriority narrationPriority() {
-                    return NarrationPriority.HOVERED;
-                }
-
-                public void updateNarration(NarrationElementOutput builder) {
-                    builder.add(NarratedElementType.TITLE, CategoryEntry.this.text);
-                }
-            });
-        }
     }
-
 }

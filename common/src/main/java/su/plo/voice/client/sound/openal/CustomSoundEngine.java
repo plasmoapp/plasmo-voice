@@ -16,8 +16,6 @@ import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Recorder;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -40,10 +38,7 @@ public class CustomSoundEngine {
     @Getter
     private boolean hrtfSupported;
     @Getter
-    protected boolean soundPhysics;
     private final ScheduledExecutorService executor;
-
-    public static Method soundPhysicsPlaySound;
 
     public CustomSoundEngine() {
         this.listener = new Listener();
@@ -151,8 +146,8 @@ public class CustomSoundEngine {
     public synchronized void close() {
         if (this.initialized) {
             this.executor.submit(() -> {
-                if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen) {
-                    screen.closeSpeaker();
+                if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen) {
+                    ((VoiceSettingsScreen) Minecraft.getInstance().screen).closeSpeaker();
                 }
 
                 EXTThreadLocalContext.alcSetThreadContext(0L);
@@ -267,17 +262,5 @@ public class CustomSoundEngine {
     }
 
     public void postInit() {
-        try {
-            Class clazz = Class.forName("com.sonicether.soundphysics.SoundPhysics");
-            clazz.getMethod("init").invoke(null);
-            soundPhysicsPlaySound = clazz.getMethod(
-                    "onPlaySound",
-                    double.class, double.class, double.class, int.class
-            );
-
-            soundPhysics = true;
-        } catch (ClassNotFoundException | NoSuchMethodException |
-                InvocationTargetException | IllegalAccessException ignored) {
-        }
     }
 }

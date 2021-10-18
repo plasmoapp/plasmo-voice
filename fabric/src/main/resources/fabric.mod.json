@@ -27,9 +27,6 @@
         "plasmovoice.mixins.json"
     ],
     "depends": {
-        "fabricloader": ">=${loader_version}"
-    },
-    "suggests": {
-        "soundphysics": "*"
+        "fabricloader": ">=0.10.8"
     }
 }

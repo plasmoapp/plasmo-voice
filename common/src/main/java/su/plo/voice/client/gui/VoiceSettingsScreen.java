@@ -3,7 +3,10 @@ package su.plo.voice.client.gui;
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.ChatFormatting;
@@ -12,7 +15,6 @@ import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.locale.Language;
@@ -23,6 +25,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.opengl.GL11;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.particle.BlockDustParticle2D;
@@ -274,8 +277,8 @@ public class VoiceSettingsScreen extends Screen {
         for (TabWidget tab : tabWidgets.values()) {
             for (TabWidget.Entry entry : tab.children()) {
                 if (entry instanceof TabWidget.OptionEntry &&
-                        entry.children().get(0) instanceof MicrophoneThresholdWidget microphoneTest) {
-                    microphoneTest.closeSpeaker();
+                        entry.children().get(0) instanceof MicrophoneThresholdWidget) {
+                    ((MicrophoneThresholdWidget) entry.children().get(0)).closeSpeaker();
                 }
             }
         }
@@ -310,16 +313,15 @@ public class VoiceSettingsScreen extends Screen {
         for (BlockDustParticle2D particle : particles) {
             Tesselator tessellator = Tesselator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuilder();
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
             RenderSystem.depthFunc(515);
             RenderSystem.disableDepthTest();
             RenderSystem.enableBlend();
             RenderSystem.defaultBlendFunc();
             RenderSystem.depthMask(true);
-            RenderSystem.setShaderTexture(0, TextureAtlas.LOCATION_BLOCKS);
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            client.getTextureManager().bind(TextureAtlas.LOCATION_BLOCKS);
+            bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
             particle.buildGeometry(bufferBuilder, delta);
 
@@ -332,11 +334,10 @@ public class VoiceSettingsScreen extends Screen {
 
         Tesselator tesselator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tesselator.getBuilder();
-        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-        RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+        client.getTextureManager().bind(BACKGROUND_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
         bufferBuilder.vertex(0.0D, height, 0.0D).uv(0.0F, (float) height / 32.0F + 0).color(64, 64, 64, 255).endVertex();
         bufferBuilder.vertex(this.width, height, 0.0D).uv((float) this.width / 32.0F, (float) height / 32.0F + 0).color(64, 64, 64, 255).endVertex();
         bufferBuilder.vertex(this.width, 0.0D, 0.0D).uv((float) this.width / 32.0F, 0).color(64, 64, 64, 255).endVertex();
@@ -349,9 +350,11 @@ public class VoiceSettingsScreen extends Screen {
         RenderSystem.enableBlend();
         RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
                 GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+        RenderSystem.disableAlphaTest();
+        RenderSystem.shadeModel(7425);
         RenderSystem.disableTexture();
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+
+        bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_COLOR);
         bufferBuilder.vertex(0, height + 4, 0.0D).color(0, 0, 0, 0).endVertex();
         bufferBuilder.vertex(this.width, height + 4, 0.0D).color(0, 0, 0, 0).endVertex();
         bufferBuilder.vertex(this.width, height, 0.0D).color(0, 0, 0, 255).endVertex(); // chanje alfa hire to 125
@@ -397,9 +400,8 @@ public class VoiceSettingsScreen extends Screen {
         }
     }
 
-    @Override
-    protected void clearWidgets() {
-        super.clearWidgets();
+    private void clearWidgets() {
+        this.buttons.clear();
         this.tabButtons.clear();
         this.tabWidgets.clear();
         this.muteMicButtons = null;
