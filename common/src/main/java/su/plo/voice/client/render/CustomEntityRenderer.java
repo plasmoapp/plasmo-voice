@@ -49,14 +49,17 @@ public class CustomEntityRenderer {
                 } else {
                     VoiceClient.getServerConfig().getMuted().remove(muted.uuid);
                 }
-            } else if (SocketClientUDPQueue.talking.containsKey(player.getUUID())) {
-                if (SocketClientUDPQueue.talking.get(player.getUUID())) {
-                    renderIcon(96, 0, player, distance, matrices, hasLabel, vertexConsumers, light);
-                } else {
-                    renderIcon(64, 0, player, distance, matrices, hasLabel, vertexConsumers, light);
+            } else {
+                Boolean isTalking = SocketClientUDPQueue.talking.get(player.getUUID());
+                if (isTalking != null) {
+                    if (isTalking) {
+                        renderIcon(96, 0, player, distance, matrices, hasLabel, vertexConsumers, light);
+                    } else {
+                        renderIcon(64, 0, player, distance, matrices, hasLabel, vertexConsumers, light);
+                    }
+                } else if (PlayerVolumeHandler.isShow(player)) {
+                    renderPercent(player, distance, matrices, hasLabel, vertexConsumers, light);
                 }
-            } else if (PlayerVolumeHandler.isShow(player)) {
-                renderPercent(player, distance, matrices, hasLabel, vertexConsumers, light);
             }
         } else {
             renderIcon(112, 0, player, distance, matrices, hasLabel, vertexConsumers, light);

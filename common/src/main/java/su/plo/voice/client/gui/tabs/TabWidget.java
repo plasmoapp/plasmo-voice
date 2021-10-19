@@ -251,7 +251,6 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
                 }
 
                 r = this.getRowLeft();
-//                System.out.println(r);
                 entry.render(matrices, j, k, r, o, n, mouseX, mouseY, Objects.equals(this.hoveredEntry, entry), delta);
 
                 height += entry.getHeight();
