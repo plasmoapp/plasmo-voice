@@ -18,7 +18,7 @@
     "gui.plasmo_voice.on": "Aan",
     "gui.plasmo_voice.off": "Uit",
 
-    "gui.plasmo_voice.title": "Instellingen",
+    "gui.plasmo_voice.title": "%s Instellingen",
 
 
     "gui.plasmo_voice.toggle.microphone": "Microfoon in-/uitschakelen",
