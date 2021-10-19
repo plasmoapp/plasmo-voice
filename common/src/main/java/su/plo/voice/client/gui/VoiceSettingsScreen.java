@@ -411,8 +411,12 @@ public class VoiceSettingsScreen extends Screen {
     public List<? extends GuiEventListener> children() {
         List<GuiEventListener> list = new ArrayList<>(super.children());
         list.addAll(this.tabButtons);
-        list.addAll(this.muteMicButtons);
-        list.addAll(this.muteSpeakerButtons);
+        if (this.muteMicButtons != null) {
+            list.addAll(this.muteMicButtons);
+        }
+        if (this.muteSpeakerButtons != null) {
+            list.addAll(this.muteSpeakerButtons);
+        }
         if (!about) {
             list.add(this.tabWidgets.get(active));
         } else {

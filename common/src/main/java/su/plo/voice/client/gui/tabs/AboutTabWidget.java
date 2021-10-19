@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.tabs;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
@@ -25,15 +26,16 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
-import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 
 import java.io.IOException;
 import java.util.*;
 
 public class AboutTabWidget extends TabWidget {
-    private static final Map<String, Translator> translators = Map.of(
-//            "_test", new Translator(new GameProfile(UUID.fromString("8f552657-df1d-42cd-89c6-c176e195f703"), "Apehum"), "GitHub", "https://github.com/apehum")
+    private static final Map<String, List<Translator>> translators = ImmutableMap.of(
+            "ja_jp", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("a2c18c8f-538d-4ea1-bdee-464dd9df3c52"), "sya_ri"), "GitHub", "https://github.com/sya-ri")
+            )
     );
     private final VoiceSettingsScreen parent;
 
@@ -53,14 +55,17 @@ public class AboutTabWidget extends TabWidget {
         this.addEntry(new DeveloperEntry("Venterok", new TranslatableComponent("gui.plasmo_voice.about.artist"), "Twitter", "https://twitter.com/venterrok"));
 
         LanguageInfo languageInfo = client.getLanguageManager().getSelected();
-        Translator translator = translators.get(languageInfo.getCode());
-        if (translator != null) {
-            this.addEntry(new DeveloperEntry(
-                    translator.getProfile().getName(),
-                    new TranslatableComponent("gui.plasmo_voice.about.translator", languageInfo.getName()),
-                    translator.getLink(),
-                    translator.getLinkUrl()
-            ));
+        List<Translator> langTranslators = translators.get(languageInfo.getCode());
+        if (langTranslators != null) {
+            for (Translator translator : langTranslators) {
+                DeveloperEntry.loadTranslatorSkin(translator);
+                this.addEntry(new DeveloperEntry(
+                        translator.getProfile().getName(),
+                        new TranslatableComponent("gui.plasmo_voice.about.translator", languageInfo.getName()),
+                        translator.getLink(),
+                        translator.getLinkUrl()
+                ));
+            }
         }
         Component links = new TranslatableComponent("gui.plasmo_voice.about.links", "Plasmo Voice");
         if (!language.getOrDefault(((TranslatableComponent) links).getKey()).contains("%s")) {
@@ -139,7 +144,6 @@ public class AboutTabWidget extends TabWidget {
                 gap = (entryWidth - (elementWidth * list.size())) / (list.size() - 1);
 
             }
-//            System.out.println(elementWidth);
             int elementX = x;
 
             for (AbstractWidget element : list) {
@@ -189,14 +193,22 @@ public class AboutTabWidget extends TabWidget {
     }
 
     public class DeveloperEntry extends Entry {
+        private static final ResourceLocation steveSkin = new ResourceLocation("textures/entity/steve.png");
         public static Map<String, ResourceLocation> skins = new HashMap<>();
+
+        public static void loadTranslatorSkin(Translator translator) {
+            if (!skins.containsKey(translator.getProfile().getName())) {
+                RenderSystem.recordRenderCall(() -> {
+                    loadSkin(
+                            translator.getProfile(),
+                            null
+                    );
+                });
+            }
+        }
 
         public static void loadSkins() {
             RenderSystem.recordRenderCall(() -> {
-                loadSkin(
-                        new GameProfile(VoiceClient.NIL_UUID, "-default"),
-                        "iVBORw0KGgoAAAANSUhEUgAAAEAAAABACAYAAACqaXHeAAAFhElEQVR4Xu1a328UVRjdR6UUKJFIKL90oa4Vs1TwgRItUvlljMYSjVIDBAzUloZkg5pIDFWJUE3UpyaQiokJSWM0PPjrwcAjT/2fPufc2TN++82dGcruTrfbOcnJ3L33u7f3nPvd2dm5LZUyMLitV8Bdm59wV5bBHRt65JNj1VTa8VYcKLi6Y72jNgCEyMlDe+Wbk/ujK9hVBlD8wJY1iQaUy+UGoq4rDODq223Auq43QItFBoB6O6wKA3ziswwYqwx0jwEU/vzWta6Mu781wMeuMYDCNZkZ+ivPRztex6HSv0ZAiHquv8eJfam8QV7cGbK6s1de2B7eBypbe9yNELGogwGMQx/0xRho57g0Kuk5ws4nd2gDwD3b1zkhELhvV5+7kvh8eHCjjAxucnEwhDHogzqOow1Ie46w88kdbtKbw1ULhQfC+rHS/Nwrf89ekvvf1+Th3Izc/64WlK/Ib5+ekv27N7oYxKIP+kbbJRgTY0Nw2nOEnU/ucCu1JUjlbevCVe0PtwLK1Wf75NcvLsif16fd9feZaZmvfSj/ztZk/uM3HRGDWPRBX5QxFsbE56znCDuf3MFUDbfBWik//aTceH9Y5s8fkeHKU048MPbKrPx19aITjzIAUxCDWPRBX4yhx9RiuT30drDzyR3RZIMVC9O2T66PDcncmdfk5qkDgbij8sfVc/LPV7Xo6+3BzUvyy+QxmQme+RGDWPRBX4zB1acBPvEdYwDTHml7brQqP02+LbfPvx79oPnx9Ggg8JB8dvjlBv5w+lX58uQBF4NY9EFfjOG2QH07UHzSc4SdT+7grzeKnr943K3otx8clCvHq3L5yB6ZHh10YsHP39onX7970BFlxCD254kTru/tj94Ir/XxaCQzgKRxdj7LjvdOLIpmpVJpoI2PYXEx9jAUPRQFbaWzZ9OZhYWFcBwwKGNLvjO0O7ra8CWjFQbYR2KyJQZQfJ2r24AgA7R49zeaRSsMsKnfzi3QtAF7KzUBB54Zd9ejw3cbqNts+/DQrJSuXfuf4+NSunVLSnfuuBsmvip580Sdo44HUQdR5L17Ifk5KZ4xtp39ySxQ4OMYALo/OjEREmVOvG5CJJ4T0vGgFq3JcXQsBbIPDbXtj2NAksCsdu8EOUlMEBmhRep40E5Ykyusx7eG2XY7RhayBGa1u7TnBFDWf5wG6LqkeMZBoC5bgTqb8soAHYN9rxkJITF5LZpl1utYGmBFq/54KCNvBA9f+P2hiTodY9ut3hh8BlCczoBEA7QYmKEN8AnThnEL+PrUU91nwNzl8Ugg61tqgM2AtPaYILv63LPWAKatR7Q2RIuzBuDqM8DV12Os3hgoLElgpgF2D2YZYL8FfLEJBtgVtgb4tojVG8OjGJDWHjOAgqwofk6L91CLSzLAZsiSDBgZGREwSSDrGTc1NdXASBCuzABSr36SATqeMSwH/bQ4a4AzQRnAdr1FrN4YKCxJYFa73iK4WgNBd7NUBuibKttdDLdJQN6EkwygSF+GLJsBvgxqMCEQlhbPGF1nV7jhBhjQd49YkgEFChQoUKBAgQIFChQoUKBAgQLNounDVbwVauXhZ95o2gBz/r/6DNAZsNiGf4BoN1pqwEIb/gWm1eDLTf2WV9O+BOXbXjJ6nU7qV+m+/yewZwfLjUc1IKndidLnBDz9pRG6XZ8krSQD0tpjBmhxMCGtvSsNaPX5f7uhxfkEWgPs8bo+1PCd7fkOPjTtfHIHxfmOupZiQNbRV0cbkJbiWe3WAH2sZQ1ghvBYbEUZQNp2e7hJYVEmqNX3bRE7n9yRJTCr3aa4zwBtUscZwFPjJIGsTzpdbhB/Jr7HG7JDGdQxWyDr+Dyr3bfCOgtWhQGkE6pucK5sMqTVBvwH+QeX13iz8VkAAAAASUVORK5CYII="
-                );
                 loadSkin(
                         new GameProfile(UUID.fromString("8f552657-df1d-42cd-89c6-c176e195f703"), "Apehum"),
                         "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"
@@ -217,20 +229,18 @@ public class AboutTabWidget extends TabWidget {
                 return;
             }
 
-            ResourceLocation fallbackIdentifier = new ResourceLocation("plasmo_voice", "skins/" + profile.getName().toLowerCase());
-            try {
-                Minecraft.getInstance().getTextureManager().register(
-                        fallbackIdentifier,
-                        new DynamicTexture(NativeImage.fromBase64(fallback))
-                );
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            // fallback
-            skins.put(profile.getName(), fallbackIdentifier);
-
-            if (profile.getId().equals(VoiceClient.NIL_UUID)) {
-                return;
+            if (fallback != null) {
+                ResourceLocation fallbackIdentifier = new ResourceLocation("plasmo_voice", "skins/" + Hashing.sha1().hashUnencodedChars(profile.getName().toLowerCase()).toString());
+                try {
+                    Minecraft.getInstance().getTextureManager().register(
+                            fallbackIdentifier,
+                            new DynamicTexture(NativeImage.fromBase64(fallback))
+                    );
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                // fallback
+                skins.put(profile.getName(), fallbackIdentifier);
             }
 
             Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = Minecraft.getInstance().getSkinManager().getInsecureSkinInformation(profile);
@@ -257,13 +267,17 @@ public class AboutTabWidget extends TabWidget {
             super(44);
             this.nick = new TextComponent(nick);
             this.role = role;
-            this.link = new Button(0, 0, 56, 20, new TextComponent(link), button -> {
-                openLink(linkUrl);
-            }, (button, matrices, mouseX, mouseY) -> {
-                AboutTabWidget.this.setTooltip(ImmutableList.of(
-                        new TextComponent(linkUrl)
-                ));
-            });
+            if (link != null) {
+                this.link = new Button(0, 0, 56, 20, new TextComponent(link), button -> {
+                    openLink(linkUrl);
+                }, (button, matrices, mouseX, mouseY) -> {
+                    AboutTabWidget.this.setTooltip(ImmutableList.of(
+                            new TextComponent(linkUrl)
+                    ));
+                });
+            } else {
+                this.link = null;
+            }
         }
 
         public void renderBackground(int y, int x, int entryWidth, int entryHeight) {
@@ -286,15 +300,11 @@ public class AboutTabWidget extends TabWidget {
         }
 
         public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            if (!skins.containsKey(nick.getContents())) {
-                return;
-            }
-
             renderBackground(y, x, entryWidth, entryHeight);
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, skins.getOrDefault(nick.getContents(), skins.get("-default")));
+            RenderSystem.setShaderTexture(0, skins.getOrDefault(nick.getContents(), steveSkin));
 
             blit(matrices, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
             blit(matrices, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
@@ -302,9 +312,11 @@ public class AboutTabWidget extends TabWidget {
             AboutTabWidget.this.minecraft.font.drawShadow(matrices, nick, x + 40, y + 11, 16777215);
             AboutTabWidget.this.minecraft.font.drawShadow(matrices, role, x + 40, y + 21, -5592406);
 
-            link.x = x + entryWidth - 62;
-            link.y = y + 10;
-            link.render(matrices, mouseX, mouseY, tickDelta);
+            if (link != null) {
+                link.x = x + entryWidth - 62;
+                link.y = y + 10;
+                link.render(matrices, mouseX, mouseY, tickDelta);
+            }
         }
 
         public List<? extends GuiEventListener> children() {
