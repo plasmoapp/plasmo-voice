@@ -1,7 +1,6 @@
 [![](http://cf.way2muchnoise.eu/full_467028_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 [![](http://cf.way2muchnoise.eu/versions/467028_all.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 [![](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
-[![](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases)
 
 <div align="center">
   <img src="https://imgur.com/3ccgCRz.png"> 
@@ -23,7 +22,7 @@ Spigot and Fabric servers are compatible with both Fabric and Forge clients. For
 
 Players need to install the Fabric or Forge mod on the client for the voice chat to work. Players without the mod are still able to join and play as usual.
 
-![](https://i.imgur.com/nE34app.png)
+![](https://i.imgur.com/fTr1rHp.png)
 
 *Assuming Plasmo Voice is installed on both client and the server*
 
@@ -79,6 +78,10 @@ Check out voice settings by pressing `V`. Make sure you have the right devices s
 - [How to install Client](https://github.com/plasmoapp/plasmo-voice/wiki/How-to-install-Client)
 - [Commands & permissions](https://github.com/plasmoapp/plasmo-voice/wiki/Commands-&-permissions)
 - [Troubleshooting and FAQ](https://github.com/plasmoapp/plasmo-voice/wiki/Troubleshooting-&-FAQ)
+
+## bStats
+
+![https://bstats.org/plugin/bukkit/PlasmoVoice/10928](https://bstats.org/signatures/bukkit/plasmovoice.svg)
 
 ## Credits
 - Used to contain audio engine implementation and menu textures from [**Simple Voice Chat**](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat), but since the 1.1.0 version, it no longer does.

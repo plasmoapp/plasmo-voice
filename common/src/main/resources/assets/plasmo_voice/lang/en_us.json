@@ -134,7 +134,7 @@
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_4": "360 is like if the option is disabled.",
 
     "gui.plasmo_voice.advanced.compressor": "Compressor & Limiter",
-    "gui.plasmo_voice.advanced.compressor.tooltip_1": "Makes loud volume quiter,",
+    "gui.plasmo_voice.advanced.compressor.tooltip_1": "Makes loud volume quieter,",
     "gui.plasmo_voice.advanced.compressor.tooltip_2": "saving your ears from loud noises.",
     "gui.plasmo_voice.advanced.compressor.tooltip_3": "",
     "gui.plasmo_voice.advanced.compressor.tooltip_4": "Applies to the players you hear.",

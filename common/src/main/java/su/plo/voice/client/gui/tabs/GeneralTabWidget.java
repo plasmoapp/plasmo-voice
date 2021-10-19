@@ -158,18 +158,21 @@ public class GeneralTabWidget extends TabWidget {
                 })
         );
 
+        MicrophoneThresholdWidget activationThreshold = new MicrophoneThresholdWidget(0, 0, 97, true, parent);
         String[] activations = new String[]{"gui.plasmo_voice.general.activation.ptt", "gui.plasmo_voice.general.activation.voice"};
         Button voiceActivation = new Button(0, 0, 97, 20, onOff(VoiceClient.getClientConfig().voiceActivation.get()
                         && !VoiceClient.getServerConfig().isVoiceActivationDisabled(),
                 activations),
                 button -> {
                     VoiceClient.getClientConfig().voiceActivation.invert();
-                    button.setMessage(onOff(VoiceClient.getClientConfig().voiceActivation.get()
-                                    && !VoiceClient.getServerConfig().isVoiceActivationDisabled(),
-                            activations));
+                    boolean enableVoiceActivation = VoiceClient.getClientConfig().voiceActivation.get()
+                            && !VoiceClient.getServerConfig().isVoiceActivationDisabled();
+                    button.setMessage(onOff(enableVoiceActivation, activations));
+                    activationThreshold.active = enableVoiceActivation;
                 });
 
         voiceActivation.active = !VoiceClient.getServerConfig().isVoiceActivationDisabled();
+        activationThreshold.active = VoiceClient.getClientConfig().voiceActivation.get();
 
         this.addEntry(new CategoryEntry(new TranslatableComponent("gui.plasmo_voice.general.activation")));
         this.addEntry(new OptionEntry(
@@ -185,7 +188,7 @@ public class GeneralTabWidget extends TabWidget {
         );
         this.addEntry(new OptionEntry(
                 new TranslatableComponent("gui.plasmo_voice.general.activation.threshold"),
-                new MicrophoneThresholdWidget(0, 0, 97, true, parent),
+                activationThreshold,
                 VoiceClient.getClientConfig().voiceActivationThreshold,
                 TextUtils.multiLine("gui.plasmo_voice.general.activation.threshold.tooltip", 8),
                 (button, element) -> {

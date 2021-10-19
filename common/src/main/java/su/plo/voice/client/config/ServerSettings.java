@@ -85,7 +85,7 @@ public class ServerSettings {
         VoiceClient.setSpeaking(false);
         VoiceClient.setSpeakingPriority(false);
 
-        VoiceClient.recorder.updateConfig(config.getSampleRate());
+        VoiceClient.recorder.updateSampleRate(config.getSampleRate());
 
         SocketClientUDPQueue.talking.clear();
         SocketClientUDPQueue.audioChannels

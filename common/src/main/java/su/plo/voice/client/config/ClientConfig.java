@@ -61,6 +61,7 @@ public class ClientConfig {
     public StringConfigEntry speaker = new StringConfigEntry();
     public BooleanConfigEntry rnNoise = new BooleanConfigEntry();
     public BooleanConfigEntry microphoneMuted = new BooleanConfigEntry();
+    public BooleanConfigEntry javaxCapture = new BooleanConfigEntry();
 
     // sound engine
     public BooleanConfigEntry hrtf = new BooleanConfigEntry();
@@ -151,6 +152,7 @@ public class ClientConfig {
         whitelist.setDefault(false);
         hrtf.setDefault(false);
         microphoneMuted.setDefault(false);
+        javaxCapture.setDefault(false);
         speakerMuted.setDefault(false);
         rnNoise.setDefault(false);
         directionalSources.setDefault(false);

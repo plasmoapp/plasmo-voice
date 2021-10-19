@@ -86,12 +86,12 @@ public class VoiceSettingsScreen extends Screen {
 
     private static Component getTranslatedTitle() {
         TranslatableComponent title = new TranslatableComponent("gui.plasmo_voice.title",
-                "Plasmo Voice " + VoiceClient.VERSION);
+                "Plasmo Voice " + VoiceClient.getInstance().getVersion());
         Language language = Language.getInstance();
 
         if (!language.getOrDefault(title.getKey()).contains("%s")) {
             return new TextComponent("Plasmo Voice ")
-                    .append(new TextComponent(VoiceClient.VERSION))
+                    .append(new TextComponent(VoiceClient.getInstance().getVersion()))
                     .append(new TextComponent(" Settings"));
         }
 
@@ -411,8 +411,12 @@ public class VoiceSettingsScreen extends Screen {
     public List<? extends GuiEventListener> children() {
         List<GuiEventListener> list = new ArrayList<>(super.children());
         list.addAll(this.tabButtons);
-        list.addAll(this.muteMicButtons);
-        list.addAll(this.muteSpeakerButtons);
+        if (this.muteMicButtons != null) {
+            list.addAll(this.muteMicButtons);
+        }
+        if (this.muteSpeakerButtons != null) {
+            list.addAll(this.muteSpeakerButtons);
+        }
         if (!about) {
             list.add(this.tabWidgets.get(active));
         } else {
