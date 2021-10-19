@@ -81,7 +81,7 @@ Check out voice settings by pressing `V`. Make sure you have the right devices s
 
 ## bStats
 
-![https://bstats.org/plugin/bukkit/PlasmoVoice/10928](https://bstats.org/signatures/bukkit/plasmovoice.svg)
+[![](https://bstats.org/signatures/bukkit/plasmovoice.svg)](https://bstats.org/plugin/bukkit/PlasmoVoice/10928)
 
 ## Credits
 - Used to contain audio engine implementation and menu textures from [**Simple Voice Chat**](https://www.curseforge.com/minecraft/mc-mods/simple-voice-chat), but since the 1.1.0 version, it no longer does.
