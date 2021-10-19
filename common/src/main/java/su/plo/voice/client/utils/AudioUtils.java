@@ -99,9 +99,14 @@ public class AudioUtils {
         return db;
     }
 
-    public static void adjustVolume(short[] audio, float volume) {
-        for (int i = 0; i < audio.length; i++) {
-            audio[i] *= volume;
+    public static void adjustVolume(byte[] audio, float volume) {
+        for (int i = 0; i < audio.length; i += 2) {
+            short audioSample = bytesToShort(audio[i], audio[i + 1]);
+
+            audioSample = (short) (audioSample * volume);
+
+            audio[i] = (byte) audioSample;
+            audio[i + 1] = (byte) (audioSample >> 8);
         }
     }
 }

@@ -13,7 +13,7 @@ import su.plo.voice.server.VoiceServer;
 import su.plo.voice.server.VoiceServerForge;
 import su.plo.voice.server.network.ServerNetworkHandlerForge;
 
-@Mod("plasmovoice")
+@Mod("plasmo_voice")
 public class VoiceForge {
     public VoiceForge() {
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::clientSetup);

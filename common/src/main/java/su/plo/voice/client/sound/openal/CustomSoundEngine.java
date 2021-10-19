@@ -15,6 +15,7 @@ import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Recorder;
+import su.plo.voice.client.sound.capture.JavaxCaptureDevice;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -173,8 +174,12 @@ public class CustomSoundEngine {
     private long openDevice() {
         try {
             return openDevice(getCurrentDevice());
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+        } catch (IllegalStateException ignored) {
+            try {
+                return openDevice(null);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
 
         throw new IllegalStateException("Failed to open OpenAL device");
@@ -214,12 +219,16 @@ public class CustomSoundEngine {
         return ALUtil.getStringList(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
     }
 
-    // capturing devices
+    // capture devices
     public static long openCaptureDevice() {
         try {
             return openCaptureDevice(getCurrentCaptureDevice());
-        } catch (IllegalStateException e) {
-            e.printStackTrace();
+        } catch (IllegalStateException ignored) {
+            try {
+                return openCaptureDevice(null);
+            } catch (IllegalStateException e) {
+                e.printStackTrace();
+            }
         }
 
         throw new IllegalStateException("Failed to open OpenAL capture device");
@@ -234,7 +243,7 @@ public class CustomSoundEngine {
             l = ALC11.alcCaptureOpenDevice(deviceName, Recorder.getSampleRate(), AL11.AL_FORMAT_MONO16, Recorder.getFrameSize());
         }
 
-        if (l != 0L && !AlUtil.checkAlcErrors(l, "Open capture device")) {
+        if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
             return l;
         }
 
@@ -243,24 +252,39 @@ public class CustomSoundEngine {
 
     public static String getCurrentCaptureDevice() {
         String deviceName = VoiceClient.getClientConfig().microphone.get();
-        List<String> devices = getCaptureDevices();
-        if (deviceName == null || !devices.contains(deviceName)) {
-            deviceName = getDefaultCaptureDevice();
+        if (VoiceClient.getClientConfig().javaxCapture.get()) {
+            List<String> devices = JavaxCaptureDevice.getNames();
+            if (deviceName == null || !devices.contains(deviceName)) {
+                deviceName = devices.get(0);
+            }
+        } else {
+            List<String> devices = getCaptureDevices();
+            if (deviceName == null || !devices.contains(deviceName)) {
+                deviceName = getDefaultCaptureDevice();
+            }
         }
 
         return deviceName;
     }
 
     public static String getDefaultCaptureDevice() {
-        String deviceName = ALC11.alcGetString(0L, ALC11.ALC_CAPTURE_DEFAULT_DEVICE_SPECIFIER);
-        AlUtil.checkErrors("Get default capture");
-        return deviceName;
+        if (VoiceClient.getClientConfig().javaxCapture.get()) {
+            return JavaxCaptureDevice.getNames().get(0);
+        } else {
+            String deviceName = ALC11.alcGetString(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
+            AlUtil.checkErrors("Get default capture");
+            return deviceName;
+        }
     }
 
     public static List<String> getCaptureDevices() {
-        List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
-        AlUtil.checkErrors("Get capture devices");
-        return devices == null ? Collections.emptyList() : devices;
+        if (VoiceClient.getClientConfig().javaxCapture.get()) {
+            return JavaxCaptureDevice.getNames();
+        } else {
+            List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
+            AlUtil.checkErrors("Get capture devices");
+            return devices == null ? Collections.emptyList() : devices;
+        }
     }
 
     public void preInit() {
@@ -268,6 +292,8 @@ public class CustomSoundEngine {
 
     public void postInit() {
         try {
+            // dependencies? nah
+            // reflections? yep
             Class clazz = Class.forName("com.sonicether.soundphysics.SoundPhysics");
             clazz.getMethod("init").invoke(null);
             soundPhysicsPlaySound = clazz.getMethod(

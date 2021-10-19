@@ -3,6 +3,7 @@ package su.plo.voice.client;
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.fml.ModList;
 import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.event.ClientInputEvent;
@@ -30,5 +31,10 @@ public class VoiceClientForge extends VoiceClient {
         ClientRegistry.registerKeyBinding(menuKey);
 
         soundEngine.init();
+    }
+
+    @Override
+    public String getVersion() {
+        return ModList.get().getModFileById("plasmo_voice").versionString();
     }
 }
