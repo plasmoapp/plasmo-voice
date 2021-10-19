@@ -18,7 +18,7 @@
     "gui.plasmo_voice.on": "オン",
     "gui.plasmo_voice.off": "オフ",
 
-    "gui.plasmo_voice.title": "設定",
+    "gui.plasmo_voice.title": "%s 設定",
 
 
     "gui.plasmo_voice.toggle.microphone": "マイクの切り替え",
@@ -50,7 +50,7 @@
     "gui.plasmo_voice.general.microphone.volume": "マイク音量",
     "gui.plasmo_voice.general.voice_distance": "声が聞こえる距離",
     "gui.plasmo_voice.general.voice_distance.tooltip_1": "あなたの声を届かせる距離。",
-    "gui.plasmo_voice.general.voice_distance.tooltip_2": "ブロック単位で測定されます。",
+    "gui.plasmo_voice.general.voice_distance.tooltip_2": "ブロック単位で設定できます。",
     "gui.plasmo_voice.general.priority_distance": "優先時に声が聞こえる距離",
     "gui.plasmo_voice.general.priority_distance.tooltip_1": "プッシュトゥトークとは独立したボタンがあり、",
     "gui.plasmo_voice.general.priority_distance.tooltip_2": "より大きな声を届けたり、距離を調整したりできます。",
@@ -139,19 +139,19 @@
     "gui.plasmo_voice.advanced.compressor.tooltip_3": "",
     "gui.plasmo_voice.advanced.compressor.tooltip_4": "聞こえ方に影響します。",
     "gui.plasmo_voice.advanced.compressor.threshold": "コンプレッサーの閾値",
-    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_1": "音量が閾値を超えると",
+    "gui.plasmo_voice.advanced.compressor.threshold.tooltip_1": "音量がこの値を超えると",
     "gui.plasmo_voice.advanced.compressor.threshold.tooltip_2": "自動的に小さくします。",
     "gui.plasmo_voice.advanced.compressor.threshold.tooltip_3": "",
     "gui.plasmo_voice.advanced.compressor.threshold.tooltip_4": "推奨値: -16 dB 〜 -6 dB",
     "gui.plasmo_voice.advanced.limiter.threshold": "リミッターの閾値",
-    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_1": "音量はこの閾値を超えることはありません。",
+    "gui.plasmo_voice.advanced.limiter.threshold.tooltip_1": "音量はこの値を超えることはありません。",
     "gui.plasmo_voice.advanced.limiter.threshold.tooltip_2": "",
     "gui.plasmo_voice.advanced.limiter.threshold.tooltip_3": "推奨値: -6 dB",
 
     "gui.plasmo_voice.advanced.visual_ui": "表示とUI",
     "gui.plasmo_voice.advanced.visual_ui.distance": "声が聞こえる範囲を可視化する",
     "gui.plasmo_voice.advanced.visual_ui.distance.join": "声が聞こえる範囲を参加時に可視化する",
-    "gui.plasmo_voice.advanced.visual_ui.priority": "ボイスチャット音量を分ける",
+    "gui.plasmo_voice.advanced.visual_ui.priority": "通常時と優先時で音量を変更する",
     "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_1": "一般タブのボイスチャット音量設定に",
     "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_2": "“優先時のボイスチャット音量“ が追加されます。",
 
@@ -163,10 +163,10 @@
     "gui.plasmo_voice.about.huix": "コンセプト & デザイン",
     "gui.plasmo_voice.about.programming": "プログラミング",
     "gui.plasmo_voice.about.artist": "アーティスト",
-    "gui.plasmo_voice.about.translator": "%s 翻訳者",
+    "gui.plasmo_voice.about.translator": "%s翻訳者",
 
     "gui.plasmo_voice.about.links": "%s",
-    "gui.plasmo_voice.about.copyright": "公式のソースコードを利用してください。また、許可なくModを再配布しないでください",
+    "gui.plasmo_voice.about.copyright": "公式のソースコードを利用してください。また、許可なくModを再配布しないでください。",
 
 
     "gui.plasmo_voice.not_available": "PlasmoVoice はこのサーバーにインストールされていません",
