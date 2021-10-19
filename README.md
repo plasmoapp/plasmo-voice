@@ -22,7 +22,7 @@ Spigot and Fabric servers are compatible with both Fabric and Forge clients. For
 
 Players need to install the Fabric or Forge mod on the client for the voice chat to work. Players without the mod are still able to join and play as usual.
 
-![](https://i.imgur.com/fTr1rHp.png)
+![](https://imgur.com/dxgaWJ2.png)
 
 *Assuming Plasmo Voice is installed on both client and the server*
 
