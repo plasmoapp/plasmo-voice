@@ -37,6 +37,9 @@ public class AboutTabWidget extends TabWidget {
     private static final Map<String, List<Translator>> translators = ImmutableMap.of(
             "ja_jp", ImmutableList.of(
                     new Translator(new GameProfile(UUID.fromString("a2c18c8f-538d-4ea1-bdee-464dd9df3c52"), "sya_ri"), "GitHub", "https://github.com/sya-ri")
+            ),
+            "it_it", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("717a29b8-7476-4d29-ba64-b9c157b9bf83"), "Yriokiri"), "GitHub", "https://github.com/Yriokiri")
             )
     );
     private final VoiceSettingsScreen parent;
