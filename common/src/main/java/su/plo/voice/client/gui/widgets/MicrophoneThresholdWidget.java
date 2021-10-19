@@ -96,6 +96,11 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
     }
 
     @Override
+    public boolean isHovered() {
+        return super.isHovered() && this.active;
+    }
+
+    @Override
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
         Font textRenderer = client.font;
         client.getTextureManager().bind(WIDGETS_LOCATION);
