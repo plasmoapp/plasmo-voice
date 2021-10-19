@@ -20,7 +20,10 @@ import su.plo.voice.client.sound.openal.CustomSoundEngine;
 
 import java.util.UUID;
 
-public class VoiceClient {
+public abstract class VoiceClient {
+    @Getter
+    private static VoiceClient instance;
+
     public static final ResourceLocation PLASMO_VOICE = new ResourceLocation("plasmo:voice");
     public static final String PROTOCOL_VERSION = "1.0.0";
     public static final String VERSION = "1.2.3";
@@ -55,6 +58,8 @@ public class VoiceClient {
     public static final ResourceLocation ICONS = new ResourceLocation("plasmo_voice", "textures/gui/icons.png");
 
     public void initialize() {
+        instance = this;
+
         Minecraft minecraft = Minecraft.getInstance();
         clientConfig = ClientConfig.read();
         keyBindings = clientConfig.keyBindings;
@@ -151,4 +156,6 @@ public class VoiceClient {
 
         return socketUDP.authorized && !socketUDP.ping.timedOut;
     }
+
+    public abstract String getVersion();
 }

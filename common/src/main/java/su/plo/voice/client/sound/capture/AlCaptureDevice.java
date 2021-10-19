@@ -1,12 +1,15 @@
-package su.plo.voice.client.sound.openal;
+package su.plo.voice.client.sound.capture;
 
 import org.lwjgl.openal.ALC11;
+import su.plo.voice.client.sound.openal.AlUtil;
+import su.plo.voice.client.sound.openal.CustomSoundEngine;
+import su.plo.voice.client.utils.AudioUtils;
 
-public class CaptureDevice {
+public class AlCaptureDevice implements CaptureDevice {
     private long pointer;
     private boolean started;
 
-    public void open() {
+    public void open() throws IllegalStateException {
         if (isOpen()) {
             throw new IllegalStateException("Capture device already open");
         }
@@ -14,10 +17,7 @@ public class CaptureDevice {
     }
 
     public void start() {
-        if (!isOpen()) {
-            return;
-        }
-        if (started) {
+        if (!isOpen() || started) {
             return;
         }
 
@@ -27,10 +27,7 @@ public class CaptureDevice {
     }
 
     public void stop() {
-        if (!isOpen()) {
-            return;
-        }
-        if (!started) {
+        if (!isOpen() || !started) {
             return;
         }
 
@@ -61,13 +58,15 @@ public class CaptureDevice {
         return samples;
     }
 
-    public void read(short[] data) {
-        int available = available();
-        if (data.length > available) {
-            throw new IllegalStateException(String.format("Failed to read from microphone: Capacity %s, available %s", data.length, available));
+    public byte[] read(int frameSize) {
+        if ((frameSize / 2) > available()) {
+            return null;
         }
-        ALC11.alcCaptureSamples(pointer, data, data.length);
+        short[] shorts = new short[frameSize / 2];
+        ALC11.alcCaptureSamples(pointer, shorts, shorts.length);
         AlUtil.checkErrors("Capture samples");
+
+        return AudioUtils.shortsToBytes(shorts);
     }
 
     public boolean isOpen() {

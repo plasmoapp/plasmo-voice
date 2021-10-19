@@ -10,6 +10,8 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.loader.api.FabricLoader;
+import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.TranslatableComponent;
@@ -135,5 +137,16 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
         HudRenderCallback.EVENT.register((__, ___) -> {
             voiceHud.render();
         });
+    }
+
+    @Override
+    public String getVersion() {
+        ModContainer modContainer = FabricLoader.getInstance()
+                .getModContainer("plasmo_voice")
+                .orElse(null);
+        if (modContainer == null) {
+            return "how can it be null?";
+        }
+        return modContainer.getMetadata().getVersion().getFriendlyString();
     }
 }

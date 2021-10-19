@@ -6,7 +6,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
-import su.plo.voice.client.sound.openal.CaptureDevice;
+import su.plo.voice.client.sound.capture.AlCaptureDevice;
+import su.plo.voice.client.sound.capture.CaptureDevice;
+import su.plo.voice.client.sound.capture.JavaxCaptureDevice;
 import su.plo.voice.client.sound.opus.OpusEncoder;
 import su.plo.voice.client.utils.AudioUtils;
 import su.plo.voice.common.packets.udp.VoiceClientPacket;
@@ -20,6 +22,8 @@ import java.io.IOException;
 import java.util.concurrent.CompletableFuture;
 
 public class Recorder implements Runnable {
+    private final Minecraft client = Minecraft.getInstance();
+
     @Getter
     private static final int mtuSize = 1024;
     @Getter
@@ -37,7 +41,7 @@ public class Recorder implements Runnable {
     @Getter
     private Thread thread;
 
-    private final CaptureDevice microphone;
+    private CaptureDevice microphone;
     private OpusEncoder encoder;
 
     // RNNoise
@@ -49,10 +53,7 @@ public class Recorder implements Runnable {
     private long lastSpeak;
     private byte[] lastBuffer;
 
-    private final Minecraft client = Minecraft.getInstance();
-
     public Recorder() {
-        this.microphone = new CaptureDevice();
         if (VoiceClient.getClientConfig().rnNoise.get()) {
             this.denoiser = new Denoiser();
         }
@@ -67,45 +68,45 @@ public class Recorder implements Runnable {
         }
     }
 
-    public void updateConfig(int rate) {
+    /**
+     * Method to update sample rate after vreload sent by server
+     * @param rate New sample rate
+     */
+    public void updateSampleRate(int rate) {
+        if (rate == Recorder.getSampleRate()) {
+            return;
+        }
+
         if (rate != 8000 && rate != 12000 && rate != 24000 && rate != 48000) {
             VoiceClient.LOGGER.info("Incorrect sample rate");
             return;
         }
 
         if (this.thread != null) {
-            this.waitForClose().thenRun(() -> {
-                format = new AudioFormat(rate, 16, 1, true, false);
-                stereoFormat = new AudioFormat(rate, 16, 2, true, false);
-                sampleRate = rate;
-                frameSize = (sampleRate / 1000) * 2 * 20;
-
-                if (this.encoder != null) {
-                    this.encoder.close();
-                }
-                this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
-
-                if (VoiceClient.isConnected()) {
-                    this.start();
-                }
-            });
+            this.waitForClose().thenRun(() -> updateSampleRateSync(rate));
         } else {
-            format = new AudioFormat(rate, 16, 1, true, false);
-            stereoFormat = new AudioFormat(rate, 16, 2, true, false);
-            sampleRate = rate;
-            frameSize = (sampleRate / 1000) * 2 * 20;
-
-            if (this.encoder != null) {
-                this.encoder.close();
-            }
-            this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
-
-            if (VoiceClient.isConnected()) {
-                this.start();
-            }
+            updateSampleRateSync(rate);
         }
     }
 
+    private void updateSampleRateSync(int rate) {
+        format = new AudioFormat(rate, 16, 1, true, false);
+        sampleRate = rate;
+        frameSize = (sampleRate / 1000) * 2 * 20;
+
+        if (this.encoder != null) {
+            this.encoder.close();
+        }
+        this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
+
+        if (VoiceClient.isConnected()) {
+            this.start();
+        }
+    }
+
+    /**
+     * Interrupts thread, closes capture device and opus encoder
+     */
     public void close() {
         this.running = false;
         this.sequenceNumber = 0L;
@@ -126,7 +127,7 @@ public class Recorder implements Runnable {
     }
 
     public void run() {
-        if (microphone.isOpen()) {
+        if (microphone != null && microphone.isOpen()) {
             synchronized (this) {
                 try {
                     this.wait();
@@ -135,7 +136,25 @@ public class Recorder implements Runnable {
             }
         }
 
-        microphone.open();
+        try {
+            // sometimes openal mic doesn't work at all,
+            // so I just made old javax capture system
+            if (VoiceClient.getClientConfig().javaxCapture.get()) {
+                VoiceClient.LOGGER.info("Using javax capture device");
+                microphone = new JavaxCaptureDevice();
+            } else {
+                microphone = new AlCaptureDevice();
+            }
+
+            microphone.open();
+        } catch (IllegalStateException e) {
+            VoiceClient.LOGGER.info("Failed to open OpenAL capture device, falling back to javax capturing");
+            if (microphone instanceof AlCaptureDevice) {
+                microphone = new JavaxCaptureDevice();
+                VoiceClient.getClientConfig().javaxCapture.set(true);
+            }
+        }
+
         if (this.encoder == null || this.encoder.isClosed()) {
             this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
         }
@@ -217,7 +236,7 @@ public class Recorder implements Runnable {
                 this.sendPacket(normBuffer);
                 return;
             }
-        } else if (VoiceClient.isSpeaking() && !activated) {
+        } else if (VoiceClient.isSpeaking()) {
             VoiceClient.setSpeaking(false);
             VoiceClient.setSpeakingPriority(false);
 
@@ -257,22 +276,14 @@ public class Recorder implements Runnable {
             VoiceClient.setSpeaking(false);
             VoiceClient.setSpeakingPriority(false);
 
-            if (client.screen instanceof VoiceSettingsScreen) {
-                readBuffer();
-            }
-
             this.sendEndPacket();
             return;
         }
 
         if (!VoiceClient.isSpeaking()) {
-            if (client.screen instanceof VoiceSettingsScreen) {
-                readBuffer();
-            } else {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException ignored) {
-                }
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException ignored) {
             }
             return;
         }
@@ -280,40 +291,36 @@ public class Recorder implements Runnable {
         this.sendPacket(normBuffer);
     }
 
-    private byte[] readBuffer() {
-        synchronized (this) {
-            if (this.encoder == null || this.encoder.isClosed()) {
-                return null;
-            }
-
-            microphone.start();
-
-            if (microphone.available() < (frameSize / 2)) {
-                return null;
-            }
-
-            short[] shortsBuffer = new short[frameSize / 2];
-
-            microphone.read(shortsBuffer);
-
-            AudioUtils.adjustVolume(shortsBuffer, VoiceClient.getClientConfig().microphoneAmplification.get().floatValue());
-
-            byte[] normBuffer = AudioUtils.shortsToBytes(shortsBuffer);
-
-            if (this.denoiser != null) {
-                float[] floats = AudioUtils.bytesToFloats(normBuffer);
-                limiter.limit(floats);
-                floats = Bytes.toFloatArray(AudioUtils.floatsToBytes(floats));
-
-                normBuffer = Bytes.toByteArray(this.denoiser.process(floats));
-            }
-
-            if (client.screen instanceof VoiceSettingsScreen) {
-                ((VoiceSettingsScreen) client.screen).setMicrophoneValue(normBuffer);
-            }
-
-            return normBuffer;
+    /**
+     * Capture samples sync
+     * @return captured samples
+     */
+    private synchronized byte[] readBuffer() {
+        if (this.encoder == null || this.encoder.isClosed()) {
+            return null;
         }
+
+        microphone.start();
+        byte[] normBuffer = microphone.read(frameSize);
+        if (normBuffer == null) {
+            return null;
+        }
+
+        AudioUtils.adjustVolume(normBuffer, VoiceClient.getClientConfig().microphoneAmplification.get().floatValue());
+
+        if (this.denoiser != null) {
+            float[] floats = AudioUtils.bytesToFloats(normBuffer);
+            limiter.limit(floats);
+            floats = Bytes.toFloatArray(AudioUtils.floatsToBytes(floats));
+
+            normBuffer = Bytes.toByteArray(this.denoiser.process(floats));
+        }
+
+        if (client.screen instanceof VoiceSettingsScreen) {
+            ((VoiceSettingsScreen) client.screen).setMicrophoneValue(normBuffer);
+        }
+
+        return normBuffer;
     }
 
     private void sendPacket(byte[] raw) {
@@ -360,6 +367,9 @@ public class Recorder implements Runnable {
         }
     }
 
+    /**
+     * Starts capture thread
+     */
     public void start() {
         if (this.thread != null) {
             this.waitForClose().thenRun(() -> {
@@ -372,6 +382,10 @@ public class Recorder implements Runnable {
         }
     }
 
+    /**
+     * Waiting capture device to close
+     */
+    // todo is it necessary at all?
     public CompletableFuture<Void> waitForClose() {
         return CompletableFuture.runAsync(() -> {
             this.running = false;

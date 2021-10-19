@@ -3,7 +3,7 @@ loaderVersion="[35,)"
 license="All rights reserved"
 issueTrackerURL="https://github.com/plasmoapp/plasmo-voice/issues"
 [[mods]]
-modId="plasmovoice"
+modId="plasmo_voice"
 version="${version}"
 displayName="Plasmo Voice" #mandatory
 # A URL to query for updates for this mod. See the JSON update specification https://mcforge.readthedocs.io/en/latest/gettingstarted/autoupdate/
