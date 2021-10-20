@@ -18,7 +18,7 @@
     "gui.plasmo_voice.on": "On",
     "gui.plasmo_voice.off": "Off",
 
-    "gui.plasmo_voice.title": "Impostazioni",
+    "gui.plasmo_voice.title": "Impostazioni %s",
 
 
     "gui.plasmo_voice.toggle.microphone": "Abilita il microfono",
