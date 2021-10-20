@@ -18,7 +18,7 @@
 </div>
 
 ## Available for Spigot, Fabric, and Forge
-Spigot and Fabric servers are compatible with both Fabric and Forge clients. Forge server is for Forge clients only.
+Spigot, Fabric, and Forge servers are compatible with both Fabric and Forge clients.
 
 Players need to install the Fabric or Forge mod on the client for the voice chat to work. Players without the mod are still able to join and play as usual.
 
