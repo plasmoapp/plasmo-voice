@@ -109,6 +109,7 @@ public class SocketClientUDPQueue extends Thread {
                     try {
                         this.wait();
                     } catch (InterruptedException ignored) {
+                        break;
                     }
                 }
             }

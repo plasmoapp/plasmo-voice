@@ -125,6 +125,10 @@ public class Metrics {
         }
     }
 
+    public void close() {
+        metricsBase.close();
+    }
+
     public static class MetricsBase {
 
         /** The version of the Metrics class. */
@@ -215,6 +219,10 @@ public class Metrics {
             if (enabled) {
                 startSubmitting();
             }
+        }
+
+        public void close() {
+            scheduler.shutdownNow();
         }
 
         public void addCustomChart(CustomChart chart) {

@@ -56,8 +56,10 @@ public abstract class VoiceServer {
     @Getter
     private static final ConcurrentHashMap<UUID, ServerMuted> muted = new ConcurrentHashMap<>();
 
+    private Metrics metrics;
+
     protected void setupMetrics(String software) {
-        Metrics metrics = new Metrics(10928, software.toLowerCase(), server);
+        metrics = new Metrics(10928, software.toLowerCase(), server);
         metrics.addCustomChart(new Metrics.SingleLineChart("players_with_forge_mod", () ->
                 (int) SocketServerUDP.clients.values().stream().filter(s -> s.getType().equals("forge")).count()));
         metrics.addCustomChart(new Metrics.SingleLineChart("players_with_fabric_mod", () ->
@@ -78,6 +80,10 @@ public abstract class VoiceServer {
     protected void close() {
         if (udpServer != null) {
             udpServer.close();
+        }
+
+        if (metrics != null) {
+            metrics.close();
         }
 
         ServerNetworkHandler.playerToken.clear();
