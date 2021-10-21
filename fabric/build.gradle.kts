@@ -40,13 +40,13 @@ dependencies {
     modApi("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
 
     // Fabric API jar-in-jar
-    include("net.fabricmc.fabric-api:fabric-api-base:0.3.0+c88702897d")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-networking-api-v1:1.0.14+6eb8b35a88")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.4.4+a02b4463d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.4+a02b4463d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-rendering-v1:1.6.0+a02b4463d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.7+b7ab6121d5")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.1+bb687600d1")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-api-base:0.3.0+a02b446318")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.3+5ab9934c18")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.4+cbda931818")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.4.4+a02b446318")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-networking-api-v1:1.0.13+cbda931818")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-rendering-v1:1.9.0+7931163218")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.8+a00e834b18")?.let { modImplementation(it) }
 
     // Plasmo Voice protocol
     implementation("su.plo.voice:common:1.0.0")
