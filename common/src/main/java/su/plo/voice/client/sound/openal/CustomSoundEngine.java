@@ -254,6 +254,10 @@ public class CustomSoundEngine {
         String deviceName = VoiceClient.getClientConfig().microphone.get();
         if (VoiceClient.getClientConfig().javaxCapture.get()) {
             List<String> devices = JavaxCaptureDevice.getNames();
+            if (devices.size() == 0) {
+                return null;
+            }
+
             if (deviceName == null || !devices.contains(deviceName)) {
                 deviceName = devices.get(0);
             }
@@ -264,7 +268,7 @@ public class CustomSoundEngine {
             }
         }
 
-        return deviceName;
+        return deviceName.isEmpty() ? null : deviceName;
     }
 
     public static String getDefaultCaptureDevice() {

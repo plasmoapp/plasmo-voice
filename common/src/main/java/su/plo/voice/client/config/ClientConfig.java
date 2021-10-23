@@ -62,6 +62,8 @@ public class ClientConfig {
     public BooleanConfigEntry rnNoise = new BooleanConfigEntry();
     public BooleanConfigEntry microphoneMuted = new BooleanConfigEntry();
     public BooleanConfigEntry javaxCapture = new BooleanConfigEntry();
+    // todo opus application mode
+//    public StringConfigEntry jopusMode = new StringConfigEntry();
 
     // sound engine
     public BooleanConfigEntry hrtf = new BooleanConfigEntry();
@@ -162,6 +164,8 @@ public class ClientConfig {
         compressor.setDefault(true);
         compressorThreshold.setDefault(-10, -60, 0);
         limiterThreshold.setDefault(-6, -60, 0);
+
+//        jopusMode.setDefault("voip");
 
         keyBindings.setupDefaults();
     }

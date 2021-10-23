@@ -37,6 +37,8 @@ public class Recorder implements Runnable {
     @Getter
     private boolean running;
     @Getter
+    private boolean available;
+    @Getter
     private Thread thread;
 
     private CaptureDevice microphone;
@@ -47,6 +49,8 @@ public class Recorder implements Runnable {
     // Limiter to fix RNNoise clipping
     private final Limiter limiter = new Limiter(-6.0F);
 
+    private int jopusMode;
+
     private long sequenceNumber = 0L;
     private long lastSpeak;
     private byte[] lastBuffer;
@@ -55,7 +59,32 @@ public class Recorder implements Runnable {
         if (VoiceClient.getClientConfig().rnNoise.get()) {
             this.denoiser = new Denoiser();
         }
+
+        jopusMode = Opus.OPUS_APPLICATION_VOIP;
+//        if (VoiceClient.getClientConfig().jopusMode.get().equals("audio")) {
+//            jopusMode = Opus.OPUS_APPLICATION_AUDIO;
+//        } else if (VoiceClient.getClientConfig().jopusMode.get().equals("low-delay")) {
+//            jopusMode = Opus.OPUS_APPLICATION_RESTRICTED_LOWDELAY;
+//        } else {
+//            jopusMode = Opus.OPUS_APPLICATION_VOIP;
+//        }
     }
+
+//    public synchronized void updateJopusMode() {
+//        if (VoiceClient.getClientConfig().jopusMode.get().equals("audio")) {
+//            jopusMode = Opus.OPUS_APPLICATION_AUDIO;
+//        } else if (VoiceClient.getClientConfig().jopusMode.get().equals("low-delay")) {
+//            jopusMode = Opus.OPUS_APPLICATION_RESTRICTED_LOWDELAY;
+//        } else {
+//            jopusMode = Opus.OPUS_APPLICATION_VOIP;
+//        }
+//
+//        if (this.encoder != null) {
+//            this.encoder.close();
+//        }
+//        System.out.println(jopusMode);
+//        this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, jopusMode);
+//    }
 
     public synchronized void toggleRnNoise() {
         if (this.denoiser != null) {
@@ -95,7 +124,7 @@ public class Recorder implements Runnable {
         if (this.encoder != null) {
             this.encoder.close();
         }
-        this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
+        this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, jopusMode);
 
         if (VoiceClient.isConnected()) {
             this.start();
@@ -134,6 +163,8 @@ public class Recorder implements Runnable {
             }
         }
 
+        this.available = true;
+
         try {
             // sometimes openal mic doesn't work at all,
             // so I just made old javax capture system
@@ -148,13 +179,23 @@ public class Recorder implements Runnable {
         } catch (IllegalStateException e) {
             VoiceClient.LOGGER.info("Failed to open OpenAL capture device, falling back to javax capturing");
             if (microphone instanceof AlCaptureDevice) {
-                microphone = new JavaxCaptureDevice();
                 VoiceClient.getClientConfig().javaxCapture.set(true);
+
+                microphone = new JavaxCaptureDevice();
+
+                try {
+                    microphone.open();
+                } catch (IllegalStateException ignored) {
+                    VoiceClient.getClientConfig().javaxCapture.set(false);
+                    VoiceClient.LOGGER.info("Capture device not available on this system");
+                    this.available = false;
+                    return;
+                }
             }
         }
 
         if (this.encoder == null || this.encoder.isClosed()) {
-            this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, Opus.OPUS_APPLICATION_VOIP);
+            this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, jopusMode);
         }
 
         this.running = true;
@@ -303,8 +344,6 @@ public class Recorder implements Runnable {
         if (normBuffer == null) {
             return null;
         }
-
-        AudioUtils.adjustVolume(normBuffer, VoiceClient.getClientConfig().microphoneAmplification.get().floatValue());
 
         if (this.denoiser != null) {
             float[] floats = AudioUtils.bytesToFloats(normBuffer);

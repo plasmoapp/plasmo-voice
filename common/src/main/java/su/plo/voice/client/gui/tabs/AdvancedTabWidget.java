@@ -42,6 +42,22 @@ public class AdvancedTabWidget extends TabWidget {
                 null,
                 null)
         );
+//        this.addEntry(new OptionEntry(
+//                new TranslatableComponent("jopus mode"),
+//                new DropDownWidget(parent, 0, 0, 97, 20,
+//                        new TextComponent(config.jopusMode.get()),
+//                        ImmutableList.of(new TextComponent("voip"), new TextComponent("audio"), new TextComponent("low-delay")),
+//                        false,
+//                        i -> {
+//                            VoiceClient.recorder.updateJopusMode();
+//                            config.jopusMode.set(ImmutableList.of("voip", "audio", "low-delay").get(i));
+//                        }),
+//                config.jopusMode,
+//                (button, element) -> {
+//                    VoiceClient.recorder.updateJopusMode();
+//                    element.setMessage(new TextComponent(config.jopusMode.get()));
+//                })
+//        );
 
 
         this.addEntry(new CategoryEntry(new TranslatableComponent("gui.plasmo_voice.advanced.compressor")));

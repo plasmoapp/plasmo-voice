@@ -28,13 +28,17 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
     private final VoiceSettingsScreen parent;
     private final boolean tooltip;
 
-    public DropDownWidget(VoiceSettingsScreen parent, int x, int y, int width, int height, Component message, List<Component> elements, boolean tooltip, Consumer<Integer> onSelect) {
+    public DropDownWidget(VoiceSettingsScreen parent, int x, int y, int width, int height, Component message,
+                          List<Component> elements, boolean tooltip, Consumer<Integer> onSelect) {
         super(x, y, width - 2, height - 1, message);
         this.tooltip = tooltip;
         this.parent = parent;
         this.textRenderer = client.font;
         this.elements = elements;
         this.onSelect = onSelect;
+        if (elements.size() == 0) {
+            this.active = false;
+        }
     }
 
     @Override
@@ -86,6 +90,10 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
     }
 
     private void renderArrow(PoseStack matrices) {
+        if (!this.active) {
+            return;
+        }
+
         if (open) {
             for (int i = 0; i < 5; i++) {
                 fill(matrices, this.x + this.width - (9 + i), this.y + ((this.height - 5) / 2) + i,
@@ -107,8 +115,8 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
 
         renderArrow(matrices);
 
-        this.textRenderer.drawShadow(matrices, orderedText(client, getMessage(), this.width - 21),
-                (float)this.x + 5, (float)this.y + 1 + (this.height - 8) / 2, 14737632);
+        this.textRenderer.drawShadow(matrices, orderedText(client, getMessage(), this.active ? (this.width - 21) : (this.width - 5)),
+                (float)this.x + 5, (float)this.y + 1 + (this.height - 8) / 2, this.active ? 14737632 : 7368816);
 
         if (open) {
             if ((this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) &&

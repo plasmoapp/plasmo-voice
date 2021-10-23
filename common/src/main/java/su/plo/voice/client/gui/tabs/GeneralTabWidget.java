@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.ClientConfig;
@@ -26,7 +25,7 @@ public class GeneralTabWidget extends TabWidget {
         this.addEntry(new OptionEntry(
                 new TranslatableComponent("gui.plasmo_voice.general.output_device"),
                 new DropDownWidget(parent, 0, 0, 97, 20,
-                        new TextComponent(TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentDevice())),
+                        TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentDevice()),
                         TextUtils.formatAlDeviceNames(CustomSoundEngine.getDevices()),
                         true,
                         i -> {
@@ -43,7 +42,7 @@ public class GeneralTabWidget extends TabWidget {
                         }),
                 VoiceClient.getClientConfig().speaker,
                 (button, element) -> {
-                    element.setMessage(new TextComponent(TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentDevice())));
+                    element.setMessage(TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentDevice()));
                 })
         );
         this.addEntry(new OptionEntry(
@@ -84,7 +83,7 @@ public class GeneralTabWidget extends TabWidget {
         this.addEntry(new OptionEntry(
                 new TranslatableComponent("gui.plasmo_voice.general.microphone"),
                 new DropDownWidget(parent, 0, 0, 97, 20,
-                        new TextComponent(TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentCaptureDevice())),
+                        TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentCaptureDevice()),
                         TextUtils.formatAlDeviceNames(CustomSoundEngine.getCaptureDevices()),
                         true,
                         i -> {
@@ -101,7 +100,7 @@ public class GeneralTabWidget extends TabWidget {
                         }),
                 VoiceClient.getClientConfig().microphone,
                 (button, element) -> {
-                    element.setMessage(new TextComponent(TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentCaptureDevice())));
+                    element.setMessage(TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentCaptureDevice()));
 
                     // restart mic thread
                     VoiceClient.recorder.start();

@@ -57,6 +57,7 @@
     "gui.plasmo_voice.general.priority_distance.tooltip_3": "",
     "gui.plasmo_voice.general.priority_distance.tooltip_4": "Можно использовать только если у вас есть права на",
     "gui.plasmo_voice.general.priority_distance.tooltip_5": "сервере. И не забудьте забиндить кнопку в вкладке \"Клавиши\"",
+    "gui.plasmo_voice.general.not_available": "Не доступен",
 
     "gui.plasmo_voice.general.activation": "Активация",
     "gui.plasmo_voice.general.activation.type": "Тип активации",

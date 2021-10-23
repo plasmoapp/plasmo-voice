@@ -57,6 +57,7 @@
     "gui.plasmo_voice.general.priority_distance.tooltip_3": "",
     "gui.plasmo_voice.general.priority_distance.tooltip_4": "Requires permission on the server, and also,",
     "gui.plasmo_voice.general.priority_distance.tooltip_5": "don’t forget to bind it in the hotkeys tab.",
+    "gui.plasmo_voice.general.not_available": "Not available",
 
     "gui.plasmo_voice.general.activation": "Activation",
     "gui.plasmo_voice.general.activation.type": "Activation type",
