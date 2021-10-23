@@ -20,10 +20,7 @@ import su.plo.voice.server.socket.SocketServerUDP;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 public abstract class ServerNetworkHandler {
     protected ScheduledExecutorService scheduler;
@@ -154,21 +151,24 @@ public abstract class ServerNetworkHandler {
         UUID token = UUID.randomUUID();
         playerToken.put(player.getUUID(), token);
 
-        executor.submit(() -> {
-            try {
-                sendTo(new ServerConnectPacket(token.toString(),
-                                VoiceServer.getServerConfig().getProxyIp() != null && !VoiceServer.getServerConfig().getProxyIp().isEmpty()
-                                        ? VoiceServer.getServerConfig().getProxyIp()
-                                        : VoiceServer.getServerConfig().getIp(),
-                                VoiceServer.getServerConfig().getProxyPort() != 0
-                                        ? VoiceServer.getServerConfig().getProxyPort()
-                                        : VoiceServer.getServerConfig().getPort(),
-                                VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.priority")),
-                        player);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+        try {
+            executor.submit(() -> {
+                try {
+                    sendTo(new ServerConnectPacket(token.toString(),
+                                    VoiceServer.getServerConfig().getProxyIp() != null && !VoiceServer.getServerConfig().getProxyIp().isEmpty()
+                                            ? VoiceServer.getServerConfig().getProxyIp()
+                                            : VoiceServer.getServerConfig().getIp(),
+                                    VoiceServer.getServerConfig().getProxyPort() != 0
+                                            ? VoiceServer.getServerConfig().getProxyPort()
+                                            : VoiceServer.getServerConfig().getPort(),
+                                    VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.priority")),
+                            player);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+        } catch (RejectedExecutionException ignored) {
+        }
     }
 
     public static void disconnectClient(UUID uuid) {
@@ -190,23 +190,26 @@ public abstract class ServerNetworkHandler {
     }
 
     public static void sendToClients(Packet packet, UUID except) {
-        executor.submit(() -> {
-            try {
-                byte[] pkt = PacketTCP.write(packet);
-                Enumeration<UUID> it = SocketServerUDP.clients.keys();
-                while (it.hasMoreElements()) {
-                    UUID uuid = it.nextElement();
-                    if (!uuid.equals(except)) {
-                        ServerPlayer player = PlayerManager.getByUUID(uuid);
+        try {
+            executor.submit(() -> {
+                try {
+                    byte[] pkt = PacketTCP.write(packet);
+                    Enumeration<UUID> it = SocketServerUDP.clients.keys();
+                    while (it.hasMoreElements()) {
+                        UUID uuid = it.nextElement();
+                        if (!uuid.equals(except)) {
+                            ServerPlayer player = PlayerManager.getByUUID(uuid);
 
-                        player.connection.send(new ClientboundCustomPayloadPacket(
-                                VoiceServer.PLASMO_VOICE,
-                                new FriendlyByteBuf(Unpooled.wrappedBuffer(pkt))));
+                            player.connection.send(new ClientboundCustomPayloadPacket(
+                                    VoiceServer.PLASMO_VOICE,
+                                    new FriendlyByteBuf(Unpooled.wrappedBuffer(pkt))));
+                        }
                     }
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
+            });
+        } catch (RejectedExecutionException ignored) {
+        }
     }
 }

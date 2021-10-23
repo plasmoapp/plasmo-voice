@@ -39,6 +39,8 @@ public class Recorder implements Runnable {
     @Getter
     private boolean running;
     @Getter
+    private boolean available;
+    @Getter
     private Thread thread;
 
     private CaptureDevice microphone;
@@ -136,6 +138,8 @@ public class Recorder implements Runnable {
             }
         }
 
+        this.available = true;
+
         try {
             // sometimes openal mic doesn't work at all,
             // so I just made old javax capture system
@@ -150,8 +154,18 @@ public class Recorder implements Runnable {
         } catch (IllegalStateException e) {
             VoiceClient.LOGGER.info("Failed to open OpenAL capture device, falling back to javax capturing");
             if (microphone instanceof AlCaptureDevice) {
-                microphone = new JavaxCaptureDevice();
                 VoiceClient.getClientConfig().javaxCapture.set(true);
+
+                microphone = new JavaxCaptureDevice();
+
+                try {
+                    microphone.open();
+                } catch (IllegalStateException ignored) {
+                    VoiceClient.getClientConfig().javaxCapture.set(false);
+                    VoiceClient.LOGGER.info("Capture device not available on this system");
+                    this.available = false;
+                    return;
+                }
             }
         }
 
@@ -305,8 +319,6 @@ public class Recorder implements Runnable {
         if (normBuffer == null) {
             return null;
         }
-
-        AudioUtils.adjustVolume(normBuffer, VoiceClient.getClientConfig().microphoneAmplification.get().floatValue());
 
         if (this.denoiser != null) {
             float[] floats = AudioUtils.bytesToFloats(normBuffer);

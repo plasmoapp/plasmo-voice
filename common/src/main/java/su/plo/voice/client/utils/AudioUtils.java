@@ -1,6 +1,15 @@
 package su.plo.voice.client.utils;
 
 public class AudioUtils {
+    public static short[] bytesToShorts(byte[] bytes) {
+        short[] shorts = new short[bytes.length / 2];
+        for (int i = 0; i < bytes.length; i += 2) {
+            shorts[i / 2] = bytesToShort(bytes[i], bytes[i + 1]);
+        }
+
+        return shorts;
+    }
+
     public static byte[] shortsToBytes(short[] shorts) {
         byte[] bytes = new byte[shorts.length * 2];
 
@@ -97,16 +106,5 @@ public class AudioUtils {
         }
 
         return db;
-    }
-
-    public static void adjustVolume(byte[] audio, float volume) {
-        for (int i = 0; i < audio.length; i += 2) {
-            short audioSample = bytesToShort(audio[i], audio[i + 1]);
-
-            audioSample = (short) (audioSample * volume);
-
-            audio[i] = (byte) audioSample;
-            audio[i + 1] = (byte) (audioSample >> 8);
-        }
     }
 }

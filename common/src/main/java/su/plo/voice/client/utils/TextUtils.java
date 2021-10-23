@@ -25,27 +25,22 @@ public class TextUtils {
         return list;
     }
 
-    public static String formatAlDeviceName(String deviceName) {
+    public static Component formatAlDeviceName(String deviceName) {
+        if (deviceName == null) {
+            return new TranslatableComponent("gui.plasmo_voice.general.not_available");
+        }
+
         Matcher matcher = DEVICE_NAME.matcher(deviceName);
         if (!matcher.matches()) {
-            return deviceName;
+            return new TextComponent(deviceName);
         }
-        return matcher.group(1);
+        return new TextComponent(matcher.group(1));
     }
 
     public static List<Component> formatAlDeviceNames(List<String> elements) {
         List<Component> list = new ArrayList<>();
         for (String element : elements) {
-            list.add(new TextComponent(formatAlDeviceName(element)));
-        }
-
-        return list;
-    }
-
-    public static List<Component> stringToText(List<String> elements) {
-        List<Component> list = new ArrayList<>();
-        for (String element : elements) {
-            list.add(new TextComponent(element));
+            list.add(formatAlDeviceName(element));
         }
 
         return list;

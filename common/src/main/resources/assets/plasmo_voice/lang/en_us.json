@@ -45,6 +45,7 @@
     "gui.plasmo_voice.general.occlusion.tooltip_4": "Useful if you don’t want to hear people from",
     "gui.plasmo_voice.general.occlusion.tooltip_5": "the other rooms, but sometimes doesn’t work properly,",
     "gui.plasmo_voice.general.occlusion.tooltip_6": "so it’s better to keep it disabled when you don’t need it.",
+    "gui.plasmo_voice.general.not_available": "Not available",
 
     "gui.plasmo_voice.general.microphone": "Microphone",
     "gui.plasmo_voice.general.microphone.volume": "Microphone volume",

@@ -46,7 +46,8 @@ public class VoiceHud {
                     0,
                     16,
                     16);
-        } else if(VoiceClient.getClientConfig().microphoneMuted.get() || VoiceClient.getServerConfig().getMuted().containsKey(player.getUUID())) {
+        } else if(VoiceClient.getClientConfig().microphoneMuted.get() || !VoiceClient.recorder.isAvailable()
+                || VoiceClient.getServerConfig().getMuted().containsKey(player.getUUID())) {
             RenderSystem.color4f(1F, 1F, 1F, 1F);
             client.getTextureManager().bind(VoiceClient.ICONS);
 

@@ -1,6 +1,8 @@
 package su.plo.voice.client.sound.capture;
 
 import org.lwjgl.openal.ALC11;
+import su.plo.voice.client.VoiceClient;
+import su.plo.voice.client.sound.VolumeAdjuster;
 import su.plo.voice.client.sound.openal.AlUtil;
 import su.plo.voice.client.sound.openal.CustomSoundEngine;
 import su.plo.voice.client.utils.AudioUtils;
@@ -8,6 +10,8 @@ import su.plo.voice.client.utils.AudioUtils;
 public class AlCaptureDevice implements CaptureDevice {
     private long pointer;
     private boolean started;
+
+    private final VolumeAdjuster adjuster = new VolumeAdjuster();
 
     public void open() throws IllegalStateException {
         if (isOpen()) {
@@ -65,6 +69,8 @@ public class AlCaptureDevice implements CaptureDevice {
         short[] shorts = new short[frameSize / 2];
         ALC11.alcCaptureSamples(pointer, shorts, shorts.length);
         AlUtil.checkErrors("Capture samples");
+
+        adjuster.adjust(shorts, VoiceClient.getClientConfig().microphoneAmplification.get().floatValue());
 
         return AudioUtils.shortsToBytes(shorts);
     }

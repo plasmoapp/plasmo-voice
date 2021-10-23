@@ -6,9 +6,8 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
@@ -20,19 +19,19 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
     private final VoiceSettingsScreen parent;
     private final Minecraft client = Minecraft.getInstance();
     private final boolean slider;
-    private List<ImageButton> microphoneTest;
+    private List<BackgroundImageButton> microphoneTest;
 
     public MicrophoneThresholdWidget(int x, int y, int width, boolean slider, VoiceSettingsScreen parent) {
         super(x, y, width - 23, 20, TextComponent.EMPTY, 0.0D);
         this.slider = slider;
         this.updateValue();
 
-        ImageButton speakerHide = new ImageButton(0, 0, 20, 20, 0, 72, 20,
+        BackgroundImageButton speakerHide = new BackgroundImageButton(0, 0, 20, 20, 0, 72, 20,
                 VoiceClient.ICONS, 256, 256, button -> {
             closeSpeaker();
         });
 
-        ImageButton speakerShow = new ImageButton(0, 0, 20, 20, 20, 72, 20,
+        BackgroundImageButton speakerShow = new BackgroundImageButton(0, 0, 20, 20, 20, 72, 20,
                 VoiceClient.ICONS, 256, 256, button -> {
             this.microphoneTest.get(0).visible = true;
             this.microphoneTest.get(1).visible = false;
@@ -45,6 +44,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
         });
 
         speakerHide.visible = false;
+        speakerShow.active = VoiceClient.recorder.isAvailable();
         this.parent = parent;
         this.microphoneTest = ImmutableList.of(speakerHide, speakerShow);
     }
@@ -131,11 +131,17 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
         //            this.x + this.width / 2, this.y + (this.height - 8) / 2, 16777215);
 
         RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
-        for (Button button : this.microphoneTest) {
+        for (BackgroundImageButton button : this.microphoneTest) {
             button.x = this.x + this.width + 2;
             button.y = this.y;
 
             button.render(matrices, mouseX, mouseY, delta);
+
+            if (button.isHovered(false)) {
+                parent.setTooltip(ImmutableList.of(
+                        new TranslatableComponent("gui.plasmo_voice.general.not_available")
+                ));
+            }
         }
     }
 }
