@@ -14,6 +14,6 @@ public class BackgroundImageButton extends ImageButton {
     }
 
     public boolean isHovered(boolean checkActive) {
-        return checkActive ? this.isHovered() : super.isHovered();
+        return checkActive ? this.visible && this.isHovered() : this.visible && super.isHovered();
     }
 }
