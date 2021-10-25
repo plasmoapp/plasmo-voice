@@ -31,6 +31,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.particle.BlockDustParticle2D;
 import su.plo.voice.client.gui.tabs.*;
 import su.plo.voice.client.gui.widgets.MicrophoneThresholdWidget;
+import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.client.sound.Compressor;
 import su.plo.voice.client.sound.openal.CustomSource;
 import su.plo.voice.client.utils.AudioUtils;
@@ -229,6 +230,8 @@ public class VoiceSettingsScreen extends Screen {
             this.muteSpeakerButtons.get(0).visible = false;
             this.muteSpeakerButtons.get(1).visible = true;
             config.speakerMuted.invert();
+
+            SocketClientUDPQueue.closeAll();
 
             if (!config.microphoneMuted.get()) {
                 this.muteMicButtons.get(0).visible = false;

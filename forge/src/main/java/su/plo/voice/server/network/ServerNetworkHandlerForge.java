@@ -28,6 +28,5 @@ public class ServerNetworkHandlerForge extends ServerNetworkHandler {
     @Override
     public void handleJoin(ServerPlayer player) {
         super.handleJoin(player);
-        ServerNetworkHandler.reconnectClient(player);
     }
 }

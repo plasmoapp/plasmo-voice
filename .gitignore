@@ -18,3 +18,5 @@ classes/
 .vscode
 .settings
 *.launch
+curseforge_key.txt
+changelog.txt

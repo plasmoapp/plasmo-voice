@@ -7,6 +7,7 @@ plugins {
     id("architectury-plugin") version("3.4-SNAPSHOT")
     id("dev.architectury.loom") version("0.10.0-SNAPSHOT") apply(false)
     id("com.github.johnrengelman.shadow") version("7.0.0") apply(false)
+    id("com.matthewprenger.cursegradle") version("1.4.0") apply(false)
 }
 
 architectury {
@@ -25,6 +26,7 @@ allprojects {
     apply(plugin = "java")
     apply(plugin = "architectury-plugin")
     apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.matthewprenger.cursegradle")
 
     tasks.withType<JavaCompile>().configureEach {
         with(options) {

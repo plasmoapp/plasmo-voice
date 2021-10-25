@@ -137,7 +137,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
 
             button.render(matrices, mouseX, mouseY, delta);
 
-            if (button.isHovered(false)) {
+            if (!VoiceClient.recorder.isAvailable() && button.isHovered(false)) {
                 parent.setTooltip(ImmutableList.of(
                         new TranslatableComponent("gui.plasmo_voice.general.not_available")
                 ));

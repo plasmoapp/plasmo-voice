@@ -21,7 +21,9 @@ public class VoiceServerFabric extends VoiceServer implements ModInitializer {
             setServer(server);
             this.start();
 
-            this.setupMetrics("Fabric");
+            if (server.isDedicatedServer()) {
+                this.setupMetrics("Fabric");
+            }
         });
         ServerLifecycleEvents.SERVER_STOPPING.register(server -> this.close());
 

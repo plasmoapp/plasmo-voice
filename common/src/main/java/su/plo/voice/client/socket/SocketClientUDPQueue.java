@@ -32,6 +32,7 @@ public class SocketClientUDPQueue extends Thread {
         audioChannels.values()
                 .forEach(AbstractSoundQueue::closeAndKill);
         audioChannels.clear();
+        talking.clear();
     }
 
     private void queuePacket(VoiceServerPacket packet, UUID uuid) {
