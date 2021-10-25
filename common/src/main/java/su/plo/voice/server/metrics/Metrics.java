@@ -133,8 +133,7 @@ public class Metrics {
         /** The version of the Metrics class. */
         public static final String METRICS_VERSION = "2.2.1";
 
-        private static final ScheduledExecutorService scheduler =
-                Executors.newScheduledThreadPool(1, task -> new Thread(task, "bStats-Metrics"));
+        private static ScheduledExecutorService scheduler;
 
         private static final String REPORT_URL = "https://bStats.org/api/v2/data/%s";
 
@@ -214,6 +213,9 @@ public class Metrics {
             this.logErrors = logErrors;
             this.logSentData = logSentData;
             this.logResponseStatusText = logResponseStatusText;
+
+            scheduler = Executors.newScheduledThreadPool(1, task -> new Thread(task, "bStats-Metrics"));
+
             checkRelocation();
             if (enabled) {
                 startSubmitting();

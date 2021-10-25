@@ -76,7 +76,10 @@ public class VoiceServerForge extends VoiceServer {
     public void onServerStart(FMLServerStartedEvent event) {
         setServer(event.getServer());
         this.start();
-        this.setupMetrics("Forge");
+
+        if (event.getServer().isDedicatedServer()) {
+            this.setupMetrics("Forge");
+        }
     }
 
     @SubscribeEvent
