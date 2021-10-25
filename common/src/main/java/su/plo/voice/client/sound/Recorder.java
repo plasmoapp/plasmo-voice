@@ -242,7 +242,7 @@ public class Recorder implements Runnable {
     }
 
     private void voiceActivation(byte[] normBuffer) {
-        boolean priorityPressed = VoiceClient.getClientConfig().keyBindings.pushToTalk.get().isPressed()
+        boolean priorityPressed = VoiceClient.getClientConfig().keyBindings.priorityPushToTalk.get().isPressed()
                 && VoiceClient.getServerConfig().isPriority()
                 && VoiceClient.getServerConfig().getPriorityDistance() > VoiceClient.getServerConfig().getMaxDistance();
 
@@ -254,34 +254,54 @@ public class Recorder implements Runnable {
             return;
         }
 
-        if (!VoiceClient.isSpeakingPriority() && priorityPressed) {
-            VoiceClient.setSpeakingPriority(true);
-        } else if (VoiceClient.isSpeaking() && VoiceClient.isSpeakingPriority() && !priorityPressed) {
-            VoiceClient.setSpeakingPriority(false);
-        }
-
         boolean activated = System.currentTimeMillis() - lastSpeak <= 500L;
         int offset = AudioUtils.getActivationOffset(normBuffer, VoiceClient.getClientConfig().voiceActivationThreshold.get());
-        if (offset > 0 || activated) {
-            if (offset > 0) {
-                this.lastSpeak = System.currentTimeMillis();
-            }
 
-            if (!VoiceClient.isSpeaking()) {
-                VoiceClient.setSpeaking(true);
-                if (this.lastBuffer != null) {
-                    this.sendPacket(lastBuffer);
-                }
-                this.sendPacket(normBuffer);
-                return;
-            }
-        } else if (VoiceClient.isSpeaking()) {
+        if (!VoiceClient.isSpeakingPriority() && priorityPressed) {
+            VoiceClient.setSpeakingPriority(true);
+        }
+
+        if (priorityPressed && !VoiceClient.isSpeaking()) {
+            VoiceClient.setSpeaking(true);
+            this.lastSpeak = System.currentTimeMillis();
+        } else if (priorityPressed && !VoiceClient.isMicrophoneLoopback()) {
+            this.lastSpeak = System.currentTimeMillis();
+        } else if (VoiceClient.isSpeakingPriority() &&
+                !priorityPressed &&
+                (System.currentTimeMillis() - lastSpeak > 350L || VoiceClient.isMicrophoneLoopback()) &&
+                offset <= 0) {
             VoiceClient.setSpeaking(false);
             VoiceClient.setSpeakingPriority(false);
 
-            this.sendPacket(normBuffer);
             this.sendEndPacket();
             return;
+        } else {
+            if (offset > 0 || activated) {
+                if (offset > 0) {
+                    this.lastSpeak = System.currentTimeMillis();
+
+                    if (VoiceClient.isSpeakingPriority() &&
+                            !priorityPressed) {
+                        VoiceClient.setSpeakingPriority(false);
+                    }
+                }
+
+                if (!VoiceClient.isSpeaking()) {
+                    VoiceClient.setSpeaking(true);
+                    if (this.lastBuffer != null) {
+                        this.sendPacket(lastBuffer);
+                    }
+                    this.sendPacket(normBuffer);
+                    return;
+                }
+            } else if (VoiceClient.isSpeaking()) {
+                VoiceClient.setSpeaking(false);
+                VoiceClient.setSpeakingPriority(false);
+
+                this.sendPacket(normBuffer);
+                this.sendEndPacket();
+                return;
+            }
         }
 
         if (VoiceClient.isSpeaking()) {
