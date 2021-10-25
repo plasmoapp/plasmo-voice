@@ -1,5 +1,6 @@
 package su.plo.voice.server;
 
+import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -33,11 +34,11 @@ public class VoiceServerForge extends VoiceServer {
     }
 
     public static void onChannelRegister(ServerboundCustomPayloadPacket packet, ServerPlayer player) {
-//        FriendlyByteBuf buffer = packet.getData();
-//        byte[] data = new byte[Math.max(buffer.readableBytes(), 0)];
-//        buffer.readBytes(data);
-//
-//        network.handleRegisterChannels(bytesToResLocation(data), player);
+        FriendlyByteBuf buffer = packet.getData();
+        byte[] data = new byte[Math.max(buffer.readableBytes(), 0)];
+        buffer.readBytes(data);
+
+        network.handleRegisterChannels(bytesToResLocation(data), player);
     }
 
     private static List<ResourceLocation> bytesToResLocation(byte[] all) {
