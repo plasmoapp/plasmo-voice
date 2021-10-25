@@ -1,9 +1,17 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.matthewprenger.cursegradle.CurseArtifact
+import com.matthewprenger.cursegradle.CurseProject
+import com.matthewprenger.cursegradle.CurseRelation
+import net.fabricmc.loom.task.RemapJarTask
 
 val minecraftVersion: String by rootProject
 val forgeVersion: String by rootProject
 val modVersion: String by rootProject
 val mavenGroup: String by rootProject
+val curseProjectId: String by rootProject
+val curseFabricRelease: String by rootProject
+val curseDisplayVersion: String by rootProject
+val curseSupportedVersions: String by rootProject
 
 configurations {
     create("shadowCommon")
@@ -118,4 +126,37 @@ tasks {
             shadowJar.get().archiveFile.get().asFile.delete()
         }
     }
+}
+
+val remapJar = tasks.getByName<RemapJarTask>("remapJar")
+
+curseforge {
+    apiKey = if (file("${rootDir}/curseforge_key.txt").exists()) {
+        file("${rootDir}/curseforge_key.txt").readText()
+    } else {
+        ""
+    }
+
+    project(closureOf<CurseProject> {
+        id = curseProjectId
+        changelog = file("${rootDir}/changelog.txt")
+        releaseType = curseFabricRelease
+        curseSupportedVersions.split(",").forEach {
+            addGameVersion(it)
+        }
+        addGameVersion("Forge")
+
+        mainArtifact(
+            file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar"),
+            closureOf<CurseArtifact> {
+                displayName = "[Forge ${curseDisplayVersion}] Plasmo Voice $version"
+
+                relations(closureOf<CurseRelation> {
+                    optionalDependency("sound-physics-remastered")
+                })
+            })
+        afterEvaluate {
+            uploadTask.dependsOn(remapJar)
+        }
+    })
 }

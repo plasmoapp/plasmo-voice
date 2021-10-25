@@ -7,6 +7,7 @@ plugins {
     id("architectury-plugin") version("3.3-SNAPSHOT")
     id("dev.architectury.loom") version("0.7.4-SNAPSHOT") apply(false)
     id("com.github.johnrengelman.shadow") version("7.0.0") apply(false)
+    id("com.matthewprenger.cursegradle") version("1.4.0") apply(false)
 }
 
 architectury {
@@ -27,6 +28,7 @@ allprojects {
     apply(plugin = "java")
     apply(plugin = "architectury-plugin")
     apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "com.matthewprenger.cursegradle")
 
 //    java { toolchain { languageVersion.set(JavaLanguageVersion.of(16)) } }
 
