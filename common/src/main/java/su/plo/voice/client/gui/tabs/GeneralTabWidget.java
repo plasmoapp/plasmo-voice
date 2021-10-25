@@ -180,6 +180,7 @@ public class GeneralTabWidget extends TabWidget {
                 VoiceClient.getClientConfig().voiceActivation,
                 TextUtils.multiLine("gui.plasmo_voice.general.activation.type.tooltip", 5),
                 (button, element) -> {
+                    activationThreshold.active = false;
                     element.setMessage(onOff(VoiceClient.getClientConfig().voiceActivation.get()
                                     && !VoiceClient.getServerConfig().isVoiceActivationDisabled(),
                             activations));
