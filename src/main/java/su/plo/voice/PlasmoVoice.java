@@ -283,7 +283,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
 
         String durationMessage = durationUnit == null ? "" : durationUnit.format(duration);
         if (duration > 0) {
-            duration = durationUnit.multiply(duration);
+            duration = durationUnit.multiply(duration) * 1000L;
             duration += System.currentTimeMillis();
         }
 
@@ -332,6 +332,10 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
         if (onlinePlayer != null) {
             PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()), onlinePlayer);
+
+            if (!silent) {
+                onlinePlayer.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("unmuted"), player.getName()));
+            }
         }
 
         Bukkit.getPluginManager().callEvent(new PlayerVoiceUnmuteEvent(player));

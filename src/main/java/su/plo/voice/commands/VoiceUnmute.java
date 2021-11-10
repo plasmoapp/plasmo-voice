@@ -30,7 +30,6 @@ public class VoiceUnmute implements TabExecutor {
             return true;
         }
 
-        sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("unmuted"), player.getName()));
         return true;
     }
 
