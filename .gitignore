@@ -19,4 +19,5 @@ classes/
 .settings
 *.launch
 curseforge_key.txt
-changelog.txt
+modrinth_key.txt
+changelog.md

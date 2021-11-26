@@ -1,4 +1,5 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import com.modrinth.minotaur.TaskModrinthUpload
 import com.matthewprenger.cursegradle.CurseArtifact
 import com.matthewprenger.cursegradle.CurseProject
 import com.matthewprenger.cursegradle.CurseRelation
@@ -10,10 +11,14 @@ val fabricLoaderVersion: String by rootProject
 val fabricVersion: String by rootProject
 val modVersion: String by rootProject
 val mavenGroup: String by rootProject
+
 val curseProjectId: String by rootProject
 val curseFabricRelease: String by rootProject
 val curseDisplayVersion: String by rootProject
 val curseSupportedVersions: String by rootProject
+
+val modrinthSupportedVersions: String by rootProject
+val modrinthProjectId: String by rootProject
 
 configurations {
     create("shadowCommon")
@@ -35,10 +40,10 @@ dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
     mappings(loom.officialMojangMappings())
 
-    implementation(project(":common")) {
+    compileOnly(project(":common", "dev")) {
         isTransitive = false
     }
-    project.configurations.getByName("developmentFabric")(project(":common")) {
+    project.configurations.getByName("developmentFabric")(project(":common", "dev")) {
         isTransitive = false
     }
     "shadowCommon"(project(":common", "transformProductionFabric")) {
@@ -49,13 +54,13 @@ dependencies {
     modApi("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
 
     // Fabric API jar-in-jar
-    include("net.fabricmc.fabric-api:fabric-api-base:0.3.0+a02b446318")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.3+5ab9934c18")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.4+cbda931818")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.4.4+a02b446318")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-networking-api-v1:1.0.13+cbda931818")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-rendering-v1:1.9.0+7931163218")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.8+a00e834b18")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-api-base:0.4.1+b4f4f6cd14")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.6+3ac43d9514")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.8+c8aba2f314")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.4.10+c15ca33514")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-networking-api-v1:1.0.18+3ac43d9514")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-rendering-v1:1.10.3+6b21378a14")?.let { modImplementation(it) }
+    include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.11+3ac43d9514")?.let { modImplementation(it) }
 
     // Plasmo Voice protocol
     implementation("su.plo.voice:common:1.0.0")
@@ -89,8 +94,8 @@ repositories {
 }
 
 tasks {
-    java {
-        withSourcesJar()
+    jar {
+        classifier = "dev"
     }
 
     processResources {
@@ -107,6 +112,7 @@ tasks {
 
     shadowJar {
         configurations = listOf(project.configurations.getByName("shadowCommon"))
+        classifier = "dev-shadow"
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
@@ -128,6 +134,23 @@ tasks {
 }
 
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
+
+tasks.register<TaskModrinthUpload>("publishModrinth") {
+    token = if (file("${rootDir}/modrinth_key.txt").exists()) {
+        file("${rootDir}/modrinth_key.txt").readText()
+    } else {
+        ""
+    }
+
+    projectId = modrinthProjectId
+
+    modrinthSupportedVersions.split(",").forEach {
+        addGameVersion(it)
+    }
+    changelog = file("${rootDir}/changelog.md").toString()
+    addLoader("fabric")
+    uploadFile = file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar")
+}
 
 curseforge {
     apiKey = if (file("${rootDir}/curseforge_key.txt").exists()) {

@@ -9,11 +9,11 @@ public class BackgroundImageButton extends ImageButton {
     }
 
     @Override
-    public boolean isHovered() {
-        return super.isHovered() && this.active;
+    public boolean isHoveredOrFocused() {
+        return super.isHoveredOrFocused() && this.active;
     }
 
     public boolean isHovered(boolean checkActive) {
-        return checkActive ? this.visible && this.isHovered() : this.visible && super.isHovered();
+        return checkActive ? this.visible && this.isHoveredOrFocused() : this.visible && super.isHoveredOrFocused();
     }
 }
