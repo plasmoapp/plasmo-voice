@@ -1,5 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.modrinth.minotaur.TaskModrinthUpload
+import com.modrinth.minotaur.request.VersionType
 import com.matthewprenger.cursegradle.CurseArtifact
 import com.matthewprenger.cursegradle.CurseProject
 import com.matthewprenger.cursegradle.CurseRelation
@@ -17,6 +18,7 @@ val curseFabricRelease: String by rootProject
 val curseDisplayVersion: String by rootProject
 val curseSupportedVersions: String by rootProject
 
+val modrinthVersionType: String by rootProject
 val modrinthSupportedVersions: String by rootProject
 val modrinthProjectId: String by rootProject
 
@@ -144,10 +146,14 @@ tasks.register<TaskModrinthUpload>("publishModrinth") {
 
     projectId = modrinthProjectId
 
+    versionNumber = "fabric-$curseDisplayVersion-$version"
+    versionName = "[Fabric ${curseDisplayVersion}] Plasmo Voice $version"
+    versionType = VersionType.valueOf(modrinthVersionType)
+
     modrinthSupportedVersions.split(",").forEach {
         addGameVersion(it)
     }
-    changelog = file("${rootDir}/changelog.md").toString()
+    changelog = file("${rootDir}/changelog.md").readText()
     addLoader("fabric")
     uploadFile = file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar")
 }
