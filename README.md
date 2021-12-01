@@ -7,7 +7,7 @@
   <div>
     <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">CurseForge</a>
     <span> | </span>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">Modrinth</a>
+    <a href="https://modrinth.com/mod/plasmo-voice">Modrinth</a>
     <span> | </span>
     <a href="https://www.spigotmc.org/resources/plasmo-voice-server.91064/">Spigot</a>
     <span> | </span>
