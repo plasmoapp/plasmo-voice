@@ -2,9 +2,9 @@ package su.plo.voice.client;
 
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
+import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fmlclient.registry.ClientRegistry;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.event.ClientInputEvent;
 import su.plo.voice.client.event.ClientNetworkEvent;

@@ -1,20 +1,31 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.matthewprenger.cursegradle.CurseArtifact
-import com.matthewprenger.cursegradle.CurseProject
-import com.matthewprenger.cursegradle.CurseRelation
+import com.modrinth.minotaur.TaskModrinthUpload
+import com.modrinth.minotaur.request.VersionType
+import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
 
 val minecraftVersion: String by rootProject
 val forgeVersion: String by rootProject
 val modVersion: String by rootProject
 val mavenGroup: String by rootProject
+
 val curseProjectId: String by rootProject
 val curseFabricRelease: String by rootProject
 val curseDisplayVersion: String by rootProject
 val curseSupportedVersions: String by rootProject
 
+val modrinthVersionType: String by rootProject
+val modrinthSupportedVersions: String by rootProject
+val modrinthProjectId: String by rootProject
+
 configurations {
     create("shadowCommon")
+}
+
+configure<LoomGradleExtensionAPI> {
+    forge {
+        mixinConfig("plasmovoice.mixins.json")
+    }
 }
 
 architectury {
@@ -35,10 +46,10 @@ dependencies {
 
     "forge"("net.minecraftforge:forge:${forgeVersion}")
 
-    implementation(project(":common")) {
+    compileOnly(project(":common", "dev")) {
         isTransitive = false
     }
-    project.configurations.getByName("developmentForge")(project(":common")) {
+    project.configurations.getByName("developmentForge")(project(":common", "dev")) {
         isTransitive = false
     }
     "shadowCommon"(project(":common", "transformProductionFabric")) {
@@ -63,9 +74,6 @@ dependencies {
 
     compileOnly("org.projectlombok:lombok:1.18.20")
     annotationProcessor("org.projectlombok:lombok:1.18.20")
-
-    testCompileOnly("org.projectlombok:lombok:1.18.20")
-    testAnnotationProcessor("org.projectlombok:lombok:1.18.20")
 }
 
 repositories {
@@ -77,8 +85,8 @@ repositories {
 }
 
 tasks {
-    java {
-        withSourcesJar()
+    jar {
+        classifier = "dev"
     }
 
     processResources {
@@ -93,6 +101,7 @@ tasks {
 
     shadowJar {
         configurations = listOf(project.configurations.getByName("shadowCommon"))
+        classifier = "dev-shadow"
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
@@ -130,33 +139,55 @@ tasks {
 
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
 
-curseforge {
-    apiKey = if (file("${rootDir}/curseforge_key.txt").exists()) {
-        file("${rootDir}/curseforge_key.txt").readText()
+tasks.register<TaskModrinthUpload>("publishModrinth") {
+    token = if (file("${rootDir}/modrinth_key.txt").exists()) {
+        file("${rootDir}/modrinth_key.txt").readText()
     } else {
         ""
     }
 
-    project(closureOf<CurseProject> {
-        id = curseProjectId
-        changelog = file("${rootDir}/changelog.txt")
-        releaseType = curseFabricRelease
-        curseSupportedVersions.split(",").forEach {
-            addGameVersion(it)
-        }
-        addGameVersion("Forge")
+    projectId = modrinthProjectId
 
-        mainArtifact(
-            file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar"),
-            closureOf<CurseArtifact> {
-                displayName = "[Forge ${curseDisplayVersion}] Plasmo Voice $version"
+    versionNumber = "forge-$curseDisplayVersion-$version"
+    versionName = "[Forge ${curseDisplayVersion}] Plasmo Voice $version"
+    versionType = VersionType.valueOf(modrinthVersionType)
 
-                relations(closureOf<CurseRelation> {
-                    optionalDependency("sound-physics-remastered")
-                })
-            })
-        afterEvaluate {
-            uploadTask.dependsOn(remapJar)
-        }
-    })
+    modrinthSupportedVersions.split(",").forEach {
+        addGameVersion(it)
+    }
+    changelog = file("${rootDir}/changelog.md").readText()
+    addLoader("forge")
+    uploadFile = file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar")
 }
+
+//
+//curseforge {
+//    apiKey = if (file("${rootDir}/curseforge_key.txt").exists()) {
+//        file("${rootDir}/curseforge_key.txt").readText()
+//    } else {
+//        ""
+//    }
+//
+//    project(closureOf<CurseProject> {
+//        id = curseProjectId
+//        changelog = file("${rootDir}/changelog.txt")
+//        releaseType = curseFabricRelease
+//        curseSupportedVersions.split(",").forEach {
+//            addGameVersion(it)
+//        }
+//        addGameVersion("Forge")
+//
+//        mainArtifact(
+//            file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar"),
+//            closureOf<CurseArtifact> {
+//                displayName = "[Forge ${curseDisplayVersion}] Plasmo Voice $version"
+//
+//                relations(closureOf<CurseRelation> {
+//                    optionalDependency("sound-physics-remastered")
+//                })
+//            })
+//        afterEvaluate {
+//            uploadTask.dependsOn(remapJar)
+//        }
+//    })
+//}

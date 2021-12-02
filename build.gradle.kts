@@ -6,7 +6,7 @@ plugins {
     java
     id("architectury-plugin") version("3.4-SNAPSHOT")
     id("com.modrinth.minotaur") version("1.2.1") apply(false)
-    id("dev.architectury.loom") version("0.10.0-SNAPSHOT") apply(false)
+    id("dev.architectury.loom") version("0.10.0.197") apply(false)
     id("com.github.johnrengelman.shadow") version("7.0.0") apply(false)
     id("com.matthewprenger.cursegradle") version("1.4.0") apply(false)
 }
@@ -36,7 +36,7 @@ allprojects {
     apply(plugin = "com.matthewprenger.cursegradle")
     apply(plugin = "com.modrinth.minotaur")
 
-//    java { toolchain { languageVersion.set(JavaLanguageVersion.of(16)) } }
+    java { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"
