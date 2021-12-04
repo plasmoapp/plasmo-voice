@@ -24,6 +24,10 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
         EXTThreadLocalContext.alcSetThreadContext(VoiceClient.getSoundEngine().getContextPointer());
 
         this.source = VoiceClient.getSoundEngine().createSource();
+        if (this.source == null) {
+            stopped = true;
+            return;
+        }
         this.source.setPitch(1.0F);
         this.source.setLooping(false);
         this.source.setRelative(false);
