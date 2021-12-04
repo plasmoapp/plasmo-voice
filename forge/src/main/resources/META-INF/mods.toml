@@ -18,7 +18,7 @@ description="A proximity voice chat mod with audio positioning and lots of featu
 [[dependencies.plasmovoice]]
     modId="forge"
     mandatory=true
-    versionRange="[37,)"
+    versionRange="[37.1.0,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.plasmovoice]]

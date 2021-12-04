@@ -4,8 +4,10 @@
     "package": "su.plo.voice.client.mixin",
     "compatibilityLevel": "JAVA_16",
     "refmap": "plasmovoice-forge-refmap.json",
-    "server": [
+    "mixins": [
         "MixinServerGamePacketListenerImpl"
+    ],
+    "server": [
     ],
     "client": [
         "MixinClientSuggestionProvider",

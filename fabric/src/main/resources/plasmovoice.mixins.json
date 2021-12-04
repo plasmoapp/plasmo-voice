@@ -5,6 +5,7 @@
     "compatibilityLevel": "JAVA_16",
     "mixins": [],
     "client": [
+        "MixinClientPacketListener",
         "MixinKeyboardHandler",
         "MixinLevelRenderer",
         "MixinMinecraft",
