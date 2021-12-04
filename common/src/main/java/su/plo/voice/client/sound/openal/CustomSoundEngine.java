@@ -46,16 +46,6 @@ public class CustomSoundEngine {
         this.executor = Executors.newScheduledThreadPool(1);
     }
 
-    public void restart() {
-        SocketClientUDPQueue.audioChannels
-                .values()
-                .forEach(AbstractSoundQueue::closeAndKill);
-        SocketClientUDPQueue.audioChannels.clear();
-
-        this.close();
-        this.init();
-    }
-
     public CustomSource createSource() {
         return this.initialized ? CustomSource.create() : null;
     }
@@ -68,7 +58,8 @@ public class CustomSoundEngine {
         this.runInContext(this::initSync);
     }
 
-    public void initSync() {
+    private void initSync() {
+        this.close();
         this.preInit();
 
         this.devicePointer = openDevice();
@@ -145,6 +136,11 @@ public class CustomSoundEngine {
     }
 
     public synchronized void close() {
+        SocketClientUDPQueue.audioChannels
+                .values()
+                .forEach(AbstractSoundQueue::closeAndKill);
+        SocketClientUDPQueue.audioChannels.clear();
+
         if (this.initialized) {
             this.executor.submit(() -> {
                 if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen) {

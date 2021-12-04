@@ -29,8 +29,6 @@ public class VoiceClientForge extends VoiceClient {
 
         menuKey = new KeyMapping("key.plasmo_voice.settings", GLFW.GLFW_KEY_V, "key.plasmo_voice");
         ClientRegistry.registerKeyBinding(menuKey);
-
-        soundEngine.init();
     }
 
     @Override

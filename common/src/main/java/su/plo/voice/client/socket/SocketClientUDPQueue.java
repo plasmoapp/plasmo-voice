@@ -37,7 +37,7 @@ public class SocketClientUDPQueue extends Thread {
 
     private void queuePacket(VoiceServerPacket packet, UUID uuid) {
         AbstractSoundQueue ch = audioChannels.get(uuid);
-        if (ch == null) {
+        if (ch == null || ch.isClosed()) {
             VoiceClient.getServerConfig().getClients().add(uuid);
             if (packet instanceof VoiceServerPacket) {
                 ch = new OpenALPlayerQueue(uuid);
