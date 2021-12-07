@@ -22,11 +22,13 @@ import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import static org.lwjgl.openal.ALC10.ALC_TRUE;
 
@@ -44,7 +46,11 @@ public class CustomSoundEngine {
     protected boolean soundPhysics;
     private final ScheduledExecutorService executor;
 
+    private final List<Consumer<CustomSoundEngine>> initListeners = new ArrayList<>();
+    private final List<Runnable> closeListeners = new ArrayList<>();
+
     public static Method soundPhysicsPlaySound;
+    public static Method soundPhysicsReverb;
 
     public CustomSoundEngine() {
         this.listener = new Listener();
@@ -124,6 +130,9 @@ public class CustomSoundEngine {
 
         this.initialized = true;
         this.postInit();
+        for (Consumer<CustomSoundEngine> listener : initListeners) {
+            listener.accept(this);
+        }
 
         executor.scheduleAtFixedRate(() -> {
             Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
@@ -147,7 +156,11 @@ public class CustomSoundEngine {
         SocketClientUDPQueue.audioChannels.clear();
 
         if (this.initialized) {
-            this.executor.submit(() -> {
+            runInContext(() -> {
+                for (Runnable listener : closeListeners) {
+                    listener.run();
+                }
+
                 if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen) {
                     screen.closeSpeaker();
                 }
@@ -300,10 +313,22 @@ public class CustomSoundEngine {
                     "onPlaySound",
                     double.class, double.class, double.class, int.class
             );
+            soundPhysicsReverb = clazz.getMethod(
+                    "onPlayReverb",
+                    double.class, double.class, double.class, int.class
+            );
 
             soundPhysics = true;
         } catch (ClassNotFoundException | NoSuchMethodException |
                 InvocationTargetException | IllegalAccessException ignored) {
         }
+    }
+
+    public synchronized void onClose(Runnable listener) {
+        this.closeListeners.add(listener);
+    }
+
+    public synchronized void onInitialize(Consumer<CustomSoundEngine> consumer) {
+        this.initListeners.add(consumer);
     }
 }
