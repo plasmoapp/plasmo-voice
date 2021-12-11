@@ -73,10 +73,17 @@ public class CustomSource {
             return;
         }
 
-        if (CustomSoundEngine.soundPhysicsPlaySound != null) {
+        if (CustomSoundEngine.soundPhysicsPlaySoundNew != null) {
             if (System.currentTimeMillis() - lastEnvCalculated > 1000 ||
                     (lastEnvPos != null && lastEnvPos.distanceTo(pos) > 1)) {
-                CustomSoundEngine.soundPhysicsPlaySound.invoke(null, pos.x(), pos.y(), pos.z(), pointer, !reverbOnly);
+                CustomSoundEngine.soundPhysicsPlaySoundNew.invoke(null, pos.x(), pos.y(), pos.z(), pointer, !reverbOnly);
+                lastEnvPos = pos;
+                lastEnvCalculated = System.currentTimeMillis();
+            }
+        } else if (CustomSoundEngine.soundPhysicsPlaySound != null) {
+            if (System.currentTimeMillis() - lastEnvCalculated > 1000 ||
+                    (lastEnvPos != null && lastEnvPos.distanceTo(pos) > 1)) {
+                CustomSoundEngine.soundPhysicsPlaySound.invoke(null, pos.x(), pos.y(), pos.z(), pointer);
                 lastEnvPos = pos;
                 lastEnvCalculated = System.currentTimeMillis();
             }

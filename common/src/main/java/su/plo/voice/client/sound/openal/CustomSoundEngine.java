@@ -50,6 +50,7 @@ public class CustomSoundEngine {
     private final List<Runnable> closeListeners = new ArrayList<>();
 
     public static Method soundPhysicsPlaySound;
+    public static Method soundPhysicsPlaySoundNew;
 
     public CustomSoundEngine() {
         this.listener = new Listener();
@@ -309,6 +310,10 @@ public class CustomSoundEngine {
             Class clazz = Class.forName("com.sonicether.soundphysics.SoundPhysics");
             clazz.getMethod("init").invoke(null);
             soundPhysicsPlaySound = clazz.getMethod(
+                    "onPlaySound",
+                    double.class, double.class, double.class, int.class
+            );
+            soundPhysicsPlaySoundNew = clazz.getMethod(
                     "onPlaySound",
                     double.class, double.class, double.class, int.class, boolean.class
             );
