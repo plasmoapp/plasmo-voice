@@ -402,7 +402,7 @@ public class Recorder implements Runnable {
             return;
         }
 
-        if (CustomSoundEngine.soundPhysicsReverb != null) {
+        if (CustomSoundEngine.soundPhysicsPlaySound != null) {
             VoiceClient.getSoundEngine().runInContext(() -> {
                 Vec3 pos = client.player.position();
 
