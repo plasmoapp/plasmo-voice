@@ -9,7 +9,9 @@ import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.widgets.ConfigIntegerSlider;
 import su.plo.voice.client.gui.widgets.MicrophoneThresholdWidget;
 import su.plo.voice.client.gui.widgets.ToggleButton;
+import su.plo.voice.client.gui.widgets.VoiceVolumeSlider;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
+import su.plo.voice.client.sound.openal.CustomSoundEngine;
 import su.plo.voice.client.utils.TextUtils;
 import su.plo.voice.rnnoise.Denoiser;
 
@@ -158,5 +160,27 @@ public class AdvancedTabWidget extends TabWidget {
                     parent.updateGeneralTab();
                 })
         );
+
+        if (CustomSoundEngine.soundPhysicsReverb != null) {
+            this.addEntry(new CategoryEntry(new TextComponent("Sound Physics")));
+            this.addEntry(new OptionEntry(
+                    new TranslatableComponent("gui.plasmo_voice.advanced.sp.mic_reverb"),
+                    new ToggleButton(0, 0, 97, 20, config.micReverb,
+                            toggled -> {}),
+                    config.micReverb,
+                    TextUtils.multiLine("gui.plasmo_voice.advanced.sp.mic_reverb.tooltip", 1),
+                    (button, element) -> {
+                        ((ToggleButton) element).updateValue();
+                    })
+            );
+            this.addEntry(new OptionEntry(
+                    new TranslatableComponent("gui.plasmo_voice.advanced.sp.mic_reverb_volume"),
+                    new VoiceVolumeSlider(0, 0, 97, VoiceClient.getClientConfig().micReverbVolume),
+                    VoiceClient.getClientConfig().micReverbVolume,
+                    (button, element) -> {
+                        ((VoiceVolumeSlider) element).updateValue();
+                    })
+            );
+        }
     }
 }

@@ -159,6 +159,11 @@
     "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_2": "громкости вместо одного",
 
 
+    "gui.plasmo_voice.advanced.sp.mic_reverb": "Эхо микрофона",
+    "gui.plasmo_voice.advanced.sp.mic_reverb.tooltip_1": "Вы будете слышать эхо от вашего микрофона",
+    "gui.plasmo_voice.advanced.sp.mic_reverb_volume": "Громкость эха микрофона",
+
+
     "gui.plasmo_voice.hotkeys": "Клавиши",
 
 

@@ -402,13 +402,13 @@ public class Recorder implements Runnable {
             return;
         }
 
-        if (CustomSoundEngine.soundPhysicsReverb != null) {
+        if (CustomSoundEngine.soundPhysicsReverb != null && VoiceClient.getClientConfig().micReverb.get()) {
             VoiceClient.getSoundEngine().runInContext(() -> {
                 Vec3 pos = client.player.position();
 
                 source.setMaxDistance(VoiceClient.getServerConfig().getDistance(), 0.95F);
                 source.setPosition(pos);
-                source.setVolume(VoiceClient.getClientConfig().voiceVolume.get().floatValue());
+                source.setVolume(VoiceClient.getClientConfig().micReverbVolume.get().floatValue());
                 source.write(raw);
             });
         }
