@@ -60,7 +60,7 @@ public class DropDownWidget extends AbstractWidget implements Widget {
         if (isValidClickButton(button)) {
             if (this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) {
                 if ((mouseX >= x && mouseX <= x + width) &&
-                        (mouseY >= y + 1 - (elements.size() * (elementHeight + 1)) && mouseY <= y)) {
+                        (mouseY >= y + 1 - (elements.size() * (elementHeight + 1)) && mouseY <= y + 1)) {
                     int i = (int) Math.floor((mouseY - (y + 1 - (elements.size() * (elementHeight + 1)))) / (elementHeight + 1));
                     this.playDownSound(client.getSoundManager());
                     this.setMessage(elements.get(i));
@@ -71,7 +71,7 @@ public class DropDownWidget extends AbstractWidget implements Widget {
                 }
             } else {
                 if ((mouseX >= x && mouseX <= x + width) &&
-                        (mouseY >= y + height && mouseY <= y + height + 1 + (elements.size() * (elementHeight + 1)))) {
+                        (mouseY >= y + 1 + height && mouseY <= y + 1 + height + (elements.size() * (elementHeight + 1)))) {
                     int i = (int) Math.floor((mouseY - (y + height + 1)) / (elementHeight + 1));
                     this.playDownSound(client.getSoundManager());
                     this.setMessage(elements.get(i));
