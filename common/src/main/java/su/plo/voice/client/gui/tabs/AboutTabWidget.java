@@ -44,6 +44,9 @@ public class AboutTabWidget extends TabWidget {
             ),
             "uk_ua", ImmutableList.of(
                     new Translator(new GameProfile(UUID.fromString("b149c762-6da3-41b4-8db7-0e87330fb9aa"), "_ProSplash_"), "GitHub", "https://github.com/Yuraplonka")
+            ),
+            "fr_fr", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("1bbe13ee-a3c9-4490-a9bc-ee8cb64ccb2b"), "JeyPeytey"), "Instagram", "https://instagram.com/jeremy_giardina")
             )
     );
     private final VoiceSettingsScreen parent;
