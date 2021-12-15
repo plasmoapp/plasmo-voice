@@ -1,5 +1,6 @@
 package su.plo.voice.client.sound.openal;
 
+import lombok.Setter;
 import lombok.SneakyThrows;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
@@ -21,6 +22,8 @@ public class CustomSource {
     private final LinkedList<Integer> freeBuffers = new LinkedList<>();
     protected Vec3 pos;
 
+    @Setter
+    private boolean reverbOnly;
     private long lastEnvCalculated;
     private Vec3 lastEnvPos;
 
@@ -70,7 +73,14 @@ public class CustomSource {
             return;
         }
 
-        if (CustomSoundEngine.soundPhysicsPlaySound != null) {
+        if (reverbOnly && CustomSoundEngine.soundPhysicsReverb != null) {
+            if (System.currentTimeMillis() - lastEnvCalculated > 1000 ||
+                    (lastEnvPos != null && lastEnvPos.distanceTo(pos) > 1)) {
+                CustomSoundEngine.soundPhysicsReverb.invoke(null, pos.x(), pos.y(), pos.z(), pointer);
+                lastEnvPos = pos;
+                lastEnvCalculated = System.currentTimeMillis();
+            }
+        } else if (CustomSoundEngine.soundPhysicsPlaySound != null) {
             if (System.currentTimeMillis() - lastEnvCalculated > 1000 ||
                     (lastEnvPos != null && lastEnvPos.distanceTo(pos) > 1)) {
                 CustomSoundEngine.soundPhysicsPlaySound.invoke(null, pos.x(), pos.y(), pos.z(), pointer);

@@ -4,11 +4,14 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.world.phys.Vec3;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.sound.capture.AlCaptureDevice;
 import su.plo.voice.client.sound.capture.CaptureDevice;
 import su.plo.voice.client.sound.capture.JavaxCaptureDevice;
+import su.plo.voice.client.sound.openal.CustomSoundEngine;
+import su.plo.voice.client.sound.openal.CustomSource;
 import su.plo.voice.client.sound.opus.OpusEncoder;
 import su.plo.voice.client.utils.AudioUtils;
 import su.plo.voice.common.packets.udp.VoiceClientPacket;
@@ -55,10 +58,24 @@ public class Recorder implements Runnable {
     private long lastSpeak;
     private byte[] lastBuffer;
 
+    // test
+    private CustomSource source;
+
     public Recorder() {
         if (VoiceClient.getClientConfig().rnNoise.get()) {
             this.denoiser = new Denoiser();
         }
+
+        VoiceClient.getSoundEngine().onInitialize(engine -> {
+            if (engine.isSoundPhysics()) {
+                this.source = engine.createSource();
+                source.setLooping(false);
+                source.setRelative(false);
+                source.setReverbOnly(true);
+            }
+        });
+
+        VoiceClient.getSoundEngine().onClose(() -> source.close());
 
         jopusMode = Opus.OPUS_APPLICATION_VOIP;
 //        if (VoiceClient.getClientConfig().jopusMode.get().equals("audio")) {
@@ -380,9 +397,20 @@ public class Recorder implements Runnable {
         return normBuffer;
     }
 
-    private void sendPacket(byte[] raw) {
+    private void sendPacket(final byte[] raw) {
         if (VoiceClient.isMicrophoneLoopback()) {
             return;
+        }
+
+        if (CustomSoundEngine.soundPhysicsReverb != null && VoiceClient.getClientConfig().micReverb.get()) {
+            VoiceClient.getSoundEngine().runInContext(() -> {
+                Vec3 pos = client.player.position();
+
+                source.setMaxDistance(VoiceClient.getServerConfig().getDistance(), 0.95F);
+                source.setPosition(pos);
+                source.setVolume(VoiceClient.getClientConfig().micReverbVolume.get().floatValue());
+                source.write(raw);
+            });
         }
 
         if (!VoiceClient.isConnected()) {

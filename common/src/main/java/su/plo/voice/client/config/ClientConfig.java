@@ -83,6 +83,10 @@ public class ClientConfig {
     // UI
     public BooleanConfigEntry showPriorityVolume = new BooleanConfigEntry();
 
+    // sound physics
+    public BooleanConfigEntry micReverb = new BooleanConfigEntry();
+    public DoubleConfigEntry micReverbVolume = new DoubleConfigEntry(0, 2);
+
     @Getter
     private transient HashSet<UUID> muted = new HashSet<>();
     @Getter
@@ -144,6 +148,8 @@ public class ClientConfig {
 
     protected void setupDefaults() {
         occlusion.setDefault(false);
+        micReverb.setDefault(true);
+        micReverbVolume.setDefault(1, 0, 2);
         showIcons.setDefault(0, 0, 2);
         micIconPosition.setDefault(MicrophoneIconPosition.BOTTOM_CENTER);
         voiceActivation.setDefault(false);
