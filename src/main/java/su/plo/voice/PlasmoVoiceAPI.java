@@ -1,5 +1,6 @@
 package su.plo.voice;
 
+import org.jetbrains.annotations.ApiStatus;
 import su.plo.voice.data.ServerMutedEntity;
 
 import javax.annotation.Nullable;
@@ -63,6 +64,11 @@ public interface PlasmoVoiceAPI {
      */
     List<UUID> getPlayers();
 
+    /**
+     * Set player voice distances
+     */
+    @ApiStatus.Experimental
+    void setVoiceDistances(UUID playerId, List<Integer> distances, Integer defaultDistance, Integer fadeDivisor);
 
     enum DurationUnit {
         SECONDS,

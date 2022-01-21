@@ -18,8 +18,11 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.commands.*;
 import su.plo.voice.common.packets.tcp.ClientMutedPacket;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
+import su.plo.voice.common.packets.tcp.ConfigPacket;
+import su.plo.voice.common.packets.tcp.PacketTCP;
 import su.plo.voice.data.DataEntity;
 import su.plo.voice.data.ServerMutedEntity;
+import su.plo.voice.events.PlayerConfigEvent;
 import su.plo.voice.events.PlayerVoiceMuteEvent;
 import su.plo.voice.events.PlayerVoiceUnmuteEvent;
 import su.plo.voice.listeners.PlayerListener;
@@ -396,5 +399,54 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
                 .stream()
                 .map(client -> client.getPlayer().getUniqueId())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public void setVoiceDistances(UUID playerId, List<Integer> distances, Integer defaultDistance, Integer fadeDivisor) {
+        if (distances.size() == 0) {
+            throw new IllegalArgumentException("distances should contains at least 1 element");
+        }
+
+        if (!distances.contains(defaultDistance)) {
+            throw new IllegalArgumentException("distances should contain defaultDistance");
+        }
+
+        if (fadeDivisor < 1) {
+            throw new IllegalArgumentException("fadeDivisor should be >= 1");
+        }
+
+        if (hasVoiceChat(playerId)) {
+            throw new IllegalArgumentException("Player does not have Plasmo Voice installed");
+        }
+
+        Player player = Bukkit.getPlayer(playerId);
+        if (player == null) {
+            throw new IllegalArgumentException("Player not found");
+        }
+
+        ConfigPacket packet = new ConfigPacket(
+                voiceConfig.getSampleRate(),
+                new ArrayList<>(distances),
+                defaultDistance,
+                voiceConfig.getMaxPriorityDistance(),
+                voiceConfig.isDisableVoiceActivation() || !player.hasPermission("voice.activation"),
+                voiceConfig.getFadeDivisor(),
+                voiceConfig.getPriorityFadeDivisor()
+        );
+
+        PlayerConfigEvent event = new PlayerConfigEvent(player, packet, PlayerConfigEvent.Cause.PLUGIN);
+
+        Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+            Bukkit.getPluginManager().callEvent(event);
+            if (event.isCancelled()) {
+                return;
+            }
+
+            try {
+                player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", PacketTCP.write(packet));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 }

@@ -9,6 +9,7 @@ import su.plo.voice.PlasmoVoice;
 import su.plo.voice.PlasmoVoiceConfig;
 import su.plo.voice.common.packets.tcp.ConfigPacket;
 import su.plo.voice.common.packets.tcp.PacketTCP;
+import su.plo.voice.events.PlayerConfigEvent;
 import su.plo.voice.socket.SocketServerUDP;
 
 import java.io.IOException;
@@ -29,13 +30,21 @@ public class VoiceReload implements CommandExecutor {
                 while (it.hasMoreElements()) {
                     Player player = it.nextElement();
 
-                    byte[] pkt = PacketTCP.write(new ConfigPacket(config.getSampleRate(),
+                    ConfigPacket configPacket = new ConfigPacket(config.getSampleRate(),
                             new ArrayList<>(config.getDistances()),
                             config.getDefaultDistance(),
                             config.getMaxPriorityDistance(),
                             config.isDisableVoiceActivation() || !player.hasPermission("voice.activation"),
                             config.getFadeDivisor(),
-                            config.getPriorityFadeDivisor()));
+                            config.getPriorityFadeDivisor());
+
+                    PlayerConfigEvent event = new PlayerConfigEvent(player, configPacket, PlayerConfigEvent.Cause.RELOAD);
+                    Bukkit.getPluginManager().callEvent(event);
+                    if (event.isCancelled()) {
+                        continue;
+                    }
+
+                    byte[] pkt = PacketTCP.write(configPacket);
 
                     player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
                 }
