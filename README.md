@@ -55,7 +55,7 @@ dependencies {
 ```java
 RegisteredServiceProvider<PlasmoVoiceAPI> provider = Bukkit.getServicesManager().getRegistration(PlasmoVoiceAPI.class);
 if(provider != null) {
-    PlasmoVoiceAPI api=provider.getProvider();
+    PlasmoVoiceAPI api = provider.getProvider();
 }
 ```
 
