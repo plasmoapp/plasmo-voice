@@ -2,22 +2,34 @@ package su.plo.voice.common.packets.udp;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import su.plo.voice.common.packets.Packet;
 
 import java.io.IOException;
 
-@AllArgsConstructor
 public class VoiceClientPacket implements Packet {
-    @Getter
     private byte[] data;
-    @Getter
     private long sequenceNumber;
-    @Getter
     private short distance;
 
+    public VoiceClientPacket(byte[] data, long sequenceNumber, short distance) {
+        this.data = data;
+        this.sequenceNumber = sequenceNumber;
+        this.distance = distance;
+    }
+
     public VoiceClientPacket() {}
+
+    public long getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public byte[] getData() {
+        return data;
+    }
+
+    public short getDistance() {
+        return distance;
+    }
 
     @Override
     public void read(ByteArrayDataInput buf) throws IOException {

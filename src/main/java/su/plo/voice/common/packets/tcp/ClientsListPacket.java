@@ -2,8 +2,6 @@ package su.plo.voice.common.packets.tcp;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.Packet;
 
@@ -12,16 +10,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-@AllArgsConstructor
 public class ClientsListPacket implements Packet {
-    @Getter
     private final List<UUID> clients;
-    @Getter
     private final List<MutedEntity> muted;
 
     public ClientsListPacket() {
         clients = new ArrayList<>();
         muted = new ArrayList<>();
+    }
+
+    public ClientsListPacket(List<UUID> clients, List<MutedEntity> muted) {
+        this.clients = clients;
+        this.muted = muted;
+    }
+
+    public List<UUID> getClients() {
+        return clients;
+    }
+
+    public List<MutedEntity> getMuted() {
+        return muted;
     }
 
     @Override
@@ -33,8 +41,8 @@ public class ClientsListPacket implements Packet {
 
         buf.writeInt(muted.size());
         for(MutedEntity m : muted) {
-            buf.writeUTF(m.getUuid().toString());
-            buf.writeLong(m.getTo());
+            buf.writeUTF(m.uuid.toString());
+            buf.writeLong(m.to);
         }
     }
 

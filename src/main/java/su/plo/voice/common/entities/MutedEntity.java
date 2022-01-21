@@ -1,13 +1,13 @@
 package su.plo.voice.common.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-
 import java.util.UUID;
 
-@AllArgsConstructor
-@Data
 public class MutedEntity {
-    private UUID uuid;
-    private Long to;
+    public final UUID uuid;
+    public final Long to;
+
+    public MutedEntity(UUID uuid, Long to) {
+        this.uuid = uuid;
+        this.to = to;
+    }
 }

@@ -2,24 +2,40 @@ package su.plo.voice.common.packets.tcp;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import su.plo.voice.common.packets.Packet;
 
 import java.io.IOException;
 
-@AllArgsConstructor
 public class ServerConnectPacket implements Packet {
-    @Getter
     private String token;
-    @Getter
     private String ip;
-    @Getter
     private int port;
-    @Getter
     private boolean priority;
 
     public ServerConnectPacket() {}
+
+    public ServerConnectPacket(String token, String ip, int port, boolean priority) {
+        this.token = token;
+        this.ip = ip;
+        this.port = port;
+        this.priority = priority;
+    }
+
+    public int getPort() {
+        return port;
+    }
+
+    public String getIp() {
+        return ip;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public boolean hasPriority() {
+        return priority;
+    }
 
     @Override
     public void read(ByteArrayDataInput buf) throws IOException {

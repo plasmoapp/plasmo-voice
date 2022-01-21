@@ -2,19 +2,23 @@ package su.plo.voice.common.packets.tcp;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import su.plo.voice.common.packets.Packet;
 
 import java.io.IOException;
 import java.util.UUID;
 
-@AllArgsConstructor
 public class ClientUnmutedPacket implements Packet {
-    @Getter
     private UUID client;
 
     public ClientUnmutedPacket() {}
+
+    public ClientUnmutedPacket(UUID client) {
+        this.client = client;
+    }
+
+    public UUID getClient() {
+        return client;
+    }
 
     @Override
     public void write(ByteArrayDataOutput buf) throws IOException {
