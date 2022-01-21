@@ -53,16 +53,16 @@ dependencies {
 ### Using the Bukkit ServicesManager
 
 ```java
-RegisteredServiceProvider<PlasmoVoiceAPI> provider=Bukkit.getServicesManager().getRegistration(PlasmoVoiceAPI.class);
-        if(provider!=null){
-        PlasmoVoiceAPI api=provider.getProvider();
-        }
+RegisteredServiceProvider<PlasmoVoiceAPI> provider = Bukkit.getServicesManager().getRegistration(PlasmoVoiceAPI.class);
+if(provider != null) {
+    PlasmoVoiceAPI api=provider.getProvider();
+}
 ```
 
 ### Using the singleton (static access)
 
 ```java
-PlasmoVoiceAPI api=PlasmoVoice.getInstance();
+PlasmoVoiceAPI api = PlasmoVoice.getInstance();
 ```
 
 ## Methods
