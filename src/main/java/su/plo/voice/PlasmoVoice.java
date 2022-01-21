@@ -429,9 +429,9 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
                 new ArrayList<>(distances),
                 defaultDistance,
                 voiceConfig.getMaxPriorityDistance(),
-                voiceConfig.isDisableVoiceActivation() || !player.hasPermission("voice.activation"),
                 voiceConfig.getFadeDivisor(),
-                voiceConfig.getPriorityFadeDivisor()
+                voiceConfig.getPriorityFadeDivisor(),
+                voiceConfig.isDisableVoiceActivation() || !player.hasPermission("voice.activation")
         );
 
         PlayerConfigEvent event = new PlayerConfigEvent(player, packet, PlayerConfigEvent.Cause.PLUGIN);

@@ -30,13 +30,15 @@ public class VoiceReload implements CommandExecutor {
                 while (it.hasMoreElements()) {
                     Player player = it.nextElement();
 
-                    ConfigPacket configPacket = new ConfigPacket(config.getSampleRate(),
+                    ConfigPacket configPacket = new ConfigPacket(
+                            config.getSampleRate(),
                             new ArrayList<>(config.getDistances()),
                             config.getDefaultDistance(),
                             config.getMaxPriorityDistance(),
-                            config.isDisableVoiceActivation() || !player.hasPermission("voice.activation"),
                             config.getFadeDivisor(),
-                            config.getPriorityFadeDivisor());
+                            config.getPriorityFadeDivisor(),
+                            config.isDisableVoiceActivation() || !player.hasPermission("voice.activation")
+                    );
 
                     PlayerConfigEvent event = new PlayerConfigEvent(player, configPacket, PlayerConfigEvent.Cause.RELOAD);
                     Bukkit.getPluginManager().callEvent(event);

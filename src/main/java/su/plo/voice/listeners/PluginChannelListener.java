@@ -56,13 +56,15 @@ public class PluginChannelListener implements PluginMessageListener {
                                 link));
                     }
 
-                    ConfigPacket configPacket = new ConfigPacket(config.getSampleRate(),
+                    ConfigPacket configPacket = new ConfigPacket(
+                            config.getSampleRate(),
                             new ArrayList<>(config.getDistances()),
                             config.getDefaultDistance(),
                             config.getMaxPriorityDistance(),
-                            config.isDisableVoiceActivation() || !player.hasPermission("voice.activation"),
                             config.getFadeDivisor(),
-                            config.getPriorityFadeDivisor());
+                            config.getPriorityFadeDivisor(),
+                            config.isDisableVoiceActivation() || !player.hasPermission("voice.activation")
+                    );
 
                     Bukkit.getPluginManager().callEvent(new PlayerConfigEvent(player, configPacket, PlayerConfigEvent.Cause.CONNECT));
 
