@@ -22,6 +22,11 @@ public class PlaceholderPlasmoVoice extends PlaceholderExpansion {
     }
 
     @Override
+    public boolean persist() {
+        return true;
+    }
+
+    @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
         if (params.equalsIgnoreCase("installed") && player != null) {
             return SocketServerUDP.clients.containsKey(player) ? "true" : "false";
