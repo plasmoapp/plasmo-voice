@@ -36,7 +36,7 @@ Players need to install the Fabric or Forge mod on the client for the voice chat
 - **RNNoise noise reduction.**
 - **OpenAL sound engine, great audio positioning.**
 - **Compressor & Limiter.** Makes loud volume quieter, saving your ears from loud noises.
-- **Compatibility with [Sound Physics](https://www.curseforge.com/minecraft/mc-mods/sound-physics-fabric).**
+- **Compatibility with [Sound Physics Fabric](https://www.curseforge.com/minecraft/mc-mods/sound-physics-fabric) and [Sound Physics Remastered](https://www.curseforge.com/minecraft/mc-mods/sound-physics-remastered)**
 - **Change voice chat distance.**
 - **Optional sound-occlusion.** Muffles the sound if blocks are in the way.
 - **Priority speaking.** Bind a separate push-to-talk button with a greater, adjustable distance. Requires permission.
