@@ -57,15 +57,33 @@ public class CustomSoundEngine {
         this.executor = Executors.newScheduledThreadPool(1);
     }
 
-    public CustomSource createSource() {
-        return this.initialized ? CustomSource.create() : null;
+    public synchronized CustomSource createSource() {
+        if (this.initialized) {
+            return CustomSource.create();
+        }
+
+        // open device/ctx if not opened
+        this.initSync();
+        return CustomSource.create();
     }
 
     public void runInContext(Runnable runnable) {
         executor.submit(runnable);
     }
 
-    public void init() {
+    /**
+     * Open device/ctx if not opened
+     */
+    public void start() {
+        if (!this.initialized) {
+            this.restart();
+        }
+    }
+
+    /**
+     * Close device/ctx if opened and open new device/ctx
+     */
+    public void restart() {
         this.runInContext(this::initSync);
     }
 
@@ -217,7 +235,7 @@ public class CustomSoundEngine {
             deviceName = getDefaultDevice();
         }
 
-        return deviceName;
+        return deviceName.isEmpty() ? null : deviceName;
     }
 
     public static String getDefaultDevice() {
@@ -225,7 +243,8 @@ public class CustomSoundEngine {
     }
 
     public static List<String> getDevices() {
-        return ALUtil.getStringList(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
+        List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
+        return devices == null ? Collections.emptyList() : devices;
     }
 
     // capture devices
@@ -284,9 +303,7 @@ public class CustomSoundEngine {
         if (VoiceClient.getClientConfig().javaxCapture.get()) {
             return JavaxCaptureDevice.getNames().get(0);
         } else {
-            String deviceName = ALC11.alcGetString(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
-            AlUtil.checkErrors("Get default capture");
-            return deviceName;
+            return ALC11.alcGetString(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
         }
     }
 
@@ -295,7 +312,6 @@ public class CustomSoundEngine {
             return JavaxCaptureDevice.getNames();
         } else {
             List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
-            AlUtil.checkErrors("Get capture devices");
             return devices == null ? Collections.emptyList() : devices;
         }
     }

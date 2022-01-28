@@ -67,6 +67,8 @@ public abstract class ClientNetworkHandler {
         VoiceClient.setServerConfig(new ServerSettings(packet.getToken(), ip,
                 packet.getPort(), packet.hasPriority()));
 
+        VoiceClient.getSoundEngine().start();
+
         this.reply(connection, new ClientConnectPacket(packet.getToken(), VoiceClient.PROTOCOL_VERSION));
     }
 

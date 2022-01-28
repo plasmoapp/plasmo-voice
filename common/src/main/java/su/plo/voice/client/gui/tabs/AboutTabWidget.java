@@ -97,10 +97,10 @@ public class AboutTabWidget extends TabWidget {
                 })
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, new TextComponent("CurseForge"), button -> {
-                    openLink("https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client");
+                new Button(0, 0, 0, 20, new TextComponent("Modrinth"), button -> {
+                    openLink("https://modrinth.com/mod/plasmo-voice");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(new TextComponent("https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client")));
+                    setTooltip(ImmutableList.of(new TextComponent("https://modrinth.com/mod/plasmo-voice")));
                 }),
                 new Button(0, 0, 0, 20, new TextComponent("Spigot"), button -> {
                     openLink("https://www.spigotmc.org/resources/plasmo-voice-server.91064/");

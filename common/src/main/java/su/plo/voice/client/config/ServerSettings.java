@@ -3,7 +3,9 @@ package su.plo.voice.client.config;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import su.plo.voice.client.VoiceClient;
+import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.render.SphereRenderer;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.client.sound.AbstractSoundQueue;
@@ -43,6 +45,8 @@ public class ServerSettings {
     }
 
     public void update(ConfigPacket config) {
+        int oldDistance = this.distance;
+
         this.distances = config.getDistances();
         Collections.sort(this.distances);
         this.minDistance = this.distances.get(0).shortValue();
@@ -63,6 +67,7 @@ public class ServerSettings {
                 this.distance = serverConfig.distance.get().shortValue();
             } else {
                 this.distance = (short) config.getDefaultDistance();
+                serverConfig.distance.set((int) this.distance);
             }
 
             if(serverConfig.priorityDistance.get() > this.maxDistance &&
@@ -70,6 +75,7 @@ public class ServerSettings {
                 this.priorityDistance = serverConfig.priorityDistance.get().shortValue();
             } else {
                 this.priorityDistance = (short) Math.min(this.maxPriorityDistance, this.maxDistance * 2);
+                serverConfig.priorityDistance.set((int) this.priorityDistance);
             }
         } else {
             this.distance = (short) config.getDefaultDistance();
@@ -93,7 +99,13 @@ public class ServerSettings {
                 .forEach(AbstractSoundQueue::closeAndKill);
         SocketClientUDPQueue.audioChannels.clear();
 
-        SphereRenderer.getInstance().setRadius(this.distance + 0.5F, false, false);
+        if (VoiceClient.isSettingsOpen()) {
+            ((VoiceSettingsScreen) Minecraft.getInstance().screen).updateGeneralTab();
+        }
+
+        SphereRenderer.getInstance().setRadius(this.distance + 0.5F,
+                this.distance != oldDistance && oldDistance > 0,
+                false);
     }
 
     public void setDistance(short distance) {

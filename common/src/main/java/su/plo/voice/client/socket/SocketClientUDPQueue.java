@@ -60,7 +60,6 @@ public class SocketClientUDPQueue extends Thread {
                     if (!socket.authorized) {
                         VoiceClient.LOGGER.info("Connected to UDP");
                         socket.authorized = true;
-                        VoiceClient.recorder.start();
 
                         if (client.screen instanceof VoiceNotAvailableScreen) {
                             client.execute(() ->
