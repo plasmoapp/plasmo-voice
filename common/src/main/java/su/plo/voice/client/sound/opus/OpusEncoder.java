@@ -67,5 +67,4 @@ public class OpusEncoder {
         VoiceClient.LOGGER.info("Close opus encoder");
         Opus.INSTANCE.opus_encoder_destroy(opusEncoder);
     }
-
 }

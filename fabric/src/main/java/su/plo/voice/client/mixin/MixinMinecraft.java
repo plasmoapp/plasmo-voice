@@ -1,6 +1,7 @@
 package su.plo.voice.client.mixin;
 
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ServerData;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
@@ -16,8 +17,8 @@ public abstract class MixinMinecraft {
 
     @Shadow public abstract boolean isLocalServer();
 
-    @Inject(at = @At("HEAD"), method = "clearLevel()V")
-    public void onDisconnect(CallbackInfo info) {
+    @Inject(at = @At("HEAD"), method = "clearLevel(Lnet/minecraft/client/gui/screens/Screen;)V")
+    public void onDisconnect(Screen screen, CallbackInfo ci) {
         if (this.getCurrentServer() == null && !this.isLocalServer()) {
             return;
         }
