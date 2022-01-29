@@ -88,7 +88,7 @@ public class CustomSoundEngine {
     }
 
     private void initSync() {
-        this.close();
+        this.closeSync();
         this.preInit();
 
         this.devicePointer = openDevice();
@@ -161,39 +161,35 @@ public class CustomSoundEngine {
             listener.setListenerPosition(vec3d);
             listener.setListenerOrientation(vector3f, vector3f2);
         }, 0L, 5L, TimeUnit.MILLISECONDS);
-
-        synchronized (this) {
-            this.notifyAll();
-        }
     }
 
-    public synchronized void close() {
+    public void close() {
+        runInContext(this::closeSync);
+    }
+
+    private synchronized void closeSync() {
         SocketClientUDPQueue.audioChannels
                 .values()
                 .forEach(AbstractSoundQueue::closeAndKill);
         SocketClientUDPQueue.audioChannels.clear();
 
         if (this.initialized) {
-            runInContext(() -> {
-                for (Runnable listener : closeListeners) {
-                    listener.run();
-                }
+            for (Runnable listener : closeListeners) {
+                listener.run();
+            }
 
-                if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen) {
-                    screen.closeSpeaker();
-                }
+            if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen) {
+                screen.closeSpeaker();
+            }
 
-                EXTThreadLocalContext.alcSetThreadContext(0L);
-            });
+            EXTThreadLocalContext.alcSetThreadContext(0L);
 
             this.initialized = false;
             ALC10.alcDestroyContext(this.contextPointer);
             if (this.devicePointer != 0L) {
                 ALC10.alcCloseDevice(this.devicePointer);
             }
-
-            this.contextPointer = 0L;
-            this.devicePointer = 0L;
+            VoiceClient.LOGGER.info("closed audio engine");
         }
     }
 
@@ -340,11 +336,11 @@ public class CustomSoundEngine {
         }
     }
 
-    public synchronized void onClose(Runnable listener) {
+    public void onClose(Runnable listener) {
         this.closeListeners.add(listener);
     }
 
-    public synchronized void onInitialize(Consumer<CustomSoundEngine> consumer) {
+    public void onInitialize(Consumer<CustomSoundEngine> consumer) {
         this.initListeners.add(consumer);
     }
 }

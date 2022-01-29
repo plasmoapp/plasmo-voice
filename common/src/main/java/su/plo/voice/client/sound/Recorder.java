@@ -71,7 +71,9 @@ public class Recorder implements Runnable {
             }
         });
 
-        VoiceClient.getSoundEngine().onClose(() -> source.close());
+        VoiceClient.getSoundEngine().onClose(() -> {
+            if (source != null) source.close();
+        });
 
         jopusMode = Opus.OPUS_APPLICATION_VOIP;
     }
@@ -90,8 +92,7 @@ public class Recorder implements Runnable {
      * @param rate New sample rate
      */
     public void updateSampleRate(int rate) {
-        VoiceClient.LOGGER.info("Server sample rate: {}", rate);
-        if (rate == Recorder.getSampleRate()) {
+        if (rate == Recorder.getSampleRate() && thread != null) {
             return;
         }
 
@@ -112,8 +113,8 @@ public class Recorder implements Runnable {
         sampleRate = rate;
         frameSize = (sampleRate / 1000) * 2 * 20;
 
-        if (this.encoder != null) {
-            this.encoder.close();
+        if (encoder != null) {
+            encoder.close();
         }
         this.encoder = new OpusEncoder(sampleRate, frameSize, mtuSize, jopusMode);
         this.start();
@@ -312,12 +313,9 @@ public class Recorder implements Runnable {
             return;
         }
 
-        if (!VoiceClient.isSpeaking()) {
-            Thread.sleep(10);
-            return;
+        if (VoiceClient.isSpeaking()) {
+            this.sendPacket(normBuffer);
         }
-
-        this.sendPacket(normBuffer);
     }
 
     /**
@@ -416,8 +414,7 @@ public class Recorder implements Runnable {
     }
 
     private void cleanup() {
-        sampleRate = 0;
-        format = null;
+        VoiceClient.LOGGER.info("Recorder cleanup");
         this.sequenceNumber = 0L;
         this.lastBuffer = null;
         if (encoder != null) {
@@ -441,11 +438,7 @@ public class Recorder implements Runnable {
     // todo is it necessary at all?
     public CompletableFuture<Void> waitForClose() {
         return CompletableFuture.runAsync(() -> {
-            if (this.thread != null) {
-                if (!this.thread.isInterrupted()) {
-                    this.thread.interrupt();
-                }
-            }
+            this.close();
 
             synchronized (this) {
                 try {
