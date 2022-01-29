@@ -1,12 +1,8 @@
-[![](http://cf.way2muchnoise.eu/full_467028_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
-[![](http://cf.way2muchnoise.eu/versions/467028_all.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 [![](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
 
 <div align="center">
   <img src="https://imgur.com/3ccgCRz.png"> 
   <div>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client">CurseForge</a>
-    <span> | </span>
     <a href="https://modrinth.com/mod/plasmo-voice">Modrinth</a>
     <span> | </span>
     <a href="https://www.spigotmc.org/resources/plasmo-voice-server.91064/">Spigot</a>
@@ -40,7 +36,7 @@ Players need to install the Fabric or Forge mod on the client for the voice chat
 - **RNNoise noise reduction.**
 - **OpenAL sound engine, great audio positioning.**
 - **Compressor & Limiter.** Makes loud volume quieter, saving your ears from loud noises.
-- **Compatibility with [Sound Physics](https://www.curseforge.com/minecraft/mc-mods/sound-physics-fabric).**
+- **Compatibility with [Sound Physics Fabric](https://www.curseforge.com/minecraft/mc-mods/sound-physics-fabric) and [Sound Physics Remastered](https://www.curseforge.com/minecraft/mc-mods/sound-physics-remastered).**
 - **Change voice chat distance.**
 - **Optional sound-occlusion.** Muffles the sound if blocks are in the way.
 - **Priority speaking.** Bind a separate push-to-talk button with a greater, adjustable distance. Requires permission.
@@ -71,7 +67,7 @@ Check out voice settings by pressing `V`. Make sure you have the right devices s
 ## Download
 
 - [Plasmo Voice Server on Spigot](https://www.spigotmc.org/resources/plasmo-voice-server.91064/)
-- [Plasmo Voice on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
+- [Plasmo Voice on Modrinth](https://modrinth.com/mod/plasmo-voice)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
 
 ## Wiki
