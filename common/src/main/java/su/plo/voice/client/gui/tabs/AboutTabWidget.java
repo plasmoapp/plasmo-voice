@@ -32,29 +32,37 @@ import java.io.IOException;
 import java.util.*;
 
 public class AboutTabWidget extends TabWidget {
-    private static final Map<String, List<Translator>> translators = ImmutableMap.of(
-            "ja_jp", ImmutableList.of(
-                    new Translator(new GameProfile(UUID.fromString("a2c18c8f-538d-4ea1-bdee-464dd9df3c52"), "sya_ri"), "GitHub", "https://github.com/sya-ri")
-            ),
-            "it_it", ImmutableList.of(
-                    new Translator(new GameProfile(UUID.fromString("717a29b8-7476-4d29-ba64-b9c157b9bf83"), "Yriokiri"), "GitHub", "https://github.com/Yriokiri")
-            ),
-            "nl_nl", ImmutableList.of(
-                    new Translator(new GameProfile(UUID.fromString("db7dce6f-3f20-4c35-b8ca-83b51658ac92"), "EEstar"), "GitHub", "https://github.com/emielderckx")
-            ),
-            "uk_ua", ImmutableList.of(
-                    new Translator(new GameProfile(UUID.fromString("b149c762-6da3-41b4-8db7-0e87330fb9aa"), "_ProSplash_"), "GitHub", "https://github.com/Yuraplonka")
-            ),
-            "fr_fr", ImmutableList.of(
-                    new Translator(new GameProfile(UUID.fromString("1bbe13ee-a3c9-4490-a9bc-ee8cb64ccb2b"), "JeyPeytey"), "Instagram", "https://instagram.com/jeremy_giardina")
-            ),
-            "es_ar", ImmutableList.of(
-                    new Translator(new GameProfile(UUID.fromString("01d40b00-d596-4555-a6ea-86ee31e26d33"), "luni3359"), "GitHub", "https://github.com/luni3359")
-            ),
-            "ko_kr", ImmutableList.of(
-                    new Translator(new GameProfile(UUID.fromString("48a50be9-085c-46f5-b5f3-e5d0ba7fd415"), "Null_D"), "GitHub", "https://github.com/NullD4201")
-            )
+    private static final List<Translator> esTranslator = ImmutableList.of(
+            new Translator(new GameProfile(UUID.fromString("01d40b00-d596-4555-a6ea-86ee31e26d33"), "luni3359"), "GitHub", "https://github.com/luni3359")
     );
+
+    private static final Map<String, List<Translator>> translators = ImmutableMap.<String, List<Translator>>builder()
+            .put("ja_jp", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("a2c18c8f-538d-4ea1-bdee-464dd9df3c52"), "sya_ri"), "GitHub", "https://github.com/sya-ri")
+            ))
+            .put("it_it", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("717a29b8-7476-4d29-ba64-b9c157b9bf83"), "Yriokiri"), "GitHub", "https://github.com/Yriokiri")
+            ))
+            .put("nl_nl", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("db7dce6f-3f20-4c35-b8ca-83b51658ac92"), "EEstar"), "GitHub", "https://github.com/emielderckx")
+            ))
+            .put("uk_ua", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("b149c762-6da3-41b4-8db7-0e87330fb9aa"), "_ProSplash_"), "GitHub", "https://github.com/Yuraplonka")
+            ))
+            .put("fr_fr", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("1bbe13ee-a3c9-4490-a9bc-ee8cb64ccb2b"), "JeyPeytey"), "Instagram", "https://instagram.com/jeremy_giardina")
+            ))
+            .put("es_ar", esTranslator)
+            .put("es_cl", esTranslator)
+            .put("es_ec", esTranslator)
+            .put("es_es", esTranslator)
+            .put("es_mx", esTranslator)
+            .put("es_uy", esTranslator)
+            .put("es_ve", esTranslator)
+            .put("ko_kr", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("48a50be9-085c-46f5-b5f3-e5d0ba7fd415"), "Null_D"), "GitHub", "https://github.com/NullD4201")
+            ))
+            .build();
     private final VoiceSettingsScreen parent;
 
     public AboutTabWidget(Minecraft client, VoiceSettingsScreen parent) {
