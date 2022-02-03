@@ -322,7 +322,7 @@ public class Recorder implements Runnable {
      * Capture samples sync
      * @return captured samples
      */
-    private synchronized byte[] readBuffer() throws InterruptedException {
+    private synchronized byte[] readBuffer() {
         if (this.encoder == null || this.encoder.isClosed()) {
             return null;
         }
