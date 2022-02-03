@@ -103,7 +103,7 @@ public class SocketServerUDP extends Thread {
                 synchronized (this.queue) {
                     this.queue.notify();
                 }
-            } catch (IOException | InstantiationException | IllegalStateException e) { // bad packet? just ignore it 4HEad
+            } catch (IOException | InstantiationException | IllegalStateException | IllegalArgumentException e) { // bad packet? just ignore it 4HEad
                 if (PlasmoVoice.getInstance().getConfig().getBoolean("debug")) {
                     e.printStackTrace();
                 }
