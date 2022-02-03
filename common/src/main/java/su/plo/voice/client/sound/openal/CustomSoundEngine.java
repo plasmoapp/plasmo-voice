@@ -189,7 +189,10 @@ public class CustomSoundEngine {
             if (this.devicePointer != 0L) {
                 ALC10.alcCloseDevice(this.devicePointer);
             }
-            VoiceClient.LOGGER.info("closed audio engine");
+
+            this.contextPointer = 0L;
+            this.devicePointer = 0L;
+            VoiceClient.LOGGER.info("Audio engine closed");
         }
     }
 
