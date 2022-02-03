@@ -285,7 +285,7 @@ public class Recorder implements Runnable {
         this.lastBuffer = normBuffer;
     }
 
-    private void pushToTalk(byte[] normBuffer) throws InterruptedException {
+    private void pushToTalk(byte[] normBuffer) {
         boolean priorityPressed = VoiceClient.getClientConfig().keyBindings.priorityPushToTalk.get().isPressed()
                 && VoiceClient.getServerConfig().isPriority()
                 && VoiceClient.getServerConfig().getPriorityDistance() > VoiceClient.getServerConfig().getMaxDistance();
