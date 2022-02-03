@@ -15,26 +15,28 @@ import java.util.concurrent.TimeUnit;
 public class OpenALPlayerQueue extends AbstractSoundQueue {
     public OpenALPlayerQueue(UUID from) {
         super(from);
-        this.start();
+
+        VoiceClient.getSoundEngine().runInContext(() -> {
+            this.source = VoiceClient.getSoundEngine().createSource();
+            if (this.source == null) {
+                stopped = true;
+                return;
+            }
+            this.source.setPitch(1.0F);
+            this.source.setLooping(false);
+            this.source.setRelative(false);
+            if (VoiceClient.getClientConfig().directionalSources.get()) {
+                this.source.setAngle(VoiceClient.getClientConfig().directionalSourcesAngle.get());
+            }
+            AlUtil.checkErrors("Create custom source");
+            this.start();
+        });
     }
 
     @SneakyThrows
     @Override
     public void run() {
         EXTThreadLocalContext.alcSetThreadContext(VoiceClient.getSoundEngine().getContextPointer());
-
-        this.source = VoiceClient.getSoundEngine().createSource();
-        if (this.source == null) {
-            stopped = true;
-            return;
-        }
-        this.source.setPitch(1.0F);
-        this.source.setLooping(false);
-        this.source.setRelative(false);
-        if (VoiceClient.getClientConfig().directionalSources.get()) {
-            this.source.setAngle(VoiceClient.getClientConfig().directionalSourcesAngle.get());
-        }
-        AlUtil.checkErrors("Create custom source");
 
         while(!stopped) {
             VoiceServerPacket packet = queue.poll(10L, TimeUnit.MILLISECONDS);

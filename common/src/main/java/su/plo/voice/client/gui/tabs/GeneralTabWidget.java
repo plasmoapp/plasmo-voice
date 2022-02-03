@@ -38,11 +38,14 @@ public class GeneralTabWidget extends TabWidget {
                             VoiceClient.getClientConfig().save();
 
                             // restart sound engine
-                            VoiceClient.getSoundEngine().init();
+                            VoiceClient.getSoundEngine().restart();
                         }),
                 VoiceClient.getClientConfig().speaker,
                 (button, element) -> {
                     element.setMessage(TextUtils.formatAlDeviceName(CustomSoundEngine.getCurrentDevice()));
+
+                    // restart sound engine
+                    VoiceClient.getSoundEngine().restart();
                 })
         );
         this.addEntry(new OptionEntry(

@@ -33,7 +33,9 @@ import su.plo.voice.client.sound.Compressor;
 import su.plo.voice.client.sound.openal.CustomSource;
 import su.plo.voice.client.utils.AudioUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 public class VoiceSettingsScreen extends Screen {
     private static final int minWidth = 640;
@@ -41,9 +43,9 @@ public class VoiceSettingsScreen extends Screen {
 
     // tabs
     private TabWidget aboutWidget;
-    private Button active;
+    private int active;
     private final List<Button> tabButtons = new ArrayList<>();
-    private final Map<Button, TabWidget> tabWidgets = new HashMap<>();
+    private final List<TabWidget> tabWidgets = new ArrayList<>();
 
     // mute mic button
     private List<Button> muteMicButtons;
@@ -181,7 +183,6 @@ public class VoiceSettingsScreen extends Screen {
         addTab(new TranslatableComponent("gui.plasmo_voice.advanced"), new AdvancedTabWidget(client, this));
         addTab(new TranslatableComponent("gui.plasmo_voice.hotkeys"), new KeyBindingsTabWidget(client, this));
         aboutWidget = new AboutTabWidget(client, this);
-        active = tabButtons.get(0);
 
         // mute mic
         ImageButton muteMicHide = new ImageButton(this.width - 52, 8, 20, 20, 0, 32, 20,
@@ -270,11 +271,11 @@ public class VoiceSettingsScreen extends Screen {
     }
 
     public void updateGeneralTab() {
-        this.tabWidgets.put(tabButtons.get(0), new GeneralTabWidget(client, this));
+        this.tabWidgets.set(0, new GeneralTabWidget(client, this));
     }
 
     public void closeSpeaker() {
-        for (TabWidget tab : tabWidgets.values()) {
+        for (TabWidget tab : tabWidgets) {
             for (TabWidget.Entry entry : tab.children()) {
                 if (entry instanceof TabWidget.OptionEntry &&
                         entry.children().get(0) instanceof MicrophoneThresholdWidget microphoneTest) {
@@ -286,11 +287,12 @@ public class VoiceSettingsScreen extends Screen {
 
     private void addTab(Component text, TabWidget drawable) {
         int textWidth = font.width(text) + 16;
+        final int elementIndex = tabWidgets.size();
         Button button = new Button(0, 0, textWidth, 20,
                 text, btn -> {
-            active = btn;
+            active = elementIndex;
             about = false;
-            for (TabWidget widget : tabWidgets.values()) {
+            for (TabWidget widget : tabWidgets) {
                 widget.onClose();
             }
             aboutWidget.setScrollAmount(0);
@@ -298,7 +300,7 @@ public class VoiceSettingsScreen extends Screen {
             this.closeSpeaker();
         });
         tabButtons.add(button);
-        tabWidgets.put(button, drawable);
+        tabWidgets.add(drawable);
     }
 
     public int getHeaderHeight() {
@@ -379,8 +381,9 @@ public class VoiceSettingsScreen extends Screen {
             buttonY = 8;
         }
 
-        for (Button button : tabButtons) {
-            button.active = about || button != active;
+        for (int i = 0; i < tabButtons.size(); i++) {
+            Button button = tabButtons.get(i);
+            button.active = about || i != active;
 
             button.x = buttonX;
             buttonX += button.getWidth() + 4;
@@ -430,8 +433,9 @@ public class VoiceSettingsScreen extends Screen {
 
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
-            for (TabWidget widget : tabWidgets.values()) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE ||
+                keyCode == GLFW.GLFW_KEY_TAB) {
+            for (TabWidget widget : tabWidgets) {
                 if (widget instanceof KeyBindingsTabWidget) {
                     if (widget.keyPressed(keyCode, scanCode, modifiers)) {
                         return true;

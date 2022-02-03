@@ -156,6 +156,10 @@
     "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_1": "In the general tab there will be",
     "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_2": "two volume sliders, instead of one",
 
+    "gui.plasmo_voice.advanced.sp.mic_reverb": "Microphone Reverb",
+    "gui.plasmo_voice.advanced.sp.mic_reverb.tooltip_1": "You will hear the reverb of your microphone when talking",
+    "gui.plasmo_voice.advanced.sp.mic_reverb_volume": "Mic Reverb Volume",
+
 
     "gui.plasmo_voice.hotkeys": "Hotkeys",
 

@@ -100,11 +100,11 @@ public class AdvancedTabWidget extends TabWidget {
         this.addEntry(new OptionEntry(
                 new TranslatableComponent("gui.plasmo_voice.advanced.hrtf"),
                 new ToggleButton(0, 0, 97, 20, config.hrtf,
-                        toggled -> VoiceClient.getSoundEngine().init()),
+                        toggled -> VoiceClient.getSoundEngine().restart()),
                 config.hrtf,
                 TextUtils.multiLine("gui.plasmo_voice.advanced.hrtf.tooltip", 7),
                 (button, element) -> {
-                    VoiceClient.getSoundEngine().init();
+                    VoiceClient.getSoundEngine().restart();
                     ((ToggleButton) element).updateValue();
                 })
         );
