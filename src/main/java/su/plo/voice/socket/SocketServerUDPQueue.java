@@ -3,10 +3,14 @@ package su.plo.voice.socket;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
+import su.plo.voice.common.entities.MutedEntity;
+import su.plo.voice.common.packets.tcp.ClientConnectedPacket;
 import su.plo.voice.common.packets.udp.*;
+import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerEndSpeakEvent;
 import su.plo.voice.events.PlayerStartSpeakEvent;
 import su.plo.voice.listeners.PlayerListener;
+import su.plo.voice.listeners.PluginChannelListener;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -21,6 +25,7 @@ public class SocketServerUDPQueue extends Thread {
     public void run() {
         while (!this.isInterrupted()) {
             try {
+                // todo this should be moved in another because it can iterate hundreds of players on every UDP packet
                 this.keepAlive();
 
                 PacketUDP message = queue.poll(10, TimeUnit.MILLISECONDS);
@@ -44,6 +49,23 @@ public class SocketServerUDPQueue extends Thread {
 
                         if (!SocketServerUDP.clients.containsKey(player.get())) {
                             SocketServerUDP.clients.put(player.get(), sock);
+
+                            ServerMutedEntity serverPlayerMuted = PlasmoVoice.getInstance().getMutedMap().get(player.get().getUniqueId());
+                            MutedEntity playerMuted = null;
+                            if (serverPlayerMuted != null) {
+                                playerMuted = new MutedEntity(serverPlayerMuted.getUuid(), serverPlayerMuted.getTo());
+                            }
+                            if (!player.get().hasPermission("voice.speak")) {
+                                playerMuted = new MutedEntity(player.get().getUniqueId(), 0L);
+                            }
+
+                            PluginChannelListener.sendToClients(
+                                    new ClientConnectedPacket(player.get().getUniqueId(), playerMuted), player.get().getUniqueId(), player.get()
+                            );
+
+                            if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+                                PlasmoVoice.getVoiceLogger().info(String.format("New client: %s", player.get().getName()));
+                            }
                         }
 
                         try {

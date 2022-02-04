@@ -11,8 +11,10 @@ import su.plo.voice.PlasmoVoice;
 import su.plo.voice.PlasmoVoiceConfig;
 import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.Packet;
-import su.plo.voice.common.packets.tcp.*;
-import su.plo.voice.data.ServerMutedEntity;
+import su.plo.voice.common.packets.tcp.ClientConnectPacket;
+import su.plo.voice.common.packets.tcp.ClientsListPacket;
+import su.plo.voice.common.packets.tcp.ConfigPacket;
+import su.plo.voice.common.packets.tcp.PacketTCP;
 import su.plo.voice.events.PlayerConfigEvent;
 import su.plo.voice.socket.SocketServerUDP;
 
@@ -82,23 +84,8 @@ public class PluginChannelListener implements PluginMessageListener {
                     PlasmoVoice.getInstance().getMutedMap()
                             .forEach((uuid, m) -> muted.add(new MutedEntity(m.getUuid(), m.getTo())));
 
-                    ServerMutedEntity serverPlayerMuted = PlasmoVoice.getInstance().getMutedMap().get(player.getUniqueId());
-                    MutedEntity playerMuted = null;
-                    if (serverPlayerMuted != null) {
-                        playerMuted = new MutedEntity(serverPlayerMuted.getUuid(), serverPlayerMuted.getTo());
-                    }
-                    if (!player.hasPermission("voice.speak")) {
-                        playerMuted = new MutedEntity(player.getUniqueId(), 0L);
-                    }
-
                     pkt = PacketTCP.write(new ClientsListPacket(clients, muted));
                     player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
-
-                    sendToClients(new ClientConnectedPacket(player.getUniqueId(), playerMuted), player.getUniqueId(), player);
-
-                    if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
-                        PlasmoVoice.getVoiceLogger().info(String.format("New client: %s v%s", player.getName(), version));
-                    }
                 }
             } catch (IOException | IllegalAccessException | InstantiationException | NoSuchMethodException | InvocationTargetException e) {
                 e.printStackTrace();
