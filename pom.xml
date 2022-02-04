@@ -6,7 +6,7 @@
 
     <groupId>su.plo.voice</groupId>
     <artifactId>spigot</artifactId>
-    <version>1.0.9-alpha</version>
+    <version>1.0.9</version>
     <packaging>jar</packaging>
 
     <name>Plasmo Voice</name>
