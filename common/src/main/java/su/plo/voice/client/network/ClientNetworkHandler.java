@@ -88,7 +88,7 @@ public abstract class ClientNetworkHandler {
     }
 
     public void handle(ClientMutedPacket packet) {
-        if (VoiceClient.isConnected()) {
+        if (VoiceClient.getServerConfig() != null) {
             VoiceClient.getServerConfig().getMuted().put(packet.getClient(), new MutedEntity(packet.getClient(), packet.getTo()));
             AbstractSoundQueue queue = SocketClientUDPQueue.audioChannels.get(packet.getClient());
             if (queue != null) {
@@ -101,7 +101,7 @@ public abstract class ClientNetworkHandler {
     }
 
     public void handle(ClientUnmutedPacket packet) {
-        if (VoiceClient.isConnected()) {
+        if (VoiceClient.getServerConfig() != null) {
             VoiceClient.getServerConfig().getMuted().remove(packet.getClient());
 
             VoiceClient.LOGGER.info(packet.getClient().toString() + " unmuted");
@@ -109,7 +109,7 @@ public abstract class ClientNetworkHandler {
     }
 
     public void handle(ClientsListPacket packet) {
-        if (VoiceClient.getServerConfig() != null) { // check only config, because it can be sent before udp is connected
+        if (VoiceClient.getServerConfig() != null) {
             VoiceClient.getServerConfig().getMuted().clear();
             VoiceClient.getServerConfig().getClients().clear();
 
@@ -127,7 +127,7 @@ public abstract class ClientNetworkHandler {
     }
 
     public void handle(ClientConnectedPacket packet) {
-        if (VoiceClient.isConnected()) {
+        if (VoiceClient.getServerConfig() != null) {
             if (packet.getMuted() != null) {
                 MutedEntity muted = packet.getMuted();
                 VoiceClient.getServerConfig().getMuted().put(muted.uuid, muted);
@@ -138,7 +138,7 @@ public abstract class ClientNetworkHandler {
     }
 
     public void handle(ClientDisconnectedPacket packet) {
-        if (VoiceClient.isConnected()) {
+        if (VoiceClient.getServerConfig() != null) {
             VoiceClient.getServerConfig().getClients().remove(packet.getClient());
             VoiceClient.getServerConfig().getMuted().remove(packet.getClient());
 

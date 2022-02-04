@@ -144,7 +144,7 @@ public abstract class VoiceClient {
     }
 
     public static boolean isSettingsOpen() {
-        return Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen;
+        return Minecraft.getInstance().screen instanceof VoiceSettingsScreen;
     }
 
     public static boolean isConnected() {
