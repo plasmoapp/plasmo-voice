@@ -11,6 +11,7 @@ import su.plo.voice.common.packets.udp.*;
 import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerEndSpeakEvent;
 import su.plo.voice.events.PlayerStartSpeakEvent;
+import su.plo.voice.events.PlayerVoiceConnectedEvent;
 import su.plo.voice.listeners.PlayerListener;
 import su.plo.voice.listeners.PluginChannelListener;
 
@@ -104,6 +105,10 @@ public class SocketServerUDPQueue extends Thread {
                             if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                                 PlasmoVoice.getVoiceLogger().info(String.format("New client: %s", player.get().getName()));
                             }
+
+                            // call event
+                            Bukkit.getScheduler().runTask(PlasmoVoice.getInstance(), () ->
+                                    Bukkit.getPluginManager().callEvent(new PlayerVoiceConnectedEvent(player.get())));
                         }
 
                         try {

@@ -3,8 +3,10 @@ package su.plo.voice.socket;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
+import su.plo.voice.events.PlayerVoiceDisconnectedEvent;
 
 import java.net.InetAddress;
 
@@ -28,6 +30,10 @@ public class SocketClientUDP {
 
     public void close() {
         if (SocketServerUDP.clients.containsKey(player)) {
+            // call event
+            Bukkit.getScheduler().runTask(PlasmoVoice.getInstance(), () ->
+                    Bukkit.getPluginManager().callEvent(new PlayerVoiceDisconnectedEvent(player)));
+
             if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                 PlasmoVoice.getVoiceLogger().info("Remove client UDP: " + this.player.getName());
             }
