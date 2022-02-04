@@ -1,6 +1,7 @@
 package su.plo.voice.client.sound;
 
 import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -29,9 +30,10 @@ public class Recorder implements Runnable {
     @Getter
     private static final int mtuSize = 1024;
     @Getter
+    @Setter
     private static int sampleRate = 0;
     @Getter
-    private static int frameSize = (sampleRate / 1000) * 2 * 20;
+    private static int frameSize = 0;
     @Getter
     private static AudioFormat format = null;
 
@@ -123,9 +125,13 @@ public class Recorder implements Runnable {
     /**
      * Interrupt thread, closes capture device and opus encoder
      */
-    public void close() {
-        if (thread != null) {
+    public void close(boolean disconnect) {
+        if (thread != null && !thread.isInterrupted()) {
             thread.interrupt();
+        }
+
+        if (disconnect) {
+            sampleRate = 0;
         }
     }
 
@@ -438,7 +444,7 @@ public class Recorder implements Runnable {
     // todo is it necessary at all?
     public CompletableFuture<Void> waitForClose() {
         return CompletableFuture.runAsync(() -> {
-            this.close();
+            this.close(false);
 
             synchronized (this) {
                 try {

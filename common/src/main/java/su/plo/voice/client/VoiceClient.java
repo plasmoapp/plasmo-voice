@@ -131,7 +131,7 @@ public abstract class VoiceClient {
             socketUDP.close();
         }
 
-        recorder.close();
+        recorder.close(true);
         serverConfig = null;
 
         SocketClientUDPQueue.talking.clear();
