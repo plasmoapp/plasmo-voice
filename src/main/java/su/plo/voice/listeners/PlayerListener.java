@@ -18,11 +18,13 @@ import su.plo.voice.socket.SocketServerUDP;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class PlayerListener implements Listener {
     private final HashMap<UUID, BukkitTask> kickTimeouts = new HashMap<>();
-    public static HashMap<UUID, UUID> playerToken = new HashMap<>();
+    public static Map<UUID, UUID> playerToken = new ConcurrentHashMap<>();
 
     public PlayerListener() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(PlasmoVoice.getInstance(), () -> {
