@@ -5,6 +5,8 @@ import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.tcp.ClientConnectedPacket;
+import su.plo.voice.common.packets.tcp.ClientsListPacket;
+import su.plo.voice.common.packets.tcp.PacketTCP;
 import su.plo.voice.common.packets.udp.*;
 import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerEndSpeakEvent;
@@ -15,6 +17,7 @@ import su.plo.voice.listeners.PluginChannelListener;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -50,6 +53,41 @@ public class SocketServerUDPQueue extends Thread {
                         if (!SocketServerUDP.clients.containsKey(player.get())) {
                             SocketServerUDP.clients.put(player.get(), sock);
 
+                            // Clients list packet
+                            List<UUID> clients = new ArrayList<>();
+                            SocketServerUDP.clients.forEach((p, c) -> {
+                                if (player.get().canSee(p)) {
+                                    clients.add(p.getUniqueId());
+                                }
+                            });
+
+                            List<MutedEntity> muted = new ArrayList<>();
+                            for (UUID client : clients) {
+                                Player clientPlayer = Bukkit.getPlayer(client);
+                                if (clientPlayer == null) {
+                                    continue;
+                                }
+
+                                ServerMutedEntity serverPlayerMuted = PlasmoVoice.getInstance().getMutedMap()
+                                        .get(client);
+                                MutedEntity playerMuted = null;
+                                if (serverPlayerMuted != null) {
+                                    playerMuted = new MutedEntity(serverPlayerMuted.getUuid(), serverPlayerMuted.getTo());
+                                }
+                                if (!clientPlayer.hasPermission("voice.speak")) {
+                                    playerMuted = new MutedEntity(client, 0L);
+                                }
+
+                                if (playerMuted != null) {
+                                    muted.add(playerMuted);
+                                }
+                            }
+
+                            player.get().sendPluginMessage(PlasmoVoice.getInstance(),
+                                    "plasmo:voice",
+                                    PacketTCP.write(new ClientsListPacket(clients, muted)));
+
+                            // Connected packet
                             ServerMutedEntity serverPlayerMuted = PlasmoVoice.getInstance().getMutedMap().get(player.get().getUniqueId());
                             MutedEntity playerMuted = null;
                             if (serverPlayerMuted != null) {
