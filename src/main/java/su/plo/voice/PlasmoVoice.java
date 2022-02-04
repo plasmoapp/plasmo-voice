@@ -2,6 +2,7 @@ package su.plo.voice;
 
 import com.google.gson.Gson;
 import lombok.Getter;
+import net.luckperms.api.LuckPerms;
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.SimplePie;
 import org.bstats.charts.SingleLineChart;
@@ -12,6 +13,7 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
@@ -25,6 +27,7 @@ import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerConfigEvent;
 import su.plo.voice.events.PlayerVoiceMuteEvent;
 import su.plo.voice.events.PlayerVoiceUnmuteEvent;
+import su.plo.voice.listeners.LuckPermsListener;
 import su.plo.voice.listeners.PlayerListener;
 import su.plo.voice.listeners.PluginChannelListener;
 import su.plo.voice.placeholders.PlaceholderPlasmoVoice;
@@ -59,6 +62,8 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
     private SocketServerUDP socketServerUDP;
     @Getter
     private PlasmoVoiceConfig voiceConfig;
+
+    private LuckPermsListener luckPermsListener;
 
     @Override
     public void onEnable() {
@@ -126,6 +131,15 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         }
 
         Bukkit.getServicesManager().register(PlasmoVoiceAPI.class, this, this, ServicePriority.Normal);
+
+        // LuckPerms
+        if (getServer().getPluginManager().isPluginEnabled("LuckPerms")) {
+            RegisteredServiceProvider<LuckPerms> luckPermsProvider = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+            if (luckPermsProvider != null) {
+                LuckPerms luckPerms = luckPermsProvider.getProvider();
+                luckPermsListener = new LuckPermsListener(luckPerms);
+            }
+        }
     }
 
     @Override
@@ -133,6 +147,10 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         if (socketServerUDP != null) {
             socketServerUDP.close();
             socketServerUDP.interrupt();
+        }
+
+        if (luckPermsListener != null) {
+            luckPermsListener.unsubscribe();
         }
 
         saveData();

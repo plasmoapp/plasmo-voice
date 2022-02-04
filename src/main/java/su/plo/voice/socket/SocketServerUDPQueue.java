@@ -205,8 +205,6 @@ public class SocketServerUDPQueue extends Thread {
             }
         }
         for (Player player : connectionsToDrop) {
-            PlayerListener.disconnectClient(player);
-
             if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                 PlasmoVoice.getVoiceLogger().info(player.getName() + " UDP timed out");
                 PlasmoVoice.getVoiceLogger().info(player.getName() + " sent reconnect packet");

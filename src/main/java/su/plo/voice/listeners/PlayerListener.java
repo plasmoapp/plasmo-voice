@@ -41,6 +41,8 @@ public class PlayerListener implements Listener {
     }
 
     public static void reconnectPlayer(Player player) {
+        PlayerListener.disconnectClient(player);
+
         UUID token = UUID.randomUUID();
         playerToken.put(player.getUniqueId(), token);
 
@@ -118,6 +120,7 @@ public class PlayerListener implements Listener {
         try {
             if (clientUDP != null) {
                 clientUDP.close();
+
                 PluginChannelListener.sendToClients(new ClientDisconnectedPacket(player.getUniqueId()), player);
             }
         } catch (Exception ex) {
