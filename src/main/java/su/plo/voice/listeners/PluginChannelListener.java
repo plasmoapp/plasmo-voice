@@ -15,6 +15,7 @@ import su.plo.voice.common.packets.tcp.ClientConnectPacket;
 import su.plo.voice.common.packets.tcp.ClientsListPacket;
 import su.plo.voice.common.packets.tcp.ConfigPacket;
 import su.plo.voice.common.packets.tcp.PacketTCP;
+import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerConfigEvent;
 import su.plo.voice.socket.SocketServerUDP;
 
@@ -81,8 +82,26 @@ public class PluginChannelListener implements PluginMessageListener {
                     });
 
                     List<MutedEntity> muted = new ArrayList<>();
-                    PlasmoVoice.getInstance().getMutedMap()
-                            .forEach((uuid, m) -> muted.add(new MutedEntity(m.getUuid(), m.getTo())));
+                    for (UUID client : clients) {
+                        Player clientPlayer = Bukkit.getPlayer(client);
+                        if (clientPlayer == null) {
+                            continue;
+                        }
+
+                        ServerMutedEntity serverPlayerMuted = PlasmoVoice.getInstance().getMutedMap()
+                                .get(client);
+                        MutedEntity playerMuted = null;
+                        if (serverPlayerMuted != null) {
+                            playerMuted = new MutedEntity(serverPlayerMuted.getUuid(), serverPlayerMuted.getTo());
+                        }
+                        if (!clientPlayer.hasPermission("voice.speak")) {
+                            playerMuted = new MutedEntity(client, 0L);
+                        }
+
+                        if (playerMuted != null) {
+                            muted.add(playerMuted);
+                        }
+                    }
 
                     pkt = PacketTCP.write(new ClientsListPacket(clients, muted));
                     player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
