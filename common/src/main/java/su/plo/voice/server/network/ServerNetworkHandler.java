@@ -8,13 +8,11 @@ import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
-import su.plo.voice.common.entities.MutedEntity;
 import su.plo.voice.common.packets.Packet;
 import su.plo.voice.common.packets.tcp.*;
 import su.plo.voice.server.PlayerManager;
 import su.plo.voice.server.VoiceServer;
 import su.plo.voice.server.config.ServerConfig;
-import su.plo.voice.server.config.ServerMuted;
 import su.plo.voice.server.socket.SocketClientUDP;
 import su.plo.voice.server.socket.SocketServerUDP;
 
@@ -25,7 +23,7 @@ import java.util.concurrent.*;
 public abstract class ServerNetworkHandler {
     protected ScheduledExecutorService scheduler;
     private static ExecutorService executor;
-    public static HashMap<UUID, UUID> playerToken = new HashMap<>();
+    public static Map<UUID, UUID> playerToken = new ConcurrentHashMap<>();
 
     public ServerNetworkHandler() {
     }
@@ -122,32 +120,10 @@ public abstract class ServerNetworkHandler {
                         config.getFadeDivisor(),
                         config.getPriorityFadeDivisor()),
                 player);
-
-        List<UUID> clients = new ArrayList<>();
-        SocketServerUDP.clients.forEach((uuid, c) -> clients.add(uuid));
-
-        List<MutedEntity> muted = new ArrayList<>();
-        VoiceServer.getMuted().forEach((uuid, m) -> muted.add(new MutedEntity(m.getUuid(), m.getTo())));
-
-        ServerMuted serverPlayerMuted = VoiceServer.getMuted().get(UUID.randomUUID());
-        MutedEntity playerMuted = null;
-        if (serverPlayerMuted != null) {
-            playerMuted = new MutedEntity(serverPlayerMuted.getUuid(), serverPlayerMuted.getTo());
-        }
-        if (!VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.speak")) {
-            playerMuted = new MutedEntity(player.getUUID(), 0L);
-        }
-
-        sendTo(new ClientsListPacket(clients, muted), player);
-
-        sendToClients(new ClientConnectedPacket(player.getUUID(), playerMuted), player.getUUID());
-
-        if (!VoiceServer.getInstance().getConfig().getBoolean("disable_logs")) {
-            VoiceServer.LOGGER.info(String.format("New client: %s v%s", player.getGameProfile().getName(), version));
-        }
     }
 
     public static void reconnectClient(ServerPlayer player) {
+        disconnectClient(player.getUUID());
         UUID token = UUID.randomUUID();
         playerToken.put(player.getUUID(), token);
 

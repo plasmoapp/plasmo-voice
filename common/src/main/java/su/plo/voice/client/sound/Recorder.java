@@ -106,9 +106,13 @@ public class Recorder implements Runnable {
     /**
      * Interrupt thread, closes capture device and opus encoder
      */
-    public void close() {
-        if (thread != null) {
+    public void close(boolean disconnect) {
+        if (thread != null && !thread.isInterrupted()) {
             thread.interrupt();
+        }
+
+        if (disconnect) {
+            sampleRate = 0;
         }
     }
 
@@ -411,7 +415,7 @@ public class Recorder implements Runnable {
     // todo is it necessary at all?
     public CompletableFuture<Void> waitForClose() {
         return CompletableFuture.runAsync(() -> {
-            this.close();
+            this.close(false);
 
             synchronized (this) {
                 try {

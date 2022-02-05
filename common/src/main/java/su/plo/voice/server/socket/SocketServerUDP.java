@@ -104,7 +104,7 @@ public class SocketServerUDP extends Thread {
                 synchronized (this.queue) {
                     this.queue.notify();
                 }
-            } catch (IllegalStateException | IOException | InstantiationException e) { // bad packet? just ignore it 4HEad
+            } catch (IllegalStateException | IOException | InstantiationException | IllegalArgumentException e) { // bad packet? just ignore it 4HEad
                 if (VoiceServer.getInstance().getConfig().getBoolean("debug")) {
                     e.printStackTrace();
                 }
