@@ -6,7 +6,7 @@ val mavenGroup: String by rootProject
 
 dependencies {
     minecraft("com.mojang:minecraft:${minecraftVersion}")
-    mappings(minecraft.officialMojangMappings())
+    mappings(loom.officialMojangMappings())
 
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
 
@@ -31,7 +31,7 @@ dependencies {
 }
 
 architectury {
-    common(true)
+    common(false)
 }
 
 configurations {

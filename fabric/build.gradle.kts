@@ -1,10 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
-import com.modrinth.minotaur.TaskModrinthUpload
-import com.modrinth.minotaur.request.VersionType
 import com.matthewprenger.cursegradle.CurseArtifact
 import com.matthewprenger.cursegradle.CurseProject
 import com.matthewprenger.cursegradle.CurseRelation
 import com.matthewprenger.cursegradle.Options
+import com.modrinth.minotaur.TaskModrinthUpload
+import com.modrinth.minotaur.request.VersionType
 import net.fabricmc.loom.task.RemapJarTask
 
 val minecraftVersion: String by rootProject
@@ -53,16 +53,15 @@ dependencies {
     }
 
     modApi("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
-    modApi("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
 
     // Fabric API jar-in-jar
-    include("net.fabricmc.fabric-api:fabric-api-base:0.4.1+b4f4f6cd14")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-command-api-v1:1.1.6+3ac43d9514")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-key-binding-api-v1:1.0.8+c8aba2f314")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-lifecycle-events-v1:1.4.10+c15ca33514")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-networking-api-v1:1.0.18+3ac43d9514")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-rendering-v1:1.10.3+6b21378a14")?.let { modImplementation(it) }
-    include("net.fabricmc.fabric-api:fabric-resource-loader-v0:0.4.11+3ac43d9514")?.let { modImplementation(it) }
+    include(fabricApi.module("fabric-api-base", fabricVersion))?.let { modImplementation(it) }
+    include(fabricApi.module("fabric-command-api-v1", fabricVersion))?.let { modImplementation(it) }
+    include(fabricApi.module("fabric-key-binding-api-v1", fabricVersion))?.let { modImplementation(it) }
+    include(fabricApi.module("fabric-lifecycle-events-v1", fabricVersion))?.let { modImplementation(it) }
+    include(fabricApi.module("fabric-networking-api-v1", fabricVersion))?.let { modImplementation(it) }
+    include(fabricApi.module("fabric-rendering-v1", fabricVersion))?.let { modImplementation(it) }
+    include(fabricApi.module("fabric-resource-loader-v0", fabricVersion))?.let { modImplementation(it) }
 
     // Plasmo Voice protocol
     implementation("su.plo.voice:common:1.0.0")
