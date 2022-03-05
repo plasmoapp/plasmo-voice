@@ -62,6 +62,9 @@ public class AboutTabWidget extends TabWidget {
             .put("ko_kr", ImmutableList.of(
                     new Translator(new GameProfile(UUID.fromString("48a50be9-085c-46f5-b5f3-e5d0ba7fd415"), "Null_D"), "GitHub", "https://github.com/NullD4201")
             ))
+            .put("pt_br", ImmutableList.of(
+                    new Translator(new GameProfile(UUID.fromString("dcfcfdbe-62fc-4895-aab3-04cd83e09d4a"), "AliMakya"), "Twitch", "https://www.twitch.tv/alimakya")
+            ))
             .build();
     private final VoiceSettingsScreen parent;
 

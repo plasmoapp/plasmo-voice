@@ -106,7 +106,11 @@ public class VoiceSettingsScreen extends Screen {
     }
 
     public TabWidget getActiveTab() {
-        return about ? aboutWidget : this.tabWidgets.get(active);
+        return about
+                ? aboutWidget
+                : this.tabWidgets.size() > 0
+                ? this.tabWidgets.get(active)
+                : null;
     }
 
     public void setMicrophoneValue(byte[] buffer) {
@@ -423,6 +427,9 @@ public class VoiceSettingsScreen extends Screen {
         }
         if (this.muteSpeakerButtons != null) {
             list.addAll(this.muteSpeakerButtons);
+        }
+        if (this.tabWidgets.size() == 0) {
+            return list;
         }
         if (!about) {
             list.add(this.tabWidgets.get(active));

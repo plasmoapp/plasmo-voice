@@ -157,6 +157,7 @@ public class Recorder implements Runnable {
             }
 
             microphone.open();
+            microphone.start(); // start device to ensure that openal is initialized well
         } catch (IllegalStateException e) {
             VoiceClient.LOGGER.info("Failed to open OpenAL capture device, falling back to javax capturing");
             if (microphone instanceof AlCaptureDevice) {
@@ -190,13 +191,19 @@ public class Recorder implements Runnable {
 
                 byte[] normBuffer = readBuffer();
 
-                if (!VoiceClient.isSettingsOpen() &&
-                        (VoiceClient.getServerConfig().getMuted().containsKey(player.getUUID()) || VoiceClient.getClientConfig().microphoneMuted.get()
-                        || VoiceClient.getClientConfig().speakerMuted.get())) {
-                    VoiceClient.setSpeaking(false);
-                    VoiceClient.setSpeakingPriority(false);
+                if (VoiceClient.getServerConfig().getMuted().containsKey(player.getUUID()) ||
+                        VoiceClient.getClientConfig().microphoneMuted.get() ||
+                        VoiceClient.getClientConfig().speakerMuted.get()) {
+                    if (VoiceClient.isSettingsOpen()) {
+                        if (normBuffer == null) {
+                            Thread.sleep(5L);
+                        }
+                    } else {
+                        VoiceClient.setSpeaking(false);
+                        VoiceClient.setSpeakingPriority(false);
 
-                    Thread.sleep(1000);
+                        Thread.sleep(1000);
+                    }
                     continue;
                 }
 
@@ -427,7 +434,10 @@ public class Recorder implements Runnable {
 
         if (microphone.isOpen()) {
             microphone.stop();
-            microphone.close();
+            try {
+                microphone.close();
+            } catch (IllegalStateException ignored) {
+            }
             thread = null;
         }
 
