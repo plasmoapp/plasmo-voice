@@ -20,15 +20,19 @@ public class VoiceUnmute implements TabExecutor {
         }
 
         OfflinePlayer player = Bukkit.getOfflinePlayer(args[0]);
-        if (player.getFirstPlayed() == 0) {
+        if (player.getFirstPlayed() == 0 || player.getName() == null) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("player_not_found"));
             return true;
         }
 
         if (!PlasmoVoice.getInstance().unmute(player.getUniqueId(), false)) {
-            sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("not_muted"), player.getName()));
+            sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("not_muted")
+                    .replace("{player}", player.getName()));
             return true;
         }
+
+        sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("unmuted")
+                .replace("{player}", player.getName()));
 
         return true;
     }

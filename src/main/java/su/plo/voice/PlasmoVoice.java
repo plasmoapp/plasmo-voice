@@ -343,11 +343,6 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
             return false;
         }
 
-        if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
-            PlasmoVoice.muted.remove(muted.getUuid());
-            return false;
-        }
-
         PlasmoVoice.muted.remove(muted.getUuid());
 
         Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
@@ -355,7 +350,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
             PluginChannelListener.sendToClients(new ClientUnmutedPacket(player.getUniqueId()), onlinePlayer);
 
             if (!silent) {
-                onlinePlayer.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("unmuted"), player.getName()));
+                onlinePlayer.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("player_unmuted"));
             }
         }
 

@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.scheduler.BukkitTask;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.packets.tcp.ClientDisconnectedPacket;
-import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.common.packets.tcp.PacketTCP;
 import su.plo.voice.common.packets.tcp.ServerConnectPacket;
 import su.plo.voice.socket.SocketClientUDP;
@@ -30,11 +29,8 @@ public class PlayerListener implements Listener {
         Bukkit.getScheduler().runTaskTimerAsynchronously(PlasmoVoice.getInstance(), () -> {
             PlasmoVoice.getInstance().getMutedMap().forEach((uuid, muted) -> {
                 if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
-                    PlasmoVoice.getInstance().getMutedMap().remove(uuid);
-                    Player player = Bukkit.getPlayer(uuid);
-                    if (player != null) {
-                        PluginChannelListener.sendToClients(new ClientUnmutedPacket(muted.getUuid()), player);
-                    }
+                    Bukkit.getScheduler().runTask(PlasmoVoice.getInstance(), () ->
+                            PlasmoVoice.getInstance().unmute(uuid, false));
                 }
             });
         }, 0L, 100L);

@@ -16,7 +16,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VoiceMute implements TabExecutor {
-    private final Pattern pattern = Pattern.compile("([0-9]*)([mhdwu])?");
+    private final Pattern pattern = Pattern.compile("^([0-9]*)([mhdwu])?$");
     private final Pattern integerPattern = Pattern.compile("^([0-9]*)$");
 
     @Override
@@ -32,8 +32,15 @@ public class VoiceMute implements TabExecutor {
             return true;
         }
 
+        if (PlasmoVoice.getInstance().isMuted(player.getUniqueId())) {
+            sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("already_muted")
+                    .replace("{player}", player.getName()));
+            return true;
+        }
+
         PlasmoVoiceAPI.DurationUnit durationUnit = null;
         long duration = 0;
+        String reason = null;
         if (args.length > 1) {
             if (!args[1].startsWith("perm")) {
                 Matcher matcher = pattern.matcher(args[1]);
@@ -69,16 +76,30 @@ public class VoiceMute implements TabExecutor {
                     } else {
                         durationUnit = PlasmoVoiceAPI.DurationUnit.SECONDS;
                     }
+                } else {
+                    reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
                 }
             }
         }
 
-        String reason = null;
-        if (args.length > 2) {
+        if (reason == null && args.length > 2) {
             reason = String.join(" ", Arrays.copyOfRange(args, 2, args.length));
         }
 
-        sender.sendMessage(String.format(PlasmoVoice.getInstance().getMessagePrefix("muted"), player.getName()));
+        if (duration == 0L) {
+            sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("muted_perm")
+                    .replace("{player}", player.getName())
+                    .replace("{reason}", reason != null
+                            ? reason
+                            : PlasmoVoice.getInstance().getMessage("mute_no_reason")));
+        } else {
+            sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("muted")
+                    .replace("{player}", player.getName())
+                    .replace("{duration}", durationUnit.format(duration))
+                    .replace("{reason}", reason != null
+                            ? reason
+                            : PlasmoVoice.getInstance().getMessage("mute_no_reason")));
+        }
 
         PlasmoVoice.getInstance().mute(player.getUniqueId(), duration, durationUnit, reason, false);
         return true;
