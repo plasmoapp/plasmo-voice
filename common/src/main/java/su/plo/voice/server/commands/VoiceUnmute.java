@@ -39,17 +39,19 @@ public class VoiceUnmute {
     private static void unmute(CommandContext<CommandSourceStack> ctx, GameProfile profile) {
         ServerMuted muted = VoiceServer.getMuted().get(profile.getId());
         if (muted == null) {
-            ctx.getSource().sendFailure(
-                    new TextComponent(String.format(VoiceServer.getInstance().getMessagePrefix("not_muted"), profile.getName()))
-            );
+            ctx.getSource().sendFailure(new TextComponent(
+                    VoiceServer.getInstance().getMessagePrefix("not_muted")
+                            .replace("{player}", profile.getName())
+            ));
             return;
         }
 
         if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
             VoiceServer.getMuted().remove(muted.getUuid());
-            ctx.getSource().sendFailure(
-                    new TextComponent(String.format(VoiceServer.getInstance().getMessagePrefix("not_muted"), profile.getName()))
-            );
+            ctx.getSource().sendFailure(new TextComponent(
+                    VoiceServer.getInstance().getMessagePrefix("not_muted")
+                            .replace("{player}", profile.getName())
+            ));
             return;
         }
 
@@ -62,7 +64,10 @@ public class VoiceUnmute {
         }
 
         ctx.getSource().sendSuccess(
-                new TextComponent(String.format(VoiceServer.getInstance().getMessagePrefix("unmuted"), profile.getName())),
+                new TextComponent(
+                        VoiceServer.getInstance().getMessagePrefix("unmuted")
+                                .replace("{player}", profile.getName())
+                ),
                 false
         );
     }

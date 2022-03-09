@@ -21,7 +21,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VoiceMute {
-    private static final Pattern pattern = Pattern.compile("([0-9]*)([mhdw])?");
+    private static final Pattern pattern = Pattern.compile("^([0-9]*)([smhdwu])?$");
     private static final Pattern integerPattern = Pattern.compile("^([0-9]*)$");
 
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -96,10 +96,19 @@ public class VoiceMute {
             return;
         }
 
+        if (VoiceServer.getMuted().containsKey(player.getUUID())) {
+            ctx.getSource().sendFailure(new TextComponent(
+                    VoiceServer.getInstance().getMessagePrefix("already_muted")
+                            .replace("{player}", player.getGameProfile().getName())
+            ));
+            return;
+        }
+
         String durationMessage = VoiceServer.getInstance().getMessage("mute_durations.permanent");
         long duration = 0;
         if (rawDuration != null) {
             if (!rawDuration.startsWith("perm")) {
+                System.out.println(rawDuration);
                 Matcher matcher = pattern.matcher(rawDuration);
                 if (matcher.find()) {
                     duration = Integer.parseInt(matcher.group(1));
@@ -147,10 +156,24 @@ public class VoiceMute {
         VoiceServer.saveData(true);
 
         ServerNetworkHandler.sendToClients(new ClientMutedPacket(serverMuted.getUuid(), serverMuted.getTo()), null);
-        ctx.getSource().sendSuccess(
-                new TextComponent(String.format(VoiceServer.getInstance().getMessagePrefix("muted"), player.getGameProfile().getName())),
-                false
-        );
+        if (duration == 0L) {
+            ctx.getSource().sendSuccess(new TextComponent(
+                    VoiceServer.getInstance().getMessagePrefix("muted_perm")
+                            .replace("{player}", player.getGameProfile().getName())
+                            .replace("{reason}", reason != null
+                                    ? reason
+                                    : VoiceServer.getInstance().getMessage("mute_no_reason"))),
+            false);
+        } else {
+            ctx.getSource().sendSuccess(new TextComponent(
+                    VoiceServer.getInstance().getMessagePrefix("muted")
+                            .replace("{player}", player.getGameProfile().getName())
+                            .replace("{duration}", durationMessage)
+                            .replace("{reason}", reason != null
+                                    ? reason
+                                    : VoiceServer.getInstance().getMessage("mute_no_reason"))
+            ), false);
+        }
 
         ctx.getSource().sendSuccess(new TextComponent(
                 (duration > 0

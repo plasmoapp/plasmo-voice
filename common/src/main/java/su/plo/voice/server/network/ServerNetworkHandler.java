@@ -44,6 +44,9 @@ public abstract class ServerNetworkHandler {
                     ServerPlayer player = PlayerManager.getByUUID(uuid);
                     if (player != null) {
                         sendToClients(new ClientUnmutedPacket(uuid), null);
+                        player.sendMessage(new TextComponent(
+                                VoiceServer.getInstance().getMessagePrefix("player_unmuted")
+                        ), VoiceServer.NIL_UUID);
                     }
                 }
             });
