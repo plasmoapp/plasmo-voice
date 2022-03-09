@@ -52,7 +52,7 @@ messages:
   mute_expires_format: "yyyy.MM.dd 'at' HH:mm:ss"
   mute_expires_never: "never"
   muted_perm: "{player} is permanently muted. Reason: {reason}"
-  muted: "Muted KPidS {duration}. Reason: {reason}"
+  muted: "Muted {player} {duration}. Reason: {reason}"
   player_muted_perm: "You've been permanently muted. Reason: {reason}"
   player_muted: "You've been muted {duration}. Reason: {reason}"
   player_unmuted: "You've been unmuted"
