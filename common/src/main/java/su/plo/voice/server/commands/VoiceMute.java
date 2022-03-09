@@ -108,7 +108,6 @@ public class VoiceMute {
         long duration = 0;
         if (rawDuration != null) {
             if (!rawDuration.startsWith("perm")) {
-                System.out.println(rawDuration);
                 Matcher matcher = pattern.matcher(rawDuration);
                 if (matcher.find()) {
                     duration = Integer.parseInt(matcher.group(1));
