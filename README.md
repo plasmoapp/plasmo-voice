@@ -5,6 +5,8 @@
   <div>
     <a href="https://modrinth.com/mod/plasmo-voice">Modrinth</a>
     <span> | </span>
+    <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice">CurseForge</a>
+    <span> | </span>
     <a href="https://www.spigotmc.org/resources/plasmo-voice-server.91064/">Spigot</a>
     <span> | </span>
     <a href="https://github.com/plasmoapp/plasmo-voice">GitHub</a>
