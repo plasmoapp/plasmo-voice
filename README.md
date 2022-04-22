@@ -1,4 +1,7 @@
 [![](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
+[![](https://img.shields.io/bstats/players/10928)](https://bstats.org/plugin/bukkit/PlasmoVoice/10928)
+[![](https://img.shields.io/bstats/servers/10928)](https://bstats.org/plugin/bukkit/PlasmoVoice/10928)
+
 
 <div align="center">
   <img src="https://imgur.com/3ccgCRz.png"> 
