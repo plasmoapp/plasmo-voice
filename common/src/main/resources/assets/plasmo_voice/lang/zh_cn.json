@@ -6,12 +6,12 @@
     "key.plasmo_voice.mute_chat": "禁用语音聊天",
     "key.plasmo_voice.action": "动作按钮",
 
-    "key.plasmo_voice.distance": "声音距离",
-    "key.plasmo_voice.distance.increase": "增加声音距离",
-    "key.plasmo_voice.distance.decrease": "减少声音距离",
+    "key.plasmo_voice.distance": "语音距离",
+    "key.plasmo_voice.distance.increase": "增加语音距离",
+    "key.plasmo_voice.distance.decrease": "减少语音距离",
 
-    "key.plasmo_voice.occlusion": "声音阻挡",
-    "key.plasmo_voice.occlusion.toggle": "切换障碍物阻挡声音",
+    "key.plasmo_voice.occlusion": "语音阻挡",
+    "key.plasmo_voice.occlusion.toggle": "语音阻挡开关",
 
     "gui.plasmo_voice.player_volume": "玩家音量: %s",
     "gui.plasmo_voice.close": "关闭",
@@ -21,11 +21,11 @@
     "gui.plasmo_voice.title": "%s 设置",
 
 
-    "gui.plasmo_voice.toggle.microphone": "麦克风",
-    "gui.plasmo_voice.toggle.voice": "语音聊天",
-    "gui.plasmo_voice.toggle.currently": "当前状态: %s",
-    "gui.plasmo_voice.toggle.enabled": "开启",
-    "gui.plasmo_voice.toggle.disabled": "关闭",
+    "gui.plasmo_voice.toggle.microphone": "开关麦克风",
+    "gui.plasmo_voice.toggle.voice": "开关语音聊天",
+    "gui.plasmo_voice.toggle.currently": "当前: %s",
+    "gui.plasmo_voice.toggle.enabled": "已开启",
+    "gui.plasmo_voice.toggle.disabled": "已关闭",
 
 
 
@@ -38,7 +38,7 @@
     "gui.plasmo_voice.general.voice_chat_volume.tooltip_1": "将音量设置到超过 100%",
     "gui.plasmo_voice.general.voice_chat_volume.tooltip_2": "可能会导致声音失真.",
     "gui.plasmo_voice.general.voice_chat_volume.priority": "重要发言音量",
-    "gui.plasmo_voice.general.occlusion": "声音阻挡",
+    "gui.plasmo_voice.general.occlusion": "语音阻挡",
     "gui.plasmo_voice.general.occlusion.tooltip_1": "从玩家向每个声源投射一条射线,",
     "gui.plasmo_voice.general.occlusion.tooltip_2": "并在有障碍物的情况下消减声音.",
     "gui.plasmo_voice.general.occlusion.tooltip_3": "",
@@ -57,7 +57,7 @@
     "gui.plasmo_voice.general.priority_distance.tooltip_3": "",
     "gui.plasmo_voice.general.priority_distance.tooltip_4": "需要在服务器上拥有权限,",
     "gui.plasmo_voice.general.priority_distance.tooltip_5": "而且不要忘记给它绑定一个按键.",
-    "gui.plasmo_voice.general.not_available": "无法使用",
+    "gui.plasmo_voice.general.not_available": "不可用",
 
     "gui.plasmo_voice.general.activation": "激活",
     "gui.plasmo_voice.general.activation.type": "麦克风激活类型",
@@ -80,19 +80,19 @@
 
 
     "gui.plasmo_voice.general.icons": "图标",
-    "gui.plasmo_voice.general.icons.tooltip_1": "仅界面: 麦克风启用提示会一直显示",
+    "gui.plasmo_voice.general.icons.tooltip_1": "仅GUI: 麦克风启用提示会一直显示",
     "gui.plasmo_voice.general.icons.tooltip_2": "除非你按下 F1 关闭界面.",
     "gui.plasmo_voice.general.icons.tooltip_3": "",
-    "gui.plasmo_voice.general.icons.tooltip_4": "总是显示: 麦克风启用提示会一直显示,",
+    "gui.plasmo_voice.general.icons.tooltip_4": "始终显示: 麦克风启用提示会一直显示,",
     "gui.plasmo_voice.general.icons.tooltip_5": "即使你已经按下了 F1 关闭界面.",
     "gui.plasmo_voice.general.icons.tooltip_6": "",
     "gui.plasmo_voice.general.icons.tooltip_7": "隐藏: 麦克风启用提示不会显示.",
     "gui.plasmo_voice.general.icons.show": "显示图标",
-    "gui.plasmo_voice.general.icons.hud": "仅界面",
-    "gui.plasmo_voice.general.icons.always": "总是显示",
+    "gui.plasmo_voice.general.icons.hud": "仅GUI",
+    "gui.plasmo_voice.general.icons.always": "始终显示",
     "gui.plasmo_voice.general.icons.hidden": "隐藏",
     "gui.plasmo_voice.general.icons.position": "图标位置",
-    "gui.plasmo_voice.general.icons.position.choose": "选择麦克风启用提示图标的显示位置",
+    "gui.plasmo_voice.general.icons.position.choose": "选择麦克风图标显示位置",
     "gui.plasmo_voice.general.icons.position.top_left": "左上方",
     "gui.plasmo_voice.general.icons.position.top_center": "中上方",
     "gui.plasmo_voice.general.icons.position.top_right": "右上方",
@@ -103,12 +103,12 @@
 
     "gui.plasmo_voice.advanced": "高级",
 
-    "gui.plasmo_voice.advanced.noise_reduction": "噪音抑制",
+    "gui.plasmo_voice.advanced.noise_reduction": "语音降噪",
     "gui.plasmo_voice.advanced.rnnoise": "RNNoise",
-    "gui.plasmo_voice.advanced.rnnoise.tooltip_1": "RNNoise 噪声抑制.",
+    "gui.plasmo_voice.advanced.rnnoise.tooltip_1": "使用神经网络降低噪声.",
     "gui.plasmo_voice.advanced.rnnoise.tooltip_2": "",
     "gui.plasmo_voice.advanced.rnnoise.tooltip_3": "使用 AI 神经网络来抑制噪声,",
-    "gui.plasmo_voice.advanced.rnnoise.tooltip_4": "效果很好，但是对 CPU 有一定的负担.",
+    "gui.plasmo_voice.advanced.rnnoise.tooltip_4": "效果很好, 但是会使用一定的CPU.",
     "gui.plasmo_voice.advanced.rnnoise.tooltip_5": "",
     "gui.plasmo_voice.advanced.rnnoise.tooltip_6": "用于对你的麦克风录制的声音进行处理.",
     "gui.plasmo_voice.advanced.microphone_testing": "麦克风测试",
@@ -132,12 +132,12 @@
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_1": "当你的位置与发出声音的玩家的视线角度小于该值时",
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_2": "你将能听到 100% 音量的声音。",
     "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_3": "",
-    "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_4": "设置成 360 就相当于把 '音源定向' 它关闭了.",
+    "gui.plasmo_voice.advanced.directional_sources_angle.tooltip_4": "设置成 360 相当于关闭 '音源定向' .",
 
     "gui.plasmo_voice.advanced.compressor": "压缩器 & 限制器",
-    "gui.plasmo_voice.advanced.compressor.tooltip_1": "让声音更安静,",
+    "gui.plasmo_voice.advanced.compressor.tooltip_1": "让其他玩家的声音更安静,",
     "gui.plasmo_voice.advanced.compressor.tooltip_2": "避免你的耳朵受到噪音的伤害.",
-    "gui.plasmo_voice.advanced.compressor.tooltip_3": "",
+    "gui.plasmo_voice.advanced.compressor.tooltip_3": "译者注 压缩器有助于使音频更清晰",
     "gui.plasmo_voice.advanced.compressor.tooltip_4": "用于对其他玩家的声音进行处理.",
     "gui.plasmo_voice.advanced.compressor.threshold": "压缩器阈值",
     "gui.plasmo_voice.advanced.compressor.threshold.tooltip_1": "如果声音的音量超过阈值",
@@ -149,12 +149,12 @@
     "gui.plasmo_voice.advanced.limiter.threshold.tooltip_2": "",
     "gui.plasmo_voice.advanced.limiter.threshold.tooltip_3": "推荐数值: -6 dB",
 
-    "gui.plasmo_voice.advanced.visual_ui": "可视界面",
+    "gui.plasmo_voice.advanced.visual_ui": "界面",
     "gui.plasmo_voice.advanced.visual_ui.distance": "可视化语音距离",
     "gui.plasmo_voice.advanced.visual_ui.distance.join": "在加入时显示语音距离",
-    "gui.plasmo_voice.advanced.visual_ui.priority": "Separate priority volume",
-    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_1": "In the general tab there will be",
-    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_2": "two volume sliders, instead of one",
+    "gui.plasmo_voice.advanced.visual_ui.priority": "单独控制重要发言音量",
+    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_1": "将在'通用'选项卡显示",
+    "gui.plasmo_voice.advanced.visual_ui.priority.tooltip_2": "会有两个音量条, 而不是一个",
 
 
     "gui.plasmo_voice.hotkeys": "热键",
@@ -168,11 +168,14 @@
 
     "gui.plasmo_voice.about.links": "%s",
     "gui.plasmo_voice.about.copyright": "请仅使用官方来源，未经我们许可，请勿重新发布该模组",
-
+    
+    "gui.plasmo_voice.advanced.sp.mic_reverb": "麦克风混响",
+    "gui.plasmo_voice.advanced.sp.mic_reverb.tooltip_1": "你的麦克风将添加混响效果",
+    "gui.plasmo_voice.advanced.sp.mic_reverb_volume": "麦克风混响音量",
 
     "gui.plasmo_voice.not_available": "此服务器上未安装 Plasmo Voice",
-    "gui.plasmo_voice.connecting": "连接到 UDP 服务器中...",
-    "gui.plasmo_voice.cannot_connect_to_udp_1": "无法连接至 UDP 服务器,",
+    "gui.plasmo_voice.connecting": "连接到语音服务器中...",
+    "gui.plasmo_voice.cannot_connect_to_udp_1": "无法连接至语音服务器,",
     "gui.plasmo_voice.cannot_connect_to_udp_2": "UDP 端口可能已关闭。请查阅维基资料: ",
     "gui.plasmo_voice.cannot_connect_to_udp_3": "%s",
 
