@@ -90,7 +90,7 @@ public class PlayerManager {
     }
 
     public static boolean isOp(UUID player) {
-        return VoiceServer.getServer().getPlayerList().isOp(VoiceServer.getServer().getProfileCache().get(player).get());
+        return VoiceServer.getServer().getPlayerList().isOp(VoiceServer.getServer().getProfileCache().get(player));
     }
 
     public static boolean isOp(ServerPlayer player) {

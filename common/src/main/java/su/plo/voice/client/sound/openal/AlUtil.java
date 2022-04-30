@@ -12,14 +12,20 @@ public class AlUtil {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static String getErrorMessage(int errorCode) {
-        return switch (errorCode) {
-            case 40961 -> "Invalid name parameter.";
-            case 40962 -> "Invalid enumerated parameter value.";
-            case 40963 -> "Invalid parameter parameter value.";
-            case 40964 -> "Invalid operation.";
-            case 40965 -> "Unable to allocate memory.";
-            default -> "An unrecognized error occurred.";
-        };
+        switch (errorCode) {
+            case 40961:
+                return "Invalid name parameter.";
+            case 40962:
+                return "Invalid enumerated parameter value.";
+            case 40963:
+                return "Invalid parameter parameter value.";
+            case 40964:
+                return "Invalid operation.";
+            case 40965:
+                return "Unable to allocate memory.";
+            default:
+                return "An unrecognized error occurred.";
+        }
     }
 
     public static boolean checkErrors(String sectionName) {
@@ -33,14 +39,20 @@ public class AlUtil {
     }
 
     private static String getAlcErrorMessage(int errorCode) {
-        return switch (errorCode) {
-            case 40961 -> "Invalid device.";
-            case 40962 -> "Invalid context.";
-            case 40963 -> "Illegal enum.";
-            case 40964 -> "Invalid value.";
-            case 40965 -> "Unable to allocate memory.";
-            default -> "An unrecognized error occurred.";
-        };
+        switch (errorCode) {
+            case 40961:
+                return "Invalid device.";
+            case 40962:
+                return "Invalid context.";
+            case 40963:
+                return "Illegal enum.";
+            case 40964:
+                return "Invalid value.";
+            case 40965:
+                return "Unable to allocate memory.";
+            default:
+                return "An unrecognized error occurred.";
+        }
     }
 
     public static boolean checkAlcErrors(long deviceHandle, String sectionName) {

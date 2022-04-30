@@ -3,7 +3,6 @@ package su.plo.voice.client.gui;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -43,9 +42,8 @@ public class BackgroundScreen extends Screen {
         if(!disableBackground) {
             this.renderBackground(matrices);
 
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, TEXTURE);
+            RenderSystem.color4f(1F, 1F, 1F, 1F);
+            minecraft.getTextureManager().bind(TEXTURE);
 
             // header
             blit(matrices, guiLeft, guiTop, 0, 0, xSize, headerHeight, 512, 512);

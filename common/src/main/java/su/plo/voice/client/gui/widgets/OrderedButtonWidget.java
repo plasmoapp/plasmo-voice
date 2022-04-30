@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -31,10 +30,9 @@ public class OrderedButtonWidget extends Button {
     @Override
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
         Font textRenderer = client.font;
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        int i = this.getYImage(this.isHoveredOrFocused());
+        client.getTextureManager().bind(WIDGETS_LOCATION);
+        RenderSystem.color4f(1.0F, 1.0F, 1.0F, this.alpha);
+        int i = this.getYImage(this.isHovered());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
@@ -46,7 +44,7 @@ public class OrderedButtonWidget extends Button {
         textRenderer.drawShadow(matrices, orderedText, (float)((this.x + this.width / 2) - textRenderer.width(orderedText) / 2), this.y + (this.height - 8) / 2,
                 j | Mth.ceil(this.alpha * 255.0F) << 24);
 
-        if (this.isHoveredOrFocused()) {
+        if (this.isHovered()) {
             this.renderToolTip(matrices, mouseX, mouseY);
         }
     }

@@ -141,7 +141,10 @@ public abstract class VoiceClient {
     }
 
     public static boolean isMicrophoneLoopback() {
-        return Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen && screen.getSource() != null;
+        if (!(Minecraft.getInstance().screen instanceof VoiceSettingsScreen)) return false;
+
+        VoiceSettingsScreen screen = (VoiceSettingsScreen) Minecraft.getInstance().screen;
+        return screen.getSource() != null;
     }
 
     public static boolean isSettingsOpen() {

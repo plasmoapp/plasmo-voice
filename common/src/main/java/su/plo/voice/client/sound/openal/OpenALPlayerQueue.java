@@ -62,8 +62,9 @@ public class OpenALPlayerQueue extends AbstractSoundQueue {
                 continue;
             }
 
-            if(minecraft.screen instanceof VoiceSettingsScreen screen && screen.getSource() != null) {
-                continue;
+            if(minecraft.screen instanceof VoiceSettingsScreen) {
+                VoiceSettingsScreen screen = (VoiceSettingsScreen) minecraft.screen;
+                if (screen.getSource() != null) continue;
             }
 
             Player player = minecraft.level.getPlayerByUUID(this.from);

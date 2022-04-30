@@ -18,19 +18,26 @@ public class ClientNetworkHandlerFabric extends ClientNetworkHandler {
 
             Packet pkt = PacketTCP.read(in);
             // not good implementation, but with the current protocol (v1.0.0) I can't do something with it
-            if (pkt instanceof ServerConnectPacket packet) {
+            if (pkt instanceof ServerConnectPacket) {
+                ServerConnectPacket packet = (ServerConnectPacket) pkt;
                 this.handle(packet, handler.getConnection());
-            } else if (pkt instanceof ConfigPacket packet) {
+            } else if (pkt instanceof ConfigPacket) {
+                ConfigPacket packet = (ConfigPacket) pkt;
                 this.handle(packet);
-            } else if (pkt instanceof ClientMutedPacket packet) {
+            } else if (pkt instanceof ClientMutedPacket) {
+                ClientMutedPacket packet = (ClientMutedPacket) pkt;
                 this.handle(packet);
-            } else if (pkt instanceof ClientUnmutedPacket packet) {
+            } else if (pkt instanceof ClientUnmutedPacket) {
+                ClientUnmutedPacket packet = (ClientUnmutedPacket) pkt;
                 this.handle(packet);
-            } else if (pkt instanceof ClientsListPacket packet) {
+            } else if (pkt instanceof ClientsListPacket) {
+                ClientsListPacket packet = (ClientsListPacket) pkt;
                 this.handle(packet);
-            } else if (pkt instanceof ClientConnectedPacket packet) {
+            } else if (pkt instanceof ClientConnectedPacket) {
+                ClientConnectedPacket packet = (ClientConnectedPacket) pkt;
                 this.handle(packet);
-            } else if (pkt instanceof ClientDisconnectedPacket packet) {
+            } else if (pkt instanceof ClientDisconnectedPacket) {
+                ClientDisconnectedPacket packet = (ClientDisconnectedPacket) pkt;
                 this.handle(packet);
             }
         } catch (Exception e) {

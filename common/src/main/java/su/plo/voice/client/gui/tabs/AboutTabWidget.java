@@ -7,7 +7,10 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import net.minecraft.Util;
@@ -15,9 +18,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
-import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.locale.Language;
@@ -26,6 +27,7 @@ import net.minecraft.network.chat.TextComponent;
 import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
+import org.lwjgl.opengl.GL11;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 
 import java.io.IOException;
@@ -84,10 +86,10 @@ public class AboutTabWidget extends TabWidget {
         if (!language.getOrDefault(((TranslatableComponent) madeBy).getKey()).contains("%s")) {
             madeBy = new TextComponent("Plasmo Voice is made by");
         }
-        this.addEntry(new CategoryEntry(madeBy, 24));
-        this.addEntry(new DeveloperEntry("KPidS", new TranslatableComponent("gui.plasmo_voice.about.huix"), "Twitch", "https://twitch.tv/kpids"));
-        this.addEntry(new DeveloperEntry("Apehum", new TranslatableComponent("gui.plasmo_voice.about.programming"), "Twitch", "https://twitch.tv/apehum"));
-        this.addEntry(new DeveloperEntry("Venterok", new TranslatableComponent("gui.plasmo_voice.about.artist"), "Twitter", "https://twitter.com/venterrok"));
+        this.addEntry(new CategoryEntry(this, madeBy, 24));
+        this.addEntry(new DeveloperEntry(this, "KPidS", new TranslatableComponent("gui.plasmo_voice.about.huix"), "Twitch", "https://twitch.tv/kpids"));
+        this.addEntry(new DeveloperEntry(this, "Apehum", new TranslatableComponent("gui.plasmo_voice.about.programming"), "Twitch", "https://twitch.tv/apehum"));
+        this.addEntry(new DeveloperEntry(this, "Venterok", new TranslatableComponent("gui.plasmo_voice.about.artist"), "Twitter", "https://twitter.com/venterrok"));
 
         LanguageInfo languageInfo = client.getLanguageManager().getSelected();
         List<Translator> langTranslators = translators.get(languageInfo.getCode());
@@ -95,6 +97,7 @@ public class AboutTabWidget extends TabWidget {
             for (Translator translator : langTranslators) {
                 DeveloperEntry.loadTranslatorSkin(translator);
                 this.addEntry(new DeveloperEntry(
+                        this,
                         translator.getProfile().getName(),
                         new TranslatableComponent("gui.plasmo_voice.about.translator", languageInfo.getName()),
                         translator.getLink(),
@@ -106,7 +109,7 @@ public class AboutTabWidget extends TabWidget {
         if (!language.getOrDefault(((TranslatableComponent) links).getKey()).contains("%s")) {
             links = new TextComponent("Plasmo Voice on");
         }
-        this.addEntry(new CategoryEntry(links));
+        this.addEntry(new CategoryEntry(this, links));
         this.addEntry(new ListEntry(ImmutableList.of(
                 new Button(0, 0, 0, 20, new TextComponent("Github"), button -> {
                     openLink("https://github.com/plasmoapp/plasmo-voice");
@@ -166,10 +169,6 @@ public class AboutTabWidget extends TabWidget {
             return list;
         }
 
-        public List<? extends NarratableEntry> narratables() {
-            return list;
-        }
-
         @Override
         public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int gap = 4;
@@ -221,13 +220,9 @@ public class AboutTabWidget extends TabWidget {
         public List<? extends GuiEventListener> children() {
             return Collections.emptyList();
         }
-
-        public List<? extends NarratableEntry> narratables() {
-            return Collections.emptyList();
-        }
     }
 
-    public class DeveloperEntry extends Entry {
+    public static class DeveloperEntry extends Entry {
         private static final ResourceLocation steveSkin = new ResourceLocation("textures/entity/steve.png");
         public static Map<String, ResourceLocation> skins = new HashMap<>();
 
@@ -297,32 +292,28 @@ public class AboutTabWidget extends TabWidget {
         private final TextComponent nick;
         private final Component role;
         private final Button link;
+        private final Minecraft client = Minecraft.getInstance();
 
-        public DeveloperEntry(String nick, Component role, String link, String linkUrl) {
+        public DeveloperEntry(AboutTabWidget parent, String nick, Component role, String link, String linkUrl) {
             super(44);
             this.nick = new TextComponent(nick);
             this.role = role;
-            if (link != null) {
-                this.link = new Button(0, 0, 56, 20, new TextComponent(link), button -> {
-                    openLink(linkUrl);
-                }, (button, matrices, mouseX, mouseY) -> {
-                    AboutTabWidget.this.setTooltip(ImmutableList.of(
-                            new TextComponent(linkUrl)
-                    ));
-                });
-            } else {
-                this.link = null;
-            }
+            this.link = new Button(0, 0, 56, 20, new TextComponent(link), button -> {
+                parent.openLink(linkUrl);
+            }, (button, matrices, mouseX, mouseY) -> {
+                parent.setTooltip(ImmutableList.of(
+                        new TextComponent(linkUrl)
+                ));
+            });
         }
 
         public void renderBackground(int y, int x, int entryWidth, int entryHeight) {
             Tesselator tessellator = Tesselator.getInstance();
             BufferBuilder bufferBuilder = tessellator.getBuilder();
-            RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
-            RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+            client.getTextureManager().bind(BACKGROUND_LOCATION);
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
-            bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            bufferBuilder.begin(GL11.GL_QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
             bufferBuilder.vertex(x, y + entryHeight, 0.0D).uv(0.0F, (float) entryHeight / 32.0F + 0)
                     .color(40, 40, 40, 255).endVertex();
             bufferBuilder.vertex(x + entryWidth, y + entryHeight, 0.0D).uv((float) entryWidth / 32.0F, (float) entryHeight / 32.0F + 0)
@@ -337,28 +328,21 @@ public class AboutTabWidget extends TabWidget {
         public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             renderBackground(y, x, entryWidth, entryHeight);
 
-            RenderSystem.setShader(GameRenderer::getPositionTexShader);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, skins.getOrDefault(nick.getContents(), steveSkin));
+            client.getTextureManager().bind(skins.getOrDefault(nick.getContents(), steveSkin));
+            RenderSystem.color4f(1.0F, 1.0F, 1.0F, 1.0F);
 
             blit(matrices, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
             blit(matrices, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
 
-            AboutTabWidget.this.minecraft.font.drawShadow(matrices, nick, x + 40, y + 11, 16777215);
-            AboutTabWidget.this.minecraft.font.drawShadow(matrices, role, x + 40, y + 21, -5592406);
+            client.font.drawShadow(matrices, nick, x + 40, y + 11, 16777215);
+            client.font.drawShadow(matrices, role, x + 40, y + 21, -5592406);
 
-            if (link != null) {
-                link.x = x + entryWidth - 62;
-                link.y = y + 10;
-                link.render(matrices, mouseX, mouseY, tickDelta);
-            }
+            link.x = x + entryWidth - 62;
+            link.y = y + 10;
+            link.render(matrices, mouseX, mouseY, tickDelta);
         }
 
         public List<? extends GuiEventListener> children() {
-            return ImmutableList.of(this.link);
-        }
-
-        public List<? extends NarratableEntry> narratables() {
             return ImmutableList.of(this.link);
         }
     }

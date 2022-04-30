@@ -6,9 +6,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.event.RegisterCommandsEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.event.server.ServerStoppingEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
+import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 import su.plo.voice.server.commands.CommandManager;
 import su.plo.voice.server.network.ServerNetworkHandlerForge;
 
@@ -34,7 +34,7 @@ public class VoiceServerForge extends VoiceServer {
     }
 
     public static void onChannelRegister(ServerboundCustomPayloadPacket packet, ServerPlayer player) {
-        FriendlyByteBuf buffer = packet.getData();
+        FriendlyByteBuf buffer = packet.getInternalData();
         byte[] data = new byte[Math.max(buffer.readableBytes(), 0)];
         buffer.readBytes(data);
 
@@ -61,20 +61,22 @@ public class VoiceServerForge extends VoiceServer {
 
     @SubscribeEvent
     public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer player) {
+        if (event.getPlayer() instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) event.getPlayer();
             network.handleJoin(player);
         }
     }
 
     @SubscribeEvent
     public void onPlayerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-        if (event.getPlayer() instanceof ServerPlayer player) {
+        if (event.getPlayer() instanceof ServerPlayer) {
+            ServerPlayer player = (ServerPlayer) event.getPlayer();
             network.handleQuit(player);
         }
     }
 
     @SubscribeEvent
-    public void onServerStart(ServerStartedEvent event) {
+    public void onServerStart(FMLServerStartedEvent event) {
         setServer(event.getServer());
         this.start();
 
@@ -84,7 +86,7 @@ public class VoiceServerForge extends VoiceServer {
     }
 
     @SubscribeEvent
-    public void onServerStop(ServerStoppingEvent event) {
+    public void onServerStop(FMLServerStoppingEvent event) {
         this.close();
     }
 }

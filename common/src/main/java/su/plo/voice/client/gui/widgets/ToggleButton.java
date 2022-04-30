@@ -1,10 +1,8 @@
 package su.plo.voice.client.gui.widgets;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.TranslatableComponent;
 import su.plo.voice.client.config.entries.BooleanConfigEntry;
@@ -40,18 +38,14 @@ public class ToggleButton extends AbstractWidget {
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
-    }
-
-    @Override
     public void onClick(double mouseX, double mouseY) {
         this.invertToggle();
     }
 
     protected void renderBg(PoseStack matrices, Minecraft client, int mouseX, int mouseY) {
-        RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        int i = (this.isHoveredOrFocused() && this.active ? 2 : 1) * 20;
+        client.getTextureManager().bind(WIDGETS_LOCATION);
+
+        int i = (this.isHovered() && this.active ? 2 : 1) * 20;
         if (this.toggled.get()) {
             blit(matrices, this.x + (int)((double)(this.width - 9)), this.y, 0, 46 + i, 4, 20);
             blit(matrices, this.x + (int)((double)(this.width - 9)) + 4, this.y, 196, 46 + i, 4, 20);

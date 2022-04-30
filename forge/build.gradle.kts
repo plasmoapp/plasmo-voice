@@ -59,12 +59,12 @@ dependencies {
     "shadowCommon"("su.plo.voice:common:1.0.0")
 
     // Opus
-    implementation("su.plo.voice:opus:1.1.2")
-    "shadowCommon"("su.plo.voice:opus:1.1.2")
+    implementation("su.plo.voice:opus:1.1.2-old-jna")
+    "shadowCommon"("su.plo.voice:opus:1.1.2-old-jna")
 
     // RNNoise
-    implementation("su.plo.voice:rnnoise:1.0.0")
-    "shadowCommon"("su.plo.voice:rnnoise:1.0.0")
+    implementation("su.plo.voice:rnnoise:1.0.0-old-jna")
+    "shadowCommon"("su.plo.voice:rnnoise:1.0.0-old-jna")
 
     compileOnly("org.projectlombok:lombok:1.18.20")
     annotationProcessor("org.projectlombok:lombok:1.18.20")

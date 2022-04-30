@@ -9,7 +9,6 @@ import su.plo.voice.server.VoiceServer;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Optional;
 
 public class VoiceMuteList {
     public static void register(CommandDispatcher<CommandSourceStack> dispatcher) {
@@ -31,8 +30,8 @@ public class VoiceMuteList {
                             false
                     );
                     VoiceServer.getMuted().forEach((uuid, muted) -> {
-                        Optional<GameProfile> gameProfile = VoiceServer.getServer().getProfileCache().get(uuid);
-                        if (gameProfile.isPresent()) {
+                        GameProfile gameProfile = VoiceServer.getServer().getProfileCache().get(uuid);
+                        if (gameProfile != null) {
                             String expires = muted.getTo() > 0
                                     ? new SimpleDateFormat(VoiceServer.getInstance().getMessage("mute_expires_format")).format(new Date(muted.getTo()))
                                     : VoiceServer.getInstance().getMessage("mute_expires_never");
@@ -41,7 +40,7 @@ public class VoiceMuteList {
                                     : muted.getReason();
                             ctx.getSource().sendSuccess(
                                     new TextComponent(VoiceServer.getInstance().getMessage("muted_list_entry")
-                                            .replace("{player}", gameProfile.get().getName())
+                                            .replace("{player}", gameProfile.getName())
                                             .replace("{expires}", expires)
                                             .replace("{reason}", reason)),
                                     false

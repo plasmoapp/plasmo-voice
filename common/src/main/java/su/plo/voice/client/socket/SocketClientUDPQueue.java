@@ -67,7 +67,8 @@ public class SocketClientUDPQueue extends Thread {
                             );
                         }
                     }
-                } else if (message.getPacket() instanceof VoiceServerPacket packet) {
+                } else if (message.getPacket() instanceof VoiceServerPacket) {
+                    VoiceServerPacket packet = (VoiceServerPacket) message.getPacket();
                     if (VoiceClient.getClientConfig().isMuted(packet.getFrom())) {
                         continue;
                     }
@@ -79,7 +80,8 @@ public class SocketClientUDPQueue extends Thread {
                     talking.put(packet.getFrom(), packet.getDistance() > VoiceClient.getServerConfig().getMaxDistance());
 
                     queuePacket(packet, packet.getFrom());
-                } else if (message.getPacket() instanceof VoiceEndServerPacket packet) {
+                } else if (message.getPacket() instanceof VoiceEndServerPacket) {
+                    VoiceEndServerPacket packet = (VoiceEndServerPacket) message.getPacket();
                     if (VoiceClient.getClientConfig().isMuted(packet.getFrom())) {
                         continue;
                     }

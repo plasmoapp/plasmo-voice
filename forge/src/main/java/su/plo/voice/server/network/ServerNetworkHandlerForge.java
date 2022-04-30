@@ -16,7 +16,8 @@ public class ServerNetworkHandlerForge extends ServerNetworkHandler {
             ByteArrayDataInput in = ByteStreams.newDataInput(data);
 
             Packet pkt = PacketTCP.read(in);
-            if (pkt instanceof ClientConnectPacket packet) {
+            if (pkt instanceof ClientConnectPacket) {
+                ClientConnectPacket packet = (ClientConnectPacket) pkt;
                 this.handle(packet, player);
             }
         } catch (Exception e) {

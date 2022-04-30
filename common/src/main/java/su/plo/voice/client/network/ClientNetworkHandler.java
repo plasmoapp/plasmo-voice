@@ -80,7 +80,8 @@ public abstract class ClientNetworkHandler {
                 VoiceClient.socketUDP = new SocketClientUDP();
                 VoiceClient.socketUDP.start();
 
-                if (client.screen instanceof VoiceNotAvailableScreen screen) {
+                if (client.screen instanceof VoiceNotAvailableScreen) {
+                    VoiceNotAvailableScreen screen = (VoiceNotAvailableScreen) client.screen;
                     screen.setConnecting();
                 }
             }

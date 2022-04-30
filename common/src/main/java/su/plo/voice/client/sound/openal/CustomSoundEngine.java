@@ -17,8 +17,6 @@ import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Recorder;
 import su.plo.voice.client.sound.capture.JavaxCaptureDevice;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -49,9 +47,6 @@ public class CustomSoundEngine {
 
     private final List<Consumer<CustomSoundEngine>> initListeners = new ArrayList<>();
     private final List<Runnable> closeListeners = new ArrayList<>();
-
-    public static Method soundPhysicsPlaySound;
-    public static Method soundPhysicsReverb;
 
     public CustomSoundEngine() {
         this.listener = new Listener();
@@ -159,9 +154,6 @@ public class CustomSoundEngine {
         this.initialized = true;
         this.failed = false;
         this.postInit();
-        for (Consumer<CustomSoundEngine> listener : initListeners) {
-            listener.accept(this);
-        }
 
         executor.scheduleAtFixedRate(() -> {
             Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
@@ -185,11 +177,8 @@ public class CustomSoundEngine {
         SocketClientUDPQueue.audioChannels.clear();
 
         if (this.initialized) {
-            for (Runnable listener : closeListeners) {
-                listener.run();
-            }
-
-            if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen screen) {
+            if (Minecraft.getInstance().screen instanceof VoiceSettingsScreen) {
+                VoiceSettingsScreen screen = (VoiceSettingsScreen) Minecraft.getInstance().screen;
                 screen.closeSpeaker();
             }
 
@@ -330,24 +319,6 @@ public class CustomSoundEngine {
     }
 
     public void postInit() {
-        try {
-            // dependencies? nah
-            // reflections? yep
-            Class clazz = Class.forName("com.sonicether.soundphysics.SoundPhysics");
-            clazz.getMethod("init").invoke(null);
-            soundPhysicsPlaySound = clazz.getMethod(
-                    "onPlaySound",
-                    double.class, double.class, double.class, int.class
-            );
-            soundPhysicsReverb = clazz.getMethod(
-                    "onPlayReverb",
-                    double.class, double.class, double.class, int.class
-            );
-
-            soundPhysics = true;
-        } catch (ClassNotFoundException | NoSuchMethodException |
-                InvocationTargetException | IllegalAccessException ignored) {
-        }
     }
 
     public void onClose(Runnable listener) {

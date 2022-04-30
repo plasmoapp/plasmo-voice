@@ -15,7 +15,7 @@ public abstract class MixinKeyboardHandler {
     private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
         if (VoiceClient.getClientConfig() == null) return;
 
-        var inputKey = InputConstants.Type.KEYSYM.getOrCreate(key);
+        InputConstants.Key inputKey = InputConstants.Type.KEYSYM.getOrCreate(key);
         if (action == 1) {
             VoiceClient.getClientConfig().keyBindings.onKeyDown(inputKey);
         } else if (action == 0) {

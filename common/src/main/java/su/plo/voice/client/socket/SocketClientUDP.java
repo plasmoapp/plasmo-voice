@@ -69,7 +69,8 @@ public class SocketClientUDP extends Thread implements SocketConnection {
         if (System.currentTimeMillis() - this.keepAlive > 7000L) {
             this.ping.timedOut = true;
 
-            if (client.screen instanceof VoiceNotAvailableScreen screen) {
+            if (client.screen instanceof VoiceNotAvailableScreen) {
+                VoiceNotAvailableScreen screen = (VoiceNotAvailableScreen) client.screen;
                 screen.setConnecting();
             } else if (client.screen instanceof VoiceSettingsScreen) {
                 client.execute(() -> {
@@ -85,7 +86,8 @@ public class SocketClientUDP extends Thread implements SocketConnection {
             VoiceClient.LOGGER.info("UDP timed out");
             VoiceClient.disconnect();
 
-            if (client.screen instanceof VoiceNotAvailableScreen screen) {
+            if (client.screen instanceof VoiceNotAvailableScreen) {
+                VoiceNotAvailableScreen screen = (VoiceNotAvailableScreen) client.screen;
                 screen.setCannotConnect();
             } else if (client.screen instanceof VoiceSettingsScreen) {
                 client.execute(() -> {
