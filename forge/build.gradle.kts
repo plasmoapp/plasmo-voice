@@ -2,8 +2,6 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import com.matthewprenger.cursegradle.CurseArtifact
 import com.matthewprenger.cursegradle.CurseProject
 import com.matthewprenger.cursegradle.CurseRelation
-import com.modrinth.minotaur.TaskModrinthUpload
-import com.modrinth.minotaur.request.VersionType
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 import net.fabricmc.loom.task.RemapJarTask
 
@@ -12,7 +10,7 @@ val forgeVersion: String by rootProject
 
 val curseProjectId: String by rootProject
 val curseFabricRelease: String by rootProject
-val curseDisplayVersion: String by rootProject
+val displayMinecraftVersion: String by rootProject
 val curseSupportedVersions: String by rootProject
 
 val modrinthVersionType: String by rootProject
@@ -98,7 +96,7 @@ tasks {
     remapJar {
         dependsOn(getByName<ShadowJar>("shadowJar"))
         input.set(shadowJar.get().archiveFile)
-        archiveBaseName.set("plasmovoice-forge-${minecraftVersion}")
+        archiveBaseName.set("plasmovoice-forge-${displayMinecraftVersion}")
     }
 
     build {
@@ -113,27 +111,24 @@ tasks {
 
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
 
-tasks.register<TaskModrinthUpload>("publishModrinth") {
-    token = if (file("${rootDir}/modrinth_key.txt").exists()) {
+modrinth {
+    token.set(if (file("${rootDir}/modrinth_key.txt").exists()) {
         file("${rootDir}/modrinth_key.txt").readText()
     } else {
         ""
-    }
+    })
 
-    projectId = modrinthProjectId
+    projectId.set(modrinthProjectId)
 
-    versionNumber = "forge-$curseDisplayVersion-$version"
-    versionName = "[Forge ${curseDisplayVersion}] Plasmo Voice $version"
-    versionType = VersionType.valueOf(modrinthVersionType)
+    versionNumber.set("forge-$displayMinecraftVersion-$version")
+    versionName.set("[Forge ${displayMinecraftVersion}] Plasmo Voice $version")
+    versionType.set(modrinthVersionType)
 
-    modrinthSupportedVersions.split(",").forEach {
-        addGameVersion(it)
-    }
-    changelog = file("${rootDir}/changelog.md").readText()
-    addLoader("forge")
-    uploadFile = file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar")
+    gameVersions.addAll(modrinthSupportedVersions.split(","))
+    changelog.set(file("${rootDir}/changelog.md").readText())
+    loaders.add("forge")
+    uploadFile.set(remapJar)
 }
-
 
 curseforge {
     apiKey = if (file("${rootDir}/curseforge_key.txt").exists()) {
@@ -154,7 +149,7 @@ curseforge {
         mainArtifact(
             file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar"),
             closureOf<CurseArtifact> {
-                displayName = "[Forge ${curseDisplayVersion}] Plasmo Voice $version"
+                displayName = "[Forge ${displayMinecraftVersion}] Plasmo Voice $version"
 
                 relations(closureOf<CurseRelation> {
                     optionalDependency("sound-physics-remastered")

@@ -3,17 +3,17 @@ import com.matthewprenger.cursegradle.CurseArtifact
 import com.matthewprenger.cursegradle.CurseProject
 import com.matthewprenger.cursegradle.CurseRelation
 import com.matthewprenger.cursegradle.Options
-import com.modrinth.minotaur.TaskModrinthUpload
-import com.modrinth.minotaur.request.VersionType
+import com.modrinth.minotaur.dependencies.ModDependency
 import net.fabricmc.loom.task.RemapJarTask
 
 val minecraftVersion: String by rootProject
 val fabricLoaderVersion: String by rootProject
 val fabricVersion: String by rootProject
+val fabricMinVersion: String by rootProject
 
 val curseProjectId: String by rootProject
 val curseFabricRelease: String by rootProject
-val curseDisplayVersion: String by rootProject
+val displayMinecraftVersion: String by rootProject
 val curseSupportedVersions: String by rootProject
 
 val modrinthVersionType: String by rootProject
@@ -43,13 +43,13 @@ dependencies {
     modApi("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
 
     // Fabric API jar-in-jar
-    include(fabricApi.module("fabric-api-base", fabricVersion))?.let { modImplementation(it) }
-    include(fabricApi.module("fabric-command-api-v1", fabricVersion))?.let { modImplementation(it) }
-    include(fabricApi.module("fabric-key-binding-api-v1", fabricVersion))?.let { modImplementation(it) }
-    include(fabricApi.module("fabric-lifecycle-events-v1", fabricVersion))?.let { modImplementation(it) }
-    include(fabricApi.module("fabric-networking-api-v1", fabricVersion))?.let { modImplementation(it) }
-    include(fabricApi.module("fabric-rendering-v1", fabricVersion))?.let { modImplementation(it) }
-    include(fabricApi.module("fabric-resource-loader-v0", fabricVersion))?.let { modImplementation(it) }
+    modImplementation(fabricApi.module("fabric-api-base", fabricVersion))
+    modImplementation(fabricApi.module("fabric-command-api-v1", fabricVersion))
+    modImplementation(fabricApi.module("fabric-key-binding-api-v1", fabricVersion))
+    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", fabricVersion))
+    modImplementation(fabricApi.module("fabric-networking-api-v1", fabricVersion))
+    modImplementation(fabricApi.module("fabric-rendering-v1", fabricVersion))
+    modImplementation(fabricApi.module("fabric-resource-loader-v0", fabricVersion))
 
     // Plasmo Voice protocol
     implementation("su.plo.voice:common:1.0.0")
@@ -85,7 +85,7 @@ tasks {
                 mutableMapOf(
                     "version" to project.version,
                     "loader_version" to fabricLoaderVersion,
-                    "fabric_version" to fabricVersion
+                    "fabric_min_version" to fabricMinVersion
                 )
             )
         }
@@ -104,7 +104,7 @@ tasks {
     remapJar {
         dependsOn(getByName<ShadowJar>("shadowJar"))
         input.set(shadowJar.get().archiveFile)
-        archiveBaseName.set("plasmovoice-fabric-${minecraftVersion}")
+        archiveBaseName.set("plasmovoice-fabric-${displayMinecraftVersion}")
     }
 
     build {
@@ -115,29 +115,46 @@ tasks {
                 .copyTo(rootProject.buildDir.resolve("libs/" + remapJar.get().archiveFile.get().asFile.name), true)
         }
     }
+
+    // Modrinth
+    getByName("modrinth") {
+        dependsOn(remapJar)
+    }
+
+    modrinth.configure {
+        group = "upload"
+    }
 }
 
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
 
-tasks.register<TaskModrinthUpload>("publishModrinth") {
-    token = if (file("${rootDir}/modrinth_key.txt").exists()) {
+modrinth {
+    token.set(if (file("${rootDir}/modrinth_key.txt").exists()) {
         file("${rootDir}/modrinth_key.txt").readText()
     } else {
         ""
-    }
+    })
 
-    projectId = modrinthProjectId
+    projectId.set(modrinthProjectId)
 
-    versionNumber = "fabric-$curseDisplayVersion-$version"
-    versionName = "[Fabric ${curseDisplayVersion}] Plasmo Voice $version"
-    versionType = VersionType.valueOf(modrinthVersionType)
+    versionNumber.set("fabric-$displayMinecraftVersion-$version")
+    versionName.set("[Fabric ${displayMinecraftVersion}] Plasmo Voice $version")
+    versionType.set(modrinthVersionType)
 
-    modrinthSupportedVersions.split(",").forEach {
-        addGameVersion(it)
-    }
-    changelog = file("${rootDir}/changelog.md").readText()
-    addLoader("fabric")
-    uploadFile = file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar")
+    gameVersions.addAll(modrinthSupportedVersions.split(","))
+    changelog.set(file("${rootDir}/changelog.md").readText())
+    loaders.add("fabric")
+    uploadFile.set(remapJar)
+
+    dependencies.set(
+        mutableListOf(
+            // fabric api
+            ModDependency(
+                "P7dR8mSH",
+                "required"
+            )
+        )
+    )
 }
 
 curseforge {
@@ -151,15 +168,13 @@ curseforge {
         id = curseProjectId
         changelog = file("${rootDir}/changelog.txt")
         releaseType = curseFabricRelease
-        curseSupportedVersions.split(",").forEach {
-            addGameVersion(it)
-        }
+        gameVersionStrings.addAll(curseSupportedVersions.split(","))
         addGameVersion("Fabric")
 
         mainArtifact(
             file("${project.buildDir}/libs/${remapJar.archiveBaseName.get()}-${version}.jar"),
             closureOf<CurseArtifact> {
-                displayName = "[Fabric ${curseDisplayVersion}] Plasmo Voice $version"
+                displayName = "[Fabric ${displayMinecraftVersion}] Plasmo Voice $version"
 
                 relations(closureOf<CurseRelation> {
                     optionalDependency("sound-physics-fabric")
