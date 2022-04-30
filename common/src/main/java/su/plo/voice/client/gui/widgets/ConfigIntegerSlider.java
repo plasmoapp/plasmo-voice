@@ -42,7 +42,7 @@ public class ConfigIntegerSlider extends AbstractSliderButton {
     }
 
     public boolean isHovered() {
-        return active && super.isHoveredOrFocused();
+        return active && super.isHovered();
     }
 
     protected void applyValue() {

@@ -34,7 +34,7 @@ public class OrderedButtonWidget extends Button {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        int i = this.getYImage(this.isHoveredOrFocused());
+        int i = this.getYImage(this.isHovered());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
@@ -46,7 +46,7 @@ public class OrderedButtonWidget extends Button {
         textRenderer.drawShadow(matrices, orderedText, (float)((this.x + this.width / 2) - textRenderer.width(orderedText) / 2), this.y + (this.height - 8) / 2,
                 j | Mth.ceil(this.alpha * 255.0F) << 24);
 
-        if (this.isHoveredOrFocused()) {
+        if (this.isHovered()) {
             this.renderToolTip(matrices, mouseX, mouseY);
         }
     }

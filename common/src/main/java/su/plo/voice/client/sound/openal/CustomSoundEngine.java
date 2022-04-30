@@ -51,7 +51,6 @@ public class CustomSoundEngine {
     private final List<Runnable> closeListeners = new ArrayList<>();
 
     public static Method soundPhysicsPlaySound;
-    public static Method soundPhysicsReverb;
 
     public CustomSoundEngine() {
         this.listener = new Listener();
@@ -337,10 +336,6 @@ public class CustomSoundEngine {
             clazz.getMethod("init").invoke(null);
             soundPhysicsPlaySound = clazz.getMethod(
                     "onPlaySound",
-                    double.class, double.class, double.class, int.class
-            );
-            soundPhysicsReverb = clazz.getMethod(
-                    "onPlayReverb",
                     double.class, double.class, double.class, int.class
             );
 

@@ -164,7 +164,7 @@ public class KeyBindWidget extends Button {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        int i = this.getYImage(this.isHoveredOrFocused());
+        int i = this.getYImage(this.isHovered());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
@@ -181,7 +181,7 @@ public class KeyBindWidget extends Button {
                     j | Mth.ceil(this.alpha * 255.0F) << 24);
         }
 
-        if (this.isHoveredOrFocused()) {
+        if (this.isHovered()) {
             this.renderToolTip(matrices, mouseX, mouseY);
         }
     }

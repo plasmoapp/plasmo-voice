@@ -73,14 +73,7 @@ public class CustomSource {
             return;
         }
 
-        if (reverbOnly && CustomSoundEngine.soundPhysicsReverb != null) {
-            if (System.currentTimeMillis() - lastEnvCalculated > 1000 ||
-                    (lastEnvPos != null && lastEnvPos.distanceTo(pos) > 1)) {
-                CustomSoundEngine.soundPhysicsReverb.invoke(null, pos.x(), pos.y(), pos.z(), pointer);
-                lastEnvPos = pos;
-                lastEnvCalculated = System.currentTimeMillis();
-            }
-        } else if (CustomSoundEngine.soundPhysicsPlaySound != null) {
+        if (CustomSoundEngine.soundPhysicsPlaySound != null) {
             if (System.currentTimeMillis() - lastEnvCalculated > 1000 ||
                     (lastEnvPos != null && lastEnvPos.distanceTo(pos) > 1)) {
                 CustomSoundEngine.soundPhysicsPlaySound.invoke(null, pos.x(), pos.y(), pos.z(), pointer);
