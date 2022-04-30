@@ -1,13 +1,8 @@
 val minecraftVersion: String by rootProject
 val fabricLoaderVersion: String by rootProject
 val fabricVersion: String by rootProject
-val modVersion: String by rootProject
-val mavenGroup: String by rootProject
 
 dependencies {
-    minecraft("com.mojang:minecraft:${minecraftVersion}")
-    mappings(loom.officialMojangMappings())
-
     modImplementation("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
 
     // Lombok
@@ -31,7 +26,7 @@ dependencies {
 }
 
 architectury {
-    common(true)
+    common("fabric", "forge")
 }
 
 configurations {

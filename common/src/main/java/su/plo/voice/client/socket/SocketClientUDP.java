@@ -14,13 +14,14 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-public class SocketClientUDP extends Thread {
+public class SocketClientUDP extends Thread implements SocketConnection {
     private static final Minecraft client = Minecraft.getInstance();
 
     private final InetAddress addr;
     public final int port;
     private final DatagramSocket socket;
     public boolean authorized;
+
     private final SocketClientAuth auth;
     private final SocketClientUDPQueue clientQueue;
     public final SocketClientPing ping;
@@ -41,8 +42,27 @@ public class SocketClientUDP extends Thread {
         this.clientQueue = new SocketClientUDPQueue(this);
         this.clientQueue.start();
 
-        ping = new SocketClientPing(this);
-        ping.start();
+        this.ping = new SocketClientPing(this);
+        this.ping.start();
+    }
+
+    @Override
+    public void run() {
+        try {
+            while (!this.socket.isClosed()) {
+                this.clientQueue.queue.add(PacketUDP.read(this.socket));
+
+                synchronized (this.clientQueue) {
+                    this.clientQueue.notify();
+                }
+            }
+        } catch (SocketException e) {
+            if(!e.getMessage().equals("Socket closed")) {
+                e.printStackTrace();
+            }
+        } catch (IOException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     public void checkTimeout() {
@@ -77,10 +97,7 @@ public class SocketClientUDP extends Thread {
         }
     }
 
-    public boolean isClosed() {
-        return socket.isClosed();
-    }
-
+    @Override
     public void close() {
         if (client.screen instanceof VoiceSettingsScreen) {
             client.execute(() ->
@@ -108,27 +125,29 @@ public class SocketClientUDP extends Thread {
         }
     }
 
+    @Override
     public void send(Packet packet) throws IOException {
         byte[] data = PacketUDP.write(packet);
         socket.send(new DatagramPacket(data, data.length, addr, port));
     }
 
     @Override
-    public void run() {
-        try {
-            while (!this.socket.isClosed()) {
-                this.clientQueue.queue.add(PacketUDP.read(this.socket));
+    public boolean isClosed() {
+        return socket.isClosed();
+    }
 
-                synchronized (this.clientQueue) {
-                    this.clientQueue.notify();
-                }
-            }
-        } catch (SocketException e) {
-            if(!e.getMessage().equals("Socket closed")) {
-                e.printStackTrace();
-            }
-        } catch (IOException | InstantiationException | InvocationTargetException | NoSuchMethodException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+    @Override
+    public boolean isConnected() {
+        return isAuthorized() && !isTimedOut();
+    }
+
+    @Override
+    public boolean isTimedOut() {
+        return ping.timedOut;
+    }
+
+    @Override
+    public boolean isAuthorized() {
+        return authorized;
     }
 }

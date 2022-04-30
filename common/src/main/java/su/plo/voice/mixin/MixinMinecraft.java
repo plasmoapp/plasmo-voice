@@ -1,20 +1,18 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.mixin;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.multiplayer.ServerData;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import su.plo.voice.client.VoiceClientForge;
-
-import javax.annotation.Nullable;
+import su.plo.voice.client.VoiceClient;
 
 @Mixin(Minecraft.class)
 public abstract class MixinMinecraft {
-
     @Shadow @Nullable public abstract ServerData getCurrentServer();
 
     @Shadow public abstract boolean isLocalServer();
@@ -25,10 +23,10 @@ public abstract class MixinMinecraft {
             return;
         }
 
-        VoiceClientForge.LOGGER.info("Disconnect from " + (getCurrentServer() == null ? "localhost" : getCurrentServer().ip));
+        VoiceClient.LOGGER.info("Disconnect from " + (getCurrentServer() == null ? "localhost" : getCurrentServer().ip));
 
-        VoiceClientForge.getClientConfig().save();
-        VoiceClientForge.disconnect();
-        VoiceClientForge.socketUDP = null;
+        VoiceClient.getClientConfig().save();
+        VoiceClient.disconnect();
+        VoiceClient.socketUDP = null;
     }
 }

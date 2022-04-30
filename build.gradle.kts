@@ -1,6 +1,8 @@
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 
 val minecraftVersion: String by rootProject
+val modVersion: String by rootProject
+val mavenGroup: String by rootProject
 
 plugins {
     java
@@ -18,14 +20,25 @@ architectury {
 subprojects {
     apply(plugin = "dev.architectury.loom")
 
+    var mappingsDependency: Dependency? = null
+
     configure<LoomGradleExtensionAPI> {
         silentMojangMappingsLicense()
+
+        mappingsDependency = layered {
+            officialMojangMappings()
+        }
 
         launches {
             named("client") {
 //                property("fabric.log.level", "debug")
             }
         }
+    }
+
+    dependencies {
+        "minecraft"("com.mojang:minecraft:${minecraftVersion}")
+        mappingsDependency?.let { "mappings"(it) }
     }
 }
 
@@ -37,6 +50,13 @@ allprojects {
     apply(plugin = "com.modrinth.minotaur")
 
     java { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
+
+    base {
+        archivesBaseName = "plasmovoice"
+    }
+
+    project.group = mavenGroup
+    project.version = modVersion
 
     tasks.withType<JavaCompile>().configureEach {
         options.encoding = "UTF-8"

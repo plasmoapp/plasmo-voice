@@ -18,6 +18,7 @@ import su.plo.voice.client.gui.tabs.KeyBindingsTabWidget;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 // govnokod
 public class ClientConfig {
@@ -239,7 +240,7 @@ public class ClientConfig {
         // sound occlusion
         public KeyBindingConfigEntry occlusion = new KeyBindingConfigEntry();
 
-        public transient Set<InputConstants.Key> pressed = new ConcurrentSet<>();
+        public transient Set<InputConstants.Key> pressed = ConcurrentHashMap.newKeySet();
 
         public void setupDefaults() {
             pushToTalk.setDefault(
@@ -312,27 +313,23 @@ public class ClientConfig {
         }
 
         public void onKeyDown(InputConstants.Key key) {
-            if (isKeyBindOpened()) {
-                return;
-            }
+            if (isKeyBindOpened()) return;
 
             pressed.add(key);
             for (KeyBindingConfigEntry entry : registeredKeyBinds) {
-                if (entry.anyContext || (client.screen == null || client.screen.passEvents)) {
-                    entry.get().onKeyDown(key);
+                if (entry.anyContext || client.screen == null) {
+                    entry.get().onKeyDown();
                 }
             }
         }
 
         public void onKeyUp(InputConstants.Key key) {
-            if (isKeyBindOpened()) {
-                return;
-            }
+            if (isKeyBindOpened()) return;
 
-            pressed.removeIf(k -> k.getType().equals(key.getType()) && k.getValue() == key.getValue());
+            pressed.remove(key);
             for (KeyBindingConfigEntry entry : registeredKeyBinds) {
-                if (entry.anyContext || (client.screen == null || client.screen.passEvents)) {
-                    entry.get().onKeyUp(key);
+                if (entry.anyContext || client.screen == null ) {
+                    entry.get().onKeyUp();
                 }
             }
         }
@@ -439,8 +436,8 @@ public class ClientConfig {
             pressed = false;
         }
 
-        public void onKeyDown(InputConstants.Key key) {
-            if (keys.size() > 0 && VoiceClient.getClientConfig().keyBindings.pressed.containsAll(keys)) {
+        public void onKeyDown() {
+            if (!pressed && keys.size() > 0 && VoiceClient.getClientConfig().keyBindings.pressed.containsAll(keys)) {
                 pressed = true;
                 if (onPress != null) {
                     onPress.onPress(1);
@@ -448,7 +445,7 @@ public class ClientConfig {
             }
         }
 
-        public void onKeyUp(InputConstants.Key key) {
+        public void onKeyUp() {
             if (pressed && keys.size() > 0 && !VoiceClient.getClientConfig().keyBindings.pressed.containsAll(keys)) {
                 pressed = false;
                 if (onPress != null) {

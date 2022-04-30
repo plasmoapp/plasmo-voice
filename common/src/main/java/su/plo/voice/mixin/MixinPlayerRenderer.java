@@ -1,4 +1,4 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.model.PlayerModel;
@@ -12,7 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.voice.client.VoiceClient;
-import su.plo.voice.client.render.CustomEntityRenderer;
+import su.plo.voice.client.render.EntityIconRenderer;
 
 @Mixin(PlayerRenderer.class)
 public abstract class MixinPlayerRenderer extends LivingEntityRenderer<AbstractClientPlayer, PlayerModel<AbstractClientPlayer>> {
@@ -31,6 +31,13 @@ public abstract class MixinPlayerRenderer extends LivingEntityRenderer<AbstractC
             return;
         }
 
-        CustomEntityRenderer.entityRender(player, d, matrices, this.shouldShowName(player), vertexConsumerProvider, i);
+        EntityIconRenderer.getInstance().entityRender(
+                player,
+                d,
+                matrices,
+                this.shouldShowName(player),
+                vertexConsumerProvider,
+                i
+        );
     }
 }

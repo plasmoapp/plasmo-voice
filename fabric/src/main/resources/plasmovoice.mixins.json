@@ -1,19 +1,9 @@
 {
     "required": true,
-    "minVersion": "0.8",
-    "package": "su.plo.voice.client.mixin",
-    "compatibilityLevel": "JAVA_16",
+    "package": "su.plo.voice.fabric.mixin",
+    "compatibilityLevel": "JAVA_17",
     "mixins": [],
-    "client": [
-        "MixinKeyboardHandler",
-        "MixinLevelRenderer",
-        "MixinMinecraft",
-        "MixinMouseHandler",
-        "MixinPlayerEntry",
-        "MixinPlayerRenderer",
-        "MixinSkinManager",
-        "MixinSoundEngine"
-    ],
+    "client": [],
     "injectors": {
         "defaultRequire": 1
     }

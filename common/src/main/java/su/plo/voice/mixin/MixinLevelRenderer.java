@@ -1,4 +1,4 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;

@@ -1,4 +1,4 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.forge.mixin;
 
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;

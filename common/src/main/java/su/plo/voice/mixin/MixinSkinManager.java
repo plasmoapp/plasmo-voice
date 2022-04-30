@@ -1,4 +1,4 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.mixin;
 
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;

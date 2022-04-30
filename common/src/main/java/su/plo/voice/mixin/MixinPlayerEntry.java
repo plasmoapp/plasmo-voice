@@ -1,4 +1,4 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.mixin;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.vertex.PoseStack;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import su.plo.voice.client.VoiceClientForge;
+import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.PlayerVolumeWidget;
 
 import java.util.List;
@@ -56,7 +56,7 @@ public abstract class MixinPlayerEntry {
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void onConstructed(CallbackInfo ci) {
-        if(VoiceClientForge.getServerConfig() == null) {
+        if(VoiceClient.getServerConfig() == null) {
             return;
         }
 
@@ -66,23 +66,21 @@ public abstract class MixinPlayerEntry {
 
         if (!minecraft.player.getGameProfile().getId().equals(id) &&
                 !socialInteractionsManager.isBlocked(id) &&
-                VoiceClientForge.getServerConfig().getClients().contains(id)) {
-
-
-            this.volumeButton = new ImageButton(0, 0, 20, 20, 0, 72, 20, VoiceClientForge.ICONS, 256, 256, (buttonWidget) -> {
+                VoiceClient.getServerConfig().getClients().contains(id)) {
+            this.volumeButton = new ImageButton(0, 0, 20, 20, 0, 72, 20, VoiceClient.ICONS, 256, 256, (buttonWidget) -> {
                 this.playerVolumeWidget.visible = true;
                 this.volumeButton.visible = false;
                 this.volumeButtonActive.visible = true;
             }, (buttonWidget, matrixStack, i, j) -> {}, new TranslatableComponent("gui.socialInteractions.hide"));
 
-            this.volumeButtonActive = new ImageButton(0, 0, 20, 20, 0, 92, 0, VoiceClientForge.ICONS, 256, 256, (buttonWidget) -> {
+            this.volumeButtonActive = new ImageButton(0, 0, 20, 20, 0, 92, 0, VoiceClient.ICONS, 256, 256, (buttonWidget) -> {
                 this.playerVolumeWidget.visible = false;
                 this.volumeButtonActive.visible = false;
                 this.volumeButton.visible = true;
             }, (buttonWidget, matrixStack, i, j) -> {}, new TranslatableComponent("gui.socialInteractions.hide"));
 
-            this.muteHideButton = new ImageButton(0, 0, 20, 20, 0, 32, 20, VoiceClientForge.ICONS, 256, 256, (buttonWidget) -> {
-                VoiceClientForge.getClientConfig().mute(id);
+            this.muteHideButton = new ImageButton(0, 0, 20, 20, 0, 32, 20, VoiceClient.ICONS, 256, 256, (buttonWidget) -> {
+                VoiceClient.getClientConfig().mute(id);
                 this.muteShowButton.visible = true;
                 this.muteHideButton.visible = false;
             }, (buttonWidget, matrixStack, i, j) -> {
@@ -96,8 +94,8 @@ public abstract class MixinPlayerEntry {
 //                }
 
             }, new TranslatableComponent("gui.socialInteractions.hide"));
-            this.muteShowButton = new ImageButton(0, 0, 20, 20, 20, 32, 20, VoiceClientForge.ICONS, 256, 256, (buttonWidget) -> {
-                VoiceClientForge.getClientConfig().unmute(id);
+            this.muteShowButton = new ImageButton(0, 0, 20, 20, 20, 32, 20, VoiceClient.ICONS, 256, 256, (buttonWidget) -> {
+                VoiceClient.getClientConfig().unmute(id);
                 this.muteShowButton.visible = false;
                 this.muteHideButton.visible = true;
             }, (buttonWidget, matrixStack, i, j) -> {
@@ -110,7 +108,7 @@ public abstract class MixinPlayerEntry {
 //                }
 
             }, new TranslatableComponent("gui.socialInteractions.show"));
-            this.muteShowButton.visible = VoiceClientForge.getClientConfig().isMuted(id);
+            this.muteShowButton.visible = VoiceClient.getClientConfig().isMuted(id);
             this.muteHideButton.visible = !this.muteShowButton.visible;
 
             this.customButtons = ImmutableList.of(this.muteHideButton, this.muteShowButton,
@@ -150,7 +148,7 @@ public abstract class MixinPlayerEntry {
     @Inject(method = "getStatusComponent", at = @At(value = "RETURN"), cancellable = true)
     private void getStatusText(CallbackInfoReturnable<Component> cir) {
         boolean bl = this.minecraft.getPlayerSocialManager().isBlocked(this.id) ||
-                VoiceClientForge.getClientConfig().isMuted(this.id   );
+                VoiceClient.getClientConfig().isMuted(this.id   );
         boolean bl2 = this.minecraft.getPlayerSocialManager().isBlocked(this.id);
         if (bl2 && this.isRemoved) {
             cir.setReturnValue(BLOCKED_OFFLINE);

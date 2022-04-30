@@ -66,6 +66,8 @@ public abstract class ServerNetworkHandler {
     }
 
     public void handleJoin(ServerPlayer player) {
+        if (VoiceServer.getServer() == null) return;
+
         if (PlayerManager.isOp(player)
                 && !SocketServerUDP.started) {
             player.sendMessage(new TextComponent(VoiceServer.getInstance().getPrefix() +
@@ -77,7 +79,7 @@ public abstract class ServerNetworkHandler {
 
     public void handleQuit(ServerPlayer player) {
         playerToken.remove(player.getUUID());
-        disconnectClient(player.getUUID());
+        executor.submit(() -> disconnectClient(player.getUUID()));
     }
 
     public void handle(ClientConnectPacket packet, ServerPlayer player) throws IOException {
@@ -126,12 +128,12 @@ public abstract class ServerNetworkHandler {
     }
 
     public static void reconnectClient(ServerPlayer player) {
-        disconnectClient(player.getUUID());
-        UUID token = UUID.randomUUID();
-        playerToken.put(player.getUUID(), token);
-
         try {
             executor.submit(() -> {
+                disconnectClient(player.getUUID());
+                UUID token = UUID.randomUUID();
+                playerToken.put(player.getUUID(), token);
+
                 try {
                     sendTo(new ServerConnectPacket(token.toString(),
                                     VoiceServer.getServerConfig().getProxyIp() != null && !VoiceServer.getServerConfig().getProxyIp().isEmpty()

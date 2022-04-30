@@ -1,4 +1,4 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.forge.mixin;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;

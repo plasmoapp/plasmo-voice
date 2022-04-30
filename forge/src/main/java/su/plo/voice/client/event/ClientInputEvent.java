@@ -23,9 +23,9 @@ public class ClientInputEvent {
             if (VoiceClientForge.menuKey.consumeClick()) {
                 VoiceNotAvailableScreen screen = new VoiceNotAvailableScreen();
                 if (VoiceClientForge.socketUDP != null) {
-                    if (VoiceClientForge.socketUDP.ping.timedOut) {
+                    if (VoiceClientForge.socketUDP.isTimedOut()) {
                         screen.setConnecting();
-                    } else if (!VoiceClientForge.socketUDP.authorized) {
+                    } else if (!VoiceClientForge.socketUDP.isAuthorized()) {
                         screen.setConnecting();
                     } else {
                         screen.setCannotConnect();

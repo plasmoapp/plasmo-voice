@@ -9,10 +9,10 @@ import net.minecraft.world.entity.player.Player;
 import su.plo.voice.client.VoiceClient;
 
 public class VoiceHud {
-    private final Minecraft client = Minecraft.getInstance();;
+    private final Minecraft client = Minecraft.getInstance();
 
     public void render() {
-        if(!VoiceClient.isConnected()) {
+        if (!VoiceClient.isConnected()) {
             return;
         }
 
@@ -22,7 +22,7 @@ public class VoiceHud {
 
         if (player == null) return;
 
-        if(VoiceClient.socketUDP.ping.timedOut) {
+        if (VoiceClient.socketUDP.isTimedOut()) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
             RenderSystem.setShaderTexture(0, VoiceClient.ICONS);
@@ -37,7 +37,7 @@ public class VoiceHud {
             return;
         }
 
-        if(VoiceClient.getClientConfig().speakerMuted.get()) {
+        if (VoiceClient.getClientConfig().speakerMuted.get()) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
             RenderSystem.setShaderTexture(0, VoiceClient.ICONS);
@@ -49,7 +49,7 @@ public class VoiceHud {
                     0,
                     16,
                     16);
-        } else if(VoiceClient.getClientConfig().microphoneMuted.get() || !VoiceClient.recorder.isAvailable()
+        } else if (VoiceClient.getClientConfig().microphoneMuted.get() || !VoiceClient.recorder.isAvailable()
                 || VoiceClient.getServerConfig().getMuted().containsKey(player.getUUID())) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
@@ -62,12 +62,12 @@ public class VoiceHud {
                     0,
                     16,
                     16);
-        } else if(VoiceClient.isSpeaking()) {
+        } else if (VoiceClient.isSpeaking()) {
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
             RenderSystem.setShaderTexture(0, VoiceClient.ICONS);
 
-            if(VoiceClient.isSpeakingPriority()) {
+            if (VoiceClient.isSpeakingPriority()) {
                 inGameHud.blit(matrixStack,
                         VoiceClient.getClientConfig().micIconPosition.get().getX(client),
                         VoiceClient.getClientConfig().micIconPosition.get().getY(client),

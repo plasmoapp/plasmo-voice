@@ -1,4 +1,4 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.mixin;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;

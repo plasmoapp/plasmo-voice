@@ -3,6 +3,7 @@ package su.plo.voice.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Matrix4f;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -18,26 +19,17 @@ import su.plo.voice.client.gui.PlayerVolumeHandler;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.common.entities.MutedEntity;
 
-public class CustomEntityRenderer {
-    private static final Minecraft client = Minecraft.getInstance();
+public class EntityIconRenderer {
+    private final Minecraft client = Minecraft.getInstance();
 
-    public static void entityRender(Player player, double distance, PoseStack matrices, boolean hasLabel, MultiBufferSource vertexConsumers, int light) {
-        if (VoiceClient.getClientConfig().showIcons.get() == 2) {
-            return;
-        }
+    @Getter
+    private static final EntityIconRenderer instance = new EntityIconRenderer();
 
-        if (player.getUUID().equals(client.player.getUUID())) {
-            return;
-        }
+    private EntityIconRenderer() {
+    }
 
-        if (!client.player.connection.getOnlinePlayerIds().contains(player.getUUID())) {
-            return;
-        }
-
-        if (player.isInvisibleTo(client.player) ||
-                (client.options.hideGui && VoiceClient.getClientConfig().showIcons.get() == 0)) {
-            return;
-        }
+    public void entityRender(Player player, double distance, PoseStack matrices, boolean hasLabel, MultiBufferSource vertexConsumers, int light) {
+        if (isIconHidden(player)) return;
 
         if (VoiceClient.getServerConfig().getClients().contains(player.getUUID())) {
             if (VoiceClient.getClientConfig().isMuted(player.getUUID())) {
@@ -66,8 +58,29 @@ public class CustomEntityRenderer {
         }
     }
 
-    private static void renderPercent(Player player, double distance, PoseStack matrices, boolean hasLabel,
-                                      MultiBufferSource vertexConsumers, int light) {
+    private boolean isIconHidden(Player player) {
+        if (VoiceClient.getClientConfig().showIcons.get() == 2) {
+            return true;
+        }
+
+        if (player.getUUID().equals(client.player.getUUID())) {
+            return true;
+        }
+
+        if (!client.player.connection.getOnlinePlayerIds().contains(player.getUUID())) {
+            return true;
+        }
+
+        if (player.isInvisibleTo(client.player) ||
+                (client.options.hideGui && VoiceClient.getClientConfig().showIcons.get() == 0)) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private void renderPercent(Player player, double distance, PoseStack matrices, boolean hasLabel,
+                               MultiBufferSource vertexConsumers, int light) {
         double yOffset = 0.5D;
         if (hasLabel) {
             yOffset += 0.3D;
@@ -102,8 +115,8 @@ public class CustomEntityRenderer {
         matrices.popPose();
     }
 
-    private static void renderIcon(float u, float v, Player player, double distance, PoseStack matrices,
-                                   boolean hasLabel, MultiBufferSource vertexConsumers, int light) {
+    private void renderIcon(float u, float v, Player player, double distance, PoseStack matrices,
+                            boolean hasLabel, MultiBufferSource vertexConsumers, int light) {
         double yOffset = 0.5D;
         if (PlayerVolumeHandler.isShow(player)) {
             renderPercent(player, distance, matrices, hasLabel, vertexConsumers, light);
@@ -156,7 +169,7 @@ public class CustomEntityRenderer {
         matrices.popPose();
     }
 
-    private static void vertex(VertexConsumer builder, PoseStack matrices, float x, float y, float z, float u, float v, int alpha, int light) {
+    private void vertex(VertexConsumer builder, PoseStack matrices, float x, float y, float z, float u, float v, int alpha, int light) {
         PoseStack.Pose entry = matrices.last();
         Matrix4f modelViewMatrix = entry.pose();
 

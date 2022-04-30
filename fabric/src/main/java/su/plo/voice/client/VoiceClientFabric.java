@@ -110,9 +110,9 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
                 if (menuKey.consumeClick()) {
                     VoiceNotAvailableScreen screen = new VoiceNotAvailableScreen();
                     if (socketUDP != null) {
-                        if (socketUDP.ping.timedOut) {
+                        if (socketUDP.isTimedOut()) {
                             screen.setConnecting();
-                        } else if (!socketUDP.authorized) {
+                        } else if (!socketUDP.isAuthorized()) {
                             screen.setConnecting();
                         } else {
                             screen.setCannotConnect();

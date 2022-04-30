@@ -10,8 +10,6 @@ import net.fabricmc.loom.task.RemapJarTask
 val minecraftVersion: String by rootProject
 val fabricLoaderVersion: String by rootProject
 val fabricVersion: String by rootProject
-val modVersion: String by rootProject
-val mavenGroup: String by rootProject
 
 val curseProjectId: String by rootProject
 val curseFabricRelease: String by rootProject
@@ -31,17 +29,7 @@ architectury {
     fabric()
 }
 
-base {
-    archivesBaseName = "plasmovoice"
-}
-
-project.group = mavenGroup
-project.version = modVersion
-
 dependencies {
-    minecraft("com.mojang:minecraft:${minecraftVersion}")
-    mappings(loom.officialMojangMappings())
-
     compileOnly(project(":common", "dev")) {
         isTransitive = false
     }
@@ -103,7 +91,7 @@ tasks {
         filesMatching("fabric.mod.json") {
             expand(
                 mutableMapOf(
-                    "version" to modVersion,
+                    "version" to project.version,
                     "loader_version" to fabricLoaderVersion,
                     "fabric_version" to fabricVersion
                 )
@@ -130,6 +118,9 @@ tasks {
     build {
         doLast {
             shadowJar.get().archiveFile.get().asFile.delete()
+            // copy artifact to root project build/libs
+            remapJar.get().archiveFile.get().asFile
+                .copyTo(rootProject.buildDir.resolve("libs/" + remapJar.get().archiveFile.get().asFile.name), true)
         }
     }
 }

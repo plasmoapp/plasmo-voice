@@ -12,8 +12,8 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.ServerSettings;
 import su.plo.voice.client.gui.PlayerVolumeHandler;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
-import su.plo.voice.client.socket.SocketClientUDP;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
+import su.plo.voice.client.socket.SocketConnection;
 import su.plo.voice.client.sound.AbstractSoundQueue;
 import su.plo.voice.client.sound.Recorder;
 import su.plo.voice.client.sound.openal.CustomSoundEngine;
@@ -38,7 +38,7 @@ public abstract class VoiceClient {
     private static ServerSettings serverConfig;
 
     // ???
-    public static SocketClientUDP socketUDP;
+    public static SocketConnection socketUDP;
     public static Recorder recorder;
     @Getter
     public static final CustomSoundEngine soundEngine = new CustomSoundEngine();
@@ -73,7 +73,8 @@ public abstract class VoiceClient {
         keyBindings.increaseDistance.get().setOnPress(action -> {
             if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
                 ClientConfig.ServerConfig serverConfig;
-                if(clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
+                if (clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
+
                     serverConfig = clientConfig.getServers().get(VoiceClient.getServerConfig().getIp());
                     int index = (getServerConfig().getDistances().indexOf(serverConfig.distance.get()) + 1) % getServerConfig().getDistances().size();
                     int value = getServerConfig().getDistances().get(index);
@@ -90,7 +91,7 @@ public abstract class VoiceClient {
         keyBindings.decreaseDistance.get().setOnPress(action -> {
             if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
                 ClientConfig.ServerConfig serverConfig;
-                if(clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
+                if (clientConfig.getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
                     serverConfig = clientConfig.getServers().get(VoiceClient.getServerConfig().getIp());
                     int index = getServerConfig().getDistances().indexOf(serverConfig.distance.get()) - 1;
                     if (index < 0) {
@@ -148,15 +149,9 @@ public abstract class VoiceClient {
     }
 
     public static boolean isConnected() {
-        if (socketUDP == null) {
-            return false;
-        }
-
-        if (serverConfig == null) {
-            return false;
-        }
-
-        return socketUDP.authorized && !socketUDP.ping.timedOut;
+        return socketUDP != null &&
+                serverConfig != null &&
+                socketUDP.isConnected();
     }
 
     public abstract String getVersion();
