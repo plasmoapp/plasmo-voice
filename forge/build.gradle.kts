@@ -70,14 +70,6 @@ dependencies {
     annotationProcessor("org.projectlombok:lombok:1.18.20")
 }
 
-repositories {
-    maven {
-        url = uri("https://repo.plo.su")
-    }
-    mavenCentral()
-    mavenLocal()
-}
-
 tasks {
     jar {
         classifier = "dev"
