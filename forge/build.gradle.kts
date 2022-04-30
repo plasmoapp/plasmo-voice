@@ -107,6 +107,15 @@ tasks {
                 .copyTo(rootProject.buildDir.resolve("libs/" + remapJar.get().archiveFile.get().asFile.name), true)
         }
     }
+
+    // Modrinth
+    getByName("modrinth") {
+        dependsOn(remapJar)
+    }
+
+    modrinth.configure {
+        group = "upload"
+    }
 }
 
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
