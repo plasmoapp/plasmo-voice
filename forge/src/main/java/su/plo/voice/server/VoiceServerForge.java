@@ -44,13 +44,20 @@ public class VoiceServerForge extends VoiceServer {
     private static List<ResourceLocation> bytesToResLocation(byte[] all) {
         List<ResourceLocation> rl = new ArrayList<>();
         int last = 0;
-        for (int cur = 0; cur < all.length; cur++) {
+        int cur;
+        for (cur = 0; cur < all.length; cur++) {
             if (all[cur] == '\0') {
                 String s = new String(all, last, cur - last, StandardCharsets.UTF_8);
                 rl.add(new ResourceLocation(s));
                 last = cur + 1;
             }
         }
+
+        if (last == 0 && all.length > 0 && cur > 0) {
+            String s = new String(all, last, cur - last, StandardCharsets.UTF_8);
+            rl.add(new ResourceLocation(s));
+        }
+
         return rl;
     }
 
