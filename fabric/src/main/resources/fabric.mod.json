@@ -28,6 +28,7 @@
         "plasmovoice.mixins.json"
     ],
     "depends": {
+        "fabric": ">=${fabric_min_version}",
         "fabricloader": ">=${loader_version}"
     },
     "suggests": {
