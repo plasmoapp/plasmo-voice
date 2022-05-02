@@ -107,6 +107,15 @@ tasks {
                 .copyTo(rootProject.buildDir.resolve("libs/" + remapJar.get().archiveFile.get().asFile.name), true)
         }
     }
+
+    // Modrinth
+    getByName("modrinth") {
+        dependsOn(remapJar)
+    }
+
+    modrinth.configure {
+        group = "upload"
+    }
 }
 
 val remapJar = tasks.getByName<RemapJarTask>("remapJar")
@@ -139,7 +148,7 @@ curseforge {
 
     project(closureOf<CurseProject> {
         id = curseProjectId
-        changelog = file("${rootDir}/changelog.txt")
+        changelog = file("${rootDir}/changelog.md")
         releaseType = curseFabricRelease
         curseSupportedVersions.split(",").forEach {
             addGameVersion(it)
