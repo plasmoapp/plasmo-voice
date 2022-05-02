@@ -167,6 +167,7 @@ curseforge {
     project(closureOf<CurseProject> {
         id = curseProjectId
         changelog = file("${rootDir}/changelog.md")
+        changelogType = "markdown"
         releaseType = curseFabricRelease
         gameVersionStrings.addAll(curseSupportedVersions.split(","))
         addGameVersion("Fabric")
