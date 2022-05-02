@@ -9,7 +9,7 @@ val minecraftVersion: String by rootProject
 val forgeVersion: String by rootProject
 
 val curseProjectId: String by rootProject
-val curseFabricRelease: String by rootProject
+val curseForgeRelease: String by rootProject
 val displayMinecraftVersion: String by rootProject
 val curseSupportedVersions: String by rootProject
 
@@ -149,7 +149,7 @@ curseforge {
     project(closureOf<CurseProject> {
         id = curseProjectId
         changelog = file("${rootDir}/changelog.md")
-        releaseType = curseFabricRelease
+        releaseType = curseForgeRelease
         curseSupportedVersions.split(",").forEach {
             addGameVersion(it)
         }

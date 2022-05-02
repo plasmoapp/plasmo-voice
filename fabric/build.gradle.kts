@@ -177,6 +177,7 @@ curseforge {
                 displayName = "[Fabric ${displayMinecraftVersion}] Plasmo Voice $version"
 
                 relations(closureOf<CurseRelation> {
+                    requiredDependency("fabric-api")
                     optionalDependency("sound-physics-fabric")
                     optionalDependency("sound-physics-remastered")
                 })
