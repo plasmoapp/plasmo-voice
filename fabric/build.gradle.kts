@@ -96,6 +96,7 @@ tasks {
         classifier = "dev-shadow"
 
         dependencies {
+            relocate("org.yaml.snakeyaml", "su.plo.snakeyaml")
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
         }
@@ -167,6 +168,7 @@ curseforge {
     project(closureOf<CurseProject> {
         id = curseProjectId
         changelog = file("${rootDir}/changelog.md")
+        changelogType = "markdown"
         releaseType = curseFabricRelease
         gameVersionStrings.addAll(curseSupportedVersions.split(","))
         addGameVersion("Fabric")
@@ -177,6 +179,7 @@ curseforge {
                 displayName = "[Fabric ${displayMinecraftVersion}] Plasmo Voice $version"
 
                 relations(closureOf<CurseRelation> {
+                    requiredDependency("fabric-api")
                     optionalDependency("sound-physics-fabric")
                     optionalDependency("sound-physics-remastered")
                 })

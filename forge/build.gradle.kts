@@ -9,7 +9,7 @@ val minecraftVersion: String by rootProject
 val forgeVersion: String by rootProject
 
 val curseProjectId: String by rootProject
-val curseFabricRelease: String by rootProject
+val curseForgeRelease: String by rootProject
 val displayMinecraftVersion: String by rootProject
 val curseSupportedVersions: String by rootProject
 
@@ -88,6 +88,7 @@ tasks {
         classifier = "dev-shadow"
 
         dependencies {
+            relocate("org.yaml.snakeyaml", "su.plo.snakeyaml")
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
         }
@@ -149,7 +150,8 @@ curseforge {
     project(closureOf<CurseProject> {
         id = curseProjectId
         changelog = file("${rootDir}/changelog.md")
-        releaseType = curseFabricRelease
+        changelogType = "markdown"
+        releaseType = curseForgeRelease
         curseSupportedVersions.split(",").forEach {
             addGameVersion(it)
         }
