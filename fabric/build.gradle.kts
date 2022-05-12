@@ -96,6 +96,7 @@ tasks {
         classifier = "dev-shadow"
 
         dependencies {
+            relocate("org.yaml.snakeyaml", "su.plo.snakeyaml")
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
         }
