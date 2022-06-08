@@ -1,7 +1,7 @@
 package su.plo.voice.server;
 
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -40,7 +40,7 @@ public class VoiceServerFabric extends VoiceServer implements ModInitializer {
                 network.handleQuit(handler.player))
         );
 
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) ->
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) ->
                 CommandManager.register(dispatcher)
         );
     }

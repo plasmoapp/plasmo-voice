@@ -15,6 +15,8 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSource {
+    private static final int NUM_BUFFERS = 16;
+
     protected final int pointer;
     private final AtomicBoolean playing = new AtomicBoolean(true);
 
@@ -37,7 +39,7 @@ public class CustomSource {
 
     protected CustomSource(int pointer) {
         this.pointer = pointer;
-        int[] buffers = new int[16];
+        int[] buffers = new int[NUM_BUFFERS];
         AL10.alGenBuffers(buffers);
         AlUtil.checkErrors("Creating buffers");
 
@@ -186,7 +188,10 @@ public class CustomSource {
     }
 
     public void write(byte[] bytes) {
-        this.removeProcessedBuffers();
+        int queuedBuffers = this.getQueuedBuffers();
+        if (queuedBuffers >= NUM_BUFFERS) {
+            removeProcessedBuffers();
+        }
 
         if (!freeBuffers.isEmpty()) {
             ByteBuffer byteBuffer = MemoryUtil.memAlloc(bytes.length);
@@ -203,6 +208,10 @@ public class CustomSource {
             AL10.alSourceQueueBuffers(this.pointer, new int[]{freeBuffer});
             this.play();
         }
+    }
+
+    public int getQueuedBuffers() {
+        return AL10.alGetSourcei(this.pointer, AL10.AL_BUFFERS_QUEUED);
     }
 
     public void removeProcessedBuffers() {

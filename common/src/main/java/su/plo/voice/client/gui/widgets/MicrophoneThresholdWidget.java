@@ -7,9 +7,9 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
+import net.minecraft.world.phys.Vec3;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.sound.openal.CustomSource;
@@ -23,7 +23,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
     private List<BackgroundImageButton> microphoneTest;
 
     public MicrophoneThresholdWidget(int x, int y, int width, boolean slider, VoiceSettingsScreen parent) {
-        super(x, y, width - 23, 20, TextComponent.EMPTY, 0.0D);
+        super(x, y, width - 23, 20, Component.empty(), 0.0D);
         this.slider = slider;
         this.updateValue();
 
@@ -40,6 +40,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
             VoiceClient.getSoundEngine().runInContext(() -> {
                 CustomSource source = VoiceClient.getSoundEngine().createSource();
                 source.setRelative(true);
+                source.setPosition(new Vec3(0, 0, 0));
                 parent.setSource(source);
             });
         });
@@ -68,7 +69,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
     }
 
     protected void updateMessage() {
-        this.setMessage(new TextComponent(Math.round((1 - this.value) * -60) + " dB"));
+        this.setMessage(Component.literal(Math.round((1 - this.value) * -60) + " dB"));
     }
 
     protected void applyValue() {
@@ -129,7 +130,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
             drawCenteredString(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
         }
 
-        //            drawCenteredString(matrices, textRenderer, new TextComponent(String.format("%.2f dB", parent.getHighestDB())),
+        //            drawCenteredString(matrices, textRenderer, Component.literal(String.format("%.2f dB", parent.getHighestDB())),
         //            this.x + this.width / 2, this.y + (this.height - 8) / 2, 16777215);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
@@ -141,7 +142,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
 
             if (!VoiceClient.recorder.isAvailable() && button.isHovered(false)) {
                 parent.setTooltip(ImmutableList.of(
-                        new TranslatableComponent("gui.plasmo_voice.general.not_available")
+                        Component.translatable("gui.plasmo_voice.general.not_available")
                 ));
             }
         }

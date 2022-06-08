@@ -4,7 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteStreams;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,7 +44,7 @@ public class ServerNetworkHandlerFabric extends ServerNetworkHandler {
                     }
 
                     VoiceServer.getServer().execute(() ->
-                            player.connection.disconnect(new TextComponent(VoiceServer.getInstance().getMessage("mod_missing_kick_message")))
+                            player.connection.disconnect(Component.literal(VoiceServer.getInstance().getMessage("mod_missing_kick_message")))
                     );
                 }
             }, (config.getClientModCheckTimeout() / 20) * 1000L, TimeUnit.MILLISECONDS));
@@ -87,7 +87,7 @@ public class ServerNetworkHandlerFabric extends ServerNetworkHandler {
 //                    if (VoiceServer.isLogsEnabled()) {
 //                        VoiceServer.LOGGER.info("Player {} does not have the mod installed!", player.getGameProfile().getName());
 //                    }
-//                    player.connection.disconnect(new TextComponent(VoiceServer.getInstance().getMessage("mod_missing_kick_message")));
+//                    player.connection.disconnect(Component.literal(VoiceServer.getInstance().getMessage("mod_missing_kick_message")));
 //                }
 //            }
         }

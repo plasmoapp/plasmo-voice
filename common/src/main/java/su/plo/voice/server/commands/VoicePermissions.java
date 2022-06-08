@@ -10,7 +10,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
 import su.plo.voice.server.VoiceServer;
 import su.plo.voice.server.config.Configuration;
@@ -33,65 +33,65 @@ public class VoicePermissions {
                         CommandManager.requiresPermission(source, "voice.permissions")
                 )
                 .then(Commands.argument("targets", GameProfileArgument.gameProfile()).suggests((commandContext, suggestionsBuilder) -> {
-                            PlayerList playerList = commandContext.getSource().getServer().getPlayerList();
-                            return SharedSuggestionProvider.suggest(playerList.getPlayers().stream()
-                                    .map((serverPlayer) -> serverPlayer.getGameProfile().getName()), suggestionsBuilder);
-                        })
-                        .then(Commands.literal("set")
-                                .then(permissions()
-                                        .executes(ctx -> {
-                                            GameProfileArgument.getGameProfiles(ctx, "targets").forEach(gameProfile -> {
-                                                set(
-                                                        ctx,
-                                                        gameProfile,
-                                                        StringArgumentType.getString(ctx, "permission"),
-                                                        true
-                                                );
-                                            });
-                                            return 1;
-                                        })
-                                        .then(Commands.argument("value", BoolArgumentType.bool())
+                                    PlayerList playerList = commandContext.getSource().getServer().getPlayerList();
+                                    return SharedSuggestionProvider.suggest(playerList.getPlayers().stream()
+                                            .map((serverPlayer) -> serverPlayer.getGameProfile().getName()), suggestionsBuilder);
+                                })
+                                .then(Commands.literal("set")
+                                        .then(permissions()
                                                 .executes(ctx -> {
                                                     GameProfileArgument.getGameProfiles(ctx, "targets").forEach(gameProfile -> {
                                                         set(
                                                                 ctx,
                                                                 gameProfile,
                                                                 StringArgumentType.getString(ctx, "permission"),
-                                                                BoolArgumentType.getBool(ctx, "value")
+                                                                true
                                                         );
                                                     });
                                                     return 1;
-                                                }))
+                                                })
+                                                .then(Commands.argument("value", BoolArgumentType.bool())
+                                                        .executes(ctx -> {
+                                                            GameProfileArgument.getGameProfiles(ctx, "targets").forEach(gameProfile -> {
+                                                                set(
+                                                                        ctx,
+                                                                        gameProfile,
+                                                                        StringArgumentType.getString(ctx, "permission"),
+                                                                        BoolArgumentType.getBool(ctx, "value")
+                                                                );
+                                                            });
+                                                            return 1;
+                                                        }))
+                                        )
                                 )
-                        )
-                        .then(Commands.literal("unset")
-                                .then(permissions()
-                                        .executes(ctx -> {
-                                            GameProfileArgument.getGameProfiles(ctx, "targets").forEach(gameProfile -> {
-                                                unset(
-                                                        ctx,
-                                                        gameProfile,
-                                                        StringArgumentType.getString(ctx, "permission")
-                                                );
-                                            });
-                                            return 1;
-                                        })
+                                .then(Commands.literal("unset")
+                                        .then(permissions()
+                                                .executes(ctx -> {
+                                                    GameProfileArgument.getGameProfiles(ctx, "targets").forEach(gameProfile -> {
+                                                        unset(
+                                                                ctx,
+                                                                gameProfile,
+                                                                StringArgumentType.getString(ctx, "permission")
+                                                        );
+                                                    });
+                                                    return 1;
+                                                })
+                                        )
                                 )
-                        )
-                        .then(Commands.literal("check")
-                                .then(permissions()
-                                        .executes(ctx -> {
-                                            GameProfileArgument.getGameProfiles(ctx, "targets").forEach(gameProfile -> {
-                                                check(
-                                                        ctx,
-                                                        gameProfile,
-                                                        StringArgumentType.getString(ctx, "permission")
-                                                );
-                                            });
-                                            return 1;
-                                        })
+                                .then(Commands.literal("check")
+                                        .then(permissions()
+                                                .executes(ctx -> {
+                                                    GameProfileArgument.getGameProfiles(ctx, "targets").forEach(gameProfile -> {
+                                                        check(
+                                                                ctx,
+                                                                gameProfile,
+                                                                StringArgumentType.getString(ctx, "permission")
+                                                        );
+                                                    });
+                                                    return 1;
+                                                })
+                                        )
                                 )
-                        )
                 )
         );
     }
@@ -99,12 +99,12 @@ public class VoicePermissions {
     private static void check(CommandContext<CommandSourceStack> ctx, GameProfile profile, String permission) {
         Configuration section = VoiceServer.getInstance().getConfig().getSection("permissions");
         if (!section.getKeys().contains(permission)) {
-            ctx.getSource().sendFailure(new TextComponent(VoiceServer.getInstance().getMessagePrefix("permissions.not_found")));
+            ctx.getSource().sendFailure(Component.literal(VoiceServer.getInstance().getMessagePrefix("permissions.not_found")));
             return;
         }
 
         ctx.getSource().sendSuccess(
-                new TextComponent(
+                Component.literal(
                         VoiceServer.getInstance().getMessagePrefix("permissions.check")
                                 .replace("{player}", profile.getName())
                                 .replace("{permission}", permission)
@@ -117,13 +117,13 @@ public class VoicePermissions {
     private static void set(CommandContext<CommandSourceStack> ctx, GameProfile profile, String permission, boolean value) {
         Configuration section = VoiceServer.getInstance().getConfig().getSection("permissions");
         if (!section.getKeys().contains(permission)) {
-            ctx.getSource().sendFailure(new TextComponent(VoiceServer.getInstance().getMessagePrefix("permissions.not_found")));
+            ctx.getSource().sendFailure(Component.literal(VoiceServer.getInstance().getMessagePrefix("permissions.not_found")));
             return;
         }
 
         if (VoiceServer.getPlayerManager().hasPermission(profile.getId(), permission) == value) {
             ctx.getSource().sendFailure(
-                    new TextComponent(
+                    Component.literal(
                             VoiceServer.getInstance().getMessagePrefix("permissions.already")
                                     .replace("{player}", profile.getName())
                                     .replace("{permission}", permission)
@@ -135,7 +135,7 @@ public class VoicePermissions {
 
         VoiceServer.getPlayerManager().setPermission(profile.getId(), permission, value);
         ctx.getSource().sendSuccess(
-                new TextComponent(
+                Component.literal(
                         VoiceServer.getInstance().getMessagePrefix("permissions.set")
                                 .replace("{player}", profile.getName())
                                 .replace("{permission}", permission)
@@ -148,14 +148,14 @@ public class VoicePermissions {
     private static void unset(CommandContext<CommandSourceStack> ctx, GameProfile profile, String permission) {
         Configuration section = VoiceServer.getInstance().getConfig().getSection("permissions");
         if (!section.getKeys().contains(permission)) {
-            ctx.getSource().sendFailure(new TextComponent(VoiceServer.getInstance().getMessagePrefix("permissions.not_found")));
+            ctx.getSource().sendFailure(Component.literal(VoiceServer.getInstance().getMessagePrefix("permissions.not_found")));
             return;
         }
 
         Map<String, Boolean> perms = VoiceServer.getPlayerManager().getPermissions().get(profile.getId());
         if (perms == null || !perms.containsKey(permission)) {
             ctx.getSource().sendFailure(
-                    new TextComponent(
+                    Component.literal(
                             VoiceServer.getInstance().getMessagePrefix("permissions.no_permission")
                                     .replace("{player}", profile.getName())
                                     .replace("{permission}", permission)
@@ -166,7 +166,7 @@ public class VoicePermissions {
 
         VoiceServer.getPlayerManager().unSetPermission(profile.getId(), permission);
         ctx.getSource().sendSuccess(
-                new TextComponent(
+                Component.literal(
                         VoiceServer.getInstance().getMessagePrefix("permissions.unset")
                                 .replace("{player}", profile.getName())
                                 .replace("{permission}", permission)

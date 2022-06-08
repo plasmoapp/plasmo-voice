@@ -7,7 +7,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.commands.SharedSuggestionProvider;
 import net.minecraft.commands.arguments.GameProfileArgument;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
@@ -39,7 +39,7 @@ public class VoiceUnmute {
     private static void unmute(CommandContext<CommandSourceStack> ctx, GameProfile profile) {
         ServerMuted muted = VoiceServer.getMuted().get(profile.getId());
         if (muted == null) {
-            ctx.getSource().sendFailure(new TextComponent(
+            ctx.getSource().sendFailure(Component.literal(
                     VoiceServer.getInstance().getMessagePrefix("not_muted")
                             .replace("{player}", profile.getName())
             ));
@@ -48,7 +48,7 @@ public class VoiceUnmute {
 
         if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
             VoiceServer.getMuted().remove(muted.getUuid());
-            ctx.getSource().sendFailure(new TextComponent(
+            ctx.getSource().sendFailure(Component.literal(
                     VoiceServer.getInstance().getMessagePrefix("not_muted")
                             .replace("{player}", profile.getName())
             ));
@@ -61,10 +61,13 @@ public class VoiceUnmute {
         ServerPlayer player = PlayerManager.getByUUID(profile.getId());
         if (player != null) {
             ServerNetworkHandler.sendToClients(new ClientUnmutedPacket(profile.getId()), null);
+            player.sendSystemMessage(Component.literal(
+                    VoiceServer.getInstance().getMessagePrefix("player_unmuted")
+            ));
         }
 
         ctx.getSource().sendSuccess(
-                new TextComponent(
+                Component.literal(
                         VoiceServer.getInstance().getMessagePrefix("unmuted")
                                 .replace("{player}", profile.getName())
                 ),

@@ -1,7 +1,7 @@
 package su.plo.voice.client.config;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 
 public enum MicrophoneIconPosition {
     TOP_LEFT,
@@ -11,14 +11,14 @@ public enum MicrophoneIconPosition {
     BOTTOM_CENTER,
     BOTTOM_RIGHT;
 
-    public TranslatableComponent translate() {
+    public Component translate() {
         return switch (this) {
-            case TOP_LEFT -> new TranslatableComponent("gui.plasmo_voice.general.icons.position.top_left");
-            case TOP_CENTER -> new TranslatableComponent("gui.plasmo_voice.general.icons.position.top_center");
-            case TOP_RIGHT -> new TranslatableComponent("gui.plasmo_voice.general.icons.position.top_right");
-            case BOTTOM_LEFT -> new TranslatableComponent("gui.plasmo_voice.general.icons.position.bottom_left");
-            case BOTTOM_CENTER -> new TranslatableComponent("gui.plasmo_voice.general.icons.position.bottom_center");
-            case BOTTOM_RIGHT -> new TranslatableComponent("gui.plasmo_voice.general.icons.position.bottom_right");
+            case TOP_LEFT -> Component.translatable("gui.plasmo_voice.general.icons.position.top_left");
+            case TOP_CENTER -> Component.translatable("gui.plasmo_voice.general.icons.position.top_center");
+            case TOP_RIGHT -> Component.translatable("gui.plasmo_voice.general.icons.position.top_right");
+            case BOTTOM_LEFT -> Component.translatable("gui.plasmo_voice.general.icons.position.bottom_left");
+            case BOTTOM_CENTER -> Component.translatable("gui.plasmo_voice.general.icons.position.bottom_center");
+            case BOTTOM_RIGHT -> Component.translatable("gui.plasmo_voice.general.icons.position.bottom_right");
         };
 
     }

@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -82,7 +82,7 @@ public abstract class VoiceClient {
                     getServerConfig().setDistance((short) value);
 
                     minecraft.gui.setOverlayMessage(
-                            new TranslatableComponent("message.plasmo_voice.distance_changed",
+                            Component.translatable("message.plasmo_voice.distance_changed",
                                     value
                             ), false);
                 }
@@ -102,7 +102,7 @@ public abstract class VoiceClient {
                     getServerConfig().setDistance((short) value);
 
                     minecraft.gui.setOverlayMessage(
-                            new TranslatableComponent("message.plasmo_voice.distance_changed",
+                            Component.translatable("message.plasmo_voice.distance_changed",
                                     value
                             ), false);
                 }
@@ -114,13 +114,13 @@ public abstract class VoiceClient {
 
                 if (clientConfig.occlusion.get()) {
                     minecraft.gui.setOverlayMessage(
-                            new TranslatableComponent("message.plasmo_voice.occlusion_changed",
-                                    new TranslatableComponent("gui.plasmo_voice.on")
+                            Component.translatable("message.plasmo_voice.occlusion_changed",
+                                    Component.translatable("gui.plasmo_voice.on")
                             ), false);
                 } else {
                     minecraft.gui.setOverlayMessage(
-                            new TranslatableComponent("message.plasmo_voice.occlusion_changed",
-                                    new TranslatableComponent("gui.plasmo_voice.off")
+                            Component.translatable("message.plasmo_voice.occlusion_changed",
+                                    Component.translatable("gui.plasmo_voice.off")
                             ), false);
                 }
             }

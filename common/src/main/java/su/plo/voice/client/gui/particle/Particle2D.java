@@ -3,10 +3,10 @@ package su.plo.voice.client.gui.particle;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.core.particles.ParticleGroup;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
-import java.util.Random;
 
 public abstract class Particle2D {
     private static final AABB EMPTY_BOUNDING_BOX = new AABB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -23,7 +23,7 @@ public abstract class Particle2D {
     protected boolean dead;
     protected float spacingXZ;
     protected float spacingY;
-    protected final Random random;
+    protected final RandomSource random;
     protected int age;
     protected int maxAge;
     protected float gravityStrength;
@@ -39,7 +39,7 @@ public abstract class Particle2D {
         this.collidesWithWorld = true;
         this.spacingXZ = 0.6F;
         this.spacingY = 1.8F;
-        this.random = new Random();
+        this.random = RandomSource.create();
         this.colorRed = 1.0F;
         this.colorGreen = 1.0F;
         this.colorBlue = 1.0F;
@@ -50,7 +50,7 @@ public abstract class Particle2D {
         this.setPos(x, y);
         this.prevPosX = x;
         this.prevPosY = y;
-        this.maxAge = (int)(4.0F / (this.random.nextFloat() * 0.9F + 0.1F));
+        this.maxAge = (int) (4.0F / (this.random.nextFloat() * 0.9F + 0.1F));
     }
 
     public Particle2D(double x, double y, double velocityX, double velocityY) {
@@ -64,8 +64,8 @@ public abstract class Particle2D {
     }
 
     public Particle2D move(float speed) {
-        this.velocityX *= (double)speed;
-        this.velocityY = (this.velocityY - 0.10000000149011612D) * (double)speed + 0.10000000149011612D;
+        this.velocityX *= (double) speed;
+        this.velocityY = (this.velocityY - 0.10000000149011612D) * (double) speed + 0.10000000149011612D;
         return this;
     }
 
@@ -103,14 +103,14 @@ public abstract class Particle2D {
         if (this.age++ >= this.maxAge) {
             this.markDead();
         } else {
-            this.velocityY += 0.04D * (double)this.gravityStrength;
+            this.velocityY += 0.04D * (double) this.gravityStrength;
             this.move(this.velocityX, this.velocityY);
             if (this.field_28787 && this.y == this.prevPosY) {
                 this.velocityX *= 1.1D;
             }
 
-            this.velocityX *= (double)this.field_28786;
-            this.velocityY *= (double)this.field_28786;
+            this.velocityX *= (double) this.field_28786;
+            this.velocityY *= (double) this.field_28786;
             if (this.onGround) {
                 this.velocityX *= 0.699999988079071D;
             }
@@ -135,9 +135,9 @@ public abstract class Particle2D {
             this.spacingXZ = spacingXZ;
             this.spacingY = spacingY;
             AABB box = this.getBoundingBox();
-            double d = (box.minX + box.maxX - (double)spacingXZ) / 2.0D;
-            double e = (box.minZ + box.maxZ - (double)spacingXZ) / 2.0D;
-            this.setBoundingBox(new AABB(d, box.minY, e, d + (double)this.spacingXZ, box.minY + (double)this.spacingY, e + (double)this.spacingXZ));
+            double d = (box.minX + box.maxX - (double) spacingXZ) / 2.0D;
+            double e = (box.minZ + box.maxZ - (double) spacingXZ) / 2.0D;
+            this.setBoundingBox(new AABB(d, box.minY, e, d + (double) this.spacingXZ, box.minY + (double) this.spacingY, e + (double) this.spacingXZ));
         }
 
     }
@@ -147,7 +147,7 @@ public abstract class Particle2D {
         this.y = y;
         float f = this.spacingXZ / 2.0F;
         float g = this.spacingY;
-        this.setBoundingBox(new AABB(x - (double)f, y, 0 - (double)f, x + (double)f, y + (double)g, 0 + (double)f));
+        this.setBoundingBox(new AABB(x - (double) f, y, 0 - (double) f, x + (double) f, y + (double) g, 0 + (double) f));
     }
 
     public void move(double dx, double dy) {

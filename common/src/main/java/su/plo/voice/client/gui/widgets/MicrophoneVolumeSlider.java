@@ -1,12 +1,12 @@
 package su.plo.voice.client.gui.widgets;
 
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import su.plo.voice.client.VoiceClient;
 
 public class MicrophoneVolumeSlider extends AbstractSliderButton {
     public MicrophoneVolumeSlider(int x, int y, int width) {
-        super(x, y, width, 20, TextComponent.EMPTY, VoiceClient.getClientConfig().microphoneAmplification.get() / 2.0D);
+        super(x, y, width, 20, Component.empty(), VoiceClient.getClientConfig().microphoneAmplification.get() / 2.0D);
         this.updateMessage();
     }
 
@@ -16,7 +16,7 @@ public class MicrophoneVolumeSlider extends AbstractSliderButton {
     }
 
     protected void updateMessage() {
-        this.setMessage(new TextComponent((int)(this.value * 200.0D) + "%"));
+        this.setMessage(Component.literal((int) (this.value * 200.0D) + "%"));
     }
 
     protected void applyValue() {

@@ -4,14 +4,11 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.ChatType;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.level.Level;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import su.plo.voice.client.VoiceClientForge;
 import su.plo.voice.client.commands.ForgeClientCommandSource;
 
 @Mixin(ClientSuggestionProvider.class)
@@ -22,12 +19,12 @@ public abstract class MixinClientSuggestionProvider implements ForgeClientComman
 
     @Override
     public void sendFeedback(Component message) {
-        minecraft.gui.handleChat(ChatType.SYSTEM, message, VoiceClientForge.NIL_UUID);
+        minecraft.gui.getChat().addMessage(message);
     }
 
     @Override
     public void sendError(Component message) {
-        minecraft.gui.handleChat(ChatType.SYSTEM, new TextComponent("").append(message).withStyle(ChatFormatting.RED), VoiceClientForge.NIL_UUID);
+        minecraft.gui.getChat().addMessage(Component.literal("").append(message).withStyle(ChatFormatting.RED));
     }
 
     @Override

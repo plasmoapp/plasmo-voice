@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import su.plo.voice.client.VoiceClient;
 
 import java.util.UUID;
@@ -14,14 +14,14 @@ public class PlayerVolumeWidget extends AbstractSliderButton {
 
     public PlayerVolumeWidget(UUID uuid) {
         super(0, 0, 0, 20,
-                new TranslatableComponent("gui.plasmo_voice.player_volume", (int) (Math.round(VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(uuid, 1.0D) * 100.0D)) + "%"),
+                Component.translatable("gui.plasmo_voice.player_volume", (int) (Math.round(VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(uuid, 1.0D) * 100.0D)) + "%"),
                 VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(uuid, 1.0D) / 2.0D);
         this.uuid = uuid;
     }
 
     @Override
     protected void updateMessage() {
-        this.setMessage(new TranslatableComponent("gui.plasmo_voice.player_volume", (int) Math.round(this.value * 200.0D) + "%"));
+        this.setMessage(Component.translatable("gui.plasmo_voice.player_volume", (int) Math.round(this.value * 200.0D) + "%"));
     }
 
     @Override
@@ -43,7 +43,7 @@ public class PlayerVolumeWidget extends AbstractSliderButton {
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-        blit(matrices, this.x + (int)(this.value * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);
-        blit(matrices, this.x + (int)(this.value * (double)(this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
+        blit(matrices, this.x + (int) (this.value * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
+        blit(matrices, this.x + (int) (this.value * (double) (this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
     }
 }

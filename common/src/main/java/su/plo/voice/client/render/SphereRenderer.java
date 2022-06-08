@@ -15,7 +15,7 @@ public class SphereRenderer {
     private static final int slice = 36;
 
     private final BufferBuilder bufferBuilder = new BufferBuilder(2097152);
-    private final VertexBuffer vertexBuffer = new VertexBuffer();
+    private VertexBuffer vertexBuffer;
 
     private int alpha = 150;
     private float radius = 8.0F;
@@ -97,8 +97,10 @@ public class SphereRenderer {
             }
         }
 
-        bufferBuilder.end();
-        vertexBuffer.uploadLater(bufferBuilder);
+        if (vertexBuffer == null) {
+            vertexBuffer = new VertexBuffer();
+        }
+        vertexBuffer.upload(bufferBuilder.end());
 
         RenderSystem.disableTexture();
         RenderSystem.disableCull();

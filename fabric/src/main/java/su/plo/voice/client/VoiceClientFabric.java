@@ -5,7 +5,8 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.fabricmc.fabric.api.client.command.v1.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandManager;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -14,7 +15,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.VoiceHud;
@@ -38,66 +39,68 @@ public class VoiceClientFabric extends VoiceClient implements ClientModInitializ
         ClientNetworkHandlerFabric network = new ClientNetworkHandlerFabric();
         ClientPlayNetworking.registerGlobalReceiver(PLASMO_VOICE, network::handle);
 
-        ClientCommandManager.DISPATCHER.register(ClientCommandManager.literal("vc")
-                .then(ClientCommandManager.literal("muteall")
-                        .executes(ctx -> {
-                            if (getClientConfig().whitelist.get()) {
-                                ctx.getSource().getPlayer().sendMessage(new TranslatableComponent("commands.plasmo_voice.whitelist_off"), NIL_UUID);
-                            } else {
-                                ctx.getSource().getPlayer().sendMessage(new TranslatableComponent("commands.plasmo_voice.whitelist_on"), NIL_UUID);
-                            }
+        ClientCommandRegistrationCallback.EVENT.register(((dispatcher, registryAccess) -> {
+            dispatcher.register(ClientCommandManager.literal("vc")
+                    .then(ClientCommandManager.literal("muteall")
+                            .executes(ctx -> {
+                                if (getClientConfig().whitelist.get()) {
+                                    ctx.getSource().getPlayer().sendSystemMessage(Component.translatable("commands.plasmo_voice.whitelist_off"));
+                                } else {
+                                    ctx.getSource().getPlayer().sendSystemMessage(Component.translatable("commands.plasmo_voice.whitelist_on"));
+                                }
 
-                            getClientConfig().whitelist.invert();
-                            getClientConfig().save();
-                            return 1;
-                        }))
-                .then(ClientCommandManager.literal("priority-distance")
-                        .executes(ctx -> {
-                            ctx.getSource().getPlayer().sendMessage(
-                                    new TranslatableComponent("commands.plasmo_voice.priority_distance_set",
-                                            getServerConfig().getPriorityDistance()
-                                    ), NIL_UUID);
-                            return 1;
-                        })
-                        .then(ClientCommandManager.argument("distance", IntegerArgumentType.integer())
-                                .executes(ctx -> {
-                                    int distance = IntegerArgumentType.getInteger(ctx, "distance");
-                                    if (distance <= getServerConfig().getMaxDistance()) {
-                                        ctx.getSource().getPlayer().sendMessage(
-                                                new TranslatableComponent("commands.plasmo_voice.min_priority_distance",
-                                                        getServerConfig().getMaxDistance()
-                                                ), NIL_UUID);
+                                getClientConfig().whitelist.invert();
+                                getClientConfig().save();
+                                return 1;
+                            }))
+                    .then(ClientCommandManager.literal("priority-distance")
+                            .executes(ctx -> {
+                                ctx.getSource().getPlayer().sendSystemMessage(
+                                        Component.translatable("commands.plasmo_voice.priority_distance_set",
+                                                getServerConfig().getPriorityDistance()
+                                        ));
+                                return 1;
+                            })
+                            .then(ClientCommandManager.argument("distance", IntegerArgumentType.integer())
+                                    .executes(ctx -> {
+                                        int distance = IntegerArgumentType.getInteger(ctx, "distance");
+                                        if (distance <= getServerConfig().getMaxDistance()) {
+                                            ctx.getSource().getPlayer().sendSystemMessage(
+                                                    Component.translatable("commands.plasmo_voice.min_priority_distance",
+                                                            getServerConfig().getMaxDistance()
+                                                    ));
+                                            return 1;
+                                        }
+
+                                        if (distance > getServerConfig().getMaxPriorityDistance()) {
+                                            ctx.getSource().getPlayer().sendSystemMessage(
+                                                    Component.translatable("commands.plasmo_voice.max_priority_distance",
+                                                            getServerConfig().getMaxPriorityDistance()
+                                                    ));
+                                            return 1;
+                                        }
+
+                                        ClientConfig.ServerConfig serverConfig;
+                                        if (getClientConfig().getServers()
+                                                .containsKey(getServerConfig().getIp())) {
+                                            serverConfig = getClientConfig().getServers()
+                                                    .get(getServerConfig().getIp());
+                                        } else {
+                                            serverConfig = new ClientConfig.ServerConfig();
+                                            serverConfig.distance.setDefault((int) getServerConfig().getDefaultDistance());
+                                            getClientConfig().getServers().put(getServerConfig().getIp(), serverConfig);
+                                        }
+
+                                        serverConfig.priorityDistance.set(distance);
+                                        getServerConfig().setPriorityDistance((short) distance);
+                                        getClientConfig().save();
+                                        ctx.getSource().getPlayer().sendSystemMessage(
+                                                Component.translatable("commands.plasmo_voice.priority_distance_set",
+                                                        distance
+                                                ));
                                         return 1;
-                                    }
-
-                                    if (distance > getServerConfig().getMaxPriorityDistance()) {
-                                        ctx.getSource().getPlayer().sendMessage(
-                                                new TranslatableComponent("commands.plasmo_voice.max_priority_distance",
-                                                        getServerConfig().getMaxPriorityDistance()
-                                                ), NIL_UUID);
-                                        return 1;
-                                    }
-
-                                    ClientConfig.ServerConfig serverConfig;
-                                    if (getClientConfig().getServers()
-                                            .containsKey(getServerConfig().getIp())) {
-                                        serverConfig = getClientConfig().getServers()
-                                                .get(getServerConfig().getIp());
-                                    } else {
-                                        serverConfig = new ClientConfig.ServerConfig();
-                                        serverConfig.distance.setDefault((int) getServerConfig().getDefaultDistance());
-                                        getClientConfig().getServers().put(getServerConfig().getIp(), serverConfig);
-                                    }
-
-                                    serverConfig.priorityDistance.set(distance);
-                                    getServerConfig().setPriorityDistance((short) distance);
-                                    getClientConfig().save();
-                                    ctx.getSource().getPlayer().sendMessage(
-                                            new TranslatableComponent("commands.plasmo_voice.priority_distance_set",
-                                                    distance
-                                            ), NIL_UUID);
-                                    return 1;
-                                }))));
+                                    }))));
+        }));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             final LocalPlayer player = client.player;

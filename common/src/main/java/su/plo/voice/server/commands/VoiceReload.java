@@ -3,7 +3,7 @@ package su.plo.voice.server.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import su.plo.voice.common.packets.tcp.ConfigPacket;
 import su.plo.voice.server.PlayerManager;
@@ -36,13 +36,13 @@ public class VoiceReload {
 
                             ServerNetworkHandler.sendTo(
                                     new ConfigPacket(config.getSampleRate(),
-                                        new ArrayList<>(config.getDistances()),
-                                        config.getDefaultDistance(),
-                                        config.getMaxPriorityDistance(),
-                                        config.isDisableVoiceActivation() ||
-                                                !VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.activation"),
-                                        config.getFadeDivisor(),
-                                        config.getPriorityFadeDivisor()
+                                            new ArrayList<>(config.getDistances()),
+                                            config.getDefaultDistance(),
+                                            config.getMaxPriorityDistance(),
+                                            config.isDisableVoiceActivation() ||
+                                                    !VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.activation"),
+                                            config.getFadeDivisor(),
+                                            config.getPriorityFadeDivisor()
                                     ),
                                     player);
                         }
@@ -51,7 +51,7 @@ public class VoiceReload {
                     }
 
                     ctx.getSource().sendSuccess(
-                            new TextComponent(VoiceServer.getInstance().getMessagePrefix("reloaded")),
+                            Component.literal(VoiceServer.getInstance().getMessagePrefix("reloaded")),
                             false
                     );
 

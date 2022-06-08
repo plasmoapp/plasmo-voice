@@ -10,7 +10,6 @@ import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
@@ -104,7 +103,7 @@ public class EntityIconRenderer {
         int j = (int) (g * 255.0F) << 24;
         Font textRenderer = client.font;
 
-        Component text = new TextComponent((int) Math.round(VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(player.getUUID(), 1.0D) * 100.0D) + "%");
+        Component text = Component.literal((int) Math.round(VoiceClient.getClientConfig().getPlayerVolumes().getOrDefault(player.getUUID(), 1.0D) * 100.0D) + "%");
 
         float h = (float) (-textRenderer.width(text) / 2);
         textRenderer.drawInBatch(text, h, 0, 553648127, false, matrix4f, vertexConsumers, bl, j, light);

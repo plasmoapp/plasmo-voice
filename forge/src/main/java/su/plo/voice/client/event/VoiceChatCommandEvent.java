@@ -13,8 +13,6 @@ import com.mojang.brigadier.tree.CommandNode;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentUtils;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraftforge.client.event.ClientChatEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import su.plo.voice.client.VoiceClientForge;
@@ -23,7 +21,6 @@ import su.plo.voice.client.config.ClientConfig;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class VoiceChatCommandEvent {
     private static final CommandDispatcher<ForgeClientCommandSource> DISPATCHER = new CommandDispatcher<>();
@@ -119,19 +116,19 @@ public class VoiceChatCommandEvent {
         DISPATCHER.register(literal("vc")
                 .then(literal("priority-distance")
                         .executes(ctx -> {
-                            ctx.getSource().getPlayer().sendMessage(new TranslatableComponent("commands.plasmo_voice.priority_distance_set", VoiceClientForge.getServerConfig().getPriorityDistance()), new UUID(0, 0));
+                            ctx.getSource().getPlayer().sendSystemMessage(Component.translatable("commands.plasmo_voice.priority_distance_set", VoiceClientForge.getServerConfig().getPriorityDistance()));
                             return 1;
                         })
                         .then(argument("distance", IntegerArgumentType.integer())
                                 .executes(ctx -> {
                                     int distance = IntegerArgumentType.getInteger(ctx, "distance");
                                     if(distance <= VoiceClientForge.getServerConfig().getMaxDistance()) {
-                                        ctx.getSource().getPlayer().sendMessage(new TranslatableComponent("commands.plasmo_voice.min_priority_distance", VoiceClientForge.getServerConfig().getMaxDistance()), new UUID(0, 0));
+                                        ctx.getSource().getPlayer().sendSystemMessage(Component.translatable("commands.plasmo_voice.min_priority_distance", VoiceClientForge.getServerConfig().getMaxDistance()));
                                         return 1;
                                     }
 
                                     if(distance > VoiceClientForge.getServerConfig().getMaxPriorityDistance()) {
-                                        ctx.getSource().getPlayer().sendMessage(new TranslatableComponent("commands.plasmo_voice.max_priority_distance", VoiceClientForge.getServerConfig().getMaxPriorityDistance()), new UUID(0, 0));
+                                        ctx.getSource().getPlayer().sendSystemMessage(Component.translatable("commands.plasmo_voice.max_priority_distance", VoiceClientForge.getServerConfig().getMaxPriorityDistance()));
                                         return 1;
                                     }
 
@@ -149,7 +146,7 @@ public class VoiceChatCommandEvent {
                                     serverConfig.priorityDistance.set(distance);
                                     VoiceClientForge.getServerConfig().setPriorityDistance((short) distance);
                                     VoiceClientForge.getClientConfig().save();
-                                    ctx.getSource().getPlayer().sendMessage(new TranslatableComponent("commands.plasmo_voice.priority_distance_set", distance), new UUID(0, 0));
+                                    ctx.getSource().getPlayer().sendSystemMessage(Component.translatable("commands.plasmo_voice.priority_distance_set", distance));
                                     return 1;
                                 }))));
     }
@@ -191,7 +188,7 @@ public class VoiceChatCommandEvent {
             commandSource.sendError(getErrorMessage(e));
             return true;
         } catch (RuntimeException e) {
-            commandSource.sendError(new TextComponent(e.getMessage()));
+            commandSource.sendError(Component.literal(e.getMessage()));
             return true;
         } finally {
             client.getProfiler().pop();
@@ -202,6 +199,6 @@ public class VoiceChatCommandEvent {
         Component message = ComponentUtils.fromMessage(e.getRawMessage());
         String context = e.getContext();
 
-        return context != null ? new TranslatableComponent("command.context.parse_error", message, context) : message;
+        return context != null ? Component.translatable("command.context.parse_error", message, context) : message;
     }
 }

@@ -55,7 +55,7 @@ public class CustomSoundEngine {
 
     public CustomSoundEngine() {
         this.listener = new Listener();
-        this.executor = Executors.newScheduledThreadPool(1);
+        this.executor = Executors.newSingleThreadScheduledExecutor();
     }
 
     public synchronized CustomSource createSource() {

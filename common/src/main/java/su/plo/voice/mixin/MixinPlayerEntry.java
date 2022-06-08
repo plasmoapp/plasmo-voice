@@ -12,8 +12,6 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.social.PlayerEntry;
 import net.minecraft.client.gui.screens.social.PlayerSocialManager;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -34,13 +32,21 @@ import static net.minecraft.client.gui.screens.social.PlayerEntry.BG_FILL_REMOVE
 @Mixin(PlayerEntry.class)
 public abstract class MixinPlayerEntry {
 
-    @Shadow @Final private Minecraft minecraft;
-    @Shadow @Final private UUID id;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
+    @Shadow
+    @Final
+    private UUID id;
 
-    @Shadow protected abstract Component getStatusComponent();
+    @Shadow
+    protected abstract Component getStatusComponent();
 
-    @Shadow private boolean isRemoved;
-    @Shadow @Final private List<AbstractWidget> children;
+    @Shadow
+    private boolean isRemoved;
+    @Shadow
+    @Final
+    private List<AbstractWidget> children;
     private Button muteShowButton;
     private Button muteHideButton;
     private Button volumeButton;
@@ -48,15 +54,15 @@ public abstract class MixinPlayerEntry {
     private PlayerVolumeWidget playerVolumeWidget;
     private List<GuiEventListener> customButtons = ImmutableList.of();
 
-    private static final Component HIDDEN = (new TranslatableComponent("gui.socialInteractions.status_hidden")).withStyle(ChatFormatting.ITALIC);
-    private static final Component BLOCKED = (new TranslatableComponent("gui.socialInteractions.status_blocked")).withStyle(ChatFormatting.ITALIC);
-    private static final Component OFFLINE = (new TranslatableComponent("gui.socialInteractions.status_offline")).withStyle(ChatFormatting.ITALIC);
-    private static final Component HIDDEN_OFFLINE = (new TranslatableComponent("gui.socialInteractions.status_hidden_offline")).withStyle(ChatFormatting.ITALIC);
-    private static final Component BLOCKED_OFFLINE = (new TranslatableComponent("gui.socialInteractions.status_blocked_offline")).withStyle(ChatFormatting.ITALIC);
+    private static final Component HIDDEN = (Component.translatable("gui.socialInteractions.status_hidden")).withStyle(ChatFormatting.ITALIC);
+    private static final Component BLOCKED = (Component.translatable("gui.socialInteractions.status_blocked")).withStyle(ChatFormatting.ITALIC);
+    private static final Component OFFLINE = (Component.translatable("gui.socialInteractions.status_offline")).withStyle(ChatFormatting.ITALIC);
+    private static final Component HIDDEN_OFFLINE = (Component.translatable("gui.socialInteractions.status_hidden_offline")).withStyle(ChatFormatting.ITALIC);
+    private static final Component BLOCKED_OFFLINE = (Component.translatable("gui.socialInteractions.status_blocked_offline")).withStyle(ChatFormatting.ITALIC);
 
     @Inject(method = "<init>*", at = @At("RETURN"))
     private void onConstructed(CallbackInfo ci) {
-        if(VoiceClient.getServerConfig() == null) {
+        if (VoiceClient.getServerConfig() == null) {
             return;
         }
 
@@ -71,13 +77,15 @@ public abstract class MixinPlayerEntry {
                 this.playerVolumeWidget.visible = true;
                 this.volumeButton.visible = false;
                 this.volumeButtonActive.visible = true;
-            }, (buttonWidget, matrixStack, i, j) -> {}, new TranslatableComponent("gui.socialInteractions.hide"));
+            }, (buttonWidget, matrixStack, i, j) -> {
+            }, Component.translatable("gui.socialInteractions.hide"));
 
             this.volumeButtonActive = new ImageButton(0, 0, 20, 20, 0, 92, 0, VoiceClient.ICONS, 256, 256, (buttonWidget) -> {
                 this.playerVolumeWidget.visible = false;
                 this.volumeButtonActive.visible = false;
                 this.volumeButton.visible = true;
-            }, (buttonWidget, matrixStack, i, j) -> {}, new TranslatableComponent("gui.socialInteractions.hide"));
+            }, (buttonWidget, matrixStack, i, j) -> {
+            }, Component.translatable("gui.socialInteractions.hide"));
 
             this.muteHideButton = new ImageButton(0, 0, 20, 20, 0, 32, 20, VoiceClient.ICONS, 256, 256, (buttonWidget) -> {
                 VoiceClient.getClientConfig().mute(id);
@@ -93,7 +101,7 @@ public abstract class MixinPlayerEntry {
 //                    });
 //                }
 
-            }, new TranslatableComponent("gui.socialInteractions.hide"));
+            }, Component.translatable("gui.socialInteractions.hide"));
             this.muteShowButton = new ImageButton(0, 0, 20, 20, 20, 32, 20, VoiceClient.ICONS, 256, 256, (buttonWidget) -> {
                 VoiceClient.getClientConfig().unmute(id);
                 this.muteShowButton.visible = false;
@@ -107,7 +115,7 @@ public abstract class MixinPlayerEntry {
 //                    });
 //                }
 
-            }, new TranslatableComponent("gui.socialInteractions.show"));
+            }, Component.translatable("gui.socialInteractions.show"));
             this.muteShowButton.visible = VoiceClient.getClientConfig().isMuted(id);
             this.muteHideButton.visible = !this.muteShowButton.visible;
 
@@ -127,7 +135,7 @@ public abstract class MixinPlayerEntry {
             this.muteShowButton.y = y + (entryHeight - this.muteShowButton.getHeight()) / 2;
             this.muteShowButton.render(matrices, mouseX, mouseY, tickDelta);
 
-            if(this.playerVolumeWidget.visible) {
+            if (this.playerVolumeWidget.visible) {
                 this.volumeButtonActive.x = x + (entryWidth - this.volumeButtonActive.getWidth() - 52);
                 this.volumeButtonActive.y = y + (entryHeight - this.volumeButtonActive.getHeight()) / 2;
                 this.volumeButtonActive.render(matrices, mouseX, mouseY, tickDelta);
@@ -137,7 +145,7 @@ public abstract class MixinPlayerEntry {
                 this.volumeButton.render(matrices, mouseX, mouseY, tickDelta);
             }
 
-            if(this.playerVolumeWidget.visible && getStatusComponent() != TextComponent.EMPTY) {
+            if (this.playerVolumeWidget.visible && getStatusComponent() != Component.empty()) {
                 GuiComponent.fill(matrices, x + entryHeight - 2, y, x + (entryWidth / 2) + 2, y + entryHeight, BG_FILL_REMOVED);
             }
 
@@ -148,7 +156,7 @@ public abstract class MixinPlayerEntry {
     @Inject(method = "getStatusComponent", at = @At(value = "RETURN"), cancellable = true)
     private void getStatusText(CallbackInfoReturnable<Component> cir) {
         boolean bl = this.minecraft.getPlayerSocialManager().isBlocked(this.id) ||
-                VoiceClient.getClientConfig().isMuted(this.id   );
+                VoiceClient.getClientConfig().isMuted(this.id);
         boolean bl2 = this.minecraft.getPlayerSocialManager().isBlocked(this.id);
         if (bl2 && this.isRemoved) {
             cir.setReturnValue(BLOCKED_OFFLINE);
@@ -159,10 +167,10 @@ public abstract class MixinPlayerEntry {
         } else if (bl) {
             cir.setReturnValue(HIDDEN);
         } else {
-            if(this.isRemoved) {
+            if (this.isRemoved) {
                 cir.setReturnValue(OFFLINE);
             } else {
-                cir.setReturnValue(TextComponent.EMPTY);
+                cir.setReturnValue(Component.empty());
             }
         }
     }

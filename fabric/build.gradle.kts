@@ -42,14 +42,8 @@ dependencies {
 
     modApi("net.fabricmc:fabric-loader:${fabricLoaderVersion}")
 
-    // Fabric API jar-in-jar
-    modImplementation(fabricApi.module("fabric-api-base", fabricVersion))
-    modImplementation(fabricApi.module("fabric-command-api-v1", fabricVersion))
-    modImplementation(fabricApi.module("fabric-key-binding-api-v1", fabricVersion))
-    modImplementation(fabricApi.module("fabric-lifecycle-events-v1", fabricVersion))
-    modImplementation(fabricApi.module("fabric-networking-api-v1", fabricVersion))
-    modImplementation(fabricApi.module("fabric-rendering-v1", fabricVersion))
-    modImplementation(fabricApi.module("fabric-resource-loader-v0", fabricVersion))
+    // Fabric API
+    modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
 
     // Plasmo Voice protocol
     implementation("su.plo.voice:common:1.0.0")

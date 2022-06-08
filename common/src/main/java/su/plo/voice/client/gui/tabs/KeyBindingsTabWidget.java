@@ -2,7 +2,7 @@ package su.plo.voice.client.gui.tabs;
 
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
@@ -21,7 +21,7 @@ public class KeyBindingsTabWidget extends TabWidget {
 
         for (String category : config.keyBindings.categories) {
             List<ClientConfig.KeyBindingConfigEntry> keyBindings = config.keyBindings.categoryEntries.get(category);
-            this.addEntry(new CategoryEntry(new TranslatableComponent(category)));
+            this.addEntry(new CategoryEntry(Component.translatable(category)));
             for (ClientConfig.KeyBindingConfigEntry keyBinding : keyBindings) {
                 this.addEntry(new OptionEntry(
                         keyBinding.get().getTranslation(),

@@ -4,7 +4,7 @@ import com.mojang.authlib.GameProfile;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import su.plo.voice.server.VoiceServer;
 
 import java.text.SimpleDateFormat;
@@ -20,14 +20,14 @@ public class VoiceMuteList {
                 .executes(ctx -> {
                     if (VoiceServer.getMuted().size() == 0) {
                         ctx.getSource().sendSuccess(
-                                new TextComponent(VoiceServer.getInstance().getMessagePrefix("muted_list_empty")),
+                                Component.literal(VoiceServer.getInstance().getMessagePrefix("muted_list_empty")),
                                 false
                         );
                         return 1;
                     }
 
                     ctx.getSource().sendSuccess(
-                            new TextComponent(VoiceServer.getInstance().getMessagePrefix("muted_list")),
+                            Component.literal(VoiceServer.getInstance().getMessagePrefix("muted_list")),
                             false
                     );
                     VoiceServer.getMuted().forEach((uuid, muted) -> {
@@ -40,7 +40,7 @@ public class VoiceMuteList {
                                     ? VoiceServer.getInstance().getMessage("mute_no_reason")
                                     : muted.getReason();
                             ctx.getSource().sendSuccess(
-                                    new TextComponent(VoiceServer.getInstance().getMessage("muted_list_entry")
+                                    Component.literal(VoiceServer.getInstance().getMessage("muted_list_entry")
                                             .replace("{player}", gameProfile.get().getName())
                                             .replace("{expires}", expires)
                                             .replace("{reason}", reason)),

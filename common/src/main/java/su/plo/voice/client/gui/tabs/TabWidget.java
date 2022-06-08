@@ -14,7 +14,6 @@ import net.minecraft.client.gui.narration.NarratedElementType;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.Mth;
 import su.plo.voice.client.config.entries.ConfigEntry;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
@@ -296,7 +295,7 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
             this.entry = entry;
             this.tooltip = tooltip;
 
-            this.resetButton = new Button(0, 0, 46, 20, new TranslatableComponent("controls.reset"), button -> {
+            this.resetButton = new Button(0, 0, 46, 20, Component.translatable("controls.reset"), button -> {
                 if (entry != null) {
                     entry.reset();
                     if (action != null) {

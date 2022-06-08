@@ -17,11 +17,8 @@ import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Blocks;
-import net.minecraft.world.phys.Vec3;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.ClientConfig;
@@ -88,14 +85,16 @@ public class VoiceSettingsScreen extends Screen {
     }
 
     private static Component getTranslatedTitle() {
-        TranslatableComponent title = new TranslatableComponent("gui.plasmo_voice.title",
-                "Plasmo Voice " + VoiceClient.getInstance().getVersion());
+        Component title = Component.translatable(
+                "gui.plasmo_voice.title",
+                "Plasmo Voice " + VoiceClient.getInstance().getVersion()
+        );
         Language language = Language.getInstance();
 
-        if (!language.getOrDefault(title.getKey()).contains("%s")) {
-            return new TextComponent("Plasmo Voice ")
-                    .append(new TextComponent(VoiceClient.getInstance().getVersion()))
-                    .append(new TextComponent(" Settings"));
+        if (!language.getOrDefault("gui.plasmo_voice.title").contains("%s")) {
+            return Component.literal("Plasmo Voice ")
+                    .append(Component.literal(VoiceClient.getInstance().getVersion()))
+                    .append(Component.literal(" Settings"));
         }
 
         return title;
@@ -137,7 +136,6 @@ public class VoiceSettingsScreen extends Screen {
         if (source != null) {
             byte[] finalBuffer = buffer;
             VoiceClient.getSoundEngine().runInContext(() -> {
-                source.setPosition(new Vec3(0, 0, 0));
                 source.setVolume(VoiceClient.getClientConfig().voiceVolume.get().floatValue());
                 source.write(finalBuffer);
             });
@@ -183,9 +181,9 @@ public class VoiceSettingsScreen extends Screen {
         this.titleWidth = font.width(title);
         clearWidgets();
         // todo optimization
-        addTab(new TranslatableComponent("gui.plasmo_voice.general"), new GeneralTabWidget(client, this));
-        addTab(new TranslatableComponent("gui.plasmo_voice.advanced"), new AdvancedTabWidget(client, this));
-        addTab(new TranslatableComponent("gui.plasmo_voice.hotkeys"), new KeyBindingsTabWidget(client, this));
+        addTab(Component.translatable("gui.plasmo_voice.general"), new GeneralTabWidget(client, this));
+        addTab(Component.translatable("gui.plasmo_voice.advanced"), new AdvancedTabWidget(client, this));
+        addTab(Component.translatable("gui.plasmo_voice.hotkeys"), new KeyBindingsTabWidget(client, this));
         aboutWidget = new AboutTabWidget(client, this);
 //        active = tabButtons.get(0);
 
@@ -197,9 +195,9 @@ public class VoiceSettingsScreen extends Screen {
             config.microphoneMuted.set(true);
         }, (button, matrices, mouseX, mouseY) -> {
             setTooltip(ImmutableList.of(
-                    new TranslatableComponent("gui.plasmo_voice.toggle.microphone"),
-                    new TranslatableComponent("gui.plasmo_voice.toggle.currently",
-                            new TranslatableComponent("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
+                    Component.translatable("gui.plasmo_voice.toggle.microphone"),
+                    Component.translatable("gui.plasmo_voice.toggle.currently",
+                            Component.translatable("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
                     ).withStyle(ChatFormatting.GRAY)
             ));
         }, null);
@@ -217,9 +215,9 @@ public class VoiceSettingsScreen extends Screen {
             }
         }, (button, matrices, mouseX, mouseY) -> {
             setTooltip(ImmutableList.of(
-                    new TranslatableComponent("gui.plasmo_voice.toggle.microphone"),
-                    new TranslatableComponent("gui.plasmo_voice.toggle.currently",
-                            new TranslatableComponent("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
+                    Component.translatable("gui.plasmo_voice.toggle.microphone"),
+                    Component.translatable("gui.plasmo_voice.toggle.currently",
+                            Component.translatable("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
                     ).withStyle(ChatFormatting.GRAY)
             ));
         }, null);
@@ -242,9 +240,9 @@ public class VoiceSettingsScreen extends Screen {
             }
         }, (button, matrices, mouseX, mouseY) -> {
             setTooltip(ImmutableList.of(
-                    new TranslatableComponent("gui.plasmo_voice.toggle.voice"),
-                    new TranslatableComponent("gui.plasmo_voice.toggle.currently",
-                            new TranslatableComponent("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
+                    Component.translatable("gui.plasmo_voice.toggle.voice"),
+                    Component.translatable("gui.plasmo_voice.toggle.currently",
+                            Component.translatable("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
                     ).withStyle(ChatFormatting.GRAY)
             ));
         }, null);
@@ -261,9 +259,9 @@ public class VoiceSettingsScreen extends Screen {
             }
         }, (button, matrices, mouseX, mouseY) -> {
             setTooltip(ImmutableList.of(
-                    new TranslatableComponent("gui.plasmo_voice.toggle.voice"),
-                    new TranslatableComponent("gui.plasmo_voice.toggle.currently",
-                            new TranslatableComponent("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
+                    Component.translatable("gui.plasmo_voice.toggle.voice"),
+                    Component.translatable("gui.plasmo_voice.toggle.currently",
+                            Component.translatable("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
                     ).withStyle(ChatFormatting.GRAY)
             ));
         }, null);

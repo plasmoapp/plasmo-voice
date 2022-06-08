@@ -22,8 +22,6 @@ import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.language.LanguageInfo;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
@@ -80,14 +78,14 @@ public class AboutTabWidget extends TabWidget {
 
         Language language = Language.getInstance();
 
-        Component madeBy = new TranslatableComponent("gui.plasmo_voice.about.made_by", "Plasmo Voice");
-        if (!language.getOrDefault(((TranslatableComponent) madeBy).getKey()).contains("%s")) {
-            madeBy = new TextComponent("Plasmo Voice is made by");
+        Component madeBy = Component.translatable("gui.plasmo_voice.about.made_by", "Plasmo Voice");
+        if (!language.getOrDefault("gui.plasmo_voice.about.made_by").contains("%s")) {
+            madeBy = Component.literal("Plasmo Voice is made by");
         }
         this.addEntry(new CategoryEntry(madeBy, 24));
-        this.addEntry(new DeveloperEntry("KPidS", new TranslatableComponent("gui.plasmo_voice.about.huix"), "Twitch", "https://twitch.tv/kpids"));
-        this.addEntry(new DeveloperEntry("Apehum", new TranslatableComponent("gui.plasmo_voice.about.programming"), "Twitch", "https://twitch.tv/apehum"));
-        this.addEntry(new DeveloperEntry("Venterok", new TranslatableComponent("gui.plasmo_voice.about.artist"), "Twitter", "https://twitter.com/venterrok"));
+        this.addEntry(new DeveloperEntry("KPidS", Component.translatable("gui.plasmo_voice.about.huix"), "Twitch", "https://twitch.tv/kpids"));
+        this.addEntry(new DeveloperEntry("Apehum", Component.translatable("gui.plasmo_voice.about.programming"), "Twitch", "https://twitch.tv/apehum"));
+        this.addEntry(new DeveloperEntry("Venterok", Component.translatable("gui.plasmo_voice.about.artist"), "Twitter", "https://twitter.com/venterrok"));
 
         LanguageInfo languageInfo = client.getLanguageManager().getSelected();
         List<Translator> langTranslators = translators.get(languageInfo.getCode());
@@ -96,42 +94,42 @@ public class AboutTabWidget extends TabWidget {
                 DeveloperEntry.loadTranslatorSkin(translator);
                 this.addEntry(new DeveloperEntry(
                         translator.getProfile().getName(),
-                        new TranslatableComponent("gui.plasmo_voice.about.translator", languageInfo.getName()),
+                        Component.translatable("gui.plasmo_voice.about.translator", languageInfo.getName()),
                         translator.getLink(),
                         translator.getLinkUrl()
                 ));
             }
         }
-        Component links = new TranslatableComponent("gui.plasmo_voice.about.links", "Plasmo Voice");
-        if (!language.getOrDefault(((TranslatableComponent) links).getKey()).contains("%s")) {
-            links = new TextComponent("Plasmo Voice on");
+        Component links = Component.translatable("gui.plasmo_voice.about.links", "Plasmo Voice");
+        if (!language.getOrDefault("gui.plasmo_voice.about.links").contains("%s")) {
+            links = Component.literal("Plasmo Voice on");
         }
         this.addEntry(new CategoryEntry(links));
         this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, new TextComponent("Github"), button -> {
+                new Button(0, 0, 0, 20, Component.literal("Github"), button -> {
                     openLink("https://github.com/plasmoapp/plasmo-voice");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(new TextComponent("https://github.com/plasmoapp/plasmo-voice")));
+                    setTooltip(ImmutableList.of(Component.literal("https://github.com/plasmoapp/plasmo-voice")));
                 }),
-                new Button(0, 0, 0, 20, new TextComponent("Discord"), button -> {
+                new Button(0, 0, 0, 20, Component.literal("Discord"), button -> {
                     openLink("https://discord.com/invite/uueEqzwCJJ");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(new TextComponent("https://discord.com/invite/uueEqzwCJJ")));
+                    setTooltip(ImmutableList.of(Component.literal("https://discord.com/invite/uueEqzwCJJ")));
                 })
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, new TextComponent("Modrinth"), button -> {
+                new Button(0, 0, 0, 20, Component.literal("Modrinth"), button -> {
                     openLink("https://modrinth.com/mod/plasmo-voice");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(new TextComponent("https://modrinth.com/mod/plasmo-voice")));
+                    setTooltip(ImmutableList.of(Component.literal("https://modrinth.com/mod/plasmo-voice")));
                 }),
-                new Button(0, 0, 0, 20, new TextComponent("Spigot"), button -> {
+                new Button(0, 0, 0, 20, Component.literal("Spigot"), button -> {
                     openLink("https://www.spigotmc.org/resources/plasmo-voice-server.91064/");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(new TextComponent("https://www.spigotmc.org/resources/plasmo-voice-server.91064/")));
+                    setTooltip(ImmutableList.of(Component.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/")));
                 })
         )));
-        this.addEntry(new TextEntry(new TranslatableComponent("gui.plasmo_voice.about.copyright")));
+        this.addEntry(new TextEntry(Component.translatable("gui.plasmo_voice.about.copyright")));
     }
 
     protected void openLink(String linkUrl) {
@@ -208,9 +206,9 @@ public class AboutTabWidget extends TabWidget {
 
             int elementY = y + 16;
 
-            for(Iterator<FormattedCharSequence> var7 = lines.iterator(); var7.hasNext(); elementY += lineHeight) {
+            for (Iterator<FormattedCharSequence> var7 = lines.iterator(); var7.hasNext(); elementY += lineHeight) {
                 FormattedCharSequence orderedText = var7.next();
-                AboutTabWidget.this.minecraft.font.drawShadow(matrices, orderedText, x, (float)(elementY - lineHeight - 1), -8355712);
+                AboutTabWidget.this.minecraft.font.drawShadow(matrices, orderedText, x, (float) (elementY - lineHeight - 1), -8355712);
             }
         }
 
@@ -294,20 +292,20 @@ public class AboutTabWidget extends TabWidget {
             }
         }
 
-        private final TextComponent nick;
+        private final Component nick;
         private final Component role;
         private final Button link;
 
         public DeveloperEntry(String nick, Component role, String link, String linkUrl) {
             super(44);
-            this.nick = new TextComponent(nick);
+            this.nick = Component.literal(nick);
             this.role = role;
             if (link != null) {
-                this.link = new Button(0, 0, 56, 20, new TextComponent(link), button -> {
+                this.link = new Button(0, 0, 56, 20, Component.literal(link), button -> {
                     openLink(linkUrl);
                 }, (button, matrices, mouseX, mouseY) -> {
                     AboutTabWidget.this.setTooltip(ImmutableList.of(
-                            new TextComponent(linkUrl)
+                            Component.literal(linkUrl)
                     ));
                 });
             } else {
@@ -339,7 +337,7 @@ public class AboutTabWidget extends TabWidget {
 
             RenderSystem.setShader(GameRenderer::getPositionTexShader);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-            RenderSystem.setShaderTexture(0, skins.getOrDefault(nick.getContents(), steveSkin));
+            RenderSystem.setShaderTexture(0, skins.getOrDefault(nick.getString(), steveSkin));
 
             blit(matrices, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
             blit(matrices, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);

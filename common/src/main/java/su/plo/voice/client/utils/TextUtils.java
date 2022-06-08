@@ -4,8 +4,6 @@ import net.minecraft.client.gui.Font;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.ArrayList;
@@ -19,7 +17,7 @@ public class TextUtils {
     public static List<Component> multiLine(String translation, int lines) {
         List<Component> list = new ArrayList<>();
         for (int i = 1; i < (lines + 1); i++) {
-            list.add(new TranslatableComponent(translation + "_" + i));
+            list.add(Component.translatable(translation + "_" + i));
         }
 
         return list;
@@ -27,14 +25,14 @@ public class TextUtils {
 
     public static Component formatAlDeviceName(String deviceName) {
         if (deviceName == null) {
-            return new TranslatableComponent("gui.plasmo_voice.general.not_available");
+            return Component.translatable("gui.plasmo_voice.general.not_available");
         }
 
         Matcher matcher = DEVICE_NAME.matcher(deviceName);
         if (!matcher.matches()) {
-            return new TextComponent(deviceName);
+            return Component.literal(deviceName);
         }
-        return new TextComponent(matcher.group(1));
+        return Component.literal(matcher.group(1));
     }
 
     public static List<Component> formatAlDeviceNames(List<String> elements) {

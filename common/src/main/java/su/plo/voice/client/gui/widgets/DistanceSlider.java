@@ -4,7 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractSliderButton;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.ClientConfig;
@@ -15,7 +15,7 @@ public class DistanceSlider extends AbstractSliderButton {
     private final int maxSteps;
 
     public DistanceSlider(int x, int y, int width) {
-        super(x, y, width, 20, TextComponent.EMPTY,
+        super(x, y, width, 20, Component.empty(),
                 (float) VoiceClient.getServerConfig().getDistances().indexOf((int) VoiceClient.getServerConfig().getDistance())
                         / (float) (VoiceClient.getServerConfig().getDistances().size() - 1));
         this.updateMessage();
@@ -44,13 +44,13 @@ public class DistanceSlider extends AbstractSliderButton {
     }
 
     protected void updateMessage() {
-        this.setMessage(new TextComponent(String.valueOf(this.getValue(this.value))));
+        this.setMessage(Component.literal(String.valueOf(this.getValue(this.value))));
     }
 
     protected void applyValue() {
         int value = this.getValue(this.value);
         ClientConfig.ServerConfig serverConfig;
-        if(VoiceClient.getClientConfig().getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
+        if (VoiceClient.getClientConfig().getServers().containsKey(VoiceClient.getServerConfig().getIp())) {
             serverConfig = VoiceClient.getClientConfig().getServers().get(VoiceClient.getServerConfig().getIp());
             serverConfig.distance.set(value);
             VoiceClient.getServerConfig().setDistance((short) value);
@@ -65,7 +65,7 @@ public class DistanceSlider extends AbstractSliderButton {
 
         float stepValue = (float) VoiceClient.getServerConfig().getDistances().indexOf((int) VoiceClient.getServerConfig().getDistance()) / ((float) maxSteps - 1);
 
-        blit(matrices, this.x + (int)(stepValue * (double)(this.width - 8)), this.y, 0, 46 + i, 4, 20);
-        blit(matrices, this.x + (int)(stepValue * (double)(this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
+        blit(matrices, this.x + (int) (stepValue * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
+        blit(matrices, this.x + (int) (stepValue * (double) (this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
     }
 }

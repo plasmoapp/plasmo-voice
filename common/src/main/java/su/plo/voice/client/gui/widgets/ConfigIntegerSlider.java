@@ -2,7 +2,6 @@ package su.plo.voice.client.gui.widgets;
 
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
 import su.plo.voice.client.config.entries.IntegerConfigEntry;
 
 public class ConfigIntegerSlider extends AbstractSliderButton {
@@ -11,7 +10,7 @@ public class ConfigIntegerSlider extends AbstractSliderButton {
     private final UpdateAction onUpdate;
 
     public ConfigIntegerSlider(int x, int y, int width, Component suffix, IntegerConfigEntry entry, UpdateAction onUpdate) {
-        super(x, y, width, 20, TextComponent.EMPTY, 0.0D);
+        super(x, y, width, 20, Component.empty(), 0.0D);
         this.onUpdate = onUpdate;
         this.suffix = suffix;
         this.entry = entry;
@@ -33,11 +32,11 @@ public class ConfigIntegerSlider extends AbstractSliderButton {
 
     protected void updateMessage() {
         if (suffix != null) {
-            this.setMessage(new TextComponent(String.valueOf((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin())))
-                    .append(new TextComponent(" "))
+            this.setMessage(Component.literal(String.valueOf((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin())))
+                    .append(Component.literal(" "))
                     .append(suffix));
         } else {
-            this.setMessage(new TextComponent(String.valueOf((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin()))));
+            this.setMessage(Component.literal(String.valueOf((int) (this.value * (entry.getMax() - entry.getMin()) + entry.getMin()))));
         }
     }
 

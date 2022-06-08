@@ -8,7 +8,7 @@ import io.netty.util.internal.ConcurrentSet;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.entries.*;
@@ -99,16 +99,17 @@ public class ClientConfig {
     public static ClientConfig read() {
         ClientConfig config = null;
         File configFile = new File("config/PlasmoVoice/config.json");
-        if(configFile.exists()) {
+        if (configFile.exists()) {
             try {
                 JsonReader reader = new JsonReader(new FileReader(configFile));
                 config = gson.fromJson(reader, ClientConfig.class);
-            } catch (FileNotFoundException ignored) {} catch (JsonSyntaxException e) {
+            } catch (FileNotFoundException ignored) {
+            } catch (JsonSyntaxException e) {
                 configFile.delete();
             }
         }
 
-        if(config == null) {
+        if (config == null) {
             config = new ClientConfig();
         }
 
@@ -116,10 +117,10 @@ public class ClientConfig {
         config.setupDefaults();
 
         ClientData data = ClientData.read();
-        if(data.mutedClients != null) {
+        if (data.mutedClients != null) {
             config.muted = data.mutedClients;
         }
-        if(data.whitelisted != null) {
+        if (data.whitelisted != null) {
             config.whitelisted = data.whitelisted;
         }
 
@@ -133,7 +134,7 @@ public class ClientConfig {
             configDir.mkdirs();
 
             try {
-                try(Writer w = new FileWriter("config/PlasmoVoice/config.json")) {
+                try (Writer w = new FileWriter("config/PlasmoVoice/config.json")) {
                     w.write(gson.toJson(this));
                 }
             } catch (IOException e) {
@@ -179,7 +180,7 @@ public class ClientConfig {
 
     // mute stuff
     public boolean isMuted(UUID uuid) {
-        if(whitelist.get()) {
+        if (whitelist.get()) {
             return !whitelisted.contains(uuid);
         } else {
             return muted.contains(uuid);
@@ -187,7 +188,7 @@ public class ClientConfig {
     }
 
     public void mute(UUID uuid) {
-        if(whitelist.get()) {
+        if (whitelist.get()) {
             whitelisted.remove(uuid);
         } else {
             muted.add(uuid);
@@ -196,7 +197,7 @@ public class ClientConfig {
     }
 
     public void unmute(UUID uuid) {
-        if(whitelist.get()) {
+        if (whitelist.get()) {
             whitelisted.add(uuid);
         } else {
             muted.remove(uuid);
@@ -328,7 +329,7 @@ public class ClientConfig {
 
             pressed.remove(key);
             for (KeyBindingConfigEntry entry : registeredKeyBinds) {
-                if (entry.anyContext || client.screen == null ) {
+                if (entry.anyContext || client.screen == null) {
                     entry.get().onKeyUp();
                 }
             }
@@ -342,14 +343,14 @@ public class ClientConfig {
 
         @Override
         public void reset() {
-            this.value = new KeyBinding(defaultValue.getTranslation().getKey(), ImmutableList.copyOf(defaultValue.getKeys()));
+            this.value = new KeyBinding(defaultValue.getTranslationKey(), ImmutableList.copyOf(defaultValue.getKeys()));
         }
 
         public void setDefault(ConfigKeyBindings keyBindings, KeyBinding value, String category, boolean anyContext) {
             this.anyContext = anyContext;
             this.defaultValue = value;
             if (this.value == null) {
-                this.value = new KeyBinding(value.getTranslation().getKey(), ImmutableList.copyOf(value.getKeys()));
+                this.value = new KeyBinding(value.getTranslationKey(), ImmutableList.copyOf(value.getKeys()));
             } else {
                 this.value.setTranslation(value.getTranslation());
             }
@@ -391,7 +392,8 @@ public class ClientConfig {
                     keys.add(InputConstants.Type.valueOf(obj.get("type").getAsString()).getOrCreate(obj.get("code").getAsInt()));
                 }
                 entry.set(new KeyBinding(null, keys));
-            } catch (UnsupportedOperationException ignored) {}
+            } catch (UnsupportedOperationException ignored) {
+            }
             return entry;
         }
 
@@ -416,8 +418,11 @@ public class ClientConfig {
 
     public static class KeyBinding {
         @Getter
+        private final String translationKey;
+
+        @Getter
         @Setter
-        private TranslatableComponent translation;
+        private Component translation;
         @Getter
         @Setter
         private List<InputConstants.Key> keys;
@@ -428,7 +433,8 @@ public class ClientConfig {
         private KeyBindingPress onPress;
 
         public KeyBinding(String translation, List<InputConstants.Key> keys) {
-            this.translation = new TranslatableComponent(translation);
+            this.translation = Component.translatable(translation);
+            this.translationKey = translation;
             this.keys = keys;
         }
 
@@ -467,7 +473,8 @@ public class ClientConfig {
             MicrophoneIconPositionConfigEntry entry = new MicrophoneIconPositionConfigEntry();
             try {
                 entry.set(MicrophoneIconPosition.valueOf(json.getAsString()));
-            } catch (UnsupportedOperationException ignored) {}
+            } catch (UnsupportedOperationException ignored) {
+            }
             return entry;
         }
 

@@ -3,8 +3,8 @@ package su.plo.voice.server.network;
 import io.netty.buffer.Unpooled;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,9 +44,9 @@ public abstract class ServerNetworkHandler {
                     ServerPlayer player = PlayerManager.getByUUID(uuid);
                     if (player != null) {
                         sendToClients(new ClientUnmutedPacket(uuid), null);
-                        player.sendMessage(new TextComponent(
+                        player.sendSystemMessage(Component.literal(
                                 VoiceServer.getInstance().getMessagePrefix("player_unmuted")
-                        ), VoiceServer.NIL_UUID);
+                        ));
                     }
                 }
             });
@@ -70,10 +70,9 @@ public abstract class ServerNetworkHandler {
 
         if (PlayerManager.isOp(player)
                 && !SocketServerUDP.started) {
-            player.sendMessage(new TextComponent(VoiceServer.getInstance().getPrefix() +
-                            String.format("Voice chat is installed but doesn't work. Check if port %d UDP is open.",
-                                    VoiceServer.getServerConfig().getPort())),
-                    VoiceServer.NIL_UUID);
+            player.sendSystemMessage(Component.literal(VoiceServer.getInstance().getPrefix() +
+                    String.format("Voice chat is installed but doesn't work. Check if port %d UDP is open.",
+                            VoiceServer.getServerConfig().getPort())));
         }
     }
 
@@ -89,30 +88,27 @@ public abstract class ServerNetworkHandler {
         int ver = VoiceServer.calculateVersion(version);
 
         if (ver > VoiceServer.version) {
-            player.sendMessage(
-                    new TranslatableComponent("message.plasmo_voice.version_not_supported", VoiceServer.rawVersion),
-                    VoiceServer.NIL_UUID
+            player.sendSystemMessage(
+                    Component.translatable("message.plasmo_voice.version_not_supported", VoiceServer.rawVersion)
             );
             return;
         } else if (ver < VoiceServer.minVersion) {
-            player.sendMessage(
-                    new TranslatableComponent("message.plasmo_voice.min_version", VoiceServer.rawMinVersion),
-                    VoiceServer.NIL_UUID
+            player.sendSystemMessage(
+                    Component.translatable("message.plasmo_voice.min_version", VoiceServer.rawMinVersion)
             );
             return;
         } else if (ver < VoiceServer.version) {
-            TextComponent link = new TextComponent("https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client/files");
+            MutableComponent link = Component.literal("https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client/files");
             link.setStyle(link.getStyle().withClickEvent(
                     new ClickEvent(ClickEvent.Action.OPEN_URL, "https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client/files")
             ));
 
-            player.sendMessage(
-                    new TranslatableComponent(
+            player.sendSystemMessage(
+                    Component.translatable(
                             "message.plasmo_voice.new_version_available",
                             VoiceServer.rawVersion,
                             link
-                    ),
-                    VoiceServer.NIL_UUID
+                    )
             );
         }
 

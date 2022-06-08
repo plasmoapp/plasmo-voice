@@ -4,8 +4,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.MicrophoneIconPosition;
 
@@ -13,7 +11,7 @@ public class MicIconPositionScreen extends Screen {
     private final Screen parent;
 
     public MicIconPositionScreen(Screen parent) {
-        super(TextComponent.EMPTY);
+        super(Component.empty());
         this.parent = parent;
     }
 
@@ -22,10 +20,10 @@ public class MicIconPositionScreen extends Screen {
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);
 
-        Component text = (new TranslatableComponent("gui.plasmo_voice.general.icons.position.choose"));
+        Component text = (Component.translatable("gui.plasmo_voice.general.icons.position.choose"));
         this.minecraft.font.draw(matrices,
                 text,
-                (float)(this.width / 2 - this.minecraft.font.width(text) / 2),
+                (float) (this.width / 2 - this.minecraft.font.width(text) / 2),
                 (float) this.height / 2 - this.minecraft.font.lineHeight,
                 16777215);
     }

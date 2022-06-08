@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TranslatableComponent;
 import su.plo.voice.client.config.entries.BooleanConfigEntry;
 
 public class ToggleButton extends AbstractWidget {
@@ -14,7 +13,7 @@ public class ToggleButton extends AbstractWidget {
     private final BooleanConfigEntry toggled;
 
     public ToggleButton(int x, int y, int width, int height, BooleanConfigEntry toggled, PressAction action) {
-        super(x, y, width, height, toggled.get() ? new TranslatableComponent("gui.plasmo_voice.on") : new TranslatableComponent("gui.plasmo_voice.off"));
+        super(x, y, width, height, toggled.get() ? Component.translatable("gui.plasmo_voice.on") : Component.translatable("gui.plasmo_voice.off"));
         this.toggled = toggled;
         this.action = action;
     }
@@ -24,7 +23,7 @@ public class ToggleButton extends AbstractWidget {
     }
 
     private Component getText() {
-        return toggled.get() ? new TranslatableComponent("gui.plasmo_voice.on") : new TranslatableComponent("gui.plasmo_voice.off");
+        return toggled.get() ? Component.translatable("gui.plasmo_voice.on") : Component.translatable("gui.plasmo_voice.off");
     }
 
     public void invertToggle() {

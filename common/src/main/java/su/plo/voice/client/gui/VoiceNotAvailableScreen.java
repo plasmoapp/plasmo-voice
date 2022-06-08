@@ -6,32 +6,30 @@ import net.minecraft.Util;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
 
 import java.util.List;
 
 public class VoiceNotAvailableScreen extends BackgroundScreen {
     public static final String wiki = "https://github.com/plasmoapp/plasmo-voice/wiki/How-to-install-Server";
-    private List<Component> message = ImmutableList.of(new TranslatableComponent("gui.plasmo_voice.not_available"));
+    private List<Component> message = ImmutableList.of(Component.translatable("gui.plasmo_voice.not_available"));
     private final Button button;
 
     public VoiceNotAvailableScreen() {
-        super(TextComponent.EMPTY, 248, 50, null, true);
-        button = new Button(0, 0, 0, 20, new TranslatableComponent("gui.plasmo_voice.close"), button -> {
+        super(Component.empty(), 248, 50, null, true);
+        button = new Button(0, 0, 0, 20, Component.translatable("gui.plasmo_voice.close"), button -> {
             minecraft.setScreen(null);
         });
     }
 
     public void setConnecting() {
-        this.message = ImmutableList.of(new TranslatableComponent("gui.plasmo_voice.connecting"));
+        this.message = ImmutableList.of(Component.translatable("gui.plasmo_voice.connecting"));
     }
 
     public void setCannotConnect() {
         this.message = ImmutableList.of(
-                new TranslatableComponent("gui.plasmo_voice.cannot_connect_to_udp_1"),
-                new TranslatableComponent("gui.plasmo_voice.cannot_connect_to_udp_2"),
-                new TranslatableComponent("gui.plasmo_voice.cannot_connect_to_udp_3", wiki)
+                Component.translatable("gui.plasmo_voice.cannot_connect_to_udp_1"),
+                Component.translatable("gui.plasmo_voice.cannot_connect_to_udp_2"),
+                Component.translatable("gui.plasmo_voice.cannot_connect_to_udp_3", wiki)
         );
     }
 
@@ -55,7 +53,7 @@ public class VoiceNotAvailableScreen extends BackgroundScreen {
 
         if (button == 0) {
             int lineWidth = this.minecraft.font.width(message.get(2));
-            float x = (float)(this.width / 2 - lineWidth / 2);
+            float x = (float) (this.width / 2 - lineWidth / 2);
 
             if (mouseX >= x && mouseX <= x + lineWidth &&
                     mouseY >= this.guiTop + 10 + (minecraft.font.lineHeight * 2) &&
@@ -95,7 +93,7 @@ public class VoiceNotAvailableScreen extends BackgroundScreen {
 
         int y = this.guiTop + 10;
         for (Component line : message) {
-            minecraft.font.draw(matrices, line, (float)(this.width / 2 - this.minecraft.font.width(line) / 2), (float) y, 16777215);
+            minecraft.font.draw(matrices, line, (float) (this.width / 2 - this.minecraft.font.width(line) / 2), (float) y, 16777215);
             y += minecraft.font.lineHeight;
         }
     }

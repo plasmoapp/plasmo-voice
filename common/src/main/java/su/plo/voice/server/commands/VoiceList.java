@@ -3,7 +3,7 @@ package su.plo.voice.server.commands;
 import com.mojang.brigadier.CommandDispatcher;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
-import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.chat.Component;
 import su.plo.voice.server.PlayerManager;
 import su.plo.voice.server.VoiceServer;
 import su.plo.voice.server.socket.SocketServerUDP;
@@ -22,7 +22,7 @@ public class VoiceList {
                             .map(uuid -> PlayerManager.getByUUID(uuid).getGameProfile().getName())
                             .collect(Collectors.toList());
 
-                    ctx.getSource().sendSuccess(new TextComponent(
+                    ctx.getSource().sendSuccess(Component.literal(
                             VoiceServer.getInstance().getMessagePrefix("list")
                                     .replace("{count}", String.valueOf(clients.size()))
                                     .replace("{online_players}", String.valueOf(VoiceServer.getServer().getPlayerCount()))

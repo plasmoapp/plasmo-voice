@@ -9,8 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.network.chat.TextComponent;
-import net.minecraft.network.chat.TranslatableComponent;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
 import org.lwjgl.glfw.GLFW;
@@ -29,7 +29,8 @@ public class KeyBindWidget extends Button {
     private final List<InputConstants.Key> pressedKeys = new ArrayList<>();
 
     public KeyBindWidget(KeyBindingsTabWidget parent, int x, int y, int width, int height, ClientConfig.KeyBindingConfigEntry entry) {
-        super(x, y, width, height, TextComponent.EMPTY, button -> {});
+        super(x, y, width, height, Component.empty(), button -> {
+        });
         this.parent = parent;
         this.entry = entry;
 
@@ -41,22 +42,22 @@ public class KeyBindWidget extends Button {
     }
 
     public void updateValue() {
-        TextComponent text = new TextComponent("");
+        MutableComponent text = Component.literal("");
         if (entry.get().getKeys().size() == 0) {
-            text.append(new TranslatableComponent("gui.none"));
+            text.append(Component.translatable("gui.none"));
         } else {
-            for (int i = 0; i < entry.get().getKeys().size(); i ++) {
+            for (int i = 0; i < entry.get().getKeys().size(); i++) {
                 InputConstants.Key key = entry.get().getKeys().get(i);
                 text.append(key.getDisplayName());
                 if (i != entry.get().getKeys().size() - 1) {
-                    text.append(new TextComponent(" + "));
+                    text.append(Component.literal(" + "));
                 }
             }
         }
 
         if (isActive()) {
             if (pressedKeys.size() > 0) {
-                text = new TextComponent("");
+                text = Component.literal("");
                 List<InputConstants.Key> sorted = pressedKeys.stream()
                         .sorted(Comparator.comparingInt(key -> key.getType().ordinal()))
                         .collect(Collectors.toList());
@@ -64,12 +65,12 @@ public class KeyBindWidget extends Button {
                     InputConstants.Key pressedKey = sorted.get(i);
                     text.append(pressedKey.getDisplayName());
                     if (i != sorted.size() - 1) {
-                        text.append(new TextComponent(" + "));
+                        text.append(Component.literal(" + "));
                     }
                 }
             }
 
-            this.setMessage((new TextComponent("> ")).append(text.withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
+            this.setMessage((Component.literal("> ")).append(text.withStyle(ChatFormatting.YELLOW)).append(" <").withStyle(ChatFormatting.YELLOW));
         } else {
             this.setMessage(text);
         }
@@ -177,7 +178,7 @@ public class KeyBindWidget extends Button {
             drawCenteredString(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
         } else {
             FormattedCharSequence orderedText = TextUtils.getOrderedText(textRenderer, getMessage(), this.width - 16);
-            textRenderer.drawShadow(matrices, orderedText, (float)((this.x + this.width / 2) - textRenderer.width(orderedText) / 2), this.y + (this.height - 8) / 2,
+            textRenderer.drawShadow(matrices, orderedText, (float) ((this.x + this.width / 2) - textRenderer.width(orderedText) / 2), this.y + (this.height - 8) / 2,
                     j | Mth.ceil(this.alpha * 255.0F) << 24);
         }
 
