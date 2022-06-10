@@ -188,30 +188,24 @@ public class CustomSource {
     }
 
     public void write(byte[] bytes) {
-        int queuedBuffers = this.getQueuedBuffers();
-        if (queuedBuffers >= NUM_BUFFERS) {
+        if (freeBuffers.isEmpty()) {
             removeProcessedBuffers();
         }
 
-        if (!freeBuffers.isEmpty()) {
-            ByteBuffer byteBuffer = MemoryUtil.memAlloc(bytes.length);
-            byteBuffer.put(bytes);
-            ((Buffer) byteBuffer).flip(); // java 8 support
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(bytes.length);
+        byteBuffer.put(bytes);
+        ((Buffer) byteBuffer).flip(); // java 8 support
 
-            int freeBuffer = freeBuffers.poll();
+        Integer freeBuffer = freeBuffers.poll();
+        if (freeBuffer == null) return;
 
-            AL10.alBufferData(freeBuffer, format, byteBuffer, (int)Recorder.getFormat().getSampleRate());
-            if (AlUtil.checkErrors("Assigning buffer data")) {
-                return;
-            }
-
-            AL10.alSourceQueueBuffers(this.pointer, new int[]{freeBuffer});
-            this.play();
+        AL10.alBufferData(freeBuffer, format, byteBuffer, (int)Recorder.getFormat().getSampleRate());
+        if (AlUtil.checkErrors("Assigning buffer data")) {
+            return;
         }
-    }
 
-    public int getQueuedBuffers() {
-        return AL10.alGetSourcei(this.pointer, AL10.AL_BUFFERS_QUEUED);
+        AL10.alSourceQueueBuffers(this.pointer, new int[]{freeBuffer});
+        this.play();
     }
 
     public void removeProcessedBuffers() {
