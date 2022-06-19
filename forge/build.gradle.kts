@@ -17,6 +17,11 @@ val modrinthVersionType: String by rootProject
 val modrinthSupportedVersions: String by rootProject
 val modrinthProjectId: String by rootProject
 
+plugins {
+    id("com.matthewprenger.cursegradle") apply(true)
+    id("com.modrinth.minotaur") apply(true)
+}
+
 configurations {
     create("shadowCommon")
 }

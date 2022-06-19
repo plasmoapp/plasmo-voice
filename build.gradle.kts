@@ -7,10 +7,10 @@ val mavenGroup: String by rootProject
 plugins {
     java
     id("architectury-plugin") version("3.4-SNAPSHOT")
-    id("com.modrinth.minotaur") version("2.+") apply(false)
     id("dev.architectury.loom") version("0.11.0-SNAPSHOT") apply(false)
     id("com.github.johnrengelman.shadow") version("7.0.0") apply(false)
     id("com.matthewprenger.cursegradle") version("1.4.0") apply(false)
+    id("com.modrinth.minotaur") version("2.+") apply(false)
 }
 
 architectury {
@@ -46,8 +46,6 @@ allprojects {
     apply(plugin = "java")
     apply(plugin = "architectury-plugin")
     apply(plugin = "com.github.johnrengelman.shadow")
-    apply(plugin = "com.matthewprenger.cursegradle")
-    apply(plugin = "com.modrinth.minotaur")
 
     java { toolchain { languageVersion.set(JavaLanguageVersion.of(17)) } }
 

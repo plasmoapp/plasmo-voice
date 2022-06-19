@@ -10,6 +10,7 @@ import net.minecraft.commands.arguments.GameProfileArgument;
 import net.minecraft.network.chat.TextComponent;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.players.PlayerList;
+import su.plo.voice.client.VoiceClient;
 import su.plo.voice.common.packets.tcp.ClientMutedPacket;
 import su.plo.voice.server.VoiceServer;
 import su.plo.voice.server.config.ServerMuted;
@@ -174,7 +175,7 @@ public class VoiceMute {
             ), false);
         }
 
-        ctx.getSource().sendSuccess(new TextComponent(
+        player.sendMessage(new TextComponent(
                 (duration > 0
                         ? VoiceServer.getInstance().getMessagePrefix("player_muted")
                         : VoiceServer.getInstance().getMessagePrefix("player_muted_perm"))
@@ -183,6 +184,6 @@ public class VoiceMute {
                                 ? reason
                                 : VoiceServer.getInstance().getMessage("mute_no_reason")
                         )
-                ), false);
+                ), VoiceClient.NIL_UUID);
     }
 }

@@ -5,6 +5,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.system.MemoryUtil;
+import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.sound.Recorder;
 
 import javax.sound.sampled.AudioFormat;
@@ -14,6 +15,8 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSource {
+    private static final int NUM_BUFFERS = 16;
+
     protected final int pointer;
     private final AtomicBoolean playing = new AtomicBoolean(true);
 
@@ -31,7 +34,7 @@ public class CustomSource {
 
     protected CustomSource(int pointer) {
         this.pointer = pointer;
-        int[] buffers = new int[16];
+        int[] buffers = new int[NUM_BUFFERS];
         AL10.alGenBuffers(buffers);
         AlUtil.checkErrors("Creating buffers");
 
@@ -164,23 +167,37 @@ public class CustomSource {
     }
 
     public void write(byte[] bytes) {
-        this.removeProcessedBuffers();
-
-        if (!freeBuffers.isEmpty()) {
-            ByteBuffer byteBuffer = MemoryUtil.memAlloc(bytes.length);
-            byteBuffer.put(bytes);
-            ((Buffer) byteBuffer).flip(); // java 8 support
-
-            int freeBuffer = freeBuffers.poll();
-
-            AL10.alBufferData(freeBuffer, format, byteBuffer, (int)Recorder.getFormat().getSampleRate());
-            if (AlUtil.checkErrors("Assigning buffer data")) {
-                return;
-            }
-
-            AL10.alSourceQueueBuffers(this.pointer, new int[]{freeBuffer});
-            this.play();
+        // set play state before queue
+        if (this.getSourceState() != AL10.AL_PLAYING) {
+            AL10.alSourcePlay(this.pointer);
+            AlUtil.checkErrors("Custom source play");
         }
+
+        this.removeProcessedBuffers();
+        this.bufferData(bytes);
+        this.play();
+    }
+
+    private void bufferData(byte[] bytes) {
+        ByteBuffer byteBuffer = MemoryUtil.memAlloc(bytes.length);
+        byteBuffer.put(bytes);
+        ((Buffer) byteBuffer).flip(); // java 8 support
+
+        Integer freeBuffer = freeBuffers.poll();
+        if (freeBuffer == null) {
+            VoiceClient.LOGGER.warn("No free buffers");
+            while (freeBuffer == null) {
+                this.removeProcessedBuffers();
+                freeBuffer = freeBuffers.poll();
+            }
+        }
+
+        AL10.alBufferData(freeBuffer, format, byteBuffer, (int)Recorder.getFormat().getSampleRate());
+        if (AlUtil.checkErrors("Assigning buffer data to " + freeBuffer + " with format " + format + " and rate " + Recorder.getFormat().getSampleRate())) {
+            return;
+        }
+
+        AL10.alSourceQueueBuffers(this.pointer, new int[]{freeBuffer});
     }
 
     public void removeProcessedBuffers() {
