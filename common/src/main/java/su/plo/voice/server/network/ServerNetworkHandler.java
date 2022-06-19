@@ -8,6 +8,7 @@ import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import su.plo.voice.client.VoiceClient;
 import su.plo.voice.common.packets.Packet;
 import su.plo.voice.common.packets.tcp.*;
 import su.plo.voice.server.PlayerManager;
@@ -21,9 +22,92 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public abstract class ServerNetworkHandler {
-    protected ScheduledExecutorService scheduler;
-    private static ExecutorService executor;
     public static Map<UUID, UUID> playerToken = new ConcurrentHashMap<>();
+
+    private static ScheduledExecutorService executor;
+
+    public static void reconnectClient(ServerPlayer player) {
+        execute(() -> {
+            disconnectClient(player.getUUID());
+            UUID token = UUID.randomUUID();
+            playerToken.put(player.getUUID(), token);
+
+            try {
+                sendTo(new ServerConnectPacket(token.toString(),
+                                VoiceServer.getServerConfig().getProxyIp() != null && !VoiceServer.getServerConfig().getProxyIp().isEmpty()
+                                        ? VoiceServer.getServerConfig().getProxyIp()
+                                        : VoiceServer.getServerConfig().getIp(),
+                                VoiceServer.getServerConfig().getProxyPort() != 0
+                                        ? VoiceServer.getServerConfig().getProxyPort()
+                                        : VoiceServer.getServerConfig().getPort(),
+                                VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.priority")),
+                        player);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public static void disconnectClient(UUID uuid) {
+        SocketClientUDP clientUDP = SocketServerUDP.clients.get(uuid);
+
+        try {
+            if (clientUDP != null) {
+                clientUDP.close();
+                sendToClients(new ClientDisconnectedPacket(uuid), null);
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static void sendTo(Packet packet, ServerPlayer player) throws IOException {
+        player.connection.send(new ClientboundCustomPayloadPacket(VoiceServer.PLASMO_VOICE,
+                new FriendlyByteBuf(Unpooled.wrappedBuffer(PacketTCP.write(packet)))));
+    }
+
+    public static void sendToClients(Packet packet, UUID except) {
+        execute(() -> {
+            try {
+                byte[] pkt = PacketTCP.write(packet);
+                Enumeration<UUID> it = SocketServerUDP.clients.keys();
+                while (it.hasMoreElements()) {
+                    UUID uuid = it.nextElement();
+                    if (!uuid.equals(except)) {
+                        ServerPlayer player = PlayerManager.getByUUID(uuid);
+
+                        player.connection.send(new ClientboundCustomPayloadPacket(
+                                VoiceServer.PLASMO_VOICE,
+                                new FriendlyByteBuf(Unpooled.wrappedBuffer(pkt))));
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    protected static void execute(Runnable runnable) {
+        if (executor == null || executor.isShutdown() || executor.isTerminated()) return;
+
+        try {
+            executor.submit(runnable);
+        } catch (RejectedExecutionException e) {
+            VoiceClient.LOGGER.warn("Failed to execute: {}", e.getMessage());
+        }
+    }
+
+    protected static Optional<ScheduledFuture<?>> schedule(Runnable runnable, long delay, TimeUnit unit) {
+        if (executor != null && !executor.isShutdown() && !executor.isTerminated()) {
+            try {
+                return Optional.of(executor.schedule(runnable, delay, unit));
+            } catch (RejectedExecutionException e) {
+                VoiceClient.LOGGER.warn("Failed to execute: {}", e.getMessage());
+            }
+        }
+
+        return Optional.empty();
+    }
 
     public ServerNetworkHandler() {
     }
@@ -33,10 +117,8 @@ public abstract class ServerNetworkHandler {
     }
 
     public void start() {
-        this.scheduler = Executors.newScheduledThreadPool(1);
-        executor = Executors.newSingleThreadExecutor();
-
-        scheduler.scheduleAtFixedRate(() -> {
+        executor = Executors.newSingleThreadScheduledExecutor();
+        executor.scheduleAtFixedRate(() -> {
             VoiceServer.getMuted().forEach((uuid, muted) -> {
                 if (muted.getTo() > 0 && muted.getTo() < System.currentTimeMillis()) {
                     VoiceServer.getMuted().remove(uuid);
@@ -54,7 +136,6 @@ public abstract class ServerNetworkHandler {
     }
 
     public void close() {
-        scheduler.shutdown();
         executor.shutdown();
     }
 
@@ -78,7 +159,7 @@ public abstract class ServerNetworkHandler {
 
     public void handleQuit(ServerPlayer player) {
         playerToken.remove(player.getUUID());
-        executor.submit(() -> disconnectClient(player.getUUID()));
+        execute(() -> disconnectClient(player.getUUID()));
     }
 
     public void handle(ClientConnectPacket packet, ServerPlayer player) throws IOException {
@@ -121,72 +202,5 @@ public abstract class ServerNetworkHandler {
                         config.getFadeDivisor(),
                         config.getPriorityFadeDivisor()),
                 player);
-    }
-
-    public static void reconnectClient(ServerPlayer player) {
-        try {
-            executor.submit(() -> {
-                disconnectClient(player.getUUID());
-                UUID token = UUID.randomUUID();
-                playerToken.put(player.getUUID(), token);
-
-                try {
-                    sendTo(new ServerConnectPacket(token.toString(),
-                                    VoiceServer.getServerConfig().getProxyIp() != null && !VoiceServer.getServerConfig().getProxyIp().isEmpty()
-                                            ? VoiceServer.getServerConfig().getProxyIp()
-                                            : VoiceServer.getServerConfig().getIp(),
-                                    VoiceServer.getServerConfig().getProxyPort() != 0
-                                            ? VoiceServer.getServerConfig().getProxyPort()
-                                            : VoiceServer.getServerConfig().getPort(),
-                                    VoiceServer.getPlayerManager().hasPermission(player.getUUID(), "voice.priority")),
-                            player);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (RejectedExecutionException ignored) {
-        }
-    }
-
-    public static void disconnectClient(UUID uuid) {
-        SocketClientUDP clientUDP = SocketServerUDP.clients.get(uuid);
-
-        try {
-            if (clientUDP != null) {
-                clientUDP.close();
-                sendToClients(new ClientDisconnectedPacket(uuid), null);
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
-    }
-
-    public static void sendTo(Packet packet, ServerPlayer player) throws IOException {
-        player.connection.send(new ClientboundCustomPayloadPacket(VoiceServer.PLASMO_VOICE,
-                new FriendlyByteBuf(Unpooled.wrappedBuffer(PacketTCP.write(packet)))));
-    }
-
-    public static void sendToClients(Packet packet, UUID except) {
-        try {
-            executor.submit(() -> {
-                try {
-                    byte[] pkt = PacketTCP.write(packet);
-                    Enumeration<UUID> it = SocketServerUDP.clients.keys();
-                    while (it.hasMoreElements()) {
-                        UUID uuid = it.nextElement();
-                        if (!uuid.equals(except)) {
-                            ServerPlayer player = PlayerManager.getByUUID(uuid);
-
-                            player.connection.send(new ClientboundCustomPayloadPacket(
-                                    VoiceServer.PLASMO_VOICE,
-                                    new FriendlyByteBuf(Unpooled.wrappedBuffer(pkt))));
-                        }
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            });
-        } catch (RejectedExecutionException ignored) {
-        }
     }
 }

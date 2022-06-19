@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ServerNetworkHandlerFabric extends ServerNetworkHandler {
     private static final ResourceLocation FML_HANDSHAKE = new ResourceLocation("fml:handshake");
-    private final HashMap<UUID, ScheduledFuture> kickTimeouts = new HashMap<>();
+    private final HashMap<UUID, ScheduledFuture<?>> kickTimeouts = new HashMap<>();
     private final Set<UUID> fabricPlayers = new HashSet<>();
 
     @Override
@@ -37,7 +37,7 @@ public class ServerNetworkHandlerFabric extends ServerNetworkHandler {
         ServerConfigFabric config = (ServerConfigFabric) VoiceServer.getServerConfig();
 
         if (config.isClientModRequired()) {
-            kickTimeouts.put(player.getUUID(), scheduler.schedule(() -> {
+            Optional<ScheduledFuture<?>> timeout = schedule(() -> {
                 if (!SocketServerUDP.clients.containsKey(player.getUUID())) {
                     if (VoiceServer.isLogsEnabled()) {
                         VoiceServer.LOGGER.info("Player {} does not have the mod installed!", player.getGameProfile().getName());
@@ -47,7 +47,11 @@ public class ServerNetworkHandlerFabric extends ServerNetworkHandler {
                             player.connection.disconnect(Component.literal(VoiceServer.getInstance().getMessage("mod_missing_kick_message")))
                     );
                 }
-            }, (config.getClientModCheckTimeout() / 20) * 1000L, TimeUnit.MILLISECONDS));
+            }, (config.getClientModCheckTimeout() / 20) * 1000L, TimeUnit.MILLISECONDS);
+
+            timeout.ifPresent(future ->
+                    kickTimeouts.put(player.getUUID(), future)
+            );
         }
     }
 
