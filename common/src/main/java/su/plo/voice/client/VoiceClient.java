@@ -70,6 +70,11 @@ public abstract class VoiceClient {
                 clientConfig.microphoneMuted.invert();
             }
         });
+        keyBindings.muteChat.get().setOnPress(action -> {
+            if (action == 1) {
+                clientConfig.speakerMuted.invert();
+            }
+        });
         keyBindings.increaseDistance.get().setOnPress(action -> {
             if (action == 1 && minecraft.player != null && VoiceClient.isConnected()) {
                 ClientConfig.ServerConfig serverConfig;
