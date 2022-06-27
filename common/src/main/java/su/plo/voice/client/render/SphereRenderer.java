@@ -100,6 +100,7 @@ public class SphereRenderer {
         if (vertexBuffer == null) {
             vertexBuffer = new VertexBuffer();
         }
+        vertexBuffer.bind();
         vertexBuffer.upload(bufferBuilder.end());
 
         RenderSystem.disableTexture();
@@ -123,6 +124,7 @@ public class SphereRenderer {
 
         matrices.popPose();
 
+        VertexBuffer.unbind();
 
         RenderSystem.polygonOffset(0f, 0f);
         RenderSystem.disablePolygonOffset();
