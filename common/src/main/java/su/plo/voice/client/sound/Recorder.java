@@ -171,6 +171,7 @@ public class Recorder implements Runnable {
                 }
 
                 byte[] normBuffer = readBuffer();
+                if (!VoiceClient.isConnected()) continue;
 
                 if (VoiceClient.getServerConfig().getMuted().containsKey(player.getUUID()) ||
                         VoiceClient.getClientConfig().microphoneMuted.get() ||
