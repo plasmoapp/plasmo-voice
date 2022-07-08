@@ -85,7 +85,7 @@ public class AboutTabWidget extends TabWidget {
         this.addEntry(new CategoryEntry(madeBy, 24));
         this.addEntry(new DeveloperEntry("KPidS", Component.translatable("gui.plasmo_voice.about.huix"), "Twitch", "https://twitch.tv/kpids"));
         this.addEntry(new DeveloperEntry("Apehum", Component.translatable("gui.plasmo_voice.about.programming"), "Twitch", "https://twitch.tv/apehum"));
-        this.addEntry(new DeveloperEntry("Venterok", Component.translatable("gui.plasmo_voice.about.artist"), "Twitter", "https://twitter.com/venterrok"));
+        this.addEntry(new DeveloperEntry("Venterok", Component.translatable("gui.plasmo_voice.about.artist"), "Telegram", "https://t.me/venterrok"));
 
         LanguageInfo languageInfo = client.getLanguageManager().getSelected();
         List<Translator> langTranslators = translators.get(languageInfo.getCode());
