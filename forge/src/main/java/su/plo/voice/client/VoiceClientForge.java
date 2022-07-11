@@ -3,7 +3,6 @@ package su.plo.voice.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
-import net.minecraftforge.client.ClientRegistry;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 import org.lwjgl.glfw.GLFW;
@@ -26,11 +25,12 @@ public class VoiceClientForge extends VoiceClient {
     public void initialize() {
         super.initialize();
 
-        menuKey = new KeyMapping("key.plasmo_voice.settings",
+        menuKey = new KeyMapping(
+                "key.plasmo_voice.settings",
                 InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_V,
-                "Plasmo Voice");
-        ClientRegistry.registerKeyBinding(menuKey);
+                "Plasmo Voice"
+        );
     }
 
     @Override

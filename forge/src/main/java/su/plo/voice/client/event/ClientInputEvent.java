@@ -3,6 +3,7 @@ package su.plo.voice.client.event;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraftforge.client.event.InputEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import su.plo.voice.client.VoiceClientForge;
 import su.plo.voice.client.gui.VoiceNotAvailableScreen;
@@ -12,7 +13,12 @@ public class ClientInputEvent {
     private final Minecraft client = Minecraft.getInstance();
 
     @SubscribeEvent
-    public void onInput(InputEvent.KeyInputEvent event) {
+    public void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
+        event.register(VoiceClientForge.menuKey);
+    }
+
+    @SubscribeEvent
+    public void onInput(InputEvent.Key event) {
         final LocalPlayer player = client.player;
         if (player == null) {
             return;
