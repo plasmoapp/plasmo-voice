@@ -1,4 +1,7 @@
+[![](http://cf.way2muchnoise.eu/full_467028_downloads.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
+[![](http://cf.way2muchnoise.eu/versions/467028_all.svg)](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client)
 [![](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
+[![](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases)
 [![](https://img.shields.io/bstats/players/10928)](https://bstats.org/plugin/bukkit/PlasmoVoice/10928)
 [![](https://img.shields.io/bstats/servers/10928)](https://bstats.org/plugin/bukkit/PlasmoVoice/10928)
 
