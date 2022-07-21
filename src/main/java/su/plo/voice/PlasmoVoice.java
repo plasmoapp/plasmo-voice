@@ -18,10 +18,12 @@ import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.commands.*;
+import su.plo.voice.common.packets.Packet;
 import su.plo.voice.common.packets.tcp.ClientMutedPacket;
 import su.plo.voice.common.packets.tcp.ClientUnmutedPacket;
 import su.plo.voice.common.packets.tcp.ConfigPacket;
 import su.plo.voice.common.packets.tcp.PacketTCP;
+import su.plo.voice.common.packets.udp.PacketUDP;
 import su.plo.voice.data.DataEntity;
 import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerConfigEvent;
@@ -356,6 +358,23 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
 
         Bukkit.getPluginManager().callEvent(new PlayerVoiceUnmuteEvent(player));
         return true;
+    }
+
+    @Override
+    public void sendVoicePacketToPlayer(Packet packet, Player recipient) {
+        byte[] bytes;
+        try {
+            bytes = PacketUDP.write(packet);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        try {
+            SocketServerUDP.sendTo(bytes, SocketServerUDP.clients.get(recipient));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override

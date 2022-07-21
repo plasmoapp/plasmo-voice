@@ -10,6 +10,7 @@ import su.plo.voice.common.packets.tcp.PacketTCP;
 import su.plo.voice.common.packets.udp.*;
 import su.plo.voice.data.ServerMutedEntity;
 import su.plo.voice.events.PlayerEndSpeakEvent;
+import su.plo.voice.events.PlayerSpeakEvent;
 import su.plo.voice.events.PlayerStartSpeakEvent;
 import su.plo.voice.events.PlayerVoiceConnectedEvent;
 import su.plo.voice.listeners.PlayerListener;
@@ -29,7 +30,7 @@ public class SocketServerUDPQueue extends Thread {
     public void run() {
         while (!this.isInterrupted()) {
             try {
-                // todo this should be moved in another because it can iterate hundreds of players on every UDP packet
+                // TODO this should be moved in another because it can iterate hundreds of players on every UDP packet
                 this.keepAlive();
 
                 PacketUDP message = queue.poll(10, TimeUnit.MILLISECONDS);
@@ -152,6 +153,13 @@ public class SocketServerUDPQueue extends Thread {
                                     packet.getSequenceNumber(),
                                     packet.getDistance()
                             );
+
+                            PlayerSpeakEvent event = new PlayerSpeakEvent(player, serverPacket);
+                            Bukkit.getPluginManager().callEvent(event);
+                            if (event.isCancelled()) {
+                                continue;
+                            }
+
                             SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
                         } else {
                             continue;
@@ -162,6 +170,13 @@ public class SocketServerUDPQueue extends Thread {
                                 packet.getSequenceNumber(),
                                 packet.getDistance()
                         );
+
+                        PlayerSpeakEvent event = new PlayerSpeakEvent(player, serverPacket);
+                        Bukkit.getPluginManager().callEvent(event);
+                        if (event.isCancelled()) {
+                            continue;
+                        }
+
                         SocketServerUDP.sendToNearbyPlayers(serverPacket, player, packet.getDistance());
                     }
 

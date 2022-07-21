@@ -1,6 +1,8 @@
 package su.plo.voice;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
+import su.plo.voice.common.packets.Packet;
 import su.plo.voice.data.ServerMutedEntity;
 
 import javax.annotation.Nullable;
@@ -28,6 +30,8 @@ public interface PlasmoVoiceAPI {
      * @return returns true, if the player is no longer muted. false, if the player wasn't muted, to begin with
      */
     boolean unmute(UUID player, boolean silent);
+
+    void sendVoicePacketToPlayer(Packet packet, Player recipient);
 
     /**
      * Check if the player is muted
