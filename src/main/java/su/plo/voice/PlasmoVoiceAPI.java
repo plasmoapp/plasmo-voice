@@ -8,6 +8,7 @@ import su.plo.voice.data.ServerMutedEntity;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PlasmoVoiceAPI {
@@ -31,6 +32,18 @@ public interface PlasmoVoiceAPI {
      */
     boolean unmute(UUID player, boolean silent);
 
+    /**
+     * @return list of players with voice chat
+     */
+    Set<Player> getConnectedPlayers();
+
+    /**
+     * Send voice chat server packet to player. Useful for redirecting packets.
+     *
+     * @param packet Voice Chat Server Packet
+     * @param recipient Recipient
+     */
+    @ApiStatus.Experimental
     void sendVoicePacketToPlayer(Packet packet, Player recipient);
 
     /**

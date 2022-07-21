@@ -37,10 +37,7 @@ import su.plo.voice.socket.SocketClientUDP;
 import su.plo.voice.socket.SocketServerUDP;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -360,8 +357,18 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         return true;
     }
 
+    /**
+     * @return list of players with voice chat
+     */
+    @Override
+    public Set<Player> getConnectedPlayers() {
+        return SocketServerUDP.clients.keySet();
+    }
+
     @Override
     public void sendVoicePacketToPlayer(Packet packet, Player recipient) {
+        if (!hasVoiceChat(recipient.getUniqueId())) return;
+
         byte[] bytes;
         try {
             bytes = PacketUDP.write(packet);
