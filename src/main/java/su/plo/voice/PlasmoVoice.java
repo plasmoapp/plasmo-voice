@@ -357,9 +357,6 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         return true;
     }
 
-    /**
-     * @return list of players with voice chat
-     */
     @Override
     public Set<Player> getConnectedPlayers() {
         return SocketServerUDP.clients.keySet();
