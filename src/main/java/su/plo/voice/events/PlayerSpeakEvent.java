@@ -37,10 +37,6 @@ public class PlayerSpeakEvent extends Event implements Cancellable {
         return HANDLERS_LIST;
     }
 
-    public static HandlerList getHandlerList() {
-        return HANDLERS_LIST;
-    }
-
     public Packet getPacket() {
         return packet;
     }
