@@ -363,15 +363,15 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
     }
 
     @Override
-    public void sendVoicePacketToPlayer(Packet packet, Player recipient) {
-        if (!hasVoiceChat(recipient.getUniqueId())) return;
+    public boolean sendVoicePacketToPlayer(Packet packet, Player recipient) {
+        if (!hasVoiceChat(recipient.getUniqueId())) return false;
 
         byte[] bytes;
         try {
             bytes = PacketUDP.write(packet);
         } catch (IOException e) {
             e.printStackTrace();
-            return;
+            return false;
         }
 
         try {
@@ -379,6 +379,8 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        return true;
     }
 
     @Override

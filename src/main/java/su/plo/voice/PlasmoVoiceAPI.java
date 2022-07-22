@@ -42,9 +42,10 @@ public interface PlasmoVoiceAPI {
      *
      * @param packet Voice Chat Server Packet
      * @param recipient Recipient
+     * @return true if the packet was sent successfully, false if the packet was not sent
      */
     @ApiStatus.Experimental
-    void sendVoicePacketToPlayer(Packet packet, Player recipient);
+    boolean sendVoicePacketToPlayer(Packet packet, Player recipient);
 
     /**
      * Check if the player is muted
