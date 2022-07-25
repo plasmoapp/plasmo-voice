@@ -20,6 +20,7 @@ subprojects {
     dependencies {
         compileOnly(rootProject.libs.annotations)
         compileOnly(rootProject.libs.guava)
+        compileOnly(rootProject.libs.gson)
 
         compileOnly(rootProject.libs.lombok)
         annotationProcessor(rootProject.libs.lombok)
