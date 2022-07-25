@@ -26,6 +26,8 @@ allprojects {
     }
 
     dependencies {
+        compileOnly(rootProject.libs.annotations)
+
         compileOnly(rootProject.libs.lombok)
         annotationProcessor(rootProject.libs.lombok)
     }
