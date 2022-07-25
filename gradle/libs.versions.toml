@@ -1,3 +1,10 @@
+[versions]
+junit5 = "5.8.2"
+
 [libraries]
-lombok = { module = "org.projectlombok:lombok", version = "1.18.24" }
-annotations = { module = "org.jetbrains:annotations", version = "23.0.0" }
+lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }
+annotations  = { module = "org.jetbrains:annotations", version = "23.0.0" }
+classgraph   = { module = "io.github.classgraph:classgraph", version = "4.8.149" }
+guava        = { module = "com.google.guava:guava", version = "31.1-jre" }
+junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }

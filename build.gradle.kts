@@ -9,7 +9,7 @@ plugins {
     `maven-publish`
 }
 
-allprojects {
+subprojects {
     apply(plugin = "java")
     apply(plugin = "idea")
     apply(plugin = "maven-publish")
@@ -17,18 +17,35 @@ allprojects {
     group = mavenGroup
     version = version
 
+    dependencies {
+        compileOnly(rootProject.libs.annotations)
+        compileOnly(rootProject.libs.guava)
+
+        compileOnly(rootProject.libs.lombok)
+        annotationProcessor(rootProject.libs.lombok)
+
+        testCompileOnly(rootProject.libs.junit.api)
+        testAnnotationProcessor(rootProject.libs.junit.api)
+        testRuntimeOnly(rootProject.libs.junit.engine)
+    }
+
+    tasks.test {
+        useJUnitPlatform()
+        testLogging {
+            events("passed", "skipped", "failed")
+        }
+    }
+}
+
+allprojects {
+    apply(plugin = "java")
+
     java {
         toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
     }
 
     repositories {
         mavenLocal()
-    }
-
-    dependencies {
-        compileOnly(rootProject.libs.annotations)
-
-        compileOnly(rootProject.libs.lombok)
-        annotationProcessor(rootProject.libs.lombok)
+        mavenCentral()
     }
 }
