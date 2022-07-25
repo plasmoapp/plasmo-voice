@@ -1,4 +1,6 @@
-## Adding Plasmo Voice to the project
+# Plasmo Voice Spigot API
+
+## Adding to the project
 
 ### Maven
 
@@ -65,7 +67,37 @@ if(provider != null) {
 PlasmoVoiceAPI api = PlasmoVoice.getInstance();
 ```
 
-## Methods
+## Methods and Events
 
-See
-this: [PlasmoVoiceAPI](https://github.com/plasmoapp/plasmo-voice/blob/spigot-distances/src/main/java/su/plo/voice/PlasmoVoiceAPI.java)
+For methods see this class: [PlasmoVoiceAPI](https://github.com/plasmoapp/plasmo-voice/tree/main-spigot/src/main/java/su/plo/voice/PlasmoVoiceAPI.java)
+
+For events see this [package](https://github.com/plasmoapp/plasmo-voice/tree/main-spigot/src/main/java/su/plo/voice/events)
+
+## Examples of API usage
+
+Example #1: Remote voice chat between players, linking players together by holding an iron ingot.
+
+```java
+public final class APIExample extends JavaPlugin implements Listener {
+    private static final PlasmoVoiceAPI api = PlasmoVoice.getInstance();
+
+    @Override
+    public void onEnable() {
+        Bukkit.getPluginManager().registerEvents(this, this);
+    }
+
+    @Override
+    public void onDisable() {
+    }
+
+    @EventHandler
+    public void onSpeak(PlayerSpeakEvent event) {
+        if (!event.getPlayer().getEquipment().getItemInMainHand().getType().equals(Material.IRON_INGOT)) return;
+        event.setCancelled(true);
+        for (Player player : api.getConnectedPlayers()) {
+            if (!player.getEquipment().getItemInMainHand().getType().equals(Material.IRON_INGOT)) continue;
+            api.sendPacketToPlayer(event.getPacket(), player);
+        }
+    }
+}
+```

@@ -1,11 +1,14 @@
 package su.plo.voice;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
+import su.plo.voice.common.packets.Packet;
 import su.plo.voice.data.ServerMutedEntity;
 
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 public interface PlasmoVoiceAPI {
@@ -28,6 +31,21 @@ public interface PlasmoVoiceAPI {
      * @return returns true, if the player is no longer muted. false, if the player wasn't muted, to begin with
      */
     boolean unmute(UUID player, boolean silent);
+
+    /**
+     * @return list of players with voice chat
+     */
+    Set<Player> getConnectedPlayers();
+
+    /**
+     * Send voice chat server packet to player. Useful for redirecting packets.
+     *
+     * @param packet Voice Chat Server Packet
+     * @param recipient Recipient
+     * @return true if the packet was sent successfully, false if the packet was not sent
+     */
+    @ApiStatus.Experimental
+    boolean sendVoicePacketToPlayer(Packet packet, Player recipient);
 
     /**
      * Check if the player is muted
