@@ -8,7 +8,7 @@ public interface EventBus {
      *
      * @param event the event to call
      */
-    void call(@NotNull Event event);
+    <E extends Event> void call(@NotNull E event);
 
     /**
      * Registers all events in listener class
