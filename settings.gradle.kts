@@ -10,3 +10,5 @@ rootProject.name = "PlasmoVoice"
 
 // API
 include("api:common")
+
+include("common")
