@@ -21,4 +21,9 @@ public interface AddonManager {
      * @deprecated the addon, if available
      */
     Optional<AddonContainer> getAddon(String id);
+
+    /**
+     * Gets an {@link AddonContainer} by its instance
+     */
+    Optional<AddonContainer> getAddon(Object instance);
 }

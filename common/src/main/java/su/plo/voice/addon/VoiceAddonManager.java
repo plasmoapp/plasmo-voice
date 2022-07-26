@@ -32,11 +32,10 @@ public final class VoiceAddonManager implements AddonManager {
 
     private static final Logger LOGGER = LogManager.getLogger(VoiceAddonManager.class);
 
-    private final ClassLoader classLoader;
+    private final Map<Object, AddonContainer> addonByInstance = Maps.newHashMap();
     private final Map<String, AddonContainer> addons = Maps.newHashMap();
 
-    public VoiceAddonManager(ClassLoader classLoader, List<File> addonFolders)  {
-        this.classLoader = classLoader;
+    public VoiceAddonManager(List<File> addonFolders)  {
         addonFolders.forEach(this::scanForAddons);
     }
 
@@ -48,6 +47,11 @@ public final class VoiceAddonManager implements AddonManager {
     @Override
     public Optional<AddonContainer> getAddon(String id) {
         return Optional.ofNullable(addons.get(id));
+    }
+
+    @Override
+    public Optional<AddonContainer> getAddon(Object instance) {
+        return Optional.ofNullable(addonByInstance.get(instance));
     }
 
     private void scanForAddons(File folder) {
@@ -92,6 +96,7 @@ public final class VoiceAddonManager implements AddonManager {
                 continue;
             }
             this.addons.put(addon.getId(), addon);
+            this.addonByInstance.put(addon.getInstance().get(), addon);
         }
     }
 
