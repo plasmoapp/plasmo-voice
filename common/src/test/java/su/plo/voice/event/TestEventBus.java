@@ -2,7 +2,6 @@ package su.plo.voice.event;
 
 import org.junit.jupiter.api.Test;
 import su.plo.voice.addon.TestAddon;
-import su.plo.voice.api.event.Event;
 import su.plo.voice.api.event.EventBus;
 import su.plo.voice.api.event.EventHandler;
 import su.plo.voice.api.event.EventPriority;
