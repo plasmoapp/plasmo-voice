@@ -21,6 +21,7 @@ subprojects {
         compileOnly(rootProject.libs.annotations)
         compileOnly(rootProject.libs.guava)
         compileOnly(rootProject.libs.gson)
+        compileOnly(rootProject.libs.log4j)
 
         compileOnly(rootProject.libs.lombok)
         annotationProcessor(rootProject.libs.lombok)
