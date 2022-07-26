@@ -29,6 +29,10 @@ subprojects {
         testCompileOnly(rootProject.libs.junit.api)
         testAnnotationProcessor(rootProject.libs.junit.api)
         testRuntimeOnly(rootProject.libs.junit.engine)
+
+        testImplementation(rootProject.libs.guava)
+        testImplementation(rootProject.libs.gson)
+        testImplementation(rootProject.libs.log4j)
     }
 
     tasks.test {
