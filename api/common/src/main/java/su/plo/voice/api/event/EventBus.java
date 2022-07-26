@@ -1,0 +1,48 @@
+package su.plo.voice.api.event;
+
+import org.jetbrains.annotations.NotNull;
+
+public interface EventBus {
+    /**
+     * Calls the event
+     *
+     * @param event the event to call
+     */
+    void call(@NotNull Event event);
+
+    /**
+     * Registers all events in listener class
+     *
+     * @param addon    the addon to associate with event listener
+     * @param listener the event listener to register
+     */
+    void register(@NotNull Object addon, @NotNull Object listener);
+
+    /**
+     * Registers the event handler
+     *
+     * @param addon   the addon to associate with event handler
+     * @param handler the event handler to register
+     */
+    <E extends Event> void register(@NotNull Object addon, Class<E> eventClass, @NotNull EventHandler<E> handler);
+
+    /**
+     * Registers an event handler with priority
+     *
+     * @param addon      the addon to associate with event handler
+     * @param eventClass the event class
+     * @param priority   the event priority in execution
+     * @param handler    the event handler to register
+     */
+    <E extends Event> void register(@NotNull Object addon, Class<E> eventClass, EventPriority priority, @NotNull EventHandler<E> handler);
+
+    /**
+     * Unregisters all listeners of the addon
+     */
+    void unregister(@NotNull Object addon);
+
+    /**
+     * Unregisters listener of the addon
+     */
+    void unregister(@NotNull Object addon, @NotNull Object listener);
+}
