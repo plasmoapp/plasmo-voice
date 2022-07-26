@@ -34,7 +34,12 @@ public interface EventBus {
     void unregister(@NotNull Object addon);
 
     /**
-     * Unregisters listener of the addon
+     * Unregisters the listener of the addon
      */
     void unregister(@NotNull Object addon, @NotNull Object listener);
+
+    /**
+     * Unregisters the event handler of the addon
+     */
+    void unregister(@NotNull Object addon, @NotNull EventHandler<?> handler);
 }
