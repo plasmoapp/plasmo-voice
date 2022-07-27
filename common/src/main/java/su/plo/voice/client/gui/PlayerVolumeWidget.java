@@ -31,7 +31,7 @@ public class PlayerVolumeWidget extends AbstractSliderButton {
 
     public void render(PoseStack matrices, int mouseX, int mouseY, float delta, int x, int y, int entryWidth, int entryHeight) {
         if (this.visible) {
-            this.setWidth((entryWidth / 2) + 2);
+            this.setWidth((entryWidth / 2) - 22);
             this.x = x + entryHeight;
             this.y = y + 6;
 

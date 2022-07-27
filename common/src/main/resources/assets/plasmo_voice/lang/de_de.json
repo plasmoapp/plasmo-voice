@@ -13,7 +13,7 @@
   "key.plasmo_voice.occlusion": "Schalleffekt",
   "key.plasmo_voice.occlusion.toggle": "Schalleffekt an/aus schalten",
 
-  "gui.plasmo_voice.player_volume": "Spieler Lautstärke: %s",
+  "gui.plasmo_voice.player_volume": "Lautstärke: %s",
   "gui.plasmo_voice.close": "Schließen",
   "gui.plasmo_voice.on": "An",
   "gui.plasmo_voice.off": "Aus",

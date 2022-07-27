@@ -128,25 +128,25 @@ public abstract class MixinPlayerEntry {
     public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight,
                        int mouseX, int mouseY, boolean hovered, float tickDelta, CallbackInfo info) {
         if (this.muteHideButton != null && this.muteShowButton != null) {
-            this.muteHideButton.x = x + (entryWidth - this.muteHideButton.getWidth() - 28);
+            this.muteHideButton.x = x + (entryWidth - this.muteHideButton.getWidth() - 52);
             this.muteHideButton.y = y + (entryHeight - this.muteHideButton.getHeight()) / 2;
             this.muteHideButton.render(matrices, mouseX, mouseY, tickDelta);
-            this.muteShowButton.x = x + (entryWidth - this.muteShowButton.getWidth() - 28);
+            this.muteShowButton.x = x + (entryWidth - this.muteShowButton.getWidth() - 52);
             this.muteShowButton.y = y + (entryHeight - this.muteShowButton.getHeight()) / 2;
             this.muteShowButton.render(matrices, mouseX, mouseY, tickDelta);
 
             if (this.playerVolumeWidget.visible) {
-                this.volumeButtonActive.x = x + (entryWidth - this.volumeButtonActive.getWidth() - 52);
+                this.volumeButtonActive.x = x + (entryWidth - this.volumeButtonActive.getWidth() - 76);
                 this.volumeButtonActive.y = y + (entryHeight - this.volumeButtonActive.getHeight()) / 2;
                 this.volumeButtonActive.render(matrices, mouseX, mouseY, tickDelta);
             } else {
-                this.volumeButton.x = x + (entryWidth - this.volumeButton.getWidth() - 52);
+                this.volumeButton.x = x + (entryWidth - this.volumeButton.getWidth() - 76);
                 this.volumeButton.y = y + (entryHeight - this.volumeButton.getHeight()) / 2;
                 this.volumeButton.render(matrices, mouseX, mouseY, tickDelta);
             }
 
             if (this.playerVolumeWidget.visible && getStatusComponent() != Component.empty()) {
-                GuiComponent.fill(matrices, x + entryHeight - 2, y, x + (entryWidth / 2) + 2, y + entryHeight, BG_FILL_REMOVED);
+                GuiComponent.fill(matrices, x + entryHeight - 2, y, x + (entryWidth / 2) - 22, y + entryHeight, BG_FILL_REMOVED);
             }
 
             this.playerVolumeWidget.render(matrices, mouseX, mouseY, tickDelta, x, y, entryWidth, entryHeight);
@@ -155,7 +155,7 @@ public abstract class MixinPlayerEntry {
 
     @Inject(method = "getStatusComponent", at = @At(value = "RETURN"), cancellable = true)
     private void getStatusText(CallbackInfoReturnable<Component> cir) {
-        boolean bl = this.minecraft.getPlayerSocialManager().isBlocked(this.id) ||
+        boolean bl = this.minecraft.getPlayerSocialManager().isHidden(this.id) ||
                 VoiceClient.getClientConfig().isMuted(this.id);
         boolean bl2 = this.minecraft.getPlayerSocialManager().isBlocked(this.id);
         if (bl2 && this.isRemoved) {

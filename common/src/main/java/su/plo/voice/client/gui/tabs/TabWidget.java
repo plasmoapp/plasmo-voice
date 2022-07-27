@@ -212,7 +212,7 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
     }
 
     @Override
-    protected void renderList(PoseStack matrices, int x, int y, int mouseX, int mouseY, float delta) {
+    protected void renderList(PoseStack matrices, int mouseX, int mouseY, float delta) {
         int i = this.getItemCount();
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
@@ -223,7 +223,7 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
             int l = this.getRowBottom(j);
             if (l >= this.y0 && k <= this.y1) {
                 Entry entry = this.getEntry(j);
-                int m = y + height + this.headerHeight;
+                int m = k + height + this.headerHeight;
                 int n = entry.getHeight() - 4;
                 int o = this.getRowWidth();
                 int r;

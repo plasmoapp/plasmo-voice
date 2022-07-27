@@ -13,7 +13,7 @@
     "key.plasmo_voice.occlusion": "Згасання звуку через блоки",
     "key.plasmo_voice.occlusion.toggle": "Перемкнути згасання звуку",
 
-    "gui.plasmo_voice.player_volume": "Гучність гравця: %s",
+    "gui.plasmo_voice.player_volume": "Гучність: %s",
     "gui.plasmo_voice.close": "Закрити",
     "gui.plasmo_voice.on": "Увімк",
     "gui.plasmo_voice.off": "Вимк",

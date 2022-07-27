@@ -13,7 +13,7 @@
     "key.plasmo_voice.occlusion": "Geluid occlusie",
     "key.plasmo_voice.occlusion.toggle": "Geluidsocclusie in-/uitschakelen",
 
-    "gui.plasmo_voice.player_volume": "Speler volume: %s",
+    "gui.plasmo_voice.player_volume": "Volume: %s",
     "gui.plasmo_voice.close": "Sluiten",
     "gui.plasmo_voice.on": "Aan",
     "gui.plasmo_voice.off": "Uit",

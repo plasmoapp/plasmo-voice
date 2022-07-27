@@ -13,7 +13,7 @@
     "key.plasmo_voice.occlusion": "Затухание звука через блоки",
     "key.plasmo_voice.occlusion.toggle": "Вкл/выкл затухание звука",
 
-    "gui.plasmo_voice.player_volume": "Громкость игрока: %s",
+    "gui.plasmo_voice.player_volume": "Громкость: %s",
     "gui.plasmo_voice.close": "Закрыть",
     "gui.plasmo_voice.on": "Вкл",
     "gui.plasmo_voice.off": "Выкл",

@@ -13,7 +13,7 @@
     "key.plasmo_voice.occlusion": "Sound Occlusion",
     "key.plasmo_voice.occlusion.toggle": "Toggle Sound Occlusion",
 
-    "gui.plasmo_voice.player_volume": "Player Volume: %s",
+    "gui.plasmo_voice.player_volume": "Volume: %s",
     "gui.plasmo_voice.close": "Close",
     "gui.plasmo_voice.on": "On",
     "gui.plasmo_voice.off": "Off",
