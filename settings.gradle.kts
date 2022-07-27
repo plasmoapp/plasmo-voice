@@ -1,6 +1,28 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        mavenCentral()
+        mavenLocal()
+
+        maven {
+            name = "JitPack"
+            url = uri("https://jitpack.io/")
+        }
+
+        maven {
+            name = "Fabric"
+            url = uri("https://maven.fabricmc.net/")
+        }
+
+        maven {
+            name = "Forge"
+            url = uri("https://files.minecraftforge.net/maven/")
+        }
+
+        maven {
+            name = "Architectury"
+            url = uri("https://maven.architectury.dev/")
+        }
     }
 }
 
