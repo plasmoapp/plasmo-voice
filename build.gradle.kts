@@ -6,7 +6,8 @@ val version: String by rootProject
 plugins {
     java
     idea
-    `maven-publish`
+    `maven-publish` apply(false)
+    alias(libs.plugins.shadow) apply(false)
 }
 
 subprojects {

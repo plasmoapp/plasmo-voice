@@ -13,3 +13,4 @@ junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
 architectury-loom   = { id = "dev.architectury.loom", version = "0.11.0-SNAPSHOT" }
+shadow              = { id = "com.github.johnrengelman.shadow", version = "7.1.0" }
