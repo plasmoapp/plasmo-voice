@@ -10,6 +10,8 @@ import su.plo.voice.api.event.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public class VoiceEventBus implements EventBus {
 
@@ -27,6 +29,8 @@ public class VoiceEventBus implements EventBus {
     // class -> handlers
     private final Map<Class<? extends Event>, EnumMap<EventPriority, List<EventHandler<?>>>> handlers = Maps.newConcurrentMap();
 
+    private final Executor asyncExecutor = Executors.newSingleThreadExecutor();
+
     @Override
     public <E extends Event> void call(@NotNull E event) {
         if (!this.handlers.containsKey(event.getClass())) return;
@@ -39,6 +43,12 @@ public class VoiceEventBus implements EventBus {
                 listener.execute(event);
             }
         }
+    }
+
+    @Override
+    public <E extends Event> void callAsync(@NotNull E event) {
+        if (event instanceof EventCancellable) throw new IllegalArgumentException("Cancellable event cannot be run async");
+        asyncExecutor.execute(() -> call(event));
     }
 
     @Override

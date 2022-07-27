@@ -11,6 +11,13 @@ public interface EventBus {
     <E extends Event> void call(@NotNull E event);
 
     /**
+     * Calls the event asynchronously
+     *
+     * @param event the event to call
+     */
+    <E extends Event> void callAsync(@NotNull E event);
+
+    /**
      * Registers all events in listener class
      *
      * @param addon    the addon to associate with event listener
