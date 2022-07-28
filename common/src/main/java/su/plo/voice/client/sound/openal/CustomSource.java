@@ -6,7 +6,6 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.system.MemoryUtil;
-import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.sound.Recorder;
 
 import javax.sound.sampled.AudioFormat;
@@ -207,7 +206,6 @@ public class CustomSource {
 
         Integer freeBuffer = freeBuffers.poll();
         if (freeBuffer == null) {
-            VoiceClient.LOGGER.warn("No free buffers");
             while (freeBuffer == null) {
                 this.removeProcessedBuffers();
                 freeBuffer = freeBuffers.poll();
