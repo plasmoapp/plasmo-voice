@@ -19,7 +19,7 @@ public class SocketClientUDPQueue extends Thread {
     private static final Minecraft client = Minecraft.getInstance();
     private final SocketClientUDP socket;
     public ConcurrentLinkedQueue<PacketUDP> queue = new ConcurrentLinkedQueue<>();
-    public static final Map<UUID, AbstractSoundQueue> audioChannels = new HashMap<>();
+    public static final Map<UUID, AbstractSoundQueue> audioChannels = new ConcurrentHashMap<>();
 
     public static final ConcurrentHashMap<UUID, Boolean> talking = new ConcurrentHashMap<>();
 
