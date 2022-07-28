@@ -16,7 +16,7 @@ import java.util.LinkedList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class CustomSource {
-    private static final int NUM_BUFFERS = 16;
+    private static final int NUM_BUFFERS = 32;
 
     protected final int pointer;
     private final AtomicBoolean playing = new AtomicBoolean(true);
