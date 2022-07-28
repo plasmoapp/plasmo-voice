@@ -207,7 +207,6 @@ public class CustomSource {
 
         Integer freeBuffer = freeBuffers.poll();
         if (freeBuffer == null) {
-            VoiceClient.LOGGER.warn("No free buffers");
             while (freeBuffer == null) {
                 this.removeProcessedBuffers();
                 freeBuffer = freeBuffers.poll();
