@@ -46,4 +46,9 @@ public class OpusCodecSupplier implements CodecSupplier<OpusEncoderBase, OpusDec
 
         return decoder;
     }
+
+    @Override
+    public @NotNull String getName() {
+        return "opus";
+    }
 }

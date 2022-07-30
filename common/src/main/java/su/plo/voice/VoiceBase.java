@@ -31,7 +31,7 @@ public abstract class VoiceBase implements PlasmoVoice {
             return new AesEncryption(key);
         });
 
-        codecs.register("opus", new OpusCodecSupplier());
+        codecs.register(new OpusCodecSupplier());
     }
 
     @Override

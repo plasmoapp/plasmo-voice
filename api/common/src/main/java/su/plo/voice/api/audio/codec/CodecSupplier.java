@@ -8,4 +8,6 @@ public interface CodecSupplier<Encoder extends AudioEncoder<?, ?>, Decoder exten
     @NotNull Encoder createEncoder(@NotNull Params params);
 
     @NotNull Decoder createDecoder(@NotNull Params params);
+
+    @NotNull String getName();
 }
