@@ -1,4 +1,4 @@
-package su.plo.voice.encryption;
+package su.plo.voice.encryption.aes;
 
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;

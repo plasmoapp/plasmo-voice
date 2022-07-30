@@ -7,6 +7,7 @@ import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.encryption.EncryptionSupplier;
 import su.plo.voice.api.util.Params;
 
+import java.util.Collection;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -20,16 +21,18 @@ public class VoiceEncryptionManager implements EncryptionManager {
         checkNotNull(name, "name cannot be null");
         checkNotNull(params, "params cannot be null");
 
-        EncryptionSupplier encryption = algorithms.get(name);
-        if (encryption == null) {
+        EncryptionSupplier supplier = algorithms.get(name);
+        if (supplier == null) {
             throw new IllegalArgumentException("Encryption algorithm with name " + name + " is not registered");
         }
 
-        return encryption.supply(params);
+        return supplier.create(params);
     }
 
     @Override
-    public synchronized void register(@NotNull String name, @NotNull EncryptionSupplier supplier) {
+    public synchronized void register(@NotNull EncryptionSupplier supplier) {
+        String name = supplier.getName();
+
         checkNotNull(name, "name cannot be null");
         checkNotNull(supplier, "supplier cannot be null");
 
@@ -44,5 +47,17 @@ public class VoiceEncryptionManager implements EncryptionManager {
     public synchronized boolean unregister(@NotNull String name) {
         checkNotNull(name, "name cannot be null");
         return algorithms.remove(name) != null;
+    }
+
+    @Override
+    public synchronized boolean unregister(@NotNull EncryptionSupplier supplier) {
+        String name = supplier.getName();
+        checkNotNull(name, "name cannot be null");
+        return algorithms.remove(name) != null;
+    }
+
+    @Override
+    public synchronized Collection<EncryptionSupplier> getAlgorithms() {
+        return algorithms.values();
     }
 }

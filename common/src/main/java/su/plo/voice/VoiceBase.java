@@ -10,8 +10,8 @@ import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
 import su.plo.voice.audio.codec.VoiceCodecManager;
 import su.plo.voice.audio.codec.opus.OpusCodecSupplier;
-import su.plo.voice.encryption.AesEncryption;
 import su.plo.voice.encryption.VoiceEncryptionManager;
+import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;
 
 import java.io.File;
@@ -26,10 +26,7 @@ public abstract class VoiceBase implements PlasmoVoice {
     private final CodecManager codecs = new VoiceCodecManager();
 
     protected VoiceBase() {
-        encryption.register("AES_CBC_PKCS5Padding", (params) -> {
-            byte[] key = params.get("key");
-            return new AesEncryption(key);
-        });
+        encryption.register(new AesEncryptionSupplier());
 
         codecs.register(new OpusCodecSupplier());
     }
