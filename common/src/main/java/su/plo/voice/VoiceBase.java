@@ -45,6 +45,11 @@ public abstract class VoiceBase implements PlasmoVoice {
     }
 
     @Override
+    public @NotNull CodecManager getCodecManager() {
+        return codecs;
+    }
+
+    @Override
     public @NotNull EventBus getEventBus() {
         return eventBus;
     }
