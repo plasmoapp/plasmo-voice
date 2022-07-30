@@ -25,7 +25,6 @@ import java.util.Optional;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 
-import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class VoiceAddonManager implements AddonManager {
@@ -56,7 +55,7 @@ public final class VoiceAddonManager implements AddonManager {
 
     private void scanForAddons(File folder) {
         checkNotNull(folder, "folder");
-        checkArgument(folder.isDirectory(), "provided path isn't a directory");
+        if (!folder.isDirectory()) return;
 
         List<VoiceAddon> addons = new ArrayList<>();
 
