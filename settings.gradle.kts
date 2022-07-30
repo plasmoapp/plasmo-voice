@@ -30,6 +30,9 @@ enableFeaturePreview("VERSION_CATALOGS")
 
 rootProject.name = "PlasmoVoice"
 
+// Protocol
+include("protocol")
+
 // API
 include("api:common")
 include("api:client")
