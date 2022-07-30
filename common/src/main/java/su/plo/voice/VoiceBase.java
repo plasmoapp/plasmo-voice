@@ -1,13 +1,15 @@
 package su.plo.voice;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonManager;
+import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
+import su.plo.voice.audio.codec.VoiceCodecManager;
+import su.plo.voice.audio.codec.opus.OpusCodecSupplier;
 import su.plo.voice.encryption.AesEncryption;
 import su.plo.voice.encryption.VoiceEncryptionManager;
 import su.plo.voice.event.VoiceEventBus;
@@ -21,20 +23,15 @@ public abstract class VoiceBase implements PlasmoVoice {
     );
     private final EventBus eventBus = new VoiceEventBus();
     private final EncryptionManager encryption = new VoiceEncryptionManager();
+    private final CodecManager codecs = new VoiceCodecManager();
 
     protected VoiceBase() {
         encryption.register("AES_CBC_PKCS5Padding", (params) -> {
-            byte[] key;
-            try {
-                Object param = params.get("key");
-                Preconditions.checkNotNull(param, "key cannot be null");
-                key = (byte[]) param;
-            } catch (ClassCastException e) {
-                throw new IllegalArgumentException("key is not byte array");
-            }
-
+            byte[] key = params.get("key");
             return new AesEncryption(key);
         });
+
+        codecs.register("opus", new OpusCodecSupplier());
     }
 
     @Override

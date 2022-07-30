@@ -2,6 +2,7 @@ package su.plo.voice.api;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.addon.AddonManager;
+import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
 
@@ -35,6 +36,15 @@ public interface PlasmoVoice {
      * @return the encryption manager
      */
     @NotNull EncryptionManager getEncryptionManager();
+
+    /**
+     * Gets the {@link CodecManager}
+     *
+     * This manager can be used to create a codec encoder/decoder or register a custom codec encoder/decoder
+     *
+     * @return the codec manager
+     */
+    @NotNull CodecManager getCodecManager();
 
     /**
      * Gets the Plasmo Voice version

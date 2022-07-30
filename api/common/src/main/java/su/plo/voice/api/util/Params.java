@@ -17,7 +17,21 @@ public class Params {
     }
 
     public <T> T get(String key) {
-        return (T) params.get(key);
+        if (!containsKey(key)) throw new IllegalArgumentException(key + " cannot be null");
+        try {
+            return (T) params.get(key);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException(key + " is incorrect");
+        }
+    }
+
+    public <T> T get(String key, Class<?> type) {
+        if (!containsKey(key)) throw new IllegalArgumentException(key + " cannot be null");
+        try {
+            return (T) params.get(key);
+        } catch (ClassCastException e) {
+            throw new IllegalArgumentException(key + " is not " + type.getName());
+        }
     }
 
     public boolean containsKey(String key) {

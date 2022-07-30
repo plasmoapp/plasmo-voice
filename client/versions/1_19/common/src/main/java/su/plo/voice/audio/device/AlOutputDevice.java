@@ -199,11 +199,11 @@ public final class AlOutputDevice extends AudioDeviceBase implements AlAudioDevi
         if (!isOpen()) throw new DeviceException("Device is not open");
 
         int numBuffers = 0;
-        if (params.containsKey("num_buffers")) {
+        if (params.containsKey("numBuffers")) {
             try {
-                numBuffers = params.get("num_buffers");
-            } catch (ClassCastException e) {
-                throw new DeviceException("num_buffers is not Integer", e);
+                numBuffers = params.get("numBuffers");
+            } catch (IllegalArgumentException e) {
+                throw new DeviceException(e);
             }
 
             if (numBuffers < 4) {
