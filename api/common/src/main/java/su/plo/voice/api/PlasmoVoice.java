@@ -2,12 +2,14 @@ package su.plo.voice.api;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.addon.AddonManager;
+import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
 
 /**
  * The Plasmo Voice API
  */
 public interface PlasmoVoice {
+
     /**
      * Gets the {@link AddonManager}
      *
@@ -24,6 +26,15 @@ public interface PlasmoVoice {
      * @return the event bus
      */
     @NotNull EventBus getEventBus();
+
+    /**
+     * Gets the {@link EncryptionManager}
+     *
+     * This manager can be used to create an encryption or register a custom encryption
+     *
+     * @return the encryption manager
+     */
+    @NotNull EncryptionManager getEncryptionManager();
 
     /**
      * Gets the Plasmo Voice version
