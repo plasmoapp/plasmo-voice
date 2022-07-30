@@ -7,11 +7,15 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALC11;
 import su.plo.voice.api.PlasmoVoiceClient;
-import su.plo.voice.api.audio.device.*;
+import su.plo.voice.api.audio.device.AudioDevice;
+import su.plo.voice.api.audio.device.DeviceException;
+import su.plo.voice.api.audio.device.DeviceType;
+import su.plo.voice.api.audio.device.InputDevice;
 import su.plo.voice.api.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.event.audio.device.DevicePreOpenEvent;
 import su.plo.voice.api.util.AudioUtil;
+import su.plo.voice.api.util.Params;
 import su.plo.voice.audio.AlUtil;
 
 import javax.sound.sampled.AudioFormat;

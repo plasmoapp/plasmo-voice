@@ -10,7 +10,7 @@ import su.plo.voice.api.audio.device.DeviceManager;
 public interface PlasmoVoiceClient extends PlasmoVoice {
 
     /**
-     * Gets the device factory manager
+     * Gets the {@link DeviceFactoryManager}
      *
      * Device factories are used to create new devices
      *
@@ -19,7 +19,7 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
     @NotNull DeviceFactoryManager getDeviceFactoryManager();
 
     /**
-     * Gets the device manager
+     * Gets the {@link DeviceManager}
      *
      * This manager can be used to set primary devices
      *

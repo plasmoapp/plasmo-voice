@@ -2,6 +2,7 @@ package su.plo.voice.api.audio.device;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;

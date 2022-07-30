@@ -8,7 +8,7 @@ import su.plo.voice.api.PlasmoVoiceClient;
 import su.plo.voice.api.audio.device.AudioDevice;
 import su.plo.voice.api.audio.device.DeviceException;
 import su.plo.voice.api.audio.device.DeviceFactory;
-import su.plo.voice.api.audio.device.Params;
+import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;

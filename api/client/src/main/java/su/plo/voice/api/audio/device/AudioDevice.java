@@ -3,6 +3,7 @@ package su.plo.voice.api.audio.device;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.audio.filter.AudioFilter;
+import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;

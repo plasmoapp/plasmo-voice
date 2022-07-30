@@ -11,11 +11,15 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.*;
 import su.plo.voice.api.PlasmoVoiceClient;
-import su.plo.voice.api.audio.device.*;
+import su.plo.voice.api.audio.device.AlAudioDevice;
+import su.plo.voice.api.audio.device.AudioDevice;
+import su.plo.voice.api.audio.device.DeviceException;
+import su.plo.voice.api.audio.device.OutputDevice;
 import su.plo.voice.api.audio.source.AlSource;
 import su.plo.voice.api.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.event.audio.device.DevicePreOpenEvent;
+import su.plo.voice.api.util.Params;
 import su.plo.voice.audio.AlUtil;
 import su.plo.voice.audio.source.StreamAlSource;
 

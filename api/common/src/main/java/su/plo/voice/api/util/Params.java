@@ -1,4 +1,4 @@
-package su.plo.voice.api.audio.device;
+package su.plo.voice.api.util;
 
 import java.util.HashMap;
 import java.util.Map;
