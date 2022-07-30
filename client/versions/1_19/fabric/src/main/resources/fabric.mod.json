@@ -1,0 +1,32 @@
+{
+    "schemaVersion": 1,
+    "id": "plasmovoice",
+    "version": "${version}",
+    "name": "Plasmo Voice",
+    "description": "A proximity voice chat mod with audio positioning and lots of features",
+    "authors": [
+        "Plasmo"
+    ],
+    "contact": {
+        "homepage": "https://github.com/plasmoapp/plasmo-voice",
+        "sources": "https://github.com/plasmoapp/plasmo-voice",
+        "issues": "https://github.com/plasmoapp/plasmo-voice/issues"
+    },
+    "license": "All rights reserved",
+    "icon": "assets/plasmo_voice/icon.png",
+    "environment": "*",
+    "entrypoints": {
+        "client": [
+            "su.plo.voice.VoiceClientFabric"
+        ]
+    },
+    "mixins": [
+        "plasmovoice.mixins.json"
+    ],
+    "depends": {
+        "fabricloader": ">=${loader_version}"
+    },
+    "suggests": {
+        "soundphysics": "*"
+    }
+}

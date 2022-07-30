@@ -32,5 +32,11 @@ rootProject.name = "PlasmoVoice"
 
 // API
 include("api:common")
+include("api:client")
 
 include("common")
+
+include("client:common")
+include("client:versions:1_19")
+include("client:versions:1_19:common")
+include("client:versions:1_19:fabric")

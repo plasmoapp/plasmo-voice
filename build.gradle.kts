@@ -1,22 +1,22 @@
 // Version
 val targetJavaVersion: String by rootProject
 val mavenGroup: String by rootProject
-val version: String by rootProject
+val buildVersion: String by rootProject
 
 plugins {
     java
     idea
-    `maven-publish` apply(false)
-    alias(libs.plugins.shadow) apply(false)
+    alias(libs.plugins.shadow)
 }
 
 subprojects {
     apply(plugin = "java")
     apply(plugin = "idea")
     apply(plugin = "maven-publish")
+    apply(plugin = "com.github.johnrengelman.shadow")
 
     group = mavenGroup
-    version = version
+    version = buildVersion
 
     dependencies {
         compileOnly(rootProject.libs.annotations)
@@ -42,15 +42,30 @@ subprojects {
             events("passed", "skipped", "failed")
         }
     }
+
+    tasks {
+        java {
+            withSourcesJar()
+
+            toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
+        }
+
+//        jar {
+//            archiveClassifier.set("dev")
+//        }
+//
+//        shadowJar {
+//            configurations = listOf(project.configurations.shadow.get())
+//            archiveClassifier.set("dev-shadow")
+//        }
+//
+//        build {
+//            dependsOn.add(shadowJar)
+//        }
+    }
 }
 
 allprojects {
-    apply(plugin = "java")
-
-    java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
-    }
-
     repositories {
         mavenLocal()
         mavenCentral()
