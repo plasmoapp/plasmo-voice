@@ -108,9 +108,9 @@ public final class AlOutputDevice extends AudioDeviceBase implements AlAudioDevi
                 AlUtil.checkErrors("Enable per-source distance models");
                 LOGGER.info("Device " + name + " initialized");
 
-                if (params != null) {
+                if (params.containsKey("hrtf")) {
                     Object hrtf = params.get("hrtf");
-                    if (hrtf != null && hrtf.equals(true)) {
+                    if (hrtf.equals(true)) {
                         enableHRTF();
                     }
                 }
