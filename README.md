@@ -17,7 +17,7 @@
         <dependency>
             <groupId>su.plo.voice</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.0.9</version>
+            <version>1.0.10</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'su.plo.voice:spigot:1.0.9'
+    compileOnly 'su.plo.voice:spigot:1.0.10'
 }
 ```
 
@@ -46,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("su.plo.voice:spigot:1.0.9")
+    compileOnly("su.plo.voice:spigot:1.0.10")
 }
 ```
 
@@ -96,7 +96,7 @@ public final class APIExample extends JavaPlugin implements Listener {
         event.setCancelled(true);
         for (Player player : api.getConnectedPlayers()) {
             if (!player.getEquipment().getItemInMainHand().getType().equals(Material.IRON_INGOT)) continue;
-            api.sendPacketToPlayer(event.getPacket(), player);
+            api.sendVoicePacketToPlayer(event.getPacket(), player);
         }
     }
 }
