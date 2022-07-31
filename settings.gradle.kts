@@ -1,3 +1,5 @@
+import org.gradle.kotlin.dsl.support.listFilesOrdered
+
 pluginManagement {
     repositories {
         gradlePluginPortal()
@@ -34,12 +36,29 @@ rootProject.name = "PlasmoVoice"
 include("protocol")
 
 // API
-include("api:common")
-include("api:client")
+file("api").listFilesOrdered {
+    return@listFilesOrdered it.isDirectory && it.name != "build"
+}.forEach {
+    include("api:${it.name}")
+}
 
+// Common
 include("common")
 
+// Client
 include("client:common")
-include("client:versions:1_19")
-include("client:versions:1_19:common")
-include("client:versions:1_19:fabric")
+// Versions
+file("client/versions").listFilesOrdered {
+    return@listFilesOrdered it.isDirectory && it.name != "build"
+}.forEach {
+    include("client:versions:${it.name}")
+    include("client:versions:${it.name}:common")
+    include("client:versions:${it.name}:fabric")
+}
+
+// Server
+file("server").listFilesOrdered {
+    return@listFilesOrdered it.isDirectory && it.name != "build"
+}.forEach {
+    include("server:${it.name}")
+}
