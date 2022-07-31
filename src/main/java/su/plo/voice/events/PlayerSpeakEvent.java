@@ -40,4 +40,8 @@ public class PlayerSpeakEvent extends Event implements Cancellable {
     public Packet getPacket() {
         return packet;
     }
+
+    public static HandlerList getHandlerList() {
+        return HANDLERS_LIST;
+    }
 }
