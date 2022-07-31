@@ -8,7 +8,7 @@ import su.plo.voice.api.event.EventCancellable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is called when the {@link AlSource#play()} has been called
+ * This event is fired when the {@link AlSource#play()} has been called
  */
 public final class AlSourceUpdateParamEvent extends AlSourceEvent implements EventCancellable {
 

@@ -25,6 +25,7 @@ public class PacketUdpCodec {
         out.writeInt(MAGIC_NUMBER);
         out.writeByte(type);
         PacketUtil.writeUUID(out, secret);
+        out.writeLong(System.currentTimeMillis());
 
         try {
             packet.write(out);
@@ -41,9 +42,10 @@ public class PacketUdpCodec {
         Packet<?> packet = PACKETS.byType(in.readByte());
         if (packet != null) {
             UUID secret = PacketUtil.readUUID(in);
+            long timestamp = in.readLong();
             packet.read(in);
 
-            return new PacketUdp(secret, packet);
+            return new PacketUdp(secret, timestamp, packet);
         }
 
         return null;

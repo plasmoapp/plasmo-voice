@@ -10,7 +10,7 @@ import java.nio.ByteBuffer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is called when the {@link AlSource#write(byte[])} has been called
+ * This event is fired when the {@link AlSource#write(byte[])} has been called
  */
 public final class AlSourceWriteEvent extends AlSourceEvent implements EventCancellable {
 

@@ -51,6 +51,10 @@ public abstract class VoiceBase implements PlasmoVoice {
         return eventBus;
     }
 
+    protected abstract void onInitialize();
+
+    protected abstract void onShutdown();
+
     protected abstract File configFolder();
 
     protected abstract File modsFolder();

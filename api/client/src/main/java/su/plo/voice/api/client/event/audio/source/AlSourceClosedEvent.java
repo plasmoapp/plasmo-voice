@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.source.AlSource;
 
 /**
- * This event is called once the {@link AlSource} has been closed
+ * This event is fired once the {@link AlSource} has been closed
  */
 public final class AlSourceClosedEvent extends AlSourceEvent {
 

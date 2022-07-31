@@ -7,4 +7,8 @@ dependencies {
     implementation(project(":api:server"))
 
     implementation(project(":common"))
+
+    implementation(project(":protocol"))
+
+    compileOnly(rootProject.libs.netty)
 }

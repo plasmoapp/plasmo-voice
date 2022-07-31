@@ -5,7 +5,7 @@ import su.plo.voice.api.client.audio.source.AlSource;
 import su.plo.voice.api.event.EventCancellable;
 
 /**
- * This event is called when the {@link AlSource#play()} has been called
+ * This event is fired when the {@link AlSource#play()} has been called
  */
 public final class AlSourcePlayEvent extends AlSourceEvent implements EventCancellable {
 

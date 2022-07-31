@@ -10,6 +10,7 @@ log4j        = { module = "org.apache.logging.log4j:log4j-core", version = "2.17
 junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 opus         = { module = "su.plo.opus:opus", version = "2.0.0" }
+netty        = { module = "io.netty:netty-all", version = "4.1.77.Final"}
 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }

@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
@@ -15,7 +16,8 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @AllArgsConstructor
-public class HandshakePacket implements Packet<ClientPacketHandler> {
+@NoArgsConstructor
+public class ConnectionPacket implements Packet<ClientPacketHandler> {
 
     @Getter
     private UUID secret;

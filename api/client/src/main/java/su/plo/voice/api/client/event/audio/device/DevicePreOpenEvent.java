@@ -10,7 +10,7 @@ import su.plo.voice.api.util.Params;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is called before the device will be open
+ * This event is fired before the device will be open
  */
 public final class DevicePreOpenEvent extends EventCancellableBase implements Event {
 

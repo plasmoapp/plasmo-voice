@@ -9,7 +9,7 @@ import su.plo.voice.api.event.Event;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is called once the device source has been created
+ * This event is fired once the device source has been created
  */
 public final class DeviceSourceCreatedEvent implements Event {
 

@@ -8,7 +8,7 @@ import su.plo.voice.api.event.Event;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is called once the Plasmo Voice client is shutdown
+ * This event is fired once the Plasmo Voice client is shutdown
  */
 public final class VoiceClientShutdownEvent implements Event {
 
