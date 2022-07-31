@@ -17,7 +17,7 @@
     "environment": "*",
     "entrypoints": {
         "client": [
-            "su.plo.voice.VoiceClientFabric"
+            "su.plo.voice.client.VoiceClientFabric"
         ]
     },
     "mixins": [
