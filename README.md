@@ -17,7 +17,7 @@
         <dependency>
             <groupId>su.plo.voice</groupId>
             <artifactId>spigot</artifactId>
-            <version>1.0.10</version>
+            <version>1.0.11</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -32,7 +32,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly 'su.plo.voice:spigot:1.0.10'
+    compileOnly 'su.plo.voice:spigot:1.0.11'
 }
 ```
 
@@ -46,7 +46,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly("su.plo.voice:spigot:1.0.10")
+    compileOnly("su.plo.voice:spigot:1.0.11")
 }
 ```
 
