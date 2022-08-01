@@ -47,8 +47,10 @@ subprojects {
 
         implementation(project(":api:common"))
         implementation(project(":api:client"))
+        implementation(project(":api:server"))
 
         implementation(project(":client:common"))
+        implementation(project(":server:common"))
 
         implementation(project(":common"))
     }

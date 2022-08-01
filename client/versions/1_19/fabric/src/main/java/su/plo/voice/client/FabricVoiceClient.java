@@ -23,7 +23,7 @@ import java.util.concurrent.ExecutionException;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Environment(EnvType.CLIENT)
-public final class VoiceClientFabric extends VoiceClientMod implements ClientModInitializer {
+public final class FabricVoiceClient extends VoiceClientMod implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {

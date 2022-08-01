@@ -6,6 +6,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
+import su.plo.voice.api.PlasmoVoice;
+import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.event.*;
 
 import java.lang.reflect.Method;
@@ -53,6 +55,8 @@ public class VoiceEventBus implements EventBus {
 
     @Override
     public void register(@NotNull Object addon, @NotNull Object listener) {
+        checkIfAddon(addon);
+
         Method[] publicMethods = listener.getClass().getMethods();
         Method[] privateMethods = listener.getClass().getDeclaredMethods();
 
@@ -121,6 +125,8 @@ public class VoiceEventBus implements EventBus {
 
     @Override
     public <E extends Event> void register(@NotNull Object addon, Class<E> eventClass, EventPriority priority, @NotNull EventHandler<E> handler) {
+        checkIfAddon(addon);
+
         EnumMap<EventPriority, List<EventHandler<?>>> listeners = this.handlers.get(eventClass);
         if (listeners == null) {
             listeners = new EnumMap<>(EventPriority.class);
@@ -148,6 +154,8 @@ public class VoiceEventBus implements EventBus {
 
     @Override
     public void unregister(@NotNull Object addon) {
+        checkIfAddon(addon);
+
         List<EventHandler<?>> handlersToRemove = new ArrayList<>();
 
         List<Object> addonListeners = registeredAddonListeners.remove(addon);
@@ -166,6 +174,8 @@ public class VoiceEventBus implements EventBus {
 
     @Override
     public void unregister(@NotNull Object addon, @NotNull Object listener) {
+        checkIfAddon(addon);
+
         List<Object> addonListeners = registeredAddonListeners.get(addon);
         addonListeners.remove(listener);
         if (addonListeners.size() == 0) registeredAddonListeners.remove(addon);
@@ -177,11 +187,19 @@ public class VoiceEventBus implements EventBus {
 
     @Override
     public void unregister(@NotNull Object addon, @NotNull EventHandler<?> handler) {
+        checkIfAddon(addon);
+
         List<EventHandler<?>> addonHandlers = registeredAddonHandlers.get(addon);
         addonHandlers.remove(handler);
         if (addonHandlers.size() == 0) registeredAddonHandlers.remove(addon);
 
         removeHandlers(ImmutableList.of(handler));
+    }
+
+    private void checkIfAddon(@NotNull Object addon) {
+        if (!addon.getClass().isAnnotationPresent(Addon.class) && !(addon instanceof PlasmoVoice)) {
+            throw new IllegalArgumentException("object is not annotated with @Addon");
+        }
     }
 
     private void removeHandlers(List<EventHandler<?>> handlersToRemove) {

@@ -14,7 +14,7 @@ import su.plo.voice.client.audio.device.VoiceDeviceManager;
 
 public abstract class VoiceClientBase extends VoiceBase implements PlasmoVoiceClient {
 
-    protected final Logger logger = LogManager.getLogger(PlasmoVoiceClient.class);
+    protected final Logger logger = LogManager.getLogger("PlasmoVoiceClient");
 
     @Getter
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
@@ -30,5 +30,10 @@ public abstract class VoiceClientBase extends VoiceBase implements PlasmoVoiceCl
         logger.info("Shutting down");
 
         getEventBus().call(new VoiceClientShutdownEvent(this));
+    }
+
+    @Override
+    protected Logger getLogger() {
+        return logger;
     }
 }

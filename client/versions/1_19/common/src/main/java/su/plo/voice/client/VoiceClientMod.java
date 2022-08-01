@@ -7,7 +7,7 @@ import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 
 public abstract class VoiceClientMod extends VoiceClientBase {
 
-    protected String modId = "plasmovoice";
+    protected final String modId = "plasmovoice";
 
     protected VoiceClientMod() {
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
