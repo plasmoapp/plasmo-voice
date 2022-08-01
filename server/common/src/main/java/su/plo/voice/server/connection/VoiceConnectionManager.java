@@ -4,6 +4,9 @@ import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.connection.ConnectionManager;
+import su.plo.voice.api.server.event.connection.UdpConnectEvent;
+import su.plo.voice.api.server.event.connection.UdpConnectedEvent;
+import su.plo.voice.api.server.event.connection.UdpDisconnectEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 
@@ -42,19 +45,28 @@ public class VoiceConnectionManager implements ConnectionManager {
 
     @Override
     public void addConnection(UdpConnection connection) {
+        UdpConnectEvent connectEvent = new UdpConnectEvent(connection);
+        server.getEventBus().call(connectEvent);
+        if (connectEvent.isCancelled()) return;
+
         UdpConnection bySecret = connectionBySecret.put(connection.getSecret(), connection);
         UdpConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getUUID(), connection);
 
         if (bySecret != null) bySecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
+
+        server.getEventBus().call(new UdpConnectedEvent(connection));
     }
 
     @Override
     public boolean removeConnection(UdpConnection connection) {
-        boolean bySecret = removeConnection(connection.getSecret());
-        boolean byPlayer = removeConnection(connection.getPlayer());
+        UdpConnection bySecret = connectionBySecret.get(connection.getSecret());
+        UdpConnection byPlayer = connectionByPlayerId.get(connection.getPlayer().getUUID());
 
-        return bySecret || byPlayer;
+        if (bySecret != null) disconnect(bySecret);
+        if (byPlayer != null && !byPlayer.equals(bySecret)) disconnect(byPlayer);
+
+        return bySecret != null || byPlayer != null;
     }
 
     @Override
@@ -88,5 +100,7 @@ public class VoiceConnectionManager implements ConnectionManager {
 
         secretByPlayerId.remove(connection.getPlayer().getUUID());
         playerIdBySecret.remove(connection.getSecret());
+
+        server.getEventBus().call(new UdpDisconnectEvent(connection));
     }
 }

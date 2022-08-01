@@ -2,7 +2,7 @@ package su.plo.voice.api.server.socket;
 
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketHandler;
+import su.plo.voice.proto.packets.udp.PacketUdpHandler;
 
 import java.util.UUID;
 
@@ -12,7 +12,7 @@ public interface UdpConnection {
 
     VoicePlayer getPlayer();
 
-    void sendPacket(Packet<ClientPacketHandler> packet);
+    void sendPacket(Packet<PacketUdpHandler> packet);
 
     void disconnect();
 }

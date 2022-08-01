@@ -1,4 +1,6 @@
 package su.plo.voice.proto.packets.tcp.clientbound;
 
-public interface ClientPacketHandler {
+import su.plo.voice.proto.packets.PacketHandler;
+
+public interface ClientPacketHandler extends PacketHandler {
 }

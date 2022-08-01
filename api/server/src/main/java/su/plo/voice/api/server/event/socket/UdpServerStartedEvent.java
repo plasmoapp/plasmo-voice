@@ -8,15 +8,14 @@ import su.plo.voice.api.server.socket.UdpServer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the udp server is started
+ * This event is fired once the udp server is started
  */
-public class UdpServerStartEvent implements Event {
+public class UdpServerStartedEvent implements Event {
 
     @Getter
     private final UdpServer server;
 
-    public UdpServerStartEvent(@NotNull UdpServer server) {
-        checkNotNull(server, "server cannot be null");
-        this.server = server;
+    public UdpServerStartedEvent(@NotNull UdpServer server) {
+        this.server = checkNotNull(server, "server cannot be null");
     }
 }

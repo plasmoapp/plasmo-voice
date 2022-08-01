@@ -8,7 +8,7 @@ import su.plo.voice.api.server.socket.UdpConnection;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the player is disconnected from the UDP server
+ * This event is fired once the player is disconnected from the UDP server
  * and removed from {@link su.plo.voice.api.server.connection.ConnectionManager}
  */
 public final class UdpDisconnectEvent implements Event {
@@ -17,7 +17,6 @@ public final class UdpDisconnectEvent implements Event {
     private final UdpConnection connection;
 
     public UdpDisconnectEvent(@NotNull UdpConnection connection) {
-        checkNotNull(connection, "connection cannot be null");
-        this.connection = connection;
+        this.connection = checkNotNull(connection, "connection cannot be null");
     }
 }

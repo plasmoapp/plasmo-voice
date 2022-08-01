@@ -1,6 +1,7 @@
 package su.plo.voice;
 
 import com.google.common.collect.ImmutableList;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
@@ -18,12 +19,12 @@ import java.io.File;
 
 public abstract class VoiceBase implements PlasmoVoice {
 
-    private final AddonManager addons = new VoiceAddonManager(
+    protected final AddonManager addons = new VoiceAddonManager(
             ImmutableList.of(modsFolder(), addonsFolder())
     );
-    private final EventBus eventBus = new VoiceEventBus();
-    private final EncryptionManager encryption = new VoiceEncryptionManager();
-    private final CodecManager codecs = new VoiceCodecManager();
+    protected final EventBus eventBus = new VoiceEventBus();
+    protected final EncryptionManager encryption = new VoiceEncryptionManager();
+    protected final CodecManager codecs = new VoiceCodecManager();
 
     protected VoiceBase() {
         encryption.register(new AesEncryptionSupplier());
@@ -50,6 +51,8 @@ public abstract class VoiceBase implements PlasmoVoice {
     public @NotNull EventBus getEventBus() {
         return eventBus;
     }
+
+    protected abstract Logger getLogger();
 
     protected abstract void onInitialize();
 

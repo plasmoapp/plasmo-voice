@@ -23,8 +23,7 @@ public final class PlayerConnectEvent extends PlayerEvent implements EventCancel
     public PlayerConnectEvent(@NotNull VoicePlayer player, @NotNull ConnectionPacket packet) {
         super(player);
 
-        checkNotNull(packet, "packet cannot be null");
-        this.packet = packet;
+        this.packet = checkNotNull(packet, "packet cannot be null");
     }
 
     @Override

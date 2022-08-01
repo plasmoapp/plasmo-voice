@@ -9,7 +9,7 @@ import su.plo.voice.api.server.socket.UdpServer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the udp server is created, but not started yet
+ * This event is fired once the udp server is created, but not started yet
  *
  * You can replace a server with yours
  * Default server is a netty udp server
@@ -21,7 +21,6 @@ public class UdpServerCreateEvent extends EventCancellableBase {
     private UdpServer server;
 
     public UdpServerCreateEvent(@NotNull UdpServer server) {
-        checkNotNull(server, "server cannot be null");
-        this.server = server;
+        this.server = checkNotNull(server, "server cannot be null");
     }
 }

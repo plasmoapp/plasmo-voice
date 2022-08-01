@@ -5,6 +5,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
+import su.plo.voice.api.event.EventBus;
 import su.plo.voice.api.server.connection.ConnectionManager;
 import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -16,6 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class NettyHandshakeHandler extends SimpleChannelInboundHandler<PacketUdp> {
 
+    private final EventBus eventBus;
     private final ConnectionManager connections;
     private final PlayerManager players;
 
@@ -29,7 +31,12 @@ public class NettyHandshakeHandler extends SimpleChannelInboundHandler<PacketUdp
         Optional<VoicePlayer> player = players.getPlayer(playerId);
         if (!player.isPresent()) return;
 
-        NettyUdpConnection connection = new NettyUdpConnection((NioDatagramChannel) ctx.channel(), secret, player.get());
+        NettyUdpConnection connection = new NettyUdpConnection(
+                eventBus,
+                (NioDatagramChannel) ctx.channel(),
+                secret,
+                player.get()
+        );
         connections.addConnection(connection);
 
         ChannelPipeline pipeline = ctx.pipeline();

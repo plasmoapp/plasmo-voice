@@ -8,15 +8,14 @@ import su.plo.voice.api.server.socket.UdpServer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the udp server is stopped
+ * This event is fired once the udp server is stopped
  */
-public class UdpServerStopEvent implements Event {
+public class UdpServerStoppedEvent implements Event {
 
     @Getter
     private final UdpServer server;
 
-    public UdpServerStopEvent(@NotNull UdpServer server) {
-        checkNotNull(server, "server cannot be null");
-        this.server = server;
+    public UdpServerStoppedEvent(@NotNull UdpServer server) {
+        this.server = checkNotNull(server, "server cannot be null");
     }
 }

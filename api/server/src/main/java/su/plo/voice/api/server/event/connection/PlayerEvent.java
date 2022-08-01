@@ -13,7 +13,6 @@ public abstract class PlayerEvent implements Event {
     private final VoicePlayer player;
 
     public PlayerEvent(@NotNull VoicePlayer player) {
-        checkNotNull(player, "player cannot be null");
-        this.player = player;
+        this.player = checkNotNull(player, "player cannot be null");
     }
 }

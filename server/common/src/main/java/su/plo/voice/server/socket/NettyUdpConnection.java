@@ -8,20 +8,25 @@ import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.event.EventBus;
+import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
+import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
-import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketHandler;
-import su.plo.voice.proto.packets.udp.serverbound.ServerPacketHandler;
-import su.plo.voice.proto.packets.udp.serverbound.ServerPingPacket;
+import su.plo.voice.proto.packets.udp.PacketUdpHandler;
+import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
+import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
+import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 
 import java.util.UUID;
 
 @AllArgsConstructor
-public class NettyUdpConnection extends SimpleChannelInboundHandler<PacketUdp> implements UdpConnection, ServerPacketHandler {
+public class NettyUdpConnection extends SimpleChannelInboundHandler<PacketUdp> implements UdpConnection, ServerPacketUdpHandler {
 
+    private final EventBus eventBus;
     private final NioDatagramChannel channel;
     private final UUID secret;
     private final VoicePlayer player;
@@ -37,7 +42,7 @@ public class NettyUdpConnection extends SimpleChannelInboundHandler<PacketUdp> i
     }
 
     @Override
-    public void sendPacket(Packet<ClientPacketHandler> packet) {
+    public void sendPacket(Packet<PacketUdpHandler> packet) {
         byte[] encoded = PacketUdpCodec.encode(packet, secret);
         if (encoded == null) return;
 
@@ -46,6 +51,9 @@ public class NettyUdpConnection extends SimpleChannelInboundHandler<PacketUdp> i
         System.out.println("send to:" + channel.remoteAddress());
 
         channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()));
+
+        UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
+        eventBus.call(event);
     }
 
     @Override
@@ -54,12 +62,21 @@ public class NettyUdpConnection extends SimpleChannelInboundHandler<PacketUdp> i
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, PacketUdp packet) throws Exception {
+    protected void channelRead0(ChannelHandlerContext ctx, PacketUdp packetUdp) throws Exception {
+        Packet<ServerPacketUdpHandler> packet = packetUdp.getPacket();
 
+        UdpPacketReceivedEvent event = new UdpPacketReceivedEvent(this, packet);
+        eventBus.call(event);
+        if (event.isCancelled()) return;
+
+        packet.handle(this);
     }
 
     @Override
-    public void handle(@NotNull ServerPingPacket packet) {
+    public void handle(@NotNull PingPacket packet) {
+    }
 
+    @Override
+    public void handle(@NotNull CustomPacket packet) {
     }
 }

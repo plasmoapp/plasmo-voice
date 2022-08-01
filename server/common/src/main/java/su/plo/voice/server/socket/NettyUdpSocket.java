@@ -11,6 +11,7 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.event.EventBus;
 import su.plo.voice.api.server.connection.ConnectionManager;
 import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.socket.UdpServer;
@@ -21,6 +22,7 @@ public class NettyUdpSocket implements UdpServer {
     private final EventLoopGroup loopGroup = new NioEventLoopGroup();
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
+    private final EventBus eventBus;
     private final ConnectionManager connections;
     private final PlayerManager players;
 
@@ -39,14 +41,19 @@ public class NettyUdpSocket implements UdpServer {
 
                 pipeline.addLast("decoder", new NettyMessageDecoder());
 
-                pipeline.addLast(executors, "handler", new NettyHandshakeHandler(connections, players));
+                pipeline.addLast(executors, "handler", new NettyHandshakeHandler(eventBus, connections, players));
             }
         });
 
+        try {
+            bootstrap.bind(ip, port);
+        } catch (Exception e) {
+
+        }
     }
 
     @Override
-    public void close() {
-
+    public void stop() {
+        loopGroup.shutdownGracefully();
     }
 }

@@ -55,7 +55,7 @@ public class ConnectionPacket implements Packet<ClientPacketHandler> {
     }
 
     @Override
-    public void handle(ClientPacketHandler listener) {
+    public void handle(ClientPacketHandler handler) {
 
     }
 }

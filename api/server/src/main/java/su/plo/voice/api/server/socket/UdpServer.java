@@ -4,5 +4,5 @@ package su.plo.voice.api.server.socket;
 public interface UdpServer {
     void start(String ip, int port);
 
-    void close();
+    void stop();
 }
