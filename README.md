@@ -75,7 +75,7 @@ For events see this [package](https://github.com/plasmoapp/plasmo-voice/tree/mai
 
 ## Examples of API usage
 
-Example #1: Full class with simple Player-to-Player voice chat, linking players together by holding an iron ingot.
+Example #1: Full class with simple remote voice chat, linking players together by holding an iron ingot.
 
 ```java
 public final class APIExample extends JavaPlugin implements Listener {
