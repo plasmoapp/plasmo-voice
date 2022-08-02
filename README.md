@@ -69,13 +69,13 @@ PlasmoVoiceAPI api = PlasmoVoice.getInstance();
 
 ## Methods and Events
 
-For methods see this class: [PlasmoVoiceAPI](https://github.com/plasmoapp/plasmo-voice/tree/main-spigot/src/main/java/su/plo/voice/PlasmoVoiceAPI.java)
+For methods see this [class](https://github.com/plasmoapp/plasmo-voice/tree/main-spigot/src/main/java/su/plo/voice/PlasmoVoiceAPI.java)
 
 For events see this [package](https://github.com/plasmoapp/plasmo-voice/tree/main-spigot/src/main/java/su/plo/voice/events)
 
 ## Examples of API usage
 
-Example #1: Remote voice chat between players, linking players together by holding an iron ingot.
+Example #1: Full class with simple Player-to-Player voice chat, linking players together by holding an iron ingot.
 
 ```java
 public final class APIExample extends JavaPlugin implements Listener {
@@ -99,5 +99,14 @@ public final class APIExample extends JavaPlugin implements Listener {
             api.sendVoicePacketToPlayer(event.getPacket(), player);
         }
     }
+}
+```
+
+Example #2: Send "Hey, you're talking!" to player which is started talking.
+
+```java
+@EventHandler
+public void onStartSpeak(PlayerStartSpeakEvent event) {
+    event.getPlayer().sendMessage("Hey, you're talking!");
 }
 ```

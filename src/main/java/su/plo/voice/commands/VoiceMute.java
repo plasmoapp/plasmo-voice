@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabExecutor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.PlasmoVoiceAPI;
 
@@ -16,11 +17,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class VoiceMute implements TabExecutor {
-    private final Pattern pattern = Pattern.compile("^([0-9]*)([mhdwu])?$");
-    private final Pattern integerPattern = Pattern.compile("^([0-9]*)$");
+    private final Pattern pattern = Pattern.compile("^(\\d*)([mhdwu])?$");
+    private final Pattern integerPattern = Pattern.compile("^(\\d*)$");
 
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("help.mute"));
             return true;
@@ -106,7 +107,7 @@ public class VoiceMute implements TabExecutor {
     }
 
     @Override
-    public List<String> onTabComplete(CommandSender sender, Command command, String s, String[] args) {
+    public List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (args.length == 2) {
             if (args[1].isEmpty()) {
                 return ImmutableList.of("permanent");

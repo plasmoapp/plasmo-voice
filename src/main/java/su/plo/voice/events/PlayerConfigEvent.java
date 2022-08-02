@@ -8,6 +8,9 @@ import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.common.packets.tcp.ConfigPacket;
 
+/**
+ * Fires when the player's config has been changed / read etc.
+ */
 public class PlayerConfigEvent extends Event implements Cancellable {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     @Getter
@@ -38,15 +41,20 @@ public class PlayerConfigEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean cancel) {
         if (cancel && cause.equals(Cause.CONNECT)) {
-            throw new IllegalStateException("Cannot cancelPlayerConfigEvent event with cause CONNECT");
+            throw new IllegalStateException("Cannot cancel PlayerConfigEvent event if cause is CONNECT!");
         }
 
         this.cancelled = cancel;
     }
 
+    /**
+     * CONNECT is when player is connecting to voice chat.<p>
+     * RELOAD is when plugin config is reloading.<p>
+     * PLUGIN is when event fires, called by third-party plugins which using PlasmoVoice API.
+     */
     public enum Cause {
         CONNECT,
         RELOAD,
-        PLUGIN // called from API
+        PLUGIN
     }
 }

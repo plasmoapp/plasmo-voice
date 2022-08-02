@@ -13,7 +13,7 @@ import java.util.List;
 
 public class VoiceUnmute implements TabExecutor {
     @Override
-    public boolean onCommand(CommandSender sender, Command command, String s, String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, String[] args) {
         if (args.length == 0) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("help.unmute"));
             return true;

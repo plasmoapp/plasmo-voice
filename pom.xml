@@ -23,7 +23,7 @@
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
                 <configuration>
-                    <finalName>plasmovoice-server-${version}</finalName>
+                    <finalName>plasmovoice-server-${project.version}</finalName>
                 </configuration>
             </plugin>
             <plugin>

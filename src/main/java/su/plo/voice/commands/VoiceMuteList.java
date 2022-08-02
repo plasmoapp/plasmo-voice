@@ -14,7 +14,7 @@ import java.util.Date;
 public class VoiceMuteList implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (PlasmoVoice.getInstance().getMutedMap().size() == 0) {
+        if (PlasmoVoice.getInstance().getMutedMap().isEmpty()) {
             sender.sendMessage(PlasmoVoice.getInstance().getMessagePrefix("muted_list_empty"));
             return true;
         }

@@ -1,25 +1,29 @@
 package su.plo.voice.events;
 
+import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * Fires when the player has been muted
+ */
 public class PlayerVoiceMuteEvent extends Event {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
+    @Getter
     private final OfflinePlayer player;
-    private final Long to;
+    private final Long muteDuration;
 
     public PlayerVoiceMuteEvent(OfflinePlayer player, long duration) {
         this.player = player;
-        this.to = duration;
+        this.muteDuration = duration;
     }
 
-    public Long getTo() {
-        return to;
-    }
-
-    public OfflinePlayer getPlayer() {
-        return this.player;
+    /**
+     * @return 0L if mute is permanent, else return usual timestamp in milliseconds
+     */
+    public Long getMuteDuration() {
+        return muteDuration;
     }
 
     @Override

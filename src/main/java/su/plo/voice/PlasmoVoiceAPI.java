@@ -1,7 +1,7 @@
 package su.plo.voice;
 
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.ApiStatus;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.common.packets.Packet;
 import su.plo.voice.data.ServerMutedEntity;
 
@@ -44,8 +44,7 @@ public interface PlasmoVoiceAPI {
      * @param recipient Recipient
      * @return true if the packet was sent successfully, false if the packet was not sent
      */
-    @ApiStatus.Experimental
-    boolean sendVoicePacketToPlayer(Packet packet, Player recipient);
+    boolean sendVoicePacketToPlayer(@NotNull Packet packet, @NotNull Player recipient);
 
     /**
      * Check if the player is muted
@@ -69,9 +68,15 @@ public interface PlasmoVoiceAPI {
     boolean hasVoiceChat(UUID player);
 
     /**
+     * @param player Online player UUID
+     * @return true if the player is talking
+     */
+    boolean isTalking(UUID player);
+
+    /**
      * Returns ModLoader of the player
      *
-     * @param player UUID игрока онлайн
+     * @param player Online Player UUID
      * @return fabric/forge or null, if the player doesn't have the mod installed
      */
     @Nullable
@@ -80,12 +85,11 @@ public interface PlasmoVoiceAPI {
     /**
      * @return List of UUIDs of the players with the mod installed
      */
-    List<UUID> getPlayers();
+    List<UUID> getConnectedPlayersUUIDs();
 
     /**
      * Set player voice distances
      */
-    @ApiStatus.Experimental
     void setVoiceDistances(UUID playerId, List<Integer> distances, Integer defaultDistance, Integer fadeDivisor);
 
     enum DurationUnit {

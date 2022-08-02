@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.commands.*;
 import su.plo.voice.common.packets.Packet;
@@ -183,14 +184,12 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         }
 
         List<Integer> distances = config.getIntegerList("distances");
-        if (distances.size() == 0) {
+        if (distances.isEmpty()) {
             voiceLogger.warning("Distances cannot be empty");
             return;
         }
         int defaultDistance = config.getInt("default_distance");
-        if (defaultDistance == 0) {
-            defaultDistance = distances.get(0);
-        } else if (!distances.contains(defaultDistance)) {
+        if (defaultDistance == 0 || !distances.contains(defaultDistance)) {
             defaultDistance = distances.get(0);
         }
 
@@ -363,7 +362,8 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
     }
 
     @Override
-    public boolean sendVoicePacketToPlayer(Packet packet, Player recipient) {
+    public boolean sendVoicePacketToPlayer(@NotNull Packet packet, @NotNull Player recipient) {
+        if (!recipient.isOnline()) return false;
         if (!hasVoiceChat(recipient.getUniqueId())) return false;
 
         byte[] bytes;
@@ -418,6 +418,11 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
                 .anyMatch(entry -> entry.getKey().getUniqueId().equals(player));
     }
 
+    @Override
+    public boolean isTalking(UUID player) {
+        return SocketServerUDP.talking.containsKey(player);
+    }
+
     @Nullable
     @Override
     public String getPlayerModLoader(UUID player) {
@@ -431,7 +436,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
     }
 
     @Override
-    public List<UUID> getPlayers() {
+    public List<UUID> getConnectedPlayersUUIDs() {
         return SocketServerUDP.clients
                 .values()
                 .stream()
@@ -441,7 +446,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
 
     @Override
     public void setVoiceDistances(UUID playerId, List<Integer> distances, Integer defaultDistance, Integer fadeDivisor) {
-        if (distances.size() == 0) {
+        if (distances.isEmpty()) {
             throw new IllegalArgumentException("distances should contains at least 1 element");
         }
 

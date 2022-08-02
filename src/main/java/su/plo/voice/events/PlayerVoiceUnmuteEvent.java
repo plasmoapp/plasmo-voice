@@ -1,10 +1,12 @@
 package su.plo.voice.events;
 
 import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+/**
+ * Fires when the player has been unmuted
+ */
 public class PlayerVoiceUnmuteEvent extends Event {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
     private final OfflinePlayer player;
