@@ -96,7 +96,9 @@ public final class APIExample extends JavaPlugin implements Listener {
         event.setCancelled(true);
         for (Player player : api.getConnectedPlayers()) {
             if (!player.getEquipment().getItemInMainHand().getType().equals(Material.IRON_INGOT)) continue;
-            api.sendVoicePacketToPlayer(event.getPacket(), player);
+            VoiceServerPacket pa = (VoiceServerPacket) event.getPacket();
+            VoiceServerPacket packet = new VoiceServerPacket(pa.getData(), player.getUniqueId(), pa.getSequenceNumber(), pa.getDistance());
+            api.sendVoicePacketToPlayer(packet, player);
         }
     }
 }

@@ -50,7 +50,6 @@ public interface PlasmoVoiceAPI {
      * Check if the player is muted
      *
      * @param player Player UUID
-     * @return true if true, false if false 5Head
      */
     boolean isMuted(UUID player);
 
