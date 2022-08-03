@@ -197,7 +197,7 @@ public class SocketServerUDPQueue extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException ignored) {
-                break;
+                break; // TODO maybe use this.interrupt before break?
             }
         }
     }
@@ -207,11 +207,10 @@ public class SocketServerUDPQueue extends Thread {
         PingPacket keepAlive = new PingPacket();
         List<Player> connectionsToDrop = new ArrayList<>(SocketServerUDP.clients.size());
         for (SocketClientUDP connection : SocketServerUDP.clients.values()) {
-            if (SocketServerUDP.talking.containsKey(connection.getPlayer().getUniqueId())) {
-                if (timestamp - SocketServerUDP.talking.get(connection.getPlayer().getUniqueId()) > 250L) {
-                    SocketServerUDP.talking.remove(connection.getPlayer().getUniqueId());
-                    Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(connection.getPlayer()));
-                }
+            if (SocketServerUDP.talking.containsKey(connection.getPlayer().getUniqueId()) &&
+                    timestamp - SocketServerUDP.talking.get(connection.getPlayer().getUniqueId()) > 250L) {
+                SocketServerUDP.talking.remove(connection.getPlayer().getUniqueId());
+                Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(connection.getPlayer()));
             }
 
             if (timestamp - connection.getKeepAlive() >= 15000L) {
