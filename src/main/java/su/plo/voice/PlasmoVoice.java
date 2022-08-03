@@ -229,7 +229,8 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
                 fadeDivisor,
                 priorityFadeDivisor,
                 config.getBoolean("client_mod_required"),
-                clientModCheckTimeout
+                clientModCheckTimeout,
+                config.getBoolean("disable_logs")
         );
     }
 

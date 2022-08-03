@@ -103,7 +103,7 @@ public class SocketServerUDPQueue extends Thread {
                                     new ClientConnectedPacket(player.get().getUniqueId(), playerMuted), player.get().getUniqueId(), player.get()
                             );
 
-                            if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+                            if (!PlasmoVoice.getInstance().getVoiceConfig().isDisableLogs()) {
                                 PlasmoVoice.getVoiceLogger().info(String.format("New client: %s", player.get().getName()));
                             }
 
@@ -225,7 +225,7 @@ public class SocketServerUDPQueue extends Thread {
             }
         }
         for (Player player : connectionsToDrop) {
-            if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+            if (!PlasmoVoice.getInstance().getVoiceConfig().isDisableLogs()) {
                 PlasmoVoice.getVoiceLogger().info(player.getName() + " UDP timed out");
                 PlasmoVoice.getVoiceLogger().info(player.getName() + " sent reconnect packet");
             }

@@ -21,12 +21,14 @@ public class PlasmoVoiceConfig {
     private final boolean disableVoiceActivation;
     private final boolean clientModRequired;
     private final int clientModCheckTimeout;
+    private final boolean disableLogs;
 
     public PlasmoVoiceConfig(String ip, int port,
                              String proxyIp, int proxyPort,
                              int sampleRate, List<Integer> distances, int defaultDistance,
                              int maxPriorityDistance, boolean disableVoiceActivation,
-                             int fadeDivisor, int priorityFadeDivisor, boolean clientModRequired, int clientModCheckTimeout) {
+                             int fadeDivisor, int priorityFadeDivisor, boolean clientModRequired,
+                             int clientModCheckTimeout, boolean disableLogs) {
         this.ip = ip;
         this.port = port;
         this.proxyIp = proxyIp;
@@ -41,5 +43,6 @@ public class PlasmoVoiceConfig {
         this.disableVoiceActivation = disableVoiceActivation;
         this.clientModRequired = clientModRequired;
         this.clientModCheckTimeout = clientModCheckTimeout;
+        this.disableLogs = disableLogs;
     }
 }

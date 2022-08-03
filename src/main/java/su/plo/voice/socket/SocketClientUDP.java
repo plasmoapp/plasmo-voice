@@ -34,7 +34,7 @@ public class SocketClientUDP {
             Bukkit.getScheduler().runTask(PlasmoVoice.getInstance(), () ->
                     Bukkit.getPluginManager().callEvent(new PlayerVoiceDisconnectedEvent(player)));
 
-            if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
+            if (!PlasmoVoice.getInstance().getVoiceConfig().isDisableLogs()) {
                 PlasmoVoice.getVoiceLogger().info("Remove client UDP: " + this.player.getName());
             }
             SocketServerUDP.clients.remove(player);
