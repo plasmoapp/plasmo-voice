@@ -6,19 +6,23 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.socket.SocketServerUDP;
 
 public class PlaceholderPlasmoVoice extends PlaceholderExpansion {
+    private static final String identifier = "plasmovoice";
+    private static final String author = "Apehum";
+    private static final String version = "1.0.0";
+
     @Override
     public @NotNull String getIdentifier() {
-        return "plasmovoice";
+        return identifier;
     }
 
     @Override
     public @NotNull String getAuthor() {
-        return "Apehum";
+        return author;
     }
 
     @Override
     public @NotNull String getVersion() {
-        return "1.0.0";
+        return version;
     }
 
     @Override

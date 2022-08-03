@@ -104,6 +104,21 @@ public interface PlasmoVoiceAPI {
     List<UUID> getConnectedPlayersUUIDs();
 
     /**
+     * @return default distance at which players will hear each other
+     */
+    int getDefaultDistance();
+
+    /**
+     * @return maximum distance at which players will hear each other
+     */
+    int getMaxDistance();
+
+    /**
+     * @return maximum priority distance
+     */
+    short getMaxPriorityDistance();
+
+    /**
      * Set player voice distances
      */
     void setVoiceDistances(UUID playerId, List<Integer> distances, Integer defaultDistance, Integer fadeDivisor);

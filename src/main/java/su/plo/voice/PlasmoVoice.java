@@ -336,12 +336,12 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
             return false;
         }
 
-        ServerMutedEntity muted = PlasmoVoice.muted.get(player.getUniqueId());
-        if (muted == null) {
+        ServerMutedEntity serverMuted = PlasmoVoice.muted.get(player.getUniqueId());
+        if (serverMuted == null) {
             return false;
         }
 
-        PlasmoVoice.muted.remove(muted.getUuid());
+        muted.remove(serverMuted.getUuid());
 
         Player onlinePlayer = Bukkit.getPlayer(player.getUniqueId());
         if (onlinePlayer != null) {
@@ -418,9 +418,6 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         }
     }
 
-    /**
-     * @return list of muted players uuids
-     */
     @Override
     public List<UUID> getMutedPlayersUUIDs() {
         return Collections.list(muted.keys());
@@ -462,6 +459,21 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
                 .stream()
                 .map(client -> client.getPlayer().getUniqueId())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public int getDefaultDistance() {
+        return voiceConfig.getDefaultDistance();
+    }
+
+    @Override
+    public int getMaxDistance() {
+        return voiceConfig.getMaxDistance();
+    }
+
+    @Override
+    public short getMaxPriorityDistance() {
+        return voiceConfig.getMaxPriorityDistance();
     }
 
     @Override

@@ -12,6 +12,7 @@ import su.plo.voice.PlasmoVoiceAPI;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,44 +43,42 @@ public class VoiceMute implements TabExecutor {
         PlasmoVoiceAPI.DurationUnit durationUnit = null;
         long duration = 0;
         String reason = null;
-        if (args.length > 1) {
-            if (!args[1].startsWith("perm")) {
-                Matcher matcher = pattern.matcher(args[1]);
-                if (matcher.find()) {
-                    duration = Integer.parseInt(matcher.group(1));
-                    if (duration > 0) {
-                        String type = matcher.group(2);
-                        if (type == null) {
-                            type = "";
-                        }
+        if (args.length > 1 && !args[1].startsWith("perm")) {
+            Matcher matcher = pattern.matcher(args[1]);
+            if (matcher.find()) {
+                duration = Integer.parseInt(matcher.group(1));
+                if (duration > 0) {
+                    String type = matcher.group(2);
+                    if (type == null) {
+                        type = "";
+                    }
 
-                        switch (type) {
-                            case "m":
-                                durationUnit = PlasmoVoiceAPI.DurationUnit.MINUTES;
-                                break;
-                            case "h":
-                                durationUnit = PlasmoVoiceAPI.DurationUnit.HOURS;
-                                break;
-                            case "d":
-                                durationUnit = PlasmoVoiceAPI.DurationUnit.DAYS;
-                                break;
-                            case "w":
-                                durationUnit = PlasmoVoiceAPI.DurationUnit.WEEKS;
-                                break;
-                            case "u":
-                                duration = duration - System.currentTimeMillis() / 1000L;
-                                durationUnit = PlasmoVoiceAPI.DurationUnit.TIMESTAMP;
-                                break;
-                            default:
-                                durationUnit = PlasmoVoiceAPI.DurationUnit.SECONDS;
-                                break;
-                        }
-                    } else {
-                        durationUnit = PlasmoVoiceAPI.DurationUnit.SECONDS;
+                    switch (type) {
+                        case "m":
+                            durationUnit = PlasmoVoiceAPI.DurationUnit.MINUTES;
+                            break;
+                        case "h":
+                            durationUnit = PlasmoVoiceAPI.DurationUnit.HOURS;
+                            break;
+                        case "d":
+                            durationUnit = PlasmoVoiceAPI.DurationUnit.DAYS;
+                            break;
+                        case "w":
+                            durationUnit = PlasmoVoiceAPI.DurationUnit.WEEKS;
+                            break;
+                        case "u":
+                            duration = duration - System.currentTimeMillis() / 1000L;
+                            durationUnit = PlasmoVoiceAPI.DurationUnit.TIMESTAMP;
+                            break;
+                        default:
+                            durationUnit = PlasmoVoiceAPI.DurationUnit.SECONDS;
+                            break;
                     }
                 } else {
-                    reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+                    durationUnit = PlasmoVoiceAPI.DurationUnit.SECONDS;
                 }
+            } else {
+                reason = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
             }
         }
 
@@ -123,6 +122,6 @@ public class VoiceMute implements TabExecutor {
                 return durations;
             }
         }
-        return null;
+        return Collections.emptyList();
     }
 }
