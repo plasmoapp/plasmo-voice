@@ -357,6 +357,18 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
     }
 
     @Override
+    public @Nullable String getMuteReason(UUID player) {
+        if (!muted.containsKey(player)) throw new IllegalArgumentException("Player is not muted!");
+        return muted.get(player).getReason();
+    }
+
+    @Override
+    public long getTimestampOfMuteEnd(UUID player) {
+        if (!muted.containsKey(player)) throw new IllegalArgumentException("Player is not muted!");
+        return muted.get(player).getTo();
+    }
+
+    @Override
     public Set<Player> getConnectedPlayers() {
         return SocketServerUDP.clients.keySet();
     }

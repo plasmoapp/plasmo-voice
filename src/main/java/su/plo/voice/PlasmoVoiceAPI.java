@@ -33,6 +33,18 @@ public interface PlasmoVoiceAPI {
     boolean unmute(UUID player, boolean silent);
 
     /**
+     * @param player Player UUID
+     * @return null is no reason given
+     */
+    @Nullable String getMuteReason(UUID player);
+
+    /**
+     * @param player Player UUID
+     * @return returns timestamp when the mute is over
+     */
+    long getTimestampOfMuteEnd(UUID player);
+
+    /**
      * @return list of players with voice chat
      */
     Set<Player> getConnectedPlayers();
