@@ -54,6 +54,11 @@ public interface PlasmoVoiceAPI {
     boolean isMuted(UUID player);
 
     /**
+     * @return list of muted players uuids
+     */
+    List<UUID> getMutedPlayersUUIDs();
+
+    /**
      * Map of the muted players
      *
      * @return Map (key - Player UUID, value - ServerMutedEntity)

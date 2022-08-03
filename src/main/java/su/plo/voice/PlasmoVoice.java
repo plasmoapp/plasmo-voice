@@ -406,6 +406,14 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         }
     }
 
+    /**
+     * @return list of muted players uuids
+     */
+    @Override
+    public List<UUID> getMutedPlayersUUIDs() {
+        return Collections.list(muted.keys());
+    }
+
     @Override
     public Map<UUID, ServerMutedEntity> getMutedMap() {
         return muted;

@@ -20,7 +20,7 @@ public class PlayerVoiceMuteEvent extends Event {
     }
 
     /**
-     * @return 0L if mute is permanent, else return usual timestamp in milliseconds
+     * @return <= 0 if mute is permanent, else return usual timestamp in milliseconds
      */
     public Long getMuteDuration() {
         return muteDuration;
