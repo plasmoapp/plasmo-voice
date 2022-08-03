@@ -5,7 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
-import su.plo.voice.common.packets.Packet;
+import su.plo.voice.common.packets.udp.VoiceServerPacket;
 
 /**
  * Fires when player is speaking in voice chat
@@ -16,9 +16,9 @@ public class PlayerSpeakEvent extends Event implements Cancellable {
     @Getter
     private final Player player;
     @Getter
-    private final Packet packet;
+    private final VoiceServerPacket packet;
 
-    public PlayerSpeakEvent(Player player, Packet packet) {
+    public PlayerSpeakEvent(Player player, VoiceServerPacket packet) {
         super(true);
         this.player = player;
         this.packet = packet;
