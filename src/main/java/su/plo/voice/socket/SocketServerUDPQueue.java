@@ -112,11 +112,7 @@ public class SocketServerUDPQueue extends Thread {
                                     Bukkit.getPluginManager().callEvent(new PlayerVoiceConnectedEvent(player.get())));
                         }
 
-                        try {
-                            SocketServerUDP.sendTo(PacketUDP.write(new AuthPacketAck()), sock);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        SocketServerUDP.sendTo(PacketUDP.write(new AuthPacketAck()), sock);
                     }
                 }
 
