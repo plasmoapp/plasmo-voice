@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpHandler;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
+@ToString
 public class CustomPacket implements Packet<PacketUdpHandler> {
 
     @Getter

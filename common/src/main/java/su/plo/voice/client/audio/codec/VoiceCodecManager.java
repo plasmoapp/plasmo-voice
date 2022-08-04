@@ -13,7 +13,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class VoiceCodecManager implements CodecManager {
+public final class VoiceCodecManager implements CodecManager {
 
     private final Map<String, CodecSupplier<?, ?>> codecs = Maps.newHashMap();
 

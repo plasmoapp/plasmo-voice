@@ -1,18 +1,26 @@
 package su.plo.voice.client;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import su.plo.voice.VoiceBase;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
+import su.plo.voice.api.client.connection.ServerInfo;
+import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.VoiceClientInitializedEvent;
 import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
+import su.plo.voice.client.connection.VoiceUdpClientManager;
 
-public abstract class VoiceClientBase extends VoiceBase implements PlasmoVoiceClient {
+import java.util.Optional;
+
+public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
+
+    public static final String CHANNEL_STRING = "plasmo:voice";
 
     protected final Logger logger = LogManager.getLogger("PlasmoVoiceClient");
 
@@ -20,6 +28,11 @@ public abstract class VoiceClientBase extends VoiceBase implements PlasmoVoiceCl
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
     @Getter
     private final DeviceManager deviceManager = new VoiceDeviceManager();
+    @Getter
+    private final UdpClientManager udpClientManager = new VoiceUdpClientManager();
+
+    @Setter
+    private ServerInfo currentServerInfo;
 
     protected void onInitialize() {
 
@@ -36,4 +49,11 @@ public abstract class VoiceClientBase extends VoiceBase implements PlasmoVoiceCl
     protected Logger getLogger() {
         return logger;
     }
+
+    @Override
+    public Optional<ServerInfo> getCurrentServerInfo() {
+        return Optional.ofNullable(currentServerInfo);
+    }
+
+    public abstract String getServerIp();
 }

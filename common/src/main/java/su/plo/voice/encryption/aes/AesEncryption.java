@@ -8,7 +8,7 @@ import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 
-public class AesEncryption implements Encryption {
+public final class AesEncryption implements Encryption {
 
     private static final String CIPHER = "AES/CBC/PKCS5Padding";
 

@@ -6,15 +6,23 @@ import com.google.common.io.ByteStreams;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.PacketUtil;
+import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
+import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 
 import java.io.IOException;
+import java.util.Optional;
 import java.util.UUID;
 
 public class PacketUdpCodec {
 
     // magic number is used to filter packets received not from PV
-    private static int MAGIC_NUMBER = 0x4e9004e9;
+    private static final int MAGIC_NUMBER = 0x4e9004e9;
     private static final PacketRegistry PACKETS = new PacketRegistry();
+
+    static {
+        PACKETS.register(0x1, PingPacket.class);
+        PACKETS.register(0x100, CustomPacket.class);
+    }
 
     public static byte[] encode(Packet<?> packet, UUID secret) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
@@ -36,7 +44,7 @@ public class PacketUdpCodec {
         return out.toByteArray();
     }
 
-    public static PacketUdp decode(ByteArrayDataInput in) throws IOException {
+    public static Optional<PacketUdp> decode(ByteArrayDataInput in) throws IOException {
         if (in.readInt() != MAGIC_NUMBER) return null; // bad packet
 
         Packet<?> packet = PACKETS.byType(in.readByte());
@@ -45,10 +53,10 @@ public class PacketUdpCodec {
             long timestamp = in.readLong();
             packet.read(in);
 
-            return new PacketUdp(secret, timestamp, packet);
+            return Optional.of(new PacketUdp(secret, timestamp, packet));
         }
 
-        return null;
+        return Optional.empty();
     }
 
     private PacketUdpCodec() {

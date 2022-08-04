@@ -2,20 +2,26 @@ package su.plo.voice.server.connection;
 
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.connection.ConnectionManager;
+import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.UdpConnectEvent;
 import su.plo.voice.api.server.event.connection.UdpConnectedEvent;
 import su.plo.voice.api.server.event.connection.UdpDisconnectEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketUdpHandler;
 
+import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Predicate;
 
 @AllArgsConstructor
-public class VoiceConnectionManager implements ConnectionManager {
+public final class VoiceUdpConnectionManager implements UdpServerConnectionManager {
 
     private final PlasmoVoiceServer server;
 
@@ -60,8 +66,8 @@ public class VoiceConnectionManager implements ConnectionManager {
 
     @Override
     public boolean removeConnection(UdpConnection connection) {
-        UdpConnection bySecret = connectionBySecret.get(connection.getSecret());
-        UdpConnection byPlayer = connectionByPlayerId.get(connection.getPlayer().getUUID());
+        UdpConnection bySecret = connectionBySecret.remove(connection.getSecret());
+        UdpConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getUUID());
 
         if (bySecret != null) disconnect(bySecret);
         if (byPlayer != null && !byPlayer.equals(bySecret)) disconnect(byPlayer);
@@ -95,6 +101,11 @@ public class VoiceConnectionManager implements ConnectionManager {
         return Optional.ofNullable(connectionByPlayerId.get(playerUUID));
     }
 
+    @Override
+    public Collection<UdpConnection> getConnections() {
+        return connectionByPlayerId.values();
+    }
+
     private void disconnect(UdpConnection connection) {
         connection.disconnect();
 
@@ -102,5 +113,13 @@ public class VoiceConnectionManager implements ConnectionManager {
         playerIdBySecret.remove(connection.getSecret());
 
         server.getEventBus().call(new UdpDisconnectEvent(connection));
+    }
+
+    @Override
+    public void broadcast(@NotNull Packet<ClientPacketUdpHandler> packet, @Nullable Predicate<VoicePlayer> filter) {
+        for (UdpConnection connection : getConnections()) {
+            if (filter == null || filter.test(connection.getPlayer()))
+                connection.sendPacket(packet);
+        }
     }
 }

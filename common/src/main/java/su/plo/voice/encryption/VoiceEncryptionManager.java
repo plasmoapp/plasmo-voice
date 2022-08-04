@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class VoiceEncryptionManager implements EncryptionManager {
+public final class VoiceEncryptionManager implements EncryptionManager {
 
     private final Map<String, EncryptionSupplier> algorithms = Maps.newHashMap();
 

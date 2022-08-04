@@ -1,5 +1,6 @@
 package su.plo.voice.api.server.player;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -17,4 +18,9 @@ public interface PlayerManager {
      * Gets the {@link VoicePlayer} by server player
      */
     Optional<VoicePlayer> getPlayer(Object player);
+
+    /**
+     * Gets collection of the players
+     */
+    Collection<VoicePlayer> getPlayers();
 }

@@ -53,7 +53,7 @@ public final class AlOutputDevice extends AudioDeviceBase implements AlAudioDevi
             Thread thread = new Thread(
                     null,
                     r,
-                    "al-output-device (" + name + ")",
+                    "Al Output Device " + name,
                     0
             );
             if (thread.isDaemon()) thread.setDaemon(false);

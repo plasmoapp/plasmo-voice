@@ -8,7 +8,7 @@ import su.plo.voice.api.util.Params;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class OpusCodecSupplier implements CodecSupplier<OpusEncoderBase, OpusDecoderBase> {
+public final class OpusCodecSupplier implements CodecSupplier<OpusEncoderBase, OpusDecoderBase> {
 
     private static final Logger LOGGER = LogManager.getLogger(OpusCodecSupplier.class);
 

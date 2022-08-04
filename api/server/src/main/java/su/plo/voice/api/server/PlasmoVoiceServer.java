@@ -2,7 +2,8 @@ package su.plo.voice.api.server;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
-import su.plo.voice.api.server.connection.ConnectionManager;
+import su.plo.voice.api.server.connection.TcpServerConnectionManager;
+import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.socket.UdpServer;
 
@@ -23,13 +24,22 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
     @NotNull PlayerManager getPlayerManager();
 
     /**
-     * Gets the {@link PlayerManager}
+     * Gets the {@link UdpServerConnectionManager}
      *
-     * This manager can be used to manage udp connections
+     * This manager can be used to broadcast to tcp connections
      *
      * @return the connection manager
      */
-    @NotNull ConnectionManager getConnectionManager();
+    @NotNull TcpServerConnectionManager getTcpConnectionManager();
+
+    /**
+     * Gets the {@link UdpServerConnectionManager}
+     *
+     * This manager can be used to broadcast or manage udp connections
+     *
+     * @return the connection manager
+     */
+    @NotNull UdpServerConnectionManager getUdpConnectionManager();
 
     /**
      * Get the {@link UdpServer}

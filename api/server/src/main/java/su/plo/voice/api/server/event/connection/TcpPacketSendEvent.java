@@ -5,22 +5,23 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventCancellable;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.proto.packets.tcp.clientbound.ConnectionPacket;
+import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the server is about to send {@link ConnectionPacket} to the player
+ * This event is fired when the server is about to send {@link su.plo.voice.proto.packets.Packet} to the player
  */
-public final class PlayerConnectEvent extends PlayerEvent implements EventCancellable {
+public final class TcpPacketSendEvent extends PlayerEvent implements EventCancellable {
 
     @Getter
     @Setter
-    private ConnectionPacket packet;
+    private Packet<ClientPacketTcpHandler> packet;
 
     private boolean cancel;
 
-    public PlayerConnectEvent(@NotNull VoicePlayer player, @NotNull ConnectionPacket packet) {
+    public TcpPacketSendEvent(@NotNull VoicePlayer player, @NotNull Packet<ClientPacketTcpHandler> packet) {
         super(player);
 
         this.packet = checkNotNull(packet, "packet cannot be null");

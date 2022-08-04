@@ -5,7 +5,7 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionSupplier;
 import su.plo.voice.api.util.Params;
 
-public class AesEncryptionSupplier implements EncryptionSupplier {
+public final class AesEncryptionSupplier implements EncryptionSupplier {
     @Override
     public @NotNull Encryption create(@NotNull Params params) {
         byte[] key = params.get("key");

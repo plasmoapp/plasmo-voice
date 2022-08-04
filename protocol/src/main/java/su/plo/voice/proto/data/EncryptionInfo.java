@@ -5,12 +5,14 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import su.plo.voice.proto.packets.PacketSerializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public final class EncryptionInfo implements PacketSerializable {
 
     @Getter

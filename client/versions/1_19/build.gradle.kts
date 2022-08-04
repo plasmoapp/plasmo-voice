@@ -53,6 +53,7 @@ subprojects {
         implementation(project(":server:common"))
 
         implementation(project(":common"))
+        implementation(project(":protocol"))
     }
 }
 

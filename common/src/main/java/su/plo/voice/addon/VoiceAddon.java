@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class VoiceAddon implements AddonContainer {
+public final class VoiceAddon implements AddonContainer {
 
     @Getter
     private final String id;

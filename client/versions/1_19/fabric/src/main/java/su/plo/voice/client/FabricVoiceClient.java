@@ -5,6 +5,7 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import su.plo.voice.api.client.audio.source.AlSource;
 import su.plo.voice.api.client.audio.source.SourceGroup;
 import su.plo.voice.api.pos.Pos3d;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.connection.FabricClientPacketTcpHandler;
 
 import javax.sound.sampled.AudioFormat;
 import java.io.File;
@@ -25,6 +27,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Environment(EnvType.CLIENT)
 public final class FabricVoiceClient extends VoiceClientMod implements ClientModInitializer {
 
+    private final FabricClientPacketTcpHandler handler = new FabricClientPacketTcpHandler(this);
+
     @Override
     public void onInitializeClient() {
         super.onInitialize();
@@ -32,9 +36,9 @@ public final class FabricVoiceClient extends VoiceClientMod implements ClientMod
         // todo: должно ли это быть тут?
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> super.onShutdown());
 
-        ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraft) -> {
-            System.out.println("joined the world");
+        ClientPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
 
+        ClientPlayConnectionEvents.JOIN.register((handler, sender, minecraft) -> {
             int sampleRate = 48_000;
             int bufferSize = (sampleRate / 1_000) * 2 * 20;
             var format = new AudioFormat((float) sampleRate, 16, 1, true, false);
@@ -68,7 +72,7 @@ public final class FabricVoiceClient extends VoiceClientMod implements ClientMod
 
                     sourceGroup = devices.createSourceGroup(DeviceType.OUTPUT);
                     sourceGroup.add(
-                            output.createSource(Params.builder().set("num_buffers", 16).build())
+                            output.createSource(Params.EMPTY)
                     );
                     ((AlAudioDevice) output).runInContext(() -> {
                         sourceGroup.getSources().forEach(source -> {

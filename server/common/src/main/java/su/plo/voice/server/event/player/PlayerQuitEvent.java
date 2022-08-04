@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * This event is fires once the player quit the server
  */
-public class PlayerQuitEvent implements Event {
+public final class PlayerQuitEvent implements Event {
 
     @Getter
     private final Object player;

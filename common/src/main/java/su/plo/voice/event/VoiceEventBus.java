@@ -15,7 +15,7 @@ import java.util.*;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
-public class VoiceEventBus implements EventBus {
+public final class VoiceEventBus implements EventBus {
 
     private static final Logger LOGGER = LogManager.getLogger(VoiceAddonManager.class);
 

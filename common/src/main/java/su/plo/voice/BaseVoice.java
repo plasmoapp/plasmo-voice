@@ -16,8 +16,9 @@ import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;
 
 import java.io.File;
+import java.io.InputStream;
 
-public abstract class VoiceBase implements PlasmoVoice {
+public abstract class BaseVoice implements PlasmoVoice {
 
     protected final AddonManager addons = new VoiceAddonManager(
             ImmutableList.of(modsFolder(), addonsFolder())
@@ -26,7 +27,7 @@ public abstract class VoiceBase implements PlasmoVoice {
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
     protected final CodecManager codecs = new VoiceCodecManager();
 
-    protected VoiceBase() {
+    protected BaseVoice() {
         encryption.register(new AesEncryptionSupplier());
 
         codecs.register(new OpusCodecSupplier());
@@ -63,4 +64,6 @@ public abstract class VoiceBase implements PlasmoVoice {
     protected abstract File modsFolder();
 
     protected abstract File addonsFolder();
+
+    protected abstract InputStream getResource(String name);
 }

@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
@@ -17,7 +18,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
-public class ConnectionPacket implements Packet<ClientPacketHandler> {
+@ToString
+public final class ConnectionPacket implements Packet<ClientPacketTcpHandler> {
 
     @Getter
     private UUID secret;
@@ -55,7 +57,7 @@ public class ConnectionPacket implements Packet<ClientPacketHandler> {
     }
 
     @Override
-    public void handle(ClientPacketHandler handler) {
-
+    public void handle(ClientPacketTcpHandler handler) {
+        handler.handle(this);
     }
 }

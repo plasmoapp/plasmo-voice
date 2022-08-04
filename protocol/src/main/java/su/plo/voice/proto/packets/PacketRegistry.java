@@ -27,6 +27,9 @@ public class PacketRegistry {
     }
 
     public int getType(Packet<?> packet) {
-        return packetIdByType.get(packet.getClass());
+        Integer id = packetIdByType.get(packet.getClass());
+        if (id == null) return -1;
+
+        return id;
     }
 }

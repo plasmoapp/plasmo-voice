@@ -11,7 +11,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * This event is fires when the player join the server
  */
-public class PlayerJoinEvent implements Event {
+public final class PlayerJoinEvent implements Event {
 
     @Getter
     private final Object player;

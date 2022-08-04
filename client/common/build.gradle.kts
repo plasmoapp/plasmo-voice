@@ -7,4 +7,7 @@ dependencies {
     implementation(project(":api:client"))
 
     implementation(project(":common"))
+    implementation(project(":protocol"))
+
+    implementation(rootProject.libs.netty)
 }
