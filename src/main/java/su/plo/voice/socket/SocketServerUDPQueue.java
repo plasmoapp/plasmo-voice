@@ -197,7 +197,7 @@ public class SocketServerUDPQueue extends Thread {
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (InterruptedException ignored) {
-                break; // TODO maybe use this.interrupt before break?
+                break;
             }
         }
     }

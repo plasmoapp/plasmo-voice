@@ -163,8 +163,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
             ver += Integer.parseInt(version[0]) * 1000;
             ver += Integer.parseInt(version[1]) * 100;
             ver += Integer.parseInt(version[2]);
-        } catch (NumberFormatException ignored) {
-        }
+        } catch (NumberFormatException ignored) {}
 
         return ver;
     }
