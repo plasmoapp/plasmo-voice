@@ -1,5 +1,6 @@
 package su.plo.voice.events;
 
+import lombok.Getter;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
@@ -9,14 +10,11 @@ import org.bukkit.event.HandlerList;
  */
 public class PlayerVoiceUnmuteEvent extends Event {
     private static final HandlerList HANDLERS_LIST = new HandlerList();
+    @Getter
     private final OfflinePlayer player;
 
     public PlayerVoiceUnmuteEvent(OfflinePlayer player) {
         this.player = player;
-    }
-
-    public OfflinePlayer getPlayer() {
-        return this.player;
     }
 
     @Override
