@@ -15,7 +15,7 @@ import java.util.UUID;
  * Interface for working with PlasmoVoiceAPI.<br>
  * All methods have javadocs to work with them.<br>
  *<br>
- * Contributions:<br>
+ * Contributors:<br>
  * 1) Apehum (https://github.com/Apehum) - PlasmoVoice creator.<br>
  * 2) bottleofench (https://github.com/bottleofench) - fixed and expanded the API.<br>
  */
