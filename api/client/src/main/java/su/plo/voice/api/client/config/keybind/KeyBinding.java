@@ -15,6 +15,8 @@ public interface KeyBinding {
 
     Collection<Key> getKeys();
 
+    boolean isAnyContext();
+
     boolean isPressed();
 
     void resetState();

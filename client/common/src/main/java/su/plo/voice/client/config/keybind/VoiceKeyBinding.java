@@ -21,12 +21,15 @@ public final class VoiceKeyBinding implements KeyBinding {
     @Getter
     private final String name;
     private final Set<Key> keys = new CopyOnWriteArraySet<>();
+    @Getter
+    private final boolean anyContext;
 
-    public VoiceKeyBinding(@NotNull KeyBindings keyBindings, @NotNull String name, @NotNull List<Key> keys) {
+    public VoiceKeyBinding(@NotNull KeyBindings keyBindings, @NotNull String name, @NotNull List<Key> keys, boolean anyContext) {
         this.keyBindings = checkNotNull(keyBindings, "keyBindings");
         this.name = checkNotNull(name, "name");
         checkNotNull(keys, "keys");
         this.keys.addAll(keys);
+        this.anyContext = anyContext;
     }
 
     @Getter

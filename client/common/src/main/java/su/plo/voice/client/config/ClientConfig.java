@@ -59,7 +59,6 @@ public final class ClientConfig {
                 try {
                     Map<String, Object> map = (Map<String, Object>) object;
                     map.forEach((key, value) -> setVolume(key, (double) value));
-                    System.out.println(map);
                 } catch (ClassCastException ignored) {
                 }
             }
