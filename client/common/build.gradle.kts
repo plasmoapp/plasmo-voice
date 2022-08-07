@@ -9,5 +9,6 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":protocol"))
 
+    implementation(rootProject.libs.config)
     implementation(rootProject.libs.netty)
 }

@@ -4,6 +4,7 @@ import io.netty.channel.local.LocalAddress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
+import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
@@ -17,6 +18,8 @@ import java.net.SocketAddress;
 public abstract class VoiceClientMod extends BaseVoiceClient {
 
     public static final ResourceLocation CHANNEL = new ResourceLocation(CHANNEL_STRING);
+    // static instance is used for access from mixins
+    public static PlasmoVoiceClient INSTANCE;
 
     protected final String modId = "plasmovoice";
     protected final Minecraft minecraft = Minecraft.getInstance();
@@ -30,6 +33,8 @@ public abstract class VoiceClientMod extends BaseVoiceClient {
 
         // JavaX input
         factoryManager.registerDeviceFactory(new JavaxInputDeviceFactory(this));
+
+        INSTANCE = this;
     }
 
     @Override

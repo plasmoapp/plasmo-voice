@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
+import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 
@@ -47,4 +48,11 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
      * @return {@link ServerInfo}
      */
     Optional<ServerInfo> getCurrentServerInfo();
+
+    /**
+     * Gets the {@link KeyBindings}
+     *
+     * @return {@link KeyBindings}
+     */
+    @NotNull KeyBindings getKeyBindings();
 }
