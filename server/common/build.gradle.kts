@@ -10,7 +10,7 @@ dependencies {
 
     implementation(project(":protocol"))
 
-    implementation(rootProject.libs.nightconfig)
+    implementation(rootProject.libs.config)
 
     compileOnly(rootProject.libs.netty)
 }

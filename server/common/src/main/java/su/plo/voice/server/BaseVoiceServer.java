@@ -1,12 +1,11 @@
 package su.plo.voice.server;
 
-import com.electronwill.nightconfig.core.file.CommentedFileConfig;
-import com.electronwill.nightconfig.core.file.CommentedFileConfigBuilder;
-import com.electronwill.nightconfig.core.file.FileNotFoundAction;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.provider.ConfigurationProvider;
+import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
@@ -17,7 +16,6 @@ import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.socket.UdpServer;
-import su.plo.voice.config.ConfigLoader;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
@@ -25,12 +23,13 @@ import su.plo.voice.server.socket.NettyUdpServer;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.Optional;
 
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
     public static final String CHANNEL_STRING = "plasmo:voice";
+
+    protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     protected final Logger logger = LogManager.getLogger("PlasmoVoiceServer");
     protected final TcpServerConnectionManager tcpConnections = new VoiceTcpConnectionManager(this);
@@ -45,15 +44,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected void onInitialize() {
         eventBus.call(new VoiceServerInitializeEvent(this));
 
-        ConfigLoader loader = new ConfigLoader(
-                new File(configFolder(), "config.toml"),
-                getResource("server.toml")
-        );
         try {
-            this.config = loader.getConfig(ServerConfig.class);
+            this.config = toml.load(ServerConfig.class, new File(configFolder(), "config.toml"), true);
             System.out.println(config);
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to load config:", e);
+            throw new IllegalStateException("Failed to load config", e);
         }
 
         UdpServer server = new NettyUdpServer(
@@ -116,13 +111,4 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     public abstract int getMinecraftServerPort();
-
-    private void reloadConfig() throws IOException {
-        try (InputStream is = getResource("config.toml")) {
-            CommentedFileConfigBuilder builder = CommentedFileConfig.builder(
-                    new File(configFolder(), "config.toml")
-            );
-            builder.onFileNotFound(FileNotFoundAction.copyData(is));
-        }
-    }
 }
