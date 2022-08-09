@@ -33,6 +33,7 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
     private final @Nullable String name;
 
     private AudioFormat format;
+    private int bufferSize;
     private long devicePointer;
     private boolean started = false;
 
@@ -58,6 +59,7 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
         try {
             this.devicePointer = openDevice(name, format);
             this.format = format;
+            this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
         } catch (DeviceException e) {
             future.completeExceptionally(e);
             return future;
@@ -133,15 +135,20 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
     }
 
     @Override
-    public byte[] read(int frameSize) {
-        if ((frameSize / 2) > available()) return null;
-        short[] shorts = new short[frameSize / 2];
+    public byte[] read(int bufferSize) {
+        if (!isOpen() || bufferSize > available()) return null;
+        short[] shorts = new short[bufferSize];
         ALC11.alcCaptureSamples(devicePointer, shorts, shorts.length);
         AlUtil.checkErrors("Capture samples");
 
         shorts = processFilters(shorts);
 
         return AudioUtil.shortsToBytes(shorts);
+    }
+
+    @Override
+    public byte[] read() {
+        return read(bufferSize);
     }
 
     @Override
@@ -153,9 +160,9 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
         long l;
         if (deviceName == null) {
             // default device
-            l = ALC11.alcCaptureOpenDevice((ByteBuffer) null, (int) format.getSampleRate(), AL11.AL_FORMAT_MONO16, format.getFrameSize());
+            l = ALC11.alcCaptureOpenDevice((ByteBuffer) null, (int) format.getSampleRate(), AL11.AL_FORMAT_MONO16, bufferSize);
         } else {
-            l = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), AL11.AL_FORMAT_MONO16, format.getFrameSize());
+            l = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), AL11.AL_FORMAT_MONO16, bufferSize);
         }
 
         if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {

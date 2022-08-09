@@ -29,6 +29,7 @@ public class JavaxInputDevice extends AudioDeviceBase implements InputDevice {
     private final @Nullable String name;
 
     private AudioFormat format;
+    private int bufferSize;
     private TargetDataLine device;
 
     public JavaxInputDevice(PlasmoVoiceClient client, @Nullable String name) {
@@ -54,6 +55,7 @@ public class JavaxInputDevice extends AudioDeviceBase implements InputDevice {
             device.open(format);
 
             this.format = format;
+            this.bufferSize = ((int) format.getSampleRate() / 1_000) * 2 * 20;
         } catch (DeviceException e) {
             future.completeExceptionally(e);
             return future;
@@ -118,11 +120,11 @@ public class JavaxInputDevice extends AudioDeviceBase implements InputDevice {
     }
 
     @Override
-    public byte[] read(int frameSize) {
+    public byte[] read(int bufferSize) {
         if (!isOpen()) throw new IllegalStateException("Device is not open");
 
-        byte[] samples = new byte[frameSize];
-        int read = device.read(samples, 0, frameSize);
+        byte[] samples = new byte[bufferSize];
+        int read = device.read(samples, 0, bufferSize);
         if (read == -1) {
             return null;
         }
@@ -132,6 +134,11 @@ public class JavaxInputDevice extends AudioDeviceBase implements InputDevice {
         samples = AudioUtil.shortsToBytes(shorts);
 
         return samples;
+    }
+
+    @Override
+    public byte[] read() {
+        return read(bufferSize);
     }
 
     @Override
