@@ -65,7 +65,7 @@ public interface AudioDevice {
     /**
      * Gets the device audio format
      *
-     * @return the audio format if audio device is open
+     * @return the audio format with which audio device was open
      */
     Optional<AudioFormat> getFormat();
 

@@ -34,6 +34,9 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> microphoneDisabled = new ConfigEntry<>(false);
 
         @ConfigField
+        private DoubleConfigEntry voiceActivationThreshold = new DoubleConfigEntry(-30D, -60D, 0);
+
+        @ConfigField
         private CategoryVolumes volumes = new CategoryVolumes();
 
         @Data

@@ -51,6 +51,54 @@ public final class AudioUtil {
         return new byte[]{(byte) (s & 0xFF), (byte) ((s >> 8) & 0xFF)};
     }
 
+    /**
+     * Checks if any sample audio level greater than the min audio level
+     *
+     * @return return true if any sample audio level
+     * greater than the min audio level
+     */
+    public static boolean containsMinAudioLevel(byte[] samples, double minAudioLevel) {
+        for (int i = 0; i < samples.length; i += 100) {
+            double level = calculateAudioLevel(samples, i, Math.min(i + 100, samples.length));
+
+            if (level >= minAudioLevel) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Calculates the audio level
+     *
+     * @param samples the samples
+     * @param offset offset from the start of the samples array
+     * @param length count of samples to process the calculation
+     *
+     * @return the audio level
+     */
+    public static double calculateAudioLevel(byte[] samples, int offset, int length) {
+        double rms = 0D; // root mean square (RMS) amplitude
+
+        for (int i = offset; i < length; i += 2) {
+            double sample = (double) bytesToShort(samples[i], samples[i + 1]) / Short.MAX_VALUE;
+            rms += sample * sample;
+        }
+
+        int sampleCount = length / 2;
+
+        rms = (sampleCount == 0) ? 0 : Math.sqrt(rms / sampleCount);
+
+        double db;
+
+        if (rms > 0D) {
+            db = Math.min(Math.max(20D * Math.log10(rms), -127D), 0D);
+        } else {
+            db = -127D;
+        }
+
+        return db;
+    }
+
     private AudioUtil() {
     }
 }

@@ -19,11 +19,19 @@ public interface InputDevice extends AudioDevice {
     int available();
 
     /**
-     * Read samples with the capacity of frameSize
-     * @param frameSize the frame size
-     * @return samples or null if frameSize > available samples
+     * Read samples with the capacity of bufferSize
+     *
+     * @param bufferSize the frame size
+     * @return samples or null if bufferSize > available samples
      */
-    byte[] read(int frameSize);
+    byte[] read(int bufferSize);
+
+    /**
+     * Read samples with the capacity of bufferSize calculated from AudioFormat
+     *
+     * @return samples or null if bufferSize > available samples
+     */
+    byte[] read();
 
     @Override
     default DeviceType getType() {
