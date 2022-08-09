@@ -3,13 +3,22 @@ package su.plo.voice.proto.packets.udp.serverbound;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.io.IOException;
 
+@NoArgsConstructor
+@ToString
 public final class PlayerAudioPacket extends BaseAudioPacket {
 
     @Getter
     private short distance;
+
+    public PlayerAudioPacket(long sequenceNumber, byte[] data, short distance) {
+        super(sequenceNumber, data);
+        this.distance = distance;
+    }
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
