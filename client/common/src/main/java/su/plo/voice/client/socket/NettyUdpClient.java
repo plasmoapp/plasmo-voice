@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.connection.ServerInfoUpdateEvent;
+import su.plo.voice.api.client.event.connection.UdpClientPacketSendEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
@@ -113,10 +114,11 @@ public final class NettyUdpClient implements UdpClient {
 
         logger.info("send {} to {}", packet, channel.remoteAddress());
 
-        channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()));
+        UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
+        voiceClient.getEventBus().call(event);
+        if (event.isCancelled()) return;
 
-//        UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
-//        eventBus.call(event);
+        channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()));
     }
 
     @Override
