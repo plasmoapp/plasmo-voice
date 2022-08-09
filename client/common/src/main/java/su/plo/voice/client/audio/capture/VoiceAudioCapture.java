@@ -22,7 +22,7 @@ public class VoiceAudioCapture implements AudioCapture {
     private final ClientConfig config;
 
     @Setter
-    private volatile AudioEncoder<?, ?> encoder;
+    private volatile AudioEncoder<byte[], short[]> encoder;
     @Setter
     private volatile Encryption encryption;
     @Setter
@@ -36,7 +36,7 @@ public class VoiceAudioCapture implements AudioCapture {
     public VoiceAudioCapture(@NotNull PlasmoVoiceClient voiceClient,
                              @NotNull ClientConfig config,
                              @NotNull EventBus eventBus,
-                             @Nullable AudioEncoder<?, ?> encoder,
+                             @Nullable AudioEncoder<byte[], short[]> encoder,
                              @Nullable Encryption encryption,
                              @Nullable InputDevice device,
                              @NotNull Activation activation) {
@@ -93,7 +93,7 @@ public class VoiceAudioCapture implements AudioCapture {
                     continue;
                 }
 
-                byte[] samples = device.read();
+                short[] samples = device.read();
                 if (samples == null) {
                     Thread.sleep(5L);
                     continue;
@@ -116,7 +116,7 @@ public class VoiceAudioCapture implements AudioCapture {
         }
     }
 
-    private void sendVoicePacket(byte[] samples) {
+    private void sendVoicePacket(short[] samples) {
     }
 
     private void sendVoiceEndPacket() {

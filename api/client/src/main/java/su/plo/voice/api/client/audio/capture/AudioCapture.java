@@ -17,7 +17,7 @@ public interface AudioCapture {
 
     Optional<AudioEncoder<?, ?>> getEncoder();
 
-    void setEncoder(@Nullable AudioEncoder<?, ?> encoder);
+    void setEncoder(@Nullable AudioEncoder<byte[], short[]> encoder);
 
     Optional<Encryption> getEncryption();
 
@@ -36,7 +36,7 @@ public interface AudioCapture {
     void stop();
 
     interface Activation {
-        @NotNull Result process(byte[] samples);
+        @NotNull Result process(short[] samples);
 
         @NotNull String getType();
 

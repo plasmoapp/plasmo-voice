@@ -18,9 +18,9 @@ public class AudioCaptureEvent extends EventCancellableBase {
 
     @Getter
     @Setter
-    private byte[] samples;
+    private short[] samples;
 
-    public AudioCaptureEvent(@NotNull AudioCapture capture, byte[] samples) {
+    public AudioCaptureEvent(@NotNull AudioCapture capture, short[] samples) {
         this.capture = checkNotNull(capture, "capture");
         this.samples = checkNotNull(samples, "samples");
     }

@@ -24,7 +24,7 @@ public final class VoiceActivation extends BaseActivation {
     }
 
     @Override
-    public @NotNull Result process(byte[] samples) {
+    public @NotNull Result process(short[] samples) {
         if (isDisabled() || !voiceClient.getCurrentServerInfo().isPresent())
             return Result.NOT_ACTIVATED;
 

@@ -68,6 +68,22 @@ public final class AudioUtil {
     }
 
     /**
+     * Checks if any sample audio level greater than the min audio level
+     *
+     * @return return true if any sample audio level
+     * greater than the min audio level
+     */
+    public static boolean containsMinAudioLevel(short[] samples, double minAudioLevel) {
+        for (int i = 0; i < samples.length; i += 50) {
+            double level = calculateAudioLevel(samples, i, Math.min(i + 50, samples.length));
+
+            if (level >= minAudioLevel) return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Calculates the audio level
      *
      * @param samples the samples
@@ -84,8 +100,38 @@ public final class AudioUtil {
             rms += sample * sample;
         }
 
-        int sampleCount = length / 2;
+        return calculateAudioLevelFromRMS(rms, samples.length / 2);
+    }
 
+    /**
+     * Calculates the audio level
+     *
+     * @param samples the samples
+     * @param offset offset from the start of the samples array
+     * @param length count of samples to process the calculation
+     *
+     * @return the audio level
+     */
+    public static double calculateAudioLevel(short[] samples, int offset, int length) {
+        double rms = 0D; // root mean square (RMS) amplitude
+
+        for (int i = offset; i < length; i++) {
+            double sample = (double) samples[i] / Short.MAX_VALUE;
+            rms += sample * sample;
+        }
+
+        return calculateAudioLevelFromRMS(rms, samples.length);
+    }
+
+    /**
+     * Calculates the audio level from RMS and samples count
+     *
+     * @param rms root mean square
+     * @param sampleCount count of samples
+     *
+     * @return the audio level
+     */
+    public static double calculateAudioLevelFromRMS(double rms, int sampleCount) {
         rms = (sampleCount == 0) ? 0 : Math.sqrt(rms / sampleCount);
 
         double db;

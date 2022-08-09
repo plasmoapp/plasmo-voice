@@ -14,7 +14,6 @@ import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
-import su.plo.voice.api.client.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.AlUtil;
 
@@ -135,7 +134,7 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
     }
 
     @Override
-    public byte[] read(int bufferSize) {
+    public short[] read(int bufferSize) {
         if (!isOpen() || bufferSize > available()) return null;
         short[] shorts = new short[bufferSize];
         ALC11.alcCaptureSamples(devicePointer, shorts, shorts.length);
@@ -143,11 +142,11 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
 
         shorts = processFilters(shorts);
 
-        return AudioUtil.shortsToBytes(shorts);
+        return shorts;
     }
 
     @Override
-    public byte[] read() {
+    public short[] read() {
         return read(bufferSize);
     }
 

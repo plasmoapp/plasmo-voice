@@ -120,7 +120,7 @@ public class JavaxInputDevice extends AudioDeviceBase implements InputDevice {
     }
 
     @Override
-    public byte[] read(int bufferSize) {
+    public short[] read(int bufferSize) {
         if (!isOpen()) throw new IllegalStateException("Device is not open");
 
         byte[] samples = new byte[bufferSize];
@@ -131,13 +131,12 @@ public class JavaxInputDevice extends AudioDeviceBase implements InputDevice {
 
         short[] shorts = AudioUtil.bytesToShorts(samples);
         shorts = processFilters(shorts);
-        samples = AudioUtil.shortsToBytes(shorts);
 
-        return samples;
+        return shorts;
     }
 
     @Override
-    public byte[] read() {
+    public short[] read() {
         return read(bufferSize);
     }
 
