@@ -11,12 +11,16 @@ import su.plo.config.ConfigValidator;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 @Config
 @Data
 public final class ServerConfig {
+
+    @ConfigField(path = "server_id")
+    private String serverId = UUID.randomUUID().toString();
 
     @ConfigField
     private Host host = new Host();

@@ -72,6 +72,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         ServerConfig config = server.getConfig();
 
         player.sendPacket(new ConfigPacket(
+                UUID.fromString(config.getServerId()),
                 config.getVoice().getSampleRate(),
                 config.getVoice().getDistances(),
                 config.getVoice().getMaxPriorityDistance()
