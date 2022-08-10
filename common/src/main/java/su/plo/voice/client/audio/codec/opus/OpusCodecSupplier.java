@@ -24,7 +24,12 @@ public final class OpusCodecSupplier implements CodecSupplier<OpusEncoderBase, O
             encoder.open();
         } catch (Exception e) {
             LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
-            encoder = new JavaOpusEncoder(sampleRate, bufferSize, application);
+            try {
+                encoder = new JavaOpusEncoder(sampleRate, bufferSize, application);
+                encoder.open();
+            } catch (Exception ex) {
+                throw new IllegalStateException("Failed to open java opus encoder", e);
+            }
         }
 
         return encoder;
@@ -41,7 +46,12 @@ public final class OpusCodecSupplier implements CodecSupplier<OpusEncoderBase, O
             decoder.open();
         } catch (Exception e) {
             LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
-            decoder = new JavaOpusDecoder(sampleRate, bufferSize);
+            try {
+                decoder = new JavaOpusDecoder(sampleRate, bufferSize);
+                decoder.open();
+            } catch (Exception ex) {
+                throw new IllegalStateException("Failed to open java opus encoder", e);
+            }
         }
 
         return decoder;

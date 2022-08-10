@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.encryption.EncryptionSupplier;
-import su.plo.voice.api.util.Params;
 
 import java.util.Collection;
 import java.util.Map;
@@ -17,16 +16,16 @@ public final class VoiceEncryptionManager implements EncryptionManager {
     private final Map<String, EncryptionSupplier> algorithms = Maps.newHashMap();
 
     @Override
-    public synchronized @NotNull Encryption create(@NotNull String name, @NotNull Params params) {
+    public synchronized @NotNull Encryption create(@NotNull String name, byte[] data) {
         checkNotNull(name, "name cannot be null");
-        checkNotNull(params, "params cannot be null");
+        checkNotNull(data, "params cannot be null");
 
         EncryptionSupplier supplier = algorithms.get(name);
         if (supplier == null) {
             throw new IllegalArgumentException("Encryption algorithm with name " + name + " is not registered");
         }
 
-        return supplier.create(params);
+        return supplier.create(data);
     }
 
     @Override
