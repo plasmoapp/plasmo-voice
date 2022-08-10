@@ -88,6 +88,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             udpServer.stop();
             eventBus.call(new UdpServerStoppedEvent(udpServer));
         }
+
+        eventBus.unregister(this);
     }
 
     @Override

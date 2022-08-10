@@ -19,6 +19,7 @@ import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
+import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 
 import java.net.InetSocketAddress;
@@ -81,5 +82,10 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
 
     @Override
     public void handle(@NotNull CustomPacket packet) {
+    }
+
+    @Override
+    public void handle(@NotNull PlayerAudioPacket packet) {
+
     }
 }

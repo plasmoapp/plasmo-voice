@@ -74,7 +74,9 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         player.sendPacket(new ConfigPacket(
                 UUID.fromString(config.getServerId()),
                 config.getVoice().getSampleRate(),
+                "opus",
                 config.getVoice().getDistances(),
+                config.getVoice().getDefaultDistance(),
                 config.getVoice().getMaxPriorityDistance()
         ));
     }
