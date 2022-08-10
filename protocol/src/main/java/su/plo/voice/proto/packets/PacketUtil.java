@@ -2,6 +2,7 @@ package su.plo.voice.proto.packets;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +31,16 @@ public class PacketUtil {
         for (int i = 0; i < size; i++) list.add(in.readInt());
 
         return list;
+    }
+
+    public static void writeNullableString(ByteArrayDataOutput out, @Nullable String str) {
+        out.writeBoolean(str != null);
+        if (str != null) out.writeUTF(str);
+    }
+
+    public static @Nullable String readNullableString(ByteArrayDataInput in) {
+        if (in.readBoolean()) return in.readUTF();
+        return null;
     }
 
     private PacketUtil() {
