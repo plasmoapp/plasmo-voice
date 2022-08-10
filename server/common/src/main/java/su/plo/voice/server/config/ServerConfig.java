@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 @Config
 @Data
@@ -96,12 +97,12 @@ public final class ServerConfig {
         private boolean clientModRequired = false;
 
         @NoArgsConstructor
-        public static class DistancesSorter implements Function<List<Integer>, List<Integer>> {
+        public static class DistancesSorter implements Function<List<Long>, List<Integer>> {
 
             @Override
-            public List<Integer> apply(List<Integer> distances) {
+            public List<Integer> apply(List<Long> distances) {
                 Collections.sort(distances);
-                return distances;
+                return distances.stream().map(Long::intValue).collect(Collectors.toList());
             }
         }
 
