@@ -24,8 +24,11 @@ public class PacketTcpCodec {
     }
 
     public static byte[] encode(Packet<?> packet) {
+        int type = PACKETS.getType(packet);
+        if (type < 0) return null;
+
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeByte(PACKETS.getType(packet));
+        out.writeByte(type);
         try {
             packet.write(out);
         } catch (IOException e) {
