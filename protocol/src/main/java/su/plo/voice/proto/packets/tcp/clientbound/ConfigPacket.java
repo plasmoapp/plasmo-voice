@@ -2,17 +2,17 @@ package su.plo.voice.proto.packets.tcp.clientbound;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
 
+@AllArgsConstructor
 @NoArgsConstructor
 @ToString
 public final class ConfigPacket extends ConfigPlayerInfoPacket {
@@ -30,15 +30,10 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     private List<Integer> distances;
 
     @Getter
-    private int maxPriorityDistance;
+    private int defaultDistance;
 
-    public ConfigPacket(@NotNull UUID serverId, int sampleRate, @Nullable String codec, List<Integer> distances, int maxPriorityDistance) {
-        this.serverId = serverId;
-        this.codec = codec;
-        this.sampleRate = sampleRate;
-        this.distances = distances;
-        this.maxPriorityDistance = maxPriorityDistance;
-    }
+    @Getter
+    private int maxPriorityDistance;
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
@@ -46,6 +41,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         this.sampleRate = in.readInt();
         this.codec = PacketUtil.readNullableString(in);
         this.distances = PacketUtil.readIntList(in);
+        this.defaultDistance = in.readInt();
         this.maxPriorityDistance = in.readInt();
     }
 
@@ -55,6 +51,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         out.writeInt(sampleRate);
         PacketUtil.writeNullableString(out, codec);
         PacketUtil.writeIntList(out, distances);
+        out.writeInt(defaultDistance);
         out.writeInt(maxPriorityDistance);
     }
 

@@ -8,6 +8,7 @@ import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
+import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class PacketUdpCodec {
 
     static {
         PACKETS.register(0x1, PingPacket.class);
+        PACKETS.register(0x2, PlayerAudioPacket.class);
         PACKETS.register(0x100, CustomPacket.class);
     }
 
