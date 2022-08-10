@@ -16,8 +16,12 @@ public final class PlayerAudioEndPacket implements Packet<ServerPacketTcpHandler
     @Getter
     private long sequenceNumber;
 
-    public PlayerAudioEndPacket(long sequenceNumber) {
+    @Getter
+    private short distance;
+
+    public PlayerAudioEndPacket(long sequenceNumber, short distance) {
         this.sequenceNumber = sequenceNumber;
+        this.distance = distance;
     }
 
     @Override
