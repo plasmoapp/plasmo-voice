@@ -47,7 +47,7 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
 
     @Override
     public synchronized Optional<KeyBinding> getKeyBinding(@NotNull String name) {
-        if (keyBindings.containsKey(name)) return Optional.empty();
+        if (!keyBindings.containsKey(name)) return Optional.empty();
         return Optional.of(keyBindings.get(name).value());
     }
 

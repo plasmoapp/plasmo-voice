@@ -1,24 +1,40 @@
 package su.plo.voice.client.audio.capture;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.audio.codec.AudioEncoder;
+import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
+import su.plo.voice.api.client.audio.device.DeviceFactory;
 import su.plo.voice.api.client.audio.device.InputDevice;
+import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.connection.ServerConnection;
+import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
+import su.plo.voice.api.client.socket.UdpClient;
+import su.plo.voice.api.client.util.AudioUtil;
 import su.plo.voice.api.encryption.Encryption;
-import su.plo.voice.api.event.EventBus;
+import su.plo.voice.api.encryption.EncryptionException;
+import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.proto.data.EncryptionInfo;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
+import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
+import javax.sound.sampled.AudioFormat;
+import java.util.Objects;
 import java.util.Optional;
 
 public class VoiceAudioCapture implements AudioCapture {
 
+    private static final Logger LOGGER = LogManager.getLogger();
+
     private final PlasmoVoiceClient voiceClient;
-    private final EventBus eventBus;
     private final ClientConfig config;
 
     @Setter
@@ -33,20 +49,12 @@ public class VoiceAudioCapture implements AudioCapture {
 
     private Thread thread;
 
+    private long sequenceNumber;
+
     public VoiceAudioCapture(@NotNull PlasmoVoiceClient voiceClient,
-                             @NotNull ClientConfig config,
-                             @NotNull EventBus eventBus,
-                             @Nullable AudioEncoder<byte[], short[]> encoder,
-                             @Nullable Encryption encryption,
-                             @Nullable InputDevice device,
-                             @NotNull Activation activation) {
+                             @NotNull ClientConfig config) {
         this.voiceClient = voiceClient;
         this.config = config;
-        this.eventBus = eventBus;
-        this.encoder = encoder;
-        this.encryption = encryption;
-        this.device = device;
-        this.activation = activation;
     }
 
     @Override
@@ -62,6 +70,100 @@ public class VoiceAudioCapture implements AudioCapture {
     @Override
     public Optional<InputDevice> getDevice() {
         return Optional.ofNullable(device);
+    }
+
+    @Override
+    public void initialize(@NotNull ServerInfo serverInfo) {
+        // initialize input device
+        AudioFormat format = new AudioFormat(
+                (float) serverInfo.getVoiceInfo().getSampleRate(),
+                16,
+                1,
+                true,
+                false
+        );
+
+        int bufferSize = (serverInfo.getVoiceInfo().getSampleRate() / 1_000) * 20;
+
+        if (config.getVoice().getUseJavaxInput().value()) {
+            try {
+                openJavaxDevice(format);
+            } catch (Exception e) {
+                LOGGER.error("Failed to open Javax input device", e);
+                return;
+            }
+        } else {
+            try {
+                openAlDevice(format);
+            } catch (Exception e) {
+                LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
+
+                try {
+                    openJavaxDevice(format);
+                } catch (Exception ex) {
+                    LOGGER.error("Failed to open Javax input device", ex);
+                    return;
+                }
+            }
+        }
+
+        // initialize encoder
+        if (Objects.equals(serverInfo.getVoiceInfo().getCodec(), "opus")) {
+            this.encoder = (AudioEncoder<byte[], short[]>) voiceClient.getCodecManager().createEncoder(
+                    "opus",
+                    Params.builder()
+                            .set("sampleRate", serverInfo.getVoiceInfo().getSampleRate())
+                            .set("bufferSize", bufferSize)
+                            .set("application", 2048)
+                            .build()
+            );
+        }
+
+        // initialize encryption
+        if (serverInfo.getEncryptionInfo().isPresent()) {
+            EncryptionInfo encryptionInfo = serverInfo.getEncryptionInfo().get();
+
+            try {
+                this.encryption = voiceClient.getEncryptionManager().create(encryptionInfo.getAlgorithm(), encryptionInfo.getData());
+            } catch (Exception e) {
+                LOGGER.error("Failed to initialize encryption with name {}", encryptionInfo.getAlgorithm(), e);
+                return;
+            }
+        }
+
+        KeyBinding pttKeyBinding = config.getKeyBindings().getKeyBinding("key.plasmo_voice.ptt").get();
+        KeyBinding priorityKeyBinding = config.getKeyBindings().getKeyBinding("key.plasmo_voice.priority_ptt").get();
+
+        // initialize activation
+        if (config.getVoice().getVoiceActivation().value()) {
+            this.activation = new VoiceActivation(
+                    voiceClient,
+                    config.getVoice(),
+                    priorityKeyBinding
+            );
+        } else {
+            this.activation = new PushToTalkActivation(
+                    voiceClient,
+                    pttKeyBinding,
+                    priorityKeyBinding
+            );
+        }
+
+        LOGGER.info("Audio capture initialized");
+    }
+
+    private void openAlDevice(@NotNull AudioFormat format) throws Exception {
+        Optional<DeviceFactory> alFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_INPUT");
+        if (!alFactory.isPresent()) throw new IllegalStateException("OpenAL input factory is not registered");
+
+        this.device = (InputDevice) alFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
+    }
+
+    private void openJavaxDevice(@NotNull AudioFormat format) throws Exception {
+        Optional<DeviceFactory> alFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("JAVAX_INPUT");
+        if (!alFactory.isPresent()) throw new IllegalStateException("Javax input factory is not registered");
+
+        this.device = (InputDevice) alFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
     }
 
     @Override
@@ -85,14 +187,20 @@ public class VoiceAudioCapture implements AudioCapture {
         thread.interrupt();
     }
 
+    @Override
+    public boolean isActive() {
+        return thread != null;
+    }
+
     private void run() {
         while (!thread.isInterrupted()) {
             try {
-                if (!device.isOpen() && !voiceClient.getCurrentServerInfo().isPresent()) {
+                if (!device.isOpen() || !voiceClient.getServerInfo().isPresent()) {
                     Thread.sleep(1_000L);
                     continue;
                 }
 
+                device.start();
                 short[] samples = device.read();
                 if (samples == null) {
                     Thread.sleep(5L);
@@ -100,7 +208,7 @@ public class VoiceAudioCapture implements AudioCapture {
                 }
 
                 AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, samples);
-                eventBus.call(captureEvent);
+                voiceClient.getEventBus().call(captureEvent);
                 if (captureEvent.isCancelled()) continue;
 
                 Activation.Result result = activation.process(samples);
@@ -114,12 +222,74 @@ public class VoiceAudioCapture implements AudioCapture {
                 break;
             }
         }
+
+        cleanup();
+    }
+
+    private void cleanup() {
+        this.sequenceNumber = 0L;
+        if (encoder != null) encoder.close();
+        if (device.isOpen()) {
+            device.close();
+        }
+
+        this.thread = null;
     }
 
     private void sendVoicePacket(short[] samples) {
+        Optional<UdpClient> udpClient = voiceClient.getUdpClientManager().getClient();
+        if (!udpClient.isPresent()) return;
+
+        short distance = getSendDistance();
+        if (distance <= 0) return;
+
+        byte[] encoded;
+        if (encoder != null) {
+            try {
+                encoded = encoder.encode(samples);
+            } catch (CodecException e) {
+                LOGGER.error("Failed to encode audio data", e);
+                return;
+            }
+        } else {
+            encoded = AudioUtil.shortsToBytes(samples);
+        }
+
+        if (encryption != null) {
+            try {
+                encoded = encryption.encrypt(encoded);
+            } catch (EncryptionException e) {
+                LOGGER.error("Failed to encrypt audio data", e);
+                return;
+            }
+        }
+
+        udpClient.get().sendPacket(new PlayerAudioPacket(
+                sequenceNumber++,
+                encoded,
+                distance
+        ));
     }
 
     private void sendVoiceEndPacket() {
+        Optional<ServerConnection> connection = voiceClient.getServerConnection();
+        if (!connection.isPresent()) return;
 
+        short distance = getSendDistance();
+        if (distance <= 0) return;
+
+        connection.get().sendPacket(new PlayerAudioEndPacket(sequenceNumber++, distance));
+    }
+
+    private short getSendDistance() {
+        Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
+        if (!serverInfo.isPresent()) return 0;
+
+        Optional<ClientConfig.Server> configServer = config.getServers().getById(serverInfo.get().getServerId());
+        if (!configServer.isPresent()) return 0;
+
+        return activation.isActivePriority() ?
+                configServer.get().getPriorityDistance().value().shortValue()
+                : configServer.get().getDistance().value().shortValue();
     }
 }

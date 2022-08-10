@@ -9,6 +9,7 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
+import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
@@ -16,6 +17,7 @@ import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.VoiceClientInitializedEvent;
 import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
+import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.config.ClientConfig;
@@ -41,23 +43,32 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     private final UdpClientManager udpClientManager = new VoiceUdpClientManager();
 
     @Setter
-    private ServerInfo currentServerInfo;
+    private ServerInfo serverInfo;
 
+    @Getter
+    private AudioCapture audioCapture;
+
+    @Getter
     protected ClientConfig config;
 
     protected void onInitialize() {
         try {
             this.config = toml.load(ClientConfig.class, new File(configFolder(), "client.toml"), true);
-            System.out.println(config);
+
+            eventBus.register(this, config.getKeyBindings());
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }
+
+        this.audioCapture = new VoiceAudioCapture(this, config);
 
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }
 
     protected void onShutdown() {
         logger.info("Shutting down");
+
+        eventBus.unregister(this);
 
         getEventBus().call(new VoiceClientShutdownEvent(this));
     }
@@ -68,8 +79,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     @Override
-    public Optional<ServerInfo> getCurrentServerInfo() {
-        return Optional.ofNullable(currentServerInfo);
+    public Optional<ServerInfo> getServerInfo() {
+        return Optional.ofNullable(serverInfo);
     }
 
     @Override

@@ -56,9 +56,9 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
         CompletableFuture<AudioDevice> future = new CompletableFuture<>();
 
         try {
-            this.devicePointer = openDevice(name, format);
             this.format = format;
             this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
+            this.devicePointer = openDevice(name, format);
         } catch (DeviceException e) {
             future.completeExceptionally(e);
             return future;

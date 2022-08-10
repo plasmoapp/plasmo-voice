@@ -1,6 +1,7 @@
 package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.data.EncryptionInfo;
 
 import java.net.InetSocketAddress;
@@ -12,6 +13,11 @@ import java.util.UUID;
  * Represents a server info of the connected server
  */
 public interface ServerInfo {
+
+    /**
+     * Gets the server's id
+     */
+    @NotNull UUID getServerId();
 
     /**
      * Gets the server's secret
@@ -61,11 +67,25 @@ public interface ServerInfo {
         int getSampleRate();
 
         /**
+         * Gets the voice codec
+         *
+         * @return the codec
+         */
+        @Nullable String getCodec();
+
+        /**
          * Gets the voice available distances
          *
          * @return collection of distances
          */
         Collection<Integer> getDistances();
+
+        /**
+         * Gets the voice default distance
+         *
+         * @return the default distance
+         */
+        int getDefaultDistance();
 
         /**
          * Gets the min distance from a distances collection

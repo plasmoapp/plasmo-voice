@@ -1,7 +1,7 @@
-package su.plo.voice.client.mixin;
+package su.plo.voice.mixin;
 
-import net.minecraft.client.KeyboardHandler;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.MouseHandler;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -11,21 +11,28 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.client.VoiceClientMod;
 import su.plo.voice.client.event.key.KeyPressedEvent;
+import su.plo.voice.client.event.key.MouseScrollEvent;
 
-@Mixin(KeyboardHandler.class)
-public abstract class MixinKeyboardHandler {
+@Mixin(MouseHandler.class)
+public class MixinMouseHandler {
 
     @Shadow @Final private Minecraft minecraft;
 
-    @Inject(at = @At("RETURN"), method = "keyPress")
-    private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {
+    @Inject(at = @At("HEAD"), method = "onPress")
+    private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
         if (window != this.minecraft.getWindow().getWindow()) return;
 
         KeyPressedEvent event = new KeyPressedEvent(
-                KeyBinding.Type.KEYSYM.getOrCreate(key),
+                KeyBinding.Type.MOUSE.getOrCreate(button),
                 KeyBinding.Action.fromInt(action)
         );
 
         VoiceClientMod.INSTANCE.getEventBus().call(event);
+    }
+
+    @Inject(at = @At("HEAD"), method = "onScroll", cancellable = true)
+    private void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
+        MouseScrollEvent event = new MouseScrollEvent(horizontal, vertical);
+        if (event.isCancelled()) ci.cancel();
     }
 }

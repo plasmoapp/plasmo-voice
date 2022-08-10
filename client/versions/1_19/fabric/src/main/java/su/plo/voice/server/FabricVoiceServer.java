@@ -7,23 +7,23 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.server.connection.FabricServerPacketTcpHandler;
+import su.plo.voice.server.connection.FabricServerChannelHandler;
 import su.plo.voice.server.event.player.PlayerJoinEvent;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.io.File;
-import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class FabricVoiceServer extends ModVoiceServer implements ModInitializer {
 
-    private final FabricServerPacketTcpHandler handler = new FabricServerPacketTcpHandler(this);
+    private final FabricServerChannelHandler handler = new FabricServerChannelHandler(this);
 
     @Override
     public void onInitialize() {
+        eventBus.register(this, handler);
+
         ServerLifecycleEvents.SERVER_STARTED.register(super::onInitialize);
         ServerLifecycleEvents.SERVER_STOPPING.register(super::onShutdown);
 
@@ -36,14 +36,7 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
                 eventBus.call(new PlayerQuitEvent(handler.getPlayer(), handler.getPlayer().getUUID()))
         );
 
-        S2CPlayChannelEvents.REGISTER.register((handler, sender, server, channels) ->
-                getPlayerManager().getPlayer(handler.getPlayer().getUUID()).ifPresent(player ->
-                    this.handler.handleRegisterChannels(
-                            channels.stream().map(ResourceLocation::toString).collect(Collectors.toList()),
-                            player
-                    )
-                )
-        );
+        S2CPlayChannelEvents.REGISTER.register(handler);
         ServerPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
     }
 

@@ -2,9 +2,11 @@ package su.plo.voice.api.client;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
+import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
+import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 
@@ -34,6 +36,13 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
     @NotNull DeviceManager getDeviceManager();
 
     /**
+     * Gets the {@link AudioCapture}
+     *
+     * @return {@link AudioCapture}
+     */
+    @NotNull AudioCapture getAudioCapture();
+
+    /**
      * Gets the {@link UdpClientManager}
      *
      * This manager used to manage current {@link su.plo.voice.api.client.socket.UdpClient}
@@ -47,7 +56,14 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
      *
      * @return {@link ServerInfo}
      */
-    Optional<ServerInfo> getCurrentServerInfo();
+    Optional<ServerInfo> getServerInfo();
+
+    /**
+     * Gets the current {@link ServerConnection}
+     *
+     * @return {@link ServerConnection}
+     */
+    Optional<ServerConnection> getServerConnection();
 
     /**
      * Gets the {@link KeyBindings}

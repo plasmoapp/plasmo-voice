@@ -5,6 +5,8 @@
     "compatibilityLevel": "JAVA_16",
     "mixins": [],
     "client": [
+        "MixinKeyboardHandler",
+        "MixinMouseHandler"
     ],
     "injectors": {
         "defaultRequire": 1

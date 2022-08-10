@@ -23,10 +23,10 @@ public final class PushToTalkActivation extends BaseActivation {
 
     @Override
     public @NotNull Result process(short[] samples) {
-        if (isDisabled() || !voiceClient.getCurrentServerInfo().isPresent())
+        if (isDisabled() || !voiceClient.getServerInfo().isPresent())
             return Result.NOT_ACTIVATED;
 
-        ServerInfo serverInfo = voiceClient.getCurrentServerInfo().get();
+        ServerInfo serverInfo = voiceClient.getServerInfo().get();
 
         boolean priorityPressed = priorityKeyBinding.isPressed()
                 && serverInfo.getPlayerInfo().get("priority").orElse(0) == 1;

@@ -1,7 +1,9 @@
 package su.plo.voice.client.connection;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.connection.ServerInfo;
@@ -13,7 +15,11 @@ import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@ToString
 public final class VoiceServerInfo implements ServerInfo {
+
+    @Getter
+    private final UUID serverId;
 
     @Getter
     private final UUID secret;
@@ -33,16 +39,20 @@ public final class VoiceServerInfo implements ServerInfo {
     @Setter
     private @Nullable EncryptionInfo encryptionInfo;
 
-    public VoiceServerInfo(@NotNull UUID secret,
+    public VoiceServerInfo(@NotNull UUID serverId,
+                           @NotNull UUID secret,
                            @NotNull InetSocketAddress remoteAddress,
                            @Nullable EncryptionInfo encryptionInfo,
                            @NotNull ConfigPacket config) {
+        this.serverId = checkNotNull(serverId, "serverId");
         this.secret = checkNotNull(secret, "secret");
         this.encryptionInfo = encryptionInfo;
         this.remoteAddress = remoteAddress;
         this.voiceInfo = new VoiceServerVoiceInfo(
                 config.getSampleRate(),
+                config.getCodec(),
                 config.getDistances(),
+                config.getDefaultDistance(),
                 config.getMaxPriorityDistance()
         );
         this.playerInfo = new VoiceServerPlayerInfo(config.getPlayerInfo());
@@ -53,24 +63,26 @@ public final class VoiceServerInfo implements ServerInfo {
         return Optional.ofNullable(encryptionInfo);
     }
 
+    @AllArgsConstructor
+    @ToString
     static final class VoiceServerVoiceInfo implements ServerInfo.VoiceInfo {
 
         @Getter
         @Setter
         private int sampleRate;
 
+        @Getter
+        private final String codec;
+
         @Setter
         private @NotNull List<Integer> distances;
 
         @Getter
+        private int defaultDistance;
+
+        @Getter
         @Setter
         private int maxPriorityDistance;
-
-        VoiceServerVoiceInfo(int sampleRate, List<Integer> distances, int maxPriorityDistance) {
-            this.sampleRate = sampleRate;
-            this.distances = checkNotNull(distances, "distances");
-            this.maxPriorityDistance = maxPriorityDistance;
-        }
 
         @Override
         public Collection<Integer> getDistances() {
@@ -88,6 +100,7 @@ public final class VoiceServerInfo implements ServerInfo {
         }
     }
 
+    @ToString
     static final class VoiceServerPlayerInfo implements ServerInfo.PlayerInfo {
 
         private final Map<String, Integer> playerInfo;

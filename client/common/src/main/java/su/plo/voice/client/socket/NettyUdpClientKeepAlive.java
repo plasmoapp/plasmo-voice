@@ -42,7 +42,7 @@ public final class NettyUdpClientKeepAlive extends SimpleChannelInboundHandler<N
             client.setTimedOut(false);
             this.keepAlive = System.currentTimeMillis();
 
-//            client.sendPacket(new PingPacket());
+            client.sendPacket(new PingPacket());
         }
     }
 

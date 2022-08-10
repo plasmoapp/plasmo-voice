@@ -51,11 +51,11 @@ public class JavaxInputDevice extends AudioDeviceBase implements InputDevice {
         CompletableFuture<AudioDevice> future = new CompletableFuture<>();
 
         try {
-            this.device = openDevice(name, format);
-            device.open(format);
-
             this.format = format;
             this.bufferSize = ((int) format.getSampleRate() / 1_000) * 2 * 20;
+
+            this.device = openDevice(name, format);
+            device.open(format);
         } catch (DeviceException e) {
             future.completeExceptionally(e);
             return future;

@@ -24,6 +24,7 @@
         ]
     },
     "mixins": [
+        "plasmovoice-common.mixins.json",
         "plasmovoice.mixins.json"
     ],
     "depends": {

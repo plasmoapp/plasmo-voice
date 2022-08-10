@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This event is fired once the {@link ConfigPacket} is received
- * and {@link ServerInfo} is available in {@link PlasmoVoiceClient#getCurrentServerInfo()}
+ * and {@link ServerInfo} is available in {@link PlasmoVoiceClient#getServerInfo()}
  */
 public final class ServerInfoUpdateEvent implements Event {
 

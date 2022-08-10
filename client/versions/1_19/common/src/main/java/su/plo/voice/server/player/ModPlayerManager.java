@@ -34,6 +34,9 @@ public final class ModPlayerManager extends BasePlayerManager {
         if (!(player instanceof ServerPlayer serverPlayer))
             throw new IllegalArgumentException("player is not " + ServerPlayer.class);
 
+        if (playerById.containsKey(serverPlayer.getUUID()))
+            return Optional.of(playerById.get(serverPlayer.getUUID()));
+
         VoicePlayer voicePlayer = new ModVoicePlayer(voiceServer, serverPlayer);
         playerById.put(serverPlayer.getUUID(), voicePlayer);
 

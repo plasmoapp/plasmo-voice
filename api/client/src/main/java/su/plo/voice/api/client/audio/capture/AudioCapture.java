@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.audio.device.InputDevice;
+import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
 
 import java.util.Optional;
@@ -31,9 +32,13 @@ public interface AudioCapture {
 
     void setActivation(@NotNull Activation activation);
 
+    void initialize(@NotNull ServerInfo serverInfo);
+
     void start();
 
     void stop();
+
+    boolean isActive();
 
     interface Activation {
         @NotNull Result process(short[] samples);
