@@ -9,6 +9,7 @@ import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPlayerInfoPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.ConnectionPacket;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -21,6 +22,7 @@ public class PacketTcpCodec {
         PACKETS.register(0x1, ConnectionPacket.class);
         PACKETS.register(0x2, ConfigPacket.class);
         PACKETS.register(0x3, ConfigPlayerInfoPacket.class);
+        PACKETS.register(0x4, PlayerAudioEndPacket.class);
     }
 
     public static byte[] encode(Packet<?> packet) {
