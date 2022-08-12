@@ -6,7 +6,7 @@ import org.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 import tomp2p.opuswrapper.Opus;
 
-public final class JavaOpusEncoder implements OpusEncoderBase {
+public final class JavaOpusEncoder implements BaseOpusEncoder {
 
     private final int sampleRate;
     private final int bufferSize;

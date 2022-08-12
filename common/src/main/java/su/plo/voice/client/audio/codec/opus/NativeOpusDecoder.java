@@ -7,7 +7,7 @@ import tomp2p.opuswrapper.Opus;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-public final class NativeOpusDecoder implements OpusDecoderBase {
+public final class NativeOpusDecoder implements BaseOpusDecoder {
 
     private final int sampleRate;
     private final int bufferSize;

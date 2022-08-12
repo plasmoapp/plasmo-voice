@@ -8,7 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 
-public final class NativeOpusEncoder implements OpusEncoderBase {
+public final class NativeOpusEncoder implements BaseOpusEncoder {
 
     private final int sampleRate;
     private final int bufferSize;

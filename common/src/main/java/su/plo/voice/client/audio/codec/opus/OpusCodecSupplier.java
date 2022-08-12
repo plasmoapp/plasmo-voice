@@ -8,18 +8,18 @@ import su.plo.voice.api.util.Params;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class OpusCodecSupplier implements CodecSupplier<OpusEncoderBase, OpusDecoderBase> {
+public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, BaseOpusDecoder> {
 
     private static final Logger LOGGER = LogManager.getLogger(OpusCodecSupplier.class);
 
     @Override
-    public @NotNull OpusEncoderBase createEncoder(@NotNull Params params) {
+    public @NotNull BaseOpusEncoder createEncoder(@NotNull Params params) {
         checkNotNull(params, "params cannot be null");
         int sampleRate = params.get("sampleRate", Integer.class);
         int bufferSize = params.get("bufferSize", Integer.class);
         int application = params.get("application", Integer.class);
 
-        OpusEncoderBase encoder = new NativeOpusEncoder(sampleRate, bufferSize, application);
+        BaseOpusEncoder encoder = new NativeOpusEncoder(sampleRate, bufferSize, application);
         try {
             encoder.open();
         } catch (Exception e) {
@@ -36,12 +36,12 @@ public final class OpusCodecSupplier implements CodecSupplier<OpusEncoderBase, O
     }
 
     @Override
-    public @NotNull OpusDecoderBase createDecoder(@NotNull Params params) {
+    public @NotNull BaseOpusDecoder createDecoder(@NotNull Params params) {
         checkNotNull(params, "params cannot be null");
         int sampleRate = params.get("sampleRate", Integer.class);
         int bufferSize = params.get("bufferSize", Integer.class);
 
-        OpusDecoderBase decoder = new NativeOpusDecoder(sampleRate, bufferSize);
+        BaseOpusDecoder decoder = new NativeOpusDecoder(sampleRate, bufferSize);
         try {
             decoder.open();
         } catch (Exception e) {

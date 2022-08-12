@@ -4,7 +4,7 @@ import org.concentus.OpusDecoder;
 import org.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 
-public final class JavaOpusDecoder implements OpusDecoderBase {
+public final class JavaOpusDecoder implements BaseOpusDecoder {
 
     private final int sampleRate;
     private final int bufferSize;
