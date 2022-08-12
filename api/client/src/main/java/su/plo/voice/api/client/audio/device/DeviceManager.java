@@ -55,5 +55,5 @@ public interface DeviceManager {
      *
      * @return the source group
      */
-    <T extends DeviceSource> SourceGroup<T> createSourceGroup(@Nullable DeviceType type);
+    <T extends DeviceSource> SourceGroup createSourceGroup(@Nullable DeviceType type);
 }

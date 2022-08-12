@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.source.SourceGroup;
-import su.plo.voice.client.audio.source.VoiceSourceGroup;
+import su.plo.voice.client.audio.source.VoiceOutputSourceGroup;
 
 import java.util.Collection;
 import java.util.List;
@@ -80,7 +80,8 @@ public final class VoiceDeviceManager implements DeviceManager {
 
     @Override
     public SourceGroup createSourceGroup(@Nullable DeviceType type) {
-        return new VoiceSourceGroup();
+        if (type == DeviceType.OUTPUT) return new VoiceOutputSourceGroup(this);
+        throw new IllegalArgumentException(type + " not supported");
     }
 
     private List<AudioDevice> getDevicesList(AudioDevice device) {

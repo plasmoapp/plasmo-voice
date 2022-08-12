@@ -1,16 +1,17 @@
 package su.plo.voice.api.client.audio.source;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.client.audio.device.DeviceException;
+import su.plo.voice.api.util.Params;
 
 import java.util.Collection;
 
 // todo: doc
-public interface SourceGroup<T extends DeviceSource> {
-    void add(@NotNull T source);
+public interface SourceGroup {
 
-    void remove(@NotNull T source);
+    void create(@NotNull Params params) throws DeviceException;
 
     void clear();
 
-    Collection<T> getSources();
+    Collection<DeviceSource> getSources();
 }

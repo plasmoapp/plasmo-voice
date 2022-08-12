@@ -1,25 +1,31 @@
 package su.plo.voice.client.audio.source;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.source.DeviceSource;
 import su.plo.voice.api.client.audio.source.SourceGroup;
+import su.plo.voice.api.util.Params;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public final class VoiceSourceGroup implements SourceGroup {
+public final class VoiceOutputSourceGroup implements SourceGroup {
+
+    private final DeviceManager devices;
 
     private final List<DeviceSource> sources = new CopyOnWriteArrayList<>();
 
-    @Override
-    public void add(@NotNull DeviceSource source) {
-        sources.add(source);
+    public VoiceOutputSourceGroup(@NotNull DeviceManager devices) {
+        this.devices = devices;
     }
 
     @Override
-    public void remove(@NotNull DeviceSource source) {
-        sources.remove(source);
+    public void create(@NotNull Params params) throws DeviceException {
+        for (AudioDevice device : devices.getDevices(DeviceType.OUTPUT)) {
+            OutputDevice<?> outputDevice = (OutputDevice<?>) device;
+            outputDevice.createSource(params);
+        }
     }
 
     @Override
