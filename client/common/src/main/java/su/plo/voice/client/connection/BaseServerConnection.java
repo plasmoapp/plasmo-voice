@@ -14,10 +14,8 @@ import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.socket.NettyUdpClient;
-import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
-import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
-import su.plo.voice.proto.packets.tcp.clientbound.ConfigPlayerInfoPacket;
-import su.plo.voice.proto.packets.tcp.clientbound.ConnectionPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.*;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
@@ -127,7 +125,22 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     }
 
     @Override
+    public void handle(@NotNull PlayerInfoRequestPacket packet) {
+        sendPacket(new PlayerInfoPacket(voiceClient.getVersion()));
+    }
+
+    @Override
     public void handle(@NotNull ConfigPlayerInfoPacket packet) {
+
+    }
+
+    @Override
+    public void handle(@NotNull PlayerListPacket packet) {
+
+    }
+
+    @Override
+    public void handle(@NotNull PlayerInfoUpdatePacket packet) {
 
     }
 }

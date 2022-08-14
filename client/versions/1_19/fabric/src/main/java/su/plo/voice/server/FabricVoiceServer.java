@@ -48,7 +48,7 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
     @Override
     public @NotNull String getVersion() {
         ModContainer modContainer = FabricLoader.getInstance()
-                .getModContainer("plasmovoice")
+                .getModContainer(modId)
                 .orElse(null);
         checkNotNull(modContainer, "modContainer cannot be null");
         return modContainer.getMetadata().getVersion().getFriendlyString();

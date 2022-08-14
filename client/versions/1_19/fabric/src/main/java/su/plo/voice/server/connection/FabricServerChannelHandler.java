@@ -20,7 +20,6 @@ import su.plo.voice.server.event.player.PlayerQuitEvent;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
@@ -42,12 +41,11 @@ public final class FabricServerChannelHandler extends BaseServerChannelHandler i
                     .ifPresent(packet -> {
                         LogManager.getLogger().info("packet received {}", packet);
 
-                        Optional<VoicePlayer> voicePlayer = voiceServer.getPlayerManager().getPlayer(player);
-                        if (voicePlayer.isEmpty()) return;
+                        VoicePlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
 
                         PlayerChannelHandler channel = channels.computeIfAbsent(
                                 player.getUUID(),
-                                (playerId) -> new PlayerChannelHandler(voiceServer, voicePlayer.get())
+                                (playerId) -> new PlayerChannelHandler(voiceServer, voicePlayer)
                         );
 
                         packet.handle(channel);
@@ -59,7 +57,7 @@ public final class FabricServerChannelHandler extends BaseServerChannelHandler i
 
     @Override
     public void onChannelRegister(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server, List<ResourceLocation> channels) {
-        voiceServer.getPlayerManager().getPlayer(handler.getPlayer().getUUID()).ifPresent(player ->
+        voiceServer.getPlayerManager().getPlayerById(handler.getPlayer().getUUID()).ifPresent(player ->
                 handleRegisterChannels(
                         channels.stream().map(ResourceLocation::toString).collect(Collectors.toList()),
                         player

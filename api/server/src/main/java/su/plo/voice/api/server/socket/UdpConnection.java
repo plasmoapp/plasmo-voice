@@ -28,4 +28,6 @@ public interface UdpConnection {
     void handlePacket(Packet<ServerPacketUdpHandler> packet);
 
     void disconnect();
+
+    boolean isConnected();
 }

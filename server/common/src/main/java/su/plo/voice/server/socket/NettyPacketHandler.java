@@ -4,12 +4,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
-import su.plo.voice.api.event.EventBus;
-import su.plo.voice.api.server.connection.TcpServerConnectionManager;
-import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.player.PlayerManager;
+import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoRequestPacket;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.socket.NettyPacketUdp;
 
@@ -19,10 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyPacketUdp> {
 
-    private final EventBus eventBus;
-    private final TcpServerConnectionManager tcpConnections;
-    private final UdpServerConnectionManager udpConnections;
-    private final PlayerManager players;
+    private final PlasmoVoiceServer voiceServer;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket) throws Exception {
@@ -30,7 +25,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         UUID secret = packet.getSecret();
 
-        Optional<UdpConnection> optConnection = udpConnections.getConnectionBySecret(secret);
+        Optional<UdpConnection> optConnection = voiceServer.getUdpConnectionManager().getConnectionBySecret(secret);
         if (optConnection.isPresent()) {
             UdpConnection connection = optConnection.get();
 
@@ -42,21 +37,21 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
             return;
         }
 
-        Optional<UUID> playerId = udpConnections.getPlayerIdBySecret(secret);
+        Optional<UUID> playerId = voiceServer.getUdpConnectionManager().getPlayerIdBySecret(secret);
         if (!playerId.isPresent()) return;
 
-        Optional<VoicePlayer> player = players.getPlayer(playerId.get());
+        Optional<VoicePlayer> player = voiceServer.getPlayerManager().getPlayerById(playerId.get());
         if (!player.isPresent()) return;
 
         NettyUdpConnection connection = new NettyUdpConnection(
-                eventBus,
+                voiceServer,
                 (NioDatagramChannel) ctx.channel(),
                 secret,
                 player.get()
         );
         connection.setRemoteAddress(nettyPacket.getSender());
-        udpConnections.addConnection(connection);
+        voiceServer.getUdpConnectionManager().addConnection(connection);
 
-        tcpConnections.sendConfigInfo(player.get());
+        player.get().sendPacket(new PlayerInfoRequestPacket());
     }
 }

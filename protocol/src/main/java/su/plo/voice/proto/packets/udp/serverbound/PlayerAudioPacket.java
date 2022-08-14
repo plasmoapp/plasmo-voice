@@ -5,12 +5,13 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import su.plo.voice.proto.packets.udp.bothbound.BaseAudioPacket;
 
 import java.io.IOException;
 
 @NoArgsConstructor
 @ToString
-public final class PlayerAudioPacket extends BaseAudioPacket {
+public final class PlayerAudioPacket extends BaseAudioPacket<ServerPacketUdpHandler> {
 
     @Getter
     private short distance;

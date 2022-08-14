@@ -1,5 +1,7 @@
 package su.plo.voice.api.server.player;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -12,12 +14,12 @@ public interface PlayerManager {
     /**
      * Gets the {@link VoicePlayer} by uuid
      */
-    Optional<VoicePlayer> getPlayer(UUID uniqueId);
+    Optional<VoicePlayer> getPlayerById(@NotNull UUID playerId);
 
     /**
      * Gets the {@link VoicePlayer} by server player
      */
-    Optional<VoicePlayer> getPlayer(Object player);
+    @NotNull VoicePlayer wrap(@NotNull Object player);
 
     /**
      * Gets collection of the players

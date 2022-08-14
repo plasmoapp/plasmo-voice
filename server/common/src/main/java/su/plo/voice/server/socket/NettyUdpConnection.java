@@ -10,7 +10,8 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.event.EventBus;
+import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -19,6 +20,7 @@ import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
+import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 
@@ -29,8 +31,7 @@ import java.util.UUID;
 @ToString(of = {"channel", "secret", "player", "keepAlive", "sentKeepAlive"})
 public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpHandler {
 
-    private final EventBus eventBus;
-
+    private final PlasmoVoiceServer voiceServer;
     private final NioDatagramChannel channel;
 
     @Getter
@@ -46,6 +47,9 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
     @Setter
     private long sentKeepAlive;
 
+    @Getter
+    private boolean connected = true;
+
     @Override
     public void sendPacket(Packet<?> packet) {
         byte[] encoded = PacketUdpCodec.encode(packet, secret);
@@ -58,13 +62,13 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
 
         UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
-        eventBus.call(event);
+        voiceServer.getEventBus().call(event);
     }
 
     @Override
     public void handlePacket(Packet<ServerPacketUdpHandler> packet) {
         UdpPacketReceivedEvent event = new UdpPacketReceivedEvent(this, packet);
-        eventBus.call(event);
+        voiceServer.getEventBus().call(event);
         if (event.isCancelled()) return;
 
         packet.handle(this);
@@ -73,6 +77,7 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
     @Override
     public void disconnect() {
         channel.disconnect();
+        connected = false;
     }
 
     @Override
@@ -86,6 +91,13 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
 
     @Override
     public void handle(@NotNull PlayerAudioPacket packet) {
-
+        ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(player, "opus");
+        SourceAudioPacket sourcePacket = new SourceAudioPacket(
+                packet.getSequenceNumber(),
+                packet.getData(),
+                source.getId(),
+                packet.getDistance()
+        );
+        source.process(sourcePacket, packet.getDistance());
     }
 }

@@ -1,6 +1,7 @@
 package su.plo.voice.server.player;
 
 import com.google.common.collect.Maps;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -17,7 +18,7 @@ public abstract class BasePlayerManager implements PlayerManager {
     protected final Map<UUID, VoicePlayer> playerById = Maps.newConcurrentMap();
 
     @Override
-    public Optional<VoicePlayer> getPlayer(UUID playerId) {
+    public Optional<VoicePlayer> getPlayerById(@NotNull UUID playerId) {
         return Optional.ofNullable(playerById.get(playerId));
     }
 
@@ -28,7 +29,7 @@ public abstract class BasePlayerManager implements PlayerManager {
 
     @EventSubscribe
     public void onPlayerJoin(PlayerJoinEvent event) {
-        getPlayer(event.getPlayer());
+        wrap(event.getPlayer());
     }
 
     @EventSubscribe

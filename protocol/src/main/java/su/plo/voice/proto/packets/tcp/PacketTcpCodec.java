@@ -6,10 +6,10 @@ import com.google.common.io.ByteStreams;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.PacketRegistry;
-import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
-import su.plo.voice.proto.packets.tcp.clientbound.ConfigPlayerInfoPacket;
-import su.plo.voice.proto.packets.tcp.clientbound.ConnectionPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -19,10 +19,17 @@ public class PacketTcpCodec {
     private static final PacketRegistry PACKETS = new PacketRegistry();
 
     static {
-        PACKETS.register(0x1, ConnectionPacket.class);
-        PACKETS.register(0x2, ConfigPacket.class);
-        PACKETS.register(0x3, ConfigPlayerInfoPacket.class);
-        PACKETS.register(0x4, PlayerAudioEndPacket.class);
+        int lastPacketId = 0x0;
+
+        PACKETS.register(++lastPacketId, ConnectionPacket.class);
+        PACKETS.register(++lastPacketId, PlayerInfoRequestPacket.class);
+        PACKETS.register(++lastPacketId, ConfigPacket.class);
+        PACKETS.register(++lastPacketId, ConfigPlayerInfoPacket.class);
+        PACKETS.register(++lastPacketId, PlayerListPacket.class);
+        PACKETS.register(++lastPacketId, PlayerInfoUpdatePacket.class);
+        PACKETS.register(++lastPacketId, PlayerInfoPacket.class);
+        PACKETS.register(++lastPacketId, PlayerStatePacket.class);
+        PACKETS.register(++lastPacketId, PlayerAudioEndPacket.class);
     }
 
     public static byte[] encode(Packet<?> packet) {

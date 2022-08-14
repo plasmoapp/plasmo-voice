@@ -124,7 +124,7 @@ public final class FabricVoiceClient extends VoiceClientMod implements ClientMod
     @Override
     public @NotNull String getVersion() {
         ModContainer modContainer = FabricLoader.getInstance()
-                .getModContainer("plasmo_voice")
+                .getModContainer(modId)
                 .orElse(null);
         checkNotNull(modContainer, "modContainer cannot be null");
         return modContainer.getMetadata().getVersion().getFriendlyString();

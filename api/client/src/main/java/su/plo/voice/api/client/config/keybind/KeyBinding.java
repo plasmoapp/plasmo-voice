@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
 import java.util.Map;
@@ -63,7 +64,8 @@ public interface KeyBinding {
         @Getter
         private final int code;
 
-        public boolean equals(Object object) {
+        @Override
+        public boolean equals(@Nullable Object object) {
             if (this == object) {
                 return true;
             } else if (object != null && this.getClass() == object.getClass()) {

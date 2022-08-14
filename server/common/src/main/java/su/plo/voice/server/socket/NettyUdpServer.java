@@ -13,10 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.event.EventBus;
-import su.plo.voice.api.server.connection.TcpServerConnectionManager;
-import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.player.PlayerManager;
+import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
@@ -29,15 +26,12 @@ public final class NettyUdpServer implements UdpServer {
     private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
-    private final EventBus eventBus;
-    private final TcpServerConnectionManager tcpConnections;
-    private final UdpServerConnectionManager udpConnections;
-    private final PlayerManager players;
+    private final PlasmoVoiceServer voiceServer;
     private NettyUdpKeepAlive keepAlive;
 
     @Override
     public void start(String ip, int port) {
-        this.keepAlive = new NettyUdpKeepAlive(tcpConnections, udpConnections);
+        this.keepAlive = new NettyUdpKeepAlive(voiceServer.getTcpConnectionManager(), voiceServer.getUdpConnectionManager());
 
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(loopGroup)
@@ -49,17 +43,10 @@ public final class NettyUdpServer implements UdpServer {
             @Override
             protected void initChannel(@NotNull NioDatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
-                System.out.println("??");
-                System.out.println(ch.remoteAddress());
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
 
-                pipeline.addLast(executors, "handler", new NettyPacketHandler(
-                        eventBus,
-                        tcpConnections,
-                        udpConnections,
-                        players
-                ));
+                pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceServer));
             }
         });
 

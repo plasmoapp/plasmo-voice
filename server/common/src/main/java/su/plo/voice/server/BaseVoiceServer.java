@@ -8,6 +8,7 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
@@ -16,6 +17,7 @@ import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.socket.UdpServer;
+import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
@@ -31,9 +33,10 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
-    protected final Logger logger = LogManager.getLogger("PlasmoVoiceServer");
+    protected final Logger logger = LogManager.getLogger();
     protected final TcpServerConnectionManager tcpConnections = new VoiceTcpConnectionManager(this);
     protected final UdpServerConnectionManager udpConnections = new VoiceUdpConnectionManager(this);
+    protected final ServerSourceManager sources = new VoiceServerSourceManager(this);
 
     protected UdpServer udpServer;
 
@@ -51,12 +54,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             throw new IllegalStateException("Failed to load config", e);
         }
 
-        UdpServer server = new NettyUdpServer(
-                eventBus,
-                getTcpConnectionManager(),
-                getUdpConnectionManager(),
-                getPlayerManager()
-        );
+        UdpServer server = new NettyUdpServer(this);
 
         UdpServerCreateEvent createEvent = new UdpServerCreateEvent(server);
         eventBus.call(createEvent);
@@ -95,6 +93,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Override
     protected Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    public @NotNull ServerSourceManager getSourceManager() {
+        return sources;
     }
 
     @Override

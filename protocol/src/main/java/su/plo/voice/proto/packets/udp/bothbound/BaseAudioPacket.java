@@ -1,4 +1,4 @@
-package su.plo.voice.proto.packets.udp.serverbound;
+package su.plo.voice.proto.packets.udp.bothbound;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -6,12 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketHandler;
 
 import java.io.IOException;
 
 @NoArgsConstructor
 @ToString
-public abstract class BaseAudioPacket implements Packet<ServerPacketUdpHandler> {
+public abstract class BaseAudioPacket<T extends PacketHandler> implements Packet<T> {
 
     @Getter
     protected long sequenceNumber;
