@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.data.VoicePlayerInfo;
 
 import java.util.UUID;
@@ -18,8 +19,8 @@ public class PlayerSourceInfo extends SourceInfo {
     @Getter
     private VoicePlayerInfo playerInfo;
 
-    public PlayerSourceInfo(UUID sourceId, boolean iconVisible, VoicePlayerInfo playerInfo) {
-        super(sourceId, iconVisible);
+    public PlayerSourceInfo(@NotNull UUID sourceId, @NotNull String codec, boolean iconVisible, VoicePlayerInfo playerInfo) {
+        super(sourceId, codec, iconVisible);
         this.playerInfo = playerInfo;
     }
 

@@ -21,9 +21,7 @@ import java.util.function.Predicate;
 public abstract class BaseServerSource implements ServerAudioSource {
 
     protected final UdpServerConnectionManager udpConnections;
-    @Getter
     protected final UUID id;
-    @Getter
     protected final @NotNull String codec;
     @Getter
     @Setter

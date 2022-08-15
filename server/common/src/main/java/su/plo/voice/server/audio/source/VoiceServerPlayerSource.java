@@ -39,6 +39,6 @@ public class VoiceServerPlayerSource extends BaseServerSource implements ServerP
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new PlayerSourceInfo(id, true, player.getInfo());
+        return new PlayerSourceInfo(id, codec, true, player.getInfo());
     }
 }

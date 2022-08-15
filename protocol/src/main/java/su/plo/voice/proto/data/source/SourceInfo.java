@@ -41,17 +41,21 @@ public abstract class SourceInfo implements PacketSerializable {
     @Getter
     protected UUID sourceId;
     @Getter
+    protected String codec;
+    @Getter
     protected boolean iconVisible;
 
     @Override
     public void deserialize(ByteArrayDataInput in) {
         this.sourceId = PacketUtil.readUUID(in);
+        this.codec = in.readUTF();
         this.iconVisible = in.readBoolean();
     }
 
     @Override
     public void serialize(ByteArrayDataOutput out) {
         PacketUtil.writeUUID(out, checkNotNull(sourceId));
+        out.writeUTF(checkNotNull(codec));
         out.writeBoolean(iconVisible);
     }
 

@@ -47,7 +47,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                     player
             );
 
-            sourceById.put(source.getId(), source);
+            sourceById.put(source.getInfo().getSourceId(), source);
 
             return source;
         });
@@ -73,6 +73,6 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         ServerAudioSource source = sourceByPlayerId.remove(event.getPlayerId());
         if (source == null) return;
 
-        sourceById.remove(source.getId());
+        sourceById.remove(source.getInfo().getSourceId());
     }
 }

@@ -59,7 +59,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
         ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(player, "opus");
-        SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());
+        SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getInfo().getSourceId(), packet.getSequenceNumber());
         source.sendPacket(sourcePacket, packet.getDistance());
     }
 
