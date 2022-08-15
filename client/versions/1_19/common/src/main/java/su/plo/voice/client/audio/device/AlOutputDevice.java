@@ -15,13 +15,13 @@ import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.OutputDevice;
-import su.plo.voice.api.client.audio.source.AlSource;
+import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.AlUtil;
-import su.plo.voice.client.audio.source.StreamAlSource;
+import su.plo.voice.client.audio.device.source.StreamAlSource;
 
 import javax.sound.sampled.AudioFormat;
 import java.nio.Buffer;

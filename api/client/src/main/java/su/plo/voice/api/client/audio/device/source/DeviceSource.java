@@ -1,4 +1,4 @@
-package su.plo.voice.api.client.audio.source;
+package su.plo.voice.api.client.audio.device.source;
 
 import java.util.concurrent.CompletableFuture;
 

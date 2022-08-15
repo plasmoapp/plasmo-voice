@@ -2,8 +2,8 @@ package su.plo.voice.api.client.audio.device;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.api.client.audio.source.DeviceSource;
-import su.plo.voice.api.client.audio.source.SourceGroup;
+import su.plo.voice.api.client.audio.device.source.DeviceSource;
+import su.plo.voice.api.client.audio.device.source.SourceGroup;
 
 import java.util.Collection;
 

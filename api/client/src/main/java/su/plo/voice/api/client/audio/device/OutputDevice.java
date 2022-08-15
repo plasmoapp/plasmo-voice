@@ -1,7 +1,7 @@
 package su.plo.voice.api.client.audio.device;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.client.audio.source.DeviceSource;
+import su.plo.voice.api.client.audio.device.source.DeviceSource;
 import su.plo.voice.api.util.Params;
 
 // todo: doc

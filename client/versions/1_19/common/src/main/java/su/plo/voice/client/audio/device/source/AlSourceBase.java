@@ -1,10 +1,10 @@
-package su.plo.voice.client.audio.source;
+package su.plo.voice.client.audio.device.source;
 
 import org.lwjgl.openal.AL11;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.AudioDevice;
-import su.plo.voice.api.client.audio.source.AlSource;
+import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.source.AlSourcePauseEvent;
 import su.plo.voice.api.client.event.audio.source.AlSourcePlayEvent;
 import su.plo.voice.api.client.event.audio.source.AlSourceStopEvent;

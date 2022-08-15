@@ -3,7 +3,7 @@ package su.plo.voice.api.client.event.audio.device;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.device.AudioDevice;
-import su.plo.voice.api.client.audio.source.DeviceSource;
+import su.plo.voice.api.client.audio.device.source.DeviceSource;
 import su.plo.voice.api.event.Event;
 
 import static com.google.common.base.Preconditions.checkNotNull;

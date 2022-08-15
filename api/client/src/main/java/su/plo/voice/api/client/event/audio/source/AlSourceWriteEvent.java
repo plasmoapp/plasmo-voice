@@ -2,7 +2,7 @@ package su.plo.voice.api.client.event.audio.source;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.client.audio.source.AlSource;
+import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.event.EventCancellable;
 
 import java.nio.ByteBuffer;

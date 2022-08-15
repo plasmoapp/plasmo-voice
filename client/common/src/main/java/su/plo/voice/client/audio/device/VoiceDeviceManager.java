@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.device.*;
-import su.plo.voice.api.client.audio.source.SourceGroup;
+import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.client.audio.source.VoiceOutputSourceGroup;
 
 import java.util.Collection;
