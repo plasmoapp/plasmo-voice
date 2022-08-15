@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.proto.data.VoicePlayerInfo;
 
 import java.util.Optional;
 
@@ -29,6 +30,18 @@ public abstract class BaseVoicePlayer implements VoicePlayer {
     @Override
     public Optional<PlayerModLoader> getModLoader() {
         return Optional.ofNullable(modLoader);
+    }
+
+    @Override
+    public VoicePlayerInfo getInfo() {
+        if (!hasVoiceChat()) throw new IllegalStateException("Player is not connected to UDP server");
+
+        return new VoicePlayerInfo(
+                getUUID(),
+                false, // TODO: mute manager
+                isVoiceDisabled(),
+                isMicrophoneMuted()
+        );
     }
 
     @Override

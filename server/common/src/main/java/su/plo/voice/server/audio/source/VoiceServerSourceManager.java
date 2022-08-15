@@ -11,6 +11,7 @@ import su.plo.voice.api.server.audio.source.*;
 import su.plo.voice.api.server.entity.VoiceEntity;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
+import su.plo.voice.proto.data.source.SourceInfo;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.util.Collection;
@@ -28,11 +29,11 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     private final Map<UUID, ServerEntitySource> sourceByEntityId = Maps.newConcurrentMap();
 
     @Override
-    public Optional<ServerAudioSource> getById(@NotNull UUID sourceId) {
+    public Optional<ServerAudioSource> getSourceById(@NotNull UUID sourceId) {
         return Optional.ofNullable(sourceById.get(sourceId));
     }
 
-    public Collection<ServerAudioSource> getSources(@Nullable AudioSource.Type type) {
+    public Collection<ServerAudioSource> getSources(@Nullable SourceInfo.Type type) {
         return sourceById.values();
     }
 

@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventCancellable;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,11 +16,11 @@ public final class TcpPacketSendEvent extends PlayerEvent implements EventCancel
 
     @Getter
     @Setter
-    private Packet<ClientPacketTcpHandler> packet;
+    private Packet<?> packet;
 
     private boolean cancel;
 
-    public TcpPacketSendEvent(@NotNull VoicePlayer player, @NotNull Packet<ClientPacketTcpHandler> packet) {
+    public TcpPacketSendEvent(@NotNull VoicePlayer player, @NotNull Packet<?> packet) {
         super(player);
 
         this.packet = checkNotNull(packet, "packet cannot be null");

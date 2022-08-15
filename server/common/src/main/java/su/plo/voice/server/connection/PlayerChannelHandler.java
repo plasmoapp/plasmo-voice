@@ -3,12 +3,16 @@ package su.plo.voice.server.connection;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.source.ServerAudioSource;
+import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
-import su.plo.voice.proto.packets.tcp.serverbound.ServerPacketTcpHandler;
+import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
+import su.plo.voice.proto.packets.tcp.serverbound.*;
+import su.plo.voice.server.player.BaseVoicePlayer;
 import su.plo.voice.util.VersionUtil;
+
+import java.util.Optional;
 
 @RequiredArgsConstructor
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
@@ -37,14 +41,37 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
         voiceServer.getTcpConnectionManager().sendConfigInfo(player);
         voiceServer.getTcpConnectionManager().sendPlayerList(player);
+
+        // todo: broadcast connected player
     }
 
     @Override
     public void handle(@NotNull PlayerStatePacket packet) {
+        BaseVoicePlayer voicePlayer = (BaseVoicePlayer) player;
+        voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
+        voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
+
+        // todo: broadcast player state update packet
+
+//        voiceServer.getTcpConnectionManager().broadcast();
     }
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
+        ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(player, "opus");
+        SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());
+        source.sendPacket(sourcePacket, packet.getDistance());
+    }
 
+    @Override
+    public void handle(@NotNull SourceInfoRequestPacket packet) {
+        Optional<ServerAudioSource> source = voiceServer.getSourceManager().getSourceById(packet.getSourceId());
+        if (!source.isPresent()) return;
+
+        player.sendPacket(new SourceInfoPacket(source.get().getInfo()));
+    }
+
+    private boolean selfFilter(VoicePlayer player) {
+        return player.equals(this.player);
     }
 }

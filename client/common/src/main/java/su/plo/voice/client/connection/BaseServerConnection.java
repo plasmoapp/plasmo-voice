@@ -143,4 +143,14 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull PlayerInfoUpdatePacket packet) {
 
     }
+
+    @Override
+    public void handle(@NotNull SourceAudioEndPacket packet) {
+
+    }
+
+    @Override
+    public void handle(@NotNull SourceInfoPacket packet) {
+
+    }
 }

@@ -7,9 +7,4 @@ import su.plo.voice.api.server.entity.VoiceEntity;
 public interface ServerEntitySource extends AudioSource {
 
     @NotNull VoiceEntity getEntity();
-
-    @Override
-    default @NotNull Type getType() {
-        return Type.ENTITY;
-    }
 }

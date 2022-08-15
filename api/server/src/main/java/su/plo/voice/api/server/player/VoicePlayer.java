@@ -3,8 +3,8 @@ package su.plo.voice.api.server.player;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.entity.VoiceEntity;
 import su.plo.voice.api.server.pos.ServerPos3d;
+import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
 
 import java.util.Optional;
 
@@ -16,7 +16,7 @@ public interface VoicePlayer extends VoiceEntity {
     /**
      * Sends a packet to the player via minecraft channel
      */
-    void sendPacket(Packet<ClientPacketTcpHandler> packet);
+    void sendPacket(Packet<?> packet);
 
     void sendTranslatableMessage(@NotNull String translatable, Object ...args);
 
@@ -31,6 +31,8 @@ public interface VoicePlayer extends VoiceEntity {
     boolean hasVoiceChat();
 
     Optional<PlayerModLoader> getModLoader();
+
+    VoicePlayerInfo getInfo();
 
     boolean isVoiceDisabled();
 

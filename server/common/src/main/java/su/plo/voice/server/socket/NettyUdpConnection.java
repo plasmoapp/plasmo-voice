@@ -98,6 +98,6 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
                 source.getId(),
                 packet.getDistance()
         );
-        source.process(sourcePacket, packet.getDistance());
+        source.sendAudioPacket(sourcePacket, packet.getDistance());
     }
 }

@@ -11,9 +11,4 @@ public interface ServerStaticSource extends AudioSource {
     void setAngle(int angle);
 
     int getAngle();
-
-    @Override
-    default @NotNull Type getType() {
-        return Type.STATIC;
-    }
 }

@@ -14,7 +14,6 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
-import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
 import su.plo.voice.server.ModVoiceServer;
 
 import java.util.Objects;
@@ -43,7 +42,7 @@ public final class ModVoicePlayer extends BaseVoicePlayer {
     }
 
     @Override
-    public void sendPacket(Packet<ClientPacketTcpHandler> packet) {
+    public void sendPacket(Packet<?> packet) {
         byte[] encoded = PacketTcpCodec.encode(packet);
 
         TcpPacketSendEvent event = new TcpPacketSendEvent(this, packet);

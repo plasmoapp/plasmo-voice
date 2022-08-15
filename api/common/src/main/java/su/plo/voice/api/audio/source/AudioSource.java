@@ -2,7 +2,7 @@ package su.plo.voice.api.audio.source;
 
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.packets.udp.bothbound.BaseAudioPacket;
+import su.plo.voice.proto.data.source.SourceInfo;
 
 import java.util.UUID;
 
@@ -13,15 +13,5 @@ public interface AudioSource {
 
     @NotNull String getCodec();
 
-    @NotNull Type getType();
-
-    void process(BaseAudioPacket packet, short distance);
-
-    enum Type {
-        PLAYER,
-        ENTITY,
-        STATIC,
-        DIRECT,
-        CUSTOM
-    }
+    @NotNull SourceInfo getInfo();
 }

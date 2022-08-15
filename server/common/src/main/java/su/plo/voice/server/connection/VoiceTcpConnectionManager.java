@@ -92,7 +92,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
 
             for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
                 if (player.canSee(connection.getPlayer())) {
-                    players.add(getPlayerInfo(connection.getPlayer()));
+                    players.add(connection.getPlayer().getInfo());
                 }
             }
 
@@ -104,17 +104,9 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     public void sendPlayerInfoUpdate(@NotNull VoicePlayer player) {
         synchronized (playerStateLock) {
             broadcast(new PlayerInfoUpdatePacket(
-                    getPlayerInfo(player)
+                    player.getInfo()
             ), (player1) -> player1.canSee(player));
         }
     }
 
-    private VoicePlayerInfo getPlayerInfo(@NotNull VoicePlayer player) {
-        return new VoicePlayerInfo(
-                player.getUUID(),
-                false, // TODO: mute manager
-                player.isVoiceDisabled(),
-                player.isMicrophoneMuted()
-        );
-    }
 }

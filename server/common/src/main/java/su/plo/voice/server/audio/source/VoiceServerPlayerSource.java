@@ -5,6 +5,8 @@ import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
+import su.plo.voice.proto.data.source.PlayerSourceInfo;
+import su.plo.voice.proto.data.source.SourceInfo;
 
 import java.util.UUID;
 
@@ -33,5 +35,10 @@ public class VoiceServerPlayerSource extends BaseServerSource implements ServerP
         return
 //                !player.equals(this.player) &&
                 player.canSee(this.player);
+    }
+
+    @Override
+    public @NotNull SourceInfo getInfo() {
+        return new PlayerSourceInfo(id, true, player.getInfo());
     }
 }
