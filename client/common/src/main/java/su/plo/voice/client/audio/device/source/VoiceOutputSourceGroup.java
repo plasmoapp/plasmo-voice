@@ -1,4 +1,4 @@
-package su.plo.voice.client.audio.source;
+package su.plo.voice.client.audio.device.source;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.device.*;

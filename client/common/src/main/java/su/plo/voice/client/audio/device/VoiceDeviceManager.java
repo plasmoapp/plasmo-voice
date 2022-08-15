@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
-import su.plo.voice.client.audio.source.VoiceOutputSourceGroup;
+import su.plo.voice.client.audio.device.source.VoiceOutputSourceGroup;
 
 import java.util.Collection;
 import java.util.List;
