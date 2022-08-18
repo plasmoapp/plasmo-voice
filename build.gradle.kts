@@ -45,6 +45,7 @@ subprojects {
 
     tasks {
         java {
+            withJavadocJar()
             withSourcesJar()
 
             toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
