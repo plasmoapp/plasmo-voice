@@ -9,7 +9,7 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.udp.bothbound.BaseAudioPacket;
+import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 
 import java.util.List;
 import java.util.UUID;
@@ -44,7 +44,7 @@ public abstract class BaseServerSource implements ServerAudioSource {
     }
 
     @Override
-    public void sendAudioPacket(BaseAudioPacket<?> packet, short distance) {
+    public void sendAudioPacket(SourceAudioPacket packet, short distance) {
         distance *= 2;
 
         ServerPos3d sourcePosition = getPosition();

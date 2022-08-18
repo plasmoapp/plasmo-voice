@@ -4,7 +4,11 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.audio.source.AudioSourceManager;
 import su.plo.voice.proto.data.source.SourceInfo;
 
+import java.util.UUID;
+
 public interface ClientSourceManager extends AudioSourceManager<ClientAudioSource<?>> {
 
-    void create(@NotNull SourceInfo sourceInfo);
+    void update(@NotNull SourceInfo sourceInfo);
+
+    void sendSourceInfoRequest(@NotNull UUID sourceId);
 }

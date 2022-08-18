@@ -111,6 +111,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     @Override
+    public void updateInfo(T sourceInfo) {
+        // todo: update decoder
+        this.sourceInfo = sourceInfo;
+    }
+
+    @Override
     public void process(@NotNull SourceAudioPacket packet) {
         if (this.lastSequenceNumber >= 0 && packet.getSequenceNumber() <= this.lastSequenceNumber) {
             LOGGER.info("Drop packet with bad order");

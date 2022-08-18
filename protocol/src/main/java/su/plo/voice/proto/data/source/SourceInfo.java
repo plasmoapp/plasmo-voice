@@ -43,6 +43,8 @@ public abstract class SourceInfo implements PacketSerializable {
     @Getter
     protected UUID id;
     @Getter
+    protected byte state;
+    @Getter
     protected String codec;
     @Getter
     protected boolean iconVisible;
@@ -52,6 +54,7 @@ public abstract class SourceInfo implements PacketSerializable {
     @Override
     public void deserialize(ByteArrayDataInput in) {
         this.id = PacketUtil.readUUID(in);
+        this.state = in.readByte();
         this.codec = PacketUtil.readNullableString(in);
         this.iconVisible = in.readBoolean();
         this.angle = in.readInt();
@@ -61,6 +64,7 @@ public abstract class SourceInfo implements PacketSerializable {
     public void serialize(ByteArrayDataOutput out) {
         out.writeUTF(getType().name());
         PacketUtil.writeUUID(out, checkNotNull(id));
+        out.writeByte(state);
         PacketUtil.writeNullableString(out, codec);
         out.writeBoolean(iconVisible);
         out.writeInt(angle);

@@ -22,12 +22,13 @@ public final class StaticSourceInfo extends SourceInfo {
     private Pos3d lookAngle;
 
     public StaticSourceInfo(@NotNull UUID sourceId,
+                            byte state,
                             @NotNull String codec,
                             boolean iconVisible,
                             int angle,
                             Pos3d position,
                             Pos3d lookAngle) {
-        super(sourceId, codec, iconVisible, angle);
+        super(sourceId, state, codec, iconVisible, angle);
         this.position = position;
         this.lookAngle = lookAngle;
     }

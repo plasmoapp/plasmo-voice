@@ -37,13 +37,8 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
         if (source != null) return Optional.of(source);
 
         // request source
-        if (!sourceRequests.contains(sourceId)) {
-            sourceRequests.add(sourceId);
-
-            voiceClient.getServerConnection().get().sendPacket(
-                    new SourceInfoRequestPacket(sourceId)
-            );
-        }
+        if (!sourceRequests.contains(sourceId))
+            sendSourceInfoRequest(sourceId);
 
         return Optional.empty();
     }
@@ -54,9 +49,17 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     }
 
     @Override
-    public void create(@NotNull SourceInfo sourceInfo) {
-        if (sourceById.containsKey(sourceInfo.getId()))
-            throw new IllegalStateException("Source with the same id is already exist");
+    public void update(@NotNull SourceInfo sourceInfo) {
+        if (sourceById.containsKey(sourceInfo.getId())) {
+            ClientAudioSource<?> source = sourceById.get(sourceInfo.getId());
+
+            if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
+                ((ClientAudioSource<StaticSourceInfo>) source).updateInfo((StaticSourceInfo) sourceInfo);
+            } else {
+                throw new IllegalArgumentException("Invalid source type");
+            }
+            return;
+        }
 
         if (sourceInfo instanceof PlayerSourceInfo) {
             ClientAudioSource<PlayerSourceInfo> source = createPlayerSource();
@@ -90,6 +93,16 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
         }
 
         sourceRequests.remove(sourceInfo.getId());
+    }
+
+    @Override
+    public void sendSourceInfoRequest(@NotNull UUID sourceId) {
+        if (!voiceClient.getServerConnection().isPresent()) throw new IllegalStateException("Not connected");
+
+        sourceRequests.add(sourceId);
+        voiceClient.getServerConnection().get().sendPacket(
+                new SourceInfoRequestPacket(sourceId)
+        );
     }
 
     @EventSubscribe

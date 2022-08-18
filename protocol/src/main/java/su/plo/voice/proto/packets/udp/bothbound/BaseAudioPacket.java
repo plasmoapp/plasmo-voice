@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
@@ -15,9 +16,11 @@ import java.io.IOException;
 public abstract class BaseAudioPacket<T extends PacketHandler> implements Packet<T> {
 
     @Getter
+    @Setter
     protected long sequenceNumber;
 
     @Getter
+    @Setter
     protected byte[] data;
 
     public BaseAudioPacket(long sequenceNumber, byte[] data) {

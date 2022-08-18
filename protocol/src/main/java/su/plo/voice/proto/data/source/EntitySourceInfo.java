@@ -17,7 +17,7 @@ public final class EntitySourceInfo extends SourceInfo {
     private int entityId;
 
     public EntitySourceInfo(@NotNull UUID sourceId, @NotNull String codec, boolean iconVisible, int angle, int entityId) {
-        super(sourceId, codec, iconVisible, angle);
+        super(sourceId, (byte) 0, codec, iconVisible, angle);
 
         this.entityId = entityId;
     }

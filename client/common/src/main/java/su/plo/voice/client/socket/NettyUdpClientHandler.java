@@ -63,7 +63,14 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     @Override
     public void handle(@NotNull SourceAudioPacket packet) {
         voiceClient.getSourceManager().getSourceById(packet.getSourceId())
-                .ifPresent(source -> source.process(packet));
+                .ifPresent(source -> {
+                    if (source.getInfo().getState() != packet.getSourceState()) {
+                        voiceClient.getSourceManager().sendSourceInfoRequest(packet.getSourceId());
+                        return;
+                    }
+
+                    source.process(packet);
+                });
     }
 
     private void tick() {

@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.PacketUtil;
@@ -21,11 +22,20 @@ public final class SourceAudioPacket extends BaseAudioPacket<ClientPacketUdpHand
     @Getter
     private UUID sourceId;
     @Getter
+    @Setter
+    private byte sourceState;
+    @Getter
+    @Setter
     private short distance;
 
     public SourceAudioPacket(long sequenceNumber, byte[] data, @NotNull UUID sourceId, short distance) {
+        this(sequenceNumber, (byte) 0, data, sourceId, distance);
+    }
+
+    public SourceAudioPacket(long sequenceNumber, byte sourceState, byte[] data, @NotNull UUID sourceId, short distance) {
         super(sequenceNumber, data);
         this.sourceId = sourceId;
+        this.sourceState = sourceState;
         this.distance = distance;
     }
 
@@ -34,6 +44,7 @@ public final class SourceAudioPacket extends BaseAudioPacket<ClientPacketUdpHand
         super.read(in);
 
         this.sourceId = PacketUtil.readUUID(in);
+        this.sourceState = in.readByte();
         this.distance = in.readShort();
     }
 
@@ -42,6 +53,7 @@ public final class SourceAudioPacket extends BaseAudioPacket<ClientPacketUdpHand
         super.write(out);
 
         PacketUtil.writeUUID(out, checkNotNull(sourceId, "sourceId"));
+        out.writeByte(sourceState);
         out.writeShort(distance);
     }
 

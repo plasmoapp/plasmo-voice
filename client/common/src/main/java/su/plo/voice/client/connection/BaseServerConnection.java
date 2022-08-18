@@ -200,6 +200,6 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull SourceInfoPacket packet) {
-        voiceClient.getSourceManager().create(packet.getSourceInfo());
+        voiceClient.getSourceManager().update(packet.getSourceInfo());
     }
 }
