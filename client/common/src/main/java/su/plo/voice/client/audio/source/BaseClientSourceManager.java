@@ -66,6 +66,15 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
             }
 
             sourceById.put(sourceInfo.getId(), source);
+        } else if (sourceInfo instanceof EntitySourceInfo) {
+            ClientAudioSource<EntitySourceInfo> source = createEntitySource();
+            try {
+                source.initialize((EntitySourceInfo) sourceInfo);
+            } catch (DeviceException e) {
+                throw new IllegalStateException("Failed to initialize audio source", e);
+            }
+
+            sourceById.put(sourceInfo.getId(), source);
         } else {
             throw new IllegalArgumentException("Invalid source type");
         }
