@@ -14,6 +14,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.source.EntitySourceInfo;
 import su.plo.voice.proto.data.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.source.SourceInfo;
+import su.plo.voice.proto.data.source.StaticSourceInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.SourceInfoRequestPacket;
 
 import java.util.*;
@@ -75,6 +76,15 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
             }
 
             sourceById.put(sourceInfo.getId(), source);
+        } else if (sourceInfo instanceof StaticSourceInfo) {
+            ClientAudioSource<StaticSourceInfo> source = createStaticSource();
+            try {
+                source.initialize((StaticSourceInfo) sourceInfo);
+            } catch (DeviceException e) {
+                throw new IllegalStateException("Failed to initialize audio source", e);
+            }
+
+            sourceById.put(sourceInfo.getId(), source);
         } else {
             throw new IllegalArgumentException("Invalid source type");
         }
@@ -93,4 +103,11 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     protected abstract ClientAudioSource<PlayerSourceInfo> createPlayerSource();
 
     protected abstract ClientAudioSource<EntitySourceInfo> createEntitySource();
+
+    protected ClientAudioSource<StaticSourceInfo> createStaticSource() {
+        ClientAudioSource<StaticSourceInfo> source = new ClientStaticSource(voiceClient, config);
+        voiceClient.getEventBus().register(voiceClient, source);
+
+        return source;
+    }
 }
