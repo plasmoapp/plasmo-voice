@@ -174,7 +174,10 @@ public final class StreamAlSource extends AlSourceBase {
         AlUtil.checkErrors("Source play");
 
         if (!fillQueue()) {
-            throw new IllegalStateException("Failed to fill initial queue");
+            LOGGER.info("Stream timed out. Closing...");
+            close();
+            EXTThreadLocalContext.alcSetThreadContext(0L);
+            return;
         }
 
         while (isStreaming.get()) {
