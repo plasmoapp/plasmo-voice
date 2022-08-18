@@ -22,12 +22,10 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.Objects;
 import java.util.Optional;
 
 public class VoiceAudioCapture implements AudioCapture {
@@ -38,7 +36,7 @@ public class VoiceAudioCapture implements AudioCapture {
     private final ClientConfig config;
 
     @Setter
-    private volatile AudioEncoder<byte[], short[]> encoder;
+    private volatile AudioEncoder encoder;
     @Setter
     private volatile Encryption encryption;
     @Setter
@@ -58,7 +56,7 @@ public class VoiceAudioCapture implements AudioCapture {
     }
 
     @Override
-    public Optional<AudioEncoder<?, ?>> getEncoder() {
+    public Optional<AudioEncoder> getEncoder() {
         return Optional.ofNullable(encoder);
     }
 
@@ -108,27 +106,20 @@ public class VoiceAudioCapture implements AudioCapture {
         }
 
         // initialize encoder
-        if (Objects.equals(serverInfo.getVoiceInfo().getCodec(), "opus")) {
-            this.encoder = (AudioEncoder<byte[], short[]>) voiceClient.getCodecManager().createEncoder(
-                    "opus",
+        if (Strings.emptyToNull(serverInfo.getVoiceInfo().getCodec()) != null) {
+            this.encoder = voiceClient.getCodecManager().createEncoder(
+                    serverInfo.getVoiceInfo().getCodec(),
                     Params.builder()
                             .set("sampleRate", serverInfo.getVoiceInfo().getSampleRate())
                             .set("bufferSize", bufferSize)
-                            .set("application", 2048)
+                            .set("application", 2048) // todo: configurable?
                             .build()
             );
         }
 
         // initialize encryption
-        if (serverInfo.getEncryptionInfo().isPresent()) {
-            EncryptionInfo encryptionInfo = serverInfo.getEncryptionInfo().get();
-
-            try {
-                this.encryption = voiceClient.getEncryptionManager().create(encryptionInfo.getAlgorithm(), encryptionInfo.getData());
-            } catch (Exception e) {
-                LOGGER.error("Failed to initialize encryption with name {}", encryptionInfo.getAlgorithm(), e);
-                return;
-            }
+        if (serverInfo.getEncryption().isPresent()) {
+            this.encryption = serverInfo.getEncryption().get();
         }
 
         KeyBinding pttKeyBinding = config.getKeyBindings().getKeyBinding("key.plasmo_voice.ptt").get();
@@ -272,6 +263,8 @@ public class VoiceAudioCapture implements AudioCapture {
     }
 
     private void sendVoiceEndPacket() {
+        if (encoder != null) encoder.reset();
+
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
 

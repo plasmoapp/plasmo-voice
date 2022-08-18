@@ -1,4 +1,4 @@
-package su.plo.voice.api.pos;
+package su.plo.voice.proto.data.pos;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;

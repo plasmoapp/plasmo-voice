@@ -2,7 +2,7 @@ package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.proto.data.EncryptionInfo;
+import su.plo.voice.api.encryption.Encryption;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -48,11 +48,11 @@ public interface ServerInfo {
     @NotNull PlayerInfo getPlayerInfo();
 
     /**
-     * Gets the server's {@link EncryptionInfo}
+     * Gets the server's {@link Encryption}
      *
-     * @return {@link EncryptionInfo}
+     * @return {@link Encryption}
      */
-    Optional<EncryptionInfo> getEncryptionInfo();
+    Optional<Encryption> getEncryption();
 
     /**
      * Represents a voice info of the connected server
@@ -107,6 +107,20 @@ public interface ServerInfo {
          * @return the max priority distance
          */
         int getMaxPriorityDistance();
+
+        /**
+         * Gets the fade divisor
+         *
+         * @return the fade divisor
+         */
+        int getFadeDivisor();
+
+        /**
+         * Gets the priority fade divisor
+         *
+         * @return the priority fade divisor
+         */
+        int getPriorityFadeDivisor();
     }
 
     /**

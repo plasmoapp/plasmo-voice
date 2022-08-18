@@ -4,7 +4,6 @@ import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.source.*;
@@ -38,34 +37,49 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     }
 
     @Override
-    public @NotNull ServerPlayerSource getOrCreatePlayerSource(@NotNull VoicePlayer player, @NotNull String codec) {
+    public @NotNull ServerPlayerSource getOrCreatePlayerSource(@NotNull VoicePlayer player, @Nullable String codec) {
         return sourceByPlayerId.computeIfAbsent(player.getUUID(), (playerId) -> {
             ServerPlayerSource source = new VoiceServerPlayerSource(
                     voiceServer.getUdpConnectionManager(),
-                    UUID.randomUUID(),
                     codec,
                     player
             );
 
-            sourceById.put(source.getInfo().getSourceId(), source);
+            sourceById.put(source.getInfo().getId(), source);
 
             return source;
         });
     }
 
     @Override
-    public @NotNull ServerEntitySource getOrCreateEntitySource(@NotNull VoiceEntity entity, @NotNull String codec) {
-        return null;
+    public @NotNull ServerEntitySource getOrCreateEntitySource(@NotNull VoiceEntity entity, @Nullable String codec) {
+        return sourceByEntityId.computeIfAbsent(entity.getUUID(), (playerId) -> {
+            ServerEntitySource source = new VoiceServerEntitySource(
+                    voiceServer.getUdpConnectionManager(),
+                    codec,
+                    entity
+            );
+
+            sourceById.put(source.getInfo().getId(), source);
+
+            return source;
+        });
     }
 
     @Override
-    public @NotNull ServerStaticSource createStaticSource(@NotNull ServerPos3d position, @NotNull String codec) {
-        return null;
+    public @NotNull ServerStaticSource createStaticSource(@NotNull ServerPos3d position, @Nullable String codec) {
+        ServerStaticSource source = new VoiceServerStaticSource(voiceServer.getUdpConnectionManager(), codec, position);
+        sourceById.put(source.getInfo().getId(), source);
+
+        return source;
     }
 
     @Override
-    public int registerCustomSource(@NotNull AudioSource source) {
-        return 0;
+    public UUID registerCustomSource(@NotNull ServerAudioSource source) {
+        UUID sourceId = UUID.randomUUID();
+        sourceById.put(sourceId, source);
+
+        return sourceId;
     }
 
     @EventSubscribe
@@ -73,6 +87,6 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         ServerAudioSource source = sourceByPlayerId.remove(event.getPlayerId());
         if (source == null) return;
 
-        sourceById.remove(source.getInfo().getSourceId());
+        sourceById.remove(source.getInfo().getId());
     }
 }

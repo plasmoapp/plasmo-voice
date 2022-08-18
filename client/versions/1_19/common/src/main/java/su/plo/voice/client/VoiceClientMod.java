@@ -4,11 +4,14 @@ import io.netty.channel.local.LocalAddress;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
+import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
+import su.plo.voice.client.audio.source.ModClientSourceManager;
 
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -24,6 +27,8 @@ public abstract class VoiceClientMod extends BaseVoiceClient {
     protected final String modId = "plasmovoice";
     protected final Minecraft minecraft = Minecraft.getInstance();
 
+    protected ClientSourceManager sources;
+
     protected VoiceClientMod() {
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
 
@@ -35,6 +40,19 @@ public abstract class VoiceClientMod extends BaseVoiceClient {
         factoryManager.registerDeviceFactory(new JavaxInputDeviceFactory(this));
 
         INSTANCE = this;
+    }
+
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+
+        this.sources = new ModClientSourceManager(this, config);
+        eventBus.register(this, sources);
+    }
+
+    @Override
+    protected void onShutdown() {
+        super.onShutdown();
     }
 
     @Override
@@ -65,5 +83,10 @@ public abstract class VoiceClientMod extends BaseVoiceClient {
         }
 
         return serverIp;
+    }
+
+    @Override
+    public @NotNull ClientSourceManager getSourceManager() {
+        return sources;
     }
 }

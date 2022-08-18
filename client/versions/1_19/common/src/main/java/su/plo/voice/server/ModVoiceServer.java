@@ -48,7 +48,7 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
         this.server = server;
 
         this.players = new ModPlayerManager(this, server);
-        this.entities = new ModEntityManager(server);
+        this.entities = new ModEntityManager(this, server);
         this.worlds = new ModWorldManager();
         eventBus.register(this, players);
 

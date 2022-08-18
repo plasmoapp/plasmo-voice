@@ -5,9 +5,13 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
+import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketUdpHandler;
+import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 import su.plo.voice.socket.NettyPacketUdp;
 
 import java.util.concurrent.Executors;
@@ -16,18 +20,21 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class NettyUdpClientKeepAlive extends SimpleChannelInboundHandler<NettyPacketUdp> {
+public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<NettyPacketUdp> implements ClientPacketUdpHandler {
 
-    private final Logger logger = LogManager.getLogger(NettyUdpClientKeepAlive.class);
+    private final Logger logger = LogManager.getLogger();
 
+    private final PlasmoVoiceClient voiceClient;
     private final NettyUdpClient client;
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private long keepAlive = System.currentTimeMillis();
 
-    public NettyUdpClientKeepAlive(@NotNull NettyUdpClient client) {
-        executor.scheduleAtFixedRate(this::tick, 0L, 1L, TimeUnit.SECONDS);
+    public NettyUdpClientHandler(@NotNull PlasmoVoiceClient voiceClient, @NotNull NettyUdpClient client) {
+        this.voiceClient = checkNotNull(voiceClient, "voiceClient");
         this.client = checkNotNull(client, "client");
+
+        executor.scheduleAtFixedRate(this::tick, 0L, 1L, TimeUnit.SECONDS);
     }
 
     public void close() {
@@ -36,14 +43,27 @@ public final class NettyUdpClientKeepAlive extends SimpleChannelInboundHandler<N
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp packetUdp) throws Exception {
-        Packet<?> packet = packetUdp.getPacketUdp().getPacket();
-        logger.info("{} received", packet);
-        if (packet instanceof PingPacket) {
-            client.setTimedOut(false);
-            this.keepAlive = System.currentTimeMillis();
+        Packet<ClientPacketUdpHandler> packet = packetUdp.getPacketUdp().getPacket();
+        logger.debug("UDP packet received {}", packet);
+        packet.handle(this);
+    }
 
-            client.sendPacket(new PingPacket());
-        }
+    @Override
+    public void handle(@NotNull PingPacket packet) {
+        client.setTimedOut(false);
+        this.keepAlive = System.currentTimeMillis();
+        client.sendPacket(new PingPacket());
+    }
+
+    @Override
+    public void handle(@NotNull CustomPacket packet) {
+
+    }
+
+    @Override
+    public void handle(@NotNull SourceAudioPacket packet) {
+        voiceClient.getSourceManager().getSourceById(packet.getSourceId())
+                .ifPresent(source -> source.process(packet));
     }
 
     private void tick() {

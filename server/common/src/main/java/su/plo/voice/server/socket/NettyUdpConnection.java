@@ -57,7 +57,7 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
 
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
 
-        LogManager.getLogger().info("send {} to {}", packet, remoteAddress);
+        LogManager.getLogger().debug("UDP packet {} sent to {}", packet, remoteAddress);
 
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
 
@@ -95,7 +95,7 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
         SourceAudioPacket sourcePacket = new SourceAudioPacket(
                 packet.getSequenceNumber(),
                 packet.getData(),
-                source.getInfo().getSourceId(),
+                source.getInfo().getId(),
                 packet.getDistance()
         );
         source.sendAudioPacket(sourcePacket, packet.getDistance());

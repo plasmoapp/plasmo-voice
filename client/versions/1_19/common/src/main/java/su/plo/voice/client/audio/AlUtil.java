@@ -11,6 +11,7 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
 
 public final class AlUtil {
+
     private static final Logger LOGGER = LogManager.getLogger();
 
     private static String getErrorMessage(int errorCode) {

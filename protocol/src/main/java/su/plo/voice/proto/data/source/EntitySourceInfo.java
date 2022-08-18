@@ -6,41 +6,38 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.data.VoicePlayerInfo;
 
 import java.util.UUID;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 @NoArgsConstructor
 @ToString
-public final class PlayerSourceInfo extends SourceInfo {
+public final class EntitySourceInfo extends SourceInfo {
 
     @Getter
-    private VoicePlayerInfo playerInfo;
+    private int entityId;
 
-    public PlayerSourceInfo(@NotNull UUID sourceId, @NotNull String codec, boolean iconVisible, int angle, VoicePlayerInfo playerInfo) {
+    public EntitySourceInfo(@NotNull UUID sourceId, @NotNull String codec, boolean iconVisible, int angle, int entityId) {
         super(sourceId, codec, iconVisible, angle);
-        this.playerInfo = playerInfo;
+
+        this.entityId = entityId;
     }
 
     @Override
     public void deserialize(ByteArrayDataInput in) {
         super.deserialize(in);
 
-        this.playerInfo = new VoicePlayerInfo();
-        playerInfo.deserialize(in);
+        this.entityId = in.readInt();
     }
 
     @Override
     public void serialize(ByteArrayDataOutput out) {
         super.serialize(out);
 
-        checkNotNull(playerInfo, "playerInfo").serialize(out);
+        out.writeInt(entityId);
     }
 
     @Override
     public Type getType() {
-        return Type.PLAYER;
+        return Type.ENTITY;
     }
 }

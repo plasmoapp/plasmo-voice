@@ -1,17 +1,17 @@
-package su.plo.voice.api.client.event.audio.source;
+package su.plo.voice.api.client.event.audio.device.source;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.event.EventCancellable;
 
 /**
- * This event is fired when the {@link AlSource#pause()} has been called
+ * This event is fired when the {@link AlSource#play()} has been called
  */
-public final class AlSourcePauseEvent extends AlSourceEvent implements EventCancellable {
+public final class AlSourcePlayEvent extends AlSourceEvent implements EventCancellable {
 
     private boolean cancel;
 
-    public AlSourcePauseEvent(@NotNull AlSource source) {
+    public AlSourcePlayEvent(@NotNull AlSource source) {
         super(source);
     }
 

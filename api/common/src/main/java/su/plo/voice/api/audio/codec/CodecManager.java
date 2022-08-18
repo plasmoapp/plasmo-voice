@@ -7,9 +7,9 @@ import java.util.Collection;
 
 public interface CodecManager {
 
-    @NotNull AudioEncoder<?, ?> createEncoder(@NotNull String name, @NotNull Params params);
+    @NotNull <T extends AudioEncoder> T createEncoder(@NotNull String name, @NotNull Params params);
 
-    @NotNull AudioDecoder<?, ?> createDecoder(@NotNull String name, @NotNull Params params);
+    @NotNull <T extends AudioDecoder> T createDecoder(@NotNull String name, @NotNull Params params);
 
     void register(@NotNull CodecSupplier<?, ?> supplier);
 

@@ -121,8 +121,11 @@ public final class ClientConfig {
                 map.put(category, new DoubleConfigEntry(volume, 0D, 2D));
             }
 
-            public synchronized Optional<DoubleConfigEntry> getVolume(@NotNull String category) {
-                return Optional.ofNullable(map.get(category));
+            public synchronized DoubleConfigEntry getVolume(@NotNull String category) {
+                return map.computeIfAbsent(
+                        category,
+                        (c) -> new DoubleConfigEntry(1D, 0D, 2D)
+                );
             }
 
             @Override
@@ -137,7 +140,9 @@ public final class ClientConfig {
             @Override
             public synchronized Object serialize() {
                 Map<String, Double> serialized = Maps.newHashMap();
-                this.map.forEach((key, entry) -> serialized.put(key, entry.value()));
+                this.map.forEach((key, entry) -> {
+                    if (!entry.isDefault()) serialized.put(key, entry.value());
+                });
                 return serialized;
             }
         }

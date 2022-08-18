@@ -16,9 +16,9 @@ import java.util.Optional;
  */
 public interface AudioCapture {
 
-    Optional<AudioEncoder<?, ?>> getEncoder();
+    Optional<AudioEncoder> getEncoder();
 
-    void setEncoder(@Nullable AudioEncoder<byte[], short[]> encoder);
+    void setEncoder(@Nullable AudioEncoder encoder);
 
     Optional<Encryption> getEncryption();
 

@@ -58,8 +58,9 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         if (port == 0) {
             port = host.getPort();
             if (port == 0) {
-                port = voiceServer.getMinecraftServerPort();
-                if (port <= 0) port = 60606;
+                port = voiceServer.getUdpServer().get()
+                        .getRemoteAddress().get()
+                        .getPort();
             }
         }
 
@@ -74,14 +75,17 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     @Override
     public void sendConfigInfo(@NotNull VoicePlayer player) {
         ServerConfig config = voiceServer.getConfig();
+        ServerConfig.Voice voiceConfig = config.getVoice();
 
         player.sendPacket(new ConfigPacket(
                 UUID.fromString(config.getServerId()),
-                config.getVoice().getSampleRate(),
+                voiceConfig.getSampleRate(),
                 "opus",
-                config.getVoice().getDistances(),
-                config.getVoice().getDefaultDistance(),
-                config.getVoice().getMaxPriorityDistance()
+                voiceConfig.getDistances(),
+                voiceConfig.getDefaultDistance(),
+                voiceConfig.getMaxPriorityDistance(),
+                voiceConfig.getFadeDivisor(),
+                voiceConfig.getPriorityFadeDivisor()
         ));
     }
 

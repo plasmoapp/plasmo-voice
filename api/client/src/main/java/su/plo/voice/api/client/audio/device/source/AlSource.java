@@ -1,7 +1,6 @@
 package su.plo.voice.api.client.audio.device.source;
 
 import su.plo.voice.api.client.audio.device.AudioDevice;
-import su.plo.voice.api.pos.Pos3d;
 
 // todo: doc
 public interface AlSource extends DeviceSource {
@@ -17,10 +16,6 @@ public interface AlSource extends DeviceSource {
     void pause();
 
     State getState();
-
-    Pos3d getPosition();
-
-    void setPosition(Pos3d position);
 
     float getPitch();
 

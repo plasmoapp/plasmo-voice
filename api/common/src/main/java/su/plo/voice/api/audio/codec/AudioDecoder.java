@@ -1,9 +1,9 @@
 package su.plo.voice.api.audio.codec;
 
 // todo: doc
-public interface AudioDecoder<Encoded, Decoded> {
+public interface AudioDecoder {
 
-    Decoded decode(Encoded encoded) throws CodecException;
+    short[] decode(byte[] encoded) throws CodecException;
 
     void open() throws CodecException;
 

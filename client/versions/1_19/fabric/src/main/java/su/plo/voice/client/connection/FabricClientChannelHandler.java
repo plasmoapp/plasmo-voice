@@ -34,7 +34,7 @@ public final class FabricClientChannelHandler implements ClientPlayNetworking.Pl
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
                     .ifPresent(packet -> {
-                        LogManager.getLogger().info("packet received {}", packet);
+                        LogManager.getLogger().info("Channel packet received {}", packet);
                         packet.handle(connection);
                     });
         } catch (IOException e) {

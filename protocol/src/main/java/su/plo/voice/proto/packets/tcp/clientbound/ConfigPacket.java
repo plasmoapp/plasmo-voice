@@ -35,6 +35,12 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     @Getter
     private int maxPriorityDistance;
 
+    @Getter
+    private int fadeDivisor;
+
+    @Getter
+    private int priorityFadeDivisor;
+
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         this.serverId = PacketUtil.readUUID(in);
@@ -43,6 +49,8 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
         this.maxPriorityDistance = in.readInt();
+        this.fadeDivisor = in.readInt();
+        this.priorityFadeDivisor = in.readInt();
     }
 
     @Override
@@ -53,6 +61,8 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         PacketUtil.writeIntList(out, distances);
         out.writeInt(defaultDistance);
         out.writeInt(maxPriorityDistance);
+        out.writeInt(fadeDivisor);
+        out.writeInt(priorityFadeDivisor);
     }
 
     @Override

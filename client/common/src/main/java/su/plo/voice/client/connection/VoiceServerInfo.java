@@ -7,7 +7,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.connection.ServerInfo;
-import su.plo.voice.proto.data.EncryptionInfo;
+import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 
 import java.net.InetSocketAddress;
@@ -37,30 +37,32 @@ public final class VoiceServerInfo implements ServerInfo {
     private @NotNull PlayerInfo playerInfo;
 
     @Setter
-    private @Nullable EncryptionInfo encryptionInfo;
+    private @Nullable Encryption encryption;
 
     public VoiceServerInfo(@NotNull UUID serverId,
                            @NotNull UUID secret,
                            @NotNull InetSocketAddress remoteAddress,
-                           @Nullable EncryptionInfo encryptionInfo,
+                           @Nullable Encryption encryption,
                            @NotNull ConfigPacket config) {
         this.serverId = checkNotNull(serverId, "serverId");
         this.secret = checkNotNull(secret, "secret");
-        this.encryptionInfo = encryptionInfo;
+        this.encryption = encryption;
         this.remoteAddress = remoteAddress;
         this.voiceInfo = new VoiceServerVoiceInfo(
                 config.getSampleRate(),
                 config.getCodec(),
                 config.getDistances(),
                 config.getDefaultDistance(),
-                config.getMaxPriorityDistance()
+                config.getMaxPriorityDistance(),
+                config.getFadeDivisor(),
+                config.getPriorityFadeDivisor()
         );
         this.playerInfo = new VoiceServerPlayerInfo(config.getPlayerInfo());
     }
 
     @Override
-    public Optional<EncryptionInfo> getEncryptionInfo() {
-        return Optional.ofNullable(encryptionInfo);
+    public Optional<Encryption> getEncryption() {
+        return Optional.ofNullable(encryption);
     }
 
     @AllArgsConstructor
@@ -83,6 +85,14 @@ public final class VoiceServerInfo implements ServerInfo {
         @Getter
         @Setter
         private int maxPriorityDistance;
+
+        @Getter
+        @Setter
+        private int fadeDivisor;
+
+        @Getter
+        @Setter
+        private int priorityFadeDivisor;
 
         @Override
         public Collection<Integer> getDistances() {

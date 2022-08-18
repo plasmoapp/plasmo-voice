@@ -39,7 +39,7 @@ public final class FabricServerChannelHandler extends BaseServerChannelHandler i
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
                     .ifPresent(packet -> {
-                        LogManager.getLogger().info("packet received {}", packet);
+                        LogManager.getLogger().info("Channel packet received {}", packet);
 
                         VoicePlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
 

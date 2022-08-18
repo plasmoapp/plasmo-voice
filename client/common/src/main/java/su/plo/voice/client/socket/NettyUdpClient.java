@@ -43,7 +43,7 @@ public final class NettyUdpClient implements UdpClient {
     private final @Nullable EncryptionInfo encryptionInfo;
 
     private final EventLoopGroup workGroup = new NioEventLoopGroup();
-    private final NettyUdpClientKeepAlive ping;
+    private final NettyUdpClientHandler handler;
     private NioDatagramChannel channel;
 
     @Getter
@@ -58,7 +58,7 @@ public final class NettyUdpClient implements UdpClient {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
         this.secret = checkNotNull(secret, "secret");
         this.encryptionInfo = encryptionInfo;
-        this.ping = new NettyUdpClientKeepAlive(NettyUdpClient.this);
+        this.handler = new NettyUdpClientHandler(voiceClient, this);
 
         voiceClient.getEventBus().register(voiceClient, this);
     }
@@ -76,7 +76,7 @@ public final class NettyUdpClient implements UdpClient {
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
 
-                pipeline.addLast("handler", ping);
+                pipeline.addLast("handler", handler);
             }
         });
 
@@ -96,7 +96,7 @@ public final class NettyUdpClient implements UdpClient {
     public void close(@NotNull UdpClientClosedEvent.Reason reason) {
         logger.info("Disconnecting from {} with reason {}", channel.remoteAddress(), reason);
 
-        ping.close();
+        handler.close();
         workGroup.shutdownGracefully();
         this.closed = true;
 
@@ -112,7 +112,7 @@ public final class NettyUdpClient implements UdpClient {
 
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
 
-        logger.info("send {} to {}", packet, channel.remoteAddress());
+        logger.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
 
         UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
         voiceClient.getEventBus().call(event);

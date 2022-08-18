@@ -5,6 +5,7 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.entity.EntityManager;
 import su.plo.voice.api.server.entity.VoiceEntity;
 
@@ -14,6 +15,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class ModEntityManager implements EntityManager {
 
+    private final PlasmoVoiceServer voiceServer;
     private final MinecraftServer server;
 
     @Override
@@ -32,6 +34,6 @@ public final class ModEntityManager implements EntityManager {
         if (!(entity instanceof Entity serverEntity))
             throw new IllegalArgumentException("entity is not " + Entity.class);
 
-        return new ModVoiceEntity(serverEntity);
+        return new ModVoiceEntity(voiceServer, serverEntity);
     }
 }

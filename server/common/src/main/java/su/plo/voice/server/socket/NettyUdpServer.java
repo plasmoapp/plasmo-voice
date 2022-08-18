@@ -17,6 +17,9 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
+import java.net.InetSocketAddress;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 public final class NettyUdpServer implements UdpServer {
 
@@ -29,8 +32,11 @@ public final class NettyUdpServer implements UdpServer {
     private final PlasmoVoiceServer voiceServer;
     private NettyUdpKeepAlive keepAlive;
 
+    private InetSocketAddress socketAddress;
+
     @Override
     public void start(String ip, int port) {
+        this.socketAddress = new InetSocketAddress(ip, port);
         this.keepAlive = new NettyUdpKeepAlive(voiceServer.getTcpConnectionManager(), voiceServer.getUdpConnectionManager());
 
         Bootstrap bootstrap = new Bootstrap();
@@ -70,5 +76,10 @@ public final class NettyUdpServer implements UdpServer {
         channelGroup.close();
         loopGroup.shutdownGracefully();
         logger.info("UDP server is stopped");
+    }
+
+    @Override
+    public Optional<InetSocketAddress> getRemoteAddress() {
+        return Optional.ofNullable(socketAddress);
     }
 }

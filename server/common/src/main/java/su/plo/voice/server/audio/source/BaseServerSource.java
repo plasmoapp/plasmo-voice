@@ -3,7 +3,6 @@ package su.plo.voice.server.audio.source;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -22,10 +21,13 @@ public abstract class BaseServerSource implements ServerAudioSource {
 
     protected final UdpServerConnectionManager udpConnections;
     protected final UUID id;
-    protected final @NotNull String codec;
+    protected final String codec;
     @Getter
     @Setter
     protected boolean iconVisible = true;
+
+    @Setter
+    protected int angle;
 
     private final List<Predicate<VoicePlayer>> filters = new CopyOnWriteArrayList<>();
     private final ServerPos3d playerPosition = new ServerPos3d();

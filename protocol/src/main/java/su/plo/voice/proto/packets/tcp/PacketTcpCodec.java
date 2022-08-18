@@ -10,6 +10,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
+import su.plo.voice.proto.packets.tcp.serverbound.SourceInfoRequestPacket;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -30,6 +31,9 @@ public class PacketTcpCodec {
         PACKETS.register(++lastPacketId, PlayerInfoPacket.class);
         PACKETS.register(++lastPacketId, PlayerStatePacket.class);
         PACKETS.register(++lastPacketId, PlayerAudioEndPacket.class);
+        PACKETS.register(++lastPacketId, SourceInfoRequestPacket.class);
+        PACKETS.register(++lastPacketId, SourceInfoPacket.class);
+        PACKETS.register(++lastPacketId, SourceAudioEndPacket.class);
     }
 
     public static byte[] encode(Packet<?> packet) {

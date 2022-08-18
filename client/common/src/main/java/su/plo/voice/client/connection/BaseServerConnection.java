@@ -5,20 +5,29 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
+import su.plo.voice.api.client.audio.device.AudioDevice;
+import su.plo.voice.api.client.audio.device.DeviceException;
+import su.plo.voice.api.client.audio.device.DeviceFactory;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.connection.ServerInfoUpdateEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectEvent;
 import su.plo.voice.api.client.socket.UdpClient;
+import su.plo.voice.api.encryption.Encryption;
+import su.plo.voice.api.util.Params;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.socket.NettyUdpClient;
+import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 
+import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 @AllArgsConstructor
 public abstract class BaseServerConnection implements ServerConnection, ClientPacketTcpHandler {
@@ -65,11 +74,24 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
             return;
         }
 
+        // initialize encryption
+        Encryption encryption = null;
+        if (client.get().getEncryptionInfo().isPresent()) {
+            EncryptionInfo encryptionInfo = client.get().getEncryptionInfo().get();
+
+            try {
+                encryption = voiceClient.getEncryptionManager().create(encryptionInfo.getAlgorithm(), encryptionInfo.getData());
+            } catch (Exception e) {
+                logger.error("Failed to initialize encryption with name {}", encryptionInfo.getAlgorithm(), e);
+                return;
+            }
+        }
+
         ServerInfo serverInfo = new VoiceServerInfo(
                 packet.getServerId(),
                 client.get().getSecret(),
                 remoteAddress.get(),
-                client.get().getEncryptionInfo().orElse(null),
+                encryption,
                 packet
         );
 
@@ -116,9 +138,35 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
             voiceClient.getConfig().getServers().put(serverInfo.getServerId(), server);
         }
 
+        // initialize capture
         AudioCapture audioCapture = voiceClient.getAudioCapture();
         audioCapture.initialize(serverInfo);
         audioCapture.start();
+
+        // clear & initialize primary output device
+        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_OUTPUT");
+        if (!deviceFactory.isPresent()) {
+            logger.error("OpenAL output device factory is not initialized");
+            return;
+        }
+
+        AudioFormat format = new AudioFormat(
+                (float) serverInfo.getVoiceInfo().getSampleRate(),
+                16,
+                1,
+                true,
+                false
+        );
+
+        try {
+            CompletableFuture<AudioDevice> outputDevice = deviceFactory.get().openDevice(
+                    format, null, Params.EMPTY
+            );
+            voiceClient.getDeviceManager().add(outputDevice.get());
+        } catch (DeviceException | ExecutionException | InterruptedException e) {
+            logger.error("Failed to open primary OpenAL output device", e);
+            return;
+        }
 
         ServerInfoUpdateEvent event = new ServerInfoUpdateEvent(oldServerInfo, serverInfo, packet);
         voiceClient.getEventBus().call(event);
@@ -146,11 +194,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull SourceAudioEndPacket packet) {
-
+        voiceClient.getSourceManager().getSourceById(packet.getSourceId())
+                .ifPresent(source -> source.process(packet));
     }
 
     @Override
     public void handle(@NotNull SourceInfoPacket packet) {
-
+        voiceClient.getSourceManager().create(packet.getSourceInfo());
     }
 }

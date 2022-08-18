@@ -3,7 +3,7 @@ package su.plo.voice.api.server.pos;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.pos.Pos3d;
+import su.plo.voice.proto.data.pos.Pos3d;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -48,6 +48,10 @@ public class ServerPos3d {
         double zDiff = z - o.z;
 
         return (xDiff * xDiff) + (yDiff * yDiff) + (zDiff * zDiff);
+    }
+
+    public Pos3d toPosition() {
+        return new Pos3d(x, y, z);
     }
 
     public Pos3d getDirection() {

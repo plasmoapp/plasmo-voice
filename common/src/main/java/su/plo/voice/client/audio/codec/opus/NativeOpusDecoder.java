@@ -24,6 +24,7 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
     public short[] decode(byte[] encoded) throws CodecException {
         if (!isOpen()) throw new CodecException("Decoder is not open");
 
+        buffer.clear();
         int result;
         if (encoded == null || encoded.length == 0) {
             result = Opus.INSTANCE.opus_decode(decoder, null, 0, buffer, bufferSize, 0);

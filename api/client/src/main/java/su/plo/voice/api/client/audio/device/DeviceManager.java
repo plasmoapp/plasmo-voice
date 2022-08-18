@@ -2,7 +2,6 @@ package su.plo.voice.api.client.audio.device;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.api.client.audio.device.source.DeviceSource;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
 
 import java.util.Collection;
@@ -55,5 +54,5 @@ public interface DeviceManager {
      *
      * @return the source group
      */
-    <T extends DeviceSource> SourceGroup createSourceGroup(@Nullable DeviceType type);
+    SourceGroup createSourceGroup(@Nullable DeviceType type);
 }

@@ -5,12 +5,12 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
-import su.plo.voice.api.client.event.audio.source.AlSourcePauseEvent;
-import su.plo.voice.api.client.event.audio.source.AlSourcePlayEvent;
-import su.plo.voice.api.client.event.audio.source.AlSourceStopEvent;
-import su.plo.voice.api.client.event.audio.source.AlSourceUpdateParamEvent;
-import su.plo.voice.api.pos.Pos3d;
+import su.plo.voice.api.client.event.audio.device.source.AlSourcePauseEvent;
+import su.plo.voice.api.client.event.audio.device.source.AlSourcePlayEvent;
+import su.plo.voice.api.client.event.audio.device.source.AlSourceStopEvent;
+import su.plo.voice.api.client.event.audio.device.source.AlSourceUpdateParamEvent;
 import su.plo.voice.client.audio.AlUtil;
+import su.plo.voice.proto.data.pos.Pos3d;
 
 public abstract class AlSourceBase implements AlSource {
 
@@ -77,25 +77,6 @@ public abstract class AlSourceBase implements AlSource {
     @Override
     public State getState() {
         return State.fromInt(getInt(AL11.AL_SOURCE_STATE));
-    }
-
-    @Override
-    public Pos3d getPosition() {
-        AlUtil.checkDeviceContext(device);
-
-        return position;
-    }
-
-    @Override
-    public void setPosition(Pos3d position) {
-        AlUtil.checkDeviceContext(device);
-
-        this.position = position;
-        setFloatArray(AL11.AL_POSITION, new float[]{
-                (float) position.getX(),
-                (float) position.getY(),
-                (float) position.getZ()
-        });
     }
 
     @Override

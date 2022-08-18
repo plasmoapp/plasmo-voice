@@ -36,7 +36,6 @@ public final class NettyUdpKeepAlive {
         PingPacket packet = new PingPacket();
 
         for (UdpConnection connection : udpConnections.getConnections()) {
-            logger.info(now - connection.getKeepAlive());
             if (now - connection.getKeepAlive() > 15_000L) { // todo: config for max timeout keepalive?
                 logger.info("{} timed out. Reconnect packet sent", connection);
                 udpConnections.removeConnection(connection);

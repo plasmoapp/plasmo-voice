@@ -9,7 +9,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.source.AlSource;
-import su.plo.voice.api.client.event.audio.source.*;
+import su.plo.voice.api.client.event.audio.device.source.*;
 import su.plo.voice.client.audio.AlUtil;
 
 import java.nio.Buffer;
@@ -102,6 +102,8 @@ public final class StreamAlSource extends AlSourceBase {
 
     @Override
     public void write(byte[] samples) {
+        if (!isStreaming.get()) return;
+
         ByteBuffer buffer = MemoryUtil.memAlloc(samples.length);
         buffer.put(samples);
         ((Buffer) buffer).flip();
@@ -120,10 +122,23 @@ public final class StreamAlSource extends AlSourceBase {
 
     @Override
     public CompletableFuture<Void> close() {
+        if (!isStreaming.get())
+            return CompletableFuture.completedFuture(null);
+
         CompletableFuture<Void> future = new CompletableFuture<>();
 
         device.runInContext(() -> {
             stop();
+
+            int processedBuffers = getInt(AL11.AL_BUFFERS_PROCESSED);
+            AlUtil.checkErrors("Get processed buffers");
+
+            while (processedBuffers > 0) {
+                int[] buffer = new int[1];
+                AL11.alSourceUnqueueBuffers(pointer, buffer);
+                AlUtil.checkErrors("Unqueue buffer");
+                processedBuffers--;
+            }
 
             AL11.alDeleteBuffers(buffers);
 
@@ -173,7 +188,7 @@ public final class StreamAlSource extends AlSourceBase {
 
             while (processedBuffers > 0) {
                 int[] buffer = new int[1];
-                AL11.alSourceUnqueueBuffers(this.pointer, buffer);
+                AL11.alSourceUnqueueBuffers(pointer, buffer);
                 AlUtil.checkErrors("Unqueue buffer");
 
                 // Bits can be 0 if the format or parameters are corrupt, avoid division by zero
@@ -183,8 +198,12 @@ public final class StreamAlSource extends AlSourceBase {
                     continue;
                 }
 
-                if (!fillAndPushBuffer(buffer[0])) {
+                if (fillAndPushBuffer(buffer[0])) {
                     processedBuffers--;
+                } else {
+                    LOGGER.info("Stream timed out. Closing...");
+                    close();
+                    break;
                 }
             }
 
@@ -205,7 +224,7 @@ public final class StreamAlSource extends AlSourceBase {
                 AlUtil.checkErrors("Source play");
             }
 
-            if (fillAndPushBuffer(buffers[i])) {
+            if (!fillAndPushBuffer(buffers[i])) {
                 return false;
             }
         }
@@ -216,16 +235,17 @@ public final class StreamAlSource extends AlSourceBase {
     private boolean fillAndPushBuffer(int buffer) {
         ByteBuffer byteBuffer;
         try {
-            byteBuffer = queue.poll(10L, TimeUnit.SECONDS);
+            byteBuffer = queue.poll(25L, TimeUnit.SECONDS);
         } catch (InterruptedException ignored) {
-            System.out.println("queue is empty");
-            return true;
+            return false;
         }
+
+        if (byteBuffer == null) return false;
 
         AL11.alBufferData(buffer, format, byteBuffer, (int) device.getFormat().get().getSampleRate());
         if (AlUtil.checkErrors("Assigning buffer data")) return true;
 
-        AL11.alSourceQueueBuffers(this.pointer, new int[]{ buffer });
-        return false;
+        AL11.alSourceQueueBuffers(pointer, new int[]{ buffer });
+        return true;
     }
 }

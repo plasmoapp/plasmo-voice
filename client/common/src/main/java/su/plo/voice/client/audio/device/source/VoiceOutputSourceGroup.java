@@ -24,7 +24,7 @@ public final class VoiceOutputSourceGroup implements SourceGroup {
     public void create(@NotNull Params params) throws DeviceException {
         for (AudioDevice device : devices.getDevices(DeviceType.OUTPUT)) {
             OutputDevice<?> outputDevice = (OutputDevice<?>) device;
-            outputDevice.createSource(params);
+            sources.add(outputDevice.createSource(params));
         }
     }
 

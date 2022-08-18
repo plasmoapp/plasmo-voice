@@ -1,4 +1,4 @@
-package su.plo.voice.api.client.event.audio.source;
+package su.plo.voice.api.client.event.audio.device.source;
 
 import lombok.Getter;
 import su.plo.voice.api.client.audio.device.source.AlSource;

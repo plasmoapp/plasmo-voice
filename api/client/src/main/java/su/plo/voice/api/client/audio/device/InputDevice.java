@@ -22,14 +22,14 @@ public interface InputDevice extends AudioDevice {
      * Read samples with the capacity of bufferSize
      *
      * @param bufferSize the frame size
-     * @return samples or null if bufferSize > available samples
+     * @return samples or null if bufferSize is greater than available samples
      */
     short[] read(int bufferSize);
 
     /**
      * Read samples with the capacity of bufferSize calculated from AudioFormat
      *
-     * @return samples or null if bufferSize > available samples
+     * @return samples or null if bufferSize is greater than available samples
      */
     short[] read();
 

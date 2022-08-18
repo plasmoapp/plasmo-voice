@@ -25,9 +25,11 @@ public abstract class SourceInfo implements PacketSerializable {
                 sourceInfo = new PlayerSourceInfo();
                 break;
             case ENTITY:
-                return null;
+                sourceInfo = new EntitySourceInfo();
+                break;
             case STATIC:
-                return null;
+                sourceInfo = new StaticSourceInfo();
+                break;
             case DIRECT:
                 return null;
         }
@@ -39,24 +41,29 @@ public abstract class SourceInfo implements PacketSerializable {
     }
 
     @Getter
-    protected UUID sourceId;
+    protected UUID id;
     @Getter
     protected String codec;
     @Getter
     protected boolean iconVisible;
+    @Getter
+    protected int angle;
 
     @Override
     public void deserialize(ByteArrayDataInput in) {
-        this.sourceId = PacketUtil.readUUID(in);
-        this.codec = in.readUTF();
+        this.id = PacketUtil.readUUID(in);
+        this.codec = PacketUtil.readNullableString(in);
         this.iconVisible = in.readBoolean();
+        this.angle = in.readInt();
     }
 
     @Override
     public void serialize(ByteArrayDataOutput out) {
-        PacketUtil.writeUUID(out, checkNotNull(sourceId));
-        out.writeUTF(checkNotNull(codec));
+        out.writeUTF(getType().name());
+        PacketUtil.writeUUID(out, checkNotNull(id));
+        PacketUtil.writeNullableString(out, codec);
         out.writeBoolean(iconVisible);
+        out.writeInt(angle);
     }
 
     public abstract Type getType();

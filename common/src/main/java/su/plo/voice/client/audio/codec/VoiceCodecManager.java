@@ -18,7 +18,7 @@ public final class VoiceCodecManager implements CodecManager {
     private final Map<String, CodecSupplier<?, ?>> codecs = Maps.newHashMap();
 
     @Override
-    public synchronized @NotNull AudioEncoder<?, ?> createEncoder(@NotNull String name, @NotNull Params params) {
+    public synchronized @NotNull <T extends AudioEncoder> T createEncoder(@NotNull String name, @NotNull Params params) {
         checkNotNull(name, "name cannot be null");
         checkNotNull(params, "params cannot be null");
 
@@ -27,11 +27,11 @@ public final class VoiceCodecManager implements CodecManager {
             throw new IllegalArgumentException("Codec encoder with name " + name + " is not registered");
         }
 
-        return supplier.createEncoder(params);
+        return (T) supplier.createEncoder(params);
     }
 
     @Override
-    public synchronized @NotNull AudioDecoder<?, ?> createDecoder(@NotNull String name, @NotNull Params params) {
+    public synchronized @NotNull <T extends AudioDecoder> T createDecoder(@NotNull String name, @NotNull Params params) {
         checkNotNull(name, "name cannot be null");
         checkNotNull(params, "params cannot be null");
 
@@ -40,7 +40,7 @@ public final class VoiceCodecManager implements CodecManager {
             throw new IllegalArgumentException("Codec encoder with name " + name + " is not registered");
         }
 
-        return supplier.createDecoder(params);
+        return (T) supplier.createDecoder(params);
     }
 
     @Override

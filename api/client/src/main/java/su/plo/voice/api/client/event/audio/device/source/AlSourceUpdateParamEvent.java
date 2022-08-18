@@ -1,27 +1,28 @@
-package su.plo.voice.api.client.event.audio.source;
+package su.plo.voice.api.client.event.audio.device.source;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.event.EventCancellable;
 
-import java.nio.ByteBuffer;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the {@link AlSource#write(byte[])} has been called
+ * This event is fired when the {@link AlSource#play()} has been called
  */
-public final class AlSourceWriteEvent extends AlSourceEvent implements EventCancellable {
+public final class AlSourceUpdateParamEvent extends AlSourceEvent implements EventCancellable {
 
     @Getter
-    private final ByteBuffer buffer;
+    private final int param;
+    @Getter
+    private final Object value;
 
     private boolean cancel;
 
-    public AlSourceWriteEvent(@NotNull AlSource source, @NotNull ByteBuffer buffer) {
+    public AlSourceUpdateParamEvent(@NotNull AlSource source, int param, @NotNull Object value) {
         super(source);
-        this.buffer = checkNotNull(buffer, "buffer cannot be null");
+        this.param = param;
+        this.value = checkNotNull(value, "value cannot be null");
     }
 
     @Override

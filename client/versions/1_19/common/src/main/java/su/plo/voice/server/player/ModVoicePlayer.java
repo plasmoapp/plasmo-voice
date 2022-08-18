@@ -32,6 +32,11 @@ public final class ModVoicePlayer extends BaseVoicePlayer {
     }
 
     @Override
+    public int getId() {
+        return player.getId();
+    }
+
+    @Override
     public @NotNull UUID getUUID() {
         return player.getUUID();
     }
@@ -54,7 +59,7 @@ public final class ModVoicePlayer extends BaseVoicePlayer {
                 new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded))
         ));
 
-        LogManager.getLogger().info("packet {} sent to {}", packet, this);
+        LogManager.getLogger().info("Channel packet {} sent to {}", packet, this);
     }
 
     @Override

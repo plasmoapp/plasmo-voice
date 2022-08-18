@@ -1,6 +1,7 @@
 package su.plo.voice.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -8,15 +9,13 @@ import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.proto.data.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.source.SourceInfo;
 
-import java.util.UUID;
-
-public class VoiceServerPlayerSource extends BaseServerSource implements ServerPlayerSource {
+public final class VoiceServerPlayerSource extends BaseServerSource implements ServerPlayerSource {
 
     private final VoicePlayer player;
     private final ServerPos3d playerPosition = new ServerPos3d();
 
-    public VoiceServerPlayerSource(UdpServerConnectionManager udpConnections, @NotNull UUID id, @NotNull String codec, @NotNull VoicePlayer player) {
-        super(udpConnections, id, codec);
+    public VoiceServerPlayerSource(UdpServerConnectionManager udpConnections, @Nullable String codec, @NotNull VoicePlayer player) {
+        super(udpConnections, player.getUUID(), codec);
         this.player = player;
         addFilter(this::filterVanish);
     }
@@ -39,6 +38,6 @@ public class VoiceServerPlayerSource extends BaseServerSource implements ServerP
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new PlayerSourceInfo(id, codec, true, player.getInfo());
+        return new PlayerSourceInfo(id, codec, true, angle, player.getInfo());
     }
 }

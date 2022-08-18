@@ -1,5 +1,6 @@
 package su.plo.voice.client.audio.device;
 
+import com.google.common.base.Strings;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.ALC11;
@@ -30,6 +31,10 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
     public CompletableFuture<AudioDevice> openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
         checkNotNull(format, "format cannot be null");
         checkNotNull(params, "params cannot be null");
+
+        if (Strings.emptyToNull(deviceName) == null) {
+            deviceName = getDefaultDeviceName();
+        }
 
         AudioDevice device = new AlOutputDevice(client, deviceName);
         return device.open(format, params);

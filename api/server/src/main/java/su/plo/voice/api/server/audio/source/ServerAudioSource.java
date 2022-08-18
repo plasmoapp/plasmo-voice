@@ -13,6 +13,8 @@ public interface ServerAudioSource extends AudioSource {
 
     @NotNull ServerPos3d getPosition();
 
+    void setAngle(int angle);
+
     void setIconVisible(boolean visible);
 
     boolean isIconVisible();

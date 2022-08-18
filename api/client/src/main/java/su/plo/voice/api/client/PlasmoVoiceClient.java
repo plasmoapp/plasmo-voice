@@ -5,6 +5,7 @@ import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
+import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
@@ -71,4 +72,11 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
      * @return {@link KeyBindings}
      */
     @NotNull KeyBindings getKeyBindings();
+
+    /**
+     * Gets the {@link ClientSourceManager}
+     *
+     * @return {@link ClientSourceManager}
+     */
+    @NotNull ClientSourceManager getSourceManager();
 }
