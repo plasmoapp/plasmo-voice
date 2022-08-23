@@ -212,7 +212,6 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     private void updateSource(float volume, int fadeDistance, int maxDistance) {
         for (DeviceSource source : sourceGroup.getSources()) {
-
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
                 AlAudioDevice device = (AlAudioDevice) alSource.getDevice();

@@ -28,4 +28,6 @@ public interface UdpServerConnectionManager extends ServerConnectionManager<Clie
     Optional<UdpConnection> getConnectionByUUID(UUID playerUUID);
 
     Collection<UdpConnection> getConnections();
+
+    void clearConnections();
 }

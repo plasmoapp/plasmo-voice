@@ -31,7 +31,8 @@ public abstract class SourceInfo implements PacketSerializable {
                 sourceInfo = new StaticSourceInfo();
                 break;
             case DIRECT:
-                return null;
+                sourceInfo = new DirectSourceInfo();
+                break;
         }
 
         if (sourceInfo == null) throw new IllegalArgumentException("Invalid source type");

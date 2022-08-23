@@ -32,7 +32,7 @@ public final class VoiceServerStaticSource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new StaticSourceInfo(id, (byte) state.get(), codec, true, angle, position.toPosition(), position.getDirection());
+        return new StaticSourceInfo(id, (byte) state.get(), codec, true, angle, position.toPosition(), position.getLookAngle());
     }
 
     @Override

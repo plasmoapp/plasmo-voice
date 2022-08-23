@@ -106,6 +106,11 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
         return connectionByPlayerId.values();
     }
 
+    @Override
+    public void clearConnections() {
+        getConnections().forEach(this::disconnect);
+    }
+
     private void disconnect(UdpConnection connection) {
         connection.disconnect();
 

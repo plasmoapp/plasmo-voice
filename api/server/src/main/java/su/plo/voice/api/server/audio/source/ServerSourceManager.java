@@ -17,5 +17,7 @@ public interface ServerSourceManager extends AudioSourceManager<ServerAudioSourc
 
     @NotNull ServerStaticSource createStaticSource(@NotNull ServerPos3d position, @Nullable String codec);
 
+    @NotNull ServerDirectSource createDirectSource(@NotNull VoicePlayer player, @Nullable String codec);
+
     @NotNull UUID registerCustomSource(@NotNull ServerAudioSource source);
 }

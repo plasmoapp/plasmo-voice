@@ -46,6 +46,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Override
     protected void onInitialize() {
         eventBus.call(new VoiceServerInitializeEvent(this));
+        eventBus.register(this, sources);
 
         try {
             this.config = toml.load(ServerConfig.class, new File(configFolder(), "config.toml"), true);
@@ -84,6 +85,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         if (this.udpServer != null) {
             udpServer.stop();
+            udpConnections.clearConnections();
             eventBus.call(new UdpServerStoppedEvent(udpServer));
         }
 

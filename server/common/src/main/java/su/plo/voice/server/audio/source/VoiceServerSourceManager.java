@@ -8,6 +8,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.source.*;
 import su.plo.voice.api.server.entity.VoiceEntity;
+import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.proto.data.source.SourceInfo;
@@ -75,11 +76,26 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     }
 
     @Override
+    public @NotNull ServerDirectSource createDirectSource(@NotNull VoicePlayer player, @Nullable String codec) {
+        ServerDirectSource source = new VoiceServerDirectSource(voiceServer.getUdpConnectionManager(), codec, player);
+        sourceById.put(source.getInfo().getId(), source);
+
+        return source;
+    }
+
+    @Override
     public UUID registerCustomSource(@NotNull ServerAudioSource source) {
         UUID sourceId = UUID.randomUUID();
         sourceById.put(sourceId, source);
 
         return sourceId;
+    }
+
+    @EventSubscribe
+    public void onVoiceShutdown(VoiceServerShutdownEvent event) {
+        sourceById.clear();
+        sourceByEntityId.clear();
+        sourceByPlayerId.clear();
     }
 
     @EventSubscribe

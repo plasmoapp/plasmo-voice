@@ -54,7 +54,7 @@ public class ServerPos3d {
         return new Pos3d(x, y, z);
     }
 
-    public Pos3d getDirection() {
+    public Pos3d getLookAngle() {
         Pos3d pos = new Pos3d();
 
         double rotX = this.getYaw();
