@@ -133,11 +133,9 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         int distance = packet.getDistance();
 
-        boolean isPriority = packet.getDistance() > voiceInfo.getMaxDistance();
+//        boolean isPriority = packet.getDistance() > voiceInfo.getMaxDistance();
         double volume = sourceVolume.value();
-        int fadeDistance = isPriority
-                ? distance / voiceInfo.getFadeDivisor()
-                : distance / voiceInfo.getPriorityFadeDivisor();
+        int fadeDistance = distance / voiceInfo.getFadeDivisor(); // todo: activation fade divisor?
 
         // todo: occlusion
 
@@ -186,6 +184,10 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public void process(@NotNull SourceAudioEndPacket packet) {
+        for (DeviceSource source : sourceGroup.getSources()) {
+            source.write(null);
+        }
+
         this.lastSequenceNumber = packet.getSequenceNumber();
         if (decoder != null) decoder.reset();
     }

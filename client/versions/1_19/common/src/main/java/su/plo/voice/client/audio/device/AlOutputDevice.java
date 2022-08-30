@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.device;
 
 import com.mojang.math.Vector3f;
+import lombok.Getter;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
@@ -33,7 +34,7 @@ import java.util.concurrent.*;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.lwjgl.openal.ALC10.ALC_TRUE;
 
-public final class AlOutputDevice extends AudioDeviceBase implements AlAudioDevice, OutputDevice<AlSource> {
+public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevice, OutputDevice<AlSource> {
 
     private static final Logger LOGGER = LogManager.getLogger(AlOutputDevice.class);
 
@@ -43,6 +44,8 @@ public final class AlOutputDevice extends AudioDeviceBase implements AlAudioDevi
     private final ScheduledExecutorService executor;
 
     private AudioFormat format;
+    @Getter
+    private int bufferSize;
     private long devicePointer;
     private long contextPointer;
 
@@ -83,6 +86,7 @@ public final class AlOutputDevice extends AudioDeviceBase implements AlAudioDevi
             try {
                 this.devicePointer = openDevice(name);
                 this.format = format;
+                this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
 
                 ALCCapabilities aLCCapabilities = ALC.createCapabilities(devicePointer);
                 if (AlUtil.checkAlcErrors(devicePointer, "Get capabilities")) {

@@ -7,7 +7,9 @@ import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
 
+import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Audio capture thread
@@ -28,9 +30,13 @@ public interface AudioCapture {
 
     void setDevice(@NotNull InputDevice device);
 
-    @NotNull Activation getActivation();
+    @NotNull Collection<ClientActivation> getActivations();
 
-    void setActivation(@NotNull Activation activation);
+    void registerActivation(@NotNull ClientActivation activation);
+
+    void unregisterActivation(@NotNull ClientActivation activation);
+
+    void unregisterActivation(@NotNull UUID activationId);
 
     void initialize(@NotNull ServerInfo serverInfo);
 
@@ -39,26 +45,4 @@ public interface AudioCapture {
     void stop();
 
     boolean isActive();
-
-    interface Activation {
-        @NotNull Result process(short[] samples);
-
-        @NotNull String getType();
-
-        void setDisabled(boolean disabled);
-
-        boolean isDisabled();
-
-        boolean isActive();
-
-        boolean isActivePriority();
-
-        long getLastSpeak();
-
-        enum Result {
-            NOT_ACTIVATED,
-            ACTIVATED,
-            END
-        }
-    }
 }

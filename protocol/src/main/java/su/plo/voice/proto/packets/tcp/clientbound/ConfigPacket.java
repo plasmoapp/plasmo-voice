@@ -6,11 +6,16 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
@@ -24,33 +29,37 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     private int sampleRate;
 
     @Getter
-    private String codec;
-
-    @Getter
-    private List<Integer> distances;
-
-    @Getter
-    private int defaultDistance;
-
-    @Getter
-    private int maxPriorityDistance;
+    private String codec; // todo: per-source codecs
 
     @Getter
     private int fadeDivisor;
 
     @Getter
-    private int priorityFadeDivisor;
+    private VoiceActivation proximityActivation;
+
+    private List<VoiceActivation> activations;
+
+    public Collection<VoiceActivation> getActivations() {
+        return activations;
+    }
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         this.serverId = PacketUtil.readUUID(in);
         this.sampleRate = in.readInt();
         this.codec = PacketUtil.readNullableString(in);
-        this.distances = PacketUtil.readIntList(in);
-        this.defaultDistance = in.readInt();
-        this.maxPriorityDistance = in.readInt();
         this.fadeDivisor = in.readInt();
-        this.priorityFadeDivisor = in.readInt();
+
+        // activations
+        this.proximityActivation = new VoiceActivation();
+        proximityActivation.deserialize(in);
+
+        this.activations = new ArrayList<>();
+        int size = in.readInt();
+        for (int i = 0; i < size; i++) {
+            VoiceActivation activation = new VoiceActivation();
+            activation.deserialize(in);
+        }
     }
 
     @Override
@@ -58,11 +67,13 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         PacketUtil.writeUUID(out, serverId);
         out.writeInt(sampleRate);
         PacketUtil.writeNullableString(out, codec);
-        PacketUtil.writeIntList(out, distances);
-        out.writeInt(defaultDistance);
-        out.writeInt(maxPriorityDistance);
         out.writeInt(fadeDivisor);
-        out.writeInt(priorityFadeDivisor);
+
+        // activations
+        checkNotNull(proximityActivation).serialize(out);
+
+        out.writeInt(activations.size());
+        activations.forEach(activation -> activation.serialize(out));
     }
 
     @Override

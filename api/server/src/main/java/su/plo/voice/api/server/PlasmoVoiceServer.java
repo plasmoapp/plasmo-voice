@@ -2,6 +2,7 @@ package su.plo.voice.api.server;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
+import su.plo.voice.api.server.audio.capture.ActivationManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
@@ -54,11 +55,18 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
     @NotNull ServerSourceManager getSourceManager();
 
     /**
-     * Gets the {@link UdpServerConnectionManager}
+     * Gets the {@link ActivationManager}
+     *
+     * @return {@link ActivationManager}
+     */
+    @NotNull ActivationManager getActivationManager();
+
+    /**
+     * Gets the {@link TcpServerConnectionManager}
      *
      * This manager can be used to broadcast to tcp connections
      *
-     * @return the connection manager
+     * @return {@link TcpServerConnectionManager}
      */
     @NotNull TcpServerConnectionManager getTcpConnectionManager();
 
@@ -67,14 +75,14 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
      *
      * This manager can be used to broadcast or manage udp connections
      *
-     * @return the connection manager
+     * @return {@link UdpServerConnectionManager}
      */
     @NotNull UdpServerConnectionManager getUdpConnectionManager();
 
     /**
      * Get the {@link UdpServer}
      *
-     * @return the udp server
+     * @return {@link UdpServer}
      */
     Optional<UdpServer> getUdpServer();
 }

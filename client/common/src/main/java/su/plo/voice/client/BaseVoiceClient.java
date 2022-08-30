@@ -68,6 +68,15 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected void onShutdown() {
         logger.info("Shutting down");
 
+        if (config != null) {
+            try {
+                System.out.println(config);
+                toml.save(ClientConfig.class, config, new File(configFolder(), "client.toml"));
+            } catch (IOException e) {
+                throw new IllegalStateException("Failed to load config", e);
+            }
+        }
+
         eventBus.unregister(this);
 
         getEventBus().call(new VoiceClientShutdownEvent(this));

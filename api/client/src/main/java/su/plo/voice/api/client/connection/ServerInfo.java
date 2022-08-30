@@ -3,6 +3,7 @@ package su.plo.voice.api.client.connection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.encryption.Encryption;
+import su.plo.voice.proto.data.capture.Activation;
 
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -74,53 +75,22 @@ public interface ServerInfo {
         @Nullable String getCodec();
 
         /**
-         * Gets the voice available distances
-         *
-         * @return collection of distances
+         * Gets the proximity activation
          */
-        Collection<Integer> getDistances();
+        @NotNull Activation getProximityActivation();
 
         /**
-         * Gets the voice default distance
-         *
-         * @return the default distance
+         * Gets the voice activations
          */
-        int getDefaultDistance();
-
-        /**
-         * Gets the min distance from a distances collection
-         *
-         * @return the min distance
-         */
-        int getMinDistance();
-
-        /**
-         * Gets the max distance from a distances collection
-         *
-         * @return the max distance
-         */
-        int getMaxDistance();
-
-        /**
-         * Gets the max allowed priority distance
-         *
-         * @return the max priority distance
-         */
-        int getMaxPriorityDistance();
+        Collection<Activation> getActivations();
 
         /**
          * Gets the fade divisor
+         * todo: move to source info?
          *
          * @return the fade divisor
          */
         int getFadeDivisor();
-
-        /**
-         * Gets the priority fade divisor
-         *
-         * @return the priority fade divisor
-         */
-        int getPriorityFadeDivisor();
     }
 
     /**

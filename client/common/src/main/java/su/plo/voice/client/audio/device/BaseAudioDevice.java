@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-public abstract class AudioDeviceBase implements AudioDevice {
+public abstract class BaseAudioDevice implements AudioDevice {
     private final ListMultimap<AudioFilter.Priority, AudioFilter> filters = Multimaps.synchronizedListMultimap(
             Multimaps.newListMultimap(new HashMap<>(), ArrayList::new)
     );

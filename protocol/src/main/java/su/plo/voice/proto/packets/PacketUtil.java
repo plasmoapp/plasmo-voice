@@ -21,7 +21,7 @@ public class PacketUtil {
 
     public static void writeIntList(ByteArrayDataOutput out, List<Integer> list) {
         out.writeInt(list.size());
-        for (int i : list) out.writeInt(i);
+        list.forEach(out::writeInt);
     }
 
     public static List<Integer> readIntList(ByteArrayDataInput in) {

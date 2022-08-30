@@ -8,6 +8,7 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.capture.ActivationManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
@@ -17,6 +18,7 @@ import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.socket.UdpServer;
+import su.plo.voice.server.audio.capture.VoiceActivationManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
@@ -39,6 +41,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected final ServerSourceManager sources = new VoiceServerSourceManager(this);
 
     protected UdpServer udpServer;
+    protected ActivationManager activations;
 
     @Getter
     protected ServerConfig config;
@@ -54,6 +57,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }
+
+        this.activations = new VoiceActivationManager(config.getVoice());
 
         UdpServer server = new NettyUdpServer(this);
 
@@ -100,6 +105,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Override
     public @NotNull ServerSourceManager getSourceManager() {
         return sources;
+    }
+
+    @Override
+    public @NotNull ActivationManager getActivationManager() {
+        return activations;
     }
 
     @Override

@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
+import su.plo.voice.proto.data.capture.Activation;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 
 import java.net.InetSocketAddress;
@@ -51,11 +53,9 @@ public final class VoiceServerInfo implements ServerInfo {
         this.voiceInfo = new VoiceServerVoiceInfo(
                 config.getSampleRate(),
                 config.getCodec(),
-                config.getDistances(),
-                config.getDefaultDistance(),
-                config.getMaxPriorityDistance(),
                 config.getFadeDivisor(),
-                config.getPriorityFadeDivisor()
+                config.getProximityActivation(),
+                new ArrayList<>(config.getActivations())
         );
         this.playerInfo = new VoiceServerPlayerInfo(config.getPlayerInfo());
     }
@@ -76,37 +76,20 @@ public final class VoiceServerInfo implements ServerInfo {
         @Getter
         private final String codec;
 
-        @Setter
-        private @NotNull List<Integer> distances;
-
-        @Getter
-        private int defaultDistance;
-
-        @Getter
-        @Setter
-        private int maxPriorityDistance;
-
         @Getter
         @Setter
         private int fadeDivisor;
 
         @Getter
         @Setter
-        private int priorityFadeDivisor;
+        private VoiceActivation proximityActivation;
+
+        @Setter
+        private List<Activation> activations;
 
         @Override
-        public Collection<Integer> getDistances() {
-            return distances;
-        }
-
-        @Override
-        public int getMinDistance() {
-            return distances.get(0);
-        }
-
-        @Override
-        public int getMaxDistance() {
-            return distances.get(distances.size() - 1);
+        public Collection<Activation> getActivations() {
+            return activations;
         }
     }
 

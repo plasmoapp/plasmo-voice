@@ -19,7 +19,7 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public final class StreamAlSource extends AlSourceBase {
+public final class StreamAlSource extends BaseAlSource {
 
     private static final Logger LOGGER = LogManager.getLogger(StreamAlSource.class);
     private static final int DEFAULT_NUM_BUFFERS = 8;
@@ -103,6 +103,13 @@ public final class StreamAlSource extends AlSourceBase {
     @Override
     public void write(byte[] samples) {
         if (!isStreaming.get()) return;
+
+        if (samples == null) { // fill queue with empty buffers
+            for (int i = 0; i < numBuffers; i++) {
+                write(new byte[device.getBufferSize()]);
+            }
+            return;
+        }
 
         ByteBuffer buffer = MemoryUtil.memAlloc(samples.length);
         buffer.put(samples);

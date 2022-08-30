@@ -12,7 +12,7 @@ public interface KeyBindings {
 
     Optional<KeyBinding> getKeyBinding(@NotNull String name);
 
-    void register(@NotNull String name, List<KeyBinding.Key> keys, @NotNull String category, boolean anyContext);
+    KeyBinding register(@NotNull String name, List<KeyBinding.Key> keys, @NotNull String category, boolean anyContext);
 
     void resetStates();
 

@@ -84,14 +84,8 @@ public final class ServerConfig {
         @ConfigField(path = "default_distance")
         private int defaultDistance = 16;
 
-        @ConfigField(path = "max_priority_distance")
-        private int maxPriorityDistance = 0;
-
         @ConfigField(path = "fade_divisor")
         private int fadeDivisor = 8;
-
-        @ConfigField(path = "priority_fade_divisor")
-        private int priorityFadeDivisor = 8;
 
         @ConfigField(path = "client_mod_required")
         private boolean clientModRequired = false;

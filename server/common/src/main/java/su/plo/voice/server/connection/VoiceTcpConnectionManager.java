@@ -9,6 +9,7 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.server.BaseVoiceServer;
@@ -18,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public final class VoiceTcpConnectionManager implements TcpServerConnectionManager {
 
@@ -81,11 +83,13 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                 UUID.fromString(config.getServerId()),
                 voiceConfig.getSampleRate(),
                 "opus",
-                voiceConfig.getDistances(),
-                voiceConfig.getDefaultDistance(),
-                voiceConfig.getMaxPriorityDistance(),
                 voiceConfig.getFadeDivisor(),
-                voiceConfig.getPriorityFadeDivisor()
+                (VoiceActivation) voiceServer.getActivationManager().getProximityActivation(),
+                voiceServer.getActivationManager()
+                        .getActivations()
+                        .stream()
+                        .map(activation -> (VoiceActivation) activation) // waytoodank
+                        .collect(Collectors.toList())
         ));
     }
 

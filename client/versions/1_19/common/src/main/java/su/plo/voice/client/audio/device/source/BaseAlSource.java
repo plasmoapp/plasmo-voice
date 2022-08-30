@@ -12,7 +12,7 @@ import su.plo.voice.api.client.event.audio.device.source.AlSourceUpdateParamEven
 import su.plo.voice.client.audio.AlUtil;
 import su.plo.voice.proto.data.pos.Pos3d;
 
-public abstract class AlSourceBase implements AlSource {
+public abstract class BaseAlSource implements AlSource {
 
     protected final PlasmoVoiceClient client;
     protected final AlAudioDevice device;
@@ -21,7 +21,7 @@ public abstract class AlSourceBase implements AlSource {
 
     private Pos3d position;
 
-    protected AlSourceBase(PlasmoVoiceClient client, AlAudioDevice device, int pointer) {
+    protected BaseAlSource(PlasmoVoiceClient client, AlAudioDevice device, int pointer) {
         this.client = client;
         this.device = device;
         this.pointer = pointer;

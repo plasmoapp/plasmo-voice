@@ -6,12 +6,15 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.SerializableConfigEntry;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.voice.api.client.audio.capture.ClientActivation;
+import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.config.entry.DoubleConfigEntry;
-import su.plo.voice.config.entry.IntConfigEntry;
+import su.plo.voice.proto.data.capture.Activation;
 
 import java.util.Map;
 import java.util.Optional;
@@ -35,18 +38,18 @@ public final class ClientConfig {
     @Data
     public static class Servers implements SerializableConfigEntry {
 
-        private final Map<UUID, Server> servers = Maps.newHashMap();
+        private final Map<UUID, Server> servers = Maps.newConcurrentMap();
 
-        public synchronized void put(@NotNull UUID serverId, Server server) {
+        public void put(@NotNull UUID serverId, Server server) {
             servers.put(serverId, server);
         }
 
-        public synchronized Optional<Server> getById(@NotNull UUID serverId) {
+        public Optional<Server> getById(@NotNull UUID serverId) {
             return Optional.ofNullable(servers.get(serverId));
         }
 
         @Override
-        public synchronized void deserialize(Object object) {
+        public void deserialize(Object object) {
             Map<String, Object> serialized = (Map<String, Object>) object;
 
             for (Map.Entry<String, Object> entry : serialized.entrySet()) {
@@ -58,8 +61,9 @@ public final class ClientConfig {
         }
 
         @Override
-        public synchronized Object serialize() {
+        public Object serialize() {
             Map<String, Object> serialized = Maps.newHashMap();
+
             servers.forEach((serverId, server) ->
                     serialized.put(serverId.toString(), toml.serialize(server))
             );
@@ -68,15 +72,82 @@ public final class ClientConfig {
         }
     }
 
-    @Config
     @Data
-    public static class Server {
+    public static class Server implements SerializableConfigEntry {
 
-        @ConfigField
-        private IntConfigEntry distance = new IntConfigEntry(0, 0, Short.MAX_VALUE);
+        private ConfigClientActivation proximityActivation;
+        private Map<UUID, ConfigClientActivation> activationById = Maps.newConcurrentMap();
 
-        @ConfigField
-        private IntConfigEntry priorityDistance = new IntConfigEntry(0, 0, Short.MAX_VALUE);
+        public void put(UUID activationId, ConfigClientActivation activation) {
+            activationById.put(activationId, activation);
+        }
+
+        public Optional<ConfigClientActivation> getActivation(UUID id) {
+            return Optional.ofNullable(activationById.get(id));
+        }
+
+        public ConfigClientActivation getActivation(UUID id, Activation serverActivation) {
+            return activationById.computeIfAbsent(
+                    id,
+                    (activationId) -> createActivation(serverActivation)
+            );
+        }
+
+        public ConfigClientActivation getProximityActivation(Activation serverActivation) {
+            if (proximityActivation == null) {
+                this.proximityActivation = createActivation(serverActivation);
+            }
+
+            return proximityActivation;
+        }
+
+        @Override
+        public void deserialize(Object o) {
+            Map<String, Object> serialized = (Map<String, Object>) o;
+
+            serialized.forEach((id, serializedActivation) -> {
+                if (id.equals("proximity")) {
+                    proximityActivation = new ConfigClientActivation();
+                    toml.deserialize(proximityActivation, serializedActivation);
+                    return;
+                }
+
+                ConfigClientActivation activation = new ConfigClientActivation();
+                toml.deserialize(activation, serializedActivation);
+                put(UUID.fromString(id), activation);
+            });
+        }
+
+        @Override
+        public Object serialize() {
+            Map<String, Object> serialized = Maps.newHashMap();
+
+            if (!proximityActivation.isDefault()) {
+                serialized.put("proximity", toml.serialize(proximityActivation));
+            }
+            for (Map.Entry<UUID, ConfigClientActivation> entry : activationById.entrySet()) {
+                UUID activationId = entry.getKey();
+                ConfigClientActivation activation = entry.getValue();
+
+                if (!activation.isDefault()) {
+                    serialized.put(activationId.toString(), toml.serialize(activation));
+                }
+            }
+
+            return serialized;
+        }
+
+        private ConfigClientActivation createActivation(Activation serverActivation) {
+            ConfigClientActivation activation = new ConfigClientActivation();
+            activation.getConfigDistance().set(serverActivation.getDefaultDistance());
+            activation.getConfigDistance().setDefault(
+                    serverActivation.getDefaultDistance(),
+                    serverActivation.getMinDistance(),
+                    serverActivation.getMaxDistance()
+            );
+
+            return activation;
+        }
     }
 
     @Config
@@ -90,10 +161,7 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> microphoneDisabled = new ConfigEntry<>(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> voiceActivation = new ConfigEntry<>(false);
-
-        @ConfigField
-        private DoubleConfigEntry voiceActivationThreshold = new DoubleConfigEntry(-30D, -60D, 0);
+        private DoubleConfigEntry activationThreshold = new DoubleConfigEntry(-30D, -60D, 0);
 
         @ConfigField
         private ConfigEntry<String> inputDevice = new ConfigEntry<>("");
@@ -106,6 +174,12 @@ public final class ClientConfig {
 
         @ConfigField
         private CategoryVolumes volumes = new CategoryVolumes();
+
+        @ConfigField(path = "activation_type")
+        protected EnumConfigEntry<ClientActivation.Type> activationType = new EnumConfigEntry<>(
+                ClientActivation.Type.class,
+                ClientActivation.Type.PUSH_TO_TALK
+        );
 
         @Data
         public static class CategoryVolumes implements SerializableConfigEntry {

@@ -1,5 +1,6 @@
 package su.plo.voice.client.audio.device;
 
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,7 @@ import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AlInputDevice extends AudioDeviceBase implements InputDevice {
+public class AlInputDevice extends BaseAudioDevice implements InputDevice {
 
     private static final Logger LOGGER = LogManager.getLogger(AlInputDevice.class);
 
@@ -32,6 +33,7 @@ public class AlInputDevice extends AudioDeviceBase implements InputDevice {
     private final @Nullable String name;
 
     private AudioFormat format;
+    @Getter
     private int bufferSize;
     private long devicePointer;
     private boolean started = false;

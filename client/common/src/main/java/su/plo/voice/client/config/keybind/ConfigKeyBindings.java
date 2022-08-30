@@ -31,15 +31,8 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
 
     public ConfigKeyBindings() {
         register(
-                "key.plasmo_voice.ptt",
+                "key.plasmo_voice.proximity.ptt",
                 ImmutableList.of(KeyBinding.Type.KEYSYM.getOrCreate(342)),
-                "gui.plasmo_voice.general",
-                true
-        );
-
-        register(
-                "key.plasmo_voice.priority_ptt",
-                ImmutableList.of(),
                 "gui.plasmo_voice.general",
                 true
         );
@@ -51,8 +44,12 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
         return Optional.of(keyBindings.get(name).value());
     }
 
+    public synchronized Optional<KeyBindingConfigEntry> getConfigKeyBinding(@NotNull String name) {
+        return Optional.ofNullable(keyBindings.get(name));
+    }
+
     @Override
-    public synchronized void register(@NotNull String name, List<KeyBinding.Key> keys, @NotNull String category, boolean anyContext) {
+    public synchronized KeyBinding register(@NotNull String name, List<KeyBinding.Key> keys, @NotNull String category, boolean anyContext) {
         KeyBinding keyBinding = new VoiceKeyBinding(this, name, keys, anyContext);
 
         if (categoryEntries.containsKey(category)) {
@@ -69,6 +66,8 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
 
         categoryEntries.put(category, entry);
         keyBindings.put(name, entry);
+
+        return keyBinding;
     }
 
     @Override

@@ -38,4 +38,13 @@ public class IntConfigEntry extends ConfigEntry<Integer> {
         this.min = min;
         this.max = max;
     }
+
+    @Override
+    public void deserialize(Object object) {
+        if (object instanceof Long)  {
+            super.deserialize(((Long) object).intValue());
+        } else {
+            super.deserialize(object);
+        }
+    }
 }

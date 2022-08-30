@@ -100,42 +100,44 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         voiceClient.setServerInfo(serverInfo);
 
         // update distances in client config
+        // todo: wtf? rework to activation system
         Optional<ClientConfig.Server> configServer = voiceClient.getConfig().getServers().getById(serverInfo.getServerId());
         if (configServer.isPresent()) {
             ClientConfig.Server server = configServer.get();
 
-            // set default distance
-            int defaultDistance = serverInfo.getVoiceInfo().getDefaultDistance();
-            server.getDistance().setDefault(defaultDistance);
-            if (!serverInfo.getVoiceInfo().getDistances().contains(server.getDistance().value())) {
-                server.getDistance().set(defaultDistance);
-            }
-
-            // set default priority distance
-            int maxPriorityDistance = serverInfo.getVoiceInfo().getMaxPriorityDistance();
-            if (maxPriorityDistance == 0) maxPriorityDistance = Short.MAX_VALUE;
-            int defaultPriorityDistance = Math.min(maxPriorityDistance, serverInfo.getVoiceInfo().getDefaultDistance() * 2);
-            server.getPriorityDistance().setDefault(defaultPriorityDistance);
-
-            if (server.getPriorityDistance().value() > maxPriorityDistance) {
-                server.getPriorityDistance().set(defaultPriorityDistance);
-            }
+//            // set default distance
+//            int defaultDistance = serverInfo.getVoiceInfo().getDefaultDistance();
+//            server.getDistance().setDefault(defaultDistance);
+//            if (!serverInfo.getVoiceInfo().getDistances().contains(server.getDistance().value())) {
+//                server.getDistance().set(defaultDistance);
+//            }
+//
+//            // set default priority distance
+//            int maxPriorityDistance = serverInfo.getVoiceInfo().getMaxPriorityDistance();
+//            if (maxPriorityDistance == 0) maxPriorityDistance = Short.MAX_VALUE;
+//            int defaultPriorityDistance = Math.min(maxPriorityDistance, serverInfo.getVoiceInfo().getDefaultDistance() * 2);
+//            server.getPriorityDistance().setDefault(defaultPriorityDistance);
+//
+//            if (server.getPriorityDistance().value() > maxPriorityDistance) {
+//                server.getPriorityDistance().set(defaultPriorityDistance);
+//            }
         } else {
-            ClientConfig.Server server = new ClientConfig.Server();
+            voiceClient.getConfig().getServers().put(
+                    serverInfo.getServerId(),
+                    new ClientConfig.Server()
+            );
 
-            // set default distance
-            int defaultDistance = serverInfo.getVoiceInfo().getDefaultDistance();
-            server.getDistance().set(defaultDistance);
-            server.getDistance().setDefault(defaultDistance);
-
-            // set default priority distance
-            int maxPriorityDistance = serverInfo.getVoiceInfo().getMaxPriorityDistance();
-            if (maxPriorityDistance == 0) maxPriorityDistance = Short.MAX_VALUE;
-            int defaultPriorityDistance = Math.min(maxPriorityDistance, serverInfo.getVoiceInfo().getDefaultDistance() * 2);
-            server.getPriorityDistance().setDefault(defaultPriorityDistance);
-            server.getPriorityDistance().set(defaultPriorityDistance);
-
-            voiceClient.getConfig().getServers().put(serverInfo.getServerId(), server);
+//            // set default distance
+//            int defaultDistance = serverInfo.getVoiceInfo().getDefaultDistance();
+//            server.getDistance().set(defaultDistance);
+//            server.getDistance().setDefault(defaultDistance);
+//
+//            // set default priority distance
+//            int maxPriorityDistance = serverInfo.getVoiceInfo().getMaxPriorityDistance();
+//            if (maxPriorityDistance == 0) maxPriorityDistance = Short.MAX_VALUE;
+//            int defaultPriorityDistance = Math.min(maxPriorityDistance, serverInfo.getVoiceInfo().getDefaultDistance() * 2);
+//            server.getPriorityDistance().setDefault(defaultPriorityDistance);
+//            server.getPriorityDistance().set(defaultPriorityDistance);
         }
 
         // initialize capture

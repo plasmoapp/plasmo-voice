@@ -70,6 +70,13 @@ public interface AudioDevice {
     Optional<AudioFormat> getFormat();
 
     /**
+     * Gets the device buffer size calculated from format
+     *
+     * @return the buffer size
+     */
+    int getBufferSize();
+
+    /**
      * Gets the device type
      *
      * @return the device type
