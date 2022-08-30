@@ -31,9 +31,9 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
 
     public ConfigKeyBindings() {
         register(
-                "key.plasmo_voice.proximity.ptt",
+                "key.plasmovoice.proximity.ptt",
                 ImmutableList.of(KeyBinding.Type.KEYSYM.getOrCreate(342)),
-                "gui.plasmo_voice.general",
+                "gui.plasmovoice.general",
                 true
         );
     }

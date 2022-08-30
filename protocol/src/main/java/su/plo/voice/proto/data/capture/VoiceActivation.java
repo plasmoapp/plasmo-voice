@@ -45,6 +45,13 @@ public class VoiceActivation implements Activation, PacketSerializable {
     protected String name;
     @Getter
     protected String translation;
+
+    @Getter
+    protected String hudIconLocation;
+
+    @Getter
+    protected String sourceIconLocation;
+
     protected List<Integer> distances = ImmutableList.of();
     @Getter
     protected int defaultDistance;
@@ -53,9 +60,17 @@ public class VoiceActivation implements Activation, PacketSerializable {
     @Getter
     protected Order priority;
 
-    public VoiceActivation(@NotNull String name, @NotNull String translation, List<Integer> distances, int defaultDistance, Order priority) {
+    public VoiceActivation(@NotNull String name,
+                           @NotNull String translation,
+                           @NotNull String hudIconLocation,
+                           @NotNull String sourceIconLocation,
+                           List<Integer> distances,
+                           int defaultDistance,
+                           Order priority) {
         this.name = checkNotNull(name);
         this.translation = translation;
+        this.hudIconLocation = checkNotNull(hudIconLocation);
+        this.sourceIconLocation = checkNotNull(sourceIconLocation);
         this.id = generateId(name);
         this.distances = checkNotNull(distances);
         this.defaultDistance = defaultDistance;
@@ -82,6 +97,9 @@ public class VoiceActivation implements Activation, PacketSerializable {
     @Override
     public void deserialize(ByteArrayDataInput in) {
         this.name = in.readUTF();
+        this.translation = in.readUTF();
+        this.hudIconLocation = in.readUTF();
+        this.sourceIconLocation = in.readUTF();
         this.id = UUID.nameUUIDFromBytes((name).getBytes(Charsets.UTF_8));
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
@@ -91,6 +109,9 @@ public class VoiceActivation implements Activation, PacketSerializable {
     @Override
     public void serialize(ByteArrayDataOutput out) {
         out.writeUTF(name);
+        out.writeUTF(translation);
+        out.writeUTF(hudIconLocation);
+        out.writeUTF(sourceIconLocation);
         PacketUtil.writeIntList(out, distances);
         out.writeInt(defaultDistance);
         out.writeUTF(priority.name());

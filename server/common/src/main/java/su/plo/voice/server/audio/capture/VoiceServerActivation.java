@@ -10,8 +10,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class VoiceServerActivation extends VoiceActivation implements ServerActivation {
 
-    public VoiceServerActivation(@NotNull String name, @NotNull String translation, List<Integer> distances, int defaultDistance, boolean transitive, Order priority) {
-        super(name, translation, distances, defaultDistance, priority);
+    public VoiceServerActivation(@NotNull String name,
+                                 @NotNull String translation,
+                                 @NotNull String hudIconLocation,
+                                 @NotNull String sourceIconLocation,
+                                 List<Integer> distances,
+                                 int defaultDistance,
+                                 boolean transitive,
+                                 Order priority) {
+        super(name, translation, hudIconLocation, sourceIconLocation, distances, defaultDistance, priority);
         this.transitive = transitive;
     }
 

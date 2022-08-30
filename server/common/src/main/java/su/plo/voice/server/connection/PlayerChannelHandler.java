@@ -27,13 +27,13 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
         if (clientVersion[0] > serverVersion[0]) {
             player.sendTranslatableMessage(
-                    "message.plasmo_voice.version_not_supported",
+                    "message.plasmovoice.version_not_supported",
                     String.format("%d.X.X", serverVersion[0])
             );
             return;
         } else if (clientVersion[0] < serverVersion[0]) {
             player.sendTranslatableMessage(
-                    "message.plasmo_voice.min_version",
+                    "message.plasmovoice.min_version",
                     String.format("%d.X.X", serverVersion[0])
             );
             return;

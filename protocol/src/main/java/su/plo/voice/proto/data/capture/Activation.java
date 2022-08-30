@@ -29,6 +29,20 @@ public interface Activation {
     @NotNull String getTranslation();
 
     /**
+     * Gets the activation's hud icon resource location
+     *
+     * @return the activation's icon resource location
+     */
+    @NotNull String getHudIconLocation();
+
+    /**
+     * Gets the activation's source icon resource location
+     *
+     * @return the activation's source resource location
+     */
+    @NotNull String getSourceIconLocation();
+
+    /**
      * Gets the activation's available distances
      *
      * @return collection of distances

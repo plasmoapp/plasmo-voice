@@ -19,7 +19,14 @@ public interface ActivationManager {
 
     Collection<ServerActivation> getActivations();
 
-    @NotNull ServerActivation register(@NotNull String name, List<Integer> distances, int defaultDistance, boolean transitive, Activation.Order order);
+    @NotNull ServerActivation register(@NotNull String name,
+                                       @NotNull String translation,
+                                       @NotNull String hudIconLocation,
+                                       @NotNull String sourceIconLocation,
+                                       List<Integer> distances,
+                                       int defaultDistance,
+                                       boolean transitive,
+                                       Activation.Order order);
 
     boolean unregister(@NotNull UUID id);
 

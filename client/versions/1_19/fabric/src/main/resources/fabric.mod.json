@@ -13,7 +13,7 @@
         "issues": "https://github.com/plasmoapp/plasmo-voice/issues"
     },
     "license": "All rights reserved",
-    "icon": "assets/plasmo_voice/icon.png",
+    "icon": "assets/plasmovoice/icon.png",
     "environment": "*",
     "entrypoints": {
         "client": [

@@ -18,7 +18,9 @@ public final class VoiceActivationManager implements ActivationManager {
     public VoiceActivationManager(ServerConfig.Voice voiceConfig) {
         this.proximityActivation = new VoiceServerActivation(
                 "proximity",
-                "gui.plasmo_voice.proximity",
+                "gui.plasmovoice.proximity",
+                "plasmovoice:textures/icons/microphone.png",
+                "plasmovoice:textures/icons/speaker.png",
                 voiceConfig.getDistances(),
                 voiceConfig.getDefaultDistance(),
                 true,
@@ -47,12 +49,21 @@ public final class VoiceActivationManager implements ActivationManager {
     }
 
     @Override
-    public @NotNull ServerActivation register(@NotNull String name, List<Integer> distances, int defaultDistance, boolean transitive, Activation.Order order) {
+    public @NotNull ServerActivation register(@NotNull String name,
+                                              @NotNull String translation,
+                                              @NotNull String hudIconLocation,
+                                              @NotNull String sourceIconLocation,
+                                              List<Integer> distances,
+                                              int defaultDistance,
+                                              boolean transitive,
+                                              Activation.Order order) {
         return activationById.computeIfAbsent(
                 VoiceActivation.generateId(name),
                 (id) -> new VoiceServerActivation(
-                        "proximity",
-                        "gui.plasmo_voice.proximity",
+                        name,
+                        translation,
+                        hudIconLocation,
+                        sourceIconLocation,
                         distances,
                         defaultDistance,
                         transitive,

@@ -44,6 +44,8 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         super(
                 activation.getName(),
                 activation.getTranslation(),
+                activation.getHudIconLocation(),
+                activation.getSourceIconLocation(),
                 new ArrayList<>(activation.getDistances()),
                 activation.getDefaultDistance(),
                 activation.getOrder()
@@ -57,7 +59,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         this.configType = activationConfig.getConfigType();
 
         // ptt
-        String pttKeyName = "key.plasmo_voice." + activation.getName() + ".ptt";
+        String pttKeyName = "key.plasmovoice." + activation.getName() + ".ptt";
         Optional<KeyBindingConfigEntry> pttKey = keyBindings.getConfigKeyBinding(pttKeyName);
         if (!pttKey.isPresent()) {
             keyBindings.register(pttKeyName, ImmutableList.of(), "hidden", true);
@@ -68,7 +70,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         else throw new IllegalStateException("Failed to register ptt keybinding");
 
         // toggle
-        String toggleKeyname = "key.plasmo_voice." + activation.getName() + ".toggle";
+        String toggleKeyname = "key.plasmovoice." + activation.getName() + ".toggle";
         Optional<KeyBindingConfigEntry> toggleKey = keyBindings.getConfigKeyBinding(toggleKeyname);
         if (!toggleKey.isPresent()) {
             keyBindings.register(toggleKeyname, ImmutableList.of(), "hidden", false);
