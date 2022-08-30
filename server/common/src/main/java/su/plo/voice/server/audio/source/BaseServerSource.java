@@ -14,12 +14,14 @@ import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
 @RequiredArgsConstructor
 public abstract class BaseServerSource implements ServerAudioSource {
 
     protected final UdpServerConnectionManager udpConnections;
+    @Getter
     protected final UUID id;
     protected final String codec;
     @Getter
@@ -29,8 +31,15 @@ public abstract class BaseServerSource implements ServerAudioSource {
     @Setter
     protected int angle;
 
+    protected final AtomicInteger state = new AtomicInteger(1);
+
     private final List<Predicate<VoicePlayer>> filters = new CopyOnWriteArrayList<>();
     private final ServerPos3d playerPosition = new ServerPos3d();
+
+    @Override
+    public int getState() {
+        return state.get();
+    }
 
     @Override
     public void addFilter(Predicate<VoicePlayer> filter) {
@@ -79,5 +88,12 @@ public abstract class BaseServerSource implements ServerAudioSource {
                 connection.getPlayer().sendPacket(packet);
             }
         }
+    }
+
+    protected void incrementState() {
+        state.updateAndGet((operand) -> {
+            int value = operand + 1;
+            return value > Byte.MAX_VALUE ? Byte.MIN_VALUE : value;
+        });
     }
 }

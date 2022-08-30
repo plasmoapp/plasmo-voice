@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.UUID;
@@ -13,7 +14,7 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public final class StaticSourceInfo extends SourceInfo {
 
     @Getter
@@ -28,7 +29,7 @@ public final class StaticSourceInfo extends SourceInfo {
                             int angle,
                             Pos3d position,
                             Pos3d lookAngle) {
-        super(sourceId, state, codec, iconVisible, angle);
+        super(sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
         this.position = position;
         this.lookAngle = lookAngle;
     }

@@ -83,9 +83,10 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
     public @NotNull SourceInfo getInfo() {
         return new DirectSourceInfo(
                 id,
+                (byte) state.get(),
                 codec,
-                true,
-                0,
+                iconVisible,
+                angle,
                 sender == null ? null : sender.getUUID(),
                 relativePosition,
                 lookAngle,

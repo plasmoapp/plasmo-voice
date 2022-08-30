@@ -38,6 +38,6 @@ public final class VoiceServerPlayerSource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new PlayerSourceInfo(id, codec, true, angle, player.getInfo());
+        return new PlayerSourceInfo(id, (byte) state.get(), codec, iconVisible, angle, player.getInfo());
     }
 }

@@ -7,20 +7,21 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public final class PlayerSourceInfo extends SourceInfo {
 
     @Getter
     private VoicePlayerInfo playerInfo;
 
-    public PlayerSourceInfo(@NotNull UUID sourceId, @NotNull String codec, boolean iconVisible, int angle, VoicePlayerInfo playerInfo) {
-        super(sourceId, (byte) 0, codec, iconVisible, angle);
+    public PlayerSourceInfo(@NotNull UUID sourceId, byte state, @NotNull String codec, boolean iconVisible, int angle, VoicePlayerInfo playerInfo) {
+        super(sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
         this.playerInfo = playerInfo;
     }
 

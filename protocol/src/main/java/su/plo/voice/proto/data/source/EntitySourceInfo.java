@@ -6,18 +6,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 
 import java.util.UUID;
 
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public final class EntitySourceInfo extends SourceInfo {
 
     @Getter
     private int entityId;
 
-    public EntitySourceInfo(@NotNull UUID sourceId, @NotNull String codec, boolean iconVisible, int angle, int entityId) {
-        super(sourceId, (byte) 0, codec, iconVisible, angle);
+    public EntitySourceInfo(@NotNull UUID sourceId, byte state, @NotNull String codec, boolean iconVisible, int angle, int entityId) {
+        super(sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
 
         this.entityId = entityId;
     }

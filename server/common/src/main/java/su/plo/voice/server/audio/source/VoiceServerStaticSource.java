@@ -13,12 +13,10 @@ import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public final class VoiceServerStaticSource extends BaseServerSource implements ServerStaticSource {
 
     private final AtomicBoolean dirty = new AtomicBoolean(true);
-    private final AtomicInteger state = new AtomicInteger(1);
 
     @Getter
     private ServerPos3d position;
@@ -32,17 +30,14 @@ public final class VoiceServerStaticSource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new StaticSourceInfo(id, (byte) state.get(), codec, true, angle, position.toPosition(), position.getLookAngle());
+        return new StaticSourceInfo(id, (byte) state.get(), codec, iconVisible, angle, position.toPosition(), position.getLookAngle());
     }
 
     @Override
     public void setPosition(@NotNull ServerPos3d position) {
         this.position = position;
         dirty.set(true);
-        state.updateAndGet((operand) -> {
-            int value = operand + 1;
-            return value > Byte.MAX_VALUE ? Byte.MIN_VALUE : value;
-        });
+        incrementState();
     }
 
     @Override

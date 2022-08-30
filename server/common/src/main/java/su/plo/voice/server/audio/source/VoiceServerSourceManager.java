@@ -46,7 +46,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                     player
             );
 
-            sourceById.put(source.getInfo().getId(), source);
+            sourceById.put(source.getId(), source);
 
             return source;
         });
@@ -61,7 +61,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                     entity
             );
 
-            sourceById.put(source.getInfo().getId(), source);
+            sourceById.put(source.getId(), source);
 
             return source;
         });
@@ -70,7 +70,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerStaticSource createStaticSource(@NotNull ServerPos3d position, @Nullable String codec) {
         ServerStaticSource source = new VoiceServerStaticSource(voiceServer.getUdpConnectionManager(), codec, position);
-        sourceById.put(source.getInfo().getId(), source);
+        sourceById.put(source.getId(), source);
 
         return source;
     }
@@ -78,7 +78,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerDirectSource createDirectSource(@NotNull VoicePlayer player, @Nullable String codec) {
         ServerDirectSource source = new VoiceServerDirectSource(voiceServer.getUdpConnectionManager(), codec, player);
-        sourceById.put(source.getInfo().getId(), source);
+        sourceById.put(source.getId(), source);
 
         return source;
     }
@@ -103,6 +103,6 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         ServerAudioSource source = sourceByPlayerId.remove(event.getPlayerId());
         if (source == null) return;
 
-        sourceById.remove(source.getInfo().getId());
+        sourceById.remove(source.getId());
     }
 }

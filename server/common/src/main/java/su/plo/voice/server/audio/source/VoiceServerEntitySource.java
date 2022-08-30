@@ -28,7 +28,7 @@ public final class VoiceServerEntitySource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new EntitySourceInfo(id, codec, true, angle, entity.getId());
+        return new EntitySourceInfo(id, (byte) state.get(), codec, iconVisible, angle, entity.getId());
     }
 }
 

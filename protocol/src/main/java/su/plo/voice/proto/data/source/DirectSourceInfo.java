@@ -7,13 +7,14 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.util.UUID;
 
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public final class DirectSourceInfo extends SourceInfo {
 
     @Getter
@@ -29,6 +30,7 @@ public final class DirectSourceInfo extends SourceInfo {
     private boolean cameraRelative = true;
 
     public DirectSourceInfo(@NotNull UUID sourceId,
+                            byte state,
                             @NotNull String codec,
                             boolean iconVisible,
                             int angle,
@@ -36,7 +38,7 @@ public final class DirectSourceInfo extends SourceInfo {
                             @Nullable Pos3d relativePosition,
                             @Nullable Pos3d lookAngle,
                             boolean cameraRelative) {
-        super(sourceId, (byte) 0, codec, iconVisible, angle);
+        super(sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
 
         this.senderId = senderId;
         this.relativePosition = relativePosition;

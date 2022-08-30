@@ -28,10 +28,6 @@ public final class SourceAudioPacket extends BaseAudioPacket<ClientPacketUdpHand
     @Setter
     private short distance;
 
-    public SourceAudioPacket(long sequenceNumber, byte[] data, @NotNull UUID sourceId, short distance) {
-        this(sequenceNumber, (byte) 0, data, sourceId, distance);
-    }
-
     public SourceAudioPacket(long sequenceNumber, byte sourceState, byte[] data, @NotNull UUID sourceId, short distance) {
         super(sequenceNumber, data);
         this.sourceId = sourceId;

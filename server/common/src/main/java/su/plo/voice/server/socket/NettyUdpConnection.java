@@ -94,8 +94,9 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
         ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(player, "opus");
         SourceAudioPacket sourcePacket = new SourceAudioPacket(
                 packet.getSequenceNumber(),
+                (byte) source.getState(),
                 packet.getData(),
-                source.getInfo().getId(),
+                source.getId(),
                 packet.getDistance()
         );
         source.sendAudioPacket(sourcePacket, packet.getDistance());

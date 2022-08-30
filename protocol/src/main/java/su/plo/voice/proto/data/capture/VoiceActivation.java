@@ -35,6 +35,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ToString
 public class VoiceActivation implements Activation, PacketSerializable {
 
+    public static final String PROXIMITY_NAME = "proximity";
+    public static final UUID PROXIMITY_ID = generateId(PROXIMITY_NAME);
+
     public static UUID generateId(@NotNull String name) {
         return UUID.nameUUIDFromBytes((name).getBytes(Charsets.UTF_8));
     }
@@ -45,13 +48,10 @@ public class VoiceActivation implements Activation, PacketSerializable {
     protected String name;
     @Getter
     protected String translation;
-
     @Getter
     protected String hudIconLocation;
-
     @Getter
     protected String sourceIconLocation;
-
     protected List<Integer> distances = ImmutableList.of();
     @Getter
     protected int defaultDistance;

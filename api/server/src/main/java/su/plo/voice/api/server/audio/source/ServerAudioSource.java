@@ -7,9 +7,14 @@ import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 
+import java.util.UUID;
 import java.util.function.Predicate;
 
 public interface ServerAudioSource extends AudioSource {
+
+    @NotNull UUID getId();
+
+    int getState();
 
     @NotNull ServerPos3d getPosition();
 
