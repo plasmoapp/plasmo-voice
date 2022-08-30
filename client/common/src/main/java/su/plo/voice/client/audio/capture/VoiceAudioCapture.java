@@ -258,13 +258,16 @@ public class VoiceAudioCapture implements AudioCapture {
                 byte[] encoded = processActivation(proximityActivation, result, samples, null);
 
                 for (ClientActivation activation : activations.values()) {
+                    if (activation.isDisabled()) continue; // skip disabled activations
+
                     if (activation.getType() == ClientActivation.Type.INHERIT ||
                             activation.getType() == ClientActivation.Type.VOICE) {
                         encoded = processActivation(activation, result, samples, encoded);
-                        continue;
+                    } else {
+                        encoded = processActivation(activation, activation.process(samples), samples, encoded);
                     }
 
-                    encoded = processActivation(activation, activation.process(samples), samples, encoded);
+                    if (!activation.isTransitive()) break;
                 }
             } catch (InterruptedException ignored) {
                 break;
