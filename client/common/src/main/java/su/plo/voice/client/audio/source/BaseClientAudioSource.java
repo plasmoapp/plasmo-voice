@@ -53,6 +53,8 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     protected AtomicBoolean closed = new AtomicBoolean(false);
 
+    protected AtomicBoolean activated = new AtomicBoolean(false);
+
     public BaseClientAudioSource(@NotNull PlasmoVoiceClient voiceClient, ClientConfig config) {
         this.voiceClient = voiceClient;
         this.config = config;
@@ -180,6 +182,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         }
 
         this.lastSequenceNumber = packet.getSequenceNumber();
+        activated.set(true);
     }
 
     @Override
@@ -190,11 +193,13 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         this.lastSequenceNumber = packet.getSequenceNumber();
         if (decoder != null) decoder.reset();
+        activated.set(false);
     }
 
     @Override
     public void close() {
         if (decoder != null && decoder.isOpen()) decoder.close();
+        activated.set(false);
         closed.set(true);
 
         sourceGroup.getSources().forEach(DeviceSource::close);
@@ -204,6 +209,11 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     @Override
     public boolean isClosed() {
         return closed.get();
+    }
+
+    @Override
+    public boolean isActivated() {
+        return activated.get();
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)

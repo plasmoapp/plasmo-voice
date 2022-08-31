@@ -21,5 +21,7 @@ public interface ClientAudioSource<S extends SourceInfo> extends AudioSource {
 
     boolean isClosed();
 
+    boolean isActivated();
+
     void close();
 }
