@@ -22,10 +22,10 @@ public final class ClientStaticSource extends BaseClientAudioSource<StaticSource
 
     @Override
     protected float[] getLookAngle(float[] lookAngle) {
-        position[0] = (float) sourceInfo.getLookAngle().getX();
-        position[1] = (float) sourceInfo.getLookAngle().getY();
-        position[2] = (float) sourceInfo.getLookAngle().getZ();
+        lookAngle[0] = (float) sourceInfo.getLookAngle().getX();
+        lookAngle[1] = (float) sourceInfo.getLookAngle().getY();
+        lookAngle[2] = (float) sourceInfo.getLookAngle().getZ();
 
-        return position;
+        return lookAngle;
     }
 }
