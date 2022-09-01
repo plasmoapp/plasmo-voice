@@ -74,6 +74,8 @@ public abstract class BaseServerSource implements ServerAudioSource {
 
     @Override
     public void sendPacket(Packet<?> packet, short distance) {
+        distance *= 2;
+
         ServerPos3d sourcePosition = getPosition();
         double distanceSquared = distance * distance;
 
