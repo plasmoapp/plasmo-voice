@@ -27,11 +27,13 @@ public final class PlayerAudioEndPacket implements Packet<ServerPacketTcpHandler
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         this.sequenceNumber = in.readLong();
+        this.distance = in.readShort();
     }
 
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
         out.writeLong(sequenceNumber);
+        out.writeShort(distance);
     }
 
     @Override
