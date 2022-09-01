@@ -3,7 +3,6 @@ package su.plo.voice.client.audio.source;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
@@ -14,34 +13,44 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.source.*;
 import su.plo.voice.proto.packets.tcp.serverbound.SourceInfoRequestPacket;
 
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArraySet;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 @RequiredArgsConstructor
 public abstract class BaseClientSourceManager implements ClientSourceManager {
 
     protected final Map<UUID, ClientAudioSource<?>> sourceById = Maps.newConcurrentMap();
-    protected final Set<UUID> sourceRequests = new CopyOnWriteArraySet<>();
+    protected final Map<UUID, Long> sourceRequests = Maps.newConcurrentMap();
 
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
 
     @Override
-    public Optional<ClientAudioSource<?>> getSourceById(@NotNull UUID sourceId) {
+    public Optional<ClientAudioSource<?>> getSourceById(@NotNull UUID sourceId, boolean request) {
         if (!voiceClient.getServerConnection().isPresent()) throw new IllegalStateException("Not connected");
 
         ClientAudioSource<?> source = sourceById.get(sourceId);
         if (source != null) return Optional.of(source);
 
+        if (!request) return Optional.empty();
+
         // request source
-        if (!sourceRequests.contains(sourceId))
+        long lastRequest = sourceRequests.getOrDefault(sourceId, 0L);
+        if (System.currentTimeMillis() - lastRequest > 1_000L)
             sendSourceInfoRequest(sourceId);
 
         return Optional.empty();
     }
 
     @Override
-    public Collection<ClientAudioSource<?>> getSources(SourceInfo.@Nullable Type type) {
+    public Optional<ClientAudioSource<?>> getSourceById(@NotNull UUID sourceId) {
+        return getSourceById(sourceId, true);
+    }
+
+    @Override
+    public Collection<ClientAudioSource<?>> getSources() {
         return sourceById.values();
     }
 
@@ -105,7 +114,7 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     public void sendSourceInfoRequest(@NotNull UUID sourceId) {
         if (!voiceClient.getServerConnection().isPresent()) throw new IllegalStateException("Not connected");
 
-        sourceRequests.add(sourceId);
+        sourceRequests.put(sourceId, System.currentTimeMillis());
         voiceClient.getServerConnection().get().sendPacket(
                 new SourceInfoRequestPacket(sourceId)
         );

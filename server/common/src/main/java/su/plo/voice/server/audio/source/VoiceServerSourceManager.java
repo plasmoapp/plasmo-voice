@@ -11,7 +11,6 @@ import su.plo.voice.api.server.entity.VoiceEntity;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
-import su.plo.voice.proto.data.source.SourceInfo;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.util.Collection;
@@ -33,7 +32,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         return Optional.ofNullable(sourceById.get(sourceId));
     }
 
-    public Collection<ServerAudioSource> getSources(@Nullable SourceInfo.Type type) {
+    public Collection<ServerAudioSource> getSources() {
         return sourceById.values();
     }
 
