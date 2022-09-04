@@ -17,3 +17,11 @@ tasks {
         add("dev", jar)
     }
 }
+
+sourceSets {
+    main {
+        resources {
+            srcDirs(project(":client:common").sourceSets.main.get().resources)
+        }
+    }
+}

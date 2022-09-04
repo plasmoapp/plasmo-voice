@@ -2,6 +2,7 @@ package su.plo.voice.client.config;
 
 import com.google.common.collect.Maps;
 import lombok.Data;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
@@ -28,6 +29,9 @@ public final class ClientConfig {
 
     @ConfigField
     private Voice voice = new Voice();
+
+    @ConfigField
+    private UI ui = new UI();
 
     @ConfigField
     private ConfigKeyBindings keyBindings = new ConfigKeyBindings();
@@ -218,6 +222,36 @@ public final class ClientConfig {
                     if (!entry.isDefault()) serialized.put(key, entry.value());
                 });
                 return serialized;
+            }
+        }
+    }
+
+    @Config
+    @Data
+    public static class UI {
+
+        @ConfigField(path = "activation_icon_position")
+        protected EnumConfigEntry<ActivationIconPosition> activationIconPosition = new EnumConfigEntry<>(
+                ActivationIconPosition.class,
+                ActivationIconPosition.BOTTOM_CENTER
+        );
+
+        public enum ActivationIconPosition {
+            TOP_LEFT(16, 16),
+            TOP_CENTER(null, 16),
+            TOP_RIGHT(-16, 16),
+            BOTTOM_LEFT(16, -16),
+            BOTTOM_CENTER(null, -38),
+            BOTTOM_RIGHT(-16, -16);
+
+            @Getter
+            private final Integer x;
+            @Getter
+            private final Integer y;
+
+            ActivationIconPosition(Integer x, Integer y) {
+                this.x = x;
+                this.y = y;
             }
         }
     }

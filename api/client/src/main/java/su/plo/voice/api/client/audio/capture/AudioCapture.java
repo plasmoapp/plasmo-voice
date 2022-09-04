@@ -32,6 +32,8 @@ public interface AudioCapture {
 
     @NotNull Collection<ClientActivation> getActivations();
 
+    Optional<ClientActivation> getActivationById(@NotNull UUID activationId);
+
     void registerActivation(@NotNull ClientActivation activation);
 
     void unregisterActivation(@NotNull ClientActivation activation);

@@ -54,6 +54,8 @@ subprojects {
 
         implementation(project(":common"))
         implementation(project(":protocol"))
+
+        compileOnly(rootProject.libs.config)
     }
 }
 

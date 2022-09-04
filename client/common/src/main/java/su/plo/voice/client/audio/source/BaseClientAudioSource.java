@@ -50,9 +50,8 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     protected SourceGroup sourceGroup;
 
     protected long lastSequenceNumber = -1L;
-
+    protected long lastActivation = 0L;
     protected AtomicBoolean closed = new AtomicBoolean(false);
-
     protected AtomicBoolean activated = new AtomicBoolean(false);
 
     public BaseClientAudioSource(@NotNull PlasmoVoiceClient voiceClient, ClientConfig config) {
@@ -92,7 +91,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
                 device.runInContext(() -> {
                     alSource.setFloat(0x100E, 4F); // AL_MAX_GAIN
-                    alSource.setInt(0xD000, 0xD004); // AL_DISTANCE_MODEL // AL_LINEAR_DISTANCE_CLAMPED
+                    alSource.setInt(0xD000, 0xD003); // AL_DISTANCE_MODEL // AL_LINEAR_DISTANCE_CLAMPED
 
                     alSource.play();
                 });
@@ -182,6 +181,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         }
 
         this.lastSequenceNumber = packet.getSequenceNumber();
+        this.lastActivation = System.currentTimeMillis();
         activated.set(true);
     }
 
@@ -213,7 +213,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public boolean isActivated() {
-        return activated.get();
+        return activated.get() && System.currentTimeMillis() - lastActivation < 500L;
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
@@ -234,7 +234,6 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
                     alSource.setFloatArray(0x1005, lookAngle); // AL_DIRECTION
                     alSource.setFloat(0x1020, fadeDistance); // AL_REFERENCE_DISTANCE
                     alSource.setFloat(0x1023, maxDistance); // AL_MAX_DISTANCE
-                    alSource.setFloat(0x1021, 0.95F); // AL_ROLLOFF_FACTOR
                 });
             }
         }

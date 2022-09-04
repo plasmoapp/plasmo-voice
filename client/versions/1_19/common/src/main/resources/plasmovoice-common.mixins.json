@@ -6,7 +6,9 @@
     "mixins": [],
     "client": [
         "MixinKeyboardHandler",
-        "MixinMouseHandler"
+        "MixinLevelRenderer",
+        "MixinMouseHandler",
+        "MixinPlayerRenderer"
     ],
     "injectors": {
         "defaultRequire": 1

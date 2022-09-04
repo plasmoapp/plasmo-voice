@@ -90,6 +90,14 @@ public class VoiceAudioCapture implements AudioCapture {
     }
 
     @Override
+    public Optional<ClientActivation> getActivationById(@NotNull UUID activationId) {
+        if (proximityActivation != null && activationId.equals(proximityActivation.getId()))
+            return Optional.of(proximityActivation);
+
+        return Optional.ofNullable(activationById.get(activationId));
+    }
+
+    @Override
     public void registerActivation(@NotNull ClientActivation activation) {
         activations.put(activation.getOrder(), activation);
         activationById.put(activation.getId(), activation);
@@ -292,6 +300,7 @@ public class VoiceAudioCapture implements AudioCapture {
             encoded = encode(samples);
         }
 
+
         if (result == ClientActivation.Result.ACTIVATED) {
             sendVoicePacket(activation, encoded);
         } else if (result == ClientActivation.Result.END) {
@@ -343,7 +352,6 @@ public class VoiceAudioCapture implements AudioCapture {
 
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
-
 
         connection.get().sendPacket(new PlayerAudioEndPacket(
                 sequenceNumber++,
