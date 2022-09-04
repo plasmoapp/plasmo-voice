@@ -1,0 +1,2 @@
+## Used icons:
+- pepega
