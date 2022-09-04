@@ -57,7 +57,7 @@ public final class VoiceServerInfo implements ServerInfo {
                 config.getProximityActivation(),
                 new ArrayList<>(config.getActivations())
         );
-        this.playerInfo = new VoiceServerPlayerInfo(config.getPlayerInfo());
+        this.playerInfo = new VoiceServerPlayerInfo(config.getPermissions());
     }
 
     @Override
@@ -96,15 +96,15 @@ public final class VoiceServerInfo implements ServerInfo {
     @ToString
     static final class VoiceServerPlayerInfo implements ServerInfo.PlayerInfo {
 
-        private final Map<String, Integer> playerInfo;
+        private final Map<String, Boolean> permissions;
 
-        public VoiceServerPlayerInfo(@NotNull Map<String, Integer> playerInfo) {
-            this.playerInfo = checkNotNull(playerInfo, "playerInfo");
+        public VoiceServerPlayerInfo(@NotNull Map<String, Boolean> permissions) {
+            this.permissions = checkNotNull(permissions, "permissions");
         }
 
         @Override
-        public Optional<Integer> get(@NotNull String key) {
-            return Optional.ofNullable(playerInfo.get(checkNotNull(key)));
+        public Optional<Boolean> get(@NotNull String key) {
+            return Optional.ofNullable(permissions.get(checkNotNull(key)));
         }
     }
 }

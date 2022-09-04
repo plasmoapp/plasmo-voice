@@ -14,6 +14,7 @@ import java.util.UUID;
 public final class ModPlayerManager extends BasePlayerManager {
 
     private final PlasmoVoiceServer voiceServer;
+    private final PermissionSupplier permissions;
     private final MinecraftServer server;
 
     @Override
@@ -23,8 +24,8 @@ public final class ModPlayerManager extends BasePlayerManager {
             ServerPlayer serverPlayer = server.getPlayerList().getPlayer(playerId);
             if (serverPlayer == null) return Optional.empty();
 
-            VoicePlayer voicePlayer = new ModVoicePlayer(voiceServer, serverPlayer);
-            playerById.put(serverPlayer.getUUID(), voicePlayer);
+            VoicePlayer voicePlayer = createVoicePlayer(serverPlayer);
+            return Optional.of(voicePlayer);
         }
 
         return player;
@@ -38,8 +39,12 @@ public final class ModPlayerManager extends BasePlayerManager {
         if (playerById.containsKey(serverPlayer.getUUID()))
             return playerById.get(serverPlayer.getUUID());
 
-        VoicePlayer voicePlayer = new ModVoicePlayer(voiceServer, serverPlayer);
-        playerById.put(serverPlayer.getUUID(), voicePlayer);
+        return createVoicePlayer(serverPlayer);
+    }
+
+    private VoicePlayer createVoicePlayer(ServerPlayer player) {
+        VoicePlayer voicePlayer = new ModVoicePlayer(voiceServer, permissions, player);
+        playerById.put(player.getUUID(), voicePlayer);
 
         return voicePlayer;
     }

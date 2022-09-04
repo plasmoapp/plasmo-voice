@@ -1,5 +1,6 @@
 package su.plo.voice.server;
 
+import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
@@ -7,10 +8,12 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.server.connection.FabricServerChannelHandler;
 import su.plo.voice.server.event.player.PlayerJoinEvent;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
+import su.plo.voice.server.player.PermissionSupplier;
 
 import java.io.File;
 
@@ -67,5 +70,14 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
     @Override
     protected File addonsFolder() {
         return new File(configFolder(), "addons");
+    }
+
+    @Override
+    protected PermissionSupplier createPermissionSupplier() {
+        return (player, permission) -> {
+            if (!(player instanceof ServerPlayer serverPlayer))
+                throw new IllegalArgumentException("player is not " + ServerPlayer.class);
+            return Permissions.check(serverPlayer, permission);
+        };
     }
 }

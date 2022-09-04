@@ -8,14 +8,13 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.server.event.player.PlayerJoinEvent;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 public abstract class BasePlayerManager implements PlayerManager {
 
     protected final Map<UUID, VoicePlayer> playerById = Maps.newConcurrentMap();
+    protected final Set<String> synchronizedPermissions = new CopyOnWriteArraySet<>();
 
     @Override
     public Optional<VoicePlayer> getPlayerById(@NotNull UUID playerId) {
@@ -25,6 +24,24 @@ public abstract class BasePlayerManager implements PlayerManager {
     @Override
     public Collection<VoicePlayer> getPlayers() {
         return playerById.values();
+    }
+
+    @Override
+    public void registerPermission(@NotNull String permission) {
+        if (synchronizedPermissions.contains(permission))
+            throw new IllegalArgumentException("Permissions is already registered");
+
+        synchronizedPermissions.add(permission);
+    }
+
+    @Override
+    public void unregisterPermission(@NotNull String permission) {
+        synchronizedPermissions.remove(permission);
+    }
+
+    @Override
+    public Collection<String> getSynchronizedPermissions() {
+        return synchronizedPermissions;
     }
 
     @EventSubscribe

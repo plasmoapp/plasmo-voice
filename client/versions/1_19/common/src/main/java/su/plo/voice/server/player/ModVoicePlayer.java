@@ -26,8 +26,10 @@ public final class ModVoicePlayer extends BaseVoicePlayer {
 
     private final ServerPlayer player;
 
-    public ModVoicePlayer(@NotNull PlasmoVoiceServer voiceServer, @NotNull ServerPlayer player) {
-        super(voiceServer);
+    public ModVoicePlayer(@NotNull PlasmoVoiceServer voiceServer,
+                          @NotNull PermissionSupplier permissions,
+                          @NotNull ServerPlayer player) {
+        super(voiceServer, permissions);
         this.player = checkNotNull(player, "player");
     }
 
@@ -101,6 +103,11 @@ public final class ModVoicePlayer extends BaseVoicePlayer {
     @Override
     public boolean canSee(@NotNull VoicePlayer player) {
         return true;
+    }
+
+    @Override
+    public boolean hasPermission(@NotNull String permission) {
+        return permissions.hasPermission(player, permission);
     }
 
     @Override

@@ -105,6 +105,6 @@ public interface ServerInfo {
          *
          * @return the voice permission
          */
-        Optional<Integer> get(@NotNull String key);
+        Optional<Boolean> get(@NotNull String key);
     }
 }

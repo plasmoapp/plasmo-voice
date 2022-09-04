@@ -23,6 +23,8 @@ public interface VoicePlayer extends VoiceEntity {
 
     boolean canSee(@NotNull VoicePlayer player);
 
+    boolean hasPermission(@NotNull String permission);
+
     boolean hasVoiceChat();
 
     Optional<PlayerModLoader> getModLoader();

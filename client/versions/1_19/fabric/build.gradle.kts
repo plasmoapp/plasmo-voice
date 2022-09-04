@@ -6,6 +6,7 @@ val buildVersion: String by rootProject
 val minecraftVersion = "1.19"
 val fabricLoaderVersion = "0.14.8"
 val fabricVersion = "0.58.0+1.19"
+val fabricPermissionsVersion = "0.2-SNAPSHOT"
 
 configurations {
     create("shadowCommon")
@@ -19,6 +20,7 @@ architectury {
 dependencies {
     modApi("net.fabricmc:fabric-loader:$fabricLoaderVersion")
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
+    modImplementation("me.lucko:fabric-permissions-api:${fabricPermissionsVersion}")?.let { include(it) }
 
     compileOnly(project(":client:versions:1_19:common", "dev")) {
         isTransitive = false

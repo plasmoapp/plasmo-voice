@@ -1,5 +1,6 @@
 package su.plo.voice.server.connection;
 
+import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.jetbrains.annotations.NotNull;
@@ -17,6 +18,7 @@ import su.plo.voice.server.config.ServerConfig;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -89,7 +91,8 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                         .getActivations()
                         .stream()
                         .map(activation -> (VoiceActivation) activation) // waytoodank
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                getPlayerPermissions(player)
         ));
     }
 
@@ -117,4 +120,15 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         }
     }
 
+    private Map<String, Boolean> getPlayerPermissions(@NotNull VoicePlayer player) {
+        Map<String, Boolean> permissions = Maps.newHashMap();
+
+        voiceServer.getPlayerManager()
+                .getSynchronizedPermissions()
+                .forEach(permission ->
+                        permissions.put(permission, player.hasPermission(permission))
+                );
+
+        return permissions;
+    }
 }

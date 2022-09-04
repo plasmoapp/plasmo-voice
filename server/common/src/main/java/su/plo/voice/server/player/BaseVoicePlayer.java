@@ -14,6 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class BaseVoicePlayer implements VoicePlayer {
 
     protected final PlasmoVoiceServer voiceServer;
+    protected final PermissionSupplier permissions;
 
     @Setter
     private PlayerModLoader modLoader;
@@ -23,8 +24,9 @@ public abstract class BaseVoicePlayer implements VoicePlayer {
     @Setter
     private boolean microphoneMuted;
 
-    public BaseVoicePlayer(@NotNull PlasmoVoiceServer voiceServer) {
+    public BaseVoicePlayer(@NotNull PlasmoVoiceServer voiceServer, @NotNull PermissionSupplier permissions) {
         this.voiceServer = checkNotNull(voiceServer, "voiceServer");
+        this.permissions = checkNotNull(permissions, "permissions");
     }
 
     @Override

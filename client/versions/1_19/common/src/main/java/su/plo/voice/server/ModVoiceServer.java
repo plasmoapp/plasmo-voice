@@ -8,6 +8,7 @@ import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.pos.WorldManager;
 import su.plo.voice.server.entity.ModEntityManager;
 import su.plo.voice.server.player.ModPlayerManager;
+import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.server.pos.ModWorldManager;
 
 import java.io.InputStream;
@@ -20,9 +21,10 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
 
     protected MinecraftServer server;
 
-    private PlayerManager players;
-    private EntityManager entities;
-    private WorldManager worlds;
+    protected PlayerManager players;
+    protected PermissionSupplier permissions;
+    protected EntityManager entities;
+    protected WorldManager worlds;
 
     @Override
     public @NotNull PlayerManager getPlayerManager() {
@@ -47,7 +49,8 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
     protected void onInitialize(MinecraftServer server) {
         this.server = server;
 
-        this.players = new ModPlayerManager(this, server);
+        this.permissions = createPermissionSupplier();
+        this.players = new ModPlayerManager(this, permissions, server);
         this.entities = new ModEntityManager(this, server);
         this.worlds = new ModWorldManager();
         eventBus.register(this, players);
@@ -58,4 +61,6 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
     protected void onShutdown(MinecraftServer server) {
         super.onShutdown();
     }
+
+    protected abstract PermissionSupplier createPermissionSupplier();
 }
