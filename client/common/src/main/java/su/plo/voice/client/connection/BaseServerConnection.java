@@ -162,7 +162,11 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         try {
             CompletableFuture<AudioDevice> outputDevice = deviceFactory.get().openDevice(
-                    format, null, Params.EMPTY
+                    format,
+                    null,
+                    Params.builder()
+                            .set("listenerCameraRelative", voiceClient.getConfig().getVoice().getListenerCameraRelative().value())
+                            .build()
             );
             voiceClient.getDeviceManager().add(outputDevice.get());
         } catch (DeviceException | ExecutionException | InterruptedException e) {

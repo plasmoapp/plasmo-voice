@@ -179,6 +179,9 @@ public final class ClientConfig {
         @ConfigField
         private CategoryVolumes volumes = new CategoryVolumes();
 
+        @ConfigField
+        private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(true);
+
         @ConfigField(path = "activation_type")
         protected EnumConfigEntry<ClientActivation.Type> activationType = new EnumConfigEntry<>(
                 ClientActivation.Type.class,

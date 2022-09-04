@@ -1,9 +1,11 @@
 package su.plo.voice.client.audio.device;
 
+import com.mojang.math.Quaternion;
 import com.mojang.math.Vector3f;
 import lombok.Getter;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -127,12 +129,40 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
                         0.0F, 1.0F, 0.0F
                 });
 
-                executor.scheduleAtFixedRate(() -> {
-                    Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+                final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
 
-                    Vec3 position = camera.getPosition();
-                    Vector3f lookVector = camera.getLookVector();
-                    Vector3f upVector = camera.getUpVector();
+                final Vector3f forwards = new Vector3f(0.0F, 0.0F, 1.0F);
+                final Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
+
+                executor.scheduleAtFixedRate(() -> {
+                    Vec3 position;
+                    Vector3f lookVector, upVector;
+
+                    if (params.get("listenerCameraRelative")) {
+                        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
+                        position = camera.getPosition();
+                        lookVector = camera.getLookVector();
+                        upVector = camera.getUpVector();
+                    } else {
+                        LocalPlayer player = Minecraft.getInstance().player;
+                        if (player == null) return;
+
+                        position = player.getEyePosition();
+
+
+                        rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
+                        rotation.mul(Vector3f.YP.rotationDegrees(-player.getYRot()));
+                        rotation.mul(Vector3f.XP.rotationDegrees(player.getXRot()));
+
+                        forwards.set(0.0F, 0.0F, 1.0F);
+                        forwards.transform(rotation);
+                        up.set(0.0F, 1.0F, 0.0F);
+                        up.transform(rotation);
+
+                        lookVector = forwards;
+                        upVector = up;
+                    }
 
                     AL11.alListener3f(
                             AL11.AL_POSITION,
