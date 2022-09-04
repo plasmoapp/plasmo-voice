@@ -19,10 +19,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class ConfigPlayerInfoPacket implements Packet<ClientPacketTcpHandler> {
 
     @Getter
-    private Map<String, Integer> playerInfo = new HashMap<>();
+    private Map<String, Boolean> permissions = new HashMap<>();
 
-    private ConfigPlayerInfoPacket(@NotNull Map<String, Integer> playerInfo) {
-        this.playerInfo = checkNotNull(playerInfo, "playerInfo cannot be null");
+    protected ConfigPlayerInfoPacket(@NotNull Map<String, Boolean> permissions) {
+        this.permissions = checkNotNull(permissions, "playerPermissions cannot be null");
     }
 
     @Override
@@ -30,19 +30,19 @@ public class ConfigPlayerInfoPacket implements Packet<ClientPacketTcpHandler> {
         int size = in.readInt();
         for (int i = 0; i < size; size++) {
             String key = in.readUTF();
-            int value = in.readInt();
+            boolean value = in.readBoolean();
 
-            playerInfo.put(key, value);
+            permissions.put(key, value);
         }
     }
 
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
-        out.writeInt(playerInfo.size());
-        for (Map.Entry<String, Integer> entry : playerInfo.entrySet()) {
-            out.writeUTF(entry.getKey());
-            out.writeInt(entry.getValue());
-        }
+        out.writeInt(permissions.size());
+        permissions.forEach((permission, value) -> {
+            out.writeUTF(permission);
+            out.writeBoolean(value);
+        });
     }
 
     @Override
