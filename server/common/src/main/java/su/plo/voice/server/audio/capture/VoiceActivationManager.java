@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.audio.capture.ActivationManager;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
+import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.proto.data.capture.Activation;
 import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.server.config.ServerConfig;
@@ -12,10 +13,12 @@ import java.util.*;
 
 public final class VoiceActivationManager implements ActivationManager {
 
+    private final PlayerManager players;
     private final ServerActivation proximityActivation;
     private final Map<UUID, ServerActivation> activationById = Maps.newConcurrentMap();
 
-    public VoiceActivationManager(ServerConfig.Voice voiceConfig) {
+    public VoiceActivationManager(PlayerManager players, ServerConfig.Voice voiceConfig) {
+        this.players = players;
         this.proximityActivation = new VoiceServerActivation(
                 VoiceActivation.PROXIMITY_NAME,
                 "gui.plasmovoice.proximity",

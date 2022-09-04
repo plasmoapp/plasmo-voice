@@ -12,17 +12,21 @@ import su.plo.voice.api.server.audio.capture.ActivationManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
+import su.plo.voice.api.server.entity.EntityManager;
 import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
+import su.plo.voice.api.server.player.PlayerManager;
+import su.plo.voice.api.server.pos.WorldManager;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.server.audio.capture.VoiceActivationManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
+import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.server.socket.NettyUdpServer;
 
 import java.io.File;
@@ -36,12 +40,24 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     protected final Logger logger = LogManager.getLogger();
-    protected final TcpServerConnectionManager tcpConnections = new VoiceTcpConnectionManager(this);
-    protected final UdpServerConnectionManager udpConnections = new VoiceUdpConnectionManager(this);
-    protected final ServerSourceManager sources = new VoiceServerSourceManager(this);
+    @Getter
+    protected final TcpServerConnectionManager tcpConnectionManager = new VoiceTcpConnectionManager(this);
+    @Getter
+    protected final UdpServerConnectionManager udpConnectionManager = new VoiceUdpConnectionManager(this);
+    @Getter
+    protected final ServerSourceManager sourceManager = new VoiceServerSourceManager(this);
 
     protected UdpServer udpServer;
-    protected ActivationManager activations;
+    @Getter
+    protected PermissionSupplier permissionSupplier;
+    @Getter
+    protected PlayerManager playerManager;
+    @Getter
+    protected EntityManager entityManager;
+    @Getter
+    protected WorldManager worldManager;
+    @Getter
+    protected ActivationManager activationManager;
 
     @Getter
     protected ServerConfig config;
@@ -49,7 +65,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Override
     protected void onInitialize() {
         eventBus.call(new VoiceServerInitializeEvent(this));
-        eventBus.register(this, sources);
+        eventBus.register(this, sourceManager);
 
         try {
             this.config = toml.load(ServerConfig.class, new File(configFolder(), "config.toml"), true);
@@ -58,7 +74,15 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             throw new IllegalStateException("Failed to load config", e);
         }
 
-        this.activations = new VoiceActivationManager(config.getVoice());
+        this.permissionSupplier = createPermissionSupplier();
+
+        this.playerManager = createPlayerManager(permissionSupplier);
+        eventBus.register(this, playerManager);
+        this.entityManager = createEntityManager();
+
+        this.worldManager = createWorldManager();
+
+        this.activationManager = new VoiceActivationManager(playerManager, config.getVoice());
 
         UdpServer server = new NettyUdpServer(this);
 
@@ -90,7 +114,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         if (this.udpServer != null) {
             udpServer.stop();
-            udpConnections.clearConnections();
+            udpConnectionManager.clearConnections();
             eventBus.call(new UdpServerStoppedEvent(udpServer));
         }
 
@@ -103,29 +127,17 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     @Override
-    public @NotNull ServerSourceManager getSourceManager() {
-        return sources;
-    }
-
-    @Override
-    public @NotNull ActivationManager getActivationManager() {
-        return activations;
-    }
-
-    @Override
-    public @NotNull TcpServerConnectionManager getTcpConnectionManager() {
-        return tcpConnections;
-    }
-
-    @Override
-    public @NotNull UdpServerConnectionManager getUdpConnectionManager() {
-        return udpConnections;
-    }
-
-    @Override
     public Optional<UdpServer> getUdpServer() {
         return Optional.ofNullable(udpServer);
     }
 
     public abstract int getMinecraftServerPort();
+
+    protected abstract PermissionSupplier createPermissionSupplier();
+
+    protected abstract PlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier);
+
+    protected abstract EntityManager createEntityManager();
+
+    protected abstract WorldManager createWorldManager();
 }

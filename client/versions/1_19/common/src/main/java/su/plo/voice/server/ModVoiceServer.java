@@ -21,26 +21,6 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
 
     protected MinecraftServer server;
 
-    protected PlayerManager players;
-    protected PermissionSupplier permissions;
-    protected EntityManager entities;
-    protected WorldManager worlds;
-
-    @Override
-    public @NotNull PlayerManager getPlayerManager() {
-        return players;
-    }
-
-    @Override
-    public @NotNull EntityManager getEntityManager() {
-        return entities;
-    }
-
-    @Override
-    public @NotNull WorldManager getWorldManager() {
-        return worlds;
-    }
-
     @Override
     protected InputStream getResource(String name) {
         return getClass().getClassLoader().getResourceAsStream(name);
@@ -48,13 +28,6 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
 
     protected void onInitialize(MinecraftServer server) {
         this.server = server;
-
-        this.permissions = createPermissionSupplier();
-        this.players = new ModPlayerManager(this, permissions, server);
-        this.entities = new ModEntityManager(this, server);
-        this.worlds = new ModWorldManager();
-        eventBus.register(this, players);
-
         super.onInitialize();
     }
 
@@ -62,5 +35,18 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
         super.onShutdown();
     }
 
-    protected abstract PermissionSupplier createPermissionSupplier();
+    @Override
+    protected PlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier) {
+        return new ModPlayerManager(this, permissionSupplier, server);
+    }
+
+    @Override
+    protected EntityManager createEntityManager() {
+        return new ModEntityManager(this, server);
+    }
+
+    @Override
+    protected WorldManager createWorldManager() {
+        return new ModWorldManager();
+    }
 }
