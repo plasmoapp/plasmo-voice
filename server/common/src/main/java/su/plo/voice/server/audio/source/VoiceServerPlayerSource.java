@@ -2,6 +2,7 @@ package su.plo.voice.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -14,8 +15,11 @@ public final class VoiceServerPlayerSource extends BaseServerSource implements S
     private final VoicePlayer player;
     private final ServerPos3d playerPosition = new ServerPos3d();
 
-    public VoiceServerPlayerSource(UdpServerConnectionManager udpConnections, @Nullable String codec, @NotNull VoicePlayer player) {
-        super(udpConnections, player.getUUID(), codec);
+    public VoiceServerPlayerSource(UdpServerConnectionManager udpConnections,
+                                   @NotNull AddonContainer addon,
+                                   @Nullable String codec,
+                                   @NotNull VoicePlayer player) {
+        super(udpConnections, addon, player.getUUID(), codec);
         this.player = player;
         addFilter(this::filterVanish);
     }
@@ -38,6 +42,6 @@ public final class VoiceServerPlayerSource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new PlayerSourceInfo(id, (byte) state.get(), codec, iconVisible, angle, player.getInfo());
+        return new PlayerSourceInfo(addon.getId(), id, (byte) state.get(), codec, iconVisible, angle, player.getInfo());
     }
 }

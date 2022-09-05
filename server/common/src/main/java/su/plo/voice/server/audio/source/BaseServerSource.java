@@ -3,6 +3,7 @@ package su.plo.voice.server.audio.source;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -21,6 +22,8 @@ import java.util.function.Predicate;
 public abstract class BaseServerSource implements ServerAudioSource {
 
     protected final UdpServerConnectionManager udpConnections;
+    @Getter
+    protected final AddonContainer addon;
     @Getter
     protected final UUID id;
     protected final String codec;

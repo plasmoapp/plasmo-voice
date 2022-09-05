@@ -11,13 +11,13 @@ import java.util.UUID;
 
 public interface ServerSourceManager extends AudioSourceManager<ServerAudioSource> {
 
-    @NotNull ServerPlayerSource getOrCreatePlayerSource(@NotNull VoicePlayer player, @Nullable String codec);
+    @NotNull ServerPlayerSource getOrCreatePlayerSource(@Nullable Object addonObject, @NotNull VoicePlayer player, @Nullable String codec);
 
-    @NotNull ServerEntitySource getOrCreateEntitySource(@NotNull VoiceEntity entity, @Nullable String codec);
+    @NotNull ServerEntitySource getOrCreateEntitySource(@Nullable Object addonObject, @NotNull VoiceEntity entity, @Nullable String codec);
 
-    @NotNull ServerStaticSource createStaticSource(@NotNull ServerPos3d position, @Nullable String codec);
+    @NotNull ServerStaticSource createStaticSource(@NotNull Object addonObject, @NotNull ServerPos3d position, @Nullable String codec);
 
-    @NotNull ServerDirectSource createDirectSource(@NotNull VoicePlayer player, @Nullable String codec);
+    @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject, @NotNull VoicePlayer player, @Nullable String codec);
 
     @NotNull UUID registerCustomSource(@NotNull ServerAudioSource source);
 }

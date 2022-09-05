@@ -21,6 +21,7 @@ import java.io.InputStream;
 public abstract class BaseVoice implements PlasmoVoice {
 
     protected final AddonManager addons = new VoiceAddonManager(
+            this,
             ImmutableList.of(modsFolder(), addonsFolder())
     );
     protected final EventBus eventBus = new VoiceEventBus();

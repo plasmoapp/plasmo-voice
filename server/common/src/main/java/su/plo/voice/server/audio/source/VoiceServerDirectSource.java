@@ -3,6 +3,7 @@ package su.plo.voice.server.audio.source;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.source.ServerDirectSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -29,9 +30,10 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
     private boolean cameraRelative = true;
 
     public VoiceServerDirectSource(UdpServerConnectionManager udpConnections,
+                                   @NotNull AddonContainer addon,
                                    @Nullable String codec,
                                    @NotNull VoicePlayer player) {
-        super(udpConnections, UUID.randomUUID(), codec);
+        super(udpConnections, addon, UUID.randomUUID(), codec);
         this.player = player;
     }
 
@@ -82,6 +84,7 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
     @Override
     public @NotNull SourceInfo getInfo() {
         return new DirectSourceInfo(
+                addon.getId(),
                 id,
                 (byte) state.get(),
                 codec,

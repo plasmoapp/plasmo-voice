@@ -3,6 +3,7 @@ package su.plo.voice.server.audio.source;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.source.ServerStaticSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.pos.ServerPos3d;
@@ -22,15 +23,16 @@ public final class VoiceServerStaticSource extends BaseServerSource implements S
     private ServerPos3d position;
 
     public VoiceServerStaticSource(UdpServerConnectionManager udpConnections,
+                                   @NotNull AddonContainer addon,
                                    @Nullable String codec,
                                    @NotNull ServerPos3d position) {
-        super(udpConnections, UUID.randomUUID(), codec);
+        super(udpConnections, addon, UUID.randomUUID(), codec);
         this.position = position;
     }
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new StaticSourceInfo(id, (byte) state.get(), codec, iconVisible, angle, position.toPosition(), position.getLookAngle());
+        return new StaticSourceInfo(addon.getId(), id, (byte) state.get(), codec, iconVisible, angle, position.toPosition(), position.getLookAngle());
     }
 
     @Override

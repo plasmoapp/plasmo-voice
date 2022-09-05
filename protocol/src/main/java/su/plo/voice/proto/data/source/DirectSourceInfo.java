@@ -29,7 +29,8 @@ public final class DirectSourceInfo extends SourceInfo {
     @Getter
     private boolean cameraRelative = true;
 
-    public DirectSourceInfo(@NotNull UUID sourceId,
+    public DirectSourceInfo(@NotNull String addonId,
+                            @NotNull UUID sourceId,
                             byte state,
                             @NotNull String codec,
                             boolean iconVisible,
@@ -38,7 +39,7 @@ public final class DirectSourceInfo extends SourceInfo {
                             @Nullable Pos3d relativePosition,
                             @Nullable Pos3d lookAngle,
                             boolean cameraRelative) {
-        super(sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
+        super(addonId, sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
 
         this.senderId = senderId;
         this.relativePosition = relativePosition;

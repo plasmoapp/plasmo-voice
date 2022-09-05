@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
@@ -11,6 +12,8 @@ import java.util.UUID;
 import java.util.function.Predicate;
 
 public interface ServerAudioSource extends AudioSource {
+
+    @NotNull AddonContainer getAddon();
 
     @NotNull UUID getId();
 

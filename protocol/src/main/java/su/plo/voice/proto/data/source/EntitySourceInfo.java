@@ -17,8 +17,14 @@ public final class EntitySourceInfo extends SourceInfo {
     @Getter
     private int entityId;
 
-    public EntitySourceInfo(@NotNull UUID sourceId, byte state, @NotNull String codec, boolean iconVisible, int angle, int entityId) {
-        super(sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
+    public EntitySourceInfo(@NotNull String addonId,
+                            @NotNull UUID sourceId,
+                            byte state,
+                            @NotNull String codec,
+                            boolean iconVisible,
+                            int angle,
+                            int entityId) {
+        super(addonId, sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
 
         this.entityId = entityId;
     }

@@ -3,6 +3,7 @@ package su.plo.voice.server.audio.source;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.source.ServerEntitySource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.entity.VoiceEntity;
@@ -16,8 +17,11 @@ public final class VoiceServerEntitySource extends BaseServerSource implements S
     private final VoiceEntity entity;
     private final ServerPos3d playerPosition = new ServerPos3d();
 
-    public VoiceServerEntitySource(UdpServerConnectionManager udpConnections, @Nullable String codec, @NotNull VoiceEntity entity) {
-        super(udpConnections, entity.getUUID(), codec);
+    public VoiceServerEntitySource(UdpServerConnectionManager udpConnections,
+                                   @NotNull AddonContainer addon,
+                                   @Nullable String codec,
+                                   @NotNull VoiceEntity entity) {
+        super(udpConnections, addon, entity.getUUID(), codec);
         this.entity = entity;
     }
 
@@ -28,7 +32,7 @@ public final class VoiceServerEntitySource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new EntitySourceInfo(id, (byte) state.get(), codec, iconVisible, angle, entity.getId());
+        return new EntitySourceInfo(addon.getId(), id, (byte) state.get(), codec, iconVisible, angle, entity.getId());
     }
 }
 

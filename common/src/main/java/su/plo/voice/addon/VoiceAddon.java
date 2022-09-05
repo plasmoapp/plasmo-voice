@@ -22,7 +22,7 @@ public final class VoiceAddon implements AddonContainer {
 
     public VoiceAddon(String id, Path path, Class<?> mainClass) {
         this.id = checkNotNull(id, "id cannot be null");
-        this.path = checkNotNull(path, "source cannot be null");
+        this.path = checkNotNull(path, "path cannot be null");
         this.mainClass = checkNotNull(mainClass, "mainClass cannot be null");
     }
 

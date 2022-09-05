@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.addon.annotation.processor.JsonAddon;
@@ -34,8 +35,13 @@ public final class VoiceAddonManager implements AddonManager {
     private final Map<Object, AddonContainer> addonByInstance = Maps.newHashMap();
     private final Map<String, AddonContainer> addons = Maps.newHashMap();
 
-    public VoiceAddonManager(List<File> addonFolders)  {
+    public VoiceAddonManager(PlasmoVoice voice, List<File> addonFolders)  {
         addonFolders.forEach(this::scanForAddons);
+
+        // register PlasmoVoice as an addon
+        AddonContainer voiceAddon = new PlasmoVoiceAddon(voice);
+        this.addons.put("plasmovoice", voiceAddon);
+        this.addonByInstance.put(voice, voiceAddon);
     }
 
     @Override

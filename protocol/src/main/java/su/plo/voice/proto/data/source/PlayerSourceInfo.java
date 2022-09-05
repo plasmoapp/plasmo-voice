@@ -20,8 +20,14 @@ public final class PlayerSourceInfo extends SourceInfo {
     @Getter
     private VoicePlayerInfo playerInfo;
 
-    public PlayerSourceInfo(@NotNull UUID sourceId, byte state, @NotNull String codec, boolean iconVisible, int angle, VoicePlayerInfo playerInfo) {
-        super(sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
+    public PlayerSourceInfo(@NotNull String addonId,
+                            @NotNull UUID sourceId,
+                            byte state,
+                            @NotNull String codec,
+                            boolean iconVisible,
+                            int angle,
+                            VoicePlayerInfo playerInfo) {
+        super(addonId, sourceId, state, codec, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
         this.playerInfo = playerInfo;
     }
 
