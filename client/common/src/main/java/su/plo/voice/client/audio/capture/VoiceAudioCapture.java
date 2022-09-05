@@ -1,9 +1,7 @@
 package su.plo.voice.client.audio.capture;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Multimaps;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -30,10 +28,7 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class VoiceAudioCapture implements AudioCapture {
@@ -52,11 +47,7 @@ public class VoiceAudioCapture implements AudioCapture {
 
     private ClientActivation proximityActivation;
 
-    private final ListMultimap<Activation.Order, ClientActivation> activations = Multimaps.synchronizedListMultimap(
-            Multimaps.newListMultimap(
-                    Maps.newEnumMap(Activation.Order.class), CopyOnWriteArrayList::new
-            )
-    );
+    private final List<ClientActivation> activations = new CopyOnWriteArrayList<>();
     private Map<UUID, ClientActivation> activationById = Maps.newConcurrentMap();
 
     private Thread thread;
@@ -99,13 +90,19 @@ public class VoiceAudioCapture implements AudioCapture {
 
     @Override
     public void registerActivation(@NotNull ClientActivation activation) {
-        activations.put(activation.getOrder(), activation);
+        int index;
+        for (index = 0; index < activations.size(); index++) {
+            ClientActivation act = activations.get(index);
+            if (activation.getWeight() >= act.getWeight()) break;
+        }
+
+        activations.add(index, activation);
         activationById.put(activation.getId(), activation);
     }
 
     @Override
     public void unregisterActivation(@NotNull ClientActivation activation) {
-        if (activations.remove(activation.getOrder(), activation)) {
+        if (activations.remove(activation)) {
             activationById.remove(activation.getId());
         }
     }
@@ -113,7 +110,7 @@ public class VoiceAudioCapture implements AudioCapture {
     @Override
     public void unregisterActivation(@NotNull UUID activationId) {
         ClientActivation activation = activationById.remove(activationId);
-        if (activation != null) activations.remove(activation.getOrder(), activation);
+        if (activation != null) activations.remove(activation);
     }
 
     @Override
@@ -265,7 +262,7 @@ public class VoiceAudioCapture implements AudioCapture {
                 ClientActivation.Result result = proximityActivation.process(samples);
                 byte[] encoded = processActivation(proximityActivation, result, samples, null);
 
-                for (ClientActivation activation : activations.values()) {
+                for (ClientActivation activation : activations) {
                     if (activation.isDisabled()) continue; // skip disabled activations
 
                     if (activation.getType() == ClientActivation.Type.INHERIT ||

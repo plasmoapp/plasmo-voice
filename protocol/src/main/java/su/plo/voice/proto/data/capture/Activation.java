@@ -80,21 +80,13 @@ public interface Activation {
     boolean isTransitive();
 
     /**
-     * Gets the activation' priority
+     * Gets the activation's weight
      *
      * todo: doc
      *
-     * @return the priority
+     * @return the weight
      */
-    default Order getOrder() {
-        return Order.NORMAL;
+    default int getWeight() {
+        return 0;
     };
-
-    enum Order {
-        FIRST,
-        EARLY,
-        NORMAL,
-        LATE,
-        LAST
-    }
 }

@@ -58,7 +58,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     @Getter
     protected boolean transitive = true;
     @Getter
-    protected Order priority;
+    protected int weight;
 
     public VoiceActivation(@NotNull String name,
                            @NotNull String translation,
@@ -66,7 +66,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
                            @NotNull String sourceIconLocation,
                            List<Integer> distances,
                            int defaultDistance,
-                           Order priority) {
+                           int weight) {
         this.name = checkNotNull(name);
         this.translation = translation;
         this.hudIconLocation = checkNotNull(hudIconLocation);
@@ -74,7 +74,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.id = generateId(name);
         this.distances = checkNotNull(distances);
         this.defaultDistance = defaultDistance;
-        this.priority = priority;
+        this.weight = weight;
     }
 
     @Override
@@ -103,7 +103,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.id = UUID.nameUUIDFromBytes((name).getBytes(Charsets.UTF_8));
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
-        this.priority = Order.valueOf(in.readUTF());
+        this.weight = in.readInt();
     }
 
     @Override
@@ -114,6 +114,6 @@ public class VoiceActivation implements Activation, PacketSerializable {
         out.writeUTF(sourceIconLocation);
         PacketUtil.writeIntList(out, distances);
         out.writeInt(defaultDistance);
-        out.writeUTF(priority.name());
+        out.writeInt(weight);
     }
 }

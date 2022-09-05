@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.audio.capture.ActivationManager;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.player.PlayerManager;
-import su.plo.voice.proto.data.capture.Activation;
 import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.server.config.ServerConfig;
 
@@ -27,7 +26,7 @@ public final class VoiceActivationManager implements ActivationManager {
                 voiceConfig.getDistances(),
                 voiceConfig.getDefaultDistance(),
                 true,
-                Activation.Order.NORMAL
+                1
         );
     }
 
@@ -59,7 +58,7 @@ public final class VoiceActivationManager implements ActivationManager {
                                               List<Integer> distances,
                                               int defaultDistance,
                                               boolean transitive,
-                                              Activation.Order order) {
+                                              int weight) {
         return activationById.computeIfAbsent(
                 VoiceActivation.generateId(name),
                 (id) -> new VoiceServerActivation(
@@ -70,7 +69,7 @@ public final class VoiceActivationManager implements ActivationManager {
                         distances,
                         defaultDistance,
                         transitive,
-                        Activation.Order.NORMAL
+                        weight
                 )
         );
     }

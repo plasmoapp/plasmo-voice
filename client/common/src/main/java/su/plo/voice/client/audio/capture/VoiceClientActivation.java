@@ -48,7 +48,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
                 activation.getSourceIconLocation(),
                 new ArrayList<>(activation.getDistances()),
                 activation.getDefaultDistance(),
-                activation.getOrder()
+                activation.getWeight()
         );
 
         this.config = config;

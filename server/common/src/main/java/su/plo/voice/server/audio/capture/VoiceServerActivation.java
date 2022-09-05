@@ -17,8 +17,8 @@ public final class VoiceServerActivation extends VoiceActivation implements Serv
                                  List<Integer> distances,
                                  int defaultDistance,
                                  boolean transitive,
-                                 Order priority) {
-        super(name, translation, hudIconLocation, sourceIconLocation, distances, defaultDistance, priority);
+                                 int weight) {
+        super(name, translation, hudIconLocation, sourceIconLocation, distances, defaultDistance, weight);
         this.transitive = transitive;
     }
 

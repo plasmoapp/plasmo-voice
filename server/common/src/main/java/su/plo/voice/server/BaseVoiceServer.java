@@ -88,9 +88,10 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         this.activationManager = new VoiceActivationManager(playerManager, config.getVoice());
 
         try {
+            Class.forName("net.luckperms.api.LuckPermsProvider");
             this.luckPermsListener = new LuckPermsListener(this, playerManager);
             luckPermsListener.subscribe();
-        } catch (IllegalStateException ignored) {
+        } catch (IllegalStateException | ClassNotFoundException ignored) {
             // luckperms not found
         }
 

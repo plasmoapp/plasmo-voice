@@ -1,7 +1,6 @@
 package su.plo.voice.api.server.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.data.capture.Activation;
 
 import java.util.Collection;
 import java.util.List;
@@ -26,7 +25,7 @@ public interface ActivationManager {
                                        List<Integer> distances,
                                        int defaultDistance,
                                        boolean transitive,
-                                       Activation.Order order);
+                                       int weight);
 
     boolean unregister(@NotNull UUID id);
 
