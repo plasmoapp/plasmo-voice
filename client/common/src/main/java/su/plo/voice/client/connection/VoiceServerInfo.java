@@ -1,5 +1,6 @@
 package su.plo.voice.client.connection;
 
+import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -96,15 +97,19 @@ public final class VoiceServerInfo implements ServerInfo {
     @ToString
     static final class VoiceServerPlayerInfo implements ServerInfo.PlayerInfo {
 
-        private final Map<String, Boolean> permissions;
+        private final Map<String, Boolean> permissions = Maps.newConcurrentMap();
 
         public VoiceServerPlayerInfo(@NotNull Map<String, Boolean> permissions) {
-            this.permissions = checkNotNull(permissions, "permissions");
+            this.permissions.putAll(checkNotNull(permissions, "permissions"));
         }
 
         @Override
         public Optional<Boolean> get(@NotNull String key) {
             return Optional.ofNullable(permissions.get(checkNotNull(key)));
+        }
+
+        public void update(@NotNull Map<String, Boolean> permissions) {
+            this.permissions.putAll(permissions);
         }
     }
 }

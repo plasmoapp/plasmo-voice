@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.proto.packets.tcp.clientbound.ConfigPlayerInfoPacket;
 import su.plo.voice.server.event.player.PlayerJoinEvent;
+import su.plo.voice.server.event.player.PlayerPermissionUpdateEvent;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.util.*;
@@ -42,6 +44,17 @@ public abstract class BasePlayerManager implements PlayerManager {
     @Override
     public Collection<String> getSynchronizedPermissions() {
         return synchronizedPermissions;
+    }
+
+    @EventSubscribe
+    public void onPermissionUpdate(PlayerPermissionUpdateEvent event) {
+        VoicePlayer player = event.getPlayer();
+        String permission = event.getPermission();
+
+        Map<String, Boolean> permissions = Maps.newHashMap();
+        permissions.put(permission, player.hasPermission(permission));
+
+        player.sendPacket(new ConfigPlayerInfoPacket(permissions));
     }
 
     @EventSubscribe

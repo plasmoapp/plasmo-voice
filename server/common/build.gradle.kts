@@ -11,6 +11,7 @@ dependencies {
     implementation(project(":protocol"))
 
     implementation(rootProject.libs.config)
+    compileOnly(rootProject.libs.luckperms)
 
     compileOnly(rootProject.libs.netty)
 }

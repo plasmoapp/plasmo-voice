@@ -26,6 +26,7 @@ import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
+import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.server.socket.NettyUdpServer;
 
@@ -59,6 +60,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Getter
     protected ActivationManager activationManager;
 
+    protected LuckPermsListener luckPermsListener;
+
     @Getter
     protected ServerConfig config;
 
@@ -83,6 +86,13 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         this.worldManager = createWorldManager();
 
         this.activationManager = new VoiceActivationManager(playerManager, config.getVoice());
+
+        try {
+            this.luckPermsListener = new LuckPermsListener(this, playerManager);
+            luckPermsListener.subscribe();
+        } catch (IllegalStateException ignored) {
+            // luckperms not found
+        }
 
         UdpServer server = new NettyUdpServer(this);
 
@@ -112,11 +122,20 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected void onShutdown() {
         eventBus.call(new VoiceServerShutdownEvent(this));
 
-        if (this.udpServer != null) {
+        if (luckPermsListener != null) {
+            luckPermsListener.unsubscribe();
+            this.luckPermsListener = null;
+        }
+
+        if (udpServer != null) {
             udpServer.stop();
             udpConnectionManager.clearConnections();
             eventBus.call(new UdpServerStoppedEvent(udpServer));
+
+            this.udpServer = null;
         }
+
+        // todo: better cleanup
 
         eventBus.unregister(this);
     }

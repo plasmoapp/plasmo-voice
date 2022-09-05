@@ -21,7 +21,7 @@ public class ConfigPlayerInfoPacket implements Packet<ClientPacketTcpHandler> {
     @Getter
     private Map<String, Boolean> permissions = new HashMap<>();
 
-    protected ConfigPlayerInfoPacket(@NotNull Map<String, Boolean> permissions) {
+    public ConfigPlayerInfoPacket(@NotNull Map<String, Boolean> permissions) {
         this.permissions = checkNotNull(permissions, "playerPermissions cannot be null");
     }
 

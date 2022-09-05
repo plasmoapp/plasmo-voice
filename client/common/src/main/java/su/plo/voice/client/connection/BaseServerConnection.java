@@ -185,7 +185,11 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull ConfigPlayerInfoPacket packet) {
-
+        voiceClient.getServerInfo()
+                .ifPresent(serverInfo ->
+                        ((VoiceServerInfo.VoiceServerPlayerInfo) serverInfo.getPlayerInfo())
+                                .update(packet.getPermissions())
+                );
     }
 
     @Override
