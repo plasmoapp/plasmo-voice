@@ -13,6 +13,7 @@ import su.plo.voice.proto.data.capture.Activation;
 import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 
+import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.util.*;
 
@@ -87,6 +88,22 @@ public final class VoiceServerInfo implements ServerInfo {
 
         @Setter
         private List<Activation> activations;
+
+        @Override
+        public @NotNull AudioFormat getFormat() {
+            return new AudioFormat(
+                    (float) sampleRate,
+                    16,
+                    1,
+                    true,
+                    false
+            );
+        }
+
+        @Override
+        public int getBufferSize() {
+            return (sampleRate / 1_000) * 20;
+        }
 
         @Override
         public Collection<Activation> getActivations() {

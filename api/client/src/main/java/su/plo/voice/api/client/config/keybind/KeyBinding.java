@@ -6,15 +6,15 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 public interface KeyBinding {
 
     @NotNull String getName();
 
-    Collection<Key> getKeys();
+    Set<Key> getKeys();
 
     boolean isAnyContext();
 
@@ -28,10 +28,12 @@ public interface KeyBinding {
 
     @FunctionalInterface
     interface OnPress {
+
         void onPress(@NotNull Action action);
     }
 
     enum Action {
+
         UP,
         DOWN,
         UNKNOWN;
@@ -46,6 +48,7 @@ public interface KeyBinding {
     }
 
     enum Type {
+
         KEYSYM,
         SCANCODE,
         MOUSE;
@@ -59,6 +62,7 @@ public interface KeyBinding {
 
     @AllArgsConstructor
     final class Key {
+
         @Getter
         private final @NotNull Type type;
         @Getter

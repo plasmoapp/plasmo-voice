@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -36,7 +35,7 @@ public final class VoiceKeyBinding implements KeyBinding {
     private boolean pressed;
 
     @Override
-    public Collection<Key> getKeys() {
+    public Set<Key> getKeys() {
         return keys;
     }
 

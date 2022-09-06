@@ -1,11 +1,11 @@
 package su.plo.voice.api.client.audio.device;
 
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 
 // todo: doc
@@ -33,7 +33,7 @@ public interface DeviceFactory {
      *
      * @return device names
      */
-    Collection<String> getDeviceNames();
+    ImmutableList<String> getDeviceNames();
 
     /**
      * Gets the device's factory type, should be unique

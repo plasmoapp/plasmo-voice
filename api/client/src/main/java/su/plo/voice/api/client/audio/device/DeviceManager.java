@@ -22,9 +22,10 @@ public interface DeviceManager {
      * Replaces old device with the new one
      *
      * @param oldDevice old device
+     *                  if null first device will be replaced
      * @param newDevice new device
      */
-    void replace(@NotNull AudioDevice oldDevice, @NotNull AudioDevice newDevice);
+    void replace(@Nullable AudioDevice oldDevice, @NotNull AudioDevice newDevice);
 
     /**
      * Removes the device

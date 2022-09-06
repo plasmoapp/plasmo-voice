@@ -67,14 +67,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         ServerInfo serverInfo = optServerInfo.get();
         this.voiceInfo = serverInfo.getVoiceInfo();
 
-        int bufferSize = (serverInfo.getVoiceInfo().getSampleRate() / 1_000) * 20;
-
         if (Strings.emptyToNull(sourceInfo.getCodec()) != null) {
             this.decoder = voiceClient.getCodecManager().createDecoder(
                     sourceInfo.getCodec(),
                     Params.builder()
-                            .set("sampleRate", serverInfo.getVoiceInfo().getSampleRate())
-                            .set("bufferSize", bufferSize)
+                            .set("sampleRate", voiceInfo.getSampleRate())
+                            .set("bufferSize", voiceInfo.getBufferSize())
                             .build()
             );
         }

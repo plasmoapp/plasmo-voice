@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.device;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -11,7 +12,6 @@ import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.*;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -44,7 +44,7 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public Collection<String> getDeviceNames() {
+    public ImmutableList<String> getDeviceNames() {
         List<String> devices = new ArrayList<>();
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
 
@@ -57,7 +57,7 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
             }
         }
 
-        return devices;
+        return ImmutableList.copyOf(devices);
     }
 
     @Override

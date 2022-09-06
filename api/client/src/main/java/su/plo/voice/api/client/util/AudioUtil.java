@@ -145,6 +145,42 @@ public final class AudioUtil {
         return db;
     }
 
+    /**
+     * Gets the highest audio level in the samples
+     *
+     * @param samples the samples
+     *
+     * @return the highest audio level
+     */
+    public static double calculateHighestAudioLevel(short[] samples) {
+        double highest = -127D;
+
+        for (int i = 0; i < samples.length; i += 50) {
+            double level = calculateAudioLevel(samples, i, Math.min(i + 50, samples.length));
+            if (level > highest) highest = level;
+        }
+
+        return highest;
+    }
+
+    /**
+     * Converts the audio level to double in range [0, 1]
+     *
+     * @return the double in range [0, 1]
+     */
+    public static double audioLevelToDoubleRange(double audioLevel) {
+        return 1D - (Math.max(-60D, audioLevel) / -60D);
+    }
+
+    /**
+     * Converts the double in range [0, 1] to audio level
+     *
+     * @return the audio level
+     */
+    public static double doubleRangeToAudioLevel(double value) {
+        return Math.round((1D - value) * -60D);
+    }
+
     private AudioUtil() {
     }
 }

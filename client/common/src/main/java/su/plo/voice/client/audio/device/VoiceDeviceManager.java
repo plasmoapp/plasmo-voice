@@ -33,22 +33,26 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     @Override
-    public void replace(@NotNull AudioDevice oldDevice, @NotNull AudioDevice newDevice) {
-        checkNotNull(oldDevice, "oldDevice cannot be null");
-        checkNotNull(oldDevice, "newDevice cannot be null");
+    public void replace(@Nullable AudioDevice oldDevice, @NotNull AudioDevice newDevice) {
+        checkNotNull(newDevice, "newDevice cannot be null");
 
         List<AudioDevice> devices = getDevicesList(newDevice);
 
-        if (devices != getDevicesList(oldDevice)) {
-            throw new IllegalArgumentException("Devices are not implementing the same interface");
-        }
+        if (oldDevice != null) {
+            if (devices != getDevicesList(oldDevice)) {
+                throw new IllegalArgumentException("Devices are not implementing the same interface");
+            }
 
-        int index = devices.indexOf(oldDevice);
-        if (index < 0) {
-            throw new IllegalArgumentException("oldDevice not found in device list");
-        }
+            int index = devices.indexOf(oldDevice);
+            if (index < 0) {
+                throw new IllegalArgumentException("oldDevice not found in device list");
+            }
 
-        devices.set(index, newDevice);
+            devices.set(index, newDevice);
+        } else {
+            if (devices.size() > 0) devices.set(0, newDevice);
+            else devices.add(newDevice);
+        }
     }
 
     @Override
@@ -69,9 +73,9 @@ public final class VoiceDeviceManager implements DeviceManager {
     @Override
     public Collection<AudioDevice> getDevices(DeviceType type) {
         if (type == DeviceType.INPUT) {
-            return ImmutableList.copyOf(inputDevices);
+            return inputDevices;
         } else if (type == DeviceType.OUTPUT) {
-            return ImmutableList.copyOf(outputDevices);
+            return outputDevices;
         } else {
             ImmutableList.Builder<AudioDevice> builder = ImmutableList.builder();
             return builder.addAll(inputDevices).addAll(outputDevices).build();

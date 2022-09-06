@@ -182,7 +182,7 @@ public final class VoiceEventBus implements EventBus {
 
         List<EventHandler<?>> listenerHandlers = registeredListeners.remove(listener);
 
-        if (listenerHandlers.size() > 0) removeHandlers(listenerHandlers);
+        if (listenerHandlers != null && listenerHandlers.size() > 0) removeHandlers(listenerHandlers);
     }
 
     @Override

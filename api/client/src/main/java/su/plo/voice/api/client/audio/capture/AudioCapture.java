@@ -7,6 +7,7 @@ import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
 
+import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,10 +27,6 @@ public interface AudioCapture {
 
     void setEncryption(@Nullable Encryption encryption);
 
-    Optional<InputDevice> getDevice();
-
-    void setDevice(@NotNull InputDevice device);
-
     @NotNull Collection<ClientActivation> getActivations();
 
     Optional<ClientActivation> getActivationById(@NotNull UUID activationId);
@@ -41,6 +38,16 @@ public interface AudioCapture {
     void unregisterActivation(@NotNull UUID activationId);
 
     void initialize(@NotNull ServerInfo serverInfo);
+
+    /**
+     * Opens the input device specified in the config
+     *
+     * @param format format which the device will be opened
+     *               if null current ServerInfo voice format will be used
+     *
+     * @return {@link InputDevice}
+     */
+    InputDevice openInputDevice(@Nullable AudioFormat format) throws Exception;
 
     void start();
 

@@ -90,9 +90,12 @@ public final class StreamAlSource extends BaseAlSource {
         client.getEventBus().call(event);
         if (event.isCancelled()) return;
 
+        AL11.alSourceStop(pointer);
+
         isStreaming.set(false);
 
         try {
+            thread.interrupt();
             thread.join();
         } catch (InterruptedException ignored) {
         }
@@ -148,9 +151,10 @@ public final class StreamAlSource extends BaseAlSource {
             }
 
             AL11.alDeleteBuffers(buffers);
+            AlUtil.checkErrors("Delete buffers");
 
             AL11.alDeleteSources(new int[]{ pointer });
-            AlUtil.checkErrors("Cleanup");
+            AlUtil.checkErrors("Delete source");
 
             AlSourceClosedEvent event = new AlSourceClosedEvent(this);
             client.getEventBus().call(event);

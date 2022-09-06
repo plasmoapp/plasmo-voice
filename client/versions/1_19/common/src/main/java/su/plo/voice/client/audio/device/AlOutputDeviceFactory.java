@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.device;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.ALC11;
@@ -12,8 +13,6 @@ import su.plo.voice.api.client.audio.device.DeviceFactory;
 import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
@@ -46,9 +45,9 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public Collection<String> getDeviceNames() {
+    public ImmutableList<String> getDeviceNames() {
         List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
-        return devices == null ? Collections.emptyList() : devices;
+        return devices == null ? ImmutableList.of() : ImmutableList.copyOf(devices);
     }
 
     @Override

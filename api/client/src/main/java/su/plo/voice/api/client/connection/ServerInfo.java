@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.proto.data.capture.Activation;
 
+import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Optional;
@@ -66,6 +67,23 @@ public interface ServerInfo {
          * @return the sample rate
          */
         int getSampleRate();
+
+        /**
+         * Gets the audio format based on sample rate
+         *
+         * sampleSizeInBits is 16
+         * channels is 1
+         *
+         * @return {@link AudioFormat}
+         */
+        @NotNull AudioFormat getFormat();
+
+        /**
+         * Gets the buffer size (for shorts) based on sample rate
+         *
+         * @return the buffer size
+         */
+        int getBufferSize();
 
         /**
          * Gets the voice codec

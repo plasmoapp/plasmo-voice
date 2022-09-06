@@ -6,13 +6,13 @@ import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
-import su.plo.voice.api.client.audio.device.DeviceFactory;
-import su.plo.voice.api.client.audio.device.InputDevice;
+import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
@@ -31,19 +31,18 @@ import javax.sound.sampled.AudioFormat;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class VoiceAudioCapture implements AudioCapture {
+public final class VoiceAudioCapture implements AudioCapture {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
+    private final DeviceManager devices;
     private final ClientConfig config;
 
     @Setter
     private volatile AudioEncoder encoder;
     @Setter
     private volatile Encryption encryption;
-    @Setter
-    private volatile InputDevice device;
 
     private ClientActivation proximityActivation;
 
@@ -57,6 +56,7 @@ public class VoiceAudioCapture implements AudioCapture {
     public VoiceAudioCapture(@NotNull PlasmoVoiceClient voiceClient,
                              @NotNull ClientConfig config) {
         this.voiceClient = voiceClient;
+        this.devices = voiceClient.getDeviceManager();
         this.config = config;
     }
 
@@ -70,10 +70,33 @@ public class VoiceAudioCapture implements AudioCapture {
         return Optional.ofNullable(encryption);
     }
 
-    @Override
-    public Optional<InputDevice> getDevice() {
-        return Optional.ofNullable(device);
+    private Optional<InputDevice> getDevice() {
+        Collection<AudioDevice> devices = this.devices.getDevices(DeviceType.INPUT);
+        return Optional.ofNullable((InputDevice) devices.stream().findFirst().orElse(null));
     }
+
+//    public void setDevice(@NotNull InputDevice device) {
+//        Optional<InputDevice> currentDevice = getDevice();
+//
+//        if (currentDevice.isPresent()) {
+//            if (currentDevice.get().isOpen()) {
+//                try {
+//                    device.close().get();
+//                    LOGGER.info("{} closed", device.getName());
+//                } catch (InterruptedException | ExecutionException e) {
+//                    LOGGER.error("Failed to close input device", e);
+//                    return;
+//                }
+//            }
+//
+//            voiceClient.getDeviceManager().replace(this.device, device);
+//        } else {
+//            voiceClient.getDeviceManager().clear(DeviceType.INPUT);
+//            voiceClient.getDeviceManager().add(device);
+//        }
+//
+//        this.device = device;
+//    }
 
     @Override
     public @NotNull Collection<ClientActivation> getActivations() {
@@ -116,35 +139,14 @@ public class VoiceAudioCapture implements AudioCapture {
     @Override
     public void initialize(@NotNull ServerInfo serverInfo) {
         // initialize input device
-        AudioFormat format = new AudioFormat(
-                (float) serverInfo.getVoiceInfo().getSampleRate(),
-                16,
-                1,
-                true,
-                false
-        );
+        AudioFormat format = serverInfo.getVoiceInfo().getFormat();
 
-        int bufferSize = (serverInfo.getVoiceInfo().getSampleRate() / 1_000) * 20;
-
-        if (config.getVoice().getUseJavaxInput().value()) {
+        if (!getDevice().isPresent()) {
             try {
-                openJavaxDevice(format);
+                InputDevice device = openInputDevice(format);
+                devices.replace(null, device);
             } catch (Exception e) {
-                LOGGER.error("Failed to open Javax input device", e);
-                return;
-            }
-        } else {
-            try {
-                openAlDevice(format);
-            } catch (Exception e) {
-                LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
-
-                try {
-                    openJavaxDevice(format);
-                } catch (Exception ex) {
-                    LOGGER.error("Failed to open Javax input device", ex);
-                    return;
-                }
+                LOGGER.error("Failed to open input device", e);
             }
         }
 
@@ -154,7 +156,7 @@ public class VoiceAudioCapture implements AudioCapture {
                     serverInfo.getVoiceInfo().getCodec(),
                     Params.builder()
                             .set("sampleRate", serverInfo.getVoiceInfo().getSampleRate())
-                            .set("bufferSize", bufferSize)
+                            .set("bufferSize", serverInfo.getVoiceInfo().getBufferSize())
                             .set("application", 2048) // todo: configurable?
                             .build()
             );
@@ -200,18 +202,40 @@ public class VoiceAudioCapture implements AudioCapture {
         LOGGER.info("Audio capture initialized");
     }
 
-    private void openAlDevice(@NotNull AudioFormat format) throws Exception {
-        Optional<DeviceFactory> alFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_INPUT");
-        if (!alFactory.isPresent()) throw new IllegalStateException("OpenAL input factory is not registered");
+    @Override
+    public InputDevice openInputDevice(@Nullable AudioFormat format) throws Exception {
+        if (format == null) {
+            if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
 
-        this.device = (InputDevice) alFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
+            ServerInfo serverInfo = voiceClient.getServerInfo().get();
+            format = serverInfo.getVoiceInfo().getFormat();
+        }
+
+        if (config.getVoice().getUseJavaxInput().value()) {
+            return openJavaxDevice(format);
+        } else {
+            try {
+                return openAlDevice(format);
+            } catch (Exception e) {
+                LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
+
+                return openJavaxDevice(format);
+            }
+        }
     }
 
-    private void openJavaxDevice(@NotNull AudioFormat format) throws Exception {
-        Optional<DeviceFactory> alFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("JAVAX_INPUT");
-        if (!alFactory.isPresent()) throw new IllegalStateException("Javax input factory is not registered");
+    private InputDevice openAlDevice(@NotNull AudioFormat format) throws Exception {
+        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_INPUT");
+        if (!deviceFactory.isPresent()) throw new IllegalStateException("OpenAL input factory is not registered");
 
-        this.device = (InputDevice) alFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
+        return (InputDevice) deviceFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
+    }
+
+    private InputDevice openJavaxDevice(@NotNull AudioFormat format) throws Exception {
+        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("JAVAX_INPUT");
+        if (!deviceFactory.isPresent()) throw new IllegalStateException("Javax input factory is not registered");
+
+        return (InputDevice) deviceFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
     }
 
     @Override
@@ -243,13 +267,17 @@ public class VoiceAudioCapture implements AudioCapture {
     private void run() {
         while (!thread.isInterrupted()) {
             try {
-                if (!device.isOpen() || !voiceClient.getServerInfo().isPresent()) {
+                Optional<InputDevice> device = getDevice();
+
+                if (!device.isPresent()
+                        || !device.get().isOpen()
+                        || !voiceClient.getServerInfo().isPresent()) {
                     Thread.sleep(1_000L);
                     continue;
                 }
 
-                device.start();
-                short[] samples = device.read();
+                device.get().start();
+                short[] samples = device.get().read();
                 if (samples == null) {
                     Thread.sleep(5L);
                     continue;
@@ -285,8 +313,11 @@ public class VoiceAudioCapture implements AudioCapture {
     private void cleanup() {
         this.sequenceNumber = 0L;
         if (encoder != null) encoder.close();
-        if (device.isOpen()) {
-            device.close();
+
+        Optional<InputDevice> device = getDevice();
+        if (device.isPresent() && device.get().isOpen()) {
+            device.get().close();
+            devices.remove(device.get());
         }
 
         this.thread = null;

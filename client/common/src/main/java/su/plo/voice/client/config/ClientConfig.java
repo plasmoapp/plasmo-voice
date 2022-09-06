@@ -1,8 +1,10 @@
 package su.plo.voice.client.config;
 
 import com.google.common.collect.Maps;
+import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
@@ -17,9 +19,12 @@ import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.capture.Activation;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.Executor;
 
 @Config
 @Data
@@ -38,6 +43,29 @@ public final class ClientConfig {
 
     @ConfigField
     private Servers servers = new Servers();
+
+    @Getter
+    @Setter
+    private File configFile;
+
+    @Getter(AccessLevel.PRIVATE)
+    @Setter
+    private Executor asyncExecutor;
+
+    public void save(boolean async) {
+        if (configFile == null) throw new IllegalStateException("configFile is null");
+
+        if (async) asyncExecutor.execute(this::save);
+        else this.save();
+    }
+
+    private void save() {
+        try {
+            toml.save(ClientConfig.class, this, configFile);
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to save the config", e);
+        }
+    }
 
     @Data
     public static class Servers implements SerializableConfigEntry {

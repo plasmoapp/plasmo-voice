@@ -1,0 +1,26 @@
+{
+    "gui.plasmovoice.title": "%s %s Settings",
+
+    "gui.plasmovoice.toggle.microphone": "Toggle Microphone",
+    "gui.plasmovoice.toggle.voice": "Toggle Voice Chat",
+    "gui.plasmovoice.toggle.currently": "Currently: %s",
+    "gui.plasmovoice.toggle.enabled": "ENABLED",
+    "gui.plasmovoice.toggle.disabled": "DISABLED",
+
+    "gui.plasmovoice.devices": "Devices",
+    "gui.plasmovoice.devices.microphone": "Microphone",
+    "gui.plasmovoice.devices.not_available": "Not Available",
+    "gui.plasmovoice.devices.default": "System Default",
+    "gui.plasmovoice.devices.activation_threshold": "Activation Threshold",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_1": "Only relevant if the activation type.",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_2": "is set to “Voice activation”.",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_3": "",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_4": "Move the slider to a point where volume",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_5": "only surpasses it when you are talking.",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_6": "",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_7": "You can also press the icon to enable",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_8": "microphone testing and hear your voice.",
+
+    "gui.plasmovoice.activation": "Activation"
+
+}

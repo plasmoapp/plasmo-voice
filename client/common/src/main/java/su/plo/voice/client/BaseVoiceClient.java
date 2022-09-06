@@ -26,6 +26,8 @@ import su.plo.voice.client.connection.VoiceUdpClientManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
 
@@ -34,6 +36,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     protected final Logger logger = LogManager.getLogger("PlasmoVoiceClient");
+    protected final Executor executor = Executors.newSingleThreadExecutor();
 
     @Getter
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
@@ -53,11 +56,14 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     protected void onInitialize() {
         try {
-            this.config = toml.load(ClientConfig.class, new File(configFolder(), "client.toml"), true);
+            File configFile = new File(configFolder(), "client.toml");
+            this.config = toml.load(ClientConfig.class, configFile, true);
+            config.setConfigFile(configFile);
+            config.setAsyncExecutor(executor);
 
             eventBus.register(this, config.getKeyBindings());
         } catch (IOException e) {
-            throw new IllegalStateException("Failed to load config", e);
+            throw new IllegalStateException("Failed to load the config", e);
         }
 
         this.audioCapture = new VoiceAudioCapture(this, config);
@@ -68,14 +74,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected void onShutdown() {
         logger.info("Shutting down");
 
-        if (config != null) {
-            try {
-                System.out.println(config);
-                toml.save(ClientConfig.class, config, new File(configFolder(), "client.toml"));
-            } catch (IOException e) {
-                throw new IllegalStateException("Failed to load config", e);
-            }
-        }
+        if (config != null) config.save(false);
 
         eventBus.unregister(this);
 

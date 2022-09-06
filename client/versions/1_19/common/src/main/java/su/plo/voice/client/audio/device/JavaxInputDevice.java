@@ -173,6 +173,6 @@ public class JavaxInputDevice extends BaseAudioDevice implements InputDevice {
             }
         }
 
-        throw new DeviceException("No devices available");
+        throw new DeviceException("Device not found");
     }
 }

@@ -1,16 +1,23 @@
 package su.plo.voice.client;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.client.connection.FabricClientChannelHandler;
+import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.render.HudIconRenderer;
 
 import java.io.File;
@@ -34,6 +41,27 @@ public final class FabricVoiceClient extends VoiceClientMod implements ClientMod
         HudRenderCallback.EVENT.register((__, ___) -> voiceHud.render());
 
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
+
+        var menuKey = KeyBindingHelper.registerKeyBinding(
+                new KeyMapping(
+                        "PV settings",
+                        InputConstants.Type.KEYSYM,
+                        GLFW.GLFW_KEY_V,
+                        "Plasmo Voice"
+                )
+        );
+        ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
+            final LocalPlayer player = minecraft.player;
+            if (player == null) return;
+
+            if (menuKey.consumeClick()) {
+                if (minecraft.screen instanceof VoiceSettingsScreen) {
+                    minecraft.setScreen(null);
+                } else {
+                    minecraft.setScreen(new VoiceSettingsScreen(minecraft, this, config));
+                }
+            }
+        });
     }
 
     @Override
