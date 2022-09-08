@@ -15,6 +15,7 @@ import su.plo.voice.client.gui.MicrophoneTestController;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.widget.DropDownWidget;
+import su.plo.voice.client.gui.widget.SliderWidget;
 import su.plo.voice.client.gui.widget.ToggleButton;
 
 import java.util.Collection;
@@ -56,8 +57,10 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.microphone")));
         addEntry(createThresholdEntry());
         addEntry(createMicrophoneEntry());
+        addEntry(createMicrophoneVolumeEntry());
+        addEntry(new CategoryEntry(Component.literal("хуй")));
         addEntry(createStereoCaptureEntry());
-        addEntry(createStereoToMonoSources());
+//        addEntry(createStereoToMonoSources());
 
     }
 
@@ -82,9 +85,7 @@ public final class DevicesTabWidget extends TabWidget {
         return new OptionEntry<>(
                 Component.literal("Stereo Capture"),
                 toggleButton,
-                config.getVoice().getStereoCapture(),
-                null,
-                (button, element) -> element.updateValue()
+                config.getVoice().getStereoCapture()
         );
     }
 
@@ -94,16 +95,13 @@ public final class DevicesTabWidget extends TabWidget {
                 0,
                 97,
                 20,
-                config.getVoice().getStereoToMonoSources(),
-                (toggled) -> {}
+                config.getVoice().getStereoToMonoSources()
         );
 
         return new OptionEntry<>(
                 Component.literal("Stereo To Mono"),
                 toggleButton,
-                config.getVoice().getStereoToMonoSources(),
-                null,
-                (button, element) -> element.updateValue()
+                config.getVoice().getStereoToMonoSources()
         );
     }
 
@@ -126,8 +124,7 @@ public final class DevicesTabWidget extends TabWidget {
                 Component.translatable("gui.plasmovoice.devices.activation_threshold"),
                 threshold,
                 config.getVoice().getActivationThreshold(),
-                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.activation_threshold.tooltip"),
-                (button, element) -> element.updateValue()
+                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.activation_threshold.tooltip")
         );
     }
 
@@ -146,28 +143,51 @@ public final class DevicesTabWidget extends TabWidget {
         Collection<AudioDevice> inputDevices = this.devices.getDevices(DeviceType.INPUT);
         Optional<AudioDevice> inputDevice = inputDevices.stream().findFirst();
 
+        DropDownWidget dropdown = new DropDownWidget(
+                parent,
+                0,
+                0,
+                97,
+                20,
+                GuiUtil.formatDeviceName(inputDevice.orElse(null), deviceFactory.get()),
+                GuiUtil.formatDeviceNames(inputDeviceNames, deviceFactory.get()),
+                true,
+                (index) -> {
+                    String deviceName = inputDeviceNames.get(index);
+                    if (Objects.equals(deviceName, deviceFactory.get().getDefaultDeviceName())) {
+                        deviceName = null;
+                    }
+
+                    config.getVoice().getInputDevice().set(Strings.nullToEmpty(deviceName));
+                    config.save(true);
+
+                    reloadInputDevice();
+                }
+        );
+
         return new OptionEntry<>(
                 Component.translatable("gui.plasmovoice.devices.microphone"),
-                new DropDownWidget(parent, 0, 0, 97, 20,
-                        GuiUtil.formatDeviceName(inputDevice.orElse(null), deviceFactory.get()),
-                        GuiUtil.formatDeviceNames(inputDeviceNames, deviceFactory.get()),
-                        true,
-                        (index) -> {
-                            String deviceName = inputDeviceNames.get(index);
-                            if (Objects.equals(deviceName, deviceFactory.get().getDefaultDeviceName())) {
-                                deviceName = null;
-                            }
-
-                            config.getVoice().getInputDevice().set(Strings.nullToEmpty(deviceName));
-                            config.save(true);
-
-                            reloadInputDevice();
-                        }),
+                dropdown,
                 config.getVoice().getInputDevice(),
                 (button, element) -> {
                     element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadInputDevice();
                 });
+    }
+
+    private OptionEntry<SliderWidget> createMicrophoneVolumeEntry() {
+        SliderWidget volumeSlider = new SliderWidget(
+                0,
+                0,
+                97,
+                config.getVoice().getMicrophoneVolume()
+        );
+
+        return new OptionEntry<>(
+                Component.translatable("gui.plasmovoice.devices.microphone_volume"),
+                volumeSlider,
+                config.getVoice().getMicrophoneVolume()
+        );
     }
 
     private void reloadInputDevice() {

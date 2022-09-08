@@ -16,11 +16,13 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.keybinding.KeyBindingWidget;
 import su.plo.voice.client.gui.widget.DropDownWidget;
 import su.plo.voice.client.gui.widget.NumberTextFieldWidget;
+import su.plo.voice.client.gui.widget.UpdatableWidget;
 
 import java.util.Collections;
 import java.util.List;
@@ -81,11 +83,11 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
             height += e.getHeight();
         }
 
-        this.setScrollAmount((double)(height + entry.getHeight() / 2 - (this.y1 - this.y0) / 2));
+        this.setScrollAmount((double) (height + entry.getHeight() / 2 - (this.y1 - this.y0) / 2));
     }
 
     private void scroll(int amount) {
-        this.setScrollAmount(this.getScrollAmount() + (double)amount);
+        this.setScrollAmount(this.getScrollAmount() + (double) amount);
     }
 
     @Override
@@ -110,7 +112,7 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
             height += children().get(i).getHeight();
         }
 
-        return this.y0 + 4 - (int)this.getScrollAmount() + height + this.headerHeight;
+        return this.y0 + 4 - (int) this.getScrollAmount() + height + this.headerHeight;
     }
 
     private int getRowBottom(int index) {
@@ -122,8 +124,8 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
         int j = this.x0 + this.width / 2;
         int k = j - i;
         int l = j + i;
-        int m = Mth.floor(y - (double)this.y0) - this.headerHeight + (int)this.getScrollAmount() - 4;
-        if (x < (double)this.getScrollbarPosition() && x >= (double)k && x <= (double)l) {
+        int m = Mth.floor(y - (double) this.y0) - this.headerHeight + (int) this.getScrollAmount() - 4;
+        if (x < (double) this.getScrollbarPosition() && x >= (double) k && x <= (double) l) {
             int top = 0;
             for (Entry entry : children()) {
                 if (m >= top && m <= top + entry.getHeight()) {
@@ -139,7 +141,7 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double amount) {
-        this.setScrollAmount(this.getScrollAmount() - amount * (double)this.itemHeight / 2.0D);
+        this.setScrollAmount(this.getScrollAmount() - amount * (double) this.itemHeight / 2.0D);
         return true;
     }
 
@@ -179,7 +181,7 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
                     return true;
                 }
             } else if (button == 0) {
-                this.clickedHeader((int)(mouseX - (double)(this.x0 + this.width / 2 - this.getRowWidth() / 2)), (int)(mouseY - (double)this.y0) + (int)this.getScrollAmount() - 4);
+                this.clickedHeader((int) (mouseX - (double) (this.x0 + this.width / 2 - this.getRowWidth() / 2)), (int) (mouseY - (double) this.y0) + (int) this.getScrollAmount() - 4);
                 return true;
             }
 
@@ -204,7 +206,7 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
 
     @Override
     protected void updateScrollingState(double mouseX, double mouseY, int button) {
-        this.scrolling = button == 0 && mouseX >= (double)this.getScrollbarPosition() && mouseX < (double)(this.getScrollbarPosition() + 6);
+        this.scrolling = button == 0 && mouseX >= (double) this.getScrollbarPosition() && mouseX < (double) (this.getScrollbarPosition() + 6);
         super.updateScrollingState(mouseX, mouseY, button);
     }
 
@@ -220,7 +222,7 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
         BufferBuilder bufferBuilder = tessellator.getBuilder();
 
         int height = 0;
-        for(int j = 0; j < i; ++j) {
+        for (int j = 0; j < i; ++j) {
             int k = this.getRowTop(j);
             int l = this.getRowBottom(j);
             if (l >= this.y0 && k <= this.y1) {
@@ -237,17 +239,17 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
                     float f = this.isFocused() ? 1.0F : 0.5F;
                     RenderSystem.setShaderColor(f, f, f, 1.0F);
                     bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-                    bufferBuilder.vertex((double)r, (double)(m + n + 2), 0.0D).endVertex();
-                    bufferBuilder.vertex((double)q, (double)(m + n + 2), 0.0D).endVertex();
-                    bufferBuilder.vertex((double)q, (double)(m - 2), 0.0D).endVertex();
-                    bufferBuilder.vertex((double)r, (double)(m - 2), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) r, (double) (m + n + 2), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) q, (double) (m + n + 2), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) q, (double) (m - 2), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) r, (double) (m - 2), 0.0D).endVertex();
                     tessellator.end();
                     RenderSystem.setShaderColor(0.0F, 0.0F, 0.0F, 1.0F);
                     bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
-                    bufferBuilder.vertex((double)(r + 1), (double)(m + n + 1), 0.0D).endVertex();
-                    bufferBuilder.vertex((double)(q - 1), (double)(m + n + 1), 0.0D).endVertex();
-                    bufferBuilder.vertex((double)(q - 1), (double)(m - 1), 0.0D).endVertex();
-                    bufferBuilder.vertex((double)(r + 1), (double)(m - 1), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) (r + 1), (double) (m + n + 1), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) (q - 1), (double) (m + n + 1), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) (q - 1), (double) (m - 1), 0.0D).endVertex();
+                    bufferBuilder.vertex((double) (r + 1), (double) (m - 1), 0.0D).endVertex();
                     tessellator.end();
                     RenderSystem.enableTexture();
                 }
@@ -289,45 +291,48 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     public class OptionEntry<T extends AbstractWidget> extends Entry {
         private final Component text;
         private final List<Component> tooltip;
-        private final AbstractWidget element;
+        private final T element;
         private final Button resetButton;
+        private final @Nullable ResetAction<T> resetAction;
         private final ConfigEntry<?> entry;
 
         public OptionEntry(Component text, T element, ConfigEntry<?> entry, ResetAction<T> action) {
             this(text, element, entry, null, action);
         }
 
-        public OptionEntry(Component text, T element, ConfigEntry<?> entry, List<Component> tooltip, ResetAction<T> action) {
+        public OptionEntry(Component text, T element, ConfigEntry<?> entry, List<Component> tooltip) {
+            this(text, element, entry, tooltip, null);
+        }
+
+        public OptionEntry(Component text, T element, ConfigEntry<?> entry) {
+            this(text, element, entry, null, null);
+        }
+
+        public OptionEntry(Component text, T element, ConfigEntry<?> entry, List<Component> tooltip, @Nullable ResetAction<T> resetAction) {
             super(24);
             this.text = text;
             this.element = element;
             this.entry = entry;
             this.tooltip = tooltip;
+            this.resetAction = resetAction;
 
-            this.resetButton = new Button(0, 0, 46, 20, Component.translatable("controls.reset"), button -> {
-                if (entry != null) {
-                    entry.reset();
-                    if (action != null) {
-                        action.onReset(button, element);
-                    }
-                }
-            });
+            this.resetButton = new Button(0, 0, 46, 20, Component.translatable("controls.reset"), this::onReset);
         }
 
         @Override
-        public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
+        public void render(@NotNull PoseStack poseStack, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
             int elementY = y + entryHeight - 4;
             Objects.requireNonNull(TabWidget.this.minecraft.font);
-            TabWidget.this.minecraft.font.drawShadow(matrices, this.text, x, (float)(elementY - 9 - 1), 16777215);
+            TabWidget.this.minecraft.font.drawShadow(poseStack, this.text, x, (float) (elementY - 9 - 1), 16777215);
 
             element.x = x + entryWidth - 147;
             element.y = y;
-            element.render(matrices, mouseX, mouseY, tickDelta);
+            element.render(poseStack, mouseX, mouseY, tickDelta);
 
             resetButton.x = x + entryWidth - 46;
             resetButton.y = y;
             resetButton.active = entry != null && !entry.isDefault();
-            resetButton.render(matrices, mouseX, mouseY, tickDelta);
+            resetButton.render(poseStack, mouseX, mouseY, tickDelta);
 
             if (hovered && mouseX < (element.x - 4)) {
                 TabWidget.this.setTooltip(tooltip);
@@ -355,7 +360,18 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
             return ImmutableList.of(this.element, this.resetButton);
         }
 
-        public interface ResetAction<T> {
+        private void onReset(@NotNull Button button) {
+            if (entry == null) return;
+
+            entry.reset();
+
+            if (element instanceof UpdatableWidget)
+                ((UpdatableWidget) element).updateValue();
+
+            if (resetAction != null) resetAction.onReset(button, element);
+        }
+
+        public interface ResetAction<T extends AbstractWidget> {
 
             void onReset(Button resetButton, T element);
         }
@@ -380,11 +396,11 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
 
         @Override
         public void render(PoseStack matrices, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean hovered, float tickDelta) {
-            float elementX = (float)(TabWidget.this.minecraft.screen.width / 2 - this.textWidth / 2);
+            float elementX = (float) (TabWidget.this.minecraft.screen.width / 2 - this.textWidth / 2);
             int elementY = y + entryHeight - 4;
             Objects.requireNonNull(TabWidget.this.minecraft.font);
 
-            TabWidget.this.minecraft.font.drawShadow(matrices, this.text, elementX, (float)(elementY - 9 - 1), color);
+            TabWidget.this.minecraft.font.drawShadow(matrices, this.text, elementX, (float) (elementY - 9 - 1), color);
         }
 
         @Override

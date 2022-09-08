@@ -10,10 +10,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 
-public final class ToggleButton extends AbstractWidget {
+public final class ToggleButton extends AbstractWidget implements UpdatableWidget {
 
     private final @Nullable PressAction action;
     private final ConfigEntry<Boolean> entry;
+
+    public ToggleButton(int x, int y, int width, int height, ConfigEntry<Boolean> entry) {
+        this(x, y, width, height, entry, null);
+    }
 
     public ToggleButton(int x, int y, int width, int height, ConfigEntry<Boolean> entry, @Nullable PressAction action) {
         super(x, y, width, height, entry.value() ? Component.translatable("gui.plasmovoice.on") : Component.translatable("gui.plasmovoice.off"));
@@ -21,6 +25,7 @@ public final class ToggleButton extends AbstractWidget {
         this.action = action;
     }
 
+    @Override
     public void updateValue() {
         setMessage(getText());
     }

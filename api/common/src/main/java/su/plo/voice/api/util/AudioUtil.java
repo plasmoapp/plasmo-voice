@@ -202,11 +202,31 @@ public final class AudioUtil {
     public static short[] convertToMonoShorts(short[] samples) {
         short[] mono = new short[samples.length / 2];
 
+        // todo: better stereo -> mono conversation
         for (int i = 0; i < samples.length; i += 2) {
-            mono[i / 2] = (short) (samples[i] + samples[i + 1]); // todo: divide by two?
+            mono[i / 2] = (short) ((samples[i] + samples[i + 1]) / 2);;
         }
 
         return mono;
+    }
+
+    /**
+     * Gets the highest absolute sample
+     */
+    public static short getHighestAbsoluteSample(short[] samples) {
+        short max = 0;
+        for (short sample : samples) {
+            if (sample == Short.MIN_VALUE) {
+                sample += 1;
+            }
+
+            short abs = (short) Math.abs(sample);
+            if (abs > max) {
+                max = abs;
+            }
+        }
+
+        return max;
     }
 
     private AudioUtil() {

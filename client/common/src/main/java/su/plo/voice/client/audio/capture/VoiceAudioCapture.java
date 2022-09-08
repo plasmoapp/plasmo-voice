@@ -21,6 +21,7 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.audio.filter.GainFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.proto.data.capture.Activation;
@@ -216,17 +217,24 @@ public final class VoiceAudioCapture implements AudioCapture {
             );
         }
 
+        InputDevice device;
+
         if (config.getVoice().getUseJavaxInput().value()) {
-            return openJavaxDevice(format);
+            device = openJavaxDevice(format);
         } else {
             try {
-                return openAlDevice(format);
+                device = openAlDevice(format);
             } catch (Exception e) {
                 LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
 
-                return openJavaxDevice(format);
+                device = openJavaxDevice(format);
             }
         }
+
+        // apply default filters
+        device.addFilter(new GainFilter(config.getVoice().getMicrophoneVolume()));
+
+        return device;
     }
 
     private InputDevice openAlDevice(@NotNull AudioFormat format) throws Exception {

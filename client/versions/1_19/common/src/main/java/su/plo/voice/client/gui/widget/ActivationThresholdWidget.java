@@ -24,7 +24,7 @@ import su.plo.voice.config.entry.DoubleConfigEntry;
 
 import java.util.List;
 
-public final class ActivationThresholdWidget extends AbstractSliderButton {
+public final class ActivationThresholdWidget extends AbstractSliderButton implements UpdatableWidget {
 
     private final Minecraft minecraft;
     private final MicrophoneTestController controller;
@@ -81,13 +81,14 @@ public final class ActivationThresholdWidget extends AbstractSliderButton {
         this.microphoneTest = ImmutableList.of(testStop, testStart);
     }
 
+    @Override
     public void updateValue() {
         this.value = AudioUtil.audioLevelToDoubleRange(configEntry.value());
         this.updateMessage();
     }
 
     protected void updateMessage() {
-        this.setMessage(Component.literal(AudioUtil.doubleRangeToAudioLevel(value) + " dB"));
+        this.setMessage(Component.literal(String.format("%.0f dB", AudioUtil.doubleRangeToAudioLevel(value))));
     }
 
     protected void applyValue() {
@@ -147,9 +148,6 @@ public final class ActivationThresholdWidget extends AbstractSliderButton {
             int j = this.active ? 16777215 : 10526880;
             drawCenteredString(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
         }
-
-        //            drawCenteredString(matrices, textRenderer, Component.literal(String.format("%.2f dB", parent.getHighestDB())),
-        //            this.x + this.width / 2, this.y + (this.height - 8) / 2, 16777215);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         for (IconButton button : this.microphoneTest) {
