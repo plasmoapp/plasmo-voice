@@ -1,4 +1,4 @@
-package su.plo.voice.api.client.util;
+package su.plo.voice.api.util;
 
 public final class AudioUtil {
 
@@ -179,6 +179,34 @@ public final class AudioUtil {
      */
     public static double doubleRangeToAudioLevel(double value) {
         return Math.round((1D - value) * -60D);
+    }
+
+    /**
+     * Converts stereo samples to mono bytes
+     */
+    public static byte[] convertToMonoBytes(short[] samples) {
+        byte[] mono = new byte[samples.length];
+
+        for (int i = 0; i < samples.length; i += 2) {
+            byte[] monoSample = AudioUtil.shortToBytes((short) (samples[i] + samples[i + 1]));
+            mono[i] = monoSample[0];
+            mono[i + 1] = monoSample[1];
+        }
+
+        return mono;
+    }
+
+    /**
+     * Converts stereo samples to mono shorts
+     */
+    public static short[] convertToMonoShorts(short[] samples) {
+        short[] mono = new short[samples.length / 2];
+
+        for (int i = 0; i < samples.length; i += 2) {
+            mono[i / 2] = (short) (samples[i] + samples[i + 1]); // todo: divide by two?
+        }
+
+        return mono;
     }
 
     private AudioUtil() {

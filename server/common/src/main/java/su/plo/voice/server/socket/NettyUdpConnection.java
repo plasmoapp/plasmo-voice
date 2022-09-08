@@ -16,6 +16,7 @@ import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
@@ -91,7 +92,10 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
 
     @Override
     public void handle(@NotNull PlayerAudioPacket packet) {
-        ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(player, "opus");
+        if (!packet.getActivationId().equals(VoiceActivation.PROXIMITY_ID)) return;
+
+        ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(voiceServer, player, "opus", false);
+
         SourceAudioPacket sourcePacket = new SourceAudioPacket(
                 packet.getSequenceNumber(),
                 (byte) source.getState(),

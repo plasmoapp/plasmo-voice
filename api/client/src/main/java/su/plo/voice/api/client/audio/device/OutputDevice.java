@@ -10,11 +10,12 @@ public interface OutputDevice<T extends DeviceSource> extends AudioDevice {
     /**
      * Create a new source
      *
+     * @param stereo if true source will be stereo
      * @param params parameters
      *
      * @return the device source
      */
-    T createSource(@NotNull Params params) throws DeviceException;
+    T createSource(boolean stereo, @NotNull Params params) throws DeviceException;
 
     @Override
     default DeviceType getType() {

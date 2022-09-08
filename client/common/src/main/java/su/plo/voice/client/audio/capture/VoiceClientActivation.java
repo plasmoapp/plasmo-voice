@@ -7,7 +7,7 @@ import su.plo.config.Config;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
-import su.plo.voice.api.client.util.AudioUtil;
+import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;

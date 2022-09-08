@@ -6,6 +6,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.source.DirectSourceInfo;
 import su.plo.voice.proto.data.source.EntitySourceInfo;
 import su.plo.voice.proto.data.source.PlayerSourceInfo;
+import su.plo.voice.proto.data.source.StaticSourceInfo;
 
 public final class ModClientSourceManager extends BaseClientSourceManager {
 
@@ -32,6 +33,14 @@ public final class ModClientSourceManager extends BaseClientSourceManager {
     @Override
     protected ClientAudioSource<DirectSourceInfo> createDirectSource() {
         ClientAudioSource<DirectSourceInfo> source = new ModClientDirectSource(voiceClient, config);
+        voiceClient.getEventBus().register(voiceClient, source);
+
+        return source;
+    }
+
+    @Override
+    protected ClientAudioSource<StaticSourceInfo> createStaticSource() {
+        ClientAudioSource<StaticSourceInfo> source = new ModClientStaticSource(voiceClient, config);
         voiceClient.getEventBus().register(voiceClient, source);
 
         return source;

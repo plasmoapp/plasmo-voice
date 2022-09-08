@@ -85,7 +85,6 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                 UUID.fromString(config.getServerId()),
                 voiceConfig.getSampleRate(),
                 "opus",
-                voiceConfig.getFadeDivisor(),
                 (VoiceActivation) voiceServer.getActivationManager().getProximityActivation(),
                 voiceServer.getActivationManager()
                         .getActivations()

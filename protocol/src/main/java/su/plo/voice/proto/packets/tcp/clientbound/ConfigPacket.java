@@ -26,10 +26,6 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
 
     @Getter
     private String codec; // todo: per-source codecs
-
-    @Getter
-    private int fadeDivisor;
-
     @Getter
     private VoiceActivation proximityActivation;
 
@@ -38,7 +34,6 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     public ConfigPacket(@NotNull UUID serverId,
                         int sampleRate,
                         @NotNull String codec,
-                        int fadeDivisor,
                         @NotNull VoiceActivation proximityActivation,
                         @NotNull List<VoiceActivation> activations,
                         @NotNull Map<String, Boolean> permissions) {
@@ -46,7 +41,6 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         this.serverId = serverId;
         this.sampleRate = sampleRate;
         this.codec = codec;
-        this.fadeDivisor = fadeDivisor;
         this.proximityActivation = proximityActivation;
         this.activations = activations;
     }
@@ -60,7 +54,6 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         this.serverId = PacketUtil.readUUID(in);
         this.sampleRate = in.readInt();
         this.codec = PacketUtil.readNullableString(in);
-        this.fadeDivisor = in.readInt();
 
         // activations
         this.proximityActivation = new VoiceActivation();
@@ -79,7 +72,6 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         PacketUtil.writeUUID(out, serverId);
         out.writeInt(sampleRate);
         PacketUtil.writeNullableString(out, codec);
-        out.writeInt(fadeDivisor);
 
         // activations
         checkNotNull(proximityActivation).serialize(out);

@@ -18,8 +18,9 @@ public final class VoiceServerPlayerSource extends BaseServerSource implements S
     public VoiceServerPlayerSource(UdpServerConnectionManager udpConnections,
                                    @NotNull AddonContainer addon,
                                    @Nullable String codec,
+                                   boolean stereo,
                                    @NotNull VoicePlayer player) {
-        super(udpConnections, addon, player.getUUID(), codec);
+        super(udpConnections, addon, player.getUUID(), codec, stereo);
         this.player = player;
         addFilter(this::filterVanish);
     }
@@ -42,6 +43,15 @@ public final class VoiceServerPlayerSource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new PlayerSourceInfo(addon.getId(), id, (byte) state.get(), codec, iconVisible, angle, player.getInfo());
+        return new PlayerSourceInfo(
+                addon.getId(),
+                id,
+                (byte) state.get(),
+                codec,
+                stereo,
+                iconVisible,
+                angle,
+                player.getInfo()
+        );
     }
 }

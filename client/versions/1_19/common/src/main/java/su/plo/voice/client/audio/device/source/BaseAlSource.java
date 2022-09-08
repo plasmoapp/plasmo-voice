@@ -21,11 +21,11 @@ public abstract class BaseAlSource implements AlSource {
 
     private Pos3d position;
 
-    protected BaseAlSource(PlasmoVoiceClient client, AlAudioDevice device, int pointer) {
+    protected BaseAlSource(PlasmoVoiceClient client, AlAudioDevice device, boolean stereo, int pointer) {
         this.client = client;
         this.device = device;
         this.pointer = pointer;
-        this.format = AlUtil.getFormatId(device.getFormat().get());
+        this.format = stereo ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
     }
 
     @Override

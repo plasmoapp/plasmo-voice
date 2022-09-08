@@ -6,10 +6,22 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 
-public class ModClientDirectSource extends BaseClientDirectSource {
+public final class ModClientDirectSource extends BaseClientDirectSource {
 
     public ModClientDirectSource(@NotNull PlasmoVoiceClient voiceClient, ClientConfig config) {
         super(voiceClient, config);
+    }
+
+    @Override
+    protected float[] getPlayerPosition(float[] position) {
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) return position;
+
+        position[0] = (float) player.getX();
+        position[1] = (float) player.getY();
+        position[2] = (float) player.getZ();
+
+        return position;
     }
 
     @Override

@@ -13,7 +13,7 @@ import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
-import su.plo.voice.api.client.util.AudioUtil;
+import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.*;

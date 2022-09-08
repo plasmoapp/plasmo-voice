@@ -12,13 +12,15 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
 
     private final int sampleRate;
     private final int bufferSize;
+    private final int channels;
     private final int application;
 
     private PointerByReference encoder;
     private ByteBuffer buffer;
 
-    public NativeOpusEncoder(int sampleRate, int bufferSize, int application) {
+    public NativeOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application) {
         this.sampleRate = sampleRate;
+        this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
         this.application = application;
     }
@@ -43,7 +45,7 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     @Override
     public void open() throws CodecException {
         IntBuffer error = IntBuffer.allocate(1);
-        this.encoder = Opus.INSTANCE.opus_encoder_create(sampleRate, 1, application, error);
+        this.encoder = Opus.INSTANCE.opus_encoder_create(sampleRate, channels, application, error);
         this.buffer = ByteBuffer.allocate(4096);
 
         if (error.get() != Opus.OPUS_OK && encoder == null) {

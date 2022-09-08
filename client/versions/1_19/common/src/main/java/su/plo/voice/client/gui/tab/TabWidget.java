@@ -286,18 +286,18 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
         }
     }
 
-    public class OptionEntry extends Entry {
+    public class OptionEntry<T extends AbstractWidget> extends Entry {
         private final Component text;
         private final List<Component> tooltip;
         private final AbstractWidget element;
         private final Button resetButton;
         private final ConfigEntry<?> entry;
 
-        public OptionEntry(Component text, AbstractWidget element, ConfigEntry<?> entry, ResetAction action) {
+        public OptionEntry(Component text, T element, ConfigEntry<?> entry, ResetAction<T> action) {
             this(text, element, entry, null, action);
         }
 
-        public OptionEntry(Component text, AbstractWidget element, ConfigEntry<?> entry, List<Component> tooltip, ResetAction action) {
+        public OptionEntry(Component text, T element, ConfigEntry<?> entry, List<Component> tooltip, ResetAction<T> action) {
             super(24);
             this.text = text;
             this.element = element;
@@ -355,8 +355,9 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
             return ImmutableList.of(this.element, this.resetButton);
         }
 
-        public interface ResetAction {
-            void onReset(Button resetButton, AbstractWidget element);
+        public interface ResetAction<T> {
+
+            void onReset(Button resetButton, T element);
         }
     }
 

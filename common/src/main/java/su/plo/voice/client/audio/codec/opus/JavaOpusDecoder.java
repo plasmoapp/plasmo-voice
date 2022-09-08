@@ -7,13 +7,15 @@ import su.plo.voice.api.audio.codec.CodecException;
 public final class JavaOpusDecoder implements BaseOpusDecoder {
 
     private final int sampleRate;
+    private final int channels;
     private final int bufferSize;
 
     private OpusDecoder decoder;
     private short[] buffer;
 
-    public JavaOpusDecoder(int sampleRate, int bufferSize) {
+    public JavaOpusDecoder(int sampleRate, boolean stereo, int bufferSize) {
         this.sampleRate = sampleRate;
+        this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
     }
 
@@ -41,7 +43,7 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     @Override
     public void open() throws CodecException {
         try {
-            this.decoder = new OpusDecoder(sampleRate, 1);
+            this.decoder = new OpusDecoder(sampleRate, channels);
             this.buffer = new short[4096];
         } catch (OpusException e) {
             throw new CodecException("Failed to open opus decoder", e);

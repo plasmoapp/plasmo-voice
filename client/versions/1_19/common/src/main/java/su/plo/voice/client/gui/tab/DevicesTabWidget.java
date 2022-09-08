@@ -15,6 +15,7 @@ import su.plo.voice.client.gui.MicrophoneTestController;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.widget.DropDownWidget;
+import su.plo.voice.client.gui.widget.ToggleButton;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -55,6 +56,8 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.microphone")));
         addEntry(createThresholdEntry());
         addEntry(createMicrophoneEntry());
+        addEntry(createStereoCaptureEntry());
+        addEntry(createStereoToMonoSources());
 
     }
 
@@ -63,7 +66,48 @@ public final class DevicesTabWidget extends TabWidget {
         super.removed();
     }
 
-    private OptionEntry createThresholdEntry() {
+    private OptionEntry<ToggleButton> createStereoCaptureEntry() {
+        ToggleButton toggleButton = new ToggleButton(
+                0,
+                0,
+                97,
+                20,
+                config.getVoice().getStereoCapture(),
+                (toggled) -> {
+                    reloadInputDevice();
+                    testController.restart();
+                }
+        );
+
+        return new OptionEntry<>(
+                Component.literal("Stereo Capture"),
+                toggleButton,
+                config.getVoice().getStereoCapture(),
+                null,
+                (button, element) -> element.updateValue()
+        );
+    }
+
+    private OptionEntry<ToggleButton> createStereoToMonoSources() {
+        ToggleButton toggleButton = new ToggleButton(
+                0,
+                0,
+                97,
+                20,
+                config.getVoice().getStereoToMonoSources(),
+                (toggled) -> {}
+        );
+
+        return new OptionEntry<>(
+                Component.literal("Stereo To Mono"),
+                toggleButton,
+                config.getVoice().getStereoToMonoSources(),
+                null,
+                (button, element) -> element.updateValue()
+        );
+    }
+
+    private OptionEntry<ActivationThresholdWidget> createThresholdEntry() {
         if (threshold != null) voiceClient.getEventBus().unregister(voiceClient, threshold);
         this.threshold = new ActivationThresholdWidget(
                 minecraft,
@@ -78,16 +122,16 @@ public final class DevicesTabWidget extends TabWidget {
         );
         voiceClient.getEventBus().register(voiceClient, threshold);
 
-        return new OptionEntry(
+        return new OptionEntry<>(
                 Component.translatable("gui.plasmovoice.devices.activation_threshold"),
                 threshold,
                 config.getVoice().getActivationThreshold(),
                 GuiUtil.multiLineTooltip("gui.plasmovoice.devices.activation_threshold.tooltip"),
-                (button, element) -> ((ActivationThresholdWidget) element).updateValue()
+                (button, element) -> element.updateValue()
         );
     }
 
-    private OptionEntry createMicrophoneEntry() {
+    private OptionEntry<DropDownWidget> createMicrophoneEntry() {
         Optional<DeviceFactory> deviceFactory;
 
         if (config.getVoice().getUseJavaxInput().value()) {
@@ -102,7 +146,7 @@ public final class DevicesTabWidget extends TabWidget {
         Collection<AudioDevice> inputDevices = this.devices.getDevices(DeviceType.INPUT);
         Optional<AudioDevice> inputDevice = inputDevices.stream().findFirst();
 
-        return new OptionEntry(
+        return new OptionEntry<>(
                 Component.translatable("gui.plasmovoice.devices.microphone"),
                 new DropDownWidget(parent, 0, 0, 97, 20,
                         GuiUtil.formatDeviceName(inputDevice.orElse(null), deviceFactory.get()),

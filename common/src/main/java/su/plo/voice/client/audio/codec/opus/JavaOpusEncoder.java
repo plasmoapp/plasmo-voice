@@ -9,14 +9,16 @@ import tomp2p.opuswrapper.Opus;
 public final class JavaOpusEncoder implements BaseOpusEncoder {
 
     private final int sampleRate;
+    private final int channels;
     private final int bufferSize;
 
     private OpusApplication application;
     private OpusEncoder encoder;
     private byte[] buffer;
 
-    public JavaOpusEncoder(int sampleRate, int bufferSize, int application) {
+    public JavaOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application) {
         this.sampleRate = sampleRate;
+        this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
         this.application = OpusApplication.OPUS_APPLICATION_UNIMPLEMENTED;
 
@@ -43,7 +45,7 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
     @Override
     public void open() throws CodecException {
         try {
-            this.encoder = new OpusEncoder(sampleRate, 1, application);
+            this.encoder = new OpusEncoder(sampleRate, channels, application);
         } catch (OpusException e) {
             throw new CodecException("Failed to open opus encoder", e);
         }

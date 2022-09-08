@@ -50,6 +50,8 @@ public abstract class SourceInfo implements PacketSerializable {
     @Getter
     protected String codec;
     @Getter
+    protected boolean stereo;
+    @Getter
     protected UUID activation;
     @Getter
     protected boolean iconVisible;
@@ -62,6 +64,7 @@ public abstract class SourceInfo implements PacketSerializable {
         this.id = PacketUtil.readUUID(in);
         this.state = in.readByte();
         this.codec = PacketUtil.readNullableString(in);
+        this.stereo = in.readBoolean();
         this.activation = PacketUtil.readUUID(in);
         this.iconVisible = in.readBoolean();
         this.angle = in.readInt();
@@ -74,6 +77,7 @@ public abstract class SourceInfo implements PacketSerializable {
         PacketUtil.writeUUID(out, checkNotNull(id));
         out.writeByte(state);
         PacketUtil.writeNullableString(out, codec);
+        out.writeBoolean(stereo);
         PacketUtil.writeUUID(out, activation);
         out.writeBoolean(iconVisible);
         out.writeInt(angle);

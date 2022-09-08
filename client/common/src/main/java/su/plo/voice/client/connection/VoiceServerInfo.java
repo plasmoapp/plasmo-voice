@@ -55,7 +55,6 @@ public final class VoiceServerInfo implements ServerInfo {
         this.voiceInfo = new VoiceServerVoiceInfo(
                 config.getSampleRate(),
                 config.getCodec(),
-                config.getFadeDivisor(),
                 config.getProximityActivation(),
                 new ArrayList<>(config.getActivations())
         );
@@ -80,21 +79,17 @@ public final class VoiceServerInfo implements ServerInfo {
 
         @Getter
         @Setter
-        private int fadeDivisor;
-
-        @Getter
-        @Setter
         private VoiceActivation proximityActivation;
 
         @Setter
         private List<Activation> activations;
 
         @Override
-        public @NotNull AudioFormat getFormat() {
+        public @NotNull AudioFormat getFormat(boolean stereo) {
             return new AudioFormat(
                     (float) sampleRate,
                     16,
-                    1,
+                    stereo ? 2 : 1,
                     true,
                     false
             );

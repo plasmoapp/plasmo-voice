@@ -21,10 +21,10 @@ public final class VoiceOutputSourceGroup implements SourceGroup {
     }
 
     @Override
-    public void create(@NotNull Params params) throws DeviceException {
+    public void create(boolean stereo, @NotNull Params params) throws DeviceException {
         for (AudioDevice device : devices.getDevices(DeviceType.OUTPUT)) {
             OutputDevice<?> outputDevice = (OutputDevice<?>) device;
-            sources.add(outputDevice.createSource(params));
+            sources.add(outputDevice.createSource(stereo, params));
         }
     }
 

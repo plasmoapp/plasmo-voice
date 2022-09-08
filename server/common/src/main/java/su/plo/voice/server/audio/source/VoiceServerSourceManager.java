@@ -40,7 +40,8 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerPlayerSource getOrCreatePlayerSource(@Nullable Object addonObject,
                                                                @NotNull VoicePlayer player,
-                                                               @Nullable String codec) {
+                                                               @Nullable String codec,
+                                                               boolean stereo) {
         return sourceByPlayerId.computeIfAbsent(player.getUUID(), (playerId) -> {
             Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
             if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
@@ -49,6 +50,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                     voiceServer.getUdpConnectionManager(),
                     addon.get(),
                     codec,
+                    stereo,
                     player
             );
 
@@ -61,7 +63,8 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerEntitySource getOrCreateEntitySource(@Nullable Object addonObject,
                                                                @NotNull VoiceEntity entity,
-                                                               @Nullable String codec) {
+                                                               @Nullable String codec,
+                                                               boolean stereo) {
         return sourceByEntityId.computeIfAbsent(entity.getUUID(), (playerId) -> {
             Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
             if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
@@ -70,6 +73,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                     voiceServer.getUdpConnectionManager(),
                     addon.get(),
                     codec,
+                    stereo,
                     entity
             );
 
@@ -82,7 +86,8 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerStaticSource createStaticSource(@NotNull Object addonObject,
                                                           @NotNull ServerPos3d position,
-                                                          @Nullable String codec) {
+                                                          @Nullable String codec,
+                                                          boolean stereo) {
         Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
@@ -90,6 +95,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                 voiceServer.getUdpConnectionManager(),
                 addon.get(),
                 codec,
+                stereo,
                 position
         );
         sourceById.put(source.getId(), source);
@@ -100,7 +106,8 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
                                                           @NotNull VoicePlayer player,
-                                                          @Nullable String codec) {
+                                                          @Nullable String codec,
+                                                          boolean stereo) {
         Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
@@ -108,6 +115,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                 voiceServer.getUdpConnectionManager(),
                 addon.get(),
                 codec,
+                stereo,
                 player
         );
         sourceById.put(source.getId(), source);

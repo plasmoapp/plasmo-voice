@@ -24,7 +24,7 @@ import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.client.VoiceClientMod;
-import su.plo.voice.client.audio.source.ClientStaticSource;
+import su.plo.voice.client.audio.source.ModClientStaticSource;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Map;
@@ -76,7 +76,7 @@ public final class SourceIconRenderer {
 
     public void renderStatics(PoseStack poseStack, Camera camera, Matrix4f matrix4f) {
         for (ClientAudioSource<?> source : sources.getSources()) {
-            if (!(source instanceof ClientStaticSource staticSource)
+            if (!(source instanceof ModClientStaticSource staticSource)
                     || !source.isActivated()) continue;
 
             // get activation source icon

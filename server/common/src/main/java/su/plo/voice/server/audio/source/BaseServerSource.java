@@ -27,6 +27,7 @@ public abstract class BaseServerSource implements ServerAudioSource {
     @Getter
     protected final UUID id;
     protected final String codec;
+    protected final boolean stereo;
     @Getter
     @Setter
     protected boolean iconVisible = true;

@@ -17,11 +17,11 @@ import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent;
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent;
-import su.plo.voice.api.client.util.AudioUtil;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.event.EventPriority;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.config.entry.DoubleConfigEntry;
@@ -39,6 +39,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
 
+    protected final float[] playerPosition = new float[3];
     protected final float[] position = new float[3];
     protected final float[] lookAngle = new float[3];
 
@@ -66,12 +67,14 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         ServerInfo serverInfo = optServerInfo.get();
         this.voiceInfo = serverInfo.getVoiceInfo();
+        this.sourceInfo = sourceInfo;
 
         if (Strings.emptyToNull(sourceInfo.getCodec()) != null) {
             this.decoder = voiceClient.getCodecManager().createDecoder(
                     sourceInfo.getCodec(),
+                    voiceInfo.getSampleRate(),
+                    sourceInfo.isStereo(),
                     Params.builder()
-                            .set("sampleRate", voiceInfo.getSampleRate())
                             .set("bufferSize", voiceInfo.getBufferSize())
                             .build()
             );
@@ -81,7 +84,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             this.encryption = serverInfo.getEncryption().get();
 
         this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup(DeviceType.OUTPUT);
-        sourceGroup.create(Params.EMPTY);
+        sourceGroup.create(isStereo(), Params.EMPTY);
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
@@ -99,7 +102,6 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         this.sourceVolume = config.getVoice()
                 .getVolumes()
                 .getVolume("source_" + sourceInfo.getId());
-        this.sourceInfo = sourceInfo;
 
         LOGGER.info("Source {} initialized", sourceInfo);
     }
@@ -134,11 +136,16 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
 //        boolean isPriority = packet.getDistance() > voiceInfo.getMaxDistance();
         double volume = sourceVolume.value();
-        int fadeDistance = distance / voiceInfo.getFadeDivisor(); // todo: activation fade divisor?
 
         // todo: occlusion
+        if (isStereo()) {
+            int sourceDistance = Math.min(getSourceDistance(position), distance);
 
-        updateSource((float) volume, fadeDistance, packet.getDistance());
+            float distanceGain = (1F - (float) sourceDistance / (float) distance);
+            volume *= distanceGain;
+        }
+
+        updateSource((float) volume, packet.getDistance());
 
         // packet compensation
         if (lastSequenceNumber >= 0 && decoder != null) { // todo: check if decoder can compensate lost packets
@@ -169,7 +176,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             }
 
             if (decoder != null) {
-                write(decoder.decode(decrypted));
+                short[] decoded = decoder.decode(decrypted);
+                if (sourceInfo.isStereo() && config.getVoice().getStereoToMonoSources().value()) {
+                    decoded = AudioUtil.convertToMonoShorts(decoded);
+                }
+
+                write(decoded);
             } else {
                 write(decrypted);
             }
@@ -220,7 +232,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         close();
     }
 
-    private void updateSource(float volume, int fadeDistance, int maxDistance) {
+    private void updateSource(float volume, int maxDistance) {
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
@@ -230,7 +242,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
                     alSource.setVolume(volume);
                     alSource.setFloatArray(0x1004, position); // AL_POSITION
                     alSource.setFloatArray(0x1005, lookAngle); // AL_DIRECTION
-                    alSource.setFloat(0x1020, fadeDistance); // AL_REFERENCE_DISTANCE
+                    alSource.setFloat(0x1020, 0); // AL_REFERENCE_DISTANCE
                     alSource.setFloat(0x1023, maxDistance); // AL_MAX_DISTANCE
                 });
             }
@@ -246,6 +258,22 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             source.write(samples);
         }
     }
+
+    private int getSourceDistance(float[] position) {
+        getPlayerPosition(playerPosition);
+
+        double xDiff = playerPosition[0] - position[0];
+        double yDiff = playerPosition[1] - position[1];
+        double zDiff = playerPosition[2] - position[2];
+
+        return (int) Math.sqrt((xDiff * xDiff) + (yDiff * yDiff) + (zDiff * zDiff));
+    }
+
+    private boolean isStereo() {
+        return sourceInfo.isStereo() && !config.getVoice().getStereoToMonoSources().value();
+    }
+
+    protected abstract float[] getPlayerPosition(float[] position);
 
     protected abstract float[] getPosition(float[] position);
 

@@ -134,10 +134,5 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
 
     protected abstract ClientAudioSource<DirectSourceInfo> createDirectSource();
 
-    protected ClientAudioSource<StaticSourceInfo> createStaticSource() {
-        ClientAudioSource<StaticSourceInfo> source = new ClientStaticSource(voiceClient, config);
-        voiceClient.getEventBus().register(voiceClient, source);
-
-        return source;
-    }
+    protected abstract ClientAudioSource<StaticSourceInfo> createStaticSource();
 }

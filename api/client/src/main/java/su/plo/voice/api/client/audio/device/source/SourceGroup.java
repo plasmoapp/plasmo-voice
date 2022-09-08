@@ -9,7 +9,7 @@ import java.util.Collection;
 // todo: doc
 public interface SourceGroup {
 
-    void create(@NotNull Params params) throws DeviceException;
+    void create(boolean stereo, @NotNull Params params) throws DeviceException;
 
     void clear();
 

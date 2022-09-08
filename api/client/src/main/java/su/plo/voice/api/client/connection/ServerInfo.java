@@ -72,11 +72,10 @@ public interface ServerInfo {
          * Gets the audio format based on sample rate
          *
          * sampleSizeInBits is 16
-         * channels is 1
          *
          * @return {@link AudioFormat}
          */
-        @NotNull AudioFormat getFormat();
+        @NotNull AudioFormat getFormat(boolean stereo);
 
         /**
          * Gets the buffer size (for shorts) based on sample rate
@@ -101,14 +100,6 @@ public interface ServerInfo {
          * Gets the voice activations
          */
         Collection<Activation> getActivations();
-
-        /**
-         * Gets the fade divisor
-         * todo: move to source info?
-         *
-         * @return the fade divisor
-         */
-        int getFadeDivisor();
     }
 
     /**

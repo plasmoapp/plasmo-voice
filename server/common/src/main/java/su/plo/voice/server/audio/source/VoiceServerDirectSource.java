@@ -32,8 +32,9 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
     public VoiceServerDirectSource(UdpServerConnectionManager udpConnections,
                                    @NotNull AddonContainer addon,
                                    @Nullable String codec,
+                                   boolean stereo,
                                    @NotNull VoicePlayer player) {
-        super(udpConnections, addon, UUID.randomUUID(), codec);
+        super(udpConnections, addon, UUID.randomUUID(), codec, stereo);
         this.player = player;
     }
 
@@ -88,6 +89,7 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
                 id,
                 (byte) state.get(),
                 codec,
+                stereo,
                 iconVisible,
                 angle,
                 sender == null ? null : sender.getUUID(),

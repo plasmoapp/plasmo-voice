@@ -37,7 +37,7 @@ public final class VoiceSettingsScreen extends Screen {
         this.voiceClient = voiceClient;
         this.config = config;
         this.navigation = new VoiceSettingsNavigation(minecraft, this, config);
-        this.testController = new MicrophoneTestController(voiceClient);
+        this.testController = new MicrophoneTestController(voiceClient, config);
     }
 
     public int getHeaderHeight() {

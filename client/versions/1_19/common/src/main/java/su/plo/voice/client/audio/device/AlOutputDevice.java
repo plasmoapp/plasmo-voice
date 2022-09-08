@@ -228,7 +228,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     }
 
     @Override
-    public AlSource createSource(@NotNull Params params) throws DeviceException {
+    public AlSource createSource(boolean stereo, @NotNull Params params) throws DeviceException {
         checkNotNull(params, "params cannot be null");
         if (!isOpen()) throw new DeviceException("Device is not open");
 
@@ -247,7 +247,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
             }
         }
 
-        CompletableFuture<AlSource> source = StreamAlSource.create(this, client, numBuffers);
+        CompletableFuture<AlSource> source = StreamAlSource.create(this, client, stereo, numBuffers);
         try {
             return source.get();
         } catch (InterruptedException e) {

@@ -17,9 +17,9 @@ import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
 import su.plo.voice.api.client.socket.UdpClient;
-import su.plo.voice.api.client.util.AudioUtil;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
+import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
@@ -139,7 +139,9 @@ public final class VoiceAudioCapture implements AudioCapture {
     @Override
     public void initialize(@NotNull ServerInfo serverInfo) {
         // initialize input device
-        AudioFormat format = serverInfo.getVoiceInfo().getFormat();
+        AudioFormat format = serverInfo.getVoiceInfo().getFormat(
+                config.getVoice().getStereoCapture().value()
+        );
 
         if (!getDevice().isPresent()) {
             try {
@@ -154,8 +156,9 @@ public final class VoiceAudioCapture implements AudioCapture {
         if (Strings.emptyToNull(serverInfo.getVoiceInfo().getCodec()) != null) {
             this.encoder = voiceClient.getCodecManager().createEncoder(
                     serverInfo.getVoiceInfo().getCodec(),
+                    serverInfo.getVoiceInfo().getSampleRate(),
+                    false,
                     Params.builder()
-                            .set("sampleRate", serverInfo.getVoiceInfo().getSampleRate())
                             .set("bufferSize", serverInfo.getVoiceInfo().getBufferSize())
                             .set("application", 2048) // todo: configurable?
                             .build()
@@ -208,7 +211,9 @@ public final class VoiceAudioCapture implements AudioCapture {
             if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
 
             ServerInfo serverInfo = voiceClient.getServerInfo().get();
-            format = serverInfo.getVoiceInfo().getFormat();
+            format = serverInfo.getVoiceInfo().getFormat(
+                    config.getVoice().getStereoCapture().value()
+            );
         }
 
         if (config.getVoice().getUseJavaxInput().value()) {
@@ -283,6 +288,10 @@ public final class VoiceAudioCapture implements AudioCapture {
                     continue;
                 }
 
+                if (config.getVoice().getStereoCapture().value()) {
+                    samples = AudioUtil.convertToMonoShorts(samples);
+                }
+
                 AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, samples);
                 voiceClient.getEventBus().call(captureEvent);
                 if (captureEvent.isCancelled()) continue;
@@ -328,7 +337,6 @@ public final class VoiceAudioCapture implements AudioCapture {
             encoded = encode(samples);
         }
 
-
         if (result == ClientActivation.Result.ACTIVATED) {
             sendVoicePacket(activation, encoded);
         } else if (result == ClientActivation.Result.END) {
@@ -371,7 +379,9 @@ public final class VoiceAudioCapture implements AudioCapture {
         udpClient.get().sendPacket(new PlayerAudioPacket(
                 sequenceNumber++,
                 encoded,
-                (short) activation.getDistance()
+                activation.getId(),
+                (short) activation.getDistance(),
+                config.getVoice().getStereoCapture().value() && activation.isStereoSupported()
         ));
     }
 

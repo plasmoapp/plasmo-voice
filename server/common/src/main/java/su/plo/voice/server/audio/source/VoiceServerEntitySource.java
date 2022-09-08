@@ -20,8 +20,9 @@ public final class VoiceServerEntitySource extends BaseServerSource implements S
     public VoiceServerEntitySource(UdpServerConnectionManager udpConnections,
                                    @NotNull AddonContainer addon,
                                    @Nullable String codec,
+                                   boolean stereo,
                                    @NotNull VoiceEntity entity) {
-        super(udpConnections, addon, entity.getUUID(), codec);
+        super(udpConnections, addon, entity.getUUID(), codec, stereo);
         this.entity = entity;
     }
 
@@ -32,7 +33,16 @@ public final class VoiceServerEntitySource extends BaseServerSource implements S
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new EntitySourceInfo(addon.getId(), id, (byte) state.get(), codec, iconVisible, angle, entity.getId());
+        return new EntitySourceInfo(
+                addon.getId(),
+                id,
+                (byte) state.get(),
+                codec,
+                stereo,
+                iconVisible,
+                angle,
+                entity.getId()
+        );
     }
 }
 

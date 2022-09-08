@@ -24,7 +24,7 @@ public final class StreamAlSource extends BaseAlSource {
     private static final Logger LOGGER = LogManager.getLogger(StreamAlSource.class);
     private static final int DEFAULT_NUM_BUFFERS = 8;
 
-    public static CompletableFuture<AlSource> create(AlAudioDevice device, PlasmoVoiceClient client, int numBuffers) {
+    public static CompletableFuture<AlSource> create(AlAudioDevice device, PlasmoVoiceClient client, boolean stereo, int numBuffers) {
         CompletableFuture<AlSource> future = new CompletableFuture<>();
 
         device.runInContext(() -> {
@@ -36,7 +36,7 @@ public final class StreamAlSource extends BaseAlSource {
                 return;
             }
 
-            AlSource source = new StreamAlSource(client, device, numBuffers, pointer[0]);
+            AlSource source = new StreamAlSource(client, device, stereo, numBuffers, pointer[0]);
 
             AlSourceCreatedEvent event = new AlSourceCreatedEvent(source);
             client.getEventBus().call(event);
@@ -54,8 +54,8 @@ public final class StreamAlSource extends BaseAlSource {
     private Thread thread;
     private int[] buffers;
 
-    private StreamAlSource(PlasmoVoiceClient client, AlAudioDevice device, int numBuffers, int pointer) {
-        super(client, device, pointer);
+    private StreamAlSource(PlasmoVoiceClient client, AlAudioDevice device, boolean stereo, int numBuffers, int pointer) {
+        super(client, device, stereo, pointer);
         this.numBuffers = numBuffers == 0 ? DEFAULT_NUM_BUFFERS : numBuffers;
     }
 

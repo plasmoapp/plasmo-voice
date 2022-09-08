@@ -25,14 +25,25 @@ public final class VoiceServerStaticSource extends BaseServerSource implements S
     public VoiceServerStaticSource(UdpServerConnectionManager udpConnections,
                                    @NotNull AddonContainer addon,
                                    @Nullable String codec,
+                                   boolean stereo,
                                    @NotNull ServerPos3d position) {
-        super(udpConnections, addon, UUID.randomUUID(), codec);
+        super(udpConnections, addon, UUID.randomUUID(), codec, stereo);
         this.position = position;
     }
 
     @Override
     public @NotNull SourceInfo getInfo() {
-        return new StaticSourceInfo(addon.getId(), id, (byte) state.get(), codec, iconVisible, angle, position.toPosition(), position.getLookAngle());
+        return new StaticSourceInfo(
+                addon.getId(),
+                id,
+                (byte) state.get(),
+                codec,
+                stereo,
+                iconVisible,
+                angle,
+                position.toPosition(),
+                position.getLookAngle()
+        );
     }
 
     @Override

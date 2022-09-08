@@ -7,6 +7,9 @@
     "gui.plasmovoice.toggle.enabled": "ENABLED",
     "gui.plasmovoice.toggle.disabled": "DISABLED",
 
+    "gui.plasmovoice.on": "On",
+    "gui.plasmovoice.off": "Off",
+
     "gui.plasmovoice.devices": "Devices",
     "gui.plasmovoice.devices.microphone": "Microphone",
     "gui.plasmovoice.devices.not_available": "Not Available",

@@ -138,8 +138,8 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
     @Override
     public short[] read(int bufferSize) {
         if (!isOpen() || bufferSize > available()) return null;
-        short[] shorts = new short[bufferSize];
-        ALC11.alcCaptureSamples(devicePointer, shorts, shorts.length);
+        short[] shorts = new short[bufferSize * format.getChannels()];
+        ALC11.alcCaptureSamples(devicePointer, shorts, bufferSize);
         AlUtil.checkErrors("Capture samples");
 
         shorts = processFilters(shorts);
@@ -158,12 +158,14 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
     }
 
     private long openDevice(String deviceName, AudioFormat format) throws DeviceException {
+        int alFormat = format.getChannels() == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
+
         long l;
         if (deviceName == null) {
             // default device
-            l = ALC11.alcCaptureOpenDevice((ByteBuffer) null, (int) format.getSampleRate(), AL11.AL_FORMAT_MONO16, bufferSize);
+            l = ALC11.alcCaptureOpenDevice((ByteBuffer) null, (int) format.getSampleRate(), alFormat, bufferSize);
         } else {
-            l = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), AL11.AL_FORMAT_MONO16, bufferSize);
+            l = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, bufferSize);
         }
 
         if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {

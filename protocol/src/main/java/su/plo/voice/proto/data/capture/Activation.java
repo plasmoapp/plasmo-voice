@@ -80,6 +80,17 @@ public interface Activation {
     boolean isTransitive();
 
     /**
+     * Checks if stereo is supported
+     *
+     * Client will send a stereo audio if it's enabled in the client settings
+     *
+     * @return true if stereo is supported
+     */
+    default boolean isStereoSupported() {
+        return false;
+    }
+
+    /**
      * Gets the activation's weight
      *
      * todo: doc

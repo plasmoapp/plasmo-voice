@@ -12,9 +12,10 @@ import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.audio.device.source.DeviceSource;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
-import su.plo.voice.api.client.util.AudioUtil;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
 
@@ -24,6 +25,7 @@ public final class MicrophoneTestController {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
+    private final ClientConfig config;
 
     private double highestDB = -127.0D;
     private long lastUpdate = 0L;
@@ -34,6 +36,18 @@ public final class MicrophoneTestController {
     private double microphoneDB = 0D;
 
     private CaptureSource source;
+
+    public void restart() {
+        if (source != null) source.close();
+
+        this.source = new CaptureSource();
+        try {
+            source.initialize();
+        } catch (DeviceException e) {
+            LOGGER.error("Failed to initialize source for mic test", e);
+            this.source = null;
+        }
+    }
 
     public void start() {
         this.source = new CaptureSource();
@@ -50,6 +64,7 @@ public final class MicrophoneTestController {
 
     public void stop() {
         if (source != null) source.close();
+        this.source = null;
 
         voiceClient.getEventBus().call(new MicrophoneTestStoppedEvent(this));
     }
@@ -95,7 +110,7 @@ public final class MicrophoneTestController {
 
         public void initialize() throws DeviceException {
             this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup(DeviceType.OUTPUT);
-            sourceGroup.create(Params.EMPTY);
+            sourceGroup.create(false, Params.EMPTY);
 
             for (DeviceSource source : sourceGroup.getSources()) {
                 if (source instanceof AlSource) {

@@ -205,6 +205,12 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> useJavaxInput = new ConfigEntry<>(false);
 
         @ConfigField
+        private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
+
+        @ConfigField
+        private ConfigEntry<Boolean> stereoToMonoSources = new ConfigEntry<>(false);
+
+        @ConfigField
         private CategoryVolumes volumes = new CategoryVolumes();
 
         @ConfigField
