@@ -22,6 +22,7 @@ import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.keybinding.KeyBindingWidget;
 import su.plo.voice.client.gui.widget.DropDownWidget;
 import su.plo.voice.client.gui.widget.NumberTextFieldWidget;
+import su.plo.voice.client.gui.widget.ToggleButton;
 import su.plo.voice.client.gui.widget.UpdatableWidget;
 
 import java.util.Collections;
@@ -273,6 +274,22 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     }
 
     public void removed() {
+    }
+
+    protected OptionEntry<ToggleButton> createToggleEntry(String translatable, ConfigEntry<Boolean> entry) {
+        ToggleButton toggleButton = new ToggleButton(
+                0,
+                0,
+                97,
+                20,
+                entry
+        );
+
+        return new OptionEntry<>(
+                Component.translatable(translatable),
+                toggleButton,
+                entry
+        );
     }
 
     public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {

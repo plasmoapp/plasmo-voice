@@ -22,6 +22,8 @@ import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.filter.GainFilter;
+import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
+import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.proto.data.capture.Activation;
@@ -233,6 +235,8 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         // apply default filters
         device.addFilter(new GainFilter(config.getVoice().getMicrophoneVolume()));
+        device.addFilter(new StereoToMonoFilter(config.getVoice().getStereoCapture()));
+        device.addFilter(new NoiseSuppressionFilter((int) format.getSampleRate(), config.getVoice().getNoiseSuppression()));
 
         return device;
     }
@@ -294,10 +298,6 @@ public final class VoiceAudioCapture implements AudioCapture {
                 if (samples == null) {
                     Thread.sleep(5L);
                     continue;
-                }
-
-                if (config.getVoice().getStereoCapture().value()) {
-                    samples = AudioUtil.convertToMonoShorts(samples);
                 }
 
                 AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, samples);

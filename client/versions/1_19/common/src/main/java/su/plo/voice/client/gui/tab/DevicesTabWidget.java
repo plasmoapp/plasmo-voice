@@ -58,6 +58,11 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(createThresholdEntry());
         addEntry(createMicrophoneEntry());
         addEntry(createMicrophoneVolumeEntry());
+        addEntry(createToggleEntry(
+                "gui.plasmovoice.devices.noise_suppression",
+                config.getVoice().getNoiseSuppression()
+        ));
+
         addEntry(new CategoryEntry(Component.literal("хуй")));
         addEntry(createStereoCaptureEntry());
 //        addEntry(createStereoToMonoSources());

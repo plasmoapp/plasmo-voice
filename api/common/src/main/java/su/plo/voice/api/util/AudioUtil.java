@@ -52,6 +52,41 @@ public final class AudioUtil {
     }
 
     /**
+     * Converts floats to shorts
+     *
+     * @return the shorts
+     */
+    public static short[] floatsToShorts(float[] floats) {
+        short[] shorts = new short[floats.length];
+
+        for(int i = 0; i < floats.length; i++) {
+            shorts[i] = Float.valueOf(floats[i]).shortValue();
+        }
+
+        return shorts;
+    }
+
+    /**
+     * Converts shorts to float
+     *
+     * @return the floats
+     */
+    public static float[] shortsToFloats(short[] input) {
+        float[] ret = new float[input.length];
+
+        for(int i = 0; i < input.length; i++) {
+            ret[i] = Short.valueOf(input[i]).floatValue(); // 3Head
+//            if ((input[i * 2 + 1] & 128) != 0) {
+//                ret[i] = (float)(-32768 + ((input[i * 2 + 1] & 127) << 8) | input[i * 2] & 255);
+//            } else {
+//                ret[i] = (float)(input[i * 2 + 1] << 8 & '\uff00' | input[i * 2] & 255);
+//            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Checks if any sample audio level greater than the min audio level
      *
      * @return return true if any sample audio level
@@ -87,9 +122,8 @@ public final class AudioUtil {
      * Calculates the audio level
      *
      * @param samples the samples
-     * @param offset offset from the start of the samples array
-     * @param length count of samples to process the calculation
-     *
+     * @param offset  offset from the start of the samples array
+     * @param length  count of samples to process the calculation
      * @return the audio level
      */
     public static double calculateAudioLevel(byte[] samples, int offset, int length) {
@@ -107,9 +141,8 @@ public final class AudioUtil {
      * Calculates the audio level
      *
      * @param samples the samples
-     * @param offset offset from the start of the samples array
-     * @param length count of samples to process the calculation
-     *
+     * @param offset  offset from the start of the samples array
+     * @param length  count of samples to process the calculation
      * @return the audio level
      */
     public static double calculateAudioLevel(short[] samples, int offset, int length) {
@@ -126,9 +159,8 @@ public final class AudioUtil {
     /**
      * Calculates the audio level from RMS and samples count
      *
-     * @param rms root mean square
+     * @param rms         root mean square
      * @param sampleCount count of samples
-     *
      * @return the audio level
      */
     public static double calculateAudioLevelFromRMS(double rms, int sampleCount) {
@@ -149,7 +181,6 @@ public final class AudioUtil {
      * Gets the highest audio level in the samples
      *
      * @param samples the samples
-     *
      * @return the highest audio level
      */
     public static double calculateHighestAudioLevel(short[] samples) {
@@ -204,7 +235,8 @@ public final class AudioUtil {
 
         // todo: better stereo -> mono conversation
         for (int i = 0; i < samples.length; i += 2) {
-            mono[i / 2] = (short) ((samples[i] + samples[i + 1]) / 2);;
+            mono[i / 2] = (short) ((samples[i] + samples[i + 1]) / 2);
+            ;
         }
 
         return mono;
@@ -227,6 +259,18 @@ public final class AudioUtil {
         }
 
         return max;
+    }
+
+    public static float mulToDB(float mul) {
+        return (mul == 0.0f) ? -Float.MAX_VALUE : (float) (20.0F * Math.log10(mul));
+    }
+
+    public static float dbToMul(float db) {
+        return Float.isFinite(db) ? (float) Math.pow(10.0F, db / 20.0F) : 0.0F;
+    }
+
+    public static float gainCoefficient(int sampleRate, float time) {
+        return (float) Math.exp(-1.0f / (sampleRate * time));
     }
 
     private AudioUtil() {
