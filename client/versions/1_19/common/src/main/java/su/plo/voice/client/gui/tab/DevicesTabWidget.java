@@ -228,7 +228,7 @@ public final class DevicesTabWidget extends TabWidget {
         return new OptionEntry<>(
                 Component.translatable("gui.plasmovoice.devices.output_device"),
                 dropdown,
-                config.getVoice().getInputDevice(),
+                config.getVoice().getOutputDevice(),
                 (button, element) -> {
                     element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadInputDevice();
