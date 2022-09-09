@@ -134,8 +134,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         int distance = packet.getDistance();
 
-//        boolean isPriority = packet.getDistance() > voiceInfo.getMaxDistance();
-        double volume = sourceVolume.value();
+        double volume = config.getVoice().getVolume().value() * sourceVolume.value();
 
         // todo: occlusion
         if (isStereo()) {

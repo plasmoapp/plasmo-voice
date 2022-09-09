@@ -211,6 +211,9 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> noiseSuppression = new ConfigEntry<>(false);
 
         @ConfigField
+        private DoubleConfigEntry volume = new DoubleConfigEntry(1D, 0D, 2D);
+
+        @ConfigField
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField

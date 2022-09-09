@@ -133,10 +133,23 @@ public final class MicrophoneTestController {
         }
 
         public void write(short[] samples) {
+            setVolume(config.getVoice().getVolume().value().floatValue());
+
             write(AudioUtil.shortsToBytes(samples));
         }
 
-        public void write(byte[] samples) {
+        private void setVolume(float volume) {
+            for (DeviceSource source : sourceGroup.getSources()) {
+                if (source instanceof AlSource) {
+                    AlSource alSource = (AlSource) source;
+                    AlAudioDevice device = (AlAudioDevice) alSource.getDevice();
+
+                    device.runInContext(() -> alSource.setVolume(volume));
+                }
+            }
+        }
+
+        private void write(byte[] samples) {
             for (DeviceSource source : sourceGroup.getSources()) {
                 source.write(samples);
             }

@@ -17,7 +17,6 @@ import su.plo.voice.client.gui.MicrophoneTestController;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.widget.DropDownWidget;
-import su.plo.voice.client.gui.widget.SliderWidget;
 import su.plo.voice.client.gui.widget.ToggleButton;
 
 import javax.sound.sampled.AudioFormat;
@@ -62,7 +61,10 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.microphone")));
         addEntry(createThresholdEntry());
         addEntry(createMicrophoneEntry());
-        addEntry(createMicrophoneVolumeEntry());
+        addEntry(createSliderWidget(
+                "gui.plasmovoice.devices.microphone_volume",
+                config.getVoice().getMicrophoneVolume()
+        ));
         addEntry(createToggleEntry(
                 "gui.plasmovoice.devices.noise_suppression",
                 config.getVoice().getNoiseSuppression()
@@ -70,6 +72,10 @@ public final class DevicesTabWidget extends TabWidget {
 
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.output")));
         addEntry(createOutputDeviceEntry());
+        addEntry(createSliderWidget(
+                "gui.plasmovoice.devices.volume",
+                config.getVoice().getVolume()
+        ));
 
         addEntry(new CategoryEntry(Component.literal("хуй")));
         addEntry(createStereoCaptureEntry());
@@ -186,21 +192,6 @@ public final class DevicesTabWidget extends TabWidget {
                     element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadInputDevice();
                 }
-        );
-    }
-
-    private OptionEntry<SliderWidget> createMicrophoneVolumeEntry() {
-        SliderWidget volumeSlider = new SliderWidget(
-                0,
-                0,
-                97,
-                config.getVoice().getMicrophoneVolume()
-        );
-
-        return new OptionEntry<>(
-                Component.translatable("gui.plasmovoice.devices.microphone_volume"),
-                volumeSlider,
-                config.getVoice().getMicrophoneVolume()
         );
     }
 

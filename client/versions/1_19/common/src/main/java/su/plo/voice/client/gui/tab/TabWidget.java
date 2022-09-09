@@ -20,10 +20,8 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.keybinding.KeyBindingWidget;
-import su.plo.voice.client.gui.widget.DropDownWidget;
-import su.plo.voice.client.gui.widget.NumberTextFieldWidget;
-import su.plo.voice.client.gui.widget.ToggleButton;
-import su.plo.voice.client.gui.widget.UpdatableWidget;
+import su.plo.voice.client.gui.widget.*;
+import su.plo.voice.config.entry.DoubleConfigEntry;
 
 import java.util.Collections;
 import java.util.List;
@@ -288,6 +286,21 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
         return new OptionEntry<>(
                 Component.translatable(translatable),
                 toggleButton,
+                entry
+        );
+    }
+
+    protected OptionEntry<SliderWidget> createSliderWidget(String translatable, DoubleConfigEntry entry) {
+        SliderWidget volumeSlider = new SliderWidget(
+                0,
+                0,
+                97,
+                entry
+        );
+
+        return new OptionEntry<>(
+                Component.translatable(translatable),
+                volumeSlider,
                 entry
         );
     }
