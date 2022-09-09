@@ -80,6 +80,11 @@ public final class DevicesTabWidget extends TabWidget {
                 "gui.plasmovoice.devices.compressor.tooltip",
                 config.getVoice().getCompressorLimiter()
         ));
+        addEntry(createToggleEntry(
+                "gui.plasmovoice.devices.occlusion",
+                "gui.plasmovoice.devices.occlusion.tooltip",
+                config.getVoice().getSoundOcclusion()
+        ));
 
         addEntry(new CategoryEntry(Component.literal("хуй")));
         addEntry(createStereoCaptureEntry());

@@ -218,6 +218,9 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> compressorLimiter = new ConfigEntry<>(true);
 
         @ConfigField
+        private ConfigEntry<Boolean> soundOcclusion = new ConfigEntry<>(false);
+
+        @ConfigField
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField

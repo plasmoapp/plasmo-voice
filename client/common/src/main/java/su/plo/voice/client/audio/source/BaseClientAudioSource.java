@@ -52,6 +52,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     protected long lastSequenceNumber = -1L;
     protected long lastActivation = 0L;
+    protected double lastOcclusion = -1D;
     protected AtomicBoolean closed = new AtomicBoolean(false);
     protected AtomicBoolean activated = new AtomicBoolean(false);
 
@@ -125,6 +126,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         }
 
         try {
+            getPlayerPosition(playerPosition);
             getPosition(position);
             getLookAngle(lookAngle);
         } catch (IllegalStateException e) {
@@ -136,7 +138,25 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         double volume = config.getVoice().getVolume().value() * sourceVolume.value();
 
-        // todo: occlusion
+        if (config.getVoice().getSoundOcclusion().value()) {
+            // todo: disable occlusion via client addon?
+            double occlusion = getOccludedPercent(position);
+            if (lastOcclusion >= 0) {
+                if (occlusion > lastOcclusion) {
+                    lastOcclusion = Math.max(lastOcclusion + 0.05, 0.0D);
+                } else {
+                    lastOcclusion = Math.max(lastOcclusion - 0.05, occlusion);
+                }
+
+                occlusion = lastOcclusion;
+            }
+
+            volume *= (float) (1D - occlusion);
+            if (lastOcclusion == -1D) {
+                lastOcclusion = occlusion;
+            }
+        }
+
         if (isStereo()) {
             int sourceDistance = Math.min(getSourceDistance(position), distance);
 
@@ -260,8 +280,6 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     private int getSourceDistance(float[] position) {
-        getPlayerPosition(playerPosition);
-
         double xDiff = playerPosition[0] - position[0];
         double yDiff = playerPosition[1] - position[1];
         double zDiff = playerPosition[2] - position[2];
@@ -272,6 +290,8 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     private boolean isStereo() {
         return sourceInfo.isStereo() && !config.getVoice().getStereoToMonoSources().value();
     }
+
+    protected abstract double getOccludedPercent(float[] position);
 
     protected abstract float[] getPlayerPosition(float[] position);
 
