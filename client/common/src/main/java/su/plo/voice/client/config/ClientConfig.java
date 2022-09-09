@@ -17,6 +17,7 @@ import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.config.entry.DoubleConfigEntry;
+import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.capture.Activation;
 
 import java.io.File;
@@ -36,7 +37,7 @@ public final class ClientConfig {
     private Voice voice = new Voice();
 
     @ConfigField
-    private UI ui = new UI();
+    private Advanced advanced = new Advanced();
 
     @ConfigField
     private ConfigKeyBindings keyBindings = new ConfigKeyBindings();
@@ -214,6 +215,9 @@ public final class ClientConfig {
         private DoubleConfigEntry volume = new DoubleConfigEntry(1D, 0D, 2D);
 
         @ConfigField
+        private ConfigEntry<Boolean> compressorLimiter = new ConfigEntry<>(true);
+
+        @ConfigField
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField
@@ -225,7 +229,7 @@ public final class ClientConfig {
         @ConfigField
         private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(true);
 
-        @ConfigField(path = "activation_type")
+        @ConfigField
         protected EnumConfigEntry<ClientActivation.Type> activationType = new EnumConfigEntry<>(
                 ClientActivation.Type.class,
                 ClientActivation.Type.PUSH_TO_TALK
@@ -274,13 +278,19 @@ public final class ClientConfig {
 
     @Config
     @Data
-    public static class UI {
+    public static class Advanced {
 
-        @ConfigField(path = "activation_icon_position")
-        protected EnumConfigEntry<ActivationIconPosition> activationIconPosition = new EnumConfigEntry<>(
+        @ConfigField
+        private EnumConfigEntry<ActivationIconPosition> activationIconPosition = new EnumConfigEntry<>(
                 ActivationIconPosition.class,
                 ActivationIconPosition.BOTTOM_CENTER
         );
+
+        @ConfigField
+        private IntConfigEntry compressorThreshold = new IntConfigEntry(-10, -60, 0);
+
+        @ConfigField
+        private IntConfigEntry limiterThreshold = new IntConfigEntry(-6, -60, 0);
 
         public enum ActivationIconPosition {
             TOP_LEFT(16, 16),

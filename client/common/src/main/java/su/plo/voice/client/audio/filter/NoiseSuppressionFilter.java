@@ -17,7 +17,7 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
     private Denoiser instance;
 
     public NoiseSuppressionFilter(int sampleRate, @NotNull ConfigEntry<Boolean> activeEntry) {
-        super(sampleRate, -6.0F, null, null);
+        super(sampleRate, -6.0F);
 
         this.activeEntry = activeEntry;
         if (activeEntry.value()) toggle();

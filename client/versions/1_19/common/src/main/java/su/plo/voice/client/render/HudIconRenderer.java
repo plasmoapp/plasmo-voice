@@ -52,7 +52,7 @@ public final class HudIconRenderer {
     }
 
     private void renderIcon(@NotNull ResourceLocation iconLocation) {
-        ClientConfig.UI.ActivationIconPosition iconPosition = config.getUi().getActivationIconPosition().value();
+        ClientConfig.Advanced.ActivationIconPosition iconPosition = config.getAdvanced().getActivationIconPosition().value();
 
         PoseStack poseStack = new PoseStack();
 

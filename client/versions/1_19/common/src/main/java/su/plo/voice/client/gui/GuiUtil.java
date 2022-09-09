@@ -14,10 +14,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class GuiUtil {
 
@@ -74,7 +71,9 @@ public final class GuiUtil {
         }
     }
 
-    public static List<Component> multiLineTooltip(@NotNull String translation) {
+    public static List<Component> multiLineTooltip(@Nullable String translation) {
+        if (translation == null) return Collections.emptyList();
+
         Language language = Language.getInstance();
 
         if (language.has(translation))

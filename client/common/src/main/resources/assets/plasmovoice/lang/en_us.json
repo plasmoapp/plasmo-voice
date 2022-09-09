@@ -18,6 +18,12 @@
     "gui.plasmovoice.devices.default": "System Default",
     "gui.plasmovoice.devices.microphone_volume": "Microphone Volume",
     "gui.plasmovoice.devices.noise_suppression": "Noise Suppression",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_1": "RNNoise noise suppression.",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_2": "",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_3": "Uses neural networks. Works great,",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_4": "but may be CPU intensive.",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_5": "",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_6": "Applies to your microphone.",
 
     "gui.plasmovoice.devices.output": "Output",
 
@@ -62,6 +68,24 @@
     "gui.plasmovoice.devices.activation_threshold.tooltip_7": "You can also press the icon to enable",
     "gui.plasmovoice.devices.activation_threshold.tooltip_8": "microphone testing and hear your voice.",
 
-    "gui.plasmovoice.activation": "Activation"
 
+    "gui.plasmovoice.activation": "Activation",
+
+
+    "gui.plasmovoice.advanced": "Advanced",
+
+    "gui.plasmovoice.advanced.compressor": "Compressor & Limiter",
+    "gui.plasmovoice.advanced.compressor.tooltip_1": "Makes loud volume quieter,",
+    "gui.plasmovoice.advanced.compressor.tooltip_2": "saving your ears from loud noises.",
+    "gui.plasmovoice.advanced.compressor.tooltip_3": "",
+    "gui.plasmovoice.advanced.compressor.tooltip_4": "Applies to the players you hear.",
+    "gui.plasmovoice.advanced.compressor_threshold": "Compressor Threshold",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_1": "Makes volume quieter if volume",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_2": "surpasses the threshold.",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_3": "",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_4": "Recommended value: from -16 dB to -6 dB",
+    "gui.plasmovoice.advanced.limiter_threshold": "Limiter Threshold",
+    "gui.plasmovoice.advanced.limiter_threshold.tooltip_1": "Volume can't surpass this threshold.",
+    "gui.plasmovoice.advanced.limiter_threshold.tooltip_2": "",
+    "gui.plasmovoice.advanced.limiter_threshold.tooltip_3": "Recommended value: -6 dB"
 }

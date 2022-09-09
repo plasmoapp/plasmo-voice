@@ -14,9 +14,7 @@ import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.device.source.VoiceOutputSourceGroup;
-import su.plo.voice.client.audio.filter.GainFilter;
-import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
-import su.plo.voice.client.audio.filter.StereoToMonoFilter;
+import su.plo.voice.client.audio.filter.*;
 import su.plo.voice.client.config.ClientConfig;
 
 import javax.sound.sampled.AudioFormat;
@@ -167,7 +165,7 @@ public final class VoiceDeviceManager implements DeviceManager {
             format = serverInfo.getVoiceInfo().getFormat(false);
         }
 
-        AudioDevice outputDevice = deviceFactory.get().openDevice(
+        AudioDevice device = deviceFactory.get().openDevice(
                 format,
                 config.getVoice().getOutputDevice().value(),
                 Params.builder()
@@ -175,7 +173,18 @@ public final class VoiceDeviceManager implements DeviceManager {
                         .build()
         );
 
-        return (OutputDevice<AlSource>) outputDevice;
+        device.addFilter(new CompressorFilter(
+                (int) format.getSampleRate(),
+                config.getVoice().getCompressorLimiter(),
+                config.getAdvanced().getCompressorThreshold()
+        ));
+        device.addFilter(new LimiterFilter(
+                (int) format.getSampleRate(),
+                config.getVoice().getCompressorLimiter(),
+                config.getAdvanced().getLimiterThreshold()
+        ));
+
+        return (OutputDevice<AlSource>) device;
     }
 
     private InputDevice openAlInputDevice(@NotNull AudioFormat format) throws Exception {

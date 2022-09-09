@@ -249,13 +249,14 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     private void write(short[] samples) {
-        write(AudioUtil.shortsToBytes(samples));
+        for (DeviceSource source : sourceGroup.getSources()) {
+            samples = source.getDevice().processFilters(samples);
+            source.write(AudioUtil.shortsToBytes(samples));
+        }
     }
 
     private void write(byte[] samples) {
-        for (DeviceSource source : sourceGroup.getSources()) {
-            source.write(samples);
-        }
+        write(AudioUtil.bytesToShorts(samples));
     }
 
     private int getSourceDistance(float[] position) {

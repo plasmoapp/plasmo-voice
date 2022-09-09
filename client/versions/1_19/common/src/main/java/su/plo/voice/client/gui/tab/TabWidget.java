@@ -18,10 +18,12 @@ import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.voice.client.gui.GuiUtil;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 import su.plo.voice.client.gui.keybinding.KeyBindingWidget;
 import su.plo.voice.client.gui.widget.*;
 import su.plo.voice.config.entry.DoubleConfigEntry;
+import su.plo.voice.config.entry.IntConfigEntry;
 
 import java.util.Collections;
 import java.util.List;
@@ -274,7 +276,9 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     public void removed() {
     }
 
-    protected OptionEntry<ToggleButton> createToggleEntry(String translatable, ConfigEntry<Boolean> entry) {
+    protected OptionEntry<ToggleButton> createToggleEntry(@NotNull String translatable,
+                                                          @Nullable String tooltipTranslatable,
+                                                          @NotNull ConfigEntry<Boolean> entry) {
         ToggleButton toggleButton = new ToggleButton(
                 0,
                 0,
@@ -286,24 +290,51 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
         return new OptionEntry<>(
                 Component.translatable(translatable),
                 toggleButton,
-                entry
+                entry,
+                GuiUtil.multiLineTooltip(tooltipTranslatable)
         );
     }
 
-    protected OptionEntry<SliderWidget> createSliderWidget(String translatable, DoubleConfigEntry entry) {
+    protected OptionEntry<SliderWidget> createDoubleSliderWidget(@NotNull String translatable,
+                                                                 @Nullable String tooltipTranslatable,
+                                                                 @NotNull DoubleConfigEntry entry,
+                                                                 @NotNull String suffix) {
         SliderWidget volumeSlider = new SliderWidget(
                 0,
                 0,
                 97,
-                entry
+                entry,
+                suffix
         );
 
         return new OptionEntry<>(
                 Component.translatable(translatable),
                 volumeSlider,
-                entry
+                entry,
+                GuiUtil.multiLineTooltip(tooltipTranslatable)
         );
     }
+
+    protected OptionEntry<IntSliderWidget> createIntSliderWidget(@NotNull String translatable,
+                                                                 @Nullable String tooltipTranslatable,
+                                                                 @NotNull IntConfigEntry entry,
+                                                                 @NotNull String suffix) {
+        IntSliderWidget volumeSlider = new IntSliderWidget(
+                0,
+                0,
+                97,
+                entry,
+                suffix
+        );
+
+        return new OptionEntry<>(
+                Component.translatable(translatable),
+                volumeSlider,
+                entry,
+                GuiUtil.multiLineTooltip(tooltipTranslatable)
+        );
+    }
+
 
     public abstract static class Entry extends ContainerObjectSelectionList.Entry<Entry> {
         @Getter

@@ -45,7 +45,8 @@ public abstract class BaseAudioDevice implements AudioDevice {
         return filters.values();
     }
 
-    protected short[] processFilters(short[] samples) {
+    @Override
+    public short[] processFilters(short[] samples) {
         for (AudioFilter filter : filters.values()) {
             if (filter.isEnabled()) {
                 samples = filter.process(samples);

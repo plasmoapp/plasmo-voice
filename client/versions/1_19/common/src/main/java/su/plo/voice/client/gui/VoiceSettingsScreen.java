@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.tab.ActivationTabWidget;
+import su.plo.voice.client.gui.tab.AdvancedTabWidget;
 import su.plo.voice.client.gui.tab.DevicesTabWidget;
 
 import java.util.ArrayList;
@@ -88,6 +89,10 @@ public final class VoiceSettingsScreen extends Screen {
         navigation.addTab(
                 Component.translatable("gui.plasmovoice.activation"),
                 new ActivationTabWidget(minecraft, this, voiceClient.getAudioCapture())
+        );
+        navigation.addTab(
+                Component.translatable("gui.plasmovoice.advanced"),
+                new AdvancedTabWidget(minecraft, this, voiceClient, config)
         );
 
         navigation.init();

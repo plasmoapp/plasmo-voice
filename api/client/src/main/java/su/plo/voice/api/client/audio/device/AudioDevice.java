@@ -55,6 +55,13 @@ public interface AudioDevice {
     Collection<AudioFilter> getFilters();
 
     /**
+     * Process all filters
+     *
+     * @return the processed samples
+     */
+    short[] processFilters(short[] samples);
+
+    /**
      * Gets the device name
      *
      * @return the device name

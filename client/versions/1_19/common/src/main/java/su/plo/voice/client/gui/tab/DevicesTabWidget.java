@@ -55,20 +55,30 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.microphone")));
         addEntry(createThresholdEntry());
         addEntry(createMicrophoneEntry());
-        addEntry(createSliderWidget(
+        addEntry(createDoubleSliderWidget(
                 "gui.plasmovoice.devices.microphone_volume",
-                config.getVoice().getMicrophoneVolume()
+                "gui.plasmovoice.devices.volume.tooltip",
+                config.getVoice().getMicrophoneVolume(),
+                "%"
         ));
         addEntry(createToggleEntry(
                 "gui.plasmovoice.devices.noise_suppression",
+                "gui.plasmovoice.devices.noise_suppression.tooltip",
                 config.getVoice().getNoiseSuppression()
         ));
 
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.output")));
         addEntry(createOutputDeviceEntry());
-        addEntry(createSliderWidget(
+        addEntry(createDoubleSliderWidget(
                 "gui.plasmovoice.devices.volume",
-                config.getVoice().getVolume()
+                "gui.plasmovoice.devices.volume.tooltip",
+                config.getVoice().getVolume(),
+                "%"
+        ));
+        addEntry(createToggleEntry(
+                "gui.plasmovoice.devices.compressor",
+                "gui.plasmovoice.devices.compressor.tooltip",
+                config.getVoice().getCompressorLimiter()
         ));
 
         addEntry(new CategoryEntry(Component.literal("хуй")));

@@ -136,12 +136,6 @@ public final class MicrophoneTestController {
             LOGGER.info("Loopback source closed");
         }
 
-        public void write(short[] samples) {
-            setVolume(config.getVoice().getVolume().value().floatValue());
-
-            write(AudioUtil.shortsToBytes(samples));
-        }
-
         private void setVolume(float volume) {
             for (DeviceSource source : sourceGroup.getSources()) {
                 if (source instanceof AlSource) {
@@ -153,9 +147,12 @@ public final class MicrophoneTestController {
             }
         }
 
-        private void write(byte[] samples) {
+        public void write(short[] samples) {
+            setVolume(config.getVoice().getVolume().value().floatValue());
+
             for (DeviceSource source : sourceGroup.getSources()) {
-                source.write(samples);
+                samples = source.getDevice().processFilters(samples);
+                source.write(AudioUtil.shortsToBytes(samples));
             }
         }
     }

@@ -19,11 +19,18 @@ public class LimiterFilter implements AudioFilter {
     private float[] envelopeBuf = new float[0];
     private float envelope;
 
-    public LimiterFilter(int sampleRate) {
-        this(sampleRate, null, null, null);
+    public LimiterFilter(int sampleRate,
+                         Float threshold) {
+        this(sampleRate, threshold, null, null);
     }
 
     public LimiterFilter(int sampleRate,
+                         @Nullable ConfigEntry<Boolean> activeEntry,
+                         @Nullable IntConfigEntry thresholdEntry) {
+        this(sampleRate, null, activeEntry, thresholdEntry);
+    }
+
+    private LimiterFilter(int sampleRate,
                          Float threshold,
                          @Nullable ConfigEntry<Boolean> activeEntry,
                          @Nullable IntConfigEntry thresholdEntry) {
