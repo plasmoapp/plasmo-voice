@@ -8,7 +8,6 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALC11;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -21,7 +20,6 @@ import su.plo.voice.client.audio.AlUtil;
 import javax.sound.sampled.AudioFormat;
 import java.nio.ByteBuffer;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -44,7 +42,7 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
     }
 
     @Override
-    public CompletableFuture<AudioDevice> open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
+    public void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
         if (isOpen()) throw new DeviceException("Device is already open");
         checkNotNull(params, "params cannot be null");
 
@@ -55,28 +53,16 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
             throw new DeviceException("Device opening has been canceled");
         }
 
-        CompletableFuture<AudioDevice> future = new CompletableFuture<>();
-
-        try {
-            this.format = format;
-            this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
-            this.devicePointer = openDevice(name, format);
-        } catch (DeviceException e) {
-            future.completeExceptionally(e);
-            return future;
-        }
+        this.format = format;
+        this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
+        this.devicePointer = openDevice(name, format);
 
         LOGGER.info("Device " + name + " initialized");
         client.getEventBus().call(new DeviceOpenEvent(this));
-
-        future.complete(this);
-        return future;
     }
 
     @Override
-    public CompletableFuture<AudioDevice> close() {
-        CompletableFuture<AudioDevice> future = new CompletableFuture<>();
-
+    public void close() {
         if (isOpen()) {
             stop();
             ALC11.alcCaptureCloseDevice(devicePointer);
@@ -87,9 +73,6 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
         }
 
         client.getEventBus().call(new DeviceClosedEvent(this));
-
-        future.complete(this);
-        return future;
     }
 
     @Override
@@ -133,6 +116,8 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
 
     @Override
     public int available() {
+        if (!isOpen() || !started) return 0;
+
         int samples = ALC11.alcGetInteger(devicePointer, ALC11.ALC_CAPTURE_SAMPLES);
         AlUtil.checkErrors("Get available samples count");
         return samples;
@@ -141,6 +126,7 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
     @Override
     public short[] read(int bufferSize) {
         if (!isOpen() || bufferSize > available()) return null;
+
         short[] shorts = new short[bufferSize * format.getChannels()];
         ALC11.alcCaptureSamples(devicePointer, shorts, bufferSize);
         AlUtil.checkErrors("Capture samples");

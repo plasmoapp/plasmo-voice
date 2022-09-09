@@ -35,13 +35,13 @@ public final class MicrophoneTestController {
     @Getter
     private double microphoneDB = 0D;
 
-    private CaptureSource source;
+    private LoopbackSource source;
 
     public void restart() {
         if (source == null) return;
         source.close();
 
-        this.source = new CaptureSource();
+        this.source = new LoopbackSource();
         try {
             source.initialize();
         } catch (DeviceException e) {
@@ -51,7 +51,7 @@ public final class MicrophoneTestController {
     }
 
     public void start() {
-        this.source = new CaptureSource();
+        this.source = new LoopbackSource();
         try {
             source.initialize();
         } catch (DeviceException e) {
@@ -105,7 +105,7 @@ public final class MicrophoneTestController {
 //        }
     }
 
-    private class CaptureSource {
+    private class LoopbackSource {
 
         private SourceGroup sourceGroup;
 
@@ -129,7 +129,11 @@ public final class MicrophoneTestController {
         }
 
         public void close() {
-            if (sourceGroup != null) sourceGroup.getSources().forEach(DeviceSource::close);
+            if (sourceGroup == null) return;
+
+            sourceGroup.getSources().forEach(DeviceSource::close);
+
+            LOGGER.info("Loopback source closed");
         }
 
         public void write(short[] samples) {

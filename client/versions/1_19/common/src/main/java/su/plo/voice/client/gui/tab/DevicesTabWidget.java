@@ -7,9 +7,8 @@ import net.minecraft.network.chat.Component;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.*;
-import su.plo.voice.api.client.connection.ServerInfo;
+import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.GuiUtil;
@@ -19,12 +18,9 @@ import su.plo.voice.client.gui.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.widget.DropDownWidget;
 import su.plo.voice.client.gui.widget.ToggleButton;
 
-import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 public final class DevicesTabWidget extends TabWidget {
 
@@ -33,7 +29,6 @@ public final class DevicesTabWidget extends TabWidget {
     private final PlasmoVoiceClient voiceClient;
     private final MicrophoneTestController testController;
     private final ClientConfig config;
-    private final AudioCapture capture;
     private final DeviceManager devices;
     private final DeviceFactoryManager deviceFactories;
 
@@ -49,7 +44,6 @@ public final class DevicesTabWidget extends TabWidget {
         this.testController = testController;
         this.voiceClient = voiceClient;
         this.config = config;
-        this.capture = voiceClient.getAudioCapture();
         this.devices = voiceClient.getDeviceManager();
         this.deviceFactories = voiceClient.getDeviceFactoryManager();
     }
@@ -221,7 +215,7 @@ public final class DevicesTabWidget extends TabWidget {
                     config.getVoice().getOutputDevice().set(Strings.nullToEmpty(deviceName));
                     config.save(true);
 
-                    reloadOutputDevice(deviceFactory.get());
+                    reloadOutputDevice();
                 }
         );
 
@@ -231,42 +225,26 @@ public final class DevicesTabWidget extends TabWidget {
                 config.getVoice().getOutputDevice(),
                 (button, element) -> {
                     element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
-                    reloadOutputDevice(deviceFactory.get());
+                    reloadOutputDevice();
                 }
         );
     }
 
-    private void reloadOutputDevice(DeviceFactory deviceFactory) {
-        Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
-        if (serverInfo.isEmpty()) return;
-
-        AudioFormat format = new AudioFormat(
-                (float) serverInfo.get().getVoiceInfo().getSampleRate(),
-                16,
-                1,
-                true,
-                false
-        );
+    private void reloadOutputDevice() {
 
         try {
-            CompletableFuture<AudioDevice> outputDevice = deviceFactory.openDevice(
-                    format,
-                    config.getVoice().getOutputDevice().value(),
-                    Params.builder()
-                            .set("listenerCameraRelative", config.getVoice().getListenerCameraRelative().value())
-                            .build()
-            );
+            OutputDevice<AlSource> outputDevice = devices.openOutputDevice(null, Params.EMPTY);
 
-            voiceClient.getDeviceManager().replace(null, outputDevice.get());
+            voiceClient.getDeviceManager().replace(null, outputDevice);
             testController.restart();
-        } catch (DeviceException | ExecutionException | InterruptedException e) {
+        } catch (Exception e) {
             LOGGER.error("Failed to open primary OpenAL output device", e);
         }
     }
 
     private void reloadInputDevice() {
         try {
-            InputDevice device = capture.openInputDevice(null);
+            InputDevice device = devices.openInputDevice(null, Params.EMPTY);
 
             devices.replace(null, device);
         } catch (Exception e) {

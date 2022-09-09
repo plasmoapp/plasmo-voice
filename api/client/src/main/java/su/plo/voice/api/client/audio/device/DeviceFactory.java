@@ -6,7 +6,6 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.concurrent.CompletableFuture;
 
 // todo: doc
 public interface DeviceFactory {
@@ -17,9 +16,11 @@ public interface DeviceFactory {
      * @param deviceName the device name
      * @param params device params, may be different depending on DeviceFactory
      *
+     * @return a new device
+     *
      * @throws DeviceException if device cannot be open
      */
-    CompletableFuture<AudioDevice> openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException;
+    AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException;
 
     /**
      * Gets the default device name

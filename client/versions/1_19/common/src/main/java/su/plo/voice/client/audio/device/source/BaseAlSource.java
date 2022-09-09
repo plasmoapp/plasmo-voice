@@ -12,12 +12,14 @@ import su.plo.voice.api.client.event.audio.device.source.AlSourceUpdateParamEven
 import su.plo.voice.client.audio.AlUtil;
 import su.plo.voice.proto.data.pos.Pos3d;
 
+import java.util.Arrays;
+
 public abstract class BaseAlSource implements AlSource {
 
     protected final PlasmoVoiceClient client;
     protected final AlAudioDevice device;
-    protected final int pointer;
     protected final int format;
+    protected int pointer;
 
     private Pos3d position;
 
@@ -26,6 +28,11 @@ public abstract class BaseAlSource implements AlSource {
         this.device = device;
         this.pointer = pointer;
         this.format = stereo ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return pointer == 0L;
     }
 
     @Override
@@ -81,19 +88,16 @@ public abstract class BaseAlSource implements AlSource {
 
     @Override
     public float getPitch() {
-        AlUtil.checkDeviceContext(device);
         return getFloat(AL11.AL_PITCH);
     }
 
     @Override
     public void setPitch(float pitch) {
-        AlUtil.checkDeviceContext(device);
         setFloat(AL11.AL_PITCH, pitch);
     }
 
     @Override
     public float getVolume() {
-        AlUtil.checkDeviceContext(device);
         return getFloat(AL11.AL_GAIN);
     }
 
@@ -118,53 +122,82 @@ public abstract class BaseAlSource implements AlSource {
     @Override
     public int getInt(int param) {
         AlUtil.checkDeviceContext(device);
-        return AL11.alGetSourcei(pointer, param);
+        if (isClosed()) return -1;
+
+        int value = AL11.alGetSourcei(pointer, param);
+        AlUtil.checkErrors("Get source int " + param);
+
+        return value;
     }
 
     @Override
     public void setInt(int param, int value) {
         AlUtil.checkDeviceContext(device);
+        if (isClosed()) return;
+
         if (!callParamEvent(param, value)) return;
         AL11.alSourcei(pointer, param, value);
+
+        AlUtil.checkErrors("Set source int " + param + ": " + value);
     }
 
     @Override
     public void getIntArray(int param, int[] values) {
         AlUtil.checkDeviceContext(device);
+        if (isClosed()) return;
+
         AL11.alGetSourceiv(pointer, param, values);
+        AlUtil.checkErrors("Get source int[] " + param);
     }
 
     @Override
     public void setIntArray(int param, int[] values) {
         AlUtil.checkDeviceContext(device);
+        if (isClosed()) return;
+
         if (!callParamEvent(param, values)) return;
         AL11.alSourceiv(pointer, param, values);
+        AlUtil.checkErrors("Set source int[] " + param + ": " + Arrays.toString(values));
     }
 
     @Override
     public float getFloat(int param) {
         AlUtil.checkDeviceContext(device);
-        return AL11.alGetSourcef(pointer, param);
+        if (isClosed()) return -1F;
+
+        float value = AL11.alGetSourcei(pointer, param);
+        AlUtil.checkErrors("Get source float " + param);
+
+        return value;
     }
 
     @Override
     public void setFloat(int param, float value) {
         AlUtil.checkDeviceContext(device);
+        if (isClosed()) return;
+
         if (!callParamEvent(param, value)) return;
         AL11.alSourcef(pointer, param, value);
+        AlUtil.checkErrors("Set source float " + param + ": " + value);
     }
 
     @Override
     public void getFloatArray(int param, float[] values) {
         AlUtil.checkDeviceContext(device);
+        if (isClosed()) return;
+
         AL11.alGetSourcefv(pointer, param, values);
+        AlUtil.checkErrors("Get source float[] " + param);
     }
 
     @Override
     public void setFloatArray(int param, float[] values) {
         AlUtil.checkDeviceContext(device);
+        if (isClosed()) return;
+
         if (!callParamEvent(param, values)) return;
         AL11.alSourcefv(pointer, param, values);
+        AlUtil.checkErrors("Set source float[] " + param + ": " + Arrays.toString(values));
     }
 
     private boolean callParamEvent(int param, Object value) {

@@ -6,13 +6,15 @@ import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
-import su.plo.voice.api.client.audio.device.*;
+import su.plo.voice.api.client.audio.device.AudioDevice;
+import su.plo.voice.api.client.audio.device.DeviceManager;
+import su.plo.voice.api.client.audio.device.DeviceType;
+import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
@@ -21,9 +23,6 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
-import su.plo.voice.client.audio.filter.GainFilter;
-import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
-import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.proto.data.capture.Activation;
@@ -148,7 +147,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         if (!getDevice().isPresent()) {
             try {
-                InputDevice device = openInputDevice(format);
+                InputDevice device = voiceClient.getDeviceManager().openInputDevice(format, Params.EMPTY);
                 devices.replace(null, device);
             } catch (Exception e) {
                 LOGGER.error("Failed to open input device", e);
@@ -206,53 +205,6 @@ public final class VoiceAudioCapture implements AudioCapture {
         }
 
         LOGGER.info("Audio capture initialized");
-    }
-
-    @Override
-    public InputDevice openInputDevice(@Nullable AudioFormat format) throws Exception {
-        if (format == null) {
-            if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
-
-            ServerInfo serverInfo = voiceClient.getServerInfo().get();
-            format = serverInfo.getVoiceInfo().getFormat(
-                    config.getVoice().getStereoCapture().value()
-            );
-        }
-
-        InputDevice device;
-
-        if (config.getVoice().getUseJavaxInput().value()) {
-            device = openJavaxDevice(format);
-        } else {
-            try {
-                device = openAlDevice(format);
-            } catch (Exception e) {
-                LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
-
-                device = openJavaxDevice(format);
-            }
-        }
-
-        // apply default filters
-        device.addFilter(new GainFilter(config.getVoice().getMicrophoneVolume()));
-        device.addFilter(new StereoToMonoFilter(config.getVoice().getStereoCapture()));
-        device.addFilter(new NoiseSuppressionFilter((int) format.getSampleRate(), config.getVoice().getNoiseSuppression()));
-
-        return device;
-    }
-
-    private InputDevice openAlDevice(@NotNull AudioFormat format) throws Exception {
-        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_INPUT");
-        if (!deviceFactory.isPresent()) throw new IllegalStateException("OpenAL input factory is not registered");
-
-        return (InputDevice) deviceFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
-    }
-
-    private InputDevice openJavaxDevice(@NotNull AudioFormat format) throws Exception {
-        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("JAVAX_INPUT");
-        if (!deviceFactory.isPresent()) throw new IllegalStateException("Javax input factory is not registered");
-
-        return (InputDevice) deviceFactory.get().openDevice(format, Strings.emptyToNull(config.getVoice().getInputDevice().value()), Params.EMPTY).get();
     }
 
     @Override

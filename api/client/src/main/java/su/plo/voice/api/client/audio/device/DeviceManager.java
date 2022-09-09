@@ -2,8 +2,11 @@ package su.plo.voice.api.client.audio.device;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
+import su.plo.voice.api.util.Params;
 
+import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 
 /**
@@ -56,4 +59,30 @@ public interface DeviceManager {
      * @return the source group
      */
     SourceGroup createSourceGroup(@Nullable DeviceType type);
+
+    /**
+     * Opens a new input device from config device name
+     *
+     * @param format audio format
+     *               if null current ServerInfo voice format will be used
+     * @param params device params, may be different depending on DeviceFactory
+     *
+     * @return the input device
+     *
+     * @throws Exception if device cannot be open
+     */
+    InputDevice openInputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception;
+
+    /**
+     * Opens a new output device from config device name
+     *
+     * @param format audio format
+     *               if null current ServerInfo voice format will be used
+     * @param params device params, may be different depending on DeviceFactory
+     *
+     * @return the output device
+     *
+     * @throws Exception if device cannot be open
+     */
+    OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception;
 }

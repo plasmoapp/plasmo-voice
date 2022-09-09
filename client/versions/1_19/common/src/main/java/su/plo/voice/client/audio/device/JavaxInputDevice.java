@@ -6,7 +6,6 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -18,7 +17,6 @@ import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.*;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -40,7 +38,7 @@ public class JavaxInputDevice extends BaseAudioDevice implements InputDevice {
     }
 
     @Override
-    public CompletableFuture<AudioDevice> open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
+    public void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
         checkNotNull(params, "params cannot be null");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
@@ -50,32 +48,23 @@ public class JavaxInputDevice extends BaseAudioDevice implements InputDevice {
             throw new DeviceException("Device opening has been canceled");
         }
 
-        CompletableFuture<AudioDevice> future = new CompletableFuture<>();
-
         try {
             this.format = format;
             this.bufferSize = ((int) format.getSampleRate() / 1_000) * 2 * 20;
 
             this.device = openDevice(name, format);
             device.open(format);
-        } catch (DeviceException e) {
-            future.completeExceptionally(e);
-            return future;
         } catch (LineUnavailableException e) {
-            future.completeExceptionally(new DeviceException("Failed to open javax device", e));
-            return future;
+            throw new DeviceException("Failed to open javax device", e);
         }
 
         LOGGER.info("Device " + name + " initialized");
 
         client.getEventBus().call(new DeviceOpenEvent(this));
-
-        future.complete(this);
-        return future;
     }
 
     @Override
-    public CompletableFuture<AudioDevice> close() {
+    public void close() {
         if (!isOpen()) {
             device.stop();
             device.flush();
@@ -84,7 +73,6 @@ public class JavaxInputDevice extends BaseAudioDevice implements InputDevice {
         }
 
         client.getEventBus().call(new DeviceClosedEvent(this));
-        return CompletableFuture.completedFuture(this);
     }
 
     @Override

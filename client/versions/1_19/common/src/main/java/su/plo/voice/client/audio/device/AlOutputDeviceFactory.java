@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.device;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.openal.ALC11;
@@ -14,20 +15,16 @@ import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@RequiredArgsConstructor
 public final class AlOutputDeviceFactory implements DeviceFactory {
 
-    private final PlasmoVoiceClient client;
-
-    public AlOutputDeviceFactory(PlasmoVoiceClient client) {
-        this.client = client;
-    }
+    private final PlasmoVoiceClient voiceClient;
 
     @Override
-    public CompletableFuture<AudioDevice> openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
+    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
         checkNotNull(format, "format cannot be null");
         checkNotNull(params, "params cannot be null");
 
@@ -35,8 +32,10 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
             deviceName = getDefaultDeviceName();
         }
 
-        AudioDevice device = new AlOutputDevice(client, deviceName);
-        return device.open(format, params);
+        AudioDevice device = new AlOutputDevice(voiceClient, deviceName);
+        device.open(format, params);
+
+        return device;
     }
 
     @Override

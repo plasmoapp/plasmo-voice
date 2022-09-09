@@ -8,7 +8,6 @@ import su.plo.voice.api.util.Params;
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 
 // todo: doc
 public interface AudioDevice {
@@ -21,12 +20,12 @@ public interface AudioDevice {
      *
      * @throws DeviceException if the device cannot be open
      */
-    CompletableFuture<AudioDevice> open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException;
+    void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException;
 
     /**
      * Closes the device
      */
-    CompletableFuture<AudioDevice> close();
+    void close();
 
     /**
      * @return true if the device is open

@@ -5,9 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
-import su.plo.voice.api.client.audio.device.AudioDevice;
-import su.plo.voice.api.client.audio.device.DeviceException;
-import su.plo.voice.api.client.audio.device.DeviceFactory;
+import su.plo.voice.api.client.audio.device.OutputDevice;
+import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.connection.ServerInfoUpdateEvent;
@@ -26,13 +25,11 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 
 @AllArgsConstructor
 public abstract class BaseServerConnection implements ServerConnection, ClientPacketTcpHandler {
 
-    private final Logger logger = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final BaseVoiceClient voiceClient;
 
@@ -56,7 +53,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         try {
             client.connect(ip, packet.getPort());
         } catch (Exception e) {
-            logger.error("Failed to connect to the UDP server", e);
+            LOGGER.error("Failed to connect to the UDP server", e);
         }
     }
 
@@ -64,13 +61,13 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull ConfigPacket packet) {
         Optional<UdpClient> client = voiceClient.getUdpClientManager().getClient();
         if (!client.isPresent()) {
-            logger.warn("Config packet is received before UDP is connected");
+            LOGGER.warn("Config packet is received before UDP is connected");
             return;
         }
 
         Optional<InetSocketAddress> remoteAddress = client.get().getRemoteAddress();
         if (!remoteAddress.isPresent()) {
-            logger.warn("Config packet is received before UDP is connected");
+            LOGGER.warn("Config packet is received before UDP is connected");
             return;
         }
 
@@ -82,7 +79,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
             try {
                 encryption = voiceClient.getEncryptionManager().create(encryptionInfo.getAlgorithm(), encryptionInfo.getData());
             } catch (Exception e) {
-                logger.error("Failed to initialize encryption with name {}", encryptionInfo.getAlgorithm(), e);
+                LOGGER.error("Failed to initialize encryption with name {}", encryptionInfo.getAlgorithm(), e);
                 return;
             }
         }
@@ -146,12 +143,6 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         audioCapture.start();
 
         // clear & initialize primary output device
-        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_OUTPUT");
-        if (!deviceFactory.isPresent()) {
-            logger.error("OpenAL output device factory is not initialized");
-            return;
-        }
-
         AudioFormat format = new AudioFormat(
                 (float) serverInfo.getVoiceInfo().getSampleRate(),
                 16,
@@ -161,16 +152,10 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         );
 
         try {
-            CompletableFuture<AudioDevice> outputDevice = deviceFactory.get().openDevice(
-                    format,
-                    null,
-                    Params.builder()
-                            .set("listenerCameraRelative", voiceClient.getConfig().getVoice().getListenerCameraRelative().value())
-                            .build()
-            );
-            voiceClient.getDeviceManager().add(outputDevice.get());
-        } catch (DeviceException | ExecutionException | InterruptedException e) {
-            logger.error("Failed to open primary OpenAL output device", e);
+            OutputDevice<AlSource> outputDevice = voiceClient.getDeviceManager().openOutputDevice(format, Params.EMPTY);
+            voiceClient.getDeviceManager().add(outputDevice);
+        } catch (Exception e) {
+            LOGGER.error("Failed to open primary OpenAL output device", e);
             return;
         }
 

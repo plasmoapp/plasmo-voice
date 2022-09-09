@@ -1,5 +1,7 @@
 package su.plo.voice.api.client.audio.device;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Optional;
 
 // todo: doc
@@ -18,5 +20,10 @@ public interface AlAudioDevice extends AudioDevice {
     /**
      * Runs runnable in the device's context
      */
-    void runInContext(Runnable runnable);
+    void runInContext(@NotNull DeviceRunnable runnable);
+
+    interface DeviceRunnable {
+
+        void run() throws DeviceException;
+    }
 }

@@ -15,7 +15,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.*;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
-import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.OutputDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -38,7 +37,7 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static org.lwjgl.openal.ALC10.ALC_TRUE;
+import static org.lwjgl.openal.ALC11.ALC_TRUE;
 
 public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevice, OutputDevice<AlSource> {
 
@@ -74,7 +73,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     }
 
     @Override
-    public CompletableFuture<AudioDevice> open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
+    public void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
         checkNotNull(params, "params cannot be null");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
@@ -88,131 +87,112 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
             throw new DeviceException("Device already open");
         }
 
-        CompletableFuture<AudioDevice> future = new CompletableFuture<>();
         runInContext(() -> {
-            try {
-                this.devicePointer = openDevice(name);
-                this.format = format;
-                this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
+            this.devicePointer = openDevice(name);
+            this.format = format;
+            this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
 
-                ALCCapabilities aLCCapabilities = ALC.createCapabilities(devicePointer);
-                if (AlUtil.checkAlcErrors(devicePointer, "Get capabilities")) {
-                    throw new DeviceException("Failed to get OpenAL capabilities");
-                } else if (!aLCCapabilities.OpenALC11) {
-                    throw new DeviceException("OpenAL 1.1 not supported");
-                }
-
-                this.contextPointer = ALC10.alcCreateContext(this.devicePointer, (IntBuffer) null);
-                EXTThreadLocalContext.alcSetThreadContext(this.contextPointer);
-
-                ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
-                AlUtil.checkErrors("Initialization");
-                if (!aLCapabilities.AL_EXT_source_distance_model) {
-                    throw new DeviceException("AL_EXT_source_distance_model is not supported");
-                }
-
-                AL10.alEnable(512);
-                if (!aLCapabilities.AL_EXT_LINEAR_DISTANCE) {
-                    throw new DeviceException("AL_EXT_LINEAR_DISTANCE is not supported");
-                }
-
-                AlUtil.checkErrors("Enable per-source distance models");
-                LOGGER.info("Device " + name + " initialized");
-
-                if (params.containsKey("hrtf")) {
-                    Object hrtf = params.get("hrtf");
-                    if (hrtf.equals(true)) {
-                        enableHRTF();
-                    }
-                }
-
-                AL11.alListenerf(AL11.AL_GAIN, 1.0F);
-
-                AL11.alListener3f(AL11.AL_POSITION, 0.0F, 0.0F, 0.0F);
-                AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
-                        0.0F, 0.0F, -1.0F,
-                        0.0F, 1.0F, 0.0F
-                });
-
-                final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
-
-                final Vector3f forwards = new Vector3f(0.0F, 0.0F, 1.0F);
-                final Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
-
-                executor.scheduleAtFixedRate(() -> {
-                    Vec3 position;
-                    Vector3f lookVector, upVector;
-
-                    if (params.get("listenerCameraRelative")) {
-                        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-
-                        position = camera.getPosition();
-                        lookVector = camera.getLookVector();
-                        upVector = camera.getUpVector();
-                    } else {
-                        LocalPlayer player = Minecraft.getInstance().player;
-                        if (player == null) return;
-
-                        position = player.getEyePosition();
-
-
-                        rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
-                        rotation.mul(Vector3f.YP.rotationDegrees(-player.getYRot()));
-                        rotation.mul(Vector3f.XP.rotationDegrees(player.getXRot()));
-
-                        forwards.set(0.0F, 0.0F, 1.0F);
-                        forwards.transform(rotation);
-                        up.set(0.0F, 1.0F, 0.0F);
-                        up.transform(rotation);
-
-                        lookVector = forwards;
-                        upVector = up;
-                    }
-
-                    AL11.alListener3f(
-                            AL11.AL_POSITION,
-                            (float) position.x(),
-                            (float) position.y(),
-                            (float) position.z()
-                    );
-                    AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
-                            lookVector.x(), lookVector.y(), lookVector.z(),
-                            upVector.x(), upVector.y(), upVector.z()
-                    });
-                }, 0L, 5L, TimeUnit.MILLISECONDS);
-
-                client.getEventBus().call(new DeviceOpenEvent(this));
-
-                future.complete(this);
-            } catch (DeviceException e) {
-                future.completeExceptionally(e);
+            ALCCapabilities aLCCapabilities = ALC.createCapabilities(devicePointer);
+            if (AlUtil.checkAlcErrors(devicePointer, "Get capabilities")) {
+                throw new DeviceException("Failed to get OpenAL capabilities");
+            } else if (!aLCCapabilities.OpenALC11) {
+                throw new DeviceException("OpenAL 1.1 not supported");
             }
-        });
 
-        return future;
+            this.contextPointer = ALC11.alcCreateContext(this.devicePointer, (IntBuffer) null);
+            EXTThreadLocalContext.alcSetThreadContext(this.contextPointer);
+
+            ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
+            AlUtil.checkErrors("Initialization");
+            if (!aLCapabilities.AL_EXT_source_distance_model) {
+                throw new DeviceException("AL_EXT_source_distance_model is not supported");
+            }
+
+            AL10.alEnable(512);
+            if (!aLCapabilities.AL_EXT_LINEAR_DISTANCE) {
+                throw new DeviceException("AL_EXT_LINEAR_DISTANCE is not supported");
+            }
+
+            AlUtil.checkErrors("Enable per-source distance models");
+            LOGGER.info("Device " + name + " initialized");
+
+            if (params.containsKey("hrtf")) {
+                Object hrtf = params.get("hrtf");
+                if (hrtf.equals(true)) {
+                    enableHRTF();
+                }
+            }
+
+            AL11.alListenerf(AL11.AL_GAIN, 1.0F);
+
+            AL11.alListener3f(AL11.AL_POSITION, 0.0F, 0.0F, 0.0F);
+            AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
+                    0.0F, 0.0F, -1.0F,
+                    0.0F, 1.0F, 0.0F
+            });
+
+            final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+
+            final Vector3f forwards = new Vector3f(0.0F, 0.0F, 1.0F);
+            final Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
+
+            executor.scheduleAtFixedRate(() -> {
+                Vec3 position;
+                Vector3f lookVector, upVector;
+
+                if (params.get("listenerCameraRelative")) {
+                    Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
+                    position = camera.getPosition();
+                    lookVector = camera.getLookVector();
+                    upVector = camera.getUpVector();
+                } else {
+                    LocalPlayer player = Minecraft.getInstance().player;
+                    if (player == null) return;
+
+                    position = player.getEyePosition();
+
+
+                    rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
+                    rotation.mul(Vector3f.YP.rotationDegrees(-player.getYRot()));
+                    rotation.mul(Vector3f.XP.rotationDegrees(player.getXRot()));
+
+                    forwards.set(0.0F, 0.0F, 1.0F);
+                    forwards.transform(rotation);
+                    up.set(0.0F, 1.0F, 0.0F);
+                    up.transform(rotation);
+
+                    lookVector = forwards;
+                    upVector = up;
+                }
+
+                AL11.alListener3f(
+                        AL11.AL_POSITION,
+                        (float) position.x(),
+                        (float) position.y(),
+                        (float) position.z()
+                );
+                AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
+                        lookVector.x(), lookVector.y(), lookVector.z(),
+                        upVector.x(), upVector.y(), upVector.z()
+                });
+            }, 0L, 5L, TimeUnit.MILLISECONDS);
+
+            client.getEventBus().call(new DeviceOpenEvent(this));
+        });
     }
 
     @Override
-    public CompletableFuture<AudioDevice> close() {
-        CompletableFuture<AudioDevice> future = new CompletableFuture<>();
-
+    public void close() {
         if (isOpen()) {
-            for (AlSource source : sources) {
-                try {
-                    source.close().get();
-                } catch (InterruptedException | ExecutionException e) {
-                    LOGGER.error("Failed to close alSource", e);
-                    future.completeExceptionally(e);
-                    return future;
-                }
-            }
+            sources.forEach(AlSource::close);
 
             runInContext(() -> {
                 EXTThreadLocalContext.alcSetThreadContext(0L);
 
-                ALC10.alcDestroyContext(contextPointer);
+                ALC11.alcDestroyContext(contextPointer);
                 if (devicePointer != 0L) {
-                    ALC10.alcCloseDevice(devicePointer);
+                    ALC11.alcCloseDevice(devicePointer);
                 }
 
                 this.contextPointer = 0L;
@@ -222,11 +202,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
                 client.getEventBus().call(new DeviceClosedEvent(this));
             });
-        } else {
-            future.complete(this);
         }
-
-        return future;
     }
 
     @Override
@@ -264,14 +240,11 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
             }
         }
 
-        CompletableFuture<AlSource> source = StreamAlSource.create(this, client, stereo, numBuffers);
         try {
-            AlSource alSource = source.get();
-            sources.add(alSource);
-            return alSource;
-        } catch (InterruptedException e) {
-            throw new DeviceException("Failed to allocate new source", e);
-        } catch (ExecutionException e) {
+            AlSource source = StreamAlSource.create(this, client, stereo, numBuffers);
+            sources.add(source);
+            return source;
+        } catch (RuntimeException e) {
             if (e.getCause() instanceof DeviceException) {
                 throw (DeviceException) e.getCause();
             }
@@ -291,8 +264,29 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     }
 
     @Override
-    public void runInContext(Runnable runnable) {
-        executor.execute(runnable);
+    public void runInContext(@NotNull DeviceRunnable runnable) {
+        try {
+            if (AlUtil.sameDeviceContext(this)) {
+                runnable.run();
+                return;
+            }
+
+            CompletableFuture<Void> future = new CompletableFuture<>();
+
+            executor.execute(() -> {
+                try {
+                    runnable.run();
+                } catch (Exception e) {
+                    future.completeExceptionally(e);
+                } finally {
+                    future.complete(null);
+                }
+            });
+
+            future.get();
+        } catch (DeviceException | ExecutionException | InterruptedException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
@@ -304,9 +298,9 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
         long l;
         if (deviceName == null) {
             // default device
-            l = ALC10.alcOpenDevice((ByteBuffer) null);
+            l = ALC11.alcOpenDevice((ByteBuffer) null);
         } else {
-            l = ALC10.alcOpenDevice(deviceName);
+            l = ALC11.alcOpenDevice(deviceName);
         }
 
         if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
@@ -317,7 +311,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     }
 
     private void enableHRTF() throws DeviceException {
-        int num = ALC10.alcGetInteger(devicePointer, SOFTHRTF.ALC_NUM_HRTF_SPECIFIERS_SOFT);
+        int num = ALC11.alcGetInteger(devicePointer, SOFTHRTF.ALC_NUM_HRTF_SPECIFIERS_SOFT);
         if (num <= 0) throw new DeviceException("HRTF is not supported");
 
         IntBuffer attr = BufferUtils.createIntBuffer(10)
@@ -328,12 +322,12 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
         ((Buffer) attr).flip();
 
         if (!SOFTHRTF.alcResetDeviceSOFT(devicePointer, attr)) {
-            LOGGER.warn("Failed to reset device: {}", ALC10.alcGetString(devicePointer, ALC10.alcGetError(devicePointer)));
+            LOGGER.warn("Failed to reset device: {}", ALC11.alcGetString(devicePointer, ALC11.alcGetError(devicePointer)));
         }
 
-        int state = ALC10.alcGetInteger(devicePointer, SOFTHRTF.ALC_HRTF_SOFT);
+        int state = ALC11.alcGetInteger(devicePointer, SOFTHRTF.ALC_HRTF_SOFT);
         if (state != 0) {
-            String name = ALC10.alcGetString(devicePointer, SOFTHRTF.ALC_HRTF_SPECIFIER_SOFT);
+            String name = ALC11.alcGetString(devicePointer, SOFTHRTF.ALC_HRTF_SPECIFIER_SOFT);
             LOGGER.info("HRTF enabled, using {}", name);
         }
     }

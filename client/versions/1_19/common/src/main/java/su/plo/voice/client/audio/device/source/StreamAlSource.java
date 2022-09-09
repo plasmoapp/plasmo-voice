@@ -15,6 +15,7 @@ import su.plo.voice.client.audio.AlUtil;
 import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,7 +25,7 @@ public final class StreamAlSource extends BaseAlSource {
     private static final Logger LOGGER = LogManager.getLogger(StreamAlSource.class);
     private static final int DEFAULT_NUM_BUFFERS = 8;
 
-    public static CompletableFuture<AlSource> create(AlAudioDevice device, PlasmoVoiceClient client, boolean stereo, int numBuffers) {
+    public static AlSource create(AlAudioDevice device, PlasmoVoiceClient client, boolean stereo, int numBuffers) {
         CompletableFuture<AlSource> future = new CompletableFuture<>();
 
         device.runInContext(() -> {
@@ -44,7 +45,11 @@ public final class StreamAlSource extends BaseAlSource {
             future.complete(source);
         });
 
-        return future;
+        try {
+            return future.get();
+        } catch (InterruptedException | ExecutionException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private final int numBuffers;
@@ -91,6 +96,7 @@ public final class StreamAlSource extends BaseAlSource {
         if (event.isCancelled()) return;
 
         AL11.alSourceStop(pointer);
+        AlUtil.checkErrors("Source stop");
 
         isStreaming.set(false);
 
@@ -131,15 +137,15 @@ public final class StreamAlSource extends BaseAlSource {
     }
 
     @Override
-    public CompletableFuture<Void> close() {
-        if (!isStreaming.get())
-            return CompletableFuture.completedFuture(null);
-
-        CompletableFuture<Void> future = new CompletableFuture<>();
+    public void close() {
+        if (!isStreaming.get()) return;
 
         device.runInContext(() -> {
             stop();
 
+            AlSourceClosedEvent event = new AlSourceClosedEvent(this);
+            client.getEventBus().call(event);
+            
             int processedBuffers = getInt(AL11.AL_BUFFERS_PROCESSED);
             AlUtil.checkErrors("Get processed buffers");
 
@@ -156,13 +162,8 @@ public final class StreamAlSource extends BaseAlSource {
             AL11.alDeleteSources(new int[]{ pointer });
             AlUtil.checkErrors("Delete source");
 
-            AlSourceClosedEvent event = new AlSourceClosedEvent(this);
-            client.getEventBus().call(event);
-
-            future.complete(null);
+            this.pointer = 0;
         });
-
-        return future;
     }
 
     private void startStreamThread() {
@@ -180,6 +181,7 @@ public final class StreamAlSource extends BaseAlSource {
 
         this.buffers = new int[numBuffers];
         AL11.alGenBuffers(buffers);
+        AlUtil.checkErrors("Source gen buffers");
 
         AL11.alSourcePlay(pointer);
         AlUtil.checkErrors("Source play");
@@ -207,6 +209,7 @@ public final class StreamAlSource extends BaseAlSource {
 
                 // Bits can be 0 if the format or parameters are corrupt, avoid division by zero
                 int bits = AL11.alGetBufferi(buffer[0], AL11.AL_BITS);
+                AlUtil.checkErrors("Source get buffer int");
                 if (bits == 0) {
                     LOGGER.warn("Corrupted stream");
                     continue;
@@ -257,9 +260,9 @@ public final class StreamAlSource extends BaseAlSource {
         if (byteBuffer == null) return false;
 
         AL11.alBufferData(buffer, format, byteBuffer, (int) device.getFormat().get().getSampleRate());
-        if (AlUtil.checkErrors("Assigning buffer data")) return true;
+        if (AlUtil.checkErrors("Assigning buffer data")) return false;
 
         AL11.alSourceQueueBuffers(pointer, new int[]{ buffer });
-        return true;
+        return !AlUtil.checkErrors("Queue buffer data");
     }
 }

@@ -41,13 +41,13 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
     @Getter
-    private final DeviceManager deviceManager = new VoiceDeviceManager(this);
-    @Getter
     private final UdpClientManager udpClientManager = new VoiceUdpClientManager();
 
     @Setter
     private ServerInfo serverInfo;
 
+    @Getter
+    private DeviceManager deviceManager;
     @Getter
     private AudioCapture audioCapture;
 
@@ -66,6 +66,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             throw new IllegalStateException("Failed to load the config", e);
         }
 
+        this.deviceManager = new VoiceDeviceManager(this, config);
         this.audioCapture = new VoiceAudioCapture(this, config);
 
         getEventBus().call(new VoiceClientInitializedEvent(this));

@@ -13,7 +13,6 @@ import su.plo.voice.api.util.Params;
 import javax.sound.sampled.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,7 +25,7 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public CompletableFuture<AudioDevice> openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
+    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
         checkNotNull(format, "format cannot be null");
         checkNotNull(params, "params cannot be null");
 
@@ -35,7 +34,9 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
         }
 
         AudioDevice device = new JavaxInputDevice(client, deviceName);
-        return device.open(format, params);
+        device.open(format, params);
+
+        return device;
     }
 
     @Override
