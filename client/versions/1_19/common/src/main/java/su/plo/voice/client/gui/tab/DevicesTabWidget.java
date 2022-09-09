@@ -231,7 +231,7 @@ public final class DevicesTabWidget extends TabWidget {
                 config.getVoice().getOutputDevice(),
                 (button, element) -> {
                     element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
-                    reloadInputDevice();
+                    reloadOutputDevice(deviceFactory.get());
                 }
         );
     }
