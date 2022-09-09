@@ -38,7 +38,8 @@ public final class MicrophoneTestController {
     private CaptureSource source;
 
     public void restart() {
-        if (source != null) source.close();
+        if (source == null) return;
+        source.close();
 
         this.source = new CaptureSource();
         try {

@@ -81,6 +81,9 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
             stop();
             ALC11.alcCaptureCloseDevice(devicePointer);
             AlUtil.checkErrors("Close capture device");
+            this.devicePointer = 0L;
+
+            LOGGER.info("Device " + name + " closed");
         }
 
         client.getEventBus().call(new DeviceClosedEvent(this));

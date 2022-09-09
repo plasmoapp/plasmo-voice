@@ -41,7 +41,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
     @Getter
-    private final DeviceManager deviceManager = new VoiceDeviceManager();
+    private final DeviceManager deviceManager = new VoiceDeviceManager(this);
     @Getter
     private final UdpClientManager udpClientManager = new VoiceUdpClientManager();
 

@@ -22,6 +22,9 @@ import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
+import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent;
+import su.plo.voice.api.event.EventPriority;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.AlUtil;
 import su.plo.voice.client.audio.device.source.StreamAlSource;
@@ -31,6 +34,7 @@ import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -44,6 +48,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     private final @Nullable String name;
 
     private final ScheduledExecutorService executor;
+    private final Set<AlSource> sources = new CopyOnWriteArraySet<>();
 
     private AudioFormat format;
     @Getter
@@ -192,6 +197,16 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
         CompletableFuture<AudioDevice> future = new CompletableFuture<>();
 
         if (isOpen()) {
+            for (AlSource source : sources) {
+                try {
+                    source.close().get();
+                } catch (InterruptedException | ExecutionException e) {
+                    LOGGER.error("Failed to close alSource", e);
+                    future.completeExceptionally(e);
+                    return future;
+                }
+            }
+
             runInContext(() -> {
                 EXTThreadLocalContext.alcSetThreadContext(0L);
 
@@ -202,6 +217,8 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
                 this.contextPointer = 0L;
                 this.devicePointer = 0L;
+
+                LOGGER.info("Device " + name + " closed");
 
                 client.getEventBus().call(new DeviceClosedEvent(this));
             });
@@ -249,7 +266,9 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
         CompletableFuture<AlSource> source = StreamAlSource.create(this, client, stereo, numBuffers);
         try {
-            return source.get();
+            AlSource alSource = source.get();
+            sources.add(alSource);
+            return alSource;
         } catch (InterruptedException e) {
             throw new DeviceException("Failed to allocate new source", e);
         } catch (ExecutionException e) {
@@ -274,6 +293,11 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     @Override
     public void runInContext(Runnable runnable) {
         executor.execute(runnable);
+    }
+
+    @EventSubscribe(priority = EventPriority.LOWEST)
+    public void onSourceClosed(AlSourceClosedEvent event) {
+        sources.remove(event.getSource());
     }
 
     private long openDevice(String deviceName) throws DeviceException {

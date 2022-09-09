@@ -9,6 +9,8 @@ import org.apache.logging.log4j.Logger;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.*;
+import su.plo.voice.api.client.connection.ServerInfo;
+import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.GuiUtil;
 import su.plo.voice.client.gui.MicrophoneTestController;
@@ -18,9 +20,12 @@ import su.plo.voice.client.gui.widget.DropDownWidget;
 import su.plo.voice.client.gui.widget.SliderWidget;
 import su.plo.voice.client.gui.widget.ToggleButton;
 
+import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 public final class DevicesTabWidget extends TabWidget {
 
@@ -62,6 +67,9 @@ public final class DevicesTabWidget extends TabWidget {
                 "gui.plasmovoice.devices.noise_suppression",
                 config.getVoice().getNoiseSuppression()
         ));
+
+        addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.output")));
+        addEntry(createOutputDeviceEntry());
 
         addEntry(new CategoryEntry(Component.literal("хуй")));
         addEntry(createStereoCaptureEntry());
@@ -177,7 +185,8 @@ public final class DevicesTabWidget extends TabWidget {
                 (button, element) -> {
                     element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadInputDevice();
-                });
+                }
+        );
     }
 
     private OptionEntry<SliderWidget> createMicrophoneVolumeEntry() {
@@ -193,6 +202,75 @@ public final class DevicesTabWidget extends TabWidget {
                 volumeSlider,
                 config.getVoice().getMicrophoneVolume()
         );
+    }
+
+    private OptionEntry<DropDownWidget> createOutputDeviceEntry() {
+        Optional<DeviceFactory> deviceFactory = deviceFactories.getDeviceFactory("AL_OUTPUT");
+        if (deviceFactory.isEmpty()) throw new IllegalStateException("Al Output device factory not initialized");
+
+        ImmutableList<String> outputDeviceNames = deviceFactory.get().getDeviceNames();
+        Collection<AudioDevice> outputDevices = this.devices.getDevices(DeviceType.OUTPUT);
+        Optional<AudioDevice> outputDevice = outputDevices.stream().findFirst();
+
+        DropDownWidget dropdown = new DropDownWidget(
+                parent,
+                0,
+                0,
+                97,
+                20,
+                GuiUtil.formatDeviceName(outputDevice.orElse(null), deviceFactory.get()),
+                GuiUtil.formatDeviceNames(outputDeviceNames, deviceFactory.get()),
+                true,
+                (index) -> {
+                    String deviceName = outputDeviceNames.get(index);
+                    if (Objects.equals(deviceName, deviceFactory.get().getDefaultDeviceName())) {
+                        deviceName = null;
+                    }
+
+                    config.getVoice().getOutputDevice().set(Strings.nullToEmpty(deviceName));
+                    config.save(true);
+
+                    reloadOutputDevice(deviceFactory.get());
+                }
+        );
+
+        return new OptionEntry<>(
+                Component.translatable("gui.plasmovoice.devices.output_device"),
+                dropdown,
+                config.getVoice().getInputDevice(),
+                (button, element) -> {
+                    element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
+                    reloadInputDevice();
+                }
+        );
+    }
+
+    private void reloadOutputDevice(DeviceFactory deviceFactory) {
+        Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
+        if (serverInfo.isEmpty()) return;
+
+        AudioFormat format = new AudioFormat(
+                (float) serverInfo.get().getVoiceInfo().getSampleRate(),
+                16,
+                1,
+                true,
+                false
+        );
+
+        try {
+            CompletableFuture<AudioDevice> outputDevice = deviceFactory.openDevice(
+                    format,
+                    config.getVoice().getOutputDevice().value(),
+                    Params.builder()
+                            .set("listenerCameraRelative", config.getVoice().getListenerCameraRelative().value())
+                            .build()
+            );
+
+            voiceClient.getDeviceManager().replace(null, outputDevice.get());
+            testController.restart();
+        } catch (DeviceException | ExecutionException | InterruptedException e) {
+            LOGGER.error("Failed to open primary OpenAL output device", e);
+        }
     }
 
     private void reloadInputDevice() {

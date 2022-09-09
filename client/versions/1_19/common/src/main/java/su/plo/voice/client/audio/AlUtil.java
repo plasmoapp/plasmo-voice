@@ -34,7 +34,7 @@ public final class AlUtil {
     public static void checkDeviceContext(AlAudioDevice device) {
         if (!device.getContextPointer().isPresent()
                 || EXTThreadLocalContext.alcGetThreadContext() != device.getContextPointer().get()) {
-            throw new IllegalStateException("This function should be called in the device context thread! Use AlAudioDevice::runInContext, to run this function");
+            throw new IllegalStateException("This function should be called in the device context thread! Use AlAudioDevice::runInContext to run this function");
         }
     }
 

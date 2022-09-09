@@ -1,8 +1,10 @@
 package su.plo.voice.client.audio.device;
 
 import com.google.common.collect.ImmutableList;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.client.audio.device.source.VoiceOutputSourceGroup;
@@ -13,8 +15,10 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@RequiredArgsConstructor
 public final class VoiceDeviceManager implements DeviceManager {
 
+    private final PlasmoVoiceClient voiceClient;
     private final List<AudioDevice> inputDevices = new CopyOnWriteArrayList<>();
     private final List<AudioDevice> outputDevices = new CopyOnWriteArrayList<>();
 
@@ -29,6 +33,8 @@ public final class VoiceDeviceManager implements DeviceManager {
         }
 
         if (devices.contains(device)) return;
+
+        voiceClient.getEventBus().register(voiceClient, device);
         devices.add(device);
     }
 
@@ -50,23 +56,35 @@ public final class VoiceDeviceManager implements DeviceManager {
 
             devices.set(index, newDevice);
         } else {
-            if (devices.size() > 0) devices.set(0, newDevice);
+            if (devices.size() > 0) {
+                oldDevice = devices.get(0);
+
+                devices.set(0, newDevice);
+
+                oldDevice.close();
+            }
             else devices.add(newDevice);
         }
+
+        if (oldDevice != null)voiceClient.getEventBus().unregister(voiceClient, oldDevice);
+        voiceClient.getEventBus().register(voiceClient, newDevice);
     }
 
     @Override
     public void remove(@NotNull AudioDevice device) {
         checkNotNull(device, "device cannot be null");
         getDevicesList(device).remove(device);
+        voiceClient.getEventBus().unregister(voiceClient, device);
     }
 
     @Override
     public void clear(@Nullable DeviceType type) {
         if (type == DeviceType.INPUT) {
             inputDevices.clear();
+            inputDevices.forEach(device -> voiceClient.getEventBus().unregister(voiceClient, device));
         } else {
             outputDevices.clear();
+            outputDevices.forEach(device -> voiceClient.getEventBus().unregister(voiceClient, device));
         }
     }
 
