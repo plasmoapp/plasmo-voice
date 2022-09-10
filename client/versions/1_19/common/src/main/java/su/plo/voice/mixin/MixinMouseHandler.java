@@ -9,7 +9,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
-import su.plo.voice.client.VoiceClientMod;
+import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.event.key.MouseScrollEvent;
 
@@ -27,7 +27,7 @@ public class MixinMouseHandler {
                 KeyBinding.Action.fromInt(action)
         );
 
-        VoiceClientMod.INSTANCE.getEventBus().call(event);
+        ModVoiceClient.INSTANCE.getEventBus().call(event);
     }
 
     @Inject(at = @At("HEAD"), method = "onScroll", cancellable = true)

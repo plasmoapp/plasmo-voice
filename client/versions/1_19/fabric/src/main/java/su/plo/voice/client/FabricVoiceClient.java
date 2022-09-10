@@ -26,7 +26,7 @@ import java.util.Optional;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @Environment(EnvType.CLIENT)
-public final class FabricVoiceClient extends VoiceClientMod implements ClientModInitializer {
+public final class FabricVoiceClient extends ModVoiceClient implements ClientModInitializer {
 
     private final FabricClientChannelHandler handler = new FabricClientChannelHandler(this);
 

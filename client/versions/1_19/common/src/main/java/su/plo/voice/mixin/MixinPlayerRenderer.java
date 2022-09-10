@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import su.plo.voice.client.VoiceClientMod;
+import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.render.SourceIconRenderer;
 
 @Mixin(PlayerRenderer.class)
@@ -23,7 +23,7 @@ public abstract class MixinPlayerRenderer extends LivingEntityRenderer<AbstractC
 
     @Inject(method = "render", at = @At(value = "HEAD"))
     public void render(AbstractClientPlayer player, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-        if (VoiceClientMod.INSTANCE.getServerInfo().isEmpty()) return;
+        if (ModVoiceClient.INSTANCE.getServerInfo().isEmpty()) return;
 
         double d = this.entityRenderDispatcher.distanceToSqr(player);
         if (d > 4096.0D) {

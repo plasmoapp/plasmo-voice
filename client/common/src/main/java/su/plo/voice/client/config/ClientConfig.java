@@ -287,6 +287,9 @@ public final class ClientConfig {
     public static class Advanced {
 
         @ConfigField
+        private IntConfigEntry showIcons = new IntConfigEntry(0, 0, 2);
+
+        @ConfigField
         private EnumConfigEntry<ActivationIconPosition> activationIconPosition = new EnumConfigEntry<>(
                 ActivationIconPosition.class,
                 ActivationIconPosition.BOTTOM_CENTER
@@ -305,21 +308,25 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> stereoSourcesToMono = new ConfigEntry<>(false);
 
         public enum ActivationIconPosition {
-            TOP_LEFT(16, 16),
-            TOP_CENTER(null, 16),
-            TOP_RIGHT(-16, 16),
-            BOTTOM_LEFT(16, -16),
-            BOTTOM_CENTER(null, -38),
-            BOTTOM_RIGHT(-16, -16);
+
+            TOP_LEFT(16, 16, "gui.plasmovoice.advanced.icon_position.top_left"),
+            TOP_CENTER(null, 16, "gui.plasmovoice.advanced.icon_position.top_center"),
+            TOP_RIGHT(-16, 16, "gui.plasmovoice.advanced.icon_position.top_right"),
+            BOTTOM_LEFT(16, -16, "gui.plasmovoice.advanced.icon_position.bottom_left"),
+            BOTTOM_CENTER(null, -38, "gui.plasmovoice.advanced.icon_position.bottom_center"),
+            BOTTOM_RIGHT(-16, -16, "gui.plasmovoice.advanced.icon_position.bottom_right");
 
             @Getter
             private final Integer x;
             @Getter
             private final Integer y;
+            @Getter
+            private final String translation;
 
-            ActivationIconPosition(Integer x, Integer y) {
+            ActivationIconPosition(Integer x, Integer y, String translation) {
                 this.x = x;
                 this.y = y;
+                this.translation = translation;
             }
         }
     }

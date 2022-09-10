@@ -5,7 +5,6 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.client.audio.device.AlInputDeviceFactory;
@@ -18,18 +17,18 @@ import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 
-public abstract class VoiceClientMod extends BaseVoiceClient {
+public abstract class ModVoiceClient extends BaseVoiceClient {
 
     public static final ResourceLocation CHANNEL = new ResourceLocation(CHANNEL_STRING);
     // static instance is used for access from mixins
-    public static PlasmoVoiceClient INSTANCE;
+    public static ModVoiceClient INSTANCE;
 
     protected final String modId = "plasmovoice";
     protected final Minecraft minecraft = Minecraft.getInstance();
 
     protected ClientSourceManager sources;
 
-    protected VoiceClientMod() {
+    protected ModVoiceClient() {
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
 
         // OpenAL in&out

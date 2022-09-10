@@ -6,7 +6,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.client.BaseVoiceClient;
-import su.plo.voice.client.VoiceClientMod;
+import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 
@@ -27,7 +27,7 @@ public final class ModServerConnection extends BaseServerConnection {
         if (encoded == null) return;
 
         connection.send(new ServerboundCustomPayloadPacket(
-                VoiceClientMod.CHANNEL,
+                ModVoiceClient.CHANNEL,
                 new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded))
         ));
     }

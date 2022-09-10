@@ -30,8 +30,15 @@ public final class DropDownWidget extends AbstractWidget implements Widget, Narr
     private final VoiceSettingsScreen parent;
     private final boolean tooltip;
 
-    public DropDownWidget(VoiceSettingsScreen parent, int x, int y, int width, int height, Component message,
-                          List<Component> elements, boolean tooltip, Consumer<Integer> onSelect) {
+    public DropDownWidget(VoiceSettingsScreen parent,
+                          int x,
+                          int y,
+                          int width,
+                          int height,
+                          Component message,
+                          List<Component> elements,
+                          boolean tooltip,
+                          Consumer<Integer> onSelect) {
         super(x, y, width - 2, height - 1, message);
         this.tooltip = tooltip;
         this.parent = parent;

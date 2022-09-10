@@ -7,6 +7,7 @@ import com.mojang.math.Matrix4f;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
@@ -23,8 +24,9 @@ import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
-import su.plo.voice.client.VoiceClientMod;
+import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.audio.source.ModClientStaticSource;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Map;
@@ -37,18 +39,23 @@ public final class SourceIconRenderer {
 
     public static SourceIconRenderer getInstance() {
         if (instance == null) {
-            instance = new SourceIconRenderer(VoiceClientMod.INSTANCE.getAudioCapture(), VoiceClientMod.INSTANCE.getSourceManager());
+            instance = new SourceIconRenderer(
+                    ModVoiceClient.INSTANCE.getAudioCapture(),
+                    ModVoiceClient.INSTANCE.getSourceManager(),
+                    ModVoiceClient.INSTANCE.getConfig()
+            );
         }
 
         return instance;
     }
 
-    private final Minecraft client = Minecraft.getInstance();
+    private final Minecraft minecraft = Minecraft.getInstance();
     private final BufferBuilder bufferBuilder = new BufferBuilder(2097152);
     private VertexBuffer vertexBuffer;
 
     private final AudioCapture capture;
     private final ClientSourceManager sources;
+    private final ClientConfig config;
 
     // cache resource locations to avoid unnecessary allocations on render
     private final Map<String, ResourceLocation> cachedIconLocations = Maps.newHashMap();
@@ -61,6 +68,15 @@ public final class SourceIconRenderer {
                              int light) {
         Optional<ClientAudioSource<?>> source = sources.getSourceById(entity.getUUID(), false);
         if (source.isEmpty()) return;
+
+        LocalPlayer player = minecraft.player;
+        if (player == null) return;
+
+        if (isIconHidden()
+                || player.getUUID().equals(entity.getUUID())
+                || (entity instanceof Player && !player.connection.getOnlinePlayerIds().contains(entity.getUUID()))
+                || entity.isInvisibleTo(player)
+        ) return;
 
         // todo: mute check
 
@@ -82,6 +98,8 @@ public final class SourceIconRenderer {
             // get activation source icon
             Optional<ClientActivation> activation = capture.getActivationById(source.getInfo().getActivation());
             if (activation.isEmpty()) return;
+
+            if (isIconHidden()) return;
 
             ResourceLocation iconLocation = getSourceIconLocation(activation.get());
             renderStatic(iconLocation, staticSource.getInfo().getPosition(), poseStack, camera, matrix4f);
@@ -154,7 +172,7 @@ public final class SourceIconRenderer {
 
         poseStack.pushPose();
         poseStack.translate(0D, entity.getBbHeight() + yOffset, 0D);
-        poseStack.mulPose(client.getEntityRenderDispatcher().cameraOrientation());
+        poseStack.mulPose(minecraft.getEntityRenderDispatcher().cameraOrientation());
         poseStack.scale(-0.025F, -0.025F, 0.025F);
         poseStack.translate(-5D, -1D, 0D);
 
@@ -202,5 +220,11 @@ public final class SourceIconRenderer {
                 activation.getSourceIconLocation(),
                 ResourceLocation::new
         );
+    }
+
+    private boolean isIconHidden() {
+        int showIcons = config.getAdvanced().getShowIcons().value();
+        return showIcons == 2 || (minecraft.options.hideGui && showIcons == 0);
+
     }
 }

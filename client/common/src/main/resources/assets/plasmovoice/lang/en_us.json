@@ -76,6 +76,21 @@
 
     "gui.plasmovoice.advanced": "Advanced",
 
+
+    "gui.plasmovoice.advanced.icons": "Icons",
+    "gui.plasmovoice.advanced.show_icons": "Show Icons",
+    "gui.plasmovoice.advanced.show_icons.hud": "GUI Only",
+    "gui.plasmovoice.advanced.show_icons.always": "Always",
+    "gui.plasmovoice.advanced.show_icons.hidden": "Hidden",
+    "gui.plasmovoice.advanced.icon_position": "Mic Icon Position",
+    "gui.plasmovoice.advanced.icon_position.choose": "Choose Icon Position",
+    "gui.plasmovoice.advanced.icon_position.top_left": "Top Left",
+    "gui.plasmovoice.advanced.icon_position.top_center": "Top Center",
+    "gui.plasmovoice.advanced.icon_position.top_right": "Top Right",
+    "gui.plasmovoice.advanced.icon_position.bottom_left": "Bottom Left",
+    "gui.plasmovoice.advanced.icon_position.bottom_center": "Bottom Center",
+    "gui.plasmovoice.advanced.icon_position.bottom_right": "Bottom Right",
+
     "gui.plasmovoice.advanced.compressor": "Compressor & Limiter",
     "gui.plasmovoice.advanced.compressor.tooltip_1": "Makes loud volume quieter,",
     "gui.plasmovoice.advanced.compressor.tooltip_2": "saving your ears from loud noises.",
