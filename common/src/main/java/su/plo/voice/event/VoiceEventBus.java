@@ -12,6 +12,7 @@ import su.plo.voice.api.event.*;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -95,7 +96,7 @@ public final class VoiceEventBus implements EventBus {
             listeners.compute(
                     entry.priority(),
                     (p, eventHandlers) -> {
-                        if (eventHandlers == null) eventHandlers = new ArrayList<>();
+                        if (eventHandlers == null) eventHandlers = new CopyOnWriteArrayList<>();
                         eventHandlers.add(handler);
                         return eventHandlers;
                     }
@@ -104,7 +105,7 @@ public final class VoiceEventBus implements EventBus {
             this.registeredListeners.compute(
                     listener,
                     (l, listenerHandlers) -> {
-                        if (listenerHandlers == null) listenerHandlers = new ArrayList<>();
+                        if (listenerHandlers == null) listenerHandlers = new CopyOnWriteArrayList<>();
                         listenerHandlers.add(handler);
                         return listenerHandlers;
                     }
@@ -115,7 +116,7 @@ public final class VoiceEventBus implements EventBus {
             registeredAddonListeners.compute(
                     addon,
                     (a, addonListeners) -> {
-                        if (addonListeners == null) addonListeners = new ArrayList<>();
+                        if (addonListeners == null) addonListeners = new CopyOnWriteArrayList<>();
                         addonListeners.add(listener);
                         return addonListeners;
                     }
@@ -136,7 +137,7 @@ public final class VoiceEventBus implements EventBus {
         listeners.compute(
                 priority,
                 (p, eventHandlers) -> {
-                    if (eventHandlers == null) eventHandlers = new ArrayList<>();
+                    if (eventHandlers == null) eventHandlers = new CopyOnWriteArrayList<>();
                     eventHandlers.add(handler);
                     return eventHandlers;
                 }
@@ -145,7 +146,7 @@ public final class VoiceEventBus implements EventBus {
         registeredAddonHandlers.compute(
                 addon,
                 (a, addonHandlers) -> {
-                    if (addonHandlers == null) addonHandlers = new ArrayList<>();
+                    if (addonHandlers == null) addonHandlers = new CopyOnWriteArrayList<>();
                     addonHandlers.add(handler);
                     return addonHandlers;
                 }
