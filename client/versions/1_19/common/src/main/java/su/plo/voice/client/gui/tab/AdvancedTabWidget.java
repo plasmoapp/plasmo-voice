@@ -32,6 +32,15 @@ public final class AdvancedTabWidget extends TabWidget {
     public void init() {
         super.init();
 
+        addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.advanced.audio_engine")));
+        addEntry(createIntSliderWidget(
+                "gui.plasmovoice.advanced.directional_sources_angle",
+                "gui.plasmovoice.advanced.directional_sources_angle.tooltip",
+                config.getAdvanced().getDirectionalSourcesAngle(),
+                ""
+        ));
+        addEntry(createStereoToMonoSources());
+
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.advanced.compressor")));
         addEntry(createIntSliderWidget(
                 "gui.plasmovoice.advanced.compressor_threshold",
@@ -45,15 +54,6 @@ public final class AdvancedTabWidget extends TabWidget {
                 config.getAdvanced().getLimiterThreshold(),
                 "dB"
         ));
-
-        addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.advanced.audio_engine")));
-        addEntry(createIntSliderWidget(
-                "gui.plasmovoice.advanced.directional_sources_angle",
-                "gui.plasmovoice.advanced.directional_sources_angle.tooltip",
-                config.getAdvanced().getDirectionalSourcesAngle(),
-                ""
-        ));
-        addEntry(createStereoToMonoSources());
     }
 
     private OptionEntry<ToggleButton> createStereoToMonoSources() {
