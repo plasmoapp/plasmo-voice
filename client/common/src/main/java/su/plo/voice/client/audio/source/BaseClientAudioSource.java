@@ -8,6 +8,7 @@ import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
+import su.plo.voice.api.client.audio.device.AlListenerDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -274,6 +275,10 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
                 AlAudioDevice device = (AlAudioDevice) alSource.getDevice();
+
+                if (device instanceof AlListenerDevice) {
+                    ((AlListenerDevice) device).getListener().update();
+                }
 
                 device.runInContext(() -> {
                     alSource.setVolume(volume);

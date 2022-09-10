@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AlInputDevice extends BaseAudioDevice implements InputDevice {
+public final class AlInputDevice extends BaseAudioDevice implements InputDevice {
 
     private static final Logger LOGGER = LogManager.getLogger(AlInputDevice.class);
 
@@ -31,6 +31,7 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
     private final @Nullable String name;
 
     private AudioFormat format;
+    private Params params;
     @Getter
     private int bufferSize;
     private long devicePointer;
@@ -54,6 +55,7 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
         }
 
         this.format = format;
+        this.params = params;
         this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
         this.devicePointer = openDevice(name, format);
 
@@ -88,6 +90,11 @@ public class AlInputDevice extends BaseAudioDevice implements InputDevice {
     @Override
     public Optional<AudioFormat> getFormat() {
         return Optional.ofNullable(format);
+    }
+
+    @Override
+    public Optional<Params> getParams() {
+        return Optional.ofNullable(params);
     }
 
     @Override

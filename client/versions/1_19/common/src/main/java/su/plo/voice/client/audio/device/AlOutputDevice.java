@@ -14,10 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.*;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.device.AlAudioDevice;
-import su.plo.voice.api.client.audio.device.DeviceException;
-import su.plo.voice.api.client.audio.device.HrtfAudioDevice;
-import su.plo.voice.api.client.audio.device.OutputDevice;
+import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
@@ -41,14 +38,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static org.lwjgl.openal.ALC10.ALC_FALSE;
 import static org.lwjgl.openal.ALC11.ALC_TRUE;
 
-public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevice, HrtfAudioDevice, OutputDevice<AlSource> {
+public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevice, AlListenerDevice, HrtfAudioDevice, OutputDevice<AlSource> {
 
     private static final Logger LOGGER = LogManager.getLogger(AlOutputDevice.class);
 
     private final PlasmoVoiceClient client;
     private final @Nullable String name;
 
-    private final ScheduledExecutorService executor;
+    private final ExecutorService executor;
+    @Getter
+    private final Listener listener = new AlListener();
     private final Set<AlSource> sources = new CopyOnWriteArraySet<>();
 
     private AudioFormat format;
@@ -136,53 +135,6 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
                     0.0F, 1.0F, 0.0F
             });
 
-            final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
-
-            final Vector3f forwards = new Vector3f(0.0F, 0.0F, 1.0F);
-            final Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
-
-            executor.scheduleAtFixedRate(() -> {
-                Vec3 position;
-                Vector3f lookVector, upVector;
-
-                if (params.get("listenerCameraRelative")) {
-                    Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-
-                    position = camera.getPosition();
-                    lookVector = camera.getLookVector();
-                    upVector = camera.getUpVector();
-                } else {
-                    LocalPlayer player = Minecraft.getInstance().player;
-                    if (player == null) return;
-
-                    position = player.getEyePosition();
-
-
-                    rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
-                    rotation.mul(Vector3f.YP.rotationDegrees(-player.getYRot()));
-                    rotation.mul(Vector3f.XP.rotationDegrees(player.getXRot()));
-
-                    forwards.set(0.0F, 0.0F, 1.0F);
-                    forwards.transform(rotation);
-                    up.set(0.0F, 1.0F, 0.0F);
-                    up.transform(rotation);
-
-                    lookVector = forwards;
-                    upVector = up;
-                }
-
-                AL11.alListener3f(
-                        AL11.AL_POSITION,
-                        (float) position.x(),
-                        (float) position.y(),
-                        (float) position.z()
-                );
-                AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
-                        lookVector.x(), lookVector.y(), lookVector.z(),
-                        upVector.x(), upVector.y(), upVector.z()
-                });
-            }, 0L, 5L, TimeUnit.MILLISECONDS);
-
             client.getEventBus().call(new DeviceOpenEvent(this));
         });
     }
@@ -222,6 +174,11 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     @Override
     public Optional<AudioFormat> getFormat() {
         return Optional.ofNullable(format);
+    }
+
+    @Override
+    public Optional<Params> getParams() {
+        return Optional.ofNullable(params);
     }
 
     @Override
@@ -389,6 +346,59 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
         if (!SOFTHRTF.alcResetDeviceSOFT(devicePointer, attr)) {
             LOGGER.warn("Failed to reset device: {}", ALC11.alcGetString(devicePointer, ALC11.alcGetError(devicePointer)));
+        }
+    }
+
+    private class AlListener implements Listener {
+
+        private final Quaternion rotation = new Quaternion(0.0F, 0.0F, 0.0F, 1.0F);
+
+        private final Vector3f forwards = new Vector3f(0.0F, 0.0F, 1.0F);
+        private final Vector3f up = new Vector3f(0.0F, 1.0F, 0.0F);
+
+        @Override
+        public void update() {
+            executor.execute(() -> {
+                Vec3 position;
+                Vector3f lookVector, upVector;
+
+                if (params.get("listenerCameraRelative")) {
+                    Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
+                    position = camera.getPosition();
+                    lookVector = camera.getLookVector();
+                    upVector = camera.getUpVector();
+                } else {
+                    LocalPlayer player = Minecraft.getInstance().player;
+                    if (player == null) return;
+
+                    position = player.getEyePosition();
+
+
+                    rotation.set(0.0F, 0.0F, 0.0F, 1.0F);
+                    rotation.mul(Vector3f.YP.rotationDegrees(-player.getYRot()));
+                    rotation.mul(Vector3f.XP.rotationDegrees(player.getXRot()));
+
+                    forwards.set(0.0F, 0.0F, 1.0F);
+                    forwards.transform(rotation);
+                    up.set(0.0F, 1.0F, 0.0F);
+                    up.transform(rotation);
+
+                    lookVector = forwards;
+                    upVector = up;
+                }
+
+                AL11.alListener3f(
+                        AL11.AL_POSITION,
+                        (float) position.x(),
+                        (float) position.y(),
+                        (float) position.z()
+                );
+                AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
+                        lookVector.x(), lookVector.y(), lookVector.z(),
+                        upVector.x(), upVector.y(), upVector.z()
+                });
+            });
         }
     }
 }
