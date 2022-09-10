@@ -66,6 +66,7 @@ public final class DevicesTabWidget extends TabWidget {
                 "gui.plasmovoice.devices.noise_suppression.tooltip",
                 config.getVoice().getNoiseSuppression()
         ));
+        addEntry(createStereoCaptureEntry());
 
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.devices.output")));
         addEntry(createOutputDeviceEntry());
@@ -93,7 +94,6 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(createHrtfEntry());
 
         addEntry(new CategoryEntry(Component.literal("хуй")));
-        addEntry(createStereoCaptureEntry());
 //        addEntry(createStereoToMonoSources());
 
     }
@@ -117,9 +117,10 @@ public final class DevicesTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                Component.literal("Stereo Capture"),
+                Component.translatable("gui.plasmovoice.devices.stereo_capture"),
                 toggleButton,
-                config.getVoice().getStereoCapture()
+                config.getVoice().getStereoCapture(),
+                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.stereo_capture.tooltip")
         );
     }
 
@@ -264,17 +265,6 @@ public final class DevicesTabWidget extends TabWidget {
                             if (toggled) hrtfAudioDevice.enableHrtf();
                             else hrtfAudioDevice.disableHrtf();
                         }
-
-//                        try {
-//                            device.reload(
-//                                    null,
-//                                    Params.builder()
-//                                            .set("hrtf", toggled)
-//                                            .build()
-//                            );
-//                        } catch (DeviceException e) {
-//                            LOGGER.error("Failed to reload an audio device", e);
-//                        }
                     });
                 }
         );

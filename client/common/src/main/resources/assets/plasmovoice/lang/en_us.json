@@ -33,6 +33,9 @@
     "gui.plasmovoice.devices.noise_suppression.tooltip_4": "but may be CPU intensive.",
     "gui.plasmovoice.devices.noise_suppression.tooltip_5": "",
     "gui.plasmovoice.devices.noise_suppression.tooltip_6": "Applies to your microphone.",
+    "gui.plasmovoice.devices.stereo_capture": "Stereo Capture",
+    "gui.plasmovoice.devices.stereo_capture.tooltip_1": "Captures sound in stereo, then converts it to mono.",
+    "gui.plasmovoice.devices.stereo_capture.tooltip_2": "May improve quality, but makes the sound quieter.",
 
     "gui.plasmovoice.devices.output": "Output",
 
