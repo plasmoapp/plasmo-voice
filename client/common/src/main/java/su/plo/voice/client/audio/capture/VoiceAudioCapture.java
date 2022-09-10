@@ -293,9 +293,8 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     private byte[] processActivation(ClientActivation activation, ClientActivation.Result result, short[] samples, byte[] encoded) {
-        if (encoded == null) {
+        if (result.isActivated() && encoded == null)
             encoded = encode(samples);
-        }
 
         if (result == ClientActivation.Result.ACTIVATED) {
             sendVoicePacket(activation, encoded);
