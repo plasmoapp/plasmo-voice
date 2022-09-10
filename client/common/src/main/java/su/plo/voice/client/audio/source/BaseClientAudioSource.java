@@ -30,6 +30,8 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 
 import java.util.Optional;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseClientAudioSource<T extends SourceInfo> implements ClientAudioSource<T> {
@@ -39,6 +41,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
+    protected final Executor executor = Executors.newSingleThreadExecutor();
 
     protected final float[] playerPosition = new float[3];
     protected final float[] position = new float[3];
@@ -123,6 +126,44 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     public void process(@NotNull SourceAudioPacket packet) {
         if (isClosed()) return;
 
+        executor.execute(() -> processAudioPacket(packet));
+    }
+
+    @Override
+    public void process(@NotNull SourceAudioEndPacket packet) {
+        if (isClosed()) return;
+
+        executor.execute(() -> processAudioEndPacket(packet));
+    }
+
+    @Override
+    public void close() {
+        activated.set(false);
+        closed.set(true);
+
+        if (decoder != null && decoder.isOpen()) decoder.close();
+
+        sourceGroup.getSources().forEach(DeviceSource::close);
+        voiceClient.getEventBus().call(new AudioSourceClosedEvent(this));
+    }
+
+    @Override
+    public boolean isClosed() {
+        return closed.get();
+    }
+
+    @Override
+    public boolean isActivated() {
+        return activated.get() && System.currentTimeMillis() - lastActivation < 500L;
+    }
+
+    @EventSubscribe(priority = EventPriority.LOWEST)
+    public void onSourceClosed(AlSourceClosedEvent event) {
+        if (closed.get() || !sourceGroup.getSources().contains(event.getSource())) return;
+        close();
+    }
+
+    private void processAudioPacket(@NotNull SourceAudioPacket packet) {
         if (this.lastSequenceNumber >= 0 && packet.getSequenceNumber() <= this.lastSequenceNumber) {
             LOGGER.info("Drop packet with bad order");
             return;
@@ -217,10 +258,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         activated.set(true);
     }
 
-    @Override
-    public void process(@NotNull SourceAudioEndPacket packet) {
-        if (isClosed()) return;
-
+    private void processAudioEndPacket(@NotNull SourceAudioEndPacket packet) {
         for (DeviceSource source : sourceGroup.getSources()) {
             source.write(null);
         }
@@ -228,33 +266,6 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         this.lastSequenceNumber = packet.getSequenceNumber();
         if (decoder != null) decoder.reset();
         activated.set(false);
-    }
-
-    @Override
-    public void close() {
-        activated.set(false);
-        closed.set(true);
-
-        if (decoder != null && decoder.isOpen()) decoder.close();
-
-        sourceGroup.getSources().forEach(DeviceSource::close);
-        voiceClient.getEventBus().call(new AudioSourceClosedEvent(this));
-    }
-
-    @Override
-    public boolean isClosed() {
-        return closed.get();
-    }
-
-    @Override
-    public boolean isActivated() {
-        return activated.get() && System.currentTimeMillis() - lastActivation < 500L;
-    }
-
-    @EventSubscribe(priority = EventPriority.LOWEST)
-    public void onSourceClosed(AlSourceClosedEvent event) {
-        if (closed.get() || !sourceGroup.getSources().contains(event.getSource())) return;
-        close();
     }
 
     private void updateSource(float volume, int maxDistance) {
