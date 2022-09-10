@@ -16,6 +16,7 @@ import org.lwjgl.openal.*;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
+import su.plo.voice.api.client.audio.device.HrtfAudioDevice;
 import su.plo.voice.api.client.audio.device.OutputDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
@@ -37,9 +38,10 @@ import java.util.Set;
 import java.util.concurrent.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static org.lwjgl.openal.ALC10.ALC_FALSE;
 import static org.lwjgl.openal.ALC11.ALC_TRUE;
 
-public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevice, OutputDevice<AlSource> {
+public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevice, HrtfAudioDevice, OutputDevice<AlSource> {
 
     private static final Logger LOGGER = LogManager.getLogger(AlOutputDevice.class);
 
@@ -50,6 +52,8 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     private final Set<AlSource> sources = new CopyOnWriteArraySet<>();
 
     private AudioFormat format;
+    private Params params;
+    private boolean hrtfSupported;
     @Getter
     private int bufferSize;
     private long devicePointer;
@@ -90,6 +94,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
         runInContext(() -> {
             this.devicePointer = openDevice(name);
             this.format = format;
+            this.params = params;
             this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
 
             ALCCapabilities aLCCapabilities = ALC.createCapabilities(devicePointer);
@@ -108,6 +113,13 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
                 throw new DeviceException("AL_EXT_source_distance_model is not supported");
             }
 
+            this.hrtfSupported = aLCCapabilities.ALC_SOFT_HRTF;
+
+            if (params.containsKey("hrtf") && hrtfSupported) {
+                Object hrtf = params.get("hrtf");
+                if (hrtf.equals(true)) enableHrtf();
+            }
+
             AL10.alEnable(512);
             if (!aLCapabilities.AL_EXT_LINEAR_DISTANCE) {
                 throw new DeviceException("AL_EXT_LINEAR_DISTANCE is not supported");
@@ -115,13 +127,6 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
             AlUtil.checkErrors("Enable per-source distance models");
             LOGGER.info("Device " + name + " initialized");
-
-            if (params.containsKey("hrtf")) {
-                Object hrtf = params.get("hrtf");
-                if (hrtf.equals(true)) {
-                    enableHRTF();
-                }
-            }
 
             AL11.alListenerf(AL11.AL_GAIN, 1.0F);
 
@@ -184,25 +189,24 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
     @Override
     public void close() {
-        if (isOpen()) {
-            sources.forEach(AlSource::close);
+        if (!isOpen()) return;
 
-            runInContext(() -> {
-                EXTThreadLocalContext.alcSetThreadContext(0L);
+        sources.forEach(AlSource::close);
+        runInContext(() -> {
+            EXTThreadLocalContext.alcSetThreadContext(0L);
 
-                ALC11.alcDestroyContext(contextPointer);
-                if (devicePointer != 0L) {
-                    ALC11.alcCloseDevice(devicePointer);
-                }
+            ALC11.alcDestroyContext(contextPointer);
+            if (devicePointer != 0L) {
+                ALC11.alcCloseDevice(devicePointer);
+            }
 
-                this.contextPointer = 0L;
-                this.devicePointer = 0L;
+            this.contextPointer = 0L;
+            this.devicePointer = 0L;
 
-                LOGGER.info("Device " + name + " closed");
+            LOGGER.info("Device " + name + " closed");
 
-                client.getEventBus().call(new DeviceClosedEvent(this));
-            });
-        }
+            client.getEventBus().call(new DeviceClosedEvent(this));
+        });
     }
 
     @Override
@@ -251,6 +255,31 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
             throw new DeviceException("Failed to allocate new source", e);
         }
+    }
+
+    @Override
+    public void reload(@Nullable AudioFormat format, @NotNull Params params) throws DeviceException {
+        if (devicePointer == 0L) {
+            throw new DeviceException("Device is not open");
+        }
+
+        if (format == null) {
+            if (this.format == null) throw new DeviceException("Device is not open");
+            format = this.format;
+        }
+
+        checkNotNull(params);
+
+        Params.Builder paramsBuilder = Params.builder();
+        this.params.entrySet().forEach(
+                (entry) -> paramsBuilder.set(entry.getKey(), entry.getValue())
+        );
+        params.entrySet().forEach(
+                (entry) -> paramsBuilder.set(entry.getKey(), entry.getValue())
+        );
+
+        close();
+        open(format, paramsBuilder.build());
     }
 
     @Override
@@ -310,25 +339,51 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
         throw new IllegalStateException("Failed to open OpenAL device");
     }
 
-    private void enableHRTF() throws DeviceException {
+    @Override
+    public boolean isHrtfSupported() {
         int num = ALC11.alcGetInteger(devicePointer, SOFTHRTF.ALC_NUM_HRTF_SPECIFIERS_SOFT);
-        if (num <= 0) throw new DeviceException("HRTF is not supported");
+        return num > 0;
+    }
 
+    @Override
+    public boolean isHrtfEnabled() {
+        int state = ALC11.alcGetInteger(devicePointer, SOFTHRTF.ALC_HRTF_SOFT);
+        return state > 0;
+    }
+
+    @Override
+    public void enableHrtf() {
+        if (!isHrtfSupported()) return;
+
+        toggleHrtf(true);
+
+        if (isHrtfEnabled()) {
+            String name = ALC11.alcGetString(devicePointer, SOFTHRTF.ALC_HRTF_SPECIFIER_SOFT);
+            LOGGER.info("HRTF enabled, using {}", name);
+        } else {
+            LOGGER.warn("Failed to enable HRTF");
+        }
+    }
+
+    @Override
+    public void disableHrtf() {
+        if (!isHrtfEnabled() || !isHrtfEnabled()) return;
+
+        toggleHrtf(false);
+        LOGGER.info("HRTF disabled");
+    }
+
+    private void toggleHrtf(boolean enabled) {
         IntBuffer attr = BufferUtils.createIntBuffer(10)
                 .put(SOFTHRTF.ALC_HRTF_SOFT)
-                .put(ALC_TRUE);
-
-        attr.put(0);
+                .put(enabled ? ALC_TRUE : ALC_FALSE)
+                .put(SOFTHRTF.ALC_HRTF_ID_SOFT)
+                .put(0)
+                .put(0);
         ((Buffer) attr).flip();
 
         if (!SOFTHRTF.alcResetDeviceSOFT(devicePointer, attr)) {
             LOGGER.warn("Failed to reset device: {}", ALC11.alcGetString(devicePointer, ALC11.alcGetError(devicePointer)));
-        }
-
-        int state = ALC11.alcGetInteger(devicePointer, SOFTHRTF.ALC_HRTF_SOFT);
-        if (state != 0) {
-            String name = ALC11.alcGetString(devicePointer, SOFTHRTF.ALC_HRTF_SPECIFIER_SOFT);
-            LOGGER.info("HRTF enabled, using {}", name);
         }
     }
 }

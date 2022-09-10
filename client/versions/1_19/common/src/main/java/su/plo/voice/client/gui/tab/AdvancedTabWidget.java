@@ -38,5 +38,13 @@ public final class AdvancedTabWidget extends TabWidget {
                 config.getAdvanced().getLimiterThreshold(),
                 "dB"
         ));
+
+        addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.advanced.audio_engine")));
+        addEntry(createIntSliderWidget(
+                "gui.plasmovoice.advanced.directional_sources_angle",
+                "gui.plasmovoice.advanced.directional_sources_angle.tooltip",
+                config.getAdvanced().getDirectionalSourcesAngle(),
+                ""
+        ));
     }
 }

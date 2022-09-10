@@ -86,5 +86,12 @@
     "gui.plasmovoice.advanced.limiter_threshold": "Limiter Threshold",
     "gui.plasmovoice.advanced.limiter_threshold.tooltip_1": "Volume can't surpass this threshold.",
     "gui.plasmovoice.advanced.limiter_threshold.tooltip_2": "",
-    "gui.plasmovoice.advanced.limiter_threshold.tooltip_3": "Recommended value: -6 dB"
+    "gui.plasmovoice.advanced.limiter_threshold.tooltip_3": "Recommended value: -6 dB",
+
+    "gui.plasmovoice.advanced.audio_engine": "Audio Engine",
+    "gui.plasmovoice.advanced.directional_sources_angle": "Directional Sources Angle",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_1": "An angle in which you will hear the source",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_2": "at 100% if directional sources option is enabled.",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_3": "",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_4": "360 is like if the option is disabled."
 }

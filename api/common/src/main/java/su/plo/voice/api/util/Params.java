@@ -2,6 +2,7 @@ package su.plo.voice.api.util;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 // todo: doc & rename
 public class Params {
@@ -36,6 +37,10 @@ public class Params {
 
     public boolean containsKey(String key) {
         return params.containsKey(key);
+    }
+
+    public Set<Map.Entry<String, Object>> entrySet() {
+        return params.entrySet();
     }
 
     private void set(String key, Object param) {

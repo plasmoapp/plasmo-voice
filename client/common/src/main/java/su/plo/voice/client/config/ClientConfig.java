@@ -221,6 +221,12 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> soundOcclusion = new ConfigEntry<>(false);
 
         @ConfigField
+        private ConfigEntry<Boolean> directionalSources = new ConfigEntry<>(false);
+
+        @ConfigField
+        private ConfigEntry<Boolean> hrtf = new ConfigEntry<>(false);
+
+        @ConfigField
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField
@@ -294,6 +300,9 @@ public final class ClientConfig {
 
         @ConfigField
         private IntConfigEntry limiterThreshold = new IntConfigEntry(-6, -60, 0);
+
+        @ConfigField
+        private IntConfigEntry directionalSourcesAngle = new IntConfigEntry(145, 100, 360);
 
         public enum ActivationIconPosition {
             TOP_LEFT(16, 16),

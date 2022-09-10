@@ -93,23 +93,29 @@ public final class VoiceDeviceManager implements DeviceManager {
     @Override
     public void clear(@Nullable DeviceType type) {
         if (type == DeviceType.INPUT) {
+            inputDevices.forEach(device -> {
+                device.close();
+                voiceClient.getEventBus().unregister(voiceClient, device);
+            });
             inputDevices.clear();
-            inputDevices.forEach(device -> voiceClient.getEventBus().unregister(voiceClient, device));
         } else {
+            outputDevices.forEach(device -> {
+                device.close();
+                voiceClient.getEventBus().unregister(voiceClient, device);
+            });
             outputDevices.clear();
-            outputDevices.forEach(device -> voiceClient.getEventBus().unregister(voiceClient, device));
         }
     }
 
     @Override
-    public Collection<AudioDevice> getDevices(DeviceType type) {
+    public <T extends AudioDevice> Collection<T> getDevices(DeviceType type) {
         if (type == DeviceType.INPUT) {
-            return inputDevices;
+            return (Collection<T>) inputDevices;
         } else if (type == DeviceType.OUTPUT) {
-            return outputDevices;
+            return (Collection<T>) outputDevices;
         } else {
             ImmutableList.Builder<AudioDevice> builder = ImmutableList.builder();
-            return builder.addAll(inputDevices).addAll(outputDevices).build();
+            return (Collection<T>) builder.addAll(inputDevices).addAll(outputDevices).build();
         }
     }
 
@@ -169,6 +175,7 @@ public final class VoiceDeviceManager implements DeviceManager {
                 format,
                 config.getVoice().getOutputDevice().value(),
                 Params.builder()
+                        .set("hrtf", config.getVoice().getHrtf().value())
                         .set("listenerCameraRelative", config.getVoice().getListenerCameraRelative().value())
                         .build()
         );

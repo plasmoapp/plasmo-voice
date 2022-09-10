@@ -34,6 +34,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseClientAudioSource<T extends SourceInfo> implements ClientAudioSource<T> {
 
+    private static final float[] ZERO_VECTOR = new float[] { 0F, 0F, 0F };
     protected static final Logger LOGGER = LogManager.getLogger();
 
     protected final PlasmoVoiceClient voiceClient;
@@ -93,7 +94,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
                 device.runInContext(() -> {
                     alSource.setFloat(0x100E, 4F); // AL_MAX_GAIN
-                    alSource.setInt(0xD000, 0xD003); // AL_DISTANCE_MODEL // AL_LINEAR_DISTANCE_CLAMPED
+                    alSource.setInt(0xD000, 0xD003); // AL_DISTANCE_MODEL // AL_LINEAR_DISTANCE
 
                     alSource.play();
                 });
@@ -260,9 +261,25 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
                 device.runInContext(() -> {
                     alSource.setVolume(volume);
                     alSource.setFloatArray(0x1004, position); // AL_POSITION
-                    alSource.setFloatArray(0x1005, lookAngle); // AL_DIRECTION
                     alSource.setFloat(0x1020, 0); // AL_REFERENCE_DISTANCE
                     alSource.setFloat(0x1023, maxDistance); // AL_MAX_DISTANCE
+
+                    if (config.getVoice().getDirectionalSources().value()) {
+                        alSource.setFloatArray(0x1005, lookAngle); // AL_DIRECTION
+
+                        alSource.setFloat(0x1022, 0F); // AL_CONE_OUTER_GAIN
+                        alSource.setFloat(
+                                0x1001, // AL_CONE_INNER_ANGLE
+                                90
+                        );
+
+                        alSource.setFloat(
+                                0x1002, // AL_CONE_OUTER_ANGLE
+                                180
+                        );
+                    } else {
+                        alSource.setFloatArray(0x1005, ZERO_VECTOR); // AL_DIRECTION
+                    }
                 });
             }
         }
@@ -289,6 +306,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     private boolean isStereo() {
         return sourceInfo.isStereo() && !config.getVoice().getStereoToMonoSources().value();
+    }
+
+    private int getSourceAngle() {
+        if (sourceInfo.getAngle() > 0) return sourceInfo.getAngle();
+
+        return config.getAdvanced().getDirectionalSourcesAngle().value();
     }
 
     protected abstract double getOccludedPercent(float[] position);

@@ -49,7 +49,7 @@ public interface DeviceManager {
      **
      * @param type the device type
      */
-    Collection<AudioDevice> getDevices(@Nullable DeviceType type);
+    <T extends AudioDevice> Collection<T> getDevices(@Nullable DeviceType type);
 
     /**
      * Creates a new source group

@@ -85,6 +85,12 @@ public final class DevicesTabWidget extends TabWidget {
                 "gui.plasmovoice.devices.occlusion.tooltip",
                 config.getVoice().getSoundOcclusion()
         ));
+        addEntry(createToggleEntry(
+                "gui.plasmovoice.devices.directional_sources",
+                "gui.plasmovoice.devices.directional_sources.tooltip",
+                config.getVoice().getDirectionalSources()
+        ));
+        addEntry(createHrtfEntry());
 
         addEntry(new CategoryEntry(Component.literal("хуй")));
         addEntry(createStereoCaptureEntry());
@@ -242,6 +248,42 @@ public final class DevicesTabWidget extends TabWidget {
                     element.setMessage(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadOutputDevice();
                 }
+        );
+    }
+
+    private OptionEntry<ToggleButton> createHrtfEntry() {
+        ToggleButton toggleButton = new ToggleButton(
+                0,
+                0,
+                97,
+                20,
+                config.getVoice().getHrtf(),
+                (toggled) -> {
+                    devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT).forEach(device -> {
+                        if (device instanceof HrtfAudioDevice hrtfAudioDevice) {
+                            if (toggled) hrtfAudioDevice.enableHrtf();
+                            else hrtfAudioDevice.disableHrtf();
+                        }
+
+//                        try {
+//                            device.reload(
+//                                    null,
+//                                    Params.builder()
+//                                            .set("hrtf", toggled)
+//                                            .build()
+//                            );
+//                        } catch (DeviceException e) {
+//                            LOGGER.error("Failed to reload an audio device", e);
+//                        }
+                    });
+                }
+        );
+
+        return new OptionEntry<>(
+                Component.translatable("gui.plasmovoice.devices.hrtf"),
+                toggleButton,
+                config.getVoice().getHrtf(),
+                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.hrtf.tooltip")
         );
     }
 
