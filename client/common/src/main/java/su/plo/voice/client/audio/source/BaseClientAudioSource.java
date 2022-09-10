@@ -121,6 +121,8 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public void process(@NotNull SourceAudioPacket packet) {
+        if (isClosed()) return;
+
         if (this.lastSequenceNumber >= 0 && packet.getSequenceNumber() <= this.lastSequenceNumber) {
             LOGGER.info("Drop packet with bad order");
             return;
@@ -217,6 +219,8 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public void process(@NotNull SourceAudioEndPacket packet) {
+        if (isClosed()) return;
+
         for (DeviceSource source : sourceGroup.getSources()) {
             source.write(null);
         }

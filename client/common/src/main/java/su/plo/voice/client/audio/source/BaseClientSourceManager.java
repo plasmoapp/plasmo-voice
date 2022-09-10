@@ -58,6 +58,7 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     public void update(@NotNull SourceInfo sourceInfo) {
         if (sourceById.containsKey(sourceInfo.getId())) {
             ClientAudioSource<?> source = sourceById.get(sourceInfo.getId());
+            if (source.isClosed()) return;
 
             if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
                 ((ClientAudioSource<StaticSourceInfo>) source).updateInfo((StaticSourceInfo) sourceInfo);
