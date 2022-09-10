@@ -228,9 +228,10 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public void close() {
-        if (decoder != null && decoder.isOpen()) decoder.close();
         activated.set(false);
         closed.set(true);
+
+        if (decoder != null && decoder.isOpen()) decoder.close();
 
         sourceGroup.getSources().forEach(DeviceSource::close);
         voiceClient.getEventBus().call(new AudioSourceClosedEvent(this));
