@@ -30,7 +30,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 
 import java.util.Optional;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -41,7 +41,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
-    protected final Executor executor = Executors.newSingleThreadExecutor();
+    protected final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     protected final float[] playerPosition = new float[3];
     protected final float[] position = new float[3];
@@ -140,6 +140,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     public void close() {
         activated.set(false);
         closed.set(true);
+        if (!executor.isShutdown()) executor.shutdown();
 
         if (decoder != null && decoder.isOpen()) decoder.close();
 

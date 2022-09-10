@@ -26,7 +26,7 @@ import su.plo.voice.client.connection.VoiceUdpClientManager;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
@@ -36,7 +36,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     protected final Logger logger = LogManager.getLogger("PlasmoVoiceClient");
-    protected final Executor executor = Executors.newSingleThreadExecutor();
+    protected final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Getter
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
@@ -78,6 +78,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         if (config != null) config.save(false);
 
         eventBus.unregister(this);
+        executor.shutdown();
 
         getEventBus().call(new VoiceClientShutdownEvent(this));
     }
