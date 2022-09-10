@@ -21,6 +21,7 @@ import su.plo.voice.client.gui.widget.ToggleButton;
 import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 public final class DevicesTabWidget extends TabWidget {
 
@@ -92,10 +93,6 @@ public final class DevicesTabWidget extends TabWidget {
                 config.getVoice().getDirectionalSources()
         ));
         addEntry(createHrtfEntry());
-
-        addEntry(new CategoryEntry(Component.literal("хуй")));
-//        addEntry(createStereoToMonoSources());
-
     }
 
     @Override
@@ -104,39 +101,26 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private OptionEntry<ToggleButton> createStereoCaptureEntry() {
+        Runnable onUpdate = () -> {
+            reloadInputDevice();
+            testController.restart();
+        };
+
         ToggleButton toggleButton = new ToggleButton(
                 0,
                 0,
                 97,
                 20,
                 config.getVoice().getStereoCapture(),
-                (toggled) -> {
-                    reloadInputDevice();
-                    testController.restart();
-                }
+                (toggled) -> onUpdate.run()
         );
 
         return new OptionEntry<>(
                 Component.translatable("gui.plasmovoice.devices.stereo_capture"),
                 toggleButton,
                 config.getVoice().getStereoCapture(),
-                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.stereo_capture.tooltip")
-        );
-    }
-
-    private OptionEntry<ToggleButton> createStereoToMonoSources() {
-        ToggleButton toggleButton = new ToggleButton(
-                0,
-                0,
-                97,
-                20,
-                config.getVoice().getStereoToMonoSources()
-        );
-
-        return new OptionEntry<>(
-                Component.literal("Stereo To Mono"),
-                toggleButton,
-                config.getVoice().getStereoToMonoSources()
+                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.stereo_capture.tooltip"),
+                (button, element) -> onUpdate.run()
         );
     }
 
@@ -253,27 +237,30 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private OptionEntry<ToggleButton> createHrtfEntry() {
+        Consumer<Boolean> onUpdate = (toggled) -> {
+            devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT).forEach(device -> {
+                if (device instanceof HrtfAudioDevice hrtfAudioDevice) {
+                    if (toggled) hrtfAudioDevice.enableHrtf();
+                    else hrtfAudioDevice.disableHrtf();
+                }
+            });
+        };
+
         ToggleButton toggleButton = new ToggleButton(
                 0,
                 0,
                 97,
                 20,
                 config.getVoice().getHrtf(),
-                (toggled) -> {
-                    devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT).forEach(device -> {
-                        if (device instanceof HrtfAudioDevice hrtfAudioDevice) {
-                            if (toggled) hrtfAudioDevice.enableHrtf();
-                            else hrtfAudioDevice.disableHrtf();
-                        }
-                    });
-                }
+                onUpdate::accept
         );
 
         return new OptionEntry<>(
                 Component.translatable("gui.plasmovoice.devices.hrtf"),
                 toggleButton,
                 config.getVoice().getHrtf(),
-                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.hrtf.tooltip")
+                GuiUtil.multiLineTooltip("gui.plasmovoice.devices.hrtf.tooltip"),
+                (button, element) -> onUpdate.accept(config.getVoice().getHrtf().value())
         );
     }
 

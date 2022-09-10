@@ -21,6 +21,11 @@ public interface OutputDevice<T extends DeviceSource> extends AudioDevice {
     T createSource(boolean stereo, @NotNull Params params) throws DeviceException;
 
     /**
+     * Closes all sources
+     */
+    void closeSources();
+
+    /**
      * Reloads the device
      *
      * @param format audio format

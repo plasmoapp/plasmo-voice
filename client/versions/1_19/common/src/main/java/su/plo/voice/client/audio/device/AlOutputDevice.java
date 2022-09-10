@@ -191,7 +191,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     public void close() {
         if (!isOpen()) return;
 
-        sources.forEach(AlSource::close);
+        closeSources();
         runInContext(() -> {
             EXTThreadLocalContext.alcSetThreadContext(0L);
 
@@ -255,6 +255,11 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
             throw new DeviceException("Failed to allocate new source", e);
         }
+    }
+
+    @Override
+    public void closeSources() {
+        sources.forEach(AlSource::close);
     }
 
     @Override

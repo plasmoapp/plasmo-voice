@@ -230,9 +230,6 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> stereoToMonoSources = new ConfigEntry<>(false);
-
-        @ConfigField
         private CategoryVolumes volumes = new CategoryVolumes();
 
         @ConfigField
@@ -303,6 +300,9 @@ public final class ClientConfig {
 
         @ConfigField
         private IntConfigEntry directionalSourcesAngle = new IntConfigEntry(145, 100, 360);
+
+        @ConfigField
+        private ConfigEntry<Boolean> stereoSourcesToMono = new ConfigEntry<>(false);
 
         public enum ActivationIconPosition {
             TOP_LEFT(16, 16),

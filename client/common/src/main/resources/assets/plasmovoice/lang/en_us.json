@@ -96,5 +96,13 @@
     "gui.plasmovoice.advanced.directional_sources_angle.tooltip_1": "An angle in which you will hear the source",
     "gui.plasmovoice.advanced.directional_sources_angle.tooltip_2": "at 100% if directional sources option is enabled.",
     "gui.plasmovoice.advanced.directional_sources_angle.tooltip_3": "",
-    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_4": "360 is like if the option is disabled."
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_4": "360 is like if the option is disabled.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono": "Mono Stereo Sources",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_1": "Addons use stereo sources for better audio quality. The quality is",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_2": "much better, but facing doesn't affect the panning. Sound only",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_3": "fades out with distance.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_4": "",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_5": "When this option is enabled, stereo sources are converted to the",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_6": "usual mono sources. Quality is worse, but they will now have",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "panning."
 }

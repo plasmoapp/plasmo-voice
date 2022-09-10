@@ -150,8 +150,8 @@ public final class VoiceDeviceManager implements DeviceManager {
         }
 
         // apply default filters
-        device.addFilter(new GainFilter(config.getVoice().getMicrophoneVolume()));
         device.addFilter(new StereoToMonoFilter(config.getVoice().getStereoCapture()));
+        device.addFilter(new GainFilter(config.getVoice().getMicrophoneVolume()));
         device.addFilter(new NoiseSuppressionFilter((int) format.getSampleRate(), config.getVoice().getNoiseSuppression()));
 
         return device;

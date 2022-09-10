@@ -197,7 +197,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
             if (decoder != null) {
                 short[] decoded = decoder.decode(decrypted);
-                if (sourceInfo.isStereo() && config.getVoice().getStereoToMonoSources().value()) {
+                if (sourceInfo.isStereo() && config.getAdvanced().getStereoSourcesToMono().value()) {
                     decoded = AudioUtil.convertToMonoShorts(decoded);
                 }
 
@@ -305,7 +305,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     private boolean isStereo() {
-        return sourceInfo.isStereo() && !config.getVoice().getStereoToMonoSources().value();
+        return sourceInfo.isStereo() && !config.getAdvanced().getStereoSourcesToMono().value();
     }
 
     private int getSourceAngle() {
