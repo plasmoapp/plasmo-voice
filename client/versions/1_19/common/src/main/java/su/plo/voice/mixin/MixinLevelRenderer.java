@@ -3,18 +3,27 @@ package su.plo.voice.mixin;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Matrix4f;
 import net.minecraft.client.Camera;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.LightTexture;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Slice;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.render.SourceIconRenderer;
+import su.plo.voice.client.render.VoiceDistanceVisualizer;
 
 @Mixin(LevelRenderer.class)
-public class MixinLevelRenderer {
+public abstract class MixinLevelRenderer {
+
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     @Inject(method = "renderLevel",
             at = @At(value = "INVOKE", ordinal = 1,
@@ -27,6 +36,11 @@ public class MixinLevelRenderer {
             LightTexture lightmapTextureManager,
             Matrix4f matrix4f,
             CallbackInfo ci) {
+        ((VoiceDistanceVisualizer) ModVoiceClient.INSTANCE.getDistanceVisualizer()).render(
+                poseStack,
+                matrix4f,
+                minecraft
+        );
         SourceIconRenderer.getInstance().renderStatics(poseStack, camera, matrix4f);
     }
 

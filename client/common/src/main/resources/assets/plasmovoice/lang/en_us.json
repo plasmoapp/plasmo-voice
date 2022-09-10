@@ -91,6 +91,9 @@
     "gui.plasmovoice.advanced.icon_position.bottom_center": "Bottom Center",
     "gui.plasmovoice.advanced.icon_position.bottom_right": "Bottom Right",
 
+    "gui.plasmovoice.advanced.visual": "Visual & UI",
+    "gui.plasmovoice.advanced.visualize_voice_distance": "Visualise Voice Distance",
+
     "gui.plasmovoice.advanced.compressor": "Compressor & Limiter",
     "gui.plasmovoice.advanced.compressor.tooltip_1": "Makes loud volume quieter,",
     "gui.plasmovoice.advanced.compressor.tooltip_2": "saving your ears from loud noises.",

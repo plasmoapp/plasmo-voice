@@ -14,9 +14,11 @@ import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.event.key.MouseScrollEvent;
 
 @Mixin(MouseHandler.class)
-public class MixinMouseHandler {
+public abstract class MixinMouseHandler {
 
-    @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     @Inject(at = @At("HEAD"), method = "onPress")
     private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {

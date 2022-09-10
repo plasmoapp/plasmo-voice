@@ -10,6 +10,7 @@ import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
+import su.plo.voice.api.client.render.DistanceVisualizer;
 
 import java.util.Optional;
 
@@ -72,6 +73,13 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
      * @return {@link KeyBindings}
      */
     @NotNull KeyBindings getKeyBindings();
+
+    /**
+     * Gets the {@link DistanceVisualizer}
+     *
+     * @return {@link DistanceVisualizer}
+     */
+    @NotNull DistanceVisualizer getDistanceVisualizer();
 
     /**
      * Gets the {@link ClientSourceManager}

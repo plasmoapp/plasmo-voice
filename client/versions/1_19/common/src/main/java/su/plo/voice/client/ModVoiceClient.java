@@ -7,10 +7,12 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
+import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.source.ModClientSourceManager;
+import su.plo.voice.client.render.VoiceDistanceVisualizer;
 
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -27,6 +29,7 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
     protected final Minecraft minecraft = Minecraft.getInstance();
 
     protected ClientSourceManager sources;
+    protected DistanceVisualizer distanceVisualizer;
 
     protected ModVoiceClient() {
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
@@ -47,6 +50,8 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
 
         this.sources = new ModClientSourceManager(this, config);
         eventBus.register(this, sources);
+
+        this.distanceVisualizer = new VoiceDistanceVisualizer(config);
     }
 
     @Override
@@ -87,5 +92,10 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
     @Override
     public @NotNull ClientSourceManager getSourceManager() {
         return sources;
+    }
+
+    @Override
+    public @NotNull DistanceVisualizer getDistanceVisualizer() {
+        return distanceVisualizer;
     }
 }

@@ -15,7 +15,9 @@ import su.plo.voice.client.event.key.KeyPressedEvent;
 @Mixin(KeyboardHandler.class)
 public abstract class MixinKeyboardHandler {
 
-    @Shadow @Final private Minecraft minecraft;
+    @Shadow
+    @Final
+    private Minecraft minecraft;
 
     @Inject(at = @At("RETURN"), method = "keyPress")
     private void onKey(long window, int key, int scancode, int action, int modifiers, CallbackInfo ci) {

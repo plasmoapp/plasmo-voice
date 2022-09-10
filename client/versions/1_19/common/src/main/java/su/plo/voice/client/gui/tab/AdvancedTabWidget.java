@@ -48,6 +48,13 @@ public final class AdvancedTabWidget extends TabWidget {
         addEntry(createShowIcons());
         addEntry(createActivationIconPosition());
 
+        addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.advanced.visual")));
+        addEntry(createToggleEntry(
+                "gui.plasmovoice.advanced.visualize_voice_distance",
+                null,
+                config.getAdvanced().getVisualizeVoiceDistance()
+        ));
+
         addEntry(new CategoryEntry(Component.translatable("gui.plasmovoice.advanced.audio_engine")));
         addEntry(createIntSliderWidget(
                 "gui.plasmovoice.advanced.directional_sources_angle",
