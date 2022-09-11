@@ -36,7 +36,6 @@ public final class NettyUdpServer implements UdpServer {
 
     @Override
     public void start(String ip, int port) {
-        this.socketAddress = new InetSocketAddress(ip, port);
         this.keepAlive = new NettyUdpKeepAlive(voiceServer.getTcpConnectionManager(), voiceServer.getUdpConnectionManager());
 
         Bootstrap bootstrap = new Bootstrap();
@@ -60,6 +59,7 @@ public final class NettyUdpServer implements UdpServer {
         try {
             ChannelFuture channelFuture = bootstrap.bind(port).sync();
             channelGroup.add(channelFuture.channel());
+            this.socketAddress = (InetSocketAddress) channelFuture.channel().localAddress();
         } catch (InterruptedException e) {
             stop();
             return;
@@ -67,7 +67,7 @@ public final class NettyUdpServer implements UdpServer {
             stop();
             throw e;
         }
-        logger.info("UDP server is started on {}:{}", ip, port);
+        logger.info("UDP server is started on {}", socketAddress);
     }
 
     @Override

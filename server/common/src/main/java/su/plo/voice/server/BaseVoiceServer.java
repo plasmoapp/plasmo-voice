@@ -107,7 +107,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             int port = config.getHost().getPort();
             if (port == 0) {
                 port = getMinecraftServerPort();
-                if (port <= 0) port = 60606;
+                if (port <= 0) port = 0;
             }
 
             server.start(config.getHost().getIp(), port);
