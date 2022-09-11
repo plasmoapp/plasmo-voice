@@ -4,7 +4,7 @@ import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
-import su.plo.voice.client.gui.keybinding.KeyBindingWidget;
+import su.plo.voice.client.gui.widget.KeyBindingWidget;
 
 public final class KeyBindingsTabWidget extends TabWidget {
 

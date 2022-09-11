@@ -18,13 +18,13 @@ public final class IconButton extends Button {
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack poseStack, int i, int j, float f) {
-        super.renderButton(poseStack, i, j, f);
+    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int moseY, float delta) {
+        super.renderButton(poseStack, mouseX, moseY, delta);
 
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, iconLocation);
 
         RenderSystem.enableDepthTest();
-        blit(poseStack, this.x + 2, this.y + 2, 0, 0, 16, 16, 16, 16);
+        blit(poseStack, x + 2, y + 2, 0, 0, 16, 16, 16, 16);
     }
 }

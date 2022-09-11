@@ -15,23 +15,14 @@ public final class IntSliderWidget extends AbstractSliderButton implements Updat
         this.suffix = suffix;
         this.entry = entry;
 
-        this.updateValue();
-        this.updateMessage();
+        updateValue();
+        updateMessage();
     }
 
+    @Override
     public void updateValue() {
         this.value = (double) (entry.value() - entry.getMin()) / (entry.getMax() - entry.getMin());
-        this.updateMessage();
-    }
-
-    protected void updateMessage() {
-        if (suffix != null) {
-            this.setMessage(Component.literal(String.valueOf((int) (value * (entry.getMax() - entry.getMin()) + entry.getMin())))
-                    .append(Component.literal(" "))
-                    .append(suffix));
-        } else {
-            this.setMessage(Component.literal(String.valueOf((int) (value * (entry.getMax() - entry.getMin()) + entry.getMin()))));
-        }
+        updateMessage();
     }
 
     @Override
@@ -39,6 +30,20 @@ public final class IntSliderWidget extends AbstractSliderButton implements Updat
         return active && super.isHoveredOrFocused();
     }
 
+    @Override
+    protected void updateMessage() {
+        if (suffix != null) {
+            setMessage(
+                    Component.literal(String.valueOf((int) (value * (entry.getMax() - entry.getMin()) + entry.getMin())))
+                            .append(Component.literal(" "))
+                            .append(suffix)
+            );
+        } else {
+            setMessage(Component.literal(String.valueOf((int) (value * (entry.getMax() - entry.getMin()) + entry.getMin()))));
+        }
+    }
+
+    @Override
     protected void applyValue() {
         entry.set((int) (value * (entry.getMax() - entry.getMin()) + entry.getMin()));
     }

@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -78,7 +77,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     }
 
     @Override
-    public Collection<Integer> getDistances() {
+    public List<Integer> getDistances() {
         return distances;
     }
 

@@ -60,12 +60,26 @@ public final class MicrophoneTestController {
             return;
         }
 
+//        voiceClient.getAudioCapture()
+//                .getActivationById(VoiceActivation.PROXIMITY_ID)
+//                .ifPresent(activation -> activation.setDisabled(true));
+//        voiceClient.getAudioCapture()
+//                .getActivations()
+//                .forEach(activation -> activation.setDisabled(true));
+
         voiceClient.getEventBus().call(new MicrophoneTestStartedEvent(this));
     }
 
     public void stop() {
         if (source != null) source.close();
         this.source = null;
+
+//        voiceClient.getAudioCapture()
+//                .getActivationById(VoiceActivation.PROXIMITY_ID)
+//                .ifPresent(activation -> activation.setDisabled(false));
+//        voiceClient.getAudioCapture()
+//                .getActivations()
+//                .forEach(activation -> activation.setDisabled(false));
 
         voiceClient.getEventBus().call(new MicrophoneTestStoppedEvent(this));
     }
@@ -95,7 +109,10 @@ public final class MicrophoneTestController {
             this.microphoneValue = Math.max(microphoneValue - 0.02D, 0.0F);
         }
 
-        if (source != null) source.write(samples);
+        if (source != null) {
+            event.setSendEnd(true);
+            source.write(samples);
+        }
 //        if (source != null) {
 //            byte[] finalBuffer = buffer;
 //            VoiceClient.getSoundEngine().runInContext(() -> {

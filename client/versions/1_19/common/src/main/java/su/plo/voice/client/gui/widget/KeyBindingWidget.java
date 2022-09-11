@@ -1,4 +1,4 @@
-package su.plo.voice.client.gui.keybinding;
+package su.plo.voice.client.gui.widget;
 
 import com.google.common.collect.ImmutableList;
 import com.mojang.blaze3d.platform.InputConstants;
@@ -18,20 +18,20 @@ import org.lwjgl.glfw.GLFW;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.client.gui.GuiUtil;
-import su.plo.voice.client.gui.tab.KeyBindingsTabWidget;
+import su.plo.voice.client.gui.tab.KeyBindingTabWidget;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 
-public final class KeyBindingWidget extends Button {
+public final class KeyBindingWidget extends Button implements UpdatableWidget {
 
-    private final KeyBindingsTabWidget parent;
+    private final KeyBindingTabWidget parent;
     private final KeyBindingConfigEntry entry;
     private final List<KeyBinding.Key> pressedKeys = new ArrayList<>();
 
-    public KeyBindingWidget(KeyBindingsTabWidget parent, int x, int y, int width, int height, KeyBindingConfigEntry entry) {
+    public KeyBindingWidget(KeyBindingTabWidget parent, int x, int y, int width, int height, KeyBindingConfigEntry entry) {
         super(x, y, width, height, Component.empty(), button -> {
         });
         this.parent = parent;
@@ -44,12 +44,20 @@ public final class KeyBindingWidget extends Button {
         return parent.getFocusedBinding() != null && parent.getFocusedBinding().equals(this);
     }
 
+    public void keysReleased() {
+        entry.value().getKeys().clear();
+        entry.value().getKeys().addAll(ImmutableList.copyOf(pressedKeys));
+        pressedKeys.clear();
+        parent.setFocusedKeyBinding(null);
+    }
+
+    @Override
     public void updateValue() {
         MutableComponent text = Component.literal("");
         if (entry.value().getKeys().size() == 0) {
             text.append(Component.translatable("gui.none"));
         } else {
-           formatKeys(text, entry.value().getKeys());
+            formatKeys(text, entry.value().getKeys());
         }
 
         if (isActive()) {
@@ -68,17 +76,12 @@ public final class KeyBindingWidget extends Button {
         }
     }
 
-    public void keysReleased() {
-        entry.value().getKeys().clear();
-        entry.value().getKeys().addAll(ImmutableList.copyOf(pressedKeys));
-        pressedKeys.clear();
-        parent.setFocusedKeyBinding(null);
-    }
-
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (isActive() && !(button == GLFW.GLFW_MOUSE_BUTTON_1 && pressedKeys.size() == 0) &&
-                pressedKeys.stream().anyMatch(key -> key.getType().equals(InputConstants.Type.MOUSE) && key.getCode() == button)) {
+        if (isActive()
+                && !(button == GLFW.GLFW_MOUSE_BUTTON_1 && pressedKeys.size() == 0)
+                && pressedKeys.stream().anyMatch(key -> key.getType() == KeyBinding.Type.MOUSE && key.getCode() == button)
+        ) {
             keysReleased();
             updateValue();
             return true;
@@ -95,7 +98,7 @@ public final class KeyBindingWidget extends Button {
             }
             updateValue();
             return true;
-        } else if (this.clicked(mouseX, mouseY)) {
+        } else if (clicked(mouseX, mouseY)) {
             parent.setFocusedKeyBinding(this);
             updateValue();
             return true;
@@ -130,8 +133,9 @@ public final class KeyBindingWidget extends Button {
 
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
-        if (isActive() &&
-                pressedKeys.stream().anyMatch(key -> key.getType().equals(InputConstants.Type.KEYSYM) && key.getCode() == keyCode)) {
+        if (isActive()
+                && pressedKeys.stream().anyMatch(key -> key.getType() == KeyBinding.Type.KEYSYM && key.getCode() == keyCode)
+        ) {
             keysReleased();
             updateValue();
             return true;
@@ -144,7 +148,7 @@ public final class KeyBindingWidget extends Button {
     public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
         if (parent.getFocusedBinding() == null || !parent.getFocusedBinding().equals(this)) {
             int width = Minecraft.getInstance().font.width(getMessage());
-            if (width > this.width - 16) {
+            if (width > width - 16) {
                 parent.setTooltip(ImmutableList.of(getMessage()));
             }
         }
@@ -158,26 +162,31 @@ public final class KeyBindingWidget extends Button {
         Font textRenderer = minecraftClient.font;
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
-        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
-        int i = this.getYImage(this.isHoveredOrFocused());
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, alpha);
+        int i = getYImage(isHoveredOrFocused());
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        blit(poseStack, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-        blit(poseStack, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
-        this.renderBg(poseStack, minecraftClient, mouseX, mouseY);
-        int j = this.active ? 16777215 : 10526880;
+        blit(poseStack, x, y, 0, 46 + i * 20, width / 2, height);
+        blit(poseStack, x + width / 2, y, 200 - width / 2, 46 + i * 20, width / 2, height);
+        renderBg(poseStack, minecraftClient, mouseX, mouseY);
+        int j = active ? 16777215 : 10526880;
 
         if (parent.getFocusedBinding() != null && parent.getFocusedBinding().equals(this)) {
-            drawCenteredString(poseStack, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+            drawCenteredString(poseStack, textRenderer, getMessage(), x + width / 2, y + (height - 8) / 2, j | Mth.ceil(alpha * 255.0F) << 24);
         } else {
-            FormattedCharSequence orderedText = GuiUtil.getOrderedText(textRenderer, getMessage(), this.width - 16);
-            textRenderer.drawShadow(poseStack, orderedText, (float) ((this.x + this.width / 2) - textRenderer.width(orderedText) / 2), this.y + (this.height - 8) / 2,
-                    j | Mth.ceil(this.alpha * 255.0F) << 24);
+            FormattedCharSequence orderedText = GuiUtil.getOrderedText(textRenderer, getMessage(), width - 16);
+            textRenderer.drawShadow(
+                    poseStack,
+                    orderedText,
+                    (float) ((x + width / 2) - textRenderer.width(orderedText) / 2),
+                    y + (float) (height - 8) / 2,
+                    j | Mth.ceil(alpha * 255.0F) << 24
+            );
         }
 
-        if (this.isHoveredOrFocused()) {
-            this.renderToolTip(poseStack, mouseX, mouseY);
+        if (isHoveredOrFocused()) {
+            renderToolTip(poseStack, mouseX, mouseY);
         }
     }
 

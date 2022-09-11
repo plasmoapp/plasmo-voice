@@ -12,10 +12,28 @@ public interface ClientActivation extends Activation {
 
     KeyBinding getToggleKey();
 
+    /**
+     * Sets the activation's disabled state
+     *
+     * If activation is disabled, it always returns {@link Result#NOT_ACTIVATED} in
+     * the {@link ClientActivation#process(short[])} method
+     *
+     * @param disabled
+     */
     void setDisabled(boolean disabled);
 
+    /**
+     * Checks if activation is disabled by toggle or manually by {@link ClientActivation#setDisabled(boolean)}
+     *
+     * @return true if activation is disabled
+     */
     boolean isDisabled();
 
+    /**
+     * Checks if activation is activated
+     *
+     * @return true if activation is activated
+     */
     boolean isActivated();
 
     long getLastActivation();
@@ -24,13 +42,17 @@ public interface ClientActivation extends Activation {
 
     @NotNull Result process(short[] samples);
 
+    void reset();
+
     enum Type {
+
         PUSH_TO_TALK,
         VOICE,
         INHERIT
     }
 
     enum Result {
+
         NOT_ACTIVATED,
         ACTIVATED,
         END;

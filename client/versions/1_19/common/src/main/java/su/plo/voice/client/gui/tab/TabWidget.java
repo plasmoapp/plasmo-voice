@@ -20,7 +20,6 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.client.gui.GuiUtil;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
-import su.plo.voice.client.gui.keybinding.KeyBindingWidget;
 import su.plo.voice.client.gui.widget.*;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.config.entry.IntConfigEntry;

@@ -180,8 +180,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 serverInfo.getVoiceInfo().getProximityActivation()
         );
         // set global proximity activation type
-        proximityConfig.getConfigType().set(config.getVoice().getActivationType().value());
-        proximityConfig.getConfigType().setDefault(config.getVoice().getActivationType().value());
+        proximityConfig.setConfigType(config.getVoice().getActivationType());
         if (proximityConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
             LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
             proximityConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
@@ -255,6 +254,19 @@ public final class VoiceAudioCapture implements AudioCapture {
                 AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, samples);
                 voiceClient.getEventBus().call(captureEvent);
                 if (captureEvent.isCancelled()) continue;
+
+                if (captureEvent.isSendEnd() || config.getVoice().getMicrophoneDisabled().value()) {
+                    if (proximityActivation.isActivated()) {
+                        proximityActivation.reset();
+                        sendVoiceEndPacket(proximityActivation);
+                    }
+
+                    activationById.forEach((activationId, activation) -> {
+                        activation.reset();
+                        sendVoiceEndPacket(activation);
+                    });
+                    continue;
+                }
 
                 ClientActivation.Result result = proximityActivation.process(samples);
                 byte[] encoded = processActivation(proximityActivation, result, samples, null);

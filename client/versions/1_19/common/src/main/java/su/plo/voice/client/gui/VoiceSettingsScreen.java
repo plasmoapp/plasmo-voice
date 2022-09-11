@@ -88,7 +88,7 @@ public final class VoiceSettingsScreen extends Screen {
         );
         navigation.addTab(
                 Component.translatable("gui.plasmovoice.activation"),
-                new ActivationTabWidget(minecraft, this, voiceClient.getAudioCapture())
+                new ActivationTabWidget(minecraft, this, voiceClient, config)
         );
         navigation.addTab(
                 Component.translatable("gui.plasmovoice.advanced"),
@@ -116,8 +116,21 @@ public final class VoiceSettingsScreen extends Screen {
     public void removed() {
         super.removed();
         navigation.removed();
+        testController.stop();
 
         voiceClient.getEventBus().unregister(voiceClient, testController);
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return navigation.keyPressed(keyCode, scanCode, modifiers)
+                || super.keyPressed(keyCode, scanCode, modifiers);
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return navigation.mouseReleased(mouseX, mouseY, button)
+                || super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override

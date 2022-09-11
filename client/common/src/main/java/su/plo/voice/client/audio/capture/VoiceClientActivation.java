@@ -27,6 +27,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
 
     private final IntConfigEntry configDistance;
     private final ConfigEntry<ClientActivation.Type> configType;
+    private final ConfigEntry<Boolean> configToggle;
 
     private final KeyBindingConfigEntry pttKey;
     private final KeyBindingConfigEntry toggleKey;
@@ -57,6 +58,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         // load values from config
         this.configDistance = activationConfig.getConfigDistance();
         this.configType = activationConfig.getConfigType();
+        this.configToggle = activationConfig.getConfigToggle();
 
         // ptt
         String pttKeyName = "key.plasmovoice." + activation.getName() + ".ptt";
@@ -79,6 +81,8 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
 
         if (toggleKey.isPresent()) this.toggleKey = toggleKey.get();
         else throw new IllegalStateException("Failed to register toggle keybinding");
+
+        toggleKey.get().value().onPress(this::onTogglePress);
     }
 
     @Override
@@ -91,7 +95,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         return pttKey.value();
     }
 
-    public KeyBindingConfigEntry getConfigPttKey() {
+    public KeyBindingConfigEntry getPttConfigEntry() {
         return pttKey;
     }
 
@@ -100,7 +104,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         return toggleKey.value();
     }
 
-    public KeyBindingConfigEntry getConfigToggleKey() {
+    public KeyBindingConfigEntry getToggleConfigEntry() {
         return toggleKey;
     }
 
@@ -111,7 +115,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
 
     @Override
     public boolean isDisabled() {
-        return disabled.get();
+        return (getType() == Type.VOICE && configToggle.value()) || disabled.get();
     }
 
     @Override
@@ -121,6 +125,15 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
 
     @Override
     public @NotNull Result process(short[] samples) {
+        if (isDisabled()) {
+            if (this.activated) {
+                this.activated = false;
+                return Result.END;
+            }
+
+            return Result.NOT_ACTIVATED;
+        }
+
         if (getType() == Type.PUSH_TO_TALK) {
             return handlePTT();
         } else if (getType() == Type.VOICE) {
@@ -128,6 +141,12 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         }
 
         return Result.NOT_ACTIVATED;
+    }
+
+    @Override
+    public void reset() {
+        this.activated = false;
+        this.lastActivation = 0L;
     }
 
     private @NotNull Result handlePTT() {
@@ -161,5 +180,10 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         }
 
         return Result.NOT_ACTIVATED;
+    }
+
+    private void onTogglePress(@NotNull KeyBinding.Action action) {
+        if (action != KeyBinding.Action.DOWN || getType() != Type.VOICE) return;
+        configToggle.set(!configToggle.value());
     }
 }

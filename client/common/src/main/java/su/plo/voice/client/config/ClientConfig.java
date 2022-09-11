@@ -19,6 +19,7 @@ import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.capture.Activation;
+import su.plo.voice.proto.data.capture.VoiceActivation;
 
 import java.io.File;
 import java.io.IOException;
@@ -109,6 +110,7 @@ public final class ClientConfig {
     public static class Server implements SerializableConfigEntry {
 
         private ConfigClientActivation proximityActivation;
+        @Getter(AccessLevel.PRIVATE)
         private Map<UUID, ConfigClientActivation> activationById = Maps.newConcurrentMap();
 
         public void put(UUID activationId, ConfigClientActivation activation) {
@@ -116,6 +118,9 @@ public final class ClientConfig {
         }
 
         public Optional<ConfigClientActivation> getActivation(UUID id) {
+            if (id.equals(VoiceActivation.PROXIMITY_ID))
+                return Optional.ofNullable(proximityActivation);
+
             return Optional.ofNullable(activationById.get(id));
         }
 

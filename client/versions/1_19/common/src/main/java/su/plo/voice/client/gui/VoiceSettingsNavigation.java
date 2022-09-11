@@ -10,8 +10,10 @@ import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.tab.AboutTabWidget;
+import su.plo.voice.client.gui.tab.KeyBindingTabWidget;
 import su.plo.voice.client.gui.tab.TabWidget;
 import su.plo.voice.client.gui.widget.IconButton;
 
@@ -49,7 +51,6 @@ public final class VoiceSettingsNavigation {
                 20,
                 name,
                 (btn) -> {
-                    System.out.println(elementIndex);
                     active = elementIndex;
                     for (TabWidget widget : tabWidgets) {
                         widget.onClose();
@@ -94,6 +95,28 @@ public final class VoiceSettingsNavigation {
     public void removed() {
         aboutWidget.removed();
         tabWidgets.forEach(TabWidget::removed);
+    }
+
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE || keyCode == GLFW.GLFW_KEY_TAB) {
+            Optional<TabWidget> tab = getActiveTab();
+            if (tab.isEmpty()) return false;
+
+            if (!(tab.get() instanceof KeyBindingTabWidget)) return false;
+
+            return tab.get().keyPressed(keyCode, scanCode, modifiers);
+        }
+
+        return false;
+    }
+
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        getActiveTab().ifPresent(tab -> {
+            if (!(tab instanceof KeyBindingTabWidget)) return;
+            tab.mouseReleased(mouseX, mouseY, button);
+        });
+
+        return false;
     }
 
     public void init() {

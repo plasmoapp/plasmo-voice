@@ -15,19 +15,21 @@ public final class SliderWidget extends AbstractSliderButton implements Updatabl
         this.entry = entry;
         this.suffix = suffix;
 
-        this.updateMessage();
+        updateMessage();
     }
 
     @Override
     public void updateValue() {
         this.value = entry.value() / entry.getMax();
-        this.updateMessage();
+        updateMessage();
     }
 
+    @Override
     protected void updateMessage() {
-        this.setMessage(Component.literal((int) (value * (entry.getMax() * 100D)) + suffix));
+        setMessage(Component.literal((int) (value * (entry.getMax() * 100D)) + suffix));
     }
 
+    @Override
     protected void applyValue() {
         entry.set(value * entry.getMax());
     }

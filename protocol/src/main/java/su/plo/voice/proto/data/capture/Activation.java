@@ -2,7 +2,7 @@ package su.plo.voice.proto.data.capture;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 public interface Activation {
@@ -47,7 +47,7 @@ public interface Activation {
      *
      * @return collection of distances
      */
-    Collection<Integer> getDistances();
+    List<Integer> getDistances();
 
     /**
      * Gets the activation's default distance
@@ -72,7 +72,7 @@ public interface Activation {
 
     /**
      * Checks if activation is transitive
-     *
+     * <p>
      * todo: doc
      *
      * @return true if activation is transitive
@@ -81,7 +81,7 @@ public interface Activation {
 
     /**
      * Checks if stereo is supported
-     *
+     * <p>
      * Client will send a stereo audio if it's enabled in the client settings
      *
      * @return true if stereo is supported
@@ -92,12 +92,14 @@ public interface Activation {
 
     /**
      * Gets the activation's weight
-     *
+     * <p>
      * todo: doc
      *
      * @return the weight
      */
     default int getWeight() {
         return 0;
-    };
+    }
+
+    ;
 }

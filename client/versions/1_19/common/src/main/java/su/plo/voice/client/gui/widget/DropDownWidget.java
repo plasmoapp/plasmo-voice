@@ -9,10 +9,9 @@ import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Widget;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
-import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.FormattedText;
-import net.minecraft.util.FormattedCharSequence;
+import org.jetbrains.annotations.NotNull;
+import su.plo.voice.client.gui.GuiUtil;
 import su.plo.voice.client.gui.VoiceSettingsScreen;
 
 import java.util.List;
@@ -60,7 +59,7 @@ public final class DropDownWidget extends AbstractWidget implements Widget, Narr
         if (open) {
             open = false;
             if (!elementClicked(mouseX, mouseY, button)) {
-                this.playDownSound(client.getSoundManager());
+                playDownSound(client.getSoundManager());
             }
             return true;
         }
@@ -68,16 +67,102 @@ public final class DropDownWidget extends AbstractWidget implements Widget, Narr
         return false;
     }
 
+    @Override
+    public void renderButton(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {
+        RenderSystem.enableDepthTest();
+        fill(poseStack, x, y, x + width + 1, y + height + 1, -6250336);
+        fill(poseStack, x + 1, y + 1, x + width, y + height, -16777216);
+
+        renderArrow(poseStack);
+
+        textRenderer.drawShadow(
+                poseStack,
+                GuiUtil.getOrderedText(textRenderer, getMessage(), active ? (width - 21) : (width - 5)),
+                (float) x + 5,
+                (float) y + 1 + (float) (height - 8) / 2,
+                active ? 0xE0E0E0 : 0x707070
+        );
+
+        if (open) {
+            if ((y + height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) &&
+                    (parent.getHeaderHeight() + height + 1 + (elements.size() * (elementHeight + 1)) < client.getWindow().getGuiScaledHeight())) {
+                int elementY = y + 1 - (elements.size() * (elementHeight + 1));
+
+                for (Component element : elements) {
+                    poseStack.pushPose();
+                    RenderSystem.enableDepthTest();
+                    poseStack.translate(0.0D, 0.0D, 10.0D);
+
+                    fill(poseStack, x, elementY - 1, x + width + 1, elementY + elementHeight, -0xB9B9BA);
+                    fill(poseStack, x + 1, elementY, x + width, elementY + elementHeight, -0x1000000);
+
+                    if ((mouseX >= x && mouseX <= x + width) &&
+                            (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
+                        if (tooltip && textRenderer.width(element) > (width - 10)) {
+                            parent.setTooltip(ImmutableList.of(element));
+                        }
+                        fill(poseStack, x + 1, elementY, x + width, elementY + elementHeight, -0xCDCDCE);
+                    }
+                    textRenderer.drawShadow(
+                            poseStack,
+                            GuiUtil.getOrderedText(client.font, element, width - 10),
+                            (float) x + 5, (float) elementY + 1 + (float) (elementHeight - 8) / 2,
+                            0xE0E0E0
+                    );
+
+
+                    poseStack.popPose();
+
+                    elementY += elementHeight + 1;
+                }
+            } else {
+                int elementY = y + height + 1;
+
+                for (Component element : elements) {
+                    poseStack.pushPose();
+                    RenderSystem.enableDepthTest();
+                    poseStack.translate(0.0D, 0.0D, 10.0D);
+
+                    fill(poseStack, x, elementY, x + width + 1, elementY + elementHeight + 1, -0xB9B9BA);
+                    fill(poseStack, x + 1, elementY, x + width, elementY + elementHeight, -0x1000000);
+                    if ((mouseX >= x && mouseX <= x + width) &&
+                            (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
+                        if (tooltip && textRenderer.width(element) > (width - 10)) {
+                            parent.setTooltip(ImmutableList.of(element));
+                        }
+                        fill(poseStack, x + 1, elementY, x + width, elementY + elementHeight, -0xCDCDCE);
+                    }
+                    textRenderer.drawShadow(
+                            poseStack,
+                            GuiUtil.getOrderedText(textRenderer, element, width - 10),
+                            (float) x + 5, (float) elementY + 1 + (float) (elementHeight - 8) / 2,
+                            0xE0E0E0
+                    );
+
+
+                    poseStack.popPose();
+
+                    elementY += elementHeight + 1;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void updateNarration(@NotNull NarrationElementOutput narrationElementOutput) {
+        defaultButtonNarrationText(narrationElementOutput);
+    }
+
     private boolean elementClicked(double mouseX, double mouseY, int button) {
         if (isValidClickButton(button)) {
-            if (this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) {
+            if (y + height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) {
                 if ((mouseX >= x && mouseX <= x + width) &&
                         (mouseY >= y + 1 - (elements.size() * (elementHeight + 1)) && mouseY <= y + 1)) {
                     int i = (int) Math.floor((mouseY - (y + 1 - (elements.size() * (elementHeight + 1)))) / (elementHeight + 1));
-                    this.playDownSound(client.getSoundManager());
-                    this.setMessage(elements.get(i));
-                    if (this.onSelect != null) {
-                        this.onSelect.accept(i);
+                    playDownSound(client.getSoundManager());
+                    setMessage(elements.get(i));
+                    if (onSelect != null) {
+                        onSelect.accept(i);
                     }
                     return true;
                 }
@@ -85,10 +170,10 @@ public final class DropDownWidget extends AbstractWidget implements Widget, Narr
                 if ((mouseX >= x && mouseX <= x + width) &&
                         (mouseY >= y + 1 + height && mouseY <= y + 1 + height + (elements.size() * (elementHeight + 1)))) {
                     int i = (int) Math.floor((mouseY - (y + height + 1)) / (elementHeight + 1));
-                    this.playDownSound(client.getSoundManager());
-                    this.setMessage(elements.get(i));
-                    if (this.onSelect != null) {
-                        this.onSelect.accept(i);
+                    playDownSound(client.getSoundManager());
+                    setMessage(elements.get(i));
+                    if (onSelect != null) {
+                        onSelect.accept(i);
                     }
                     return true;
                 }
@@ -98,103 +183,29 @@ public final class DropDownWidget extends AbstractWidget implements Widget, Narr
         return false;
     }
 
-    private void renderArrow(PoseStack matrices) {
-        if (!this.active) {
-            return;
-        }
+    private void renderArrow(PoseStack poseStack) {
+        if (!active) return;
 
         if (open) {
             for (int i = 0; i < 5; i++) {
-                fill(matrices, this.x + this.width - (9 + i), this.y + ((this.height - 5) / 2) + i,
-                        this.x + this.width - (8 - i), (this.y + (this.height - 5) / 2) + 2 + i, -6250336);
+                fill(poseStack,
+                        x + width - (9 + i),
+                        y + ((height - 5) / 2) + i,
+                        x + width - (8 - i),
+                        (y + (height - 5) / 2) + 2 + i,
+                        -0x5F5F60
+                );
             }
         } else {
             for (int i = 0; i < 5; i++) {
-                fill(matrices, this.x + this.width - (13 - i), this.y + ((this.height - 5) / 2) + (i > 0 ? (1 + i) : 0),
-                        this.x + this.width - (4 + i), (this.y + (this.height - 5) / 2) + 2 + i, -6250336);
+                fill(poseStack,
+                        x + width - (13 - i),
+                        y + ((height - 5) / 2) + (i > 0 ? (1 + i) : 0),
+                        x + width - (4 + i),
+                        (y + (height - 5) / 2) + 2 + i,
+                        -0x5F5F60
+                );
             }
         }
-    }
-
-    @Override
-    public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        RenderSystem.enableDepthTest();
-        fill(matrices, this.x, this.y, this.x + this.width + 1, this.y + this.height + 1, -6250336);
-        fill(matrices, this.x + 1, this.y + 1, this.x + this.width, this.y + this.height, -16777216);
-
-        renderArrow(matrices);
-
-        this.textRenderer.drawShadow(matrices, orderedText(client, getMessage(), this.active ? (this.width - 21) : (this.width - 5)),
-                (float)this.x + 5, (float)this.y + 1 + (this.height - 8) / 2, this.active ? 14737632 : 7368816);
-
-        if (open) {
-            if ((this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) &&
-                    (parent.getHeaderHeight() + this.height + 1 + (elements.size() * (elementHeight + 1)) < client.getWindow().getGuiScaledHeight())) {
-                int elementY = this.y + 1 - (elements.size() * (elementHeight + 1));
-
-                for (Component element : elements) {
-                    matrices.pushPose();
-                    RenderSystem.enableDepthTest();
-                    matrices.translate(0.0D, 0.0D, 10.0D);
-
-                    fill(matrices, this.x, elementY - 1, this.x + this.width + 1, elementY + elementHeight, -12171706);
-                    fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -16777216);
-                    if ((mouseX >= x && mouseX <= x + width) &&
-                            (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
-                        if (tooltip && this.textRenderer.width(element) > (this.width - 10)) {
-                            parent.setTooltip(ImmutableList.of(element));
-                        }
-                        fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -13487566);
-                    }
-                    this.textRenderer.drawShadow(matrices, orderedText(client, element, this.width - 10),
-                            (float)this.x + 5, (float)elementY + 1 + (elementHeight - 8) / 2, 14737632);
-
-
-                    matrices.popPose();
-
-                    elementY += elementHeight + 1;
-                }
-            } else {
-                int elementY = this.y + this.height + 1;
-
-                for (Component element : elements) {
-                    matrices.pushPose();
-                    RenderSystem.enableDepthTest();
-                    matrices.translate(0.0D, 0.0D, 10.0D);
-
-                    fill(matrices, this.x, elementY, this.x + this.width + 1, elementY + elementHeight + 1, -12171706);
-                    fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -16777216);
-                    if ((mouseX >= x && mouseX <= x + width) &&
-                            (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
-                        if (tooltip && this.textRenderer.width(element) > (this.width - 10)) {
-                            parent.setTooltip(ImmutableList.of(element));
-                        }
-                        fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -13487566);
-                    }
-                    this.textRenderer.drawShadow(matrices, orderedText(client, element, this.width - 10),
-                            (float)this.x + 5, (float)elementY + 1 + (elementHeight - 8) / 2, 14737632);
-
-
-                    matrices.popPose();
-
-                    elementY += elementHeight + 1;
-                }
-            }
-        }
-    }
-
-    private FormattedCharSequence orderedText(Minecraft minecraftClient, Component text, int width) {
-        int i = minecraftClient.font.width(text);
-        if (i > width) {
-            FormattedText stringVisitable = FormattedText.composite(minecraftClient.font.substrByWidth(text, width - minecraftClient.font.width("...")), FormattedText.of("..."));
-            return Language.getInstance().getVisualOrder(stringVisitable);
-        } else {
-            return text.getVisualOrderText();
-        }
-    }
-
-    @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
-        this.defaultButtonNarrationText(narrationElementOutput);
     }
 }

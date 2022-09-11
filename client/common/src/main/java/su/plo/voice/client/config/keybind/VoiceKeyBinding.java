@@ -68,7 +68,7 @@ public final class VoiceKeyBinding implements KeyBinding {
             return true;
         } else if (object instanceof KeyBinding) {
             KeyBinding keyBinding = (KeyBinding) object;
-            return this.name.equals(keyBinding.getName());
+            return this.hashCode() == keyBinding.hashCode();
         } else {
             return false;
         }
@@ -76,6 +76,6 @@ public final class VoiceKeyBinding implements KeyBinding {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name);
+        return Objects.hash(name, keys.hashCode());
     }
 }
