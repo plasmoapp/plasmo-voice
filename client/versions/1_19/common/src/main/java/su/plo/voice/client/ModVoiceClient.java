@@ -27,6 +27,7 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
 
     protected final String modId = "plasmovoice";
     protected final Minecraft minecraft = Minecraft.getInstance();
+    protected final MinecraftClientLib minecraftLib = new ModMinecraftLib();
 
     protected ClientSourceManager sources;
     protected DistanceVisualizer distanceVisualizer;
@@ -87,6 +88,11 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
         }
 
         return serverIp;
+    }
+
+    @Override
+    public MinecraftClientLib getMinecraft() {
+        return minecraftLib;
     }
 
     @Override

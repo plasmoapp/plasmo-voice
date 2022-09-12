@@ -24,9 +24,6 @@
     "gui.plasmovoice.toggle.enabled": "ENABLED",
     "gui.plasmovoice.toggle.disabled": "DISABLED",
 
-    "gui.plasmovoice.on": "On",
-    "gui.plasmovoice.off": "Off",
-
 
     "gui.plasmovoice.devices": "Devices",
 
@@ -148,5 +145,11 @@
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_6": "usual mono sources. Quality is worse, but they will now have",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "panning.",
 
-    "gui.plasmovoice.hotkeys": "Hotkeys"
+    "gui.plasmovoice.hotkeys": "Hotkeys",
+
+
+    "message.plasmovoice.on": "On",
+    "message.plasmovoice.off": "Off",
+
+    "message.plasmovoice.occlusion_changed": "Sound Occlusion: %s"
 }

@@ -71,7 +71,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         this.audioCapture = new VoiceAudioCapture(this, config);
 
         // hotkey actions
-        new HotkeyActions(getKeyBindings(), config).register();
+        new HotkeyActions(getMinecraft(), getKeyBindings(), config).register();
 
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }
@@ -103,4 +103,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     public abstract String getServerIp();
+
+    public abstract MinecraftClientLib getMinecraft();
 }

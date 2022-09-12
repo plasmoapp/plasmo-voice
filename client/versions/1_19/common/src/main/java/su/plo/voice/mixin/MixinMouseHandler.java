@@ -25,6 +25,7 @@ public abstract class MixinMouseHandler {
         if (window != this.minecraft.getWindow().getWindow()) return;
 
         KeyPressedEvent event = new KeyPressedEvent(
+                ModVoiceClient.INSTANCE.getMinecraft(),
                 KeyBinding.Type.MOUSE.getOrCreate(button),
                 KeyBinding.Action.fromInt(action)
         );
@@ -34,7 +35,12 @@ public abstract class MixinMouseHandler {
 
     @Inject(at = @At("HEAD"), method = "onScroll", cancellable = true)
     private void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {
-        MouseScrollEvent event = new MouseScrollEvent(horizontal, vertical);
+        MouseScrollEvent event = new MouseScrollEvent(
+                ModVoiceClient.INSTANCE.getMinecraft(),
+                horizontal,
+                vertical
+        );
+
         if (event.isCancelled()) ci.cancel();
     }
 }

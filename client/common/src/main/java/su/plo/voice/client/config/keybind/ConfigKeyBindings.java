@@ -195,13 +195,17 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
     }
 
     @EventSubscribe
-    public void onKeyPressed(KeyPressedEvent event) {
+    public void onKeyPressed(@NotNull KeyPressedEvent event) {
         if (event.getAction() == KeyBinding.Action.UP) {
             pressedKeys.remove(event.getKey());
         } else {
             pressedKeys.add(event.getKey());
         }
 
-        keyBindings.values().forEach(entry -> entry.value().updateState(event.getAction()));
+        keyBindings.values().forEach(entry -> {
+            if (entry.value().isAnyContext() || !event.getMinecraft().getScreen().isPresent()) {
+                entry.value().updateState(event.getAction());
+            }
+        });
     }
 }

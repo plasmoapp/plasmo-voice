@@ -24,6 +24,7 @@ public abstract class MixinKeyboardHandler {
         if (window != this.minecraft.getWindow().getWindow()) return;
 
         KeyPressedEvent event = new KeyPressedEvent(
+                ModVoiceClient.INSTANCE.getMinecraft(),
                 KeyBinding.Type.KEYSYM.getOrCreate(key),
                 KeyBinding.Action.fromInt(action)
         );

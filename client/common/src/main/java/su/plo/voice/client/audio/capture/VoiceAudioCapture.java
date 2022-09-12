@@ -181,6 +181,11 @@ public final class VoiceAudioCapture implements AudioCapture {
         );
         // set global proximity activation type
         proximityConfig.setConfigType(config.getVoice().getActivationType());
+        proximityConfig.getConfigDistance().setDefault(
+                serverInfo.getVoiceInfo().getProximityActivation().getDefaultDistance(),
+                serverInfo.getVoiceInfo().getProximityActivation().getMinDistance(),
+                serverInfo.getVoiceInfo().getProximityActivation().getMaxDistance()
+        );
         if (proximityConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
             LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
             proximityConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
@@ -194,9 +199,16 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         // register custom activations
         for (Activation serverActivation : serverInfo.getVoiceInfo().getActivations()) {
+            ConfigClientActivation activationConfig = serverConfig.get().getActivation(serverActivation.getId(), serverActivation);
+            activationConfig.getConfigDistance().setDefault(
+                    serverActivation.getDefaultDistance(),
+                    serverActivation.getMinDistance(),
+                    serverActivation.getMaxDistance()
+            );
+
             ClientActivation activation = new VoiceClientActivation(
                     config,
-                    serverConfig.get().getActivation(serverActivation.getId(), serverActivation),
+                    activationConfig,
                     serverActivation
             );
 

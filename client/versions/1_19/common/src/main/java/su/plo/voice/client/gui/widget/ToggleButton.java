@@ -10,7 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 
-public final class ToggleButton extends AbstractWidget implements UpdatableWidget {
+public final class ToggleButton extends AbstractWidget {
+
+    private static final Component ON = Component.translatable("message.plasmovoice.on");
+    private static final Component OFF = Component.translatable("message.plasmovoice.off");
 
     private final @Nullable PressAction action;
     private final ConfigEntry<Boolean> entry;
@@ -20,7 +23,7 @@ public final class ToggleButton extends AbstractWidget implements UpdatableWidge
     }
 
     public ToggleButton(int x, int y, int width, int height, ConfigEntry<Boolean> entry, @Nullable PressAction action) {
-        super(x, y, width, height, entry.value() ? Component.translatable("gui.plasmovoice.on") : Component.translatable("gui.plasmovoice.off"));
+        super(x, y, width, height, entry.value() ? Component.translatable("message.plasmovoice.on") : Component.translatable("message.plasmovoice.off"));
 
         this.entry = entry;
         this.action = action;
@@ -28,14 +31,12 @@ public final class ToggleButton extends AbstractWidget implements UpdatableWidge
 
     public void invertToggle() {
         entry.set(!entry.value());
-        setMessage(getText());
-
         if (action != null) action.onToggle(entry.value());
     }
 
     @Override
-    public void updateValue() {
-        setMessage(getText());
+    public Component getMessage() {
+        return entry.value() ? ON : OFF;
     }
 
     @Override
@@ -64,10 +65,6 @@ public final class ToggleButton extends AbstractWidget implements UpdatableWidge
             blit(poseStack, x, y, 0, 46 + i, 4, 20);
             blit(poseStack, x + 4, y, 196, 46 + i, 4, 20);
         }
-    }
-
-    private Component getText() {
-        return entry.value() ? Component.translatable("gui.plasmovoice.on") : Component.translatable("gui.plasmovoice.off");
     }
 
     public interface PressAction {

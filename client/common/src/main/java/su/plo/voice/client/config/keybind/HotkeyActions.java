@@ -5,11 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
+import su.plo.voice.chat.Text;
+import su.plo.voice.client.MinecraftClientLib;
 import su.plo.voice.client.config.ClientConfig;
 
 @RequiredArgsConstructor
 public final class HotkeyActions {
 
+    private final MinecraftClientLib minecraft;
     private final KeyBindings keyBindings;
     private final ClientConfig config;
 
@@ -21,6 +24,24 @@ public final class HotkeyActions {
         setHotkeyAction(
                 "key.plasmovoice.general.disable_voice",
                 createConfigToggleAction(config.getVoice().getDisabled())
+        );
+
+        setHotkeyAction(
+                "key.plasmovoice.occlusion.toggle",
+                createKeyDownAction(() -> {
+                    ConfigEntry<Boolean> entry = config.getVoice().getSoundOcclusion();
+                    entry.set(!entry.value());
+
+                    minecraft.getClientPlayer()
+                            .ifPresent(player -> { // lambdas hell
+                                player.sendActionbarMessage(Text.translatable(
+                                        "message.plasmovoice.occlusion_changed",
+                                        entry.value()
+                                                ? Text.translatable("message.plasmovoice.on")
+                                                : Text.translatable("message.plasmovoice.off")
+                                ));
+                            });
+                })
         );
     }
 
