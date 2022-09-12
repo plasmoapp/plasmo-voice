@@ -13,7 +13,7 @@ import su.plo.voice.client.gui.widget.KeyBindingWidget;
 
 public abstract class KeyBindingTabWidget extends TabWidget {
 
-    private final KeyBindings keyBindings;
+    protected final KeyBindings keyBindings;
     @Getter
     private KeyBindingWidget focusedBinding;
 

@@ -148,7 +148,7 @@ public final class KeyBindingWidget extends Button implements UpdatableWidget {
     public void renderToolTip(@NotNull PoseStack poseStack, int mouseX, int mouseY) {
         if (parent.getFocusedBinding() == null || !parent.getFocusedBinding().equals(this)) {
             int width = Minecraft.getInstance().font.width(getMessage());
-            if (width > width - 16) {
+            if (width > this.width - 16) {
                 parent.setTooltip(ImmutableList.of(getMessage()));
             }
         }

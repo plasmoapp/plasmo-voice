@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.SerializableConfigEntry;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
@@ -24,17 +25,47 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
     @Setter
     private Map<String, KeyBindingConfigEntry> keyBindings = Maps.newHashMap();
 
+    @Getter
     private final ListMultimap<String, KeyBindingConfigEntry> categoryEntries = Multimaps.newListMultimap(new HashMap<>(), ArrayList::new);
 
     @Getter
     private final Set<KeyBinding.Key> pressedKeys = new HashSet<>();
 
     public ConfigKeyBindings() {
+        // proximity
         register(
                 "key.plasmovoice.proximity.ptt",
-                ImmutableList.of(KeyBinding.Type.KEYSYM.getOrCreate(342)),
-                "gui.plasmovoice.general",
+                ImmutableList.of(KeyBinding.Type.KEYSYM.getOrCreate(342)), // GLFW_KEY_LEFT_ALT
+                "hidden",
                 true
+        );
+
+        // general
+        register(
+                "key.plasmovoice.general.mute_microphone",
+                ImmutableList.of(KeyBinding.Type.KEYSYM.getOrCreate(77)), // GLFW_KEY_M
+                "key.plasmovoice.general",
+                false
+        );
+        register(
+                "key.plasmovoice.general.disable_voice",
+                ImmutableList.of(),
+                "key.plasmovoice.general",
+                false
+        );
+        register(
+                "key.plasmovoice.general.action",
+                ImmutableList.of(KeyBinding.Type.MOUSE.getOrCreate(1)), // GLFW_MOUSE_BUTTON_2
+                "key.plasmovoice.general",
+                false
+        );
+
+        // occlusion
+        register(
+                "key.plasmovoice.occlusion.toggle",
+                ImmutableList.of(),
+                "key.plasmovoice.occlusion",
+                false
         );
     }
 
@@ -76,8 +107,19 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
     }
 
     @Override
-    public Collection<String> getCategories() {
-        return categoryEntries.keys();
+    public Map<String, Collection<KeyBinding>> getCategories() {
+        Map<String, Collection<KeyBinding>> categories = new HashMap<>();
+
+        categoryEntries.asMap().forEach((category, list) -> {
+            categories.put(
+                    category,
+                    list.stream()
+                            .map(ConfigEntry::value)
+                            .collect(Collectors.toList())
+            );
+        });
+
+        return categories;
     }
 
     @Override

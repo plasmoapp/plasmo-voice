@@ -36,7 +36,8 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     private boolean scrolling;
 
     public TabWidget(Minecraft minecraft, VoiceSettingsScreen parent) {
-        super(minecraft, parent.width, parent.height, parent.getHeaderHeight() + 4, parent.height - 4, 24);
+        super(minecraft, parent.width, parent.height, 0, 0, 24);
+
         this.parent = parent;
         this.setRenderBackground(false);
         this.setRenderHeader(false, 0);
@@ -52,91 +53,8 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     }
 
     @Override
-    protected int getScrollbarPosition() {
-        return super.getScrollbarPosition() + 40;
-    }
-
-    @Override
     public int getRowWidth() {
         return 302;
-    }
-
-    @Override
-    protected int getMaxPosition() {
-        int height = 0;
-
-        for (Entry entry : children()) {
-            height += entry.getHeight();
-        }
-
-        return height + this.headerHeight;
-    }
-
-    @Override
-    protected void centerScrollOn(Entry entry) {
-        int height = 0;
-        for (Entry e : children()) {
-            if (e == entry) {
-                break;
-            }
-
-            height += e.getHeight();
-        }
-
-        this.setScrollAmount((double) (height + entry.getHeight() / 2 - (this.y1 - this.y0) / 2));
-    }
-
-    private void scroll(int amount) {
-        this.setScrollAmount(this.getScrollAmount() + (double) amount);
-    }
-
-    @Override
-    protected void ensureVisible(Entry entry) {
-        int i = this.getRowTop(this.children().indexOf(entry));
-        // todo wtf how it works pepega
-        int j = i - this.y0 - 4 - this.itemHeight;
-        if (j < 0) {
-            this.scroll(j);
-        }
-
-        int k = this.y1 - i - this.itemHeight - this.itemHeight;
-        if (k < 0) {
-            this.scroll(-k);
-        }
-    }
-
-    @Override
-    protected int getRowTop(int index) {
-        int height = 0;
-        for (int i = 0; i < index; i++) {
-            height += children().get(i).getHeight();
-        }
-
-        return this.y0 + 4 - (int) this.getScrollAmount() + height + this.headerHeight;
-    }
-
-    private int getRowBottom(int index) {
-        return this.getRowTop(index) + children().get(index).getHeight();
-    }
-
-    private Entry getDynamicEntryAtPosition(double x, double y) {
-        int i = this.getRowWidth() / 2;
-        int j = this.x0 + this.width / 2;
-        int k = j - i;
-        int l = j + i;
-        int m = Mth.floor(y - (double) this.y0) - this.headerHeight + (int) this.getScrollAmount() - 4;
-        if (x < (double) this.getScrollbarPosition() && x >= (double) k && x <= (double) l) {
-            int top = 0;
-            for (Entry entry : children()) {
-                if (m >= top && m <= top + entry.getHeight()) {
-                    return entry;
-                }
-
-                top += entry.getHeight();
-            }
-        }
-
-        return null;
     }
 
     @Override
@@ -148,6 +66,8 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     // todo fix drag out the slider not playing a sound
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        updateY();
+        
         Entry entry = this.getDynamicEntryAtPosition(mouseX, mouseY);
 
         for (Entry e : children()) {
@@ -181,7 +101,7 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
                     return true;
                 }
             } else if (button == 0) {
-                this.clickedHeader((int) (mouseX - (double) (this.x0 + this.width / 2 - this.getRowWidth() / 2)), (int) (mouseY - (double) this.y0) + (int) this.getScrollAmount() - 4);
+                this.clickedHeader((int) (mouseX - (double) (this.x0 + this.width / 2 - this.getRowWidth() / 2)), (int) (mouseY - (double) y0) + (int) this.getScrollAmount() - 4);
                 return true;
             }
 
@@ -191,6 +111,8 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        updateY();
+
         Entry entry = this.getDynamicEntryAtPosition(mouseX, mouseY);
 
         for (Entry e : children()) {
@@ -205,18 +127,79 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     }
 
     @Override
+    public int getRowLeft() {
+        return super.getRowLeft();
+    }
+
+    @Override
+    protected int getScrollbarPosition() {
+        return super.getScrollbarPosition() + 40;
+    }
+
+    @Override
+    protected int getMaxPosition() {
+        int height = 0;
+
+        for (Entry entry : children()) {
+            height += entry.getHeight();
+        }
+
+        return height + this.headerHeight;
+    }
+
+    @Override
+    protected void centerScrollOn(Entry entry) {
+        int height = 0;
+        for (Entry e : children()) {
+            if (e == entry) {
+                break;
+            }
+
+            height += e.getHeight();
+        }
+
+        updateY();
+        this.setScrollAmount((double) (height + entry.getHeight() / 2 - (y1 - y0) / 2));
+    }
+
+    @Override
+    protected void ensureVisible(Entry entry) {
+        updateY();
+
+        int i = this.getRowTop(this.children().indexOf(entry));
+        // todo wtf how it works pepega
+        int j = i - y0 - 4 - this.itemHeight;
+        if (j < 0) {
+            this.scroll(j);
+        }
+
+        int k = y1 - i - this.itemHeight - this.itemHeight;
+        if (k < 0) {
+            this.scroll(-k);
+        }
+    }
+
+    @Override
+    protected int getRowTop(int index) {
+        int height = 0;
+        for (int i = 0; i < index; i++) {
+            height += children().get(i).getHeight();
+        }
+
+        updateY();
+        return y0 + 4 - (int) this.getScrollAmount() + height + this.headerHeight;
+    }
+
+    @Override
     protected void updateScrollingState(double mouseX, double mouseY, int button) {
         this.scrolling = button == 0 && mouseX >= (double) this.getScrollbarPosition() && mouseX < (double) (this.getScrollbarPosition() + 6);
         super.updateScrollingState(mouseX, mouseY, button);
     }
 
     @Override
-    public int getRowLeft() {
-        return super.getRowLeft();
-    }
-
-    @Override
     protected void renderList(@NotNull PoseStack poseStack, int x, int y, int mouseX, int mouseY, float delta) {
+        updateY();
+
         int i = this.getItemCount();
         Tesselator tessellator = Tesselator.getInstance();
         BufferBuilder bufferBuilder = tessellator.getBuilder();
@@ -225,7 +208,7 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
         for (int j = 0; j < i; ++j) {
             int k = this.getRowTop(j);
             int l = this.getRowBottom(j);
-            if (l >= this.y0 && k <= this.y1) {
+            if (l >= y0 && k <= y1) {
                 Entry entry = this.getEntry(j);
                 int m = y + height + this.headerHeight;
                 int n = entry.getHeight() - 4;
@@ -263,9 +246,10 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     }
 
     @Override
-    public void render(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        this.hoveredEntry = this.isMouseOver(mouseX, mouseY) ? this.getDynamicEntryAtPosition(mouseX, mouseY) : null;
-        super.render(matrices, mouseX, mouseY, delta);
+    public void render(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {
+        updateY();
+        this.hoveredEntry = isMouseOver(mouseX, mouseY) ? this.getDynamicEntryAtPosition(mouseX, mouseY) : null;
+        super.render(poseStack, mouseX, mouseY, delta);
     }
 
     public void init() {
@@ -273,6 +257,41 @@ public abstract class TabWidget extends ContainerObjectSelectionList<TabWidget.E
     }
 
     public void removed() {
+    }
+
+    private void scroll(int amount) {
+        this.setScrollAmount(this.getScrollAmount() + (double) amount);
+    }
+
+    private int getRowBottom(int index) {
+        return this.getRowTop(index) + children().get(index).getHeight();
+    }
+
+    private Entry getDynamicEntryAtPosition(double x, double y) {
+        updateY();
+
+        int i = this.getRowWidth() / 2;
+        int j = this.x0 + this.width / 2;
+        int k = j - i;
+        int l = j + i;
+        int m = Mth.floor(y - (double) y0) - this.headerHeight + (int) this.getScrollAmount() - 4;
+        if (x < (double) this.getScrollbarPosition() && x >= (double) k && x <= (double) l) {
+            int top = 0;
+            for (Entry entry : children()) {
+                if (m >= top && m <= top + entry.getHeight()) {
+                    return entry;
+                }
+
+                top += entry.getHeight();
+            }
+        }
+
+        return null;
+    }
+    
+    private void updateY() {
+        this.y0 = parent.getNavigation().getHeight() + 4;
+        this.y1 = parent.height - 4;
     }
 
     protected OptionEntry<ToggleButton> createToggleEntry(@NotNull String translatable,

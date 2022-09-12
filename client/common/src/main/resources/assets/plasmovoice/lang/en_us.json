@@ -1,4 +1,21 @@
 {
+    "key.plasmovoice.settings": "Voice Settings",
+
+    "key.plasmovoice.proximity": "Proximity",
+
+    "key.plasmovoice.general": "General",
+    "key.plasmovoice.general.mute_microphone": "Mute Microphone",
+    "key.plasmovoice.general.disable_voice": "Disable Voice Chat",
+    "key.plasmovoice.general.action": "Action Button",
+
+    "key.plasmovoice.distance": "%s Voice Distance",
+    "key.plasmovoice.distance.increase": "Increase Voice Distance",
+    "key.plasmovoice.distance.decrease": "Decrease Voice Distance",
+
+    "key.plasmovoice.occlusion": "Sound Occlusion",
+    "key.plasmovoice.occlusion.toggle": "Toggle Sound Occlusion",
+
+
     "gui.plasmovoice.title": "%s %s Settings",
 
     "gui.plasmovoice.toggle.microphone": "Toggle Microphone",
@@ -81,11 +98,8 @@
     "gui.plasmovoice.activation.toggle_button": "Toggle Button",
     "gui.plasmovoice.activation.distance": "%s Distance",
 
-    "gui.plasmovoice.proximity": "Proximity",
-
 
     "gui.plasmovoice.advanced": "Advanced",
-
 
     "gui.plasmovoice.advanced.icons": "Icons",
     "gui.plasmovoice.advanced.show_icons": "Show Icons",
@@ -132,5 +146,7 @@
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_4": "",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_5": "When this option is enabled, stereo sources are converted to the",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_6": "usual mono sources. Quality is worse, but they will now have",
-    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "panning."
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "panning.",
+
+    "gui.plasmovoice.hotkeys": "Hotkeys"
 }

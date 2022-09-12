@@ -21,6 +21,7 @@ import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 
 import java.io.File;
@@ -68,6 +69,9 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         this.deviceManager = new VoiceDeviceManager(this, config);
         this.audioCapture = new VoiceAudioCapture(this, config);
+
+        // hotkey actions
+        new HotkeyActions(getKeyBindings(), config).register();
 
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }

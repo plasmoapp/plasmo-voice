@@ -85,7 +85,7 @@ public final class DropDownWidget extends AbstractWidget implements Widget, Narr
 
         if (open) {
             if ((y + height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) &&
-                    (parent.getHeaderHeight() + height + 1 + (elements.size() * (elementHeight + 1)) < client.getWindow().getGuiScaledHeight())) {
+                    (parent.getNavigation().getHeight() + height + 1 + (elements.size() * (elementHeight + 1)) < client.getWindow().getGuiScaledHeight())) {
                 int elementY = y + 1 - (elements.size() * (elementHeight + 1));
 
                 for (Component element : elements) {

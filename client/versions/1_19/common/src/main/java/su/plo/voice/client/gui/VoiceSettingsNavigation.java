@@ -1,12 +1,14 @@
 package su.plo.voice.client.gui;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.*;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.events.GuiEventListener;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -21,8 +23,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static net.minecraft.client.gui.GuiComponent.BACKGROUND_LOCATION;
+
 public final class VoiceSettingsNavigation {
 
+    private final Minecraft minecraft;
     private final VoiceSettingsScreen parent;
     private final ClientConfig config;
 
@@ -36,6 +41,7 @@ public final class VoiceSettingsNavigation {
     private List<Button> disableVoiceButtons;
 
     public VoiceSettingsNavigation(Minecraft minecraft, VoiceSettingsScreen parent, ClientConfig config) {
+        this.minecraft = minecraft;
         this.parent = parent;
         this.config = config;
         this.aboutWidget = new AboutTabWidget(minecraft, parent);
@@ -68,10 +74,56 @@ public final class VoiceSettingsNavigation {
 
     public Optional<TabWidget> getActiveTab() {
         return active < 0
-                ? Optional.ofNullable(aboutWidget)
+                ? Optional.of(aboutWidget)
                 : tabWidgets.size() > 0
                 ? Optional.of(tabWidgets.get(active))
                 : Optional.empty();
+    }
+
+    public int getHeight() {
+        if (isMinimized()) {
+            return 36 + (getLines() * 28);
+        } else {
+            return 36;
+        }
+    }
+
+    public boolean isMinimized() {
+        int titleWidth = 14 + minecraft.font.width(parent.getTitle()) + 4;
+
+        int buttonsWidth = getButtonsWidth();
+        int buttonX = (parent.getWidth() / 2) - (buttonsWidth / 2);
+
+        if (buttonX < titleWidth) return true;
+
+        int disableButtonsWidth = 14 + 48; // 48 = 20 + 4 + 20 + 4
+
+        return (titleWidth + buttonsWidth + disableButtonsWidth) > parent.getWidth();
+    }
+
+    public int getLines() {
+        int buttonX = 14;
+        int lines = 1;
+
+        for (Button button : tabButtons) {
+            if (buttonX + button.getWidth() > parent.getWidth() - 14) {
+                buttonX = 14;
+                lines++;
+            }
+
+            buttonX += button.getWidth() + 4;
+        }
+
+        return lines;
+    }
+
+    public int getButtonsWidth() {
+        int width = tabButtons.stream()
+                .map(Button::getWidth)
+                .reduce(0, Integer::sum);
+        width += (tabButtons.size() - 1) * 4;
+
+        return width;
     }
 
     public List<? extends GuiEventListener> children() {
@@ -245,11 +297,8 @@ public final class VoiceSettingsNavigation {
         int buttonX = 14;
         int buttonY = 36;
 
-        if (parent.isHeaderMinimized()) {
-            int buttonsWidth = (tabButtons.size() - 1) * 4;
-            for (Button button : tabButtons) {
-                buttonsWidth += button.getWidth();
-            }
+        if (!isMinimized()) {
+            int buttonsWidth = getButtonsWidth();
 
             buttonX = (parent.getWidth() / 2) - (buttonsWidth / 2);
             buttonY = 8;
@@ -258,6 +307,11 @@ public final class VoiceSettingsNavigation {
         for (int i = 0; i < tabButtons.size(); i++) {
             Button button = tabButtons.get(i);
             button.active = active == -1 || i != active;
+
+            if (buttonX + button.getWidth() > parent.getWidth() - 14) {
+                buttonX = 14;
+                buttonY += 26;
+            }
 
             button.x = buttonX;
             buttonX += button.getWidth() + 4;
@@ -268,13 +322,75 @@ public final class VoiceSettingsNavigation {
             button.render(poseStack, mouseX, mouseY, delta);
         }
 
-        for (Button button : this.disableMicrophoneButtons) {
+        for (Button button : disableMicrophoneButtons) {
             button.render(poseStack, mouseX, mouseY, delta);
         }
 
-        for (Button button : this.disableVoiceButtons) {
+        for (Button button : disableVoiceButtons) {
             button.render(poseStack, mouseX, mouseY, delta);
         }
+    }
+
+    public void renderBackground() {
+        int width = parent.getWidth();
+        int height = getHeight();
+
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder bufferBuilder = tesselator.getBuilder();
+        RenderSystem.setShader(GameRenderer::getPositionTexColorShader);
+        RenderSystem.setShaderTexture(0, BACKGROUND_LOCATION);
+        RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
+
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+        bufferBuilder
+                .vertex(0.0D, height, 0.0D)
+                .uv(0.0F, (float) height / 32.0F + 0)
+                .color(64, 64, 64, 255)
+                .endVertex();
+        bufferBuilder
+                .vertex(width, height, 0.0D)
+                .uv((float) width / 32.0F, (float) height / 32.0F + 0)
+                .color(64, 64, 64, 255)
+                .endVertex();
+        bufferBuilder
+                .vertex(width, 0.0D, 0.0D)
+                .uv((float) width / 32.0F, 0)
+                .color(64, 64, 64, 255)
+                .endVertex();
+        bufferBuilder
+                .vertex(0.0D, 0.0D, 0.0D)
+                .uv(0.0F, 0)
+                .color(64, 64, 64, 255)
+                .endVertex();
+        tesselator.end();
+
+
+        RenderSystem.depthFunc(515);
+        RenderSystem.disableDepthTest();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE_MINUS_SRC_ALPHA,
+                GlStateManager.SourceFactor.ZERO, GlStateManager.DestFactor.ONE);
+        RenderSystem.disableTexture();
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        bufferBuilder
+                .vertex(0, height + 4, 0.0D)
+                .color(0, 0, 0, 0)
+                .endVertex();
+        bufferBuilder
+                .vertex(width, height + 4, 0.0D)
+                .color(0, 0, 0, 0)
+                .endVertex();
+        bufferBuilder
+                .vertex(width, height, 0.0D)
+                .color(0, 0, 0, 255)
+                .endVertex();
+        bufferBuilder
+                .vertex(0, height, 0.0D)
+                .color(0, 0, 0, 255)
+                .endVertex();
+        tesselator.end();
     }
 
     public void renderTab(@NotNull PoseStack poseStack, int mouseX, int mouseY, float delta) {

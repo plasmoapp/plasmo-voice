@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface KeyBindings {
@@ -16,5 +17,5 @@ public interface KeyBindings {
 
     void resetStates();
 
-    Collection<String> getCategories();
+    Map<String, Collection<KeyBinding>> getCategories();
 }
