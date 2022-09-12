@@ -20,7 +20,7 @@ public final class VoiceActivationManager implements ActivationManager {
         this.players = players;
         this.proximityActivation = new VoiceServerActivation(
                 VoiceActivation.PROXIMITY_NAME,
-                "gui.plasmovoice.proximity",
+                "key.plasmovoice.proximity",
                 "plasmovoice:textures/icons/microphone.png",
                 "plasmovoice:textures/icons/speaker.png",
                 voiceConfig.getDistances(),
