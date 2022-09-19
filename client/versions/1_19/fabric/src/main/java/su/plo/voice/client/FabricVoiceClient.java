@@ -17,7 +17,8 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.client.connection.FabricClientChannelHandler;
-import su.plo.voice.client.gui.VoiceSettingsScreen;
+import su.plo.voice.client.gui.ScreenContainer;
+import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.render.HudIconRenderer;
 
 import java.io.File;
@@ -50,15 +51,25 @@ public final class FabricVoiceClient extends ModVoiceClient implements ClientMod
                         "Plasmo Voice"
                 )
         );
+
+        var fakeMenuKey = KeyBindingHelper.registerKeyBinding(
+                new KeyMapping(
+                        "PV settings 2",
+                        InputConstants.Type.KEYSYM,
+                        GLFW.GLFW_KEY_B,
+                        "Plasmo Voice"
+                )
+        );
         ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
             final LocalPlayer player = minecraft.player;
             if (player == null) return;
 
             if (menuKey.consumeClick()) {
-                if (minecraft.screen instanceof VoiceSettingsScreen) {
-                    minecraft.setScreen(null);
+                Optional<ScreenContainer> screen = minecraftLib.getScreen();
+                if (screen.isPresent() && screen.get().get() instanceof VoiceSettingsScreen) {
+                    minecraftLib.setScreen(null);
                 } else {
-                    minecraft.setScreen(new VoiceSettingsScreen(minecraft, this, config));
+                    minecraftLib.setScreen(new VoiceSettingsScreen(minecraftLib, this, config));
                 }
             }
         });

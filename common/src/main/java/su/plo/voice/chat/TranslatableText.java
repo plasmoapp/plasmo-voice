@@ -2,9 +2,11 @@ package su.plo.voice.chat;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @RequiredArgsConstructor
-public final class TranslatableText extends Text {
+@ToString
+public final class TranslatableText extends TextComponent {
 
     @Getter
     private final String key;

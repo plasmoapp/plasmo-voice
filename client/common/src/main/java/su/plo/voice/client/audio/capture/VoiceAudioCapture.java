@@ -6,6 +6,7 @@ import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -37,6 +38,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
+    private final MinecraftClientLib minecraft;
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;
     private final ClientConfig config;
@@ -55,8 +57,10 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     private long sequenceNumber;
 
-    public VoiceAudioCapture(@NotNull PlasmoVoiceClient voiceClient,
+    public VoiceAudioCapture(@NotNull MinecraftClientLib minecraft,
+                             @NotNull PlasmoVoiceClient voiceClient,
                              @NotNull ClientConfig config) {
+        this.minecraft = minecraft;
         this.voiceClient = voiceClient;
         this.devices = voiceClient.getDeviceManager();
         this.config = config;
@@ -192,6 +196,7 @@ public final class VoiceAudioCapture implements AudioCapture {
         }
 
         this.proximityActivation = new VoiceClientActivation(
+                minecraft,
                 config,
                 proximityConfig,
                 serverInfo.getVoiceInfo().getProximityActivation()
@@ -207,6 +212,7 @@ public final class VoiceAudioCapture implements AudioCapture {
             );
 
             ClientActivation activation = new VoiceClientActivation(
+                    minecraft,
                     config,
                     activationConfig,
                     serverActivation

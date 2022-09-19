@@ -1,0 +1,76 @@
+package su.plo.voice.lib.client;
+
+import lombok.Getter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.Nullable;
+import su.plo.lib.client.MinecraftClientLib;
+import su.plo.lib.client.gui.MinecraftFont;
+import su.plo.lib.client.gui.screen.GuiScreen;
+import su.plo.lib.client.locale.MinecraftLanguage;
+import su.plo.lib.client.render.MinecraftTesselator;
+import su.plo.lib.client.render.MinecraftWindow;
+import su.plo.lib.client.sound.MinecraftSoundManager;
+import su.plo.voice.chat.ComponentTextConverter;
+import su.plo.voice.chat.TextConverter;
+import su.plo.voice.client.gui.ScreenContainer;
+import su.plo.voice.client.player.ClientPlayer;
+import su.plo.voice.client.player.ModClientPlayer;
+import su.plo.voice.lib.client.gui.ModFontWrapper;
+import su.plo.voice.lib.client.gui.ModScreenWrapper;
+import su.plo.voice.lib.client.locale.ModLanguageWrapper;
+import su.plo.voice.lib.client.render.ModTesselator;
+import su.plo.voice.lib.client.render.ModWindow;
+import su.plo.voice.lib.client.sound.ModSoundManager;
+import su.plo.voice.lib.client.texture.ResourceCache;
+
+import java.util.Optional;
+
+public final class ModClientLib implements MinecraftClientLib {
+
+    private final Minecraft minecraft = Minecraft.getInstance();
+
+    @Getter
+    private final TextConverter<Component> textConverter = new ComponentTextConverter();
+    @Getter
+    private final MinecraftFont font = new ModFontWrapper(textConverter);
+    @Getter
+    private final MinecraftLanguage language = new ModLanguageWrapper();
+    @Getter
+    private final MinecraftSoundManager soundManager = new ModSoundManager();
+    @Getter
+    private final MinecraftTesselator tesselator = new ModTesselator();
+    @Getter
+    private final MinecraftWindow window = new ModWindow();
+
+    @Getter
+    private final ResourceCache resources = new ResourceCache();
+
+    @Override
+    public Optional<ClientPlayer> getClientPlayer() {
+        if (minecraft.player == null) return Optional.empty();
+
+        return Optional.of(new ModClientPlayer(minecraft.player, textConverter));
+    }
+
+    @Override
+    public Optional<ScreenContainer> getScreen() {
+        if (minecraft.screen == null)
+            return Optional.empty();
+
+        return Optional.of(new ScreenContainer(minecraft.screen));
+    }
+
+    @Override
+    public void setScreen(@Nullable GuiScreen screen) {
+        if (screen == null) {
+            minecraft.setScreen(null);
+            return;
+        }
+
+        screen.setMinecraftScreen(new ModScreenWrapper(this, screen));
+
+        minecraft.setScreen((Screen) screen.getMinecraftScreen());
+    }
+}

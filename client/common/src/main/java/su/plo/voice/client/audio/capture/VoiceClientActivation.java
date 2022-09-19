@@ -5,9 +5,11 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.Config;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.util.AudioUtil;
+import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
@@ -23,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Config
 public final class VoiceClientActivation extends VoiceActivation implements ClientActivation {
 
+    private final MinecraftClientLib minecraft;
     private final ClientConfig config;
 
     private final IntConfigEntry configDistance;
@@ -32,6 +35,9 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     private final KeyBindingConfigEntry pttKey;
     private final KeyBindingConfigEntry toggleKey;
 
+    private final KeyBindingConfigEntry distanceIncreaseKey;
+    private final KeyBindingConfigEntry distanceDecreaseKey;
+
     private final AtomicBoolean disabled = new AtomicBoolean(false);
 
     @Getter
@@ -39,7 +45,8 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     @Getter
     private long lastActivation;
 
-    public VoiceClientActivation(@NotNull ClientConfig config,
+    public VoiceClientActivation(@NotNull MinecraftClientLib minecraft,
+                                 @NotNull ClientConfig config,
                                  @NotNull ConfigClientActivation activationConfig,
                                  @NotNull Activation activation) {
         super(
@@ -52,37 +59,24 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
                 activation.getWeight()
         );
 
+        this.minecraft = minecraft;
         this.config = config;
-        ConfigKeyBindings keyBindings = config.getKeyBindings();
+        ConfigKeyBindings hotKeys = config.getKeyBindings();
 
         // load values from config
         this.configDistance = activationConfig.getConfigDistance();
         this.configType = activationConfig.getConfigType();
         this.configToggle = activationConfig.getConfigToggle();
 
-        // ptt
-        String pttKeyName = "key.plasmovoice." + activation.getName() + ".ptt";
-        Optional<KeyBindingConfigEntry> pttKey = keyBindings.getConfigKeyBinding(pttKeyName);
-        if (!pttKey.isPresent()) {
-            keyBindings.register(pttKeyName, ImmutableList.of(), "hidden", true);
-            pttKey = keyBindings.getConfigKeyBinding(pttKeyName);
-        }
+        this.pttKey = createHotKey(hotKeys, activation, "ptt", true);
+        this.toggleKey = createHotKey(hotKeys, activation, "toggle", false);
 
-        if (pttKey.isPresent()) this.pttKey = pttKey.get();
-        else throw new IllegalStateException("Failed to register ptt keybinding");
+        this.distanceIncreaseKey = createHotKey(hotKeys, activation, "distance_increase", false);
+        this.distanceDecreaseKey = createHotKey(hotKeys, activation, "distance_decrease", false);
 
-        // toggle
-        String toggleKeyname = "key.plasmovoice." + activation.getName() + ".toggle";
-        Optional<KeyBindingConfigEntry> toggleKey = keyBindings.getConfigKeyBinding(toggleKeyname);
-        if (!toggleKey.isPresent()) {
-            keyBindings.register(toggleKeyname, ImmutableList.of(), "hidden", false);
-            toggleKey = keyBindings.getConfigKeyBinding(toggleKeyname);
-        }
-
-        if (toggleKey.isPresent()) this.toggleKey = toggleKey.get();
-        else throw new IllegalStateException("Failed to register toggle keybinding");
-
-        toggleKey.get().value().onPress(this::onTogglePress);
+        toggleKey.value().onPress(this::onToggle);
+        distanceIncreaseKey.value().onPress(this::onDistanceIncrease);
+        distanceDecreaseKey.value().onPress(this::onDistanceDecrease);
     }
 
     @Override
@@ -102,6 +96,24 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     @Override
     public KeyBinding getToggleKey() {
         return toggleKey.value();
+    }
+
+    @Override
+    public KeyBinding getDistanceIncreaseKey() {
+        return distanceIncreaseKey.value();
+    }
+
+    public KeyBindingConfigEntry getDistanceIncreaseConfigEntry() {
+        return distanceIncreaseKey;
+    }
+
+    @Override
+    public KeyBinding getDistanceDecreaseKey() {
+        return distanceDecreaseKey.value();
+    }
+
+    public KeyBindingConfigEntry getDistanceDecreaseConfigEntry() {
+        return distanceDecreaseKey;
     }
 
     public KeyBindingConfigEntry getToggleConfigEntry() {
@@ -182,8 +194,56 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         return Result.NOT_ACTIVATED;
     }
 
-    private void onTogglePress(@NotNull KeyBinding.Action action) {
+    private void onToggle(@NotNull KeyBinding.Action action) {
         if (action != KeyBinding.Action.DOWN || getType() != Type.VOICE) return;
         configToggle.set(!configToggle.value());
+    }
+
+    private void onDistanceIncrease(@NotNull KeyBinding.Action action) {
+        if (action != KeyBinding.Action.DOWN) return;
+
+        int index = (distances.indexOf(getDistance()) + 1) % distances.size();
+        configDistance.set(distances.get(index));
+
+        sendDistanceChangedMessage();
+    }
+
+    private void onDistanceDecrease(@NotNull KeyBinding.Action action) {
+        if (action != KeyBinding.Action.DOWN) return;
+
+        int index = distances.indexOf(getDistance()) - 1;
+        if (index < 0) {
+            index = distances.size() - 1;
+        }
+        configDistance.set(distances.get(index));
+
+        sendDistanceChangedMessage();
+    }
+
+    private void sendDistanceChangedMessage() {
+        minecraft.getClientPlayer()
+                .ifPresent(player -> {
+                    player.sendActionbarMessage(TextComponent.translatable(
+                            "message.plasmovoice.distance_changed",
+                            TextComponent.translatable(translation),
+                            getDistance()
+                    ));
+                });
+    }
+
+    private KeyBindingConfigEntry createHotKey(@NotNull ConfigKeyBindings hotKeys,
+                                               @NotNull Activation activation,
+                                               @NotNull String suffix,
+                                               boolean anyContext) {
+        String keyName = "key.plasmovoice." + activation.getName() + "." + suffix;
+        Optional<KeyBindingConfigEntry> key = hotKeys.getConfigKeyBinding(keyName);
+        if (!key.isPresent()) {
+            hotKeys.register(keyName, ImmutableList.of(), "hidden", anyContext);
+            key = hotKeys.getConfigKeyBinding(keyName);
+        }
+
+        if (!key.isPresent()) throw new IllegalStateException("Failed to register keybinding " + activation.getName() + "." + suffix);
+
+        return key.get();
     }
 }

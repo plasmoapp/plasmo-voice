@@ -2,7 +2,7 @@ package su.plo.voice.client.gui;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.client.gui.screen.GuiScreen;
+import su.plo.lib.client.gui.screen.GuiScreen;
 
 import java.util.Optional;
 

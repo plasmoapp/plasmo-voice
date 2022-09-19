@@ -3,10 +3,10 @@ package su.plo.voice.client.config.keybind;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
-import su.plo.voice.chat.Text;
-import su.plo.voice.client.MinecraftClientLib;
+import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.config.ClientConfig;
 
 @RequiredArgsConstructor
@@ -34,11 +34,11 @@ public final class HotkeyActions {
 
                     minecraft.getClientPlayer()
                             .ifPresent(player -> { // lambdas hell
-                                player.sendActionbarMessage(Text.translatable(
+                                player.sendActionbarMessage(TextComponent.translatable(
                                         "message.plasmovoice.occlusion_changed",
                                         entry.value()
-                                                ? Text.translatable("message.plasmovoice.on")
-                                                : Text.translatable("message.plasmovoice.off")
+                                                ? TextComponent.translatable("message.plasmovoice.on")
+                                                : TextComponent.translatable("message.plasmovoice.off")
                                 ));
                             });
                 })

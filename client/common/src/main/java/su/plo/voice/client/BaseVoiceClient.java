@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
@@ -68,7 +69,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         }
 
         this.deviceManager = new VoiceDeviceManager(this, config);
-        this.audioCapture = new VoiceAudioCapture(this, config);
+        this.audioCapture = new VoiceAudioCapture(getMinecraft(), this, config);
 
         // hotkey actions
         new HotkeyActions(getMinecraft(), getKeyBindings(), config).register();

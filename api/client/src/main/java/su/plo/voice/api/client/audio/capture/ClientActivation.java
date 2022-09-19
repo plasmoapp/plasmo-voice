@@ -12,6 +12,10 @@ public interface ClientActivation extends Activation {
 
     KeyBinding getToggleKey();
 
+    KeyBinding getDistanceIncreaseKey();
+
+    KeyBinding getDistanceDecreaseKey();
+
     /**
      * Sets the activation's disabled state
      *

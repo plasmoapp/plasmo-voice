@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -60,6 +61,10 @@ public final class VoiceKeyBinding implements KeyBinding {
     @Override
     public void onPress(@NotNull OnPress onPress) {
         this.onPress.add(onPress);
+    }
+
+    public @NotNull VoiceKeyBinding copy() {
+        return new VoiceKeyBinding(keyBindings, name, new ArrayList<>(keys), anyContext);
     }
 
     @Override

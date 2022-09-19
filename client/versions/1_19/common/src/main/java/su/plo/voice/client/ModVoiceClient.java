@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.render.DistanceVisualizer;
@@ -13,6 +14,7 @@ import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.source.ModClientSourceManager;
 import su.plo.voice.client.render.VoiceDistanceVisualizer;
+import su.plo.voice.lib.client.ModClientLib;
 
 import java.io.InputStream;
 import java.net.Inet4Address;
@@ -27,7 +29,7 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
 
     protected final String modId = "plasmovoice";
     protected final Minecraft minecraft = Minecraft.getInstance();
-    protected final MinecraftClientLib minecraftLib = new ModMinecraftLib();
+    protected final MinecraftClientLib minecraftLib = new ModClientLib();
 
     protected ClientSourceManager sources;
     protected DistanceVisualizer distanceVisualizer;
