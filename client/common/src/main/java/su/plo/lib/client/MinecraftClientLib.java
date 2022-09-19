@@ -7,6 +7,8 @@ import su.plo.lib.client.gui.screen.GuiScreen;
 import su.plo.lib.client.locale.MinecraftLanguage;
 import su.plo.lib.client.render.MinecraftTesselator;
 import su.plo.lib.client.render.MinecraftWindow;
+import su.plo.lib.client.render.particle.MinecraftParticles;
+import su.plo.lib.client.render.texture.MinecraftPlayerSkins;
 import su.plo.lib.client.sound.MinecraftSoundManager;
 import su.plo.voice.chat.TextConverter;
 import su.plo.voice.client.gui.ScreenContainer;
@@ -33,4 +35,8 @@ public interface MinecraftClientLib {
     @NotNull MinecraftTesselator getTesselator();
 
     @NotNull MinecraftWindow getWindow();
+
+    @NotNull MinecraftParticles getSimpleParticles();
+
+    @NotNull MinecraftPlayerSkins getPlayerSkins();
 }

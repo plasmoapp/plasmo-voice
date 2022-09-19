@@ -28,8 +28,10 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     protected int y;
 
     @Getter
+    @Setter
     protected int width;
     @Getter
+    @Setter
     protected int height;
 
     @Setter

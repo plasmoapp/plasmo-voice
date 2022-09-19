@@ -24,6 +24,8 @@ import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
+import su.plo.voice.client.gui.ScreenContainer;
+import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 import java.io.File;
 import java.io.IOException;
@@ -56,6 +58,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     protected ClientConfig config;
 
+    protected int settingsTab;
+
     protected void onInitialize() {
         try {
             File configFile = new File(configFolder(), "client.toml");
@@ -86,6 +90,25 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         executor.shutdown();
 
         getEventBus().call(new VoiceClientShutdownEvent(this));
+    }
+
+    protected void openSettings() {
+        MinecraftClientLib minecraft = getMinecraft();
+
+        Optional<ScreenContainer> screen = minecraft.getScreen();
+        if (screen.isPresent() && screen.get().get() instanceof VoiceSettingsScreen) {
+            minecraft.setScreen(null);
+        } else {
+            minecraft.setScreen(new VoiceSettingsScreen(
+                    minecraft,
+                    this,
+                    config,
+                    settingsTab,
+                    (tab) -> {
+                        if (tab >= 0) this.settingsTab = tab;
+                    }
+            ));
+        }
     }
 
     @Override

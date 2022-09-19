@@ -27,6 +27,8 @@ import su.plo.voice.lib.client.render.ModShaders;
 import su.plo.voice.lib.client.render.ModVertexBuilder;
 import su.plo.voice.lib.client.texture.ResourceCache;
 
+import java.util.Iterator;
+import java.util.List;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
@@ -204,6 +206,19 @@ public final class ModGuiRender implements GuiRender {
     @Override
     public int drawString(TextComponent text, int x, int y, int color) {
         return minecraft.font.drawShadow(matrix.getPoseStack(), textConverter.convert(text), (float)x, (float)y, color);
+    }
+
+    @Override
+    public int drawStringMultiLine(TextComponent text, int x, int y, int color, int width) {
+        List<FormattedCharSequence> lines = minecraft.font.split(textConverter.convert(text), width);
+        int lineHeight = minecraft.font.lineHeight;
+
+        for (Iterator<FormattedCharSequence> var7 = lines.iterator(); var7.hasNext(); y += lineHeight) {
+            FormattedCharSequence orderedText = var7.next();
+            minecraft.font.drawShadow(matrix.getPoseStack(), orderedText, x, (float) (y - lineHeight - 1), -8355712);
+        }
+
+        return lines.size();
     }
 
     @Override
@@ -392,6 +407,11 @@ public final class ModGuiRender implements GuiRender {
     @Override
     public void depthFunc(int func) {
         RenderSystem.depthFunc(func);
+    }
+
+    @Override
+    public void depthMask(boolean mask) {
+        RenderSystem.depthMask(mask);
     }
 
     @Override

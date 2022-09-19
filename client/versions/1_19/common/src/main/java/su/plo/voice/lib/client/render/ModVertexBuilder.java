@@ -3,6 +3,7 @@ package su.plo.voice.lib.client.render;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.VertexFormat;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,6 +23,7 @@ public final class ModVertexBuilder implements VertexBuilder {
         };
     }
 
+    @Getter
     private final BufferBuilder builder;
 
     @Override

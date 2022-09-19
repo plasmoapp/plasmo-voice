@@ -33,10 +33,10 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
 
-    public TabWidget(MinecraftClientLib minecraft,
-                     VoiceSettingsScreen parent,
-                     PlasmoVoiceClient voiceClient,
-                     ClientConfig config) {
+    public TabWidget(@NotNull MinecraftClientLib minecraft,
+                     @NotNull VoiceSettingsScreen parent,
+                     @NotNull PlasmoVoiceClient voiceClient,
+                     @NotNull ClientConfig config) {
         super(
                 minecraft,
                 parent,

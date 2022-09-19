@@ -2,42 +2,59 @@ package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiRender;
 import su.plo.lib.client.gui.components.Button;
 import su.plo.lib.client.gui.components.IconButton;
 import su.plo.lib.client.gui.widget.GuiWidgetListener;
+import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.chat.TextComponent;
 import su.plo.voice.chat.TextStyle;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 import static su.plo.lib.client.gui.widget.GuiWidget.BACKGROUND_LOCATION;
 
 public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
     private final MinecraftClientLib minecraft;
+    private final PlasmoVoiceClient voiceClient;
     private final VoiceSettingsScreen parent;
     private final ClientConfig config;
+    private final Consumer<Integer> onTabChange;
 
     private final List<Button> disableMicrophoneButtons = Lists.newArrayList();
     private final List<Button> disableVoiceButtons = Lists.newArrayList();
     private final List<TabWidget> tabWidgets = Lists.newArrayList();
     private final List<Button> tabButtons = Lists.newArrayList();
+    @Nullable
+    private AboutTabWidget aboutTabWidget;
 
+    @Getter
     private int active;
 
     public VoiceSettingsNavigation(@NotNull MinecraftClientLib minecraft,
+                                   @NotNull PlasmoVoiceClient voiceClient,
                                    @NotNull VoiceSettingsScreen parent,
-                                   @NotNull ClientConfig config) {
+                                   @NotNull ClientConfig config,
+                                   int tab,
+                                   @NotNull Consumer<Integer> onTabChange) {
         this.minecraft = minecraft;
+        this.voiceClient = voiceClient;
         this.parent = parent;
         this.config = config;
+
+        this.active = tab;
+        this.onTabChange = onTabChange;
     }
 
     // GuiWidgetEventListener impl
@@ -72,6 +89,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     }
 
     public void init() {
+        this.aboutTabWidget = new AboutTabWidget(minecraft, parent, voiceClient, config);
+
         disableMicrophoneButtons.clear();
         disableVoiceButtons.clear();
 
@@ -217,7 +236,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     }
 
     public void removed() {
-        // todo: aboutWidget::removed
+        if (aboutTabWidget != null) aboutTabWidget.removed();
         tabWidgets.forEach(TabWidget::removed);
     }
 
@@ -304,6 +323,22 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         render.defaultBlendFunc();
     }
 
+    public void openTab(int index) {
+        getActiveTab().ifPresent((widget) -> {
+            widget.removed();
+            parent.removeWidget(widget);
+        });
+
+        active = index;
+
+        getActiveTab().ifPresent((widget) -> {
+            widget.init();
+            parent.addWidget(widget);
+        });
+
+        onTabChange.accept(index);
+    }
+
     public void addTab(@NotNull TextComponent name, @NotNull TabWidget tabWidget) {
         int elementIndex = tabWidgets.size();
         Button tabButton = new Button(
@@ -314,19 +349,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 20,
                 name,
                 (btn) -> {
-                    getActiveTab().ifPresent((widget) -> {
-                        widget.removed();
-                        parent.removeWidget(widget);
-                    });
-
-                    active = elementIndex;
-//                    aboutWidget.setScrollAmount(0);
-
-                    getActiveTab().ifPresent((widget) -> {
-                        widget.init();
-                        parent.addWidget(widget);
-                    });
-
+                    openTab(elementIndex);
                     // todo: disable mic test
                 }, Button.NO_TOOLTIP);
 
@@ -343,7 +366,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
     public Optional<TabWidget> getActiveTab() {
         return active < 0
-                ? Optional.empty() // todo: Optional.of(aboutWidget)
+                ? Optional.ofNullable(aboutTabWidget)
                 : tabWidgets.size() > 0
                 ? Optional.of(tabWidgets.get(active))
                 : Optional.empty();

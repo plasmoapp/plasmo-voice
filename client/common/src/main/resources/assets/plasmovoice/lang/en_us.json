@@ -145,7 +145,19 @@
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_6": "usual mono sources. Quality is worse, but they will now have",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "panning.",
 
+
     "gui.plasmovoice.hotkeys": "Hotkeys",
+
+
+    "gui.plasmovoice.about.made_by": "%s is made by",
+    "gui.plasmovoice.about.huix": "Concept & Design",
+    "gui.plasmovoice.about.programming": "Programming",
+    "gui.plasmovoice.about.artist": "Artist",
+    "gui.plasmovoice.about.contributor": "Contributor",
+    "gui.plasmovoice.about.translator": "%s translator",
+
+    "gui.plasmovoice.about.links": "%s on",
+    "gui.plasmovoice.about.copyright": "Please use only official sources and don’t redistribute the mod without our permission",
 
 
     "message.plasmovoice.on": "On",

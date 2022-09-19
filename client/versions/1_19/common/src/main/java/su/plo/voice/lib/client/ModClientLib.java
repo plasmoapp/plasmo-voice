@@ -11,6 +11,8 @@ import su.plo.lib.client.gui.screen.GuiScreen;
 import su.plo.lib.client.locale.MinecraftLanguage;
 import su.plo.lib.client.render.MinecraftTesselator;
 import su.plo.lib.client.render.MinecraftWindow;
+import su.plo.lib.client.render.particle.MinecraftParticles;
+import su.plo.lib.client.render.texture.MinecraftPlayerSkins;
 import su.plo.lib.client.sound.MinecraftSoundManager;
 import su.plo.voice.chat.ComponentTextConverter;
 import su.plo.voice.chat.TextConverter;
@@ -22,6 +24,8 @@ import su.plo.voice.lib.client.gui.ModScreenWrapper;
 import su.plo.voice.lib.client.locale.ModLanguageWrapper;
 import su.plo.voice.lib.client.render.ModTesselator;
 import su.plo.voice.lib.client.render.ModWindow;
+import su.plo.voice.lib.client.render.particle.ModSimpleParticles;
+import su.plo.voice.lib.client.render.texture.ModPlayerSkins;
 import su.plo.voice.lib.client.sound.ModSoundManager;
 import su.plo.voice.lib.client.texture.ResourceCache;
 
@@ -43,6 +47,10 @@ public final class ModClientLib implements MinecraftClientLib {
     private final MinecraftTesselator tesselator = new ModTesselator();
     @Getter
     private final MinecraftWindow window = new ModWindow();
+    @Getter
+    private final MinecraftParticles simpleParticles = new ModSimpleParticles();
+    @Getter
+    private final MinecraftPlayerSkins playerSkins = new ModPlayerSkins();
 
     @Getter
     private final ResourceCache resources = new ResourceCache();

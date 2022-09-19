@@ -252,8 +252,6 @@ public final class ClientConfig {
             private Map<String, DoubleConfigEntry> map = Maps.newHashMap();
 
             public CategoryVolumes() {
-                setVolume("general", 1D);
-                setVolume("priority", 1D);
             }
 
             public synchronized void setVolume(@NotNull String category, double volume) {

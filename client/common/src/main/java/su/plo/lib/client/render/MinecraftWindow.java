@@ -1,6 +1,12 @@
 package su.plo.lib.client.render;
 
+import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
+
 public interface MinecraftWindow {
+
+    void openLink(@NotNull String link, boolean trusted, @NotNull Consumer<Boolean> onConfirm);
 
     int getWidth();
 

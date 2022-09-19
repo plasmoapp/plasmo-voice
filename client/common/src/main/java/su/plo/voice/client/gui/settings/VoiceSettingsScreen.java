@@ -21,6 +21,7 @@ import su.plo.voice.client.gui.settings.tab.HotKeysTabWidget;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
@@ -30,21 +31,32 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     private final TextComponent title;
     @Getter
     private final VoiceSettingsNavigation navigation;
+    private final VoiceSettingsAboutFeature aboutFeature;
     private final MicrophoneTestController testController;
 
+    @Getter
     private int titleWidth;
     @Setter
     private List<TextComponent> tooltip;
 
     public VoiceSettingsScreen(@NotNull MinecraftClientLib minecraft,
                                @NotNull PlasmoVoiceClient voiceClient,
-                               @NotNull ClientConfig config) {
+                               @NotNull ClientConfig config,
+                               int tab,
+                               @NotNull Consumer<Integer> onTabChange) {
         super(minecraft);
 
         this.voiceClient = voiceClient;
         this.config = config;
         this.title = getSettingsTitle();
-        this.navigation = new VoiceSettingsNavigation(minecraft, this, config);
+        this.navigation = new VoiceSettingsNavigation(minecraft,
+                voiceClient,
+                this,
+                config,
+                tab,
+                onTabChange
+        );
+        this.aboutFeature = new VoiceSettingsAboutFeature(minecraft, this);
         this.testController = new MicrophoneTestController(voiceClient, config);
     }
 
@@ -52,6 +64,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Override
     public void tick() {
         navigation.tick();
+        aboutFeature.tick();
     }
 
     @Override
@@ -78,16 +91,6 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
                 TextComponent.translatable("gui.plasmovoice.hotkeys"),
                 new HotKeysTabWidget(minecraft, this, voiceClient, config)
         );
-
-//        addRenderWidget(new Button(
-//                minecraft,
-//                14, 14,
-//                90,
-//                20,
-//                TextComponent.literal("Pepega"),
-//                Button.NO_ACTION,
-//                Button.NO_TOOLTIP
-//        ));
 
         addWidget(navigation);
 
@@ -125,6 +128,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         screen.drawTextShadow(title, 14, 15, 0xFFFFFF);
 
         navigation.renderButtons(render, mouseX, mouseY, delta);
+        aboutFeature.render(render, delta);
 
         if (tooltip == null && isTitleHovered(mouseX, mouseY))
             this.tooltip = getVersionTooltip();
@@ -133,8 +137,18 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
             screen.renderTooltip(tooltip, mouseX, mouseY);
     }
 
+    @Override
+    public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (button == 0 && isTitleHovered(mouseX, mouseY) && navigation.getActive() >= 0) {
+            aboutFeature.titleClicked();
+            return true;
+        }
+
+        return super.mouseClicked(mouseX, mouseY, button);
+    }
+
     // Class methods
-    public boolean isTitleHovered(int mouseX, int mouseY) {
+    public boolean isTitleHovered(double mouseX, double mouseY) {
         return mouseX >= 14 && mouseX <= (14 + titleWidth) &&
                 mouseY >= 15 && mouseY <= (15 + font.getLineHeight());
     }

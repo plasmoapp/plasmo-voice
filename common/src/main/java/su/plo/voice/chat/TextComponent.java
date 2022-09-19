@@ -14,11 +14,11 @@ public abstract class TextComponent {
     @Getter
     protected final List<TextComponent> siblings = new ArrayList<>();
 
-    public static TextComponent literal(String text) {
+    public static LiteralText literal(String text) {
         return new LiteralText(text);
     }
 
-    public static TextComponent translatable(String key, Object ...args) {
+    public static TranslatableText translatable(String key, Object ...args) {
         return new TranslatableText(key, args);
     }
 

@@ -1,12 +1,30 @@
 package su.plo.voice.lib.client.render;
 
+import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ConfirmLinkScreen;
 import net.minecraft.client.gui.screens.Screen;
+import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.render.MinecraftWindow;
+
+import java.util.function.Consumer;
 
 public final class ModWindow implements MinecraftWindow {
 
     private final Minecraft minecraft = Minecraft.getInstance();
+
+    @Override
+    public void openLink(@NotNull String link, boolean trusted, @NotNull Consumer<Boolean> onConfirm) {
+        minecraft.setScreen(new ConfirmLinkScreen(
+                        (ok) -> {
+                            if (ok) Util.getPlatform().openUri(link);
+                            onConfirm.accept(ok);
+                        },
+                        link,
+                        true
+                )
+        );
+    }
 
     @Override
     public int getWidth() {

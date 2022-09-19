@@ -36,6 +36,8 @@ public interface GuiRender {
 
     int drawString(TextComponent text, int x, int y, int color);
 
+    int drawStringMultiLine(TextComponent text, int x, int y, int color, int width);
+
     int drawCenteredOrderedString(TextComponent text, int width, int x, int y, int color);
 
     int drawOrderedString(TextComponent text, int width, int x, int y, int color);
@@ -89,6 +91,8 @@ public interface GuiRender {
     void disableDepthTest();
 
     void depthFunc(int func);
+
+    void depthMask(boolean mask);
 
     void enableTexture();
 

@@ -3,7 +3,7 @@ package su.plo.voice.util;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class VersionUtil {
+public final class VersionUtil {
 
     private static final Pattern versionPattern = Pattern.compile("(\\d).(\\d).(\\d).*");
 
