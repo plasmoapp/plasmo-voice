@@ -9,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
-import su.plo.voice.proto.data.capture.Activation;
-import su.plo.voice.proto.data.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 
 import javax.sound.sampled.AudioFormat;
@@ -55,7 +55,7 @@ public final class VoiceServerInfo implements ServerInfo {
         this.voiceInfo = new VoiceServerVoiceInfo(
                 config.getSampleRate(),
                 config.getCodec(),
-                config.getProximityActivation(),
+                new ArrayList<>(config.getSourceLines()),
                 new ArrayList<>(config.getActivations())
         );
         this.playerInfo = new VoiceServerPlayerInfo(config.getPermissions());
@@ -73,15 +73,13 @@ public final class VoiceServerInfo implements ServerInfo {
         @Getter
         @Setter
         private int sampleRate;
-
         @Getter
         private final String codec;
-
         @Getter
         @Setter
-        private VoiceActivation proximityActivation;
-
+        private List<SourceLine> sourceLines;
         @Setter
+        @Getter
         private List<Activation> activations;
 
         @Override
@@ -98,11 +96,6 @@ public final class VoiceServerInfo implements ServerInfo {
         @Override
         public int getBufferSize() {
             return (sampleRate / 1_000) * 20;
-        }
-
-        @Override
-        public Collection<Activation> getActivations() {
-            return activations;
         }
     }
 

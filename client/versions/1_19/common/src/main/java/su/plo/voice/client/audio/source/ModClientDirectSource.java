@@ -9,7 +9,7 @@ import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.audio.device.source.DeviceSource;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.source.DirectSourceInfo;
+import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 
 public final class ModClientDirectSource extends ModClientAudioSource<DirectSourceInfo> {
 

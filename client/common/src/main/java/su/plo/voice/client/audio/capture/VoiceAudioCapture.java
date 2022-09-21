@@ -1,7 +1,6 @@
 package su.plo.voice.client.audio.capture;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Maps;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +11,7 @@ import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
+import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.DeviceType;
@@ -25,14 +25,12 @@ import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.client.config.capture.ConfigClientActivation;
-import su.plo.voice.proto.data.capture.Activation;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Collection;
+import java.util.Optional;
 
 public final class VoiceAudioCapture implements AudioCapture {
 
@@ -41,17 +39,13 @@ public final class VoiceAudioCapture implements AudioCapture {
     private final MinecraftClientLib minecraft;
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;
+    private final ClientActivationManager activations;
     private final ClientConfig config;
 
     @Setter
     private volatile AudioEncoder encoder;
     @Setter
     private volatile Encryption encryption;
-
-    private ClientActivation proximityActivation;
-
-    private final List<ClientActivation> activations = new CopyOnWriteArrayList<>();
-    private Map<UUID, ClientActivation> activationById = Maps.newConcurrentMap();
 
     private Thread thread;
 
@@ -63,6 +57,7 @@ public final class VoiceAudioCapture implements AudioCapture {
         this.minecraft = minecraft;
         this.voiceClient = voiceClient;
         this.devices = voiceClient.getDeviceManager();
+        this.activations = voiceClient.getActivationManager();
         this.config = config;
     }
 
@@ -79,67 +74,6 @@ public final class VoiceAudioCapture implements AudioCapture {
     private Optional<InputDevice> getDevice() {
         Collection<AudioDevice> devices = this.devices.getDevices(DeviceType.INPUT);
         return Optional.ofNullable((InputDevice) devices.stream().findFirst().orElse(null));
-    }
-
-//    public void setDevice(@NotNull InputDevice device) {
-//        Optional<InputDevice> currentDevice = getDevice();
-//
-//        if (currentDevice.isPresent()) {
-//            if (currentDevice.get().isOpen()) {
-//                try {
-//                    device.close().get();
-//                    LOGGER.info("{} closed", device.getName());
-//                } catch (InterruptedException | ExecutionException e) {
-//                    LOGGER.error("Failed to close input device", e);
-//                    return;
-//                }
-//            }
-//
-//            voiceClient.getDeviceManager().replace(this.device, device);
-//        } else {
-//            voiceClient.getDeviceManager().clear(DeviceType.INPUT);
-//            voiceClient.getDeviceManager().add(device);
-//        }
-//
-//        this.device = device;
-//    }
-
-    @Override
-    public @NotNull Collection<ClientActivation> getActivations() {
-        return activationById.values();
-    }
-
-    @Override
-    public Optional<ClientActivation> getActivationById(@NotNull UUID activationId) {
-        if (proximityActivation != null && activationId.equals(proximityActivation.getId()))
-            return Optional.of(proximityActivation);
-
-        return Optional.ofNullable(activationById.get(activationId));
-    }
-
-    @Override
-    public void registerActivation(@NotNull ClientActivation activation) {
-        int index;
-        for (index = 0; index < activations.size(); index++) {
-            ClientActivation act = activations.get(index);
-            if (activation.getWeight() >= act.getWeight()) break;
-        }
-
-        activations.add(index, activation);
-        activationById.put(activation.getId(), activation);
-    }
-
-    @Override
-    public void unregisterActivation(@NotNull ClientActivation activation) {
-        if (activations.remove(activation)) {
-            activationById.remove(activation.getId());
-        }
-    }
-
-    @Override
-    public void unregisterActivation(@NotNull UUID activationId) {
-        ClientActivation activation = activationById.remove(activationId);
-        if (activation != null) activations.remove(activation);
     }
 
     @Override
@@ -174,51 +108,6 @@ public final class VoiceAudioCapture implements AudioCapture {
         // initialize encryption
         if (serverInfo.getEncryption().isPresent()) {
             this.encryption = serverInfo.getEncryption().get();
-        }
-
-        // initialize proximity activation
-        Optional<ClientConfig.Server> serverConfig = config.getServers().getById(serverInfo.getServerId());
-        if (!serverConfig.isPresent()) throw new IllegalStateException("Server config is empty");
-
-        ConfigClientActivation proximityConfig = serverConfig.get().getProximityActivation(
-                serverInfo.getVoiceInfo().getProximityActivation()
-        );
-        // set global proximity activation type
-        proximityConfig.setConfigType(config.getVoice().getActivationType());
-        proximityConfig.getConfigDistance().setDefault(
-                serverInfo.getVoiceInfo().getProximityActivation().getDefaultDistance(),
-                serverInfo.getVoiceInfo().getProximityActivation().getMinDistance(),
-                serverInfo.getVoiceInfo().getProximityActivation().getMaxDistance()
-        );
-        if (proximityConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
-            LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
-            proximityConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
-        }
-
-        this.proximityActivation = new VoiceClientActivation(
-                minecraft,
-                config,
-                proximityConfig,
-                serverInfo.getVoiceInfo().getProximityActivation()
-        );
-
-        // register custom activations
-        for (Activation serverActivation : serverInfo.getVoiceInfo().getActivations()) {
-            ConfigClientActivation activationConfig = serverConfig.get().getActivation(serverActivation.getId(), serverActivation);
-            activationConfig.getConfigDistance().setDefault(
-                    serverActivation.getDefaultDistance(),
-                    serverActivation.getMinDistance(),
-                    serverActivation.getMaxDistance()
-            );
-
-            ClientActivation activation = new VoiceClientActivation(
-                    minecraft,
-                    config,
-                    activationConfig,
-                    serverActivation
-            );
-
-            registerActivation(activation);
         }
 
         LOGGER.info("Audio capture initialized");
@@ -257,7 +146,8 @@ public final class VoiceAudioCapture implements AudioCapture {
 
                 if (!device.isPresent()
                         || !device.get().isOpen()
-                        || !voiceClient.getServerInfo().isPresent()) {
+                        || !voiceClient.getServerInfo().isPresent()
+                        || !activations.getParentActivation().isPresent()) {
                     Thread.sleep(1_000L);
                     continue;
                 }
@@ -273,24 +163,28 @@ public final class VoiceAudioCapture implements AudioCapture {
                 voiceClient.getEventBus().call(captureEvent);
                 if (captureEvent.isCancelled()) continue;
 
+                ClientActivation parentActivation = activations.getParentActivation().get();
+
                 if (captureEvent.isSendEnd() || config.getVoice().getMicrophoneDisabled().value()) {
-                    if (proximityActivation.isActivated()) {
-                        proximityActivation.reset();
-                        sendVoiceEndPacket(proximityActivation);
+                    if (parentActivation.isActivated()) {
+                        parentActivation.reset();
+                        sendVoiceEndPacket(parentActivation);
                     }
 
-                    activationById.forEach((activationId, activation) -> {
-                        activation.reset();
-                        sendVoiceEndPacket(activation);
+                    activations.getActivations().forEach((activation) -> {
+                        if (activation.isActivated()) {
+                            activation.reset();
+                            sendVoiceEndPacket(activation);
+                        }
                     });
                     continue;
                 }
 
-                ClientActivation.Result result = proximityActivation.process(samples);
-                byte[] encoded = processActivation(proximityActivation, result, samples, null);
+                ClientActivation.Result result = parentActivation.process(samples);
+                byte[] encoded = processActivation(parentActivation, result, samples, null);
 
-                for (ClientActivation activation : activations) {
-                    if (activation.isDisabled()) continue; // skip disabled activations
+                for (ClientActivation activation : activations.getActivations()) {
+                    if (activation.isDisabled() || activation.equals(parentActivation)) continue;
 
                     if (activation.getType() == ClientActivation.Type.INHERIT ||
                             activation.getType() == ClientActivation.Type.VOICE) {
@@ -362,6 +256,8 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     private void sendVoicePacket(ClientActivation activation, byte[] encoded) {
+        if (activation.getTranslation().equals("key.plasmovoice.parent")) return;
+
         Optional<UdpClient> udpClient = voiceClient.getUdpClientManager().getClient();
         if (!udpClient.isPresent()) return;
 
@@ -375,6 +271,8 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     private void sendVoiceEndPacket(ClientActivation activation) {
+        if (activation.getTranslation().equals("key.plasmovoice.parent")) return;
+
         if (encoder != null) encoder.reset();
 
         Optional<ServerConnection> connection = voiceClient.getServerConnection();

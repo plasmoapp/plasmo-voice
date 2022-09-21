@@ -8,7 +8,8 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.audio.capture.ActivationManager;
+import su.plo.voice.api.server.audio.capture.ServerActivationManager;
+import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
@@ -21,7 +22,8 @@ import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.pos.WorldManager;
 import su.plo.voice.api.server.socket.UdpServer;
-import su.plo.voice.server.audio.capture.VoiceActivationManager;
+import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
+import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
@@ -58,7 +60,9 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Getter
     protected WorldManager worldManager;
     @Getter
-    protected ActivationManager activationManager;
+    protected ServerActivationManager activationManager;
+    @Getter
+    protected ServerSourceLineManager sourceLineManager;
 
     protected LuckPermsListener luckPermsListener;
 
@@ -85,7 +89,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         this.worldManager = createWorldManager();
 
-        this.activationManager = new VoiceActivationManager(playerManager, config.getVoice());
+        this.activationManager = new VoiceServerActivationManager(this, config.getVoice());
+        this.sourceLineManager = new VoiceServerSourceLineManager(this);
 
         try {
             Class.forName("net.luckperms.api.LuckPermsProvider");

@@ -52,7 +52,7 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.devices.microphone")));
         addEntry(createThresholdEntry());
         addEntry(createMicrophoneEntry());
-        addEntry(createDoubleSliderWidget(
+        addEntry(createVolumeSlider(
                 "gui.plasmovoice.devices.microphone_volume",
                 "gui.plasmovoice.devices.volume.tooltip",
                 config.getVoice().getMicrophoneVolume(),
@@ -67,7 +67,7 @@ public final class DevicesTabWidget extends TabWidget {
 
         addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.devices.output")));
         addEntry(createOutputDeviceEntry());
-        addEntry(createDoubleSliderWidget(
+        addEntry(createVolumeSlider(
                 "gui.plasmovoice.devices.volume",
                 "gui.plasmovoice.devices.volume.tooltip",
                 config.getVoice().getVolume(),
@@ -91,26 +91,28 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(createHrtfEntry());
     }
 
-    private OptionEntry<ActivationThresholdWidget> createThresholdEntry() {
+    private ButtonOptionEntry<ActivationThresholdWidget> createThresholdEntry() {
         if (threshold != null) voiceClient.getEventBus().unregister(voiceClient, threshold);
         this.threshold = new ActivationThresholdWidget(
                 minecraft,
                 parent,
-                testController,
-                devices,
                 config.getVoice().getActivationThreshold(),
+                devices,
+                testController,
                 0,
                 0,
-                ELEMENT_WIDTH, // 128
+                ELEMENT_WIDTH - 24,
                 20
         );
         voiceClient.getEventBus().register(voiceClient, threshold);
 
-        return new OptionEntry<>(
+        return new ButtonOptionEntry<>(
                 TextComponent.translatable("gui.plasmovoice.devices.activation_threshold"),
                 threshold,
+                threshold.getButtons(),
                 config.getVoice().getActivationThreshold(),
-                GuiUtil.multiLineTooltip(minecraft.getLanguage(), "gui.plasmovoice.devices.activation_threshold.tooltip")
+                GuiUtil.multiLineTooltip(minecraft.getLanguage(), "gui.plasmovoice.devices.activation_threshold.tooltip"),
+                null
         );
     }
 

@@ -2,6 +2,7 @@
     "key.plasmovoice.settings": "Voice Settings",
 
     "key.plasmovoice.proximity": "Proximity",
+    "key.plasmovoice.parent": "Parent",
 
     "key.plasmovoice.general": "General",
     "key.plasmovoice.general.mute_microphone": "Mute Microphone",
@@ -147,6 +148,12 @@
 
 
     "gui.plasmovoice.hotkeys": "Hotkeys",
+
+
+    "gui.plasmovoice.volumes": "Volumes",
+
+    "gui.plasmovoice.volumes.sources": "Sources Volume",
+    "gui.plasmovoice.volumes.players": "Players Volume",
 
 
     "gui.plasmovoice.about.made_by": "%s is made by",

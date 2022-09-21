@@ -3,10 +3,10 @@ package su.plo.voice.client.audio.source;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.source.DirectSourceInfo;
-import su.plo.voice.proto.data.source.EntitySourceInfo;
-import su.plo.voice.proto.data.source.PlayerSourceInfo;
-import su.plo.voice.proto.data.source.StaticSourceInfo;
+import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
+import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
+import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
+import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 
 public final class ModClientSourceManager extends BaseClientSourceManager {
 

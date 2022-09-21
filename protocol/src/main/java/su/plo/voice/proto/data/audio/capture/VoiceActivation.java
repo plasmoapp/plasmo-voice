@@ -1,4 +1,4 @@
-package su.plo.voice.proto.data.capture;
+package su.plo.voice.proto.data.audio.capture;
 
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
@@ -16,20 +16,6 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-// todo (both-sided):
-//  name = translation key
-//  transitive
-//  priority
-//  distances:
-//  - [1, 2, 4] -> just a slider
-//  - [-1, 100] -> input with max value
-
-// todo (client-sided):
-//  ptt key
-//  toggle button
-//  activation types (by default its ptt):
-//  - ptt -> key
-//  - voice -> toggle
 @NoArgsConstructor
 @ToString
 public class VoiceActivation implements Activation, PacketSerializable {
@@ -38,7 +24,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     public static final UUID PROXIMITY_ID = generateId(PROXIMITY_NAME);
 
     public static UUID generateId(@NotNull String name) {
-        return UUID.nameUUIDFromBytes((name).getBytes(Charsets.UTF_8));
+        return UUID.nameUUIDFromBytes((name + "_activation").getBytes(Charsets.UTF_8));
     }
 
     @Getter
@@ -48,9 +34,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     @Getter
     protected String translation;
     @Getter
-    protected String hudIconLocation;
-    @Getter
-    protected String sourceIconLocation;
+    protected String icon;
     protected List<Integer> distances = ImmutableList.of();
     @Getter
     protected int defaultDistance;
@@ -61,15 +45,13 @@ public class VoiceActivation implements Activation, PacketSerializable {
 
     public VoiceActivation(@NotNull String name,
                            @NotNull String translation,
-                           @NotNull String hudIconLocation,
-                           @NotNull String sourceIconLocation,
+                           @NotNull String icon,
                            List<Integer> distances,
                            int defaultDistance,
                            int weight) {
         this.name = checkNotNull(name);
         this.translation = translation;
-        this.hudIconLocation = checkNotNull(hudIconLocation);
-        this.sourceIconLocation = checkNotNull(sourceIconLocation);
+        this.icon = checkNotNull(icon);
         this.id = generateId(name);
         this.distances = checkNotNull(distances);
         this.defaultDistance = defaultDistance;
@@ -97,9 +79,8 @@ public class VoiceActivation implements Activation, PacketSerializable {
     public void deserialize(ByteArrayDataInput in) {
         this.name = in.readUTF();
         this.translation = in.readUTF();
-        this.hudIconLocation = in.readUTF();
-        this.sourceIconLocation = in.readUTF();
-        this.id = UUID.nameUUIDFromBytes((name).getBytes(Charsets.UTF_8));
+        this.icon = in.readUTF();
+        this.id = UUID.nameUUIDFromBytes((name + "_activation").getBytes(Charsets.UTF_8));
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
         this.weight = in.readInt();
@@ -109,8 +90,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     public void serialize(ByteArrayDataOutput out) {
         out.writeUTF(name);
         out.writeUTF(translation);
-        out.writeUTF(hudIconLocation);
-        out.writeUTF(sourceIconLocation);
+        out.writeUTF(icon);
         PacketUtil.writeIntList(out, distances);
         out.writeInt(defaultDistance);
         out.writeInt(weight);

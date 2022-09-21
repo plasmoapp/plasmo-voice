@@ -1,11 +1,17 @@
 package su.plo.voice.server.connection;
 
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
+import su.plo.voice.api.server.audio.source.ServerSourceManager;
+import su.plo.voice.api.server.event.connection.TcpPacketReceivedEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
@@ -14,11 +20,28 @@ import su.plo.voice.util.VersionUtil;
 
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     private final PlasmoVoiceServer voiceServer;
+    private final ServerSourceLineManager lines;
+    private final ServerSourceManager sources;
     private final VoicePlayer player;
+
+    public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
+                                @NotNull VoicePlayer player) {
+        this.voiceServer = voiceServer;
+        this.lines = voiceServer.getSourceLineManager();
+        this.sources = voiceServer.getSourceManager();
+        this.player = player;
+    }
+
+    public void handlePacket(Packet<PacketHandler> packet) {
+        TcpPacketReceivedEvent event = new TcpPacketReceivedEvent(player, packet);
+        voiceServer.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
+        packet.handle(this);
+    }
 
     @Override
     public void handle(@NotNull PlayerInfoPacket packet) {
@@ -58,7 +81,16 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
-        ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(voiceServer, player, "opus", false);
+        Optional<ServerSourceLine> sourceLine = lines.getLineById(VoiceSourceLine.PROXIMITY_ID);
+        if (!sourceLine.isPresent()) return;
+
+        ServerPlayerSource source = voiceServer.getSourceManager().createPlayerSource(
+                voiceServer,
+                player,
+                sourceLine.get(),
+                "opus",
+                false
+        );
 
         SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());
         source.sendPacket(sourcePacket, packet.getDistance());

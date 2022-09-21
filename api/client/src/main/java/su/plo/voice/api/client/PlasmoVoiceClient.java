@@ -3,8 +3,10 @@ package su.plo.voice.api.client;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
+import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
+import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerConnection;
@@ -43,6 +45,20 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
      * @return {@link AudioCapture}
      */
     @NotNull AudioCapture getAudioCapture();
+
+    /**
+     * Gets the {@link ClientActivationManager}
+     *
+     * @return {@link ClientActivationManager}
+     */
+    @NotNull ClientActivationManager getActivationManager();
+
+    /**
+     * Gets the {@link ClientSourceLineManager}
+     *
+     * @return {@link ClientSourceLineManager}
+     */
+    @NotNull ClientSourceLineManager getSourceLineManager();
 
     /**
      * Gets the {@link UdpClientManager}

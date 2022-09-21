@@ -14,7 +14,7 @@ import java.io.IOException;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PlayerInfoRequestPacket implements Packet<ClientPacketTcpHandler> {
+public final class PlayerInfoRequestPacket implements Packet<ClientPacketTcpHandler> {
 
     @Getter
     private VoicePlayerInfo playerInfo;

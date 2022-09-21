@@ -1,4 +1,4 @@
-package su.plo.voice.proto.data.source;
+package su.plo.voice.proto.data.audio.source;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.data.capture.VoiceActivation;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.UUID;
@@ -24,6 +23,7 @@ public final class StaticSourceInfo extends SourceInfo {
 
     public StaticSourceInfo(@NotNull String addonId,
                             @NotNull UUID sourceId,
+                            @NotNull UUID lineId,
                             byte state,
                             @NotNull String codec,
                             boolean stereo,
@@ -31,7 +31,8 @@ public final class StaticSourceInfo extends SourceInfo {
                             int angle,
                             Pos3d position,
                             Pos3d lookAngle) {
-        super(addonId, sourceId, state, codec, stereo, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
+        super(addonId, sourceId, lineId, state, codec, stereo, iconVisible, angle);
+
         this.position = position;
         this.lookAngle = lookAngle;
     }

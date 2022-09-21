@@ -5,18 +5,21 @@ import io.netty.buffer.Unpooled;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
+import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
-import su.plo.voice.proto.data.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
@@ -26,13 +29,15 @@ import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 import java.util.UUID;
 
-@RequiredArgsConstructor
 @ToString(of = {"channel", "secret", "player", "keepAlive", "sentKeepAlive"})
 public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpHandler {
 
     private final PlasmoVoiceServer voiceServer;
+    private final ServerSourceLineManager lines;
+    private final ServerSourceManager sources;
     private final NioDatagramChannel channel;
 
     @Getter
@@ -50,6 +55,18 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
 
     @Getter
     private boolean connected = true;
+
+    public NettyUdpConnection(@NotNull PlasmoVoiceServer voiceServer,
+                              @NotNull NioDatagramChannel channel,
+                              @NotNull UUID secret,
+                              @NotNull VoicePlayer player) {
+        this.voiceServer = voiceServer;
+        this.lines = voiceServer.getSourceLineManager();
+        this.sources = voiceServer.getSourceManager();
+        this.channel = channel;
+        this.secret = secret;
+        this.player = player;
+    }
 
     @Override
     public void sendPacket(Packet<?> packet) {
@@ -94,7 +111,16 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
     public void handle(@NotNull PlayerAudioPacket packet) {
         if (!packet.getActivationId().equals(VoiceActivation.PROXIMITY_ID)) return;
 
-        ServerPlayerSource source = voiceServer.getSourceManager().getOrCreatePlayerSource(voiceServer, player, "opus", false);
+        Optional<ServerSourceLine> sourceLine = lines.getLineById(VoiceSourceLine.PROXIMITY_ID);
+        if (!sourceLine.isPresent()) return;
+
+        ServerPlayerSource source = sources.createPlayerSource(
+                voiceServer,
+                player,
+                sourceLine.get(),
+                "opus",
+                false
+        );
 
         SourceAudioPacket sourcePacket = new SourceAudioPacket(
                 packet.getSequenceNumber(),

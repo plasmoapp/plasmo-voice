@@ -1,4 +1,4 @@
-package su.plo.voice.proto.data.source;
+package su.plo.voice.proto.data.audio.source;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -6,7 +6,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.data.capture.VoiceActivation;
 
 import java.util.UUID;
 
@@ -19,13 +18,14 @@ public final class EntitySourceInfo extends SourceInfo {
 
     public EntitySourceInfo(@NotNull String addonId,
                             @NotNull UUID sourceId,
+                            @NotNull UUID lineId,
                             byte state,
                             @NotNull String codec,
                             boolean stereo,
                             boolean iconVisible,
                             int angle,
                             int entityId) {
-        super(addonId, sourceId, state, codec, stereo, VoiceActivation.PROXIMITY_ID, iconVisible, angle);
+        super(addonId, sourceId, lineId, state, codec, stereo, iconVisible, angle);
 
         this.entityId = entityId;
     }

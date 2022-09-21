@@ -6,9 +6,7 @@ import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.UUID;
 
 /**
  * Audio capture thread
@@ -24,16 +22,6 @@ public interface AudioCapture {
     Optional<Encryption> getEncryption();
 
     void setEncryption(@Nullable Encryption encryption);
-
-    @NotNull Collection<ClientActivation> getActivations();
-
-    Optional<ClientActivation> getActivationById(@NotNull UUID activationId);
-
-    void registerActivation(@NotNull ClientActivation activation);
-
-    void unregisterActivation(@NotNull ClientActivation activation);
-
-    void unregisterActivation(@NotNull UUID activationId);
 
     void initialize(@NotNull ServerInfo serverInfo);
 

@@ -3,7 +3,7 @@ package su.plo.voice.client.audio.source;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.source.StaticSourceInfo;
+import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 
 public final class ModClientStaticSource extends ModClientAudioSource<StaticSourceInfo> {
 

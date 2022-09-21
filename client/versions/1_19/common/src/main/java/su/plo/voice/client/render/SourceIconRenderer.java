@@ -83,11 +83,11 @@ public final class SourceIconRenderer {
         if (!source.get().isActivated()) return;
 
         // get activation source icon
-        Optional<ClientActivation> activation = capture.getActivationById(source.get().getInfo().getActivation());
-        if (activation.isEmpty()) return;
-
-        ResourceLocation iconLocation = getSourceIconLocation(activation.get());
-        renderIcon(iconLocation, entity, distance, hasLabel, poseStack, multiBufferSource, light);
+//        Optional<ClientActivation> activation = capture.getActivationById(source.get().getInfo().getActivation());
+//        if (activation.isEmpty()) return;
+//
+//        ResourceLocation iconLocation = getSourceIconLocation(activation.get());
+//        renderIcon(iconLocation, entity, distance, hasLabel, poseStack, multiBufferSource, light);
     }
 
     public void renderStatics(PoseStack poseStack, Camera camera, Matrix4f matrix4f) {
@@ -96,13 +96,13 @@ public final class SourceIconRenderer {
                     || !source.isActivated()) continue;
 
             // get activation source icon
-            Optional<ClientActivation> activation = capture.getActivationById(source.getInfo().getActivation());
-            if (activation.isEmpty()) return;
-
-            if (isIconHidden()) return;
-
-            ResourceLocation iconLocation = getSourceIconLocation(activation.get());
-            renderStatic(iconLocation, staticSource.getInfo().getPosition(), poseStack, camera, matrix4f);
+//            Optional<ClientActivation> activation = capture.getActivationById(source.getInfo().getActivation());
+//            if (activation.isEmpty()) return;
+//
+//            if (isIconHidden()) return;
+//
+//            ResourceLocation iconLocation = getSourceIconLocation(activation.get());
+//            renderStatic(iconLocation, staticSource.getInfo().getPosition(), poseStack, camera, matrix4f);
         }
     }
 
@@ -217,7 +217,7 @@ public final class SourceIconRenderer {
 
     private ResourceLocation getSourceIconLocation(ClientActivation activation) {
         return cachedIconLocations.computeIfAbsent(
-                activation.getSourceIconLocation(),
+                activation.getIcon(),
                 ResourceLocation::new
         );
     }

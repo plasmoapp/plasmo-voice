@@ -3,7 +3,8 @@ package su.plo.voice.api.client.connection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.encryption.Encryption;
-import su.plo.voice.proto.data.capture.Activation;
+import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.line.SourceLine;
 
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
@@ -92,9 +93,9 @@ public interface ServerInfo {
         @Nullable String getCodec();
 
         /**
-         * Gets the proximity activation
+         * Gets the voice source lines
          */
-        @NotNull Activation getProximityActivation();
+        Collection<SourceLine> getSourceLines();
 
         /**
          * Gets the voice activations

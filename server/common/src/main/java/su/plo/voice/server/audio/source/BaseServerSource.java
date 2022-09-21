@@ -1,9 +1,11 @@
 package su.plo.voice.server.audio.source;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -18,7 +20,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-@RequiredArgsConstructor
 public abstract class BaseServerSource implements ServerAudioSource {
 
     protected final UdpServerConnectionManager udpConnections;
@@ -28,10 +29,13 @@ public abstract class BaseServerSource implements ServerAudioSource {
     protected final UUID id;
     protected final String codec;
     protected final boolean stereo;
+
+    @Getter
+    @Setter
+    protected @NotNull ServerSourceLine line;
     @Getter
     @Setter
     protected boolean iconVisible = true;
-
     @Setter
     protected int angle;
 
@@ -39,6 +43,20 @@ public abstract class BaseServerSource implements ServerAudioSource {
 
     private final List<Predicate<VoicePlayer>> filters = new CopyOnWriteArrayList<>();
     private final ServerPos3d playerPosition = new ServerPos3d();
+
+    public BaseServerSource(@NotNull UdpServerConnectionManager udpConnections,
+                            @NotNull AddonContainer addon,
+                            @NotNull UUID id,
+                            @NotNull ServerSourceLine line,
+                            @Nullable String codec,
+                            boolean stereo) {
+        this.udpConnections = udpConnections;
+        this.addon = addon;
+        this.id = id;
+        this.line = line;
+        this.codec = codec;
+        this.stereo = stereo;
+    }
 
     @Override
     public int getState() {

@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import su.plo.voice.proto.data.source.SourceInfo;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.Packet;
 
 import java.io.IOException;
@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class SourceInfoPacket implements Packet<ClientPacketTcpHandler> {
+public final class SourceInfoPacket implements Packet<ClientPacketTcpHandler> {
 
     @Getter
     private SourceInfo sourceInfo;

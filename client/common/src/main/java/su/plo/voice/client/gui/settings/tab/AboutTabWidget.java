@@ -40,7 +40,7 @@ public final class AboutTabWidget extends TabWidget {
                 "Apehum",
                 TextComponent.translatable("gui.plasmovoice.about.programming"),
                 "Telegram",
-                "https://t.me/apehum"
+                "https://t.me/arehum"
         ));
         addEntry(new DeveloperEntry(
                 "KPidS",

@@ -2,7 +2,7 @@ package su.plo.voice.api.client.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
-import su.plo.voice.proto.data.capture.Activation;
+import su.plo.voice.proto.data.audio.capture.Activation;
 
 public interface ClientActivation extends Activation {
 

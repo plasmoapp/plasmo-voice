@@ -13,13 +13,11 @@ import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.SerializableConfigEntry;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.config.entry.IntConfigEntry;
-import su.plo.voice.proto.data.capture.Activation;
-import su.plo.voice.proto.data.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.capture.Activation;
 
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +37,9 @@ public final class ClientConfig {
 
     @ConfigField
     private Advanced advanced = new Advanced();
+
+    @ConfigField
+    private Activations activations = new Activations();
 
     @ConfigField
     private ConfigKeyBindings keyBindings = new ConfigKeyBindings();
@@ -107,9 +108,8 @@ public final class ClientConfig {
     }
 
     @Data
-    public static class Server implements SerializableConfigEntry {
+    public static class Activations implements SerializableConfigEntry {
 
-        private ConfigClientActivation proximityActivation;
         @Getter(AccessLevel.PRIVATE)
         private Map<UUID, ConfigClientActivation> activationById = Maps.newConcurrentMap();
 
@@ -118,25 +118,14 @@ public final class ClientConfig {
         }
 
         public Optional<ConfigClientActivation> getActivation(UUID id) {
-            if (id.equals(VoiceActivation.PROXIMITY_ID))
-                return Optional.ofNullable(proximityActivation);
-
             return Optional.ofNullable(activationById.get(id));
         }
 
         public ConfigClientActivation getActivation(UUID id, Activation serverActivation) {
             return activationById.computeIfAbsent(
                     id,
-                    (activationId) -> createActivation(serverActivation)
+                    (activationId) -> new ConfigClientActivation()
             );
-        }
-
-        public ConfigClientActivation getProximityActivation(Activation serverActivation) {
-            if (proximityActivation == null) {
-                this.proximityActivation = createActivation(serverActivation);
-            }
-
-            return proximityActivation;
         }
 
         @Override
@@ -144,12 +133,6 @@ public final class ClientConfig {
             Map<String, Object> serialized = (Map<String, Object>) o;
 
             serialized.forEach((id, serializedActivation) -> {
-                if (id.equals("proximity")) {
-                    proximityActivation = new ConfigClientActivation();
-                    toml.deserialize(proximityActivation, serializedActivation);
-                    return;
-                }
-
                 ConfigClientActivation activation = new ConfigClientActivation();
                 toml.deserialize(activation, serializedActivation);
                 put(UUID.fromString(id), activation);
@@ -160,9 +143,6 @@ public final class ClientConfig {
         public Object serialize() {
             Map<String, Object> serialized = Maps.newHashMap();
 
-            if (!proximityActivation.isDefault()) {
-                serialized.put("proximity", toml.serialize(proximityActivation));
-            }
             for (Map.Entry<UUID, ConfigClientActivation> entry : activationById.entrySet()) {
                 UUID activationId = entry.getKey();
                 ConfigClientActivation activation = entry.getValue();
@@ -174,17 +154,64 @@ public final class ClientConfig {
 
             return serialized;
         }
+    }
 
-        private ConfigClientActivation createActivation(Activation serverActivation) {
-            ConfigClientActivation activation = new ConfigClientActivation();
-            activation.getConfigDistance().set(serverActivation.getDefaultDistance());
-            activation.getConfigDistance().setDefault(
+    @Data
+    public static class Server implements SerializableConfigEntry {
+
+        private Map<UUID, IntConfigEntry> activationDistances = Maps.newConcurrentMap();
+
+        public void put(UUID activationId, IntConfigEntry distance) {
+            activationDistances.put(activationId, distance);
+        }
+
+        public Optional<IntConfigEntry> getActivationDistance(UUID id) {
+            return Optional.ofNullable(activationDistances.get(id));
+        }
+
+        public IntConfigEntry getActivationDistance(UUID id, Activation serverActivation) {
+            return activationDistances.computeIfAbsent(
+                    id,
+                    (activationId) -> createActivationDistance(serverActivation)
+            );
+        }
+
+        @Override
+        public void deserialize(Object o) {
+            Map<String, Object> serialized = (Map<String, Object>) o;
+            if (serialized.containsKey("distances")) {
+                Map<String, Object> distances = (Map<String, Object>) serialized.get("distances");
+
+                distances.forEach((activationId, distance) -> {
+                    IntConfigEntry entry = new IntConfigEntry(0, 0, Short.MAX_VALUE);
+                    entry.set((int) distance);
+
+                    put(UUID.fromString(activationId), entry);
+                });
+            }
+        }
+
+        @Override
+        public Object serialize() {
+            Map<String, Map<String, Object>> serialized = Maps.newHashMap();
+            Map<String, Object> distances = Maps.newHashMap();
+
+            activationDistances.forEach((activationId, entry) -> {
+                if (entry.isDefault()) return;
+                distances.put(activationId.toString(), entry.value());
+            });
+
+            if (distances.size() > 0) serialized.put("distances", distances);
+
+            return serialized;
+        }
+
+        private IntConfigEntry createActivationDistance(Activation serverActivation) {
+            return new IntConfigEntry(
                     serverActivation.getDefaultDistance(),
                     serverActivation.getMinDistance(),
                     serverActivation.getMaxDistance()
             );
-
-            return activation;
         }
     }
 
@@ -235,33 +262,45 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField
-        private CategoryVolumes volumes = new CategoryVolumes();
+        private SourceLineVolumes volumes = new SourceLineVolumes();
 
         @ConfigField
         private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(true);
 
-        @ConfigField
-        protected EnumConfigEntry<ClientActivation.Type> activationType = new EnumConfigEntry<>(
-                ClientActivation.Type.class,
-                ClientActivation.Type.PUSH_TO_TALK
-        );
+//        @ConfigField
+//        protected EnumConfigEntry<ClientActivation.Type> activationType = new EnumConfigEntry<>(
+//                ClientActivation.Type.class,
+//                ClientActivation.Type.PUSH_TO_TALK
+//        );
 
         @Data
-        public static class CategoryVolumes implements SerializableConfigEntry {
+        public static class SourceLineVolumes implements SerializableConfigEntry {
 
-            private Map<String, DoubleConfigEntry> map = Maps.newHashMap();
+            private Map<String, DoubleConfigEntry> volumes = Maps.newHashMap();
+            private Map<String, ConfigEntry<Boolean>> mutes = Maps.newHashMap();
 
-            public CategoryVolumes() {
+            public SourceLineVolumes() {
             }
 
-            public synchronized void setVolume(@NotNull String category, double volume) {
-                map.put(category, new DoubleConfigEntry(volume, 0D, 2D));
+            public synchronized void setVolume(@NotNull String lineName, double volume) {
+                getVolume(lineName).set(volume);
             }
 
-            public synchronized DoubleConfigEntry getVolume(@NotNull String category) {
-                return map.computeIfAbsent(
-                        category,
+            public synchronized DoubleConfigEntry getVolume(@NotNull String lineName) {
+                return volumes.computeIfAbsent(
+                        lineName,
                         (c) -> new DoubleConfigEntry(1D, 0D, 2D)
+                );
+            }
+
+            public synchronized void setMute(@NotNull String lineName, boolean muted) {
+                getMute(lineName).set(muted);
+            }
+
+            public synchronized ConfigEntry<Boolean> getMute(@NotNull String category) {
+                return mutes.computeIfAbsent(
+                        category,
+                        (c) -> new ConfigEntry<>(false)
                 );
             }
 
@@ -269,6 +308,13 @@ public final class ClientConfig {
             public synchronized void deserialize(Object object) {
                 try {
                     Map<String, Object> map = (Map<String, Object>) object;
+
+                    map.forEach((key, serialized) -> {
+                        Map<String, Object> value = (Map<String, Object>) serialized;
+
+
+                    });
+
                     map.forEach((key, value) -> setVolume(key, (double) value));
                 } catch (ClassCastException ignored) {
                 }
@@ -276,10 +322,26 @@ public final class ClientConfig {
 
             @Override
             public synchronized Object serialize() {
-                Map<String, Double> serialized = Maps.newHashMap();
-                this.map.forEach((key, entry) -> {
-                    if (!entry.isDefault()) serialized.put(key, entry.value());
+                Map<String, Map<String, Object>> serialized = Maps.newHashMap();
+
+                volumes.forEach((key, entry) -> {
+                    Map<String, Object> value = Maps.newHashMap();
+
+                    if (!entry.isDefault()) {
+                        value.put("volume", entry.value());
+                        serialized.put(key, value);
+                    }
                 });
+
+                mutes.forEach((key, entry) -> {
+                    Map<String, Object> value = serialized.getOrDefault(key, Maps.newHashMap());
+
+                    if (!entry.isDefault()) {
+                        value.put("muted", entry.value());
+                        serialized.put(key, value);
+                    }
+                });
+
                 return serialized;
             }
         }

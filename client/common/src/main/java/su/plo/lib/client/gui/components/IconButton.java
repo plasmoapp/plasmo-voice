@@ -10,10 +10,11 @@ import su.plo.voice.chat.TextComponent;
 
 public final class IconButton extends Button {
 
-    @Getter
-    private final String iconLocation;
     private final boolean shadow;
     private final int shadowColor;
+    @Getter
+    @Setter
+    private String iconLocation;
     @Getter
     @Setter
     private int iconColor;

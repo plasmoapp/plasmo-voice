@@ -4,13 +4,14 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerDirectSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.pos.ServerPos3d;
+import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
-import su.plo.voice.proto.data.source.DirectSourceInfo;
-import su.plo.voice.proto.data.source.SourceInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
@@ -31,10 +32,11 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
 
     public VoiceServerDirectSource(UdpServerConnectionManager udpConnections,
                                    @NotNull AddonContainer addon,
+                                   @NotNull ServerSourceLine line,
                                    @Nullable String codec,
                                    boolean stereo,
                                    @NotNull VoicePlayer player) {
-        super(udpConnections, addon, UUID.randomUUID(), codec, stereo);
+        super(udpConnections, addon, UUID.randomUUID(), line, codec, stereo);
         this.player = player;
     }
 
@@ -87,6 +89,7 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
         return new DirectSourceInfo(
                 addon.getId(),
                 id,
+                line.getId(),
                 (byte) state.get(),
                 codec,
                 stereo,

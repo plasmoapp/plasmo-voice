@@ -1,4 +1,4 @@
-package su.plo.voice.proto.data.source;
+package su.plo.voice.proto.data.audio.source;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -46,13 +46,13 @@ public abstract class SourceInfo implements PacketSerializable {
     @Getter
     protected UUID id;
     @Getter
+    protected UUID lineId;
+    @Getter
     protected byte state;
     @Getter
     protected String codec;
     @Getter
     protected boolean stereo;
-    @Getter
-    protected UUID activation;
     @Getter
     protected boolean iconVisible;
     @Getter
@@ -65,7 +65,7 @@ public abstract class SourceInfo implements PacketSerializable {
         this.state = in.readByte();
         this.codec = PacketUtil.readNullableString(in);
         this.stereo = in.readBoolean();
-        this.activation = PacketUtil.readUUID(in);
+        this.lineId = PacketUtil.readUUID(in);
         this.iconVisible = in.readBoolean();
         this.angle = in.readInt();
     }
@@ -78,7 +78,7 @@ public abstract class SourceInfo implements PacketSerializable {
         out.writeByte(state);
         PacketUtil.writeNullableString(out, codec);
         out.writeBoolean(stereo);
-        PacketUtil.writeUUID(out, activation);
+        PacketUtil.writeUUID(out, lineId);
         out.writeBoolean(iconVisible);
         out.writeInt(angle);
     }

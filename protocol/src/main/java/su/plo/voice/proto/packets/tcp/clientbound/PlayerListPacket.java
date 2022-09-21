@@ -17,7 +17,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class PlayerListPacket implements Packet<ClientPacketTcpHandler> {
+public final class PlayerListPacket implements Packet<ClientPacketTcpHandler> {
 
     private List<VoicePlayerInfo> players;
 

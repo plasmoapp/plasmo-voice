@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.audio.SoundOcclusion;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.source.SourceInfo;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 public abstract class ModClientAudioSource<T extends SourceInfo> extends BaseClientAudioSource<T> {
 

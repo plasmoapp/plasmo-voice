@@ -6,7 +6,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.source.PlayerSourceInfo;
+import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 
 public final class ModClientPlayerSource extends ModClientAudioSource<PlayerSourceInfo> {
 

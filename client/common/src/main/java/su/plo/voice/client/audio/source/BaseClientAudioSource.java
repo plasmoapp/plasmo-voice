@@ -6,6 +6,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.CodecException;
+import su.plo.voice.api.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.AlListenerDevice;
@@ -26,7 +27,7 @@ import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.config.entry.DoubleConfigEntry;
-import su.plo.voice.proto.data.source.SourceInfo;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 
@@ -105,9 +106,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             }
         }
 
+        Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager().getLineById(sourceInfo.getLineId());
+        if (!sourceLine.isPresent()) throw new IllegalStateException("Source line not found");
+
         this.sourceVolume = config.getVoice()
                 .getVolumes()
-                .getVolume("source_" + sourceInfo.getId());
+                .getVolume(sourceLine.get().getName());
 
         LOGGER.info("Source {} initialized", sourceInfo);
     }

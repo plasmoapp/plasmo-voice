@@ -1,18 +1,18 @@
 package su.plo.voice.proto.packets.tcp.clientbound;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.data.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.*;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
 @ToString
@@ -20,29 +20,30 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
 
     @Getter
     private UUID serverId;
-
     @Getter
     private int sampleRate;
-
     @Getter
     private String codec; // todo: per-source codecs
-    @Getter
-    private VoiceActivation proximityActivation;
-
+    private List<VoiceSourceLine> sourceLines;
     private List<VoiceActivation> activations;
 
     public ConfigPacket(@NotNull UUID serverId,
                         int sampleRate,
                         @NotNull String codec,
-                        @NotNull VoiceActivation proximityActivation,
+                        @NotNull List<VoiceSourceLine> sourceLines,
                         @NotNull List<VoiceActivation> activations,
                         @NotNull Map<String, Boolean> permissions) {
         super(permissions);
+
         this.serverId = serverId;
         this.sampleRate = sampleRate;
         this.codec = codec;
-        this.proximityActivation = proximityActivation;
+        this.sourceLines = sourceLines;
         this.activations = activations;
+    }
+
+    public Collection<VoiceSourceLine> getSourceLines() {
+        return sourceLines;
     }
 
     public Collection<VoiceActivation> getActivations() {
@@ -55,15 +56,22 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         this.sampleRate = in.readInt();
         this.codec = PacketUtil.readNullableString(in);
 
-        // activations
-        this.proximityActivation = new VoiceActivation();
-        proximityActivation.deserialize(in);
-
-        this.activations = new ArrayList<>();
+        // source lines
+        this.sourceLines = Lists.newArrayList();
         int size = in.readInt();
+        for (int i = 0; i < size; i++) {
+            VoiceSourceLine sourceLine = new VoiceSourceLine();
+            sourceLine.deserialize(in);
+            sourceLines.add(sourceLine);
+        }
+
+        // activations
+        this.activations = new ArrayList<>();
+        size = in.readInt();
         for (int i = 0; i < size; i++) {
             VoiceActivation activation = new VoiceActivation();
             activation.deserialize(in);
+            activations.add(activation);
         }
     }
 
@@ -73,9 +81,11 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         out.writeInt(sampleRate);
         PacketUtil.writeNullableString(out, codec);
 
-        // activations
-        checkNotNull(proximityActivation).serialize(out);
+        // source lines
+        out.writeInt(sourceLines.size());
+        sourceLines.forEach(sourceLine -> sourceLine.serialize(out));
 
+        // activations
         out.writeInt(activations.size());
         activations.forEach(activation -> activation.serialize(out));
     }

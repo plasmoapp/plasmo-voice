@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.*;
 import su.plo.voice.api.server.entity.VoiceEntity;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
@@ -38,10 +39,11 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     }
 
     @Override
-    public @NotNull ServerPlayerSource getOrCreatePlayerSource(@Nullable Object addonObject,
-                                                               @NotNull VoicePlayer player,
-                                                               @Nullable String codec,
-                                                               boolean stereo) {
+    public @NotNull ServerPlayerSource createPlayerSource(@Nullable Object addonObject,
+                                                          @NotNull VoicePlayer player,
+                                                          @NotNull ServerSourceLine line,
+                                                          @Nullable String codec,
+                                                          boolean stereo) {
         return sourceByPlayerId.computeIfAbsent(player.getUUID(), (playerId) -> {
             Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
             if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
@@ -49,6 +51,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
             ServerPlayerSource source = new VoiceServerPlayerSource(
                     voiceServer.getUdpConnectionManager(),
                     addon.get(),
+                    line,
                     codec,
                     stereo,
                     player
@@ -61,10 +64,11 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     }
 
     @Override
-    public @NotNull ServerEntitySource getOrCreateEntitySource(@Nullable Object addonObject,
-                                                               @NotNull VoiceEntity entity,
-                                                               @Nullable String codec,
-                                                               boolean stereo) {
+    public @NotNull ServerEntitySource createEntitySource(@Nullable Object addonObject,
+                                                          @NotNull VoiceEntity entity,
+                                                          @NotNull ServerSourceLine line,
+                                                          @Nullable String codec,
+                                                          boolean stereo) {
         return sourceByEntityId.computeIfAbsent(entity.getUUID(), (playerId) -> {
             Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
             if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
@@ -72,6 +76,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
             ServerEntitySource source = new VoiceServerEntitySource(
                     voiceServer.getUdpConnectionManager(),
                     addon.get(),
+                    line,
                     codec,
                     stereo,
                     entity
@@ -86,6 +91,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerStaticSource createStaticSource(@NotNull Object addonObject,
                                                           @NotNull ServerPos3d position,
+                                                          @NotNull ServerSourceLine line,
                                                           @Nullable String codec,
                                                           boolean stereo) {
         Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
@@ -94,6 +100,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         ServerStaticSource source = new VoiceServerStaticSource(
                 voiceServer.getUdpConnectionManager(),
                 addon.get(),
+                line,
                 codec,
                 stereo,
                 position
@@ -106,6 +113,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
                                                           @NotNull VoicePlayer player,
+                                                          @NotNull ServerSourceLine line,
                                                           @Nullable String codec,
                                                           boolean stereo) {
         Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
@@ -114,6 +122,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         ServerDirectSource source = new VoiceServerDirectSource(
                 voiceServer.getUdpConnectionManager(),
                 addon.get(),
+                line,
                 codec,
                 stereo,
                 player
@@ -123,13 +132,13 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         return source;
     }
 
-    @Override
-    public @NotNull UUID registerCustomSource(@NotNull ServerAudioSource source) {
-        UUID sourceId = UUID.randomUUID();
-        sourceById.put(sourceId, source);
-
-        return sourceId;
-    }
+//    @Override
+//    public @NotNull UUID registerCustomSource(@NotNull ServerAudioSource source) {
+//        UUID sourceId = UUID.randomUUID();
+//        sourceById.put(sourceId, source);
+//
+//        return sourceId;
+//    }
 
     @EventSubscribe
     public void onVoiceShutdown(VoiceServerShutdownEvent event) {

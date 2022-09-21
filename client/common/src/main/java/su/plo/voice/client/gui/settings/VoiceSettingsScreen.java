@@ -14,10 +14,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.chat.TextComponent;
 import su.plo.voice.chat.TextStyle;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.client.gui.settings.tab.ActivationTabWidget;
-import su.plo.voice.client.gui.settings.tab.AdvancedTabWidget;
-import su.plo.voice.client.gui.settings.tab.DevicesTabWidget;
-import su.plo.voice.client.gui.settings.tab.HotKeysTabWidget;
+import su.plo.voice.client.gui.settings.tab.*;
 
 import java.util.List;
 import java.util.Objects;
@@ -78,6 +75,10 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         navigation.addTab(
                 TextComponent.translatable("gui.plasmovoice.devices"),
                 new DevicesTabWidget(minecraft, this, voiceClient, config, testController)
+        );
+        navigation.addTab(
+                TextComponent.translatable("gui.plasmovoice.volumes"),
+                new VolumesTabWidget(minecraft, this, voiceClient, config)
         );
         navigation.addTab(
                 TextComponent.translatable("gui.plasmovoice.activation"),

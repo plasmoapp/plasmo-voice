@@ -5,8 +5,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
+import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.OutputDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
+import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.connection.ServerInfoUpdateEvent;
@@ -136,6 +138,14 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 //            server.getPriorityDistance().setDefault(defaultPriorityDistance);
 //            server.getPriorityDistance().set(defaultPriorityDistance);
         }
+
+        // register source lines
+        ClientSourceLineManager sourceLines = voiceClient.getSourceLineManager();
+        sourceLines.register(serverInfo.getVoiceInfo().getSourceLines());
+
+        // register activations
+        ClientActivationManager activations = voiceClient.getActivationManager();
+        activations.register(serverInfo.getServerId(), serverInfo.getVoiceInfo().getActivations());
 
         // initialize capture
         AudioCapture audioCapture = voiceClient.getAudioCapture();

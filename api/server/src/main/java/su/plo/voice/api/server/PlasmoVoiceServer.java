@@ -2,7 +2,8 @@ package su.plo.voice.api.server;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
-import su.plo.voice.api.server.audio.capture.ActivationManager;
+import su.plo.voice.api.server.audio.capture.ServerActivationManager;
+import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
@@ -55,11 +56,18 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
     @NotNull ServerSourceManager getSourceManager();
 
     /**
-     * Gets the {@link ActivationManager}
+     * Gets the {@link ServerActivationManager}
      *
-     * @return {@link ActivationManager}
+     * @return {@link ServerActivationManager}
      */
-    @NotNull ActivationManager getActivationManager();
+    @NotNull ServerActivationManager getActivationManager();
+
+    /**
+     * Gets the {@link ServerSourceLineManager}
+     *
+     * @return {@link ServerSourceLineManager}
+     */
+    @NotNull ServerSourceLineManager getSourceLineManager();
 
     /**
      * Gets the {@link TcpServerConnectionManager}

@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This event is fired once the {@link su.plo.voice.api.server.socket.UdpServer}
  * is received the packet, but not handled yet
  */
-public class UdpPacketReceivedEvent extends EventCancellableBase {
+public final class UdpPacketReceivedEvent extends EventCancellableBase {
 
     @Getter
     private final UdpConnection connection;

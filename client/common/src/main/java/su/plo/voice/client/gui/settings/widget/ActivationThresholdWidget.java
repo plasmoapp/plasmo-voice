@@ -26,25 +26,24 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     private static final String START_ICON = "plasmovoice:textures/icons/speaker_disabled_v1.png";
     private static final TextComponent NOT_AVAILABLE = TextComponent.translatable("gui.plasmovoice.devices.not_available");
 
-    private final VoiceSettingsScreen parent;
-    private final MicrophoneTestController controller;
     private final DoubleConfigEntry entry;
-    private final List<IconButton> microphoneTest;
+    private final MicrophoneTestController controller;
+
+    private final List<Button> microphoneTest;
 
     public ActivationThresholdWidget(@NotNull MinecraftClientLib minecraft,
                                      @NotNull VoiceSettingsScreen parent,
-                                     @NotNull MicrophoneTestController testController,
-                                     @NotNull DeviceManager devices,
                                      @NotNull DoubleConfigEntry entry,
+                                     @NotNull DeviceManager devices,
+                                     @NotNull MicrophoneTestController controller,
                                      int x,
                                      int y,
                                      int width,
                                      int height) {
         super(minecraft, x, y, width, height);
 
-        this.parent = parent;
-        this.controller = testController;
         this.entry = entry;
+        this.controller = controller;
 
         IconButton testStop = new IconButton(
                 minecraft,
@@ -93,35 +92,9 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     }
 
     @Override
-    protected int getSliderWidth() {
-        return width - 22;
-    }
-
-    @Override
     public void updateValue() {
         this.value = AudioUtil.audioLevelToDoubleRange(entry.value());
         updateText();
-    }
-
-    @Override
-    public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        return super.mouseClicked(mouseX, mouseY, button) ||
-                microphoneTest.get(0).mouseClicked(mouseX, mouseY, button) ||
-                microphoneTest.get(1).mouseClicked(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        return super.mouseReleased(mouseX, mouseY, button);
-    }
-
-    @Override
-    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (mouseX >= x && mouseX <= x + width) {
-            return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
-        } else {
-            return false;
-        }
     }
 
     @Override
@@ -133,19 +106,13 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     public void renderButton(@NotNull GuiRender render, int mouseX, int mouseY, float delta) {
         renderBackground(render, mouseX, mouseY);
 
-        int sliderWidth = getSliderWidth();
-
-        renderMicrophoneValue(render, sliderWidth);
+        renderMicrophoneValue(render, getSliderWidth());
         renderTrack(render, mouseX, mouseY);
         renderText(render, mouseX, mouseY);
+    }
 
-        render.setShaderColor(1F, 1F, 1F, alpha);
-        for (IconButton button : microphoneTest) {
-            button.setX(x + sliderWidth + 2);
-            button.setY(y);
-
-            button.render(render, mouseX, mouseY, delta);
-        }
+    public List<Button> getButtons() {
+        return microphoneTest;
     }
 
     private void renderMicrophoneValue(@NotNull GuiRender render, int sliderWidth) {

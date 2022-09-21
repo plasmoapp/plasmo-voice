@@ -10,7 +10,8 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.data.VoicePlayerInfo;
-import su.plo.voice.proto.data.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.server.BaseVoiceServer;
@@ -85,7 +86,11 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                 UUID.fromString(config.getServerId()),
                 voiceConfig.getSampleRate(),
                 "opus",
-                (VoiceActivation) voiceServer.getActivationManager().getProximityActivation(),
+                voiceServer.getSourceLineManager()
+                        .getLines()
+                        .stream()
+                        .map(line -> (VoiceSourceLine) line)
+                        .collect(Collectors.toList()),
                 voiceServer.getActivationManager()
                         .getActivations()
                         .stream()

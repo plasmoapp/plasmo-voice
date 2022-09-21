@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.capture.VoiceActivation;
 
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -33,22 +33,21 @@ public final class HudIconRenderer {
         if (player == null) return;
 
         // todo: timed out
+        List<ClientActivation> activations = (List<ClientActivation>) voiceClient.getActivationManager().getActivations();
 
-        voiceClient.getAudioCapture()
-                .getActivationById(VoiceActivation.PROXIMITY_ID)
-                .ifPresent(activation -> {
-                    if (activation.isActivated()) {
-                        renderIcon(getActivationIconLocation(activation));
-                    }
-                });
+        ClientActivation currentActivation = null;
 
-        for (ClientActivation activation : voiceClient.getAudioCapture().getActivations()) {
+        for (int index = activations.size() - 1; index >= 0; index--) {
+            ClientActivation activation = activations.get(index);
+
             if (!activation.isActivated()) continue;
 
-            renderIcon(getActivationIconLocation(activation));
-
+            currentActivation = activation;
             if (!activation.isTransitive()) break;
         }
+
+        if (currentActivation != null)
+            renderIcon(getActivationIconLocation(currentActivation));
     }
 
     private void renderIcon(@NotNull ResourceLocation iconLocation) {
@@ -95,7 +94,7 @@ public final class HudIconRenderer {
 
     private ResourceLocation getActivationIconLocation(ClientActivation activation) {
         return cachedIconLocations.computeIfAbsent(
-                activation.getHudIconLocation(),
+                activation.getIcon(),
                 ResourceLocation::new
         );
     }

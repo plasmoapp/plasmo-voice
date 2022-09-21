@@ -2,21 +2,20 @@ package su.plo.voice.client.gui.settings.tab;
 
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
+import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.audio.capture.VoiceClientActivation;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.proto.data.capture.VoiceActivation;
 
 import java.util.Collection;
 
 public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
 
-    private final AudioCapture capture;
+    private final ClientActivationManager activations;
 
     public HotKeysTabWidget(MinecraftClientLib minecraft,
                             VoiceSettingsScreen parent,
@@ -24,7 +23,7 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
                             ClientConfig config) {
         super(minecraft, parent, voiceClient, config);
 
-        this.capture = voiceClient.getAudioCapture();
+        this.activations = voiceClient.getActivationManager();
     }
 
     @Override
@@ -36,9 +35,10 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
                 .asMap()
                 .forEach(this::createCategory);
 
-        capture.getActivationById(VoiceActivation.PROXIMITY_ID)
+        activations.getParentActivation()
                 .ifPresent(this::createActivation);
-        capture.getActivations().forEach(this::createActivation);
+        activations.getActivations()
+                .forEach(this::createActivation);
     }
 
     private void createActivation(ClientActivation activation) {

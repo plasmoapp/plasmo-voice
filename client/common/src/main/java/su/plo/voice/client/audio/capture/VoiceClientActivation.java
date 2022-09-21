@@ -15,8 +15,8 @@ import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.config.entry.IntConfigEntry;
-import su.plo.voice.proto.data.capture.Activation;
-import su.plo.voice.proto.data.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
 import java.util.ArrayList;
 import java.util.Optional;
@@ -48,12 +48,12 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     public VoiceClientActivation(@NotNull MinecraftClientLib minecraft,
                                  @NotNull ClientConfig config,
                                  @NotNull ConfigClientActivation activationConfig,
+                                 @NotNull IntConfigEntry activationDistance,
                                  @NotNull Activation activation) {
         super(
                 activation.getName(),
                 activation.getTranslation(),
-                activation.getHudIconLocation(),
-                activation.getSourceIconLocation(),
+                activation.getIcon(),
                 new ArrayList<>(activation.getDistances()),
                 activation.getDefaultDistance(),
                 activation.getWeight()
@@ -64,7 +64,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         ConfigKeyBindings hotKeys = config.getKeyBindings();
 
         // load values from config
-        this.configDistance = activationConfig.getConfigDistance();
+        this.configDistance = activationDistance;
         this.configType = activationConfig.getConfigType();
         this.configToggle = activationConfig.getConfigToggle();
 

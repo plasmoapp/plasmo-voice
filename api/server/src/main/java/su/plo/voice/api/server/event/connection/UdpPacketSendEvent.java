@@ -13,7 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This event is fired when the {@link su.plo.voice.api.server.socket.UdpServer}
  * is about to send packet to {@link UdpConnection}
  */
-public class UdpPacketSendEvent extends EventCancellableBase {
+public final class UdpPacketSendEvent extends EventCancellableBase {
 
     @Getter
     private final UdpConnection connection;

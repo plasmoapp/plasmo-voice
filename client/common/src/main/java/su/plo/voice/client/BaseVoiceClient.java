@@ -11,16 +11,20 @@ import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
+import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
+import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.VoiceClientInitializedEvent;
 import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
+import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
+import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
@@ -54,6 +58,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     private DeviceManager deviceManager;
     @Getter
     private AudioCapture audioCapture;
+    @Getter
+    private ClientActivationManager activationManager;
+    @Getter
+    private ClientSourceLineManager sourceLineManager;
 
     @Getter
     protected ClientConfig config;
@@ -73,6 +81,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         }
 
         this.deviceManager = new VoiceDeviceManager(this, config);
+        this.sourceLineManager = new VoiceClientSourceLineManager(config);
+        this.activationManager = new VoiceClientActivationManager(getMinecraft(), config);
         this.audioCapture = new VoiceAudioCapture(getMinecraft(), this, config);
 
         // hotkey actions

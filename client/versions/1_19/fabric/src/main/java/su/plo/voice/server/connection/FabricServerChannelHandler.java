@@ -48,7 +48,7 @@ public final class FabricServerChannelHandler extends BaseServerChannelHandler i
                                 (playerId) -> new PlayerChannelHandler(voiceServer, voicePlayer)
                         );
 
-                        packet.handle(channel);
+                        channel.handlePacket(packet);
                     });
         } catch (IOException e) {
             e.printStackTrace();

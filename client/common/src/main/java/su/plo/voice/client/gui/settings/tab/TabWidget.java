@@ -174,10 +174,10 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         );
     }
 
-    protected OptionEntry<VolumeSliderWidget> createDoubleSliderWidget(@NotNull String translatable,
-                                                                       @Nullable String tooltipTranslatable,
-                                                                       @NotNull DoubleConfigEntry entry,
-                                                                       @NotNull String suffix) {
+    protected OptionEntry<VolumeSliderWidget> createVolumeSlider(@NotNull String translatable,
+                                                                 @Nullable String tooltipTranslatable,
+                                                                 @NotNull DoubleConfigEntry entry,
+                                                                 @NotNull String suffix) {
         VolumeSliderWidget volumeSlider = new VolumeSliderWidget(
                 minecraft,
                 voiceClient.getKeyBindings(),
@@ -250,14 +250,14 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
     }
 
-    public final class OptionEntry<W extends GuiAbstractWidget> extends Entry {
+    public class OptionEntry<W extends GuiAbstractWidget> extends Entry {
 
-        private final TextComponent text;
-        private final List<TextComponent> tooltip;
-        private final W element;
-        private final IconButton resetButton;
-        private final @Nullable TabWidget.OptionResetAction<W> resetAction;
-        private final ConfigEntry<?> entry;
+        protected final TextComponent text;
+        protected final List<TextComponent> tooltip;
+        protected final W element;
+        protected final IconButton resetButton;
+        protected final @Nullable TabWidget.OptionResetAction<W> resetAction;
+        protected final ConfigEntry<?> entry;
 
         private final List<? extends GuiWidgetListener> widgets;
 
@@ -310,21 +310,12 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
         @Override
         public void render(@NotNull GuiRender render, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-//            render.fill(getContainerX0(), y, getContainerX1(), y + height, -0x7f3f3f40);
-
-            render.drawString(text, x, y + height / 2 - minecraft.getFont().getLineHeight() / 2, 0xFFFFFF);
+            renderText(render, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
 
             int elementY = y + height / 2 - element.getHeight() / 2;
 
-            element.setX(x + entryWidth - element.getWidth() - 24);
-            element.setY(elementY);
-            element.render(render, mouseX, mouseY, delta);
-
-            resetButton.setX(x + entryWidth - 20);
-            resetButton.setY(elementY);
-            resetButton.setActive(entry != null && !entry.isDefault());
-            resetButton.setIconColor(!resetButton.isActive() ? -0x5f5f60 : 0);
-            resetButton.render(render, mouseX, mouseY, delta);
+            renderElement(render, index, x, y, entryWidth, mouseX, mouseY, hovered, delta, elementY);
+            renderResetButton(render, index, x, y, entryWidth, mouseX, mouseY, hovered, delta, elementY);
 
             if (hovered && mouseX < element.getX()) {
                 setTooltip(tooltip);
@@ -347,7 +338,31 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             return widgets;
         }
 
-        private void onReset(@NotNull Button button) {
+        protected void renderText(@NotNull GuiRender render, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            render.drawString(text, x, y + height / 2 - minecraft.getFont().getLineHeight() / 2, 0xFFFFFF);
+        }
+
+        protected void renderElement(@NotNull GuiRender render, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
+                                     int elementY) {
+            element.setX(x + entryWidth - element.getWidth() - 24);
+            element.setY(elementY);
+            element.render(render, mouseX, mouseY, delta);
+        }
+
+        protected void renderResetButton(@NotNull GuiRender render, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
+                                         int elementY) {
+            resetButton.setX(x + entryWidth - 20);
+            resetButton.setY(elementY);
+            resetButton.setActive(entry != null && !isDefault());
+            resetButton.setIconColor(!resetButton.isActive() ? -0x5f5f60 : 0);
+            resetButton.render(render, mouseX, mouseY, delta);
+        }
+
+        protected boolean isDefault() {
+            return entry.isDefault();
+        }
+
+        protected void onReset(@NotNull Button button) {
             if (entry == null) return;
             entry.reset();
 
@@ -356,6 +371,48 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
             if (resetAction != null)
                 resetAction.onReset((IconButton) button, element);
+        }
+    }
+
+    public class ButtonOptionEntry<W extends GuiAbstractWidget> extends OptionEntry<W> {
+
+        private final List<Button> buttons;
+        private final List<GuiAbstractWidget> widgets;
+
+
+        public ButtonOptionEntry(@NotNull TextComponent text,
+                                 @NotNull W widget,
+                                 @NotNull List<Button> buttons,
+                                 @NotNull ConfigEntry<?> entry,
+                                 @NotNull List<TextComponent> tooltip,
+                                 @Nullable OptionResetAction<W> resetAction) {
+            super(text, widget, entry, tooltip, resetAction);
+
+            this.buttons = buttons;
+            this.widgets = Lists.newArrayList(element, resetButton);
+            widgets.addAll(buttons);
+
+            if (widgets.size() == 0) throw new IllegalArgumentException("buttons cannot be empty");
+        }
+
+        @Override
+        protected void renderElement(@NotNull GuiRender render, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta, int elementY) {
+            element.setX(x + entryWidth - element.getWidth() - 8 - resetButton.getWidth() - buttons.get(0).getWidth());
+            element.setY(elementY);
+            element.render(render, mouseX, mouseY, delta);
+
+            for (Button button : buttons) {
+                if (!button.isVisible()) continue;
+
+                button.setX(x + entryWidth - button.getWidth() - 24);
+                button.setY(elementY);
+                button.render(render, mouseX, mouseY, delta);
+            }
+        }
+
+        @Override
+        public List<? extends GuiWidgetListener> widgets() {
+            return widgets;
         }
     }
 

@@ -1,4 +1,4 @@
-package su.plo.voice.proto.data.capture;
+package su.plo.voice.proto.data.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -29,18 +29,13 @@ public interface Activation {
     @NotNull String getTranslation();
 
     /**
-     * Gets the activation's hud icon resource location
+     * Gets the activation's icon
      *
-     * @return the activation's icon resource location
-     */
-    @NotNull String getHudIconLocation();
-
-    /**
-     * Gets the activation's source icon resource location
+     * Minecraft ResourceLocation or base64 in format: "base64;<base64_string>"
      *
-     * @return the activation's source resource location
+     * @return the activation's icon
      */
-    @NotNull String getSourceIconLocation();
+    @NotNull String getIcon();
 
     /**
      * Gets the activation's available distances
@@ -100,6 +95,4 @@ public interface Activation {
     default int getWeight() {
         return 0;
     }
-
-    ;
 }
