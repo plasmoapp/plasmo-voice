@@ -1,17 +1,20 @@
 package su.plo.voice.client.audio.line;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.audio.line.ClientSourceLine;
+import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public final class VoiceClientSourceLineManager implements ClientSourceLineManager {
@@ -56,14 +59,15 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
     }
 
     @Override
+    public @NotNull ClientSourceLine register(@NotNull SourceLine line) {
+        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
+        return new VoiceClientSourceLine(volumeEntry, line);
+    }
+
+    @Override
     public @NotNull Collection<ClientSourceLine> register(@NotNull Collection<SourceLine> lines) {
-        List<ClientSourceLine> registered = Lists.newArrayList();
-
-        for (SourceLine line : lines) {
-            DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
-            registered.add(register(new VoiceClientSourceLine(volumeEntry, line)));
-        }
-
-        return registered;
+        return lines.stream()
+                .map(this::register)
+                .collect(Collectors.toList());
     }
 }

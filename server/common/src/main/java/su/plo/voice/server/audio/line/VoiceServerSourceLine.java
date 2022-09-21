@@ -7,13 +7,14 @@ import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.proto.packets.tcp.clientbound.SourceLineRegisterPacket;
 
 @ToString(callSuper = true)
 public class VoiceServerSourceLine extends VoiceSourceLine implements ServerSourceLine {
 
-    private final PlasmoVoiceServer voiceServer;
+    protected final PlasmoVoiceServer voiceServer;
     @Getter
-    private final AddonContainer addon;
+    protected final AddonContainer addon;
 
     public VoiceServerSourceLine(@NotNull PlasmoVoiceServer voiceServer,
                                  @NotNull AddonContainer addon,
@@ -31,6 +32,15 @@ public class VoiceServerSourceLine extends VoiceSourceLine implements ServerSour
     public void setIcon(@NotNull String icon) {
         this.icon = icon;
 
-        // todo: send update
+    }
+
+    /**
+     * Broadcasts {@link SourceLineRegisterPacket}
+     */
+    public void update() {
+        voiceServer.getTcpConnectionManager().broadcast(
+                new SourceLineRegisterPacket(this),
+                null
+        );
     }
 }

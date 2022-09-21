@@ -45,7 +45,8 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     @Override
     public void broadcast(@NotNull Packet<ClientPacketTcpHandler> packet, @Nullable Predicate<VoicePlayer> filter) {
         for (VoicePlayer player : voiceServer.getPlayerManager().getPlayers()) {
-            if (filter == null || filter.test(player)) player.sendPacket(packet);
+            if ((filter == null || filter.test(player)) && player.hasVoiceChat())
+                player.sendPacket(packet);
         }
     }
 

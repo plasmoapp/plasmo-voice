@@ -3,16 +3,19 @@ package su.plo.voice.server.audio.line;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.audio.line.PlayersSourceLine;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.audio.line.ServerPlayersSourceLine;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerAddPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerRemovePacket;
+import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayersClearPacket;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
 @ToString(callSuper = true)
-public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine implements ServerPlayersSourceLine {
+public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine implements ServerSourceLine, PlayersSourceLine {
 
     private final Set<UUID> players = new HashSet<>();
 
@@ -26,19 +29,35 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
     }
 
     @Override
-    public void addPlayer(@NotNull VoicePlayer player) {
-        players.add(player.getUUID());
-        // todo: send update
-    }
+    public void addPlayer(@NotNull UUID playerId) {
+        players.add(playerId);
 
-    @Override
-    public boolean removePlayer(@NotNull VoicePlayer player) {
-        return removePlayer(player.getUUID());
+        voiceServer.getTcpConnectionManager().broadcast(
+                new SourceLinePlayerAddPacket(id, playerId),
+                null
+        );
     }
 
     @Override
     public boolean removePlayer(@NotNull UUID playerId) {
-        // todo: send update
-        return players.remove(playerId);
+        if (players.remove(playerId)) {
+            voiceServer.getTcpConnectionManager().broadcast(
+                    new SourceLinePlayerRemovePacket(id, playerId),
+                    null
+            );
+
+            return true;
+        }
+
+        return false;
+    }
+
+    @Override
+    public void clearPlayers() {
+        players.clear();
+        voiceServer.getTcpConnectionManager().broadcast(
+                new SourceLinePlayersClearPacket(id),
+                null
+        );
     }
 }

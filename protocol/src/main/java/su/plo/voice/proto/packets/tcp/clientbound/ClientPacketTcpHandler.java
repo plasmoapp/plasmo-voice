@@ -20,4 +20,14 @@ public interface ClientPacketTcpHandler extends PacketTcpHandler {
     void handle(@NotNull SourceAudioEndPacket packet);
 
     void handle(@NotNull SourceInfoPacket packet);
+
+    void handle(@NotNull SourceLineRegisterPacket packet);
+
+    void handle(@NotNull SourceLineUnregisterPacket packet);
+
+    void handle(@NotNull SourceLinePlayerAddPacket packet);
+
+    void handle(@NotNull SourceLinePlayerRemovePacket packet);
+
+    void handle(@NotNull SourceLinePlayersClearPacket packet);
 }

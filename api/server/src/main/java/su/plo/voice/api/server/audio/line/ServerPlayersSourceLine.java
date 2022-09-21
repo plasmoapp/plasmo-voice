@@ -1,15 +1,6 @@
 package su.plo.voice.api.server.audio.line;
 
-import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.audio.line.PlayersSourceLine;
 
-import java.util.UUID;
-
-public interface ServerPlayersSourceLine extends ServerSourceLine {
-
-    void addPlayer(@NotNull VoicePlayer player);
-
-    boolean removePlayer(@NotNull VoicePlayer player);
-
-    boolean removePlayer(@NotNull UUID playerId);
+public interface ServerPlayersSourceLine extends ServerSourceLine, PlayersSourceLine {
 }

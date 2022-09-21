@@ -9,6 +9,7 @@ import su.plo.voice.api.server.audio.line.ServerPlayersSourceLine;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.proto.packets.tcp.clientbound.SourceLineUnregisterPacket;
 
 import java.util.Collection;
 import java.util.Map;
@@ -61,14 +62,19 @@ public final class VoiceServerSourceLineManager implements ServerSourceLineManag
 
         return lineById.computeIfAbsent(
                 VoiceSourceLine.generateId(name),
-                (id) -> new VoiceServerSourceLine(
-                        voiceServer,
-                        addon.get(),
-                        name,
-                        translation,
-                        icon,
-                        weight
-                )
+                (id) -> {
+                    VoiceServerSourceLine sourceLine = new VoiceServerSourceLine(
+                            voiceServer,
+                            addon.get(),
+                            name,
+                            translation,
+                            icon,
+                            weight
+                    );
+
+                    sourceLine.update();
+                    return sourceLine;
+                }
         );
     }
 
@@ -83,20 +89,33 @@ public final class VoiceServerSourceLineManager implements ServerSourceLineManag
 
         return (ServerPlayersSourceLine) lineById.computeIfAbsent(
                 VoiceSourceLine.generateId(name),
-                (id) -> new VoiceServerPlayersSourceLine(
-                        voiceServer,
-                        addon.get(),
-                        name,
-                        translation,
-                        icon,
-                        weight
-                )
+                (id) -> {
+                    VoiceServerPlayersSourceLine sourceLine = new VoiceServerPlayersSourceLine(
+                            voiceServer,
+                            addon.get(),
+                            name,
+                            translation,
+                            icon,
+                            weight
+                    );
+
+                    sourceLine.update();
+                    return sourceLine;
+                }
         );
     }
 
     @Override
     public boolean unregister(@NotNull UUID id) {
-        return lineById.remove(id) != null;
+        if (lineById.remove(id) != null) {
+            voiceServer.getTcpConnectionManager().broadcast(
+                    new SourceLineUnregisterPacket(id),
+                    null
+            );
+            return true;
+        }
+
+        return false;
     }
 
     @Override

@@ -1,6 +1,5 @@
 package su.plo.voice.client.connection;
 
-import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -8,7 +7,9 @@ import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.OutputDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
+import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
+import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.connection.ServerInfoUpdateEvent;
@@ -28,12 +29,21 @@ import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-@AllArgsConstructor
 public abstract class BaseServerConnection implements ServerConnection, ClientPacketTcpHandler {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final BaseVoiceClient voiceClient;
+    private final ClientSourceLineManager sourceLines;
+    private final ClientActivationManager activations;
+    private final ClientSourceManager sources;
+
+    public BaseServerConnection(@NotNull BaseVoiceClient voiceClient) {
+        this.voiceClient = voiceClient;
+        this.sourceLines = voiceClient.getSourceLineManager();
+        this.activations = voiceClient.getActivationManager();
+        this.sources = voiceClient.getSourceManager();
+    }
 
     @Override
     public void handle(@NotNull ConnectionPacket packet) {
@@ -199,12 +209,40 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull SourceAudioEndPacket packet) {
-        voiceClient.getSourceManager().getSourceById(packet.getSourceId())
+        sources.getSourceById(packet.getSourceId())
                 .ifPresent(source -> source.process(packet));
     }
 
     @Override
     public void handle(@NotNull SourceInfoPacket packet) {
-        voiceClient.getSourceManager().update(packet.getSourceInfo());
+        sources.update(packet.getSourceInfo());
+    }
+
+    @Override
+    public void handle(@NotNull SourceLineRegisterPacket packet) {
+        sourceLines.register(packet.getSourceLine());
+    }
+
+    @Override
+    public void handle(@NotNull SourceLineUnregisterPacket packet) {
+        sourceLines.unregister(packet.getLineId());
+    }
+
+    @Override
+    public void handle(@NotNull SourceLinePlayerAddPacket packet) {
+        sourceLines.getLineById(packet.getLineId())
+                .ifPresent((line) -> line.addPlayer(packet.getPlayerId()));
+    }
+
+    @Override
+    public void handle(@NotNull SourceLinePlayerRemovePacket packet) {
+        sourceLines.getLineById(packet.getLineId())
+                .ifPresent((line) -> line.removePlayer(packet.getPlayerId()));
+    }
+
+    @Override
+    public void handle(@NotNull SourceLinePlayersClearPacket packet) {
+        sourceLines.getLineById(packet.getLineId())
+                .ifPresent(ClientSourceLine::clearPlayers);
     }
 }

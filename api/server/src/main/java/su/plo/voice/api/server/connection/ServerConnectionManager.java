@@ -11,5 +11,8 @@ import java.util.function.Predicate;
 // todo: doc
 public interface ServerConnectionManager<T extends PacketHandler> {
 
+    /**
+     * Broadcasts packet to all players with voice chat installed
+     */
     void broadcast(@NotNull Packet<T> packet, @Nullable Predicate<VoicePlayer> filter);
 }
