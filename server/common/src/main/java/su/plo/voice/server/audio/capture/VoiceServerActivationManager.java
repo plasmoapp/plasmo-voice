@@ -8,8 +8,12 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.player.PlayerManager;
+import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.ActivationUnregisterPacket;
 import su.plo.voice.server.config.ServerConfig;
+import su.plo.voice.server.player.BaseVoicePlayer;
 
 import java.util.*;
 
@@ -70,32 +74,52 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
         return activationById.computeIfAbsent(
                 VoiceActivation.generateId(name),
-                (id) -> new VoiceServerActivation(
-                        voiceServer,
-                        addon.get(),
-                        name,
-                        translation,
-                        icon,
-                        distances,
-                        defaultDistance,
-                        transitive,
-                        weight
-                )
+                (id) -> {
+                    VoiceServerActivation activation = new VoiceServerActivation(
+                            voiceServer,
+                            addon.get(),
+                            name,
+                            translation,
+                            icon,
+                            distances,
+                            defaultDistance,
+                            transitive,
+                            weight
+                    );
+
+                    voiceServer.getTcpConnectionManager()
+                            .broadcast(new ActivationRegisterPacket(activation));
+
+                    return activation;
+                }
         );
     }
 
     @Override
     public boolean unregister(@NotNull UUID id) {
-        return activationById.remove(id) != null;
+        ServerActivation activation = activationById.remove(id);
+        if (activation != null) {
+            players.getPlayers()
+                    .stream()
+                    .filter(VoicePlayer::hasVoiceChat)
+                    .forEach((player) -> ((BaseVoicePlayer) player).removeActivationDistance(activation));
+
+            voiceServer.getTcpConnectionManager()
+                    .broadcast(new ActivationUnregisterPacket(activation.getId()));
+
+            return true;
+        }
+
+        return false;
     }
 
     @Override
     public boolean unregister(@NotNull String name) {
-        return activationById.remove(VoiceActivation.generateId(name)) != null;
+        return unregister(VoiceActivation.generateId(name));
     }
 
     @Override
     public boolean unregister(@NotNull ServerActivation activation) {
-        return activationById.remove(activation.getId()) != null;
+        return unregister(activation.getId());
     }
 }

@@ -16,19 +16,21 @@ public interface TcpServerConnectionManager extends ServerConnectionManager<Clie
     /**
      * Sends {@link su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket} to the player
      *
-     * @param player the player
+     * @param receiver the player
      */
-    void sendConfigInfo(@NotNull VoicePlayer player);
+    void sendConfigInfo(@NotNull VoicePlayer receiver);
 
     /**
      * Sends {@link su.plo.voice.proto.packets.tcp.clientbound.PlayerListPacket} to the player
      *
-     * @param player the player
+     * @param receiver the player
      */
-    void sendPlayerList(@NotNull VoicePlayer player);
+    void sendPlayerList(@NotNull VoicePlayer receiver);
 
     /**
      * Sends {@link su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket} to all connected players
+     *
+     * @param player the player
      */
-    void sendPlayerInfoUpdate(@NotNull VoicePlayer player);
+    void broadcastPlayerInfoUpdate(@NotNull VoicePlayer player);
 }

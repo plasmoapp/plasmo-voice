@@ -1,5 +1,7 @@
 package su.plo.voice.client.connection;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -22,12 +24,17 @@ import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.socket.NettyUdpClient;
 import su.plo.voice.proto.data.EncryptionInfo;
+import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 public abstract class BaseServerConnection implements ServerConnection, ClientPacketTcpHandler {
 
@@ -38,11 +45,23 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     private final ClientActivationManager activations;
     private final ClientSourceManager sources;
 
+    private final Map<UUID, VoicePlayerInfo> playerById = Maps.newConcurrentMap();
+
     public BaseServerConnection(@NotNull BaseVoiceClient voiceClient) {
         this.voiceClient = voiceClient;
         this.sourceLines = voiceClient.getSourceLineManager();
         this.activations = voiceClient.getActivationManager();
         this.sources = voiceClient.getSourceManager();
+    }
+
+    @Override
+    public Collection<VoicePlayerInfo> getPlayers() {
+        return playerById.values();
+    }
+
+    @Override
+    public Optional<VoicePlayerInfo> getPlayerById(@NotNull UUID playerId) {
+        return Optional.ofNullable(playerById.get(playerId));
     }
 
     @Override
@@ -108,54 +127,26 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         voiceClient.setServerInfo(serverInfo);
 
-        // update distances in client config
-        // todo: wtf? rework to activation system
         Optional<ClientConfig.Server> configServer = voiceClient.getConfig().getServers().getById(serverInfo.getServerId());
-        if (configServer.isPresent()) {
-            ClientConfig.Server server = configServer.get();
-
-//            // set default distance
-//            int defaultDistance = serverInfo.getVoiceInfo().getDefaultDistance();
-//            server.getDistance().setDefault(defaultDistance);
-//            if (!serverInfo.getVoiceInfo().getDistances().contains(server.getDistance().value())) {
-//                server.getDistance().set(defaultDistance);
-//            }
-//
-//            // set default priority distance
-//            int maxPriorityDistance = serverInfo.getVoiceInfo().getMaxPriorityDistance();
-//            if (maxPriorityDistance == 0) maxPriorityDistance = Short.MAX_VALUE;
-//            int defaultPriorityDistance = Math.min(maxPriorityDistance, serverInfo.getVoiceInfo().getDefaultDistance() * 2);
-//            server.getPriorityDistance().setDefault(defaultPriorityDistance);
-//
-//            if (server.getPriorityDistance().value() > maxPriorityDistance) {
-//                server.getPriorityDistance().set(defaultPriorityDistance);
-//            }
-        } else {
+        if (!configServer.isPresent()) { // put config server if it doesn't exist
             voiceClient.getConfig().getServers().put(
                     serverInfo.getServerId(),
                     new ClientConfig.Server()
             );
-
-//            // set default distance
-//            int defaultDistance = serverInfo.getVoiceInfo().getDefaultDistance();
-//            server.getDistance().set(defaultDistance);
-//            server.getDistance().setDefault(defaultDistance);
-//
-//            // set default priority distance
-//            int maxPriorityDistance = serverInfo.getVoiceInfo().getMaxPriorityDistance();
-//            if (maxPriorityDistance == 0) maxPriorityDistance = Short.MAX_VALUE;
-//            int defaultPriorityDistance = Math.min(maxPriorityDistance, serverInfo.getVoiceInfo().getDefaultDistance() * 2);
-//            server.getPriorityDistance().setDefault(defaultPriorityDistance);
-//            server.getPriorityDistance().set(defaultPriorityDistance);
         }
 
         // register source lines
         ClientSourceLineManager sourceLines = voiceClient.getSourceLineManager();
         sourceLines.register(serverInfo.getVoiceInfo().getSourceLines());
 
-        // register activations
+        // register activations & send activations distances to the server
+        Map<UUID, Integer> distanceByActivationId = Maps.newHashMap();
+
         ClientActivationManager activations = voiceClient.getActivationManager();
-        activations.register(serverInfo.getServerId(), serverInfo.getVoiceInfo().getActivations());
+        activations.register(serverInfo.getServerId(), serverInfo.getVoiceInfo().getActivations())
+                .forEach((activation) -> distanceByActivationId.put(activation.getId(), activation.getDistance()));
+
+        sendPacket(new PlayerActivationDistancesPacket(distanceByActivationId));
 
         // initialize capture
         AudioCapture audioCapture = voiceClient.getAudioCapture();
@@ -185,7 +176,11 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull PlayerInfoRequestPacket packet) {
-        sendPacket(new PlayerInfoPacket(voiceClient.getVersion()));
+        sendPacket(new PlayerInfoPacket(
+                voiceClient.getVersion(),
+                voiceClient.getConfig().getVoice().getDisabled().value(),
+                voiceClient.getConfig().getVoice().getMicrophoneDisabled().value()
+        ));
     }
 
     @Override
@@ -244,5 +239,21 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull SourceLinePlayersClearPacket packet) {
         sourceLines.getLineById(packet.getLineId())
                 .ifPresent(ClientSourceLine::clearPlayers);
+    }
+
+    @Override
+    public void handle(@NotNull ActivationRegisterPacket packet) {
+        Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
+        if (!serverInfo.isPresent()) return;
+
+        activations.register(
+                serverInfo.get().getServerId(),
+                Lists.newArrayList(packet.getActivation())
+        );
+    }
+
+    @Override
+    public void handle(@NotNull ActivationUnregisterPacket packet) {
+        activations.unregister(packet.getActivationId());
     }
 }

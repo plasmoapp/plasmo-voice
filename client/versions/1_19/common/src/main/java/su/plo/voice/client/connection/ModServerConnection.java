@@ -14,7 +14,8 @@ public final class ModServerConnection extends BaseServerConnection {
 
     private final Connection connection;
 
-    public ModServerConnection(@NotNull Connection connection, @NotNull BaseVoiceClient voiceClient) {
+    public ModServerConnection(@NotNull Connection connection,
+                               @NotNull BaseVoiceClient voiceClient) {
         super(voiceClient);
         this.connection = connection;
     }

@@ -53,10 +53,10 @@ public interface KeyBinding {
         SCANCODE,
         MOUSE;
 
-        private final Map<Integer, Key> map = Maps.newHashMap();
+        private final Map<Integer, Key> keys = Maps.newHashMap();
 
         public Key getOrCreate(int keyCode) {
-            return map.computeIfAbsent(keyCode, (k) -> new Key(this, keyCode));
+            return keys.computeIfAbsent(keyCode, (k) -> new Key(this, keyCode));
         }
     }
 

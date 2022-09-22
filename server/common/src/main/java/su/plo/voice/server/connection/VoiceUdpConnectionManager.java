@@ -127,4 +127,9 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
                 connection.sendPacket(packet);
         }
     }
+
+    @Override
+    public void broadcast(@NotNull Packet<ClientPacketUdpHandler> packet) {
+        broadcast(packet, null);
+    }
 }

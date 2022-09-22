@@ -2,6 +2,7 @@ package su.plo.voice.server.connection;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
@@ -74,9 +75,18 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
         voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
 
-        // todo: broadcast player state update packet
+        voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
+    }
 
-//        voiceServer.getTcpConnectionManager().broadcast();
+    @Override
+    public void handle(@NotNull PlayerActivationDistancesPacket packet) {
+        BaseVoicePlayer voicePlayer = (BaseVoicePlayer) player;
+        packet.getDistanceByActivationId().forEach((activationId, distance) -> {
+            Optional<ServerActivation> activation = voiceServer.getActivationManager().getActivationById(activationId);
+            if (!activation.isPresent()) return;
+
+            voicePlayer.setActivationDistance(activation.get(), distance);
+        });
     }
 
     @Override

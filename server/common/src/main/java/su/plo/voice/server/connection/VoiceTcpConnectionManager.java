@@ -51,6 +51,11 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     }
 
     @Override
+    public void broadcast(@NotNull Packet<ClientPacketTcpHandler> packet) {
+        broadcast(packet, null);
+    }
+
+    @Override
     public void connect(@NotNull VoicePlayer player) {
         UUID secret = voiceServer.getUdpConnectionManager().getSecretByPlayerId(player.getUUID());
 
@@ -79,11 +84,11 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     }
 
     @Override
-    public void sendConfigInfo(@NotNull VoicePlayer player) {
+    public void sendConfigInfo(@NotNull VoicePlayer receiver) {
         ServerConfig config = voiceServer.getConfig();
         ServerConfig.Voice voiceConfig = config.getVoice();
 
-        player.sendPacket(new ConfigPacket(
+        receiver.sendPacket(new ConfigPacket(
                 UUID.fromString(config.getServerId()),
                 voiceConfig.getSampleRate(),
                 "opus",
@@ -97,27 +102,27 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                         .stream()
                         .map(activation -> (VoiceActivation) activation) // waytoodank
                         .collect(Collectors.toList()),
-                getPlayerPermissions(player)
+                getPlayerPermissions(receiver)
         ));
     }
 
     @Override
-    public void sendPlayerList(@NotNull VoicePlayer player) {
+    public void sendPlayerList(@NotNull VoicePlayer receiver) {
         synchronized (playerStateLock) {
             List<VoicePlayerInfo> players = new ArrayList<>();
 
             for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
-                if (player.canSee(connection.getPlayer())) {
+                if (receiver.canSee(connection.getPlayer())) {
                     players.add(connection.getPlayer().getInfo());
                 }
             }
 
-            player.sendPacket(new PlayerListPacket(players));
+            receiver.sendPacket(new PlayerListPacket(players));
         }
     }
 
     @Override
-    public void sendPlayerInfoUpdate(@NotNull VoicePlayer player) {
+    public void broadcastPlayerInfoUpdate(@NotNull VoicePlayer player) {
         synchronized (playerStateLock) {
             broadcast(new PlayerInfoUpdatePacket(
                     player.getInfo()

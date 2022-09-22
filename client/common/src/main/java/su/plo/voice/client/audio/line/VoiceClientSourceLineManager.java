@@ -60,8 +60,13 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     @Override
     public @NotNull ClientSourceLine register(@NotNull SourceLine line) {
-        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
-        return new VoiceClientSourceLine(volumeEntry, line);
+        return lineById.computeIfAbsent(
+                line.getId(),
+                (id) -> {
+                    DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
+                    return new VoiceClientSourceLine(volumeEntry, line);
+                }
+        );
     }
 
     @Override

@@ -8,10 +8,10 @@ import java.util.Map;
 
 public final class ResourceCache {
 
-    private final Map<String, ResourceLocation> resourceLocations = Maps.newConcurrentMap();
+    private final Map<String, ResourceLocation> locationByString = Maps.newConcurrentMap();
 
     public ResourceLocation getLocation(@NotNull String resourceLocation) {
-        return resourceLocations.computeIfAbsent(
+        return locationByString.computeIfAbsent(
                 resourceLocation,
                 ResourceLocation::new
         );

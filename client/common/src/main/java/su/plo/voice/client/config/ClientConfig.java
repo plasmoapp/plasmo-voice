@@ -73,14 +73,14 @@ public final class ClientConfig {
     @Data
     public static class Servers implements SerializableConfigEntry {
 
-        private final Map<UUID, Server> servers = Maps.newConcurrentMap();
+        private final Map<UUID, Server> serverById = Maps.newConcurrentMap();
 
         public void put(@NotNull UUID serverId, Server server) {
-            servers.put(serverId, server);
+            serverById.put(serverId, server);
         }
 
         public Optional<Server> getById(@NotNull UUID serverId) {
-            return Optional.ofNullable(servers.get(serverId));
+            return Optional.ofNullable(serverById.get(serverId));
         }
 
         @Override
@@ -99,7 +99,7 @@ public final class ClientConfig {
         public Object serialize() {
             Map<String, Object> serialized = Maps.newHashMap();
 
-            servers.forEach((serverId, server) ->
+            serverById.forEach((serverId, server) ->
                     serialized.put(serverId.toString(), toml.serialize(server))
             );
 
@@ -276,8 +276,8 @@ public final class ClientConfig {
         @Data
         public static class SourceLineVolumes implements SerializableConfigEntry {
 
-            private Map<String, DoubleConfigEntry> volumes = Maps.newHashMap();
-            private Map<String, ConfigEntry<Boolean>> mutes = Maps.newHashMap();
+            private Map<String, DoubleConfigEntry> volumeByLineName = Maps.newHashMap();
+            private Map<String, ConfigEntry<Boolean>> muteByLineName = Maps.newHashMap();
 
             public SourceLineVolumes() {
             }
@@ -287,7 +287,7 @@ public final class ClientConfig {
             }
 
             public synchronized DoubleConfigEntry getVolume(@NotNull String lineName) {
-                return volumes.computeIfAbsent(
+                return volumeByLineName.computeIfAbsent(
                         lineName,
                         (c) -> new DoubleConfigEntry(1D, 0D, 2D)
                 );
@@ -298,7 +298,7 @@ public final class ClientConfig {
             }
 
             public synchronized ConfigEntry<Boolean> getMute(@NotNull String category) {
-                return mutes.computeIfAbsent(
+                return muteByLineName.computeIfAbsent(
                         category,
                         (c) -> new ConfigEntry<>(false)
                 );
@@ -324,7 +324,7 @@ public final class ClientConfig {
             public synchronized Object serialize() {
                 Map<String, Map<String, Object>> serialized = Maps.newHashMap();
 
-                volumes.forEach((key, entry) -> {
+                volumeByLineName.forEach((key, entry) -> {
                     Map<String, Object> value = Maps.newHashMap();
 
                     if (!entry.isDefault()) {
@@ -333,7 +333,7 @@ public final class ClientConfig {
                     }
                 });
 
-                mutes.forEach((key, entry) -> {
+                muteByLineName.forEach((key, entry) -> {
                     Map<String, Object> value = serialized.getOrDefault(key, Maps.newHashMap());
 
                     if (!entry.isDefault()) {

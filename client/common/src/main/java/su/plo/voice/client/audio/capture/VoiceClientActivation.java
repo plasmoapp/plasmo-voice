@@ -1,11 +1,13 @@
 package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.Config;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.lib.client.MinecraftClientLib;
+import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.util.AudioUtil;
@@ -17,15 +19,19 @@ import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 
 import java.util.ArrayList;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Config
 public final class VoiceClientActivation extends VoiceActivation implements ClientActivation {
 
     private final MinecraftClientLib minecraft;
+    private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
 
     private final IntConfigEntry configDistance;
@@ -46,6 +52,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     private long lastActivation;
 
     public VoiceClientActivation(@NotNull MinecraftClientLib minecraft,
+                                 @NotNull PlasmoVoiceClient voiceClient,
                                  @NotNull ClientConfig config,
                                  @NotNull ConfigClientActivation activationConfig,
                                  @NotNull IntConfigEntry activationDistance,
@@ -60,6 +67,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         );
 
         this.minecraft = minecraft;
+        this.voiceClient = voiceClient;
         this.config = config;
         ConfigKeyBindings hotKeys = config.getKeyBindings();
 
@@ -77,6 +85,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         toggleKey.value().onPress(this::onToggle);
         distanceIncreaseKey.value().onPress(this::onDistanceIncrease);
         distanceDecreaseKey.value().onPress(this::onDistanceDecrease);
+        activationDistance.onUpdate(this::onDistanceChange);
     }
 
     @Override
@@ -218,6 +227,16 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         configDistance.set(distances.get(index));
 
         sendDistanceChangedMessage();
+    }
+
+    private void onDistanceChange(int distance) {
+        voiceClient.getServerConnection()
+                .ifPresent((connection) -> {
+                    Map<UUID, Integer> distanceByActivationId = Maps.newHashMap();
+                    distanceByActivationId.put(id, distance);
+
+                    connection.sendPacket(new PlayerActivationDistancesPacket(distanceByActivationId));
+                });
     }
 
     private void sendDistanceChangedMessage() {

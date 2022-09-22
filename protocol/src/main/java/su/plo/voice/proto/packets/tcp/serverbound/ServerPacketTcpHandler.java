@@ -9,6 +9,8 @@ public interface ServerPacketTcpHandler extends PacketTcpHandler {
 
     void handle(@NotNull PlayerStatePacket packet);
 
+    void handle(@NotNull PlayerActivationDistancesPacket packet);
+
     void handle(@NotNull PlayerAudioEndPacket packet);
 
     void handle(@NotNull SourceInfoRequestPacket packet);

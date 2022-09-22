@@ -1,6 +1,5 @@
 package su.plo.voice.client.render;
 
-import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import com.mojang.math.Matrix4f;
@@ -21,15 +20,14 @@ import net.minecraft.world.scores.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
-import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.audio.source.ModClientStaticSource;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.lib.client.texture.ResourceCache;
 import su.plo.voice.proto.data.pos.Pos3d;
 
-import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -58,7 +56,7 @@ public final class SourceIconRenderer {
     private final ClientConfig config;
 
     // cache resource locations to avoid unnecessary allocations on render
-    private final Map<String, ResourceLocation> cachedIconLocations = Maps.newHashMap();
+    private final ResourceCache resources = new ResourceCache();
 
     public void renderEntity(@NotNull Entity entity,
                              double distance,
@@ -213,13 +211,6 @@ public final class SourceIconRenderer {
         builder.uv2(light);
         builder.normal(0F, 0F, -1F);
         builder.endVertex();
-    }
-
-    private ResourceLocation getSourceIconLocation(ClientActivation activation) {
-        return cachedIconLocations.computeIfAbsent(
-                activation.getIcon(),
-                ResourceLocation::new
-        );
     }
 
     private boolean isIconHidden() {

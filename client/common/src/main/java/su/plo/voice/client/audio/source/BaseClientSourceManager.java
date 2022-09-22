@@ -22,7 +22,7 @@ import java.util.UUID;
 public abstract class BaseClientSourceManager implements ClientSourceManager {
 
     protected final Map<UUID, ClientAudioSource<?>> sourceById = Maps.newConcurrentMap();
-    protected final Map<UUID, Long> sourceRequests = Maps.newConcurrentMap();
+    protected final Map<UUID, Long> sourceRequestById = Maps.newConcurrentMap();
 
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
@@ -37,7 +37,7 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
         if (!request) return Optional.empty();
 
         // request source
-        long lastRequest = sourceRequests.getOrDefault(sourceId, 0L);
+        long lastRequest = sourceRequestById.getOrDefault(sourceId, 0L);
         if (System.currentTimeMillis() - lastRequest > 1_000L)
             sendSourceInfoRequest(sourceId);
 
@@ -108,14 +108,14 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
             throw new IllegalArgumentException("Invalid source type");
         }
 
-        sourceRequests.remove(sourceInfo.getId());
+        sourceRequestById.remove(sourceInfo.getId());
     }
 
     @Override
     public void sendSourceInfoRequest(@NotNull UUID sourceId) {
         if (!voiceClient.getServerConnection().isPresent()) throw new IllegalStateException("Not connected");
 
-        sourceRequests.put(sourceId, System.currentTimeMillis());
+        sourceRequestById.put(sourceId, System.currentTimeMillis());
         voiceClient.getServerConnection().get().sendPacket(
                 new SourceInfoRequestPacket(sourceId)
         );

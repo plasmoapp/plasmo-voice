@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.MinecraftClientLib;
+import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.client.config.ClientConfig;
@@ -23,6 +24,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final MinecraftClientLib minecraft;
+    private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
 
     private ClientActivation parentActivation;
@@ -65,6 +67,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
             ClientActivation activation = register(new VoiceClientActivation(
                     minecraft,
+                    voiceClient,
                     config,
                     activationConfig,
                     activationDistance,
@@ -101,6 +104,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
             this.parentActivation = new VoiceClientActivation(
                     minecraft,
+                    voiceClient,
                     config,
                     activationConfig,
                     activationDistance,

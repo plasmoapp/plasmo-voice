@@ -17,6 +17,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
 
 import java.util.List;
 import java.util.Optional;
@@ -105,6 +106,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                     disableMicrophoneButtons.get(0).setVisible(false);
                     disableMicrophoneButtons.get(1).setVisible(true);
                     config.getVoice().getMicrophoneDisabled().set(true);
+
+                    sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
@@ -134,6 +137,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                         this.disableVoiceButtons.get(1).setVisible(false);
                         config.getVoice().getDisabled().set(false);
                     }
+
+                    sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
@@ -175,6 +180,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                         disableMicrophoneButtons.get(0).setVisible(false);
                         disableMicrophoneButtons.get(1).setVisible(true);
                     }
+
+                    sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
@@ -203,6 +210,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                         disableMicrophoneButtons.get(0).setVisible(true);
                         disableMicrophoneButtons.get(1).setVisible(false);
                     }
+
+                    sendStateUpdate();
                 },
                 (button, matrices, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
@@ -416,5 +425,15 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         width += (tabButtons.size() - 1) * 4;
 
         return width;
+    }
+
+    private void sendStateUpdate() {
+        voiceClient.getServerConnection()
+                .ifPresent((connection) -> {
+                    connection.sendPacket(new PlayerStatePacket(
+                            config.getVoice().getDisabled().value(),
+                            config.getVoice().getMicrophoneDisabled().value()
+                    ));
+                });
     }
 }

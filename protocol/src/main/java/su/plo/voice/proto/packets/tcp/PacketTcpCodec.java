@@ -7,10 +7,7 @@ import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
-import su.plo.voice.proto.packets.tcp.serverbound.SourceInfoRequestPacket;
+import su.plo.voice.proto.packets.tcp.serverbound.*;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -26,14 +23,26 @@ public class PacketTcpCodec {
         PACKETS.register(++lastPacketId, PlayerInfoRequestPacket.class);
         PACKETS.register(++lastPacketId, ConfigPacket.class);
         PACKETS.register(++lastPacketId, ConfigPlayerInfoPacket.class);
+
         PACKETS.register(++lastPacketId, PlayerListPacket.class);
         PACKETS.register(++lastPacketId, PlayerInfoUpdatePacket.class);
         PACKETS.register(++lastPacketId, PlayerInfoPacket.class);
         PACKETS.register(++lastPacketId, PlayerStatePacket.class);
         PACKETS.register(++lastPacketId, PlayerAudioEndPacket.class);
+        PACKETS.register(++lastPacketId, PlayerActivationDistancesPacket.class);
+
         PACKETS.register(++lastPacketId, SourceInfoRequestPacket.class);
         PACKETS.register(++lastPacketId, SourceInfoPacket.class);
         PACKETS.register(++lastPacketId, SourceAudioEndPacket.class);
+
+        PACKETS.register(++lastPacketId, ActivationRegisterPacket.class);
+        PACKETS.register(++lastPacketId, ActivationUnregisterPacket.class);
+
+        PACKETS.register(++lastPacketId, SourceLineRegisterPacket.class);
+        PACKETS.register(++lastPacketId, SourceLineUnregisterPacket.class);
+        PACKETS.register(++lastPacketId, SourceLinePlayerAddPacket.class);
+        PACKETS.register(++lastPacketId, SourceLinePlayerRemovePacket.class);
+        PACKETS.register(++lastPacketId, SourceLinePlayersClearPacket.class);
     }
 
     public static byte[] encode(Packet<?> packet) {
