@@ -25,6 +25,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.socket.NettyUdpClient;
 import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
@@ -194,12 +195,13 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull PlayerListPacket packet) {
-
+        packet.getPlayers()
+                .forEach((player) -> playerById.put(player.getPlayerId(), player));
     }
 
     @Override
     public void handle(@NotNull PlayerInfoUpdatePacket packet) {
-
+        playerById.put(packet.getPlayerInfo().getPlayerId(), packet.getPlayerInfo());
     }
 
     @Override
@@ -210,6 +212,11 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull SourceInfoPacket packet) {
+        if (packet.getSourceInfo() instanceof PlayerSourceInfo) {
+            PlayerSourceInfo sourceInfo = (PlayerSourceInfo) packet.getSourceInfo();
+            playerById.put(sourceInfo.getPlayerInfo().getPlayerId(), sourceInfo.getPlayerInfo());
+        }
+
         sources.update(packet.getSourceInfo());
     }
 

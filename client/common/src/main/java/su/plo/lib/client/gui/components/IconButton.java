@@ -57,6 +57,7 @@ public final class IconButton extends Button {
 
         if (hasShadow()) {
             render.blitColorShader(
+                    VertexBuilder.Shader.POSITION_TEX_SOLID_COLOR,
                     VertexBuilder.Format.POSITION_TEX_SOLID_COLOR,
                     x + 2,
                     x + 2 + 16,

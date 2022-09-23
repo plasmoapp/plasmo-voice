@@ -18,7 +18,6 @@ import su.plo.voice.client.gui.settings.tab.*;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
@@ -38,20 +37,17 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     public VoiceSettingsScreen(@NotNull MinecraftClientLib minecraft,
                                @NotNull PlasmoVoiceClient voiceClient,
-                               @NotNull ClientConfig config,
-                               int tab,
-                               @NotNull Consumer<Integer> onTabChange) {
+                               @NotNull ClientConfig config) {
         super(minecraft);
 
         this.voiceClient = voiceClient;
         this.config = config;
         this.title = getSettingsTitle();
-        this.navigation = new VoiceSettingsNavigation(minecraft,
+        this.navigation = new VoiceSettingsNavigation(
+                minecraft,
                 voiceClient,
                 this,
-                config,
-                tab,
-                onTabChange
+                config
         );
         this.aboutFeature = new VoiceSettingsAboutFeature(minecraft, this);
         this.testController = new MicrophoneTestController(voiceClient, config);

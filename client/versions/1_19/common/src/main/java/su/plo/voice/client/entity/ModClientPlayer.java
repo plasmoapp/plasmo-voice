@@ -1,19 +1,25 @@
-package su.plo.voice.client.player;
+package su.plo.voice.client.entity;
 
-import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.entity.MinecraftClientPlayer;
 import su.plo.voice.chat.TextComponent;
 import su.plo.voice.chat.TextConverter;
 
-@RequiredArgsConstructor
-public final class ModClientPlayer implements ClientPlayer {
+public final class ModClientPlayer extends ModPlayer implements MinecraftClientPlayer {
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private final LocalPlayer player;
     private final TextConverter<Component> textConverter;
+
+    public ModClientPlayer(@NotNull LocalPlayer player, @NotNull TextConverter<Component> textConverter) {
+        super(player);
+
+        this.player = player;
+        this.textConverter = textConverter;
+    }
 
     @Override
     public void sendChatMessage(@NotNull TextComponent text) {

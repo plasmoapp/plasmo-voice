@@ -51,6 +51,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     protected ServerInfo.VoiceInfo voiceInfo;
     protected T sourceInfo;
+    protected DoubleConfigEntry lineVolume;
     protected DoubleConfigEntry sourceVolume;
     protected Encryption encryption;
     protected AudioDecoder decoder;
@@ -109,9 +110,13 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager().getLineById(sourceInfo.getLineId());
         if (!sourceLine.isPresent()) throw new IllegalStateException("Source line not found");
 
-        this.sourceVolume = config.getVoice()
+        this.lineVolume = config.getVoice()
                 .getVolumes()
                 .getVolume(sourceLine.get().getName());
+
+        this.sourceVolume = config.getVoice()
+                .getVolumes()
+                .getVolume("source_" + sourceInfo.getId().toString());
 
         LOGGER.info("Source {} initialized", sourceInfo);
     }
@@ -186,7 +191,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         int distance = packet.getDistance();
 
-        double volume = config.getVoice().getVolume().value() * sourceVolume.value();
+        double volume = config.getVoice().getVolume().value() * sourceVolume.value() * lineVolume.value();
 
         if (config.getVoice().getSoundOcclusion().value()) {
             // todo: disable occlusion via client addon?

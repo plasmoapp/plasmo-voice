@@ -1,9 +1,9 @@
-package su.plo.voice.client.player;
+package su.plo.lib.client.entity;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.chat.TextComponent;
 
-public interface ClientPlayer {
+public interface MinecraftClientPlayer extends MinecraftPlayer {
 
     void sendChatMessage(@NotNull TextComponent text);
 

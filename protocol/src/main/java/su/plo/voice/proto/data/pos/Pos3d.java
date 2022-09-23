@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.PacketSerializable;
 
 @NoArgsConstructor
@@ -32,5 +33,13 @@ public class Pos3d implements PacketSerializable {
         out.writeDouble(x);
         out.writeDouble(y);
         out.writeDouble(z);
+    }
+
+    public double distanceSquared(@NotNull Pos3d o) {
+        double xDiff = x - o.x;
+        double yDiff = y - o.y;
+        double zDiff = z - o.z;
+
+        return (xDiff * xDiff) + (yDiff * yDiff) + (zDiff * zDiff);
     }
 }

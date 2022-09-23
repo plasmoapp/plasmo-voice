@@ -59,7 +59,8 @@ public interface GuiRender {
                    float u0, float u1, float v0, float v1,
                    int red, int green, int blue, int alpha);
 
-    void blitColorShader(@NotNull VertexBuilder.Format format,
+    void blitColorShader(@NotNull VertexBuilder.Shader shader,
+                         @NotNull VertexBuilder.Format format,
                          int x0, int x1, int y0, int y1, int z,
                          float u0, float u1, float v0, float v1,
                          int red, int green, int blue, int alpha);
@@ -69,7 +70,7 @@ public interface GuiRender {
     void setBlitOffset(int blitOffset);
 
     // RenderSystem
-    void setShader(@NotNull VertexBuilder.Format format);
+    void setShader(@NotNull VertexBuilder.Shader shader);
 
     void setShaderTexture(int texture, @NotNull String resourceLocation);
 
@@ -103,6 +104,10 @@ public interface GuiRender {
     void disableColorLogicOp();
 
     void logicOp(@NotNull String logicOp);
+
+    void turnOnLightLayer();
+
+    void turnOffLightLayer();
 
     @NotNull MinecraftTesselator getTesselator();
 

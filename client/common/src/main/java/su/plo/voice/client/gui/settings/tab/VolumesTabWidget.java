@@ -93,7 +93,7 @@ public final class VolumesTabWidget extends TabWidget {
                 20,
                 buttonClick,
                 Button.NO_TOOLTIP,
-                "plasmovoice:textures/icons/speaker_disabled_v1.png",
+                "plasmovoice:textures/icons/speaker_disabled.png",
                 true
         );
 

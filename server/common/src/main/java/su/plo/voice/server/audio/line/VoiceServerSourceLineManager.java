@@ -43,7 +43,7 @@ public final class VoiceServerSourceLineManager implements ServerSourceLineManag
 
     @Override
     public Optional<ServerSourceLine> getLineByName(@NotNull String name) {
-        return Optional.ofNullable(lineById.get(VoiceSourceLine.generateId(name + "_line")));
+        return Optional.ofNullable(lineById.get(VoiceSourceLine.generateId(name)));
     }
 
     @Override

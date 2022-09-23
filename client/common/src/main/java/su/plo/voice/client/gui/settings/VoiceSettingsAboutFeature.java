@@ -83,7 +83,7 @@ public final class VoiceSettingsAboutFeature {
         VertexBuilder bufferBuilder = tesselator.getBuilder();
 
         for (MinecraftBlockParticle particle : particles) {
-            render.setShader(VertexBuilder.Format.POSITION_TEX_COLOR);
+            render.setShader(VertexBuilder.Shader.POSITION_TEX_COLOR);
             render.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
             render.depthFunc(515);

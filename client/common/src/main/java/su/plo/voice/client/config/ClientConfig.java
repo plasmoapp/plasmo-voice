@@ -297,9 +297,9 @@ public final class ClientConfig {
                 getMute(lineName).set(muted);
             }
 
-            public synchronized ConfigEntry<Boolean> getMute(@NotNull String category) {
+            public synchronized ConfigEntry<Boolean> getMute(@NotNull String lineName) {
                 return muteByLineName.computeIfAbsent(
-                        category,
+                        lineName,
                         (c) -> new ConfigEntry<>(false)
                 );
             }

@@ -80,7 +80,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.name = in.readUTF();
         this.translation = in.readUTF();
         this.icon = in.readUTF();
-        this.id = UUID.nameUUIDFromBytes((name + "_activation").getBytes(Charsets.UTF_8));
+        this.id = VoiceActivation.generateId(name);
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
         this.weight = in.readInt();

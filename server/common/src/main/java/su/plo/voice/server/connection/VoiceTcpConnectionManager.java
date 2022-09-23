@@ -7,9 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.data.EncryptionInfo;
-import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.Packet;
@@ -17,8 +15,6 @@ import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.ServerConfig;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -109,15 +105,13 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     @Override
     public void sendPlayerList(@NotNull VoicePlayer receiver) {
         synchronized (playerStateLock) {
-            List<VoicePlayerInfo> players = new ArrayList<>();
-
-            for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
-                if (receiver.canSee(connection.getPlayer())) {
-                    players.add(connection.getPlayer().getInfo());
-                }
-            }
-
-            receiver.sendPacket(new PlayerListPacket(players));
+            receiver.sendPacket(new PlayerListPacket(
+                    voiceServer.getUdpConnectionManager().getConnections()
+                            .stream()
+                            .filter(connection -> receiver.canSee(connection.getPlayer()))
+                            .map(connection -> connection.getPlayer().getInfo())
+                            .collect(Collectors.toList())
+            ));
         }
     }
 

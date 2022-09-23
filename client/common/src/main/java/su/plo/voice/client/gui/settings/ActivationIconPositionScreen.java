@@ -92,7 +92,7 @@ public final class ActivationIconPositionScreen extends GuiScreen {
     }
 
     private Button createPositionButton(int x, int y, ClientConfig.Advanced.ActivationIconPosition iconPosition) {
-        return new Button(
+        Button positionButton = new Button(
                 minecraft,
                 x,
                 y,
@@ -105,5 +105,8 @@ public final class ActivationIconPositionScreen extends GuiScreen {
                 },
                 Button.NO_TOOLTIP
         );
+
+        positionButton.setActive(iconPosition != entry.value());
+        return positionButton;
     }
 }

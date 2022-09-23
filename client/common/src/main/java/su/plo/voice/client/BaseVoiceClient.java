@@ -30,6 +30,8 @@ import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.gui.ScreenContainer;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
+import su.plo.voice.client.render.HudIconRenderer;
+import su.plo.voice.client.render.SourceIconRenderer;
 
 import java.io.File;
 import java.io.IOException;
@@ -66,7 +68,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     protected ClientConfig config;
 
-    protected int settingsTab;
+    protected VoiceSettingsScreen settingsScreen;
 
     protected void onInitialize() {
         try {
@@ -87,6 +89,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         // hotkey actions
         new HotkeyActions(getMinecraft(), getKeyBindings(), config).register();
+
+        // render
+        eventBus.register(this, new HudIconRenderer(getMinecraft(), this, config));
+        eventBus.register(this, new SourceIconRenderer(getMinecraft(), this, config));
 
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }
@@ -109,15 +115,15 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         if (screen.isPresent() && screen.get().get() instanceof VoiceSettingsScreen) {
             minecraft.setScreen(null);
         } else {
-            minecraft.setScreen(new VoiceSettingsScreen(
-                    minecraft,
-                    this,
-                    config,
-                    settingsTab,
-                    (tab) -> {
-                        if (tab >= 0) this.settingsTab = tab;
-                    }
-            ));
+            if (settingsScreen == null) {
+                this.settingsScreen = new VoiceSettingsScreen(
+                        minecraft,
+                        this,
+                        config
+                );
+            }
+
+            minecraft.setScreen(settingsScreen);
         }
     }
 

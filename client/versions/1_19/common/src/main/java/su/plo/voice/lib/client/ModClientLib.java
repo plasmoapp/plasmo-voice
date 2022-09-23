@@ -6,6 +6,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.client.MinecraftClientLib;
+import su.plo.lib.client.MinecraftOptions;
+import su.plo.lib.client.entity.MinecraftClientPlayer;
 import su.plo.lib.client.gui.MinecraftFont;
 import su.plo.lib.client.gui.screen.GuiScreen;
 import su.plo.lib.client.locale.MinecraftLanguage;
@@ -16,9 +18,8 @@ import su.plo.lib.client.render.texture.MinecraftPlayerSkins;
 import su.plo.lib.client.sound.MinecraftSoundManager;
 import su.plo.voice.chat.ComponentTextConverter;
 import su.plo.voice.chat.TextConverter;
+import su.plo.voice.client.entity.ModClientPlayer;
 import su.plo.voice.client.gui.ScreenContainer;
-import su.plo.voice.client.player.ClientPlayer;
-import su.plo.voice.client.player.ModClientPlayer;
 import su.plo.voice.lib.client.gui.ModFontWrapper;
 import su.plo.voice.lib.client.gui.ModScreenWrapper;
 import su.plo.voice.lib.client.locale.ModLanguageWrapper;
@@ -51,12 +52,14 @@ public final class ModClientLib implements MinecraftClientLib {
     private final MinecraftParticles simpleParticles = new ModSimpleParticles();
     @Getter
     private final MinecraftPlayerSkins playerSkins = new ModPlayerSkins();
+    @Getter
+    private final MinecraftOptions options = new ModOptions();
 
     @Getter
     private final ResourceCache resources = new ResourceCache();
 
     @Override
-    public Optional<ClientPlayer> getClientPlayer() {
+    public Optional<MinecraftClientPlayer> getClientPlayer() {
         if (minecraft.player == null) return Optional.empty();
 
         return Optional.of(new ModClientPlayer(minecraft.player, textConverter));

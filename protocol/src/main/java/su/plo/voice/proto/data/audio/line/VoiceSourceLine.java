@@ -42,14 +42,14 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
         this.name = checkNotNull(name);
         this.translation = translation;
         this.icon = checkNotNull(icon);
-        this.id = generateId(name + "_line");
+        this.id = generateId(name);
         this.weight = weight;
     }
 
     @Override
     public void deserialize(ByteArrayDataInput in) {
         this.name = in.readUTF();
-        this.id = UUID.nameUUIDFromBytes((name).getBytes(Charsets.UTF_8));
+        this.id = generateId(name);
         this.translation = in.readUTF();
         this.icon = in.readUTF();
         this.weight = in.readInt();

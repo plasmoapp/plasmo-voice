@@ -319,15 +319,18 @@ public final class ModGuiRender implements GuiRender {
     }
 
     @Override
-    public void blitColorShader(@NotNull VertexBuilder.Format shader, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1, int red, int green, int blue, int alpha) {
+    public void blitColorShader(@NotNull VertexBuilder.Shader shader, @NotNull VertexBuilder.Format format,
+                                int x0, int x1, int y0, int y1, int z,
+                                float u0, float u1, float v0, float v1,
+                                int red, int green, int blue, int alpha) {
         Matrix4f matrix4f = matrix.getPoseStack().last().pose();
 
-        VertexFormat format = ModVertexBuilder.getFormat(shader);
-        if (format == null) return;
+        VertexFormat vertexFormat = ModVertexBuilder.getFormat(format);
+        if (vertexFormat == null) return;
 
         RenderSystem.setShader(getMinecraftShader(shader));
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
-        bufferBuilder.begin(VertexFormat.Mode.QUADS, format);
+        bufferBuilder.begin(VertexFormat.Mode.QUADS, vertexFormat);
         bufferBuilder
                 .vertex(matrix4f, (float)x0, (float)y1, (float)z)
                 .uv(u0, v1)
@@ -352,7 +355,7 @@ public final class ModGuiRender implements GuiRender {
     }
 
     @Override
-    public void setShader(@NotNull VertexBuilder.Format shader) {
+    public void setShader(@NotNull VertexBuilder.Shader shader) {
         RenderSystem.setShader(getMinecraftShader(shader));
     }
 
@@ -439,13 +442,26 @@ public final class ModGuiRender implements GuiRender {
         RenderSystem.logicOp(GlStateManager.LogicOp.valueOf(logicOp));
     }
 
-    private Supplier<ShaderInstance> getMinecraftShader(@NotNull VertexBuilder.Format shader) {
+    @Override
+    public void turnOnLightLayer() {
+        minecraft.gameRenderer.lightTexture().turnOnLightLayer();
+    }
+
+    @Override
+    public void turnOffLightLayer() {
+        minecraft.gameRenderer.lightTexture().turnOffLightLayer();
+    }
+
+    private Supplier<ShaderInstance> getMinecraftShader(@NotNull VertexBuilder.Shader shader) {
         return switch (shader) {
             case POSITION -> GameRenderer::getPositionShader;
             case POSITION_TEX -> GameRenderer::getPositionTexShader;
             case POSITION_COLOR -> GameRenderer::getPositionColorShader;
             case POSITION_TEX_COLOR -> GameRenderer::getPositionTexColorShader;
             case POSITION_TEX_SOLID_COLOR -> ModShaders::getPositionTexSolidColorShader;
+            case POSITION_COLOR_TEX_LIGHTMAP -> GameRenderer::getPositionColorTexLightmapShader;
+            case RENDERTYPE_TEXT -> GameRenderer::getRendertypeTextShader;
+            case RENDERTYPE_TEXT_SEE_THROUGH -> GameRenderer::getRendertypeTextSeeThroughShader;
             default -> null;
         };
 

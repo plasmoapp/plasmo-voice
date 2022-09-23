@@ -3,6 +3,7 @@ package su.plo.voice.proto.packets.tcp.clientbound;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import su.plo.voice.proto.data.VoicePlayerInfo;
@@ -19,6 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ToString
 public final class PlayerListPacket implements Packet<ClientPacketTcpHandler> {
 
+    @Getter
     private List<VoicePlayerInfo> players;
 
     @Override

@@ -23,7 +23,7 @@ import java.util.List;
 public final class ActivationThresholdWidget extends AbstractSlider implements UpdatableWidget {
 
     private static final String STOP_ICON = "plasmovoice:textures/icons/speaker.png";
-    private static final String START_ICON = "plasmovoice:textures/icons/speaker_disabled_v1.png";
+    private static final String START_ICON = "plasmovoice:textures/icons/speaker_disabled.png";
     private static final TextComponent NOT_AVAILABLE = TextComponent.translatable("gui.plasmovoice.devices.not_available");
 
     private final DoubleConfigEntry entry;

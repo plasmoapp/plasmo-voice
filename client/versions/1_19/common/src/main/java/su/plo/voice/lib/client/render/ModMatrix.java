@@ -1,12 +1,13 @@
 package su.plo.voice.lib.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Quaternion;
 import lombok.Getter;
 import lombok.Setter;
+import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.render.MinecraftMatrix;
+import su.plo.lib.client.render.MinecraftQuaternion;
 
-public class ModMatrix implements MinecraftMatrix {
+public final class ModMatrix implements MinecraftMatrix {
 
     @Setter
     @Getter
@@ -25,9 +26,9 @@ public class ModMatrix implements MinecraftMatrix {
     }
 
     @Override
-    public void multiply(float x, float y, float z, float w) {
+    public void multiply(@NotNull MinecraftQuaternion quaternion) {
         if (poseStack == null) return;
-        poseStack.mulPose(new Quaternion(x, y, z, w));
+        poseStack.mulPose(((ModQuaternion) quaternion).getInstance());
     }
 
     @Override

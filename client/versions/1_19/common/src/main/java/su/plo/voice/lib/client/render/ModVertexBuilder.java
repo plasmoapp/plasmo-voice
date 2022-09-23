@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.client.render.MinecraftMatrix;
 import su.plo.lib.client.render.VertexBuilder;
 
 @RequiredArgsConstructor
@@ -19,6 +20,7 @@ public final class ModVertexBuilder implements VertexBuilder {
             case POSITION_TEX -> DefaultVertexFormat.POSITION_TEX;
             case POSITION_TEX_COLOR -> DefaultVertexFormat.POSITION_TEX_COLOR;
             case POSITION_TEX_SOLID_COLOR -> ModShaders.POSITION_TEX_SOLID_COLOR;
+            case POSITION_COLOR_TEX_LIGHTMAP -> DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP;
             default -> null;
         };
     }
@@ -43,8 +45,38 @@ public final class ModVertexBuilder implements VertexBuilder {
     }
 
     @Override
+    public VertexBuilder vertex(@NotNull MinecraftMatrix matrix, double x, double y, double z) {
+        builder.vertex(((ModMatrix) matrix).getPoseStack().last().pose(), (float) x, (float) y, (float) z);
+        return this;
+    }
+
+    @Override
     public VertexBuilder uv(float u, float v) {
         builder.uv(u, v);
+        return this;
+    }
+
+    @Override
+    public VertexBuilder overlayCoords(int i, int j) {
+        builder.overlayCoords(i, j);
+        return this;
+    }
+
+    @Override
+    public VertexBuilder uv2(int i, int j) {
+        builder.uv2(i, j);
+        return this;
+    }
+
+    @Override
+    public VertexBuilder normal(float f, float g, float h) {
+        builder.normal(f, g, h);
+        return this;
+    }
+
+    @Override
+    public VertexBuilder normal(@NotNull MinecraftMatrix matrix, float f, float g, float h) {
+        builder.normal(((ModMatrix) matrix).getPoseStack().last().normal(), f, g, h);
         return this;
     }
 

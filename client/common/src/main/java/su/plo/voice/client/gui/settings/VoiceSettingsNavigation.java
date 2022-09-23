@@ -21,7 +21,6 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import static su.plo.lib.client.gui.widget.GuiWidget.BACKGROUND_LOCATION;
 
@@ -31,7 +30,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     private final PlasmoVoiceClient voiceClient;
     private final VoiceSettingsScreen parent;
     private final ClientConfig config;
-    private final Consumer<Integer> onTabChange;
 
     private final List<Button> disableMicrophoneButtons = Lists.newArrayList();
     private final List<Button> disableVoiceButtons = Lists.newArrayList();
@@ -46,16 +44,11 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     public VoiceSettingsNavigation(@NotNull MinecraftClientLib minecraft,
                                    @NotNull PlasmoVoiceClient voiceClient,
                                    @NotNull VoiceSettingsScreen parent,
-                                   @NotNull ClientConfig config,
-                                   int tab,
-                                   @NotNull Consumer<Integer> onTabChange) {
+                                   @NotNull ClientConfig config) {
         this.minecraft = minecraft;
         this.voiceClient = voiceClient;
         this.parent = parent;
         this.config = config;
-
-        this.active = tab;
-        this.onTabChange = onTabChange;
     }
 
     // GuiWidgetEventListener impl
@@ -148,7 +141,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(TextStyle.GRAY)
                     ));
                 },
-                "plasmovoice:textures/icons/microphone_disabled_v1.png",
+                "plasmovoice:textures/icons/microphone_disabled.png",
                 true
         );
 
@@ -221,7 +214,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(TextStyle.GRAY)
                     ));
                 },
-                "plasmovoice:textures/icons/speaker_disabled_v1.png",
+                "plasmovoice:textures/icons/speaker_disabled.png",
                 true
         );
 
@@ -344,8 +337,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
             widget.init();
             parent.addWidget(widget);
         });
-
-        onTabChange.accept(index);
     }
 
     public void addTab(@NotNull TextComponent name, @NotNull TabWidget tabWidget) {

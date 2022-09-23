@@ -83,7 +83,7 @@ public final class VoiceEventBus implements EventBus {
                 try {
                     method.invoke(listener, event);
                 } catch (Throwable e) {
-                    LOGGER.warn("Failed to call the event: {}", e.getMessage());
+                    LOGGER.warn("Failed to call an event: {}", e.getMessage());
                 }
             };
 

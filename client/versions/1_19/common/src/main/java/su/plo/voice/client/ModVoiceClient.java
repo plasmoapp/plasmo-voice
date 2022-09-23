@@ -1,6 +1,7 @@
 package su.plo.voice.client;
 
 import io.netty.channel.local.LocalAddress;
+import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +14,9 @@ import su.plo.voice.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.source.ModClientSourceManager;
+import su.plo.voice.client.render.ModEntityRenderer;
+import su.plo.voice.client.render.ModHudRenderer;
+import su.plo.voice.client.render.ModLevelRenderer;
 import su.plo.voice.client.render.VoiceDistanceVisualizer;
 import su.plo.voice.lib.client.ModClientLib;
 
@@ -29,7 +33,14 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
 
     protected final String modId = "plasmovoice";
     protected final Minecraft minecraft = Minecraft.getInstance();
-    protected final MinecraftClientLib minecraftLib = new ModClientLib();
+    protected final ModClientLib minecraftLib = new ModClientLib();
+
+    @Getter
+    protected final ModHudRenderer hudRenderer;
+    @Getter
+    protected final ModLevelRenderer levelRenderer;
+    @Getter
+    protected final ModEntityRenderer entityRenderer;
 
     protected ClientSourceManager sources;
     protected DistanceVisualizer distanceVisualizer;
@@ -43,6 +54,10 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
 
         // JavaX input
         factoryManager.registerDeviceFactory(new JavaxInputDeviceFactory(this));
+
+        this.hudRenderer = new ModHudRenderer(minecraftLib, this);
+        this.levelRenderer = new ModLevelRenderer(minecraftLib, this);
+        this.entityRenderer = new ModEntityRenderer(minecraftLib, this);
 
         INSTANCE = this;
     }

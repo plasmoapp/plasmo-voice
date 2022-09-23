@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.client.KeyMapping;
@@ -17,7 +18,6 @@ import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.client.connection.FabricClientChannelHandler;
-import su.plo.voice.client.render.HudIconRenderer;
 
 import java.io.File;
 import java.util.Optional;
@@ -35,9 +35,10 @@ public final class FabricVoiceClient extends ModVoiceClient implements ClientMod
 
         // todo: должно ли это быть тут?
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> super.onShutdown());
-
-        HudIconRenderer voiceHud = new HudIconRenderer(this, config);
-        HudRenderCallback.EVENT.register((__, ___) -> voiceHud.render());
+        HudRenderCallback.EVENT.register(hudRenderer::render);
+        WorldRenderEvents.AFTER_TRANSLUCENT.register(
+                (context) -> levelRenderer.render(context.matrixStack(), context.camera(), context.tickDelta())
+        );
 
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
 
