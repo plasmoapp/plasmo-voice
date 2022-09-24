@@ -165,7 +165,17 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public boolean isActivated() {
-        return activated.get() && System.currentTimeMillis() - lastActivation < 500L;
+        if (activated.get()) {
+            if (System.currentTimeMillis() - lastActivation > 500L) {
+                LOGGER.warn("Voice end packet was not received. Resetting audio source");
+                reset();
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
@@ -270,11 +280,16 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     private void processAudioEndPacket(@NotNull SourceAudioEndPacket packet) {
+        if (!activated.get()) return;
+        this.lastSequenceNumber = packet.getSequenceNumber();
+        reset();
+    }
+
+    private void reset() {
         for (DeviceSource source : sourceGroup.getSources()) {
             source.write(null);
         }
 
-        this.lastSequenceNumber = packet.getSequenceNumber();
         if (decoder != null) decoder.reset();
         activated.set(false);
     }

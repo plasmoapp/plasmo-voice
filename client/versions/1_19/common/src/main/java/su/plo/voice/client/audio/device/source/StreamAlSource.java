@@ -55,6 +55,7 @@ public final class StreamAlSource extends BaseAlSource {
     private final int numBuffers;
     private final LinkedBlockingQueue<ByteBuffer> queue = new LinkedBlockingQueue<>();
     private final AtomicBoolean isStreaming = new AtomicBoolean(false);
+    private final byte[] emptyBuffer;
 
     private Thread thread;
     private int[] buffers;
@@ -62,6 +63,7 @@ public final class StreamAlSource extends BaseAlSource {
     private StreamAlSource(PlasmoVoiceClient client, AlAudioDevice device, boolean stereo, int numBuffers, int pointer) {
         super(client, device, stereo, pointer);
         this.numBuffers = numBuffers == 0 ? DEFAULT_NUM_BUFFERS : numBuffers;
+        this.emptyBuffer = new byte[device.getBufferSize()];
     }
 
     @Override
@@ -115,7 +117,7 @@ public final class StreamAlSource extends BaseAlSource {
 
         if (samples == null) { // fill queue with empty buffers
             for (int i = 0; i < numBuffers; i++) {
-                write(new byte[device.getBufferSize()]);
+                write(emptyBuffer);
             }
             return;
         }
