@@ -82,9 +82,9 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
                     sourceInfo.getCodec(),
                     voiceInfo.getCapture().getSampleRate(),
                     sourceInfo.isStereo(),
-                    Params.builder()
-                            .set("bufferSize", voiceInfo.getBufferSize())
-                            .build()
+                    serverInfo.getVoiceInfo().getBufferSize(),
+                    serverInfo.getVoiceInfo().getCapture().getMtuSize(),
+                    Params.EMPTY
             );
         }
 

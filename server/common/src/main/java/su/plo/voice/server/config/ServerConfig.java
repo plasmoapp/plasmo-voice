@@ -78,6 +78,13 @@ public final class ServerConfig {
         private int sampleRate = 48_000;
 
         @ConfigField
+        @ConfigValidator(
+                value = MtuSizeValidator.class,
+                allowed = "128-5000"
+        )
+        private int mtuSize = 1024;
+
+        @ConfigField
         @ConfigFieldProcessor(DistancesSorter.class)
         private List<Integer> distances = Arrays.asList(8, 16, 32);
 
@@ -130,6 +137,17 @@ public final class ServerConfig {
 
                     return bitrate == -1 || (bitrate >= 500 && bitrate <= 512_000);
                 }
+            }
+        }
+
+        @NoArgsConstructor
+        public static class MtuSizeValidator implements Predicate<Object> {
+
+            @Override
+            public boolean test(Object o) {
+                if (!(o instanceof Long)) return false;
+                long mtuSize = (long) o;
+                return mtuSize >= 128 && mtuSize <= 5000;
             }
         }
 

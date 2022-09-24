@@ -109,12 +109,13 @@ public final class VoiceAudioCapture implements AudioCapture {
 
             Params.Builder params = Params.builder();
             codec.getParams().forEach(params::set);
-            params.set("bufferSize", serverInfo.getVoiceInfo().getBufferSize());
 
             this.monoEncoder = voiceClient.getCodecManager().createEncoder(
                     codec.getName(),
                     capture.getSampleRate(),
                     false,
+                    serverInfo.getVoiceInfo().getBufferSize(),
+                    capture.getMtuSize(),
                     params.build()
             );
 
@@ -122,6 +123,8 @@ public final class VoiceAudioCapture implements AudioCapture {
                     codec.getName(),
                     capture.getSampleRate(),
                     true,
+                    serverInfo.getVoiceInfo().getBufferSize(),
+                    capture.getMtuSize(),
                     params.build()
             );
         }

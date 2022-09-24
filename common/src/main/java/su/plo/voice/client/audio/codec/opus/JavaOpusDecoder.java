@@ -9,14 +9,16 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     private final int sampleRate;
     private final int channels;
     private final int bufferSize;
+    private final int mtuSize;
 
     private OpusDecoder decoder;
     private short[] buffer;
 
-    public JavaOpusDecoder(int sampleRate, boolean stereo, int bufferSize) {
+    public JavaOpusDecoder(int sampleRate, boolean stereo, int bufferSize, int mtuSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
+        this.mtuSize = mtuSize;
     }
 
     @Override
@@ -44,7 +46,7 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     public void open() throws CodecException {
         try {
             this.decoder = new OpusDecoder(sampleRate, channels);
-            this.buffer = new short[4096];
+            this.buffer = new short[mtuSize];
         } catch (OpusException e) {
             throw new CodecException("Failed to open opus decoder", e);
         }

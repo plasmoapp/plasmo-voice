@@ -11,16 +11,18 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
     private final int sampleRate;
     private final int channels;
     private final int bufferSize;
+    private final int mtuSize;
 
     private OpusApplication application;
     private OpusEncoder encoder;
     private byte[] buffer;
 
-    public JavaOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application) {
+    public JavaOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application,
+                           int mtuSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
-        this.application = OpusApplication.OPUS_APPLICATION_UNIMPLEMENTED;
+        this.mtuSize = mtuSize;
 
         setApplication(application);
     }
@@ -31,7 +33,7 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
 
         int result;
         try {
-            result = encoder.encode(samples, 0, bufferSize, buffer, 0, buffer.length);
+            result = encoder.encode(samples, 0, bufferSize, buffer, 0, mtuSize);
         } catch (OpusException e) {
             throw new CodecException("Failed to encode audio", e);
         }
@@ -46,6 +48,7 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
     public void open() throws CodecException {
         try {
             this.encoder = new OpusEncoder(sampleRate, channels, application);
+            this.buffer = new byte[mtuSize];
         } catch (OpusException e) {
             throw new CodecException("Failed to open opus encoder", e);
         }

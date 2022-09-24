@@ -95,6 +95,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                 UUID.fromString(config.getServerId()),
                 new CaptureInfo(
                         voiceConfig.getSampleRate(),
+                        voiceConfig.getMtuSize(),
                         new CodecInfo("opus", codecParams)
                 ),
                 voiceServer.getSourceLineManager()

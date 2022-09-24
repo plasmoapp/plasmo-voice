@@ -12,14 +12,16 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
     private final int sampleRate;
     private final int channels;
     private final int bufferSize;
+    private final int mtuSize;
 
     private PointerByReference decoder;
     private ShortBuffer buffer;
 
-    public NativeOpusDecoder(int sampleRate, boolean stereo, int bufferSize) {
+    public NativeOpusDecoder(int sampleRate, boolean stereo, int bufferSize, int mtuSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
+        this.mtuSize = mtuSize;
     }
 
     @Override
@@ -48,7 +50,7 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
     public void open() throws CodecException {
         IntBuffer error = IntBuffer.allocate(1);
         this.decoder = Opus.INSTANCE.opus_decoder_create(sampleRate, channels, error);
-        this.buffer = ShortBuffer.allocate(4096);
+        this.buffer = ShortBuffer.allocate(mtuSize);
 
         if (error.get() != Opus.OPUS_OK && decoder == null) {
             throw new CodecException("Failed to open opus decoder:" + error.get());

@@ -14,15 +14,18 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     private final int bufferSize;
     private final int channels;
     private final int application;
+    private final int mtuSize;
 
     private PointerByReference encoder;
     private ByteBuffer buffer;
 
-    public NativeOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application) {
+    public NativeOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application,
+                             int mtuSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
         this.application = application;
+        this.mtuSize = mtuSize;
     }
 
     @Override
@@ -32,7 +35,7 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
         ShortBuffer shortSamples = ShortBuffer.wrap(samples);
 
         buffer.clear();
-        int result = Opus.INSTANCE.opus_encode(encoder, shortSamples, bufferSize, buffer, samples.length);
+        int result = Opus.INSTANCE.opus_encode(encoder, shortSamples, bufferSize, buffer, mtuSize);
 
         if (result < 0) throw new CodecException("Failed to encode audio: " + result);
 
@@ -46,7 +49,7 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     public void open() throws CodecException {
         IntBuffer error = IntBuffer.allocate(1);
         this.encoder = Opus.INSTANCE.opus_encoder_create(sampleRate, channels, application, error);
-        this.buffer = ByteBuffer.allocate(4096);
+        this.buffer = ByteBuffer.allocate(mtuSize);
 
         if (error.get() != Opus.OPUS_OK && encoder == null) {
             throw new CodecException("Failed to open opus encoder:" + error.get());
