@@ -256,7 +256,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 encoded.stereo = encode(stereoEncoder, samples);
             } else if (!isStereo && encoded.mono == null) {
                 samples = device.processFilters(samples);
-                encoded.mono = encode(monoEncoder, samples); // todo: change to mono
+                encoded.mono = encode(monoEncoder, samples);
             }
         }
 
