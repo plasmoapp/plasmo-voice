@@ -88,6 +88,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
         this.weight = in.readInt();
+        this.stereoSupported = in.readBoolean();
     }
 
     @Override
@@ -98,5 +99,6 @@ public class VoiceActivation implements Activation, PacketSerializable {
         PacketUtil.writeIntList(out, distances);
         out.writeInt(defaultDistance);
         out.writeInt(weight);
+        out.writeBoolean(stereoSupported);
     }
 }

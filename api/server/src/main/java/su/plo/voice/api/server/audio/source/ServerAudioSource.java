@@ -30,6 +30,8 @@ public interface ServerAudioSource extends AudioSource {
 
     void setIconVisible(boolean visible);
 
+    void setStereo(boolean stereo);
+
     boolean isIconVisible();
 
     void addFilter(Predicate<VoicePlayer> filter);

@@ -3,6 +3,7 @@ package su.plo.voice.server.connection;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
+import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
@@ -10,6 +11,7 @@ import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.event.connection.TcpPacketReceivedEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     private final PlasmoVoiceServer voiceServer;
+    private final ServerActivationManager activations;
     private final ServerSourceLineManager lines;
     private final ServerSourceManager sources;
     private final VoicePlayer player;
@@ -31,6 +34,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
                                 @NotNull VoicePlayer player) {
         this.voiceServer = voiceServer;
+        this.activations = voiceServer.getActivationManager();
         this.lines = voiceServer.getSourceLineManager();
         this.sources = voiceServer.getSourceManager();
         this.player = player;
@@ -91,15 +95,18 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
+        Optional<ServerActivation> activation = activations.getActivationById(VoiceActivation.PROXIMITY_ID);
+        if (!activation.isPresent()) return;
+
         Optional<ServerSourceLine> sourceLine = lines.getLineById(VoiceSourceLine.PROXIMITY_ID);
         if (!sourceLine.isPresent()) return;
 
-        ServerPlayerSource source = voiceServer.getSourceManager().createPlayerSource(
+        ServerPlayerSource source = sources.createPlayerSource(
                 voiceServer,
                 player,
                 sourceLine.get(),
                 "opus",
-                false
+                activation.get().isStereoSupported()
         );
 
         SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());

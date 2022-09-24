@@ -32,14 +32,13 @@ import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 
-import java.util.Optional;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseClientAudioSource<T extends SourceInfo> implements ClientAudioSource<T> {
 
-    private static final float[] ZERO_VECTOR = new float[] { 0F, 0F, 0F };
+    private static final float[] ZERO_VECTOR = new float[]{0F, 0F, 0F};
     protected static final Logger LOGGER = LogManager.getLogger();
 
     protected final PlasmoVoiceClient voiceClient;
@@ -71,29 +70,17 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public void initialize(T sourceInfo) throws DeviceException {
-        Optional<ServerInfo> optServerInfo = voiceClient.getServerInfo();
-        if (!optServerInfo.isPresent()) throw new IllegalStateException("Not connected");
+        ServerInfo serverInfo = voiceClient.getServerInfo()
+                .orElseThrow(() -> new IllegalStateException("Not connected"));
 
-        ServerInfo serverInfo = optServerInfo.get();
         this.voiceInfo = serverInfo.getVoiceInfo();
-        this.sourceInfo = sourceInfo;
-
-        if (Strings.emptyToNull(sourceInfo.getCodec()) != null) {
-            this.decoder = voiceClient.getCodecManager().createDecoder(
-                    sourceInfo.getCodec(),
-                    voiceInfo.getCapture().getSampleRate(),
-                    sourceInfo.isStereo(),
-                    serverInfo.getVoiceInfo().getBufferSize(),
-                    serverInfo.getVoiceInfo().getCapture().getMtuSize(),
-                    Params.EMPTY
-            );
-        }
+        updateInfo(sourceInfo);
 
         if (serverInfo.getEncryption().isPresent())
             this.encryption = serverInfo.getEncryption().get();
 
         this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup(DeviceType.OUTPUT);
-        sourceGroup.create(isStereo(), Params.EMPTY);
+        sourceGroup.create(isStereo(sourceInfo), Params.EMPTY);
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
@@ -108,12 +95,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             }
         }
 
-        Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager().getLineById(sourceInfo.getLineId());
-        if (!sourceLine.isPresent()) throw new IllegalStateException("Source line not found");
+        ClientSourceLine sourceLine = voiceClient.getSourceLineManager().getLineById(sourceInfo.getLineId())
+                .orElseThrow(() -> new IllegalStateException("Source line not found"));
 
         this.lineVolume = config.getVoice()
                 .getVolumes()
-                .getVolume(sourceLine.get().getName());
+                .getVolume(sourceLine.getName());
 
         this.sourceVolume = config.getVoice()
                 .getVolumes()
@@ -129,7 +116,30 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @Override
     public void updateInfo(T sourceInfo) {
-        // todo: update decoder
+        ServerInfo serverInfo = voiceClient.getServerInfo()
+                .orElseThrow(() -> new IllegalStateException("Not connected"));
+
+        if (this.sourceInfo == null) {
+            AudioDecoder decoder = null;
+
+            if (Strings.emptyToNull(sourceInfo.getCodec()) != null) {
+                decoder = voiceClient.getCodecManager().createDecoder(
+                        sourceInfo.getCodec(),
+                        voiceInfo.getCapture().getSampleRate(),
+                        sourceInfo.isStereo(),
+                        serverInfo.getVoiceInfo().getBufferSize(),
+                        serverInfo.getVoiceInfo().getCapture().getMtuSize(),
+                        Params.EMPTY
+                );
+            }
+
+            this.decoder = decoder;
+        }
+
+        if (this.sourceInfo != null && isStereo(sourceInfo) != isStereo(this.sourceInfo) && sourceGroup != null) {
+            sourceGroup.clear();
+        }
+
         this.sourceInfo = sourceInfo;
     }
 
@@ -155,7 +165,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         if (decoder != null && decoder.isOpen()) decoder.close();
 
-        sourceGroup.getSources().forEach(DeviceSource::close);
+        sourceGroup.clear();
         voiceClient.getEventBus().call(new AudioSourceClosedEvent(this));
     }
 
@@ -223,7 +233,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             }
         }
 
-        if (isStereo()) {
+        if (isStereo(sourceInfo)) {
             int sourceDistance = Math.min(getSourceDistance(position), distance);
 
             float distanceGain = (1F - (float) sourceDistance / (float) distance);
@@ -351,7 +361,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         return (int) Math.sqrt((xDiff * xDiff) + (yDiff * yDiff) + (zDiff * zDiff));
     }
 
-    private boolean isStereo() {
+    private boolean isStereo(@NotNull SourceInfo sourceInfo) {
         return sourceInfo.isStereo() && !config.getAdvanced().getStereoSourcesToMono().value();
     }
 

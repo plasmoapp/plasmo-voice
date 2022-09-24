@@ -60,8 +60,11 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
             ClientAudioSource<?> source = sourceById.get(sourceInfo.getId());
             if (source.isClosed()) return;
 
+            // todo: waytoodank
             if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
                 ((ClientAudioSource<StaticSourceInfo>) source).updateInfo((StaticSourceInfo) sourceInfo);
+            } else if (source.getInfo() instanceof PlayerSourceInfo && sourceInfo instanceof PlayerSourceInfo) {
+                ((ClientAudioSource<PlayerSourceInfo>) source).updateInfo((PlayerSourceInfo) sourceInfo);
             } else {
                 throw new IllegalArgumentException("Invalid source type");
             }

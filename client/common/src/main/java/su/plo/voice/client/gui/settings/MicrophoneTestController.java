@@ -130,9 +130,7 @@ public final class MicrophoneTestController {
 
         public void close() {
             if (sourceGroup == null) return;
-
-            sourceGroup.getSources().forEach(DeviceSource::close);
-
+            sourceGroup.clear();
             LOGGER.info("Loopback source closed");
         }
 

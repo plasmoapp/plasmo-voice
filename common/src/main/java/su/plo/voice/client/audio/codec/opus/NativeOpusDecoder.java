@@ -50,7 +50,7 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
     public void open() throws CodecException {
         IntBuffer error = IntBuffer.allocate(1);
         this.decoder = Opus.INSTANCE.opus_decoder_create(sampleRate, channels, error);
-        this.buffer = ShortBuffer.allocate(mtuSize);
+        this.buffer = ShortBuffer.allocate(mtuSize * channels);
 
         if (error.get() != Opus.OPUS_OK && decoder == null) {
             throw new CodecException("Failed to open opus decoder:" + error.get());

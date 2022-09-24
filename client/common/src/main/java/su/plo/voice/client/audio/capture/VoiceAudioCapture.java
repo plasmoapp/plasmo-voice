@@ -248,22 +248,24 @@ public final class VoiceAudioCapture implements AudioCapture {
                                    @NotNull ClientActivation.Result result,
                                    short[] samples,
                                    @NotNull EncodedCapture encoded) {
+        boolean isStereo = config.getVoice().getStereoCapture().value() && activation.isStereoSupported();
+
         if (result.isActivated()) {
-            if (activation.isStereoSupported() && encoded.stereo == null) {
+            if (isStereo && encoded.stereo == null) {
                 samples = device.processFilters(samples, (filter) -> (filter instanceof StereoToMonoFilter));
                 encoded.stereo = encode(stereoEncoder, samples);
-            } else if (!activation.isStereoSupported() && encoded.mono == null) {
+            } else if (!isStereo && encoded.mono == null) {
                 samples = device.processFilters(samples);
                 encoded.mono = encode(monoEncoder, samples); // todo: change to mono
             }
         }
 
-        byte[] encodedData = activation.isStereoSupported() ? encoded.stereo : encoded.mono;
+        byte[] encodedData = isStereo ? encoded.stereo : encoded.mono;
 
         if (result == ClientActivation.Result.ACTIVATED) {
-            sendVoicePacket(activation, encodedData);
+            sendVoicePacket(activation, isStereo, encodedData);
         } else if (result == ClientActivation.Result.END) {
-            sendVoicePacket(activation, encodedData);
+            sendVoicePacket(activation, isStereo, encodedData);
             sendVoiceEndPacket(activation);
         }
     }
@@ -293,7 +295,9 @@ public final class VoiceAudioCapture implements AudioCapture {
         return encoded;
     }
 
-    private void sendVoicePacket(ClientActivation activation, byte[] encoded) {
+    private void sendVoicePacket(@NotNull ClientActivation activation,
+                                 boolean isStereo,
+                                 byte[] encoded) {
         if (activation.getTranslation().equals("key.plasmovoice.parent")) return;
 
         Optional<UdpClient> udpClient = voiceClient.getUdpClientManager().getClient();
@@ -304,7 +308,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 encoded,
                 activation.getId(),
                 (short) activation.getDistance(),
-                config.getVoice().getStereoCapture().value() && activation.isStereoSupported()
+                isStereo
         ));
     }
 
