@@ -15,6 +15,7 @@ import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
@@ -60,13 +61,6 @@ public final class MicrophoneTestController {
             return;
         }
 
-//        voiceClient.getAudioCapture()
-//                .getActivationById(VoiceActivation.PROXIMITY_ID)
-//                .ifPresent(activation -> activation.setDisabled(true));
-//        voiceClient.getAudioCapture()
-//                .getActivations()
-//                .forEach(activation -> activation.setDisabled(true));
-
         voiceClient.getEventBus().call(new MicrophoneTestStartedEvent(this));
     }
 
@@ -74,24 +68,16 @@ public final class MicrophoneTestController {
         if (source != null) source.close();
         this.source = null;
 
-//        voiceClient.getAudioCapture()
-//                .getActivationById(VoiceActivation.PROXIMITY_ID)
-//                .ifPresent(activation -> activation.setDisabled(false));
-//        voiceClient.getAudioCapture()
-//                .getActivations()
-//                .forEach(activation -> activation.setDisabled(false));
-
         voiceClient.getEventBus().call(new MicrophoneTestStoppedEvent(this));
     }
 
     @EventSubscribe
     public void onAudioCapture(AudioCaptureEvent event) {
-        // todo: compressor?
-//        if (VoiceClient.getClientConfig().compressor.get()) {
-//            buffer = compressor.compress(buffer);
-//        }
-
         short[] samples = event.getSamples();
+        samples = event.getDevice().processFilters(
+                samples,
+                (filter) -> isStereo() && (filter instanceof StereoToMonoFilter)
+        );
 
         this.microphoneDB = AudioUtil.calculateHighestAudioLevel(samples);
         if (microphoneDB > highestDB) {
@@ -113,13 +99,10 @@ public final class MicrophoneTestController {
             event.setSendEnd(true);
             source.write(samples);
         }
-//        if (source != null) {
-//            byte[] finalBuffer = buffer;
-//            VoiceClient.getSoundEngine().runInContext(() -> {
-//                source.setVolume(VoiceClient.getClientConfig().voiceVolume.get().floatValue());
-//                source.write(finalBuffer);
-//            });
-//        }
+    }
+
+    private boolean isStereo() {
+        return config.getVoice().getStereoCapture().value() && !config.getAdvanced().getStereoSourcesToMono().value();
     }
 
     private class LoopbackSource {
@@ -128,7 +111,7 @@ public final class MicrophoneTestController {
 
         public void initialize() throws DeviceException {
             this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup(DeviceType.OUTPUT);
-            sourceGroup.create(false, Params.EMPTY);
+            sourceGroup.create(isStereo(), Params.EMPTY);
 
             for (DeviceSource source : sourceGroup.getSources()) {
                 if (source instanceof AlSource) {

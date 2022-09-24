@@ -2,12 +2,14 @@ package su.plo.voice.api.client.audio.device;
 
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
 import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Predicate;
 
 // todo: doc
 public interface AudioDevice {
@@ -59,7 +61,16 @@ public interface AudioDevice {
      *
      * @return the processed samples
      */
-    short[] processFilters(short[] samples);
+    short[] processFilters(short[] samples, @Nullable Predicate<AudioFilter> excludeFilter);
+
+    /**
+     * Process all filters
+     *
+     * @return the processed samples
+     */
+    default short[] processFilters(short[] samples) {
+        return processFilters(samples, null);
+    }
 
     /**
      * Gets the device name

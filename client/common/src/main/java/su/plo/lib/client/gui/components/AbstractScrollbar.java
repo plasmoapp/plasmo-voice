@@ -103,7 +103,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-        setScrollTop(scrollTop - delta * ((float) scrollHeight / entries.size())); // todo: use avg item height?
+        setScrollTop(scrollTop - delta * ((float) scrollHeight / entries.size()));
         return true;
     }
 

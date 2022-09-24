@@ -8,7 +8,9 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.EncryptionInfo;
+import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
@@ -83,11 +85,18 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     public void sendConfigInfo(@NotNull VoicePlayer receiver) {
         ServerConfig config = voiceServer.getConfig();
         ServerConfig.Voice voiceConfig = config.getVoice();
+        ServerConfig.Voice.Opus opusConfig = voiceConfig.getOpus();
+
+        Map<String, String> codecParams = Maps.newHashMap();
+        codecParams.put("mode", opusConfig.getMode());
+        codecParams.put("bitrate", String.valueOf(opusConfig.getBitrate()));
 
         receiver.sendPacket(new ConfigPacket(
                 UUID.fromString(config.getServerId()),
-                voiceConfig.getSampleRate(),
-                "opus",
+                new CaptureInfo(
+                        voiceConfig.getSampleRate(),
+                        new CodecInfo("opus", codecParams)
+                ),
                 voiceServer.getSourceLineManager()
                         .getLines()
                         .stream()

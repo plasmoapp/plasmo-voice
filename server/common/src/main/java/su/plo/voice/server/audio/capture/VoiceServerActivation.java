@@ -34,8 +34,9 @@ public final class VoiceServerActivation extends VoiceActivation implements Serv
                                  List<Integer> distances,
                                  int defaultDistance,
                                  boolean transitive,
+                                 boolean stereoSupported,
                                  int weight) {
-        super(name, translation, icon, distances, defaultDistance, weight);
+        super(name, translation, icon, distances, defaultDistance, stereoSupported, weight);
 
         this.voiceServer = voiceServer;
         this.addon = addon;

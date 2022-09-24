@@ -156,7 +156,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         // clear & initialize primary output device
         AudioFormat format = new AudioFormat(
-                (float) serverInfo.getVoiceInfo().getSampleRate(),
+                (float) serverInfo.getVoiceInfo().getCapture().getSampleRate(),
                 16,
                 1,
                 true,

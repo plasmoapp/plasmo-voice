@@ -41,6 +41,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                 voiceConfig.getDistances(),
                 voiceConfig.getDefaultDistance(),
                 true,
+                true,
                 1
         );
     }
@@ -68,6 +69,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                                               List<Integer> distances,
                                               int defaultDistance,
                                               boolean transitive,
+                                              boolean stereoSupported,
                                               int weight) {
         Optional<AddonContainer> addon = addons.getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
@@ -84,6 +86,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                             distances,
                             defaultDistance,
                             transitive,
+                            stereoSupported,
                             weight
                     );
 

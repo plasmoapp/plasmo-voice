@@ -16,7 +16,8 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
     public @NotNull BaseOpusEncoder createEncoder(int sampleRate, boolean stereo, @NotNull Params params) {
         checkNotNull(params, "params cannot be null");
         int bufferSize = params.get("bufferSize", Integer.class);
-        int application = params.get("application", Integer.class);
+        int application = applicationToMode(params.get("mode", String.class));
+        int bitrate = validateBitrate(params.get("bitrate", String.class));
 
         BaseOpusEncoder encoder = new NativeOpusEncoder(sampleRate, stereo, bufferSize, application);
         try {
@@ -30,6 +31,9 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
                 throw new IllegalStateException("Failed to open java opus encoder", e);
             }
         }
+
+        encoder.setBitrate(bitrate);
+        LOGGER.info("Opus encoder bitrate is {}", encoder.getBitrate());
 
         return encoder;
     }
@@ -58,5 +62,29 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
     @Override
     public @NotNull String getName() {
         return "opus";
+    }
+
+    private int validateBitrate(@NotNull String rawBitrate) {
+        try {
+            int bitrate = Integer.parseInt(rawBitrate);
+
+            if (bitrate < 0) {
+                if (bitrate != -1 && bitrate != -1000) bitrate = -1000;
+            } else if (bitrate > 512_000) bitrate = 512_000;
+
+            return bitrate;
+        } catch (NumberFormatException ignored) {
+            return -1000;
+        }
+    }
+
+    private int applicationToMode(@NotNull String mode) {
+        switch (mode) {
+            case "VOIP": return 2048;
+            case "AUDIO": return 2049;
+            case "RESTRICTED_LOWDELAY": return 2051;
+        }
+
+        throw new IllegalArgumentException("Bad opus mode");
     }
 }

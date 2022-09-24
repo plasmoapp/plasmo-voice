@@ -138,8 +138,6 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         ALC11.alcCaptureSamples(devicePointer, shorts, bufferSize);
         AlUtil.checkErrors("Capture samples");
 
-        shorts = processFilters(shorts);
-
         return shorts;
     }
 

@@ -87,6 +87,52 @@ public final class ServerConfig {
         @ConfigField(path = "client_mod_required")
         private boolean clientModRequired = false;
 
+        @ConfigField
+        private Opus opus = new Opus();
+
+        @Config
+        @Data
+        public static class Opus {
+
+            @ConfigField
+            @ConfigValidator(
+                    value = ModeValidator.class,
+                    allowed = {"VOIP", "AUDIO", "RESTRICTED_LOWDELAY"}
+            )
+            private String mode = "VOIP";
+
+            @ConfigField
+            @ConfigValidator(
+                    value = BitrateValidator.class,
+                    allowed = {"-1000 (auto)", "-1 (max)", "500-512000"}
+            )
+            private int bitrate = -1000;
+
+            @NoArgsConstructor
+            public static class ModeValidator implements Predicate<Object> {
+
+                @Override
+                public boolean test(Object o) {
+                    if (!(o instanceof String)) return false;
+                    String mode = (String) o;
+
+                    return mode.equals("VOIP") || mode.equals("AUDIO") || mode.equals("RESTRICTED_LOWDELAY");
+                }
+            }
+
+            @NoArgsConstructor
+            public static class BitrateValidator implements Predicate<Object> {
+
+                @Override
+                public boolean test(Object o) {
+                    if (!(o instanceof Long)) return false;
+                    long bitrate = (Long) o;
+
+                    return bitrate == -1 || (bitrate >= 500 && bitrate <= 512_000);
+                }
+            }
+        }
+
         @NoArgsConstructor
         public static class DistancesSorter implements Function<List<Long>, List<Integer>> {
 

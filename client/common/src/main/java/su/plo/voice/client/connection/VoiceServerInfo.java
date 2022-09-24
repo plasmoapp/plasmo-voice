@@ -1,15 +1,13 @@
 package su.plo.voice.client.connection;
 
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 
@@ -53,7 +51,6 @@ public final class VoiceServerInfo implements ServerInfo {
         this.encryption = encryption;
         this.remoteAddress = remoteAddress;
         this.voiceInfo = new VoiceServerVoiceInfo(
-                config.getSampleRate(),
                 config.getCodec(),
                 new ArrayList<>(config.getSourceLines()),
                 new ArrayList<>(config.getActivations())
@@ -68,24 +65,17 @@ public final class VoiceServerInfo implements ServerInfo {
 
     @AllArgsConstructor
     @ToString
+    @Data
     static final class VoiceServerVoiceInfo implements ServerInfo.VoiceInfo {
 
-        @Getter
-        @Setter
-        private int sampleRate;
-        @Getter
-        private final String codec;
-        @Getter
-        @Setter
+        private CaptureInfo capture;
         private List<SourceLine> sourceLines;
-        @Setter
-        @Getter
         private List<Activation> activations;
 
         @Override
         public @NotNull AudioFormat getFormat(boolean stereo) {
             return new AudioFormat(
-                    (float) sampleRate,
+                    (float) capture.getSampleRate(),
                     16,
                     stereo ? 2 : 1,
                     true,
@@ -95,7 +85,7 @@ public final class VoiceServerInfo implements ServerInfo {
 
         @Override
         public int getBufferSize() {
-            return (sampleRate / 1_000) * 20;
+            return (capture.getSampleRate() / 1_000) * 20;
         }
     }
 

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
+import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.event.EventCancellableBase;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -15,6 +16,8 @@ public final class AudioCaptureEvent extends EventCancellableBase {
 
     @Getter
     private final AudioCapture capture;
+    @Getter
+    private final InputDevice device;
 
     @Getter
     @Setter
@@ -24,8 +27,11 @@ public final class AudioCaptureEvent extends EventCancellableBase {
     @Setter
     private boolean sendEnd;
 
-    public AudioCaptureEvent(@NotNull AudioCapture capture, short[] samples) {
+    public AudioCaptureEvent(@NotNull AudioCapture capture,
+                             @NotNull InputDevice device,
+                             short[] samples) {
         this.capture = checkNotNull(capture, "capture");
+        this.device = checkNotNull(device, "device");
         this.samples = checkNotNull(samples, "samples");
     }
 }

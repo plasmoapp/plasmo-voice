@@ -15,5 +15,6 @@ public interface ServerActivationManager extends ActivationManager<ServerActivat
                                        List<Integer> distances,
                                        int defaultDistance,
                                        boolean transitive,
+                                       boolean stereoSupported,
                                        int weight);
 }

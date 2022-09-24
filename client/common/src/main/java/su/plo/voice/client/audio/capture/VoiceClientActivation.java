@@ -63,6 +63,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
                 activation.getIcon(),
                 new ArrayList<>(activation.getDistances()),
                 activation.getDefaultDistance(),
+                activation.isStereoSupported(),
                 activation.getWeight()
         );
 

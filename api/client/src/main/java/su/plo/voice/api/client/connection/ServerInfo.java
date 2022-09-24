@@ -1,9 +1,9 @@
 package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 
 import javax.sound.sampled.AudioFormat;
@@ -63,13 +63,6 @@ public interface ServerInfo {
     interface VoiceInfo {
 
         /**
-         * Gets the voice sample rate
-         *
-         * @return the sample rate
-         */
-        int getSampleRate();
-
-        /**
          * Gets the audio format based on sample rate
          *
          * sampleSizeInBits is 16
@@ -86,11 +79,11 @@ public interface ServerInfo {
         int getBufferSize();
 
         /**
-         * Gets the voice codec
+         * Gets the voice capture info
          *
-         * @return the codec
+         * @return the capture info
          */
-        @Nullable String getCodec();
+        @NotNull CaptureInfo getCapture();
 
         /**
          * Gets the voice source lines

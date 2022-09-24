@@ -73,4 +73,19 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     public boolean isOpen() {
         return encoder != null;
     }
+
+    @Override
+    public void setBitrate(int bitrate) {
+        if (!isOpen()) return;
+
+        Opus.INSTANCE.opus_encoder_ctl(encoder, Opus.OPUS_SET_BITRATE_REQUEST, bitrate);
+    }
+
+    @Override
+    public int getBitrate() {
+        IntBuffer request = IntBuffer.allocate(1);
+        Opus.INSTANCE.opus_encoder_ctl(encoder, Opus.OPUS_GET_BITRATE_REQUEST, request);
+
+        return request.get();
+    }
 }

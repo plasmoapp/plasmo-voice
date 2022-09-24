@@ -80,7 +80,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         if (Strings.emptyToNull(sourceInfo.getCodec()) != null) {
             this.decoder = voiceClient.getCodecManager().createDecoder(
                     sourceInfo.getCodec(),
-                    voiceInfo.getSampleRate(),
+                    voiceInfo.getCapture().getSampleRate(),
                     sourceInfo.isStereo(),
                     Params.builder()
                             .set("bufferSize", voiceInfo.getBufferSize())

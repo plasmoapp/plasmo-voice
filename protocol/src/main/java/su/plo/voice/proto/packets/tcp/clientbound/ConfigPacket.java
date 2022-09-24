@@ -7,12 +7,15 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
 @ToString
@@ -21,22 +24,18 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     @Getter
     private UUID serverId;
     @Getter
-    private int sampleRate;
-    @Getter
-    private String codec; // todo: per-source codecs
+    private CaptureInfo codec;
     private List<VoiceSourceLine> sourceLines;
     private List<VoiceActivation> activations;
 
     public ConfigPacket(@NotNull UUID serverId,
-                        int sampleRate,
-                        @NotNull String codec,
+                        @NotNull CaptureInfo codec,
                         @NotNull List<VoiceSourceLine> sourceLines,
                         @NotNull List<VoiceActivation> activations,
                         @NotNull Map<String, Boolean> permissions) {
         super(permissions);
 
         this.serverId = serverId;
-        this.sampleRate = sampleRate;
         this.codec = codec;
         this.sourceLines = sourceLines;
         this.activations = activations;
@@ -53,8 +52,9 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         this.serverId = PacketUtil.readUUID(in);
-        this.sampleRate = in.readInt();
-        this.codec = PacketUtil.readNullableString(in);
+
+        this.codec = new CaptureInfo();
+        codec.deserialize(in);
 
         // source lines
         this.sourceLines = Lists.newArrayList();
@@ -78,8 +78,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
         PacketUtil.writeUUID(out, serverId);
-        out.writeInt(sampleRate);
-        PacketUtil.writeNullableString(out, codec);
+        checkNotNull(codec).serialize(out);
 
         // source lines
         out.writeInt(sourceLines.size());

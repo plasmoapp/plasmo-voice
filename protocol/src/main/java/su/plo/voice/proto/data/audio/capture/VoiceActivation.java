@@ -41,6 +41,8 @@ public class VoiceActivation implements Activation, PacketSerializable {
     @Getter
     protected boolean transitive = true;
     @Getter
+    protected boolean stereoSupported;
+    @Getter
     protected int weight;
 
     public VoiceActivation(@NotNull String name,
@@ -48,6 +50,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
                            @NotNull String icon,
                            List<Integer> distances,
                            int defaultDistance,
+                           boolean stereoSupported,
                            int weight) {
         this.name = checkNotNull(name);
         this.translation = translation;
@@ -56,6 +59,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.distances = checkNotNull(distances);
         this.defaultDistance = defaultDistance;
         this.weight = weight;
+        this.stereoSupported = stereoSupported;
     }
 
     @Override

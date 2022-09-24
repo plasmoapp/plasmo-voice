@@ -126,10 +126,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
             return null;
         }
 
-        short[] shorts = AudioUtil.bytesToShorts(samples);
-        shorts = processFilters(shorts);
-
-        return shorts;
+        return AudioUtil.bytesToShorts(samples);
     }
 
     @Override

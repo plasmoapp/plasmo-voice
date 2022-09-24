@@ -2,12 +2,14 @@ package su.plo.voice.client.audio.device;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.function.Predicate;
 
 public abstract class BaseAudioDevice implements AudioDevice {
     private final ListMultimap<AudioFilter.Priority, AudioFilter> filters = Multimaps.synchronizedListMultimap(
@@ -46,9 +48,9 @@ public abstract class BaseAudioDevice implements AudioDevice {
     }
 
     @Override
-    public short[] processFilters(short[] samples) {
+    public short[] processFilters(short[] samples, @Nullable Predicate<AudioFilter> excludeFilter) {
         for (AudioFilter filter : filters.values()) {
-            if (filter.isEnabled()) {
+            if (filter.isEnabled() && (excludeFilter == null || !excludeFilter.test(filter))) {
                 samples = filter.process(samples);
             }
         }

@@ -80,4 +80,18 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
             this.application = OpusApplication.OPUS_APPLICATION_RESTRICTED_LOWDELAY;
         }
     }
+
+    @Override
+    public void setBitrate(int bitrate) {
+        if (!isOpen()) return;
+
+        encoder.setBitrate(bitrate);
+    }
+
+    @Override
+    public int getBitrate() {
+        if (!isOpen()) return -1;
+
+        return encoder.getBitrate();
+    }
 }

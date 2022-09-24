@@ -1,10 +1,10 @@
 package su.plo.voice.client.audio.capture;
 
-import com.google.common.base.Strings;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
@@ -24,7 +24,10 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.proto.data.audio.capture.CaptureInfo;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
@@ -43,7 +46,9 @@ public final class VoiceAudioCapture implements AudioCapture {
     private final ClientConfig config;
 
     @Setter
-    private volatile AudioEncoder encoder;
+    private volatile AudioEncoder monoEncoder;
+    @Setter
+    private volatile AudioEncoder stereoEncoder;
     @Setter
     private volatile Encryption encryption;
 
@@ -62,8 +67,13 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     @Override
-    public Optional<AudioEncoder> getEncoder() {
-        return Optional.ofNullable(encoder);
+    public Optional<AudioEncoder> getMonoEncoder() {
+        return Optional.ofNullable(monoEncoder);
+    }
+
+    @Override
+    public Optional<AudioEncoder> getStereoEncoder() {
+        return Optional.ofNullable(stereoEncoder);
     }
 
     @Override
@@ -93,15 +103,26 @@ public final class VoiceAudioCapture implements AudioCapture {
         }
 
         // initialize encoder
-        if (Strings.emptyToNull(serverInfo.getVoiceInfo().getCodec()) != null) {
-            this.encoder = voiceClient.getCodecManager().createEncoder(
-                    serverInfo.getVoiceInfo().getCodec(),
-                    serverInfo.getVoiceInfo().getSampleRate(),
+        CaptureInfo capture = serverInfo.getVoiceInfo().getCapture();
+        if (capture.getCodec() != null) {
+            CodecInfo codec = capture.getCodec();
+
+            Params.Builder params = Params.builder();
+            codec.getParams().forEach(params::set);
+            params.set("bufferSize", serverInfo.getVoiceInfo().getBufferSize());
+
+            this.monoEncoder = voiceClient.getCodecManager().createEncoder(
+                    codec.getName(),
+                    capture.getSampleRate(),
                     false,
-                    Params.builder()
-                            .set("bufferSize", serverInfo.getVoiceInfo().getBufferSize())
-                            .set("application", 2048) // todo: configurable?
-                            .build()
+                    params.build()
+            );
+
+            this.stereoEncoder = voiceClient.getCodecManager().createEncoder(
+                    codec.getName(),
+                    capture.getSampleRate(),
+                    true,
+                    params.build()
             );
         }
 
@@ -159,7 +180,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                     continue;
                 }
 
-                AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, samples);
+                AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, device.get(), samples);
                 voiceClient.getEventBus().call(captureEvent);
                 if (captureEvent.isCancelled()) continue;
 
@@ -181,16 +202,18 @@ public final class VoiceAudioCapture implements AudioCapture {
                 }
 
                 ClientActivation.Result result = parentActivation.process(samples);
-                byte[] encoded = processActivation(parentActivation, result, samples, null);
+
+                EncodedCapture encoded = new EncodedCapture();
+                processActivation(device.get(), parentActivation, result, samples, encoded);
 
                 for (ClientActivation activation : activations.getActivations()) {
                     if (activation.isDisabled() || activation.equals(parentActivation)) continue;
 
                     if (activation.getType() == ClientActivation.Type.INHERIT ||
                             activation.getType() == ClientActivation.Type.VOICE) {
-                        encoded = processActivation(activation, result, samples, encoded);
+                        processActivation(device.get(), activation, result, samples, encoded);
                     } else {
-                        encoded = processActivation(activation, activation.process(samples), samples, encoded);
+                        processActivation(device.get(), activation, activation.process(samples), samples, encoded);
                     }
 
                     if (!activation.isTransitive()) break;
@@ -205,7 +228,8 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     private void cleanup() {
         this.sequenceNumber = 0L;
-        if (encoder != null) encoder.close();
+        if (monoEncoder != null) monoEncoder.close();
+        if (stereoEncoder != null) stereoEncoder.close();
 
         Optional<InputDevice> device = getDevice();
         if (device.isPresent() && device.get().isOpen()) {
@@ -216,21 +240,32 @@ public final class VoiceAudioCapture implements AudioCapture {
         this.thread = null;
     }
 
-    private byte[] processActivation(ClientActivation activation, ClientActivation.Result result, short[] samples, byte[] encoded) {
-        if (result.isActivated() && encoded == null)
-            encoded = encode(samples);
-
-        if (result == ClientActivation.Result.ACTIVATED) {
-            sendVoicePacket(activation, encoded);
-        } else if (result == ClientActivation.Result.END) {
-            sendVoicePacket(activation, encoded);
-            sendVoiceEndPacket(activation);
+    private void processActivation(@NotNull InputDevice device,
+                                   @NotNull ClientActivation activation,
+                                   @NotNull ClientActivation.Result result,
+                                   short[] samples,
+                                   @NotNull EncodedCapture encoded) {
+        if (result.isActivated()) {
+            if (activation.isStereoSupported() && encoded.stereo == null) {
+                samples = device.processFilters(samples, (filter) -> (filter instanceof StereoToMonoFilter));
+                encoded.stereo = encode(stereoEncoder, samples);
+            } else if (!activation.isStereoSupported() && encoded.mono == null) {
+                samples = device.processFilters(samples);
+                encoded.mono = encode(monoEncoder, samples); // todo: change to mono
+            }
         }
 
-        return encoded;
+        byte[] encodedData = activation.isStereoSupported() ? encoded.stereo : encoded.mono;
+
+        if (result == ClientActivation.Result.ACTIVATED) {
+            sendVoicePacket(activation, encodedData);
+        } else if (result == ClientActivation.Result.END) {
+            sendVoicePacket(activation, encodedData);
+            sendVoiceEndPacket(activation);
+        }
     }
 
-    private byte[] encode(short[] samples) {
+    private byte[] encode(@Nullable AudioEncoder encoder, short[] samples) {
         byte[] encoded;
         if (encoder != null) {
             try {
@@ -273,7 +308,8 @@ public final class VoiceAudioCapture implements AudioCapture {
     private void sendVoiceEndPacket(ClientActivation activation) {
         if (activation.getTranslation().equals("key.plasmovoice.parent")) return;
 
-        if (encoder != null) encoder.reset();
+        if (monoEncoder != null) monoEncoder.reset();
+        if (stereoEncoder != null) stereoEncoder.reset();
 
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
@@ -282,5 +318,11 @@ public final class VoiceAudioCapture implements AudioCapture {
                 sequenceNumber++,
                 (short) activation.getDistance()
         ));
+    }
+
+    static class EncodedCapture {
+
+        private byte[] mono;
+        private byte[] stereo;
     }
 }
