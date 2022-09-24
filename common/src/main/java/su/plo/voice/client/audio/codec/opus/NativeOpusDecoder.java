@@ -77,4 +77,9 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
     public boolean isOpen() {
         return decoder != null;
     }
+
+    @Override
+    public short[] decodePLC() throws CodecException {
+        return decode(null);
+    }
 }

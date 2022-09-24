@@ -25,6 +25,7 @@ import su.plo.voice.api.event.EventPriority;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.audio.codec.AudioDecoderPlc;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
@@ -232,14 +233,14 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         updateSource((float) volume, packet.getDistance());
 
         // packet compensation
-        if (lastSequenceNumber >= 0 && decoder != null) { // todo: check if decoder can compensate lost packets
+        if (lastSequenceNumber >= 0 && decoder != null && decoder instanceof AudioDecoderPlc) {
             int packetsToCompensate = (int) (packet.getSequenceNumber() - (lastSequenceNumber + 1));
             if (packetsToCompensate <= 4) {
                 LOGGER.debug("Compensate {} packets", packetsToCompensate);
 
                 for (int i = 0; i < packetsToCompensate; i++) {
                     try {
-                        write(decoder.decode(null));
+                        write(((AudioDecoderPlc) decoder).decodePLC());
                     } catch (CodecException e) {
                         LOGGER.warn("Failed to decode source audio", e);
                         return;
