@@ -108,7 +108,7 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
 
     @Override
     public void clearConnections() {
-        getConnections().forEach(this::disconnect);
+        getConnections().forEach(this::removeConnection);
     }
 
     private void disconnect(UdpConnection connection) {

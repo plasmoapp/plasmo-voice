@@ -24,8 +24,10 @@ public final class FabricClientChannelHandler implements ClientPlayNetworking.Pl
 
     @Override
     public void receive(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender) {
-        if (connection == null) {
+        if (connection == null || handler.getConnection() != connection.getHandler()) {
+            if (connection != null) close();
             this.connection = new ModServerConnection(handler.getConnection(), voiceClient);
+            voiceClient.getEventBus().register(voiceClient, connection);
         }
 
         byte[] data = new byte[buf.readableBytes()];
@@ -42,8 +44,11 @@ public final class FabricClientChannelHandler implements ClientPlayNetworking.Pl
         }
     }
 
-    public void disconnect() {
-        this.connection = null;
+    public void close() {
+        if (connection != null) {
+            voiceClient.getEventBus().unregister(voiceClient, connection);
+            this.connection = null;
+        }
     }
 
     public Optional<ServerConnection> getConnection() {

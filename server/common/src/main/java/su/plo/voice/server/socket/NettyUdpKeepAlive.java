@@ -2,10 +2,12 @@ package su.plo.voice.server.socket;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
+import su.plo.voice.server.config.ServerConfig;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -19,10 +21,14 @@ public final class NettyUdpKeepAlive {
 
     private final TcpServerConnectionManager tcpConnections;
     private final UdpServerConnectionManager udpConnections;
+    private final ServerConfig config;
 
-    public NettyUdpKeepAlive(TcpServerConnectionManager tcpConnections, UdpServerConnectionManager udpConnections) {
+    public NettyUdpKeepAlive(@NotNull TcpServerConnectionManager tcpConnections,
+                             @NotNull UdpServerConnectionManager udpConnections,
+                             @NotNull ServerConfig config) {
         this.tcpConnections = tcpConnections;
         this.udpConnections = udpConnections;
+        this.config = config;
 
         executor.scheduleAtFixedRate(this::tick, 0L, 3L, TimeUnit.SECONDS);
     }
@@ -36,7 +42,7 @@ public final class NettyUdpKeepAlive {
         PingPacket packet = new PingPacket();
 
         for (UdpConnection connection : udpConnections.getConnections()) {
-            if (now - connection.getKeepAlive() > 15_000L) { // todo: config for max timeout keepalive?
+            if (now - connection.getKeepAlive() > config.getVoice().getKeepAliveTimeoutMs()) {
                 logger.info("{} timed out. Reconnect packet sent", connection);
                 udpConnections.removeConnection(connection);
                 tcpConnections.connect(connection.getPlayer());

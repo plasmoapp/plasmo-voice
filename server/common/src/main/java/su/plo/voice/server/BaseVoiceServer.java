@@ -19,7 +19,6 @@ import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
-import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.pos.WorldManager;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
@@ -28,6 +27,7 @@ import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
+import su.plo.voice.server.player.BasePlayerManager;
 import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.server.socket.NettyUdpServer;
@@ -54,7 +54,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Getter
     protected PermissionSupplier permissionSupplier;
     @Getter
-    protected PlayerManager playerManager;
+    protected BasePlayerManager playerManager;
     @Getter
     protected EntityManager entityManager;
     @Getter
@@ -76,7 +76,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         try {
             this.config = toml.load(ServerConfig.class, new File(configFolder(), "config.toml"), true);
-            System.out.println(config);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }
@@ -100,7 +99,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             // luckperms not found
         }
 
-        UdpServer server = new NettyUdpServer(this);
+        UdpServer server = new NettyUdpServer(this, config);
 
         UdpServerCreateEvent createEvent = new UdpServerCreateEvent(server);
         eventBus.call(createEvent);
@@ -134,14 +133,24 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         }
 
         if (udpServer != null) {
-            udpServer.stop();
             udpConnectionManager.clearConnections();
+            udpServer.stop();
             eventBus.call(new UdpServerStoppedEvent(udpServer));
 
             this.udpServer = null;
         }
 
-        // todo: better cleanup
+        // cleanup sources
+        sourceManager.clear();
+
+        // cleanup source lines
+        sourceLineManager.clear();
+
+        // cleanup activations
+        activationManager.clear();
+
+        // cleanup players
+        playerManager.clear();
 
         eventBus.unregister(this);
     }
@@ -160,7 +169,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected abstract PermissionSupplier createPermissionSupplier();
 
-    protected abstract PlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier);
+    protected abstract BasePlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier);
 
     protected abstract EntityManager createEntityManager();
 

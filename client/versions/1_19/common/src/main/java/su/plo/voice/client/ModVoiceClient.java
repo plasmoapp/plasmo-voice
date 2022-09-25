@@ -73,11 +73,6 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
     }
 
     @Override
-    protected void onShutdown() {
-        super.onShutdown();
-    }
-
-    @Override
     protected InputStream getResource(String name) {
         return getClass().getClassLoader().getResourceAsStream(name);
     }

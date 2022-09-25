@@ -8,6 +8,7 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.server.connection.FabricServerChannelHandler;
@@ -27,8 +28,8 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
     public void onInitialize() {
         eventBus.register(this, handler);
 
-        ServerLifecycleEvents.SERVER_STARTED.register(super::onInitialize);
-        ServerLifecycleEvents.SERVER_STOPPING.register(super::onShutdown);
+        ServerLifecycleEvents.SERVER_STARTED.register(this::onInitialize);
+        ServerLifecycleEvents.SERVER_STOPPING.register(this::onShutdown);
 
         // todo: мб переместить в отдельный файл, но наверное и тут норм.
         //  если надумаю куда-то переместить, то уберу Kappa
@@ -41,6 +42,12 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
 
         S2CPlayChannelEvents.REGISTER.register(handler);
         ServerPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
+    }
+
+    @Override
+    protected void onShutdown(MinecraftServer server) {
+        super.onShutdown(server);
+        handler.clear();
     }
 
     @Override

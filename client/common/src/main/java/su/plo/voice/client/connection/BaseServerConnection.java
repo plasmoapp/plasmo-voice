@@ -19,6 +19,7 @@ import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.encryption.Encryption;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
@@ -63,6 +64,32 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     @Override
     public Optional<VoicePlayerInfo> getPlayerById(@NotNull UUID playerId) {
         return Optional.ofNullable(playerById.get(playerId));
+    }
+
+    @Override
+    public void close() {
+        // cleanup server connection
+        playerById.clear();
+
+        // cleanup audio capture
+        voiceClient.getAudioCapture().stop();
+
+        // cleanup sources
+        voiceClient.getSourceManager().clear();
+
+        // cleanup source lines
+        voiceClient.getSourceLineManager().clear();
+
+        // cleanup activations
+        voiceClient.getActivationManager().clear();
+
+        // cleanup devices
+        voiceClient.getDeviceManager().clear(null);
+    }
+
+    @EventSubscribe
+    public void onUdpClosed(@NotNull UdpClientClosedEvent event) {
+        close();
     }
 
     @Override
@@ -151,8 +178,8 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         // initialize capture
         AudioCapture audioCapture = voiceClient.getAudioCapture();
-        audioCapture.initialize(serverInfo);
         audioCapture.start();
+        audioCapture.initialize(serverInfo);
 
         // clear & initialize primary output device
         AudioFormat format = new AudioFormat(

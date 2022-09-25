@@ -98,11 +98,18 @@ public final class VoiceDeviceManager implements DeviceManager {
                 voiceClient.getEventBus().unregister(voiceClient, device);
             });
             inputDevices.clear();
-        } else {
+        } else if (type == DeviceType.OUTPUT) {
             outputDevices.forEach(device -> {
                 device.close();
                 voiceClient.getEventBus().unregister(voiceClient, device);
             });
+            outputDevices.clear();
+        } else {
+            getDevices(null).forEach(device -> {
+                device.close();
+                voiceClient.getEventBus().unregister(voiceClient, device);
+            });
+            inputDevices.clear();
             outputDevices.clear();
         }
     }

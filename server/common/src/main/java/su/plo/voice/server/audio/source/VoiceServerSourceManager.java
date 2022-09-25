@@ -39,6 +39,15 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     }
 
     @Override
+    public void clear() {
+        // todo: create & send source removed packet
+
+        sourceByEntityId.clear();
+        sourceByPlayerId.clear();
+        sourceById.clear();
+    }
+
+    @Override
     public @NotNull ServerPlayerSource createPlayerSource(@Nullable Object addonObject,
                                                           @NotNull VoicePlayer player,
                                                           @NotNull ServerSourceLine line,

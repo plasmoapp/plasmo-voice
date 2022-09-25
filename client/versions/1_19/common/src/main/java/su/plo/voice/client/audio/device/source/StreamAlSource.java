@@ -120,6 +120,9 @@ public final class StreamAlSource extends BaseAlSource {
                 write(emptyBuffer);
             }
             return;
+        } else if (samples.length == 0) {
+            write(emptyBuffer);
+            return;
         }
 
         ByteBuffer buffer = MemoryUtil.memAlloc(samples.length);

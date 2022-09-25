@@ -13,8 +13,6 @@ public interface ClientAudioSource<S extends SourceInfo> extends AudioSource {
 
     @NotNull S getInfo();
 
-    void updateInfo(S sourceInfo);
-
     void process(@NotNull SourceAudioPacket packet);
 
     void process(@NotNull SourceAudioEndPacket packet);

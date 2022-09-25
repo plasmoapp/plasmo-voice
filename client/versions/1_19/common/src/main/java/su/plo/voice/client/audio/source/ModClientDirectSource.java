@@ -24,15 +24,6 @@ public final class ModClientDirectSource extends ModClientAudioSource<DirectSour
     }
 
     @Override
-    public void updateInfo(DirectSourceInfo sourceInfo) {
-        if (getInfo().isCameraRelative() != sourceInfo.isCameraRelative()) {
-            updateSourceParams();
-        }
-
-        super.updateInfo(sourceInfo);
-    }
-
-    @Override
     protected float[] getPosition(float[] position) {
         if (sourceInfo.getRelativePosition() != null) {
             if (sourceInfo.isCameraRelative()) {

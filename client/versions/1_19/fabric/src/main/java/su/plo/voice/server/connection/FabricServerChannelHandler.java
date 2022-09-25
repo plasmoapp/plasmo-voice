@@ -65,6 +65,10 @@ public final class FabricServerChannelHandler extends BaseServerChannelHandler i
         );
     }
 
+    public void clear() {
+        channels.clear();
+    }
+
     @EventSubscribe
     public void onPlayerQuit(PlayerQuitEvent event) {
         channels.remove(event.getPlayerId());

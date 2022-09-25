@@ -20,4 +20,6 @@ public interface SourceLineManager<T extends SourceLine> {
     boolean unregister(@NotNull String name);
 
     boolean unregister(@NotNull T line);
+
+    void clear();
 }

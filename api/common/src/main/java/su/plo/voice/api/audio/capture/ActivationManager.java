@@ -20,4 +20,6 @@ public interface ActivationManager<T extends Activation> {
     boolean unregister(@NotNull String name);
 
     boolean unregister(@NotNull T activation);
+
+    void clear();
 }

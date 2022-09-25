@@ -16,10 +16,12 @@ import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
+import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.VoiceClientInitializedEvent;
 import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
+import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
@@ -106,6 +108,11 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         executor.shutdown();
 
         getEventBus().call(new VoiceClientShutdownEvent(this));
+    }
+
+    protected void onServerDisconnect() {
+        udpClientManager.removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
+        getServerConnection().ifPresent(ServerConnection::close);
     }
 
     protected void openSettings() {

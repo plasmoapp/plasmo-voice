@@ -11,4 +11,6 @@ public interface AudioSourceManager<T extends AudioSource> {
     Optional<T> getSourceById(@NotNull UUID sourceId);
 
     Collection<T> getSources();
+
+    void clear();
 }

@@ -38,9 +38,15 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
 
         if (result < 0) throw new CodecException("Failed to decode audio: " + result);
 
-        short[] decoded = new short[result * channels];
-        for (int channel = 0; channel < channels; channel++) {
-            buffer.get(decoded, result * channel, result);
+        short[] decoded;
+        if (encoded == null || encoded.length == 0) {
+            decoded = new short[result];
+            buffer.get(decoded, 0, result);
+        } else {
+            decoded = new short[result * channels];
+            for (int channel = 0; channel < channels; channel++) {
+                buffer.get(decoded, result * channel, result);
+            }
         }
 
         return decoded;

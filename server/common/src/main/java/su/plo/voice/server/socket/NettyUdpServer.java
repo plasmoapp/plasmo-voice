@@ -15,6 +15,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.socket.UdpServer;
+import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
@@ -30,13 +31,19 @@ public final class NettyUdpServer implements UdpServer {
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
     private final PlasmoVoiceServer voiceServer;
+    private final ServerConfig config;
+
     private NettyUdpKeepAlive keepAlive;
 
     private InetSocketAddress socketAddress;
 
     @Override
     public void start(String ip, int port) {
-        this.keepAlive = new NettyUdpKeepAlive(voiceServer.getTcpConnectionManager(), voiceServer.getUdpConnectionManager());
+        this.keepAlive = new NettyUdpKeepAlive(
+                voiceServer.getTcpConnectionManager(),
+                voiceServer.getUdpConnectionManager(),
+                config
+        );
 
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(loopGroup)

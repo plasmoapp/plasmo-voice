@@ -26,4 +26,10 @@ public final class VoiceUdpClientManager implements UdpClientManager {
     public Optional<UdpClient> getClient() {
         return Optional.ofNullable(client);
     }
+
+    @Override
+    public boolean isConnected() {
+        if (client == null) return false;
+        return !client.isClosed() && client.isConnected() && !client.isTimedOut();
+    }
 }

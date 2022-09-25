@@ -4,9 +4,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.entity.EntityManager;
-import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.pos.WorldManager;
 import su.plo.voice.server.entity.ModEntityManager;
+import su.plo.voice.server.player.BasePlayerManager;
 import su.plo.voice.server.player.ModPlayerManager;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.server.pos.ModWorldManager;
@@ -33,10 +33,11 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
 
     protected void onShutdown(MinecraftServer server) {
         super.onShutdown();
+        this.server = null;
     }
 
     @Override
-    protected PlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier) {
+    protected BasePlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier) {
         return new ModPlayerManager(this, permissionSupplier, server);
     }
 

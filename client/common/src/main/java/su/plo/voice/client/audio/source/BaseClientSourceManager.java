@@ -7,6 +7,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
+import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
@@ -55,77 +56,75 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     }
 
     @Override
-    public void update(@NotNull SourceInfo sourceInfo) {
-        if (sourceById.containsKey(sourceInfo.getId())) {
-            ClientAudioSource<?> source = sourceById.get(sourceInfo.getId());
-            if (source.isClosed()) return;
-
-            // todo: waytoodank
-            if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
-                ((ClientAudioSource<StaticSourceInfo>) source).updateInfo((StaticSourceInfo) sourceInfo);
-            } else if (source.getInfo() instanceof PlayerSourceInfo && sourceInfo instanceof PlayerSourceInfo) {
-                ((ClientAudioSource<PlayerSourceInfo>) source).updateInfo((PlayerSourceInfo) sourceInfo);
-            } else {
-                throw new IllegalArgumentException("Invalid source type");
-            }
-            return;
-        }
-
-        if (sourceInfo instanceof PlayerSourceInfo) {
-            ClientAudioSource<PlayerSourceInfo> source = createPlayerSource();
-            try {
-                source.initialize((PlayerSourceInfo) sourceInfo);
-            } catch (DeviceException e) {
-                throw new IllegalStateException("Failed to initialize audio source", e);
-            }
-
-            sourceById.put(sourceInfo.getId(), source);
-        } else if (sourceInfo instanceof EntitySourceInfo) {
-            ClientAudioSource<EntitySourceInfo> source = createEntitySource();
-            try {
-                source.initialize((EntitySourceInfo) sourceInfo);
-            } catch (DeviceException e) {
-                throw new IllegalStateException("Failed to initialize audio source", e);
-            }
-
-            sourceById.put(sourceInfo.getId(), source);
-        } else if (sourceInfo instanceof StaticSourceInfo) {
-            ClientAudioSource<StaticSourceInfo> source = createStaticSource();
-            try {
-                source.initialize((StaticSourceInfo) sourceInfo);
-            } catch (DeviceException e) {
-                throw new IllegalStateException("Failed to initialize audio source", e);
-            }
-
-            sourceById.put(sourceInfo.getId(), source);
-        } else if (sourceInfo instanceof DirectSourceInfo) {
-            ClientAudioSource<DirectSourceInfo> source = createDirectSource();
-            try {
-                source.initialize((DirectSourceInfo) sourceInfo);
-            } catch (DeviceException e) {
-                throw new IllegalStateException("Failed to initialize audio source", e);
-            }
-
-            sourceById.put(sourceInfo.getId(), source);
-        } else {
-            throw new IllegalArgumentException("Invalid source type");
-        }
-
-        sourceRequestById.remove(sourceInfo.getId());
+    public synchronized void clear() {
+        sourceById.values().forEach(ClientAudioSource::close);
+        sourceRequestById.clear();
     }
 
     @Override
-    public void sendSourceInfoRequest(@NotNull UUID sourceId) {
-        if (!voiceClient.getServerConnection().isPresent()) throw new IllegalStateException("Not connected");
+    public void update(@NotNull SourceInfo sourceInfo) {
+        try {
+            if (sourceById.containsKey(sourceInfo.getId())) {
+                ClientAudioSource<?> source = sourceById.get(sourceInfo.getId());
+                if (source.isClosed() || source.getInfo() == null) {
+                    sourceRequestById.remove(sourceInfo.getId());
+                    return;
+                }
+
+                // todo: waytoodank
+                if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
+                    ((ClientAudioSource<StaticSourceInfo>) source).initialize((StaticSourceInfo) sourceInfo);
+                } else if (source.getInfo() instanceof PlayerSourceInfo && sourceInfo instanceof PlayerSourceInfo) {
+                    ((ClientAudioSource<PlayerSourceInfo>) source).initialize((PlayerSourceInfo) sourceInfo);
+                } else {
+                    throw new IllegalArgumentException("Invalid source type");
+                }
+                return;
+            }
+
+            if (sourceInfo instanceof PlayerSourceInfo) {
+                ClientAudioSource<PlayerSourceInfo> source = createPlayerSource();
+                source.initialize((PlayerSourceInfo) sourceInfo);
+
+                sourceById.put(sourceInfo.getId(), source);
+            } else if (sourceInfo instanceof EntitySourceInfo) {
+                ClientAudioSource<EntitySourceInfo> source = createEntitySource();
+                source.initialize((EntitySourceInfo) sourceInfo);
+
+                sourceById.put(sourceInfo.getId(), source);
+            } else if (sourceInfo instanceof StaticSourceInfo) {
+                ClientAudioSource<StaticSourceInfo> source = createStaticSource();
+                source.initialize((StaticSourceInfo) sourceInfo);
+
+                sourceById.put(sourceInfo.getId(), source);
+            } else if (sourceInfo instanceof DirectSourceInfo) {
+                ClientAudioSource<DirectSourceInfo> source = createDirectSource();
+                source.initialize((DirectSourceInfo) sourceInfo);
+
+                sourceById.put(sourceInfo.getId(), source);
+            } else {
+                throw new IllegalArgumentException("Invalid source type");
+            }
+
+            sourceRequestById.remove(sourceInfo.getId());
+        } catch (DeviceException e) {
+            throw new IllegalStateException("Failed to initialize audio source", e);
+        }
+    }
+
+    @Override
+    public synchronized void sendSourceInfoRequest(@NotNull UUID sourceId) {
+        ServerConnection connection = voiceClient.getServerConnection()
+                .orElseThrow(() -> new IllegalStateException("Not connected"));
+
+        if (sourceById.containsKey(sourceId)) return;
 
         sourceRequestById.put(sourceId, System.currentTimeMillis());
-        voiceClient.getServerConnection().get().sendPacket(
-                new SourceInfoRequestPacket(sourceId)
-        );
+        connection.sendPacket(new SourceInfoRequestPacket(sourceId));
     }
 
     @EventSubscribe
-    public void onAudioSourceClosed(AudioSourceClosedEvent event) {
+    public synchronized void onAudioSourceClosed(AudioSourceClosedEvent event) {
         ClientAudioSource<?> source = event.getSource();
         voiceClient.getEventBus().unregister(voiceClient, source);
 

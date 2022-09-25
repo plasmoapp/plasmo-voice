@@ -152,4 +152,10 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
         return false;
     }
+
+    @Override
+    public void clear() {
+        activations.clear();
+        activationById.clear();
+    }
 }

@@ -77,6 +77,13 @@ public final class ServerConfig {
         )
         private int sampleRate = 48_000;
 
+        @ConfigField(path = "keep_alive_timeout")
+        @ConfigValidator(
+                value = KeepAliveTimeoutValidator.class,
+                allowed = "1000-120000"
+        )
+        private int keepAliveTimeoutMs = 15_000;
+
         @ConfigField
         @ConfigValidator(
                 value = MtuSizeValidator.class,
@@ -135,7 +142,7 @@ public final class ServerConfig {
                     if (!(o instanceof Long)) return false;
                     long bitrate = (Long) o;
 
-                    return bitrate == -1 || (bitrate >= 500 && bitrate <= 512_000);
+                    return bitrate == -1 || bitrate == -1000 || (bitrate >= 500 && bitrate <= 512_000);
                 }
             }
         }
@@ -172,6 +179,19 @@ public final class ServerConfig {
                         || sampleRate == 12_000
                         || sampleRate == 24_000
                         || sampleRate == 48_000;
+            }
+        }
+
+        @NoArgsConstructor
+        public static class KeepAliveTimeoutValidator implements Predicate<Object> {
+
+            @Override
+            public boolean test(Object o) {
+                if (o == null) return true;
+
+                if (!(o instanceof Long)) return false;
+                long keepAliveTimeout = (Long) o;
+                return keepAliveTimeout >= 1_000 && keepAliveTimeout <= 120_000;
             }
         }
     }

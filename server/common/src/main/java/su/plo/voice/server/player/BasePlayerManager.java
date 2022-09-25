@@ -46,6 +46,11 @@ public abstract class BasePlayerManager implements PlayerManager {
         return synchronizedPermissions;
     }
 
+    public void clear() {
+        playerById.clear();
+        synchronizedPermissions.clear();
+    }
+
     @EventSubscribe
     public void onPermissionUpdate(PlayerPermissionUpdateEvent event) {
         VoicePlayer player = event.getPlayer();

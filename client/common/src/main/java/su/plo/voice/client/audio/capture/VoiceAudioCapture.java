@@ -155,7 +155,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     @Override
     public void stop() {
-        thread.interrupt();
+        if (thread != null) thread.interrupt();
     }
 
     @Override
@@ -170,7 +170,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
                 if (!device.isPresent()
                         || !device.get().isOpen()
-                        || !voiceClient.getServerInfo().isPresent()
+                        || !voiceClient.getUdpClientManager().isConnected()
                         || !activations.getParentActivation().isPresent()) {
                     Thread.sleep(1_000L);
                     continue;

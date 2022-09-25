@@ -99,6 +99,7 @@ public final class NettyUdpClient implements UdpClient {
         handler.close();
         workGroup.shutdownGracefully();
         this.closed = true;
+        this.connected = false;
 
         voiceClient.getEventBus().unregister(voiceClient, this);
 

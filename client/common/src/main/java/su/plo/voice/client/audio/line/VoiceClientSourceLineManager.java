@@ -54,6 +54,11 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
     }
 
     @Override
+    public void clear() {
+        lineById.clear();
+    }
+
+    @Override
     public @NotNull ClientSourceLine register(@NotNull ClientSourceLine line) {
         return lineById.put(line.getId(), line);
     }

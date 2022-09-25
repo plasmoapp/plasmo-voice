@@ -281,7 +281,7 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
-    public void onSourceClosed(AlSourceClosedEvent event) {
+    public void onSourceClosed(@NotNull AlSourceClosedEvent event) {
         sources.remove(event.getSource());
     }
 

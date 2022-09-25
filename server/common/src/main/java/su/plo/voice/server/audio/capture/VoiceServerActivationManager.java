@@ -125,4 +125,10 @@ public final class VoiceServerActivationManager implements ServerActivationManag
     public boolean unregister(@NotNull ServerActivation activation) {
         return unregister(activation.getId());
     }
+
+    @Override
+    public void clear() {
+        activationById.values().forEach(this::unregister);
+        activationById.clear();
+    }
 }

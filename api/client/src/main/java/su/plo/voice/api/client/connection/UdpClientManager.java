@@ -28,4 +28,9 @@ public interface UdpClientManager {
      * @return {@link UdpClient}
      */
     Optional<UdpClient> getClient();
+
+    /**
+     * Checks if {@link UdpClient} is present, connected and not timed out
+     */
+    boolean isConnected();
 }

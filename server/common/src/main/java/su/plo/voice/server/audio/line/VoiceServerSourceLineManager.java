@@ -127,4 +127,10 @@ public final class VoiceServerSourceLineManager implements ServerSourceLineManag
     public boolean unregister(@NotNull ServerSourceLine line) {
         return unregister(line.getId());
     }
+
+    @Override
+    public void clear() {
+        lineById.values().forEach(this::unregister);
+        lineById.clear();
+    }
 }

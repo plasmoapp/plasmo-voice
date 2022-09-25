@@ -1,6 +1,7 @@
 package su.plo.voice.client.connection;
 
 import io.netty.buffer.Unpooled;
+import lombok.Getter;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
@@ -12,22 +13,24 @@ import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 
 public final class ModServerConnection extends BaseServerConnection {
 
-    private final Connection connection;
+    @Getter
+    private final Connection handler;
 
-    public ModServerConnection(@NotNull Connection connection,
+    public ModServerConnection(@NotNull Connection handler,
                                @NotNull BaseVoiceClient voiceClient) {
         super(voiceClient);
-        this.connection = connection;
+
+        this.handler = handler;
     }
 
     @Override
     public void sendPacket(Packet<?> packet) {
-        if (!connection.isConnected()) return;
+        if (!handler.isConnected()) return;
 
         byte[] encoded = PacketTcpCodec.encode(packet);
         if (encoded == null) return;
 
-        connection.send(new ServerboundCustomPayloadPacket(
+        handler.send(new ServerboundCustomPayloadPacket(
                 ModVoiceClient.CHANNEL,
                 new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded))
         ));
