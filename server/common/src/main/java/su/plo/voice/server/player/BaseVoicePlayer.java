@@ -46,6 +46,7 @@ public abstract class BaseVoicePlayer implements VoicePlayer {
 
         return new VoicePlayerInfo(
                 getUUID(),
+                getNick(),
                 false, // TODO: mute manager
                 isVoiceDisabled(),
                 isMicrophoneMuted()

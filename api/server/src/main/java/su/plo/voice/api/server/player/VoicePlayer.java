@@ -26,6 +26,8 @@ public interface VoicePlayer extends VoiceEntity {
 
     boolean hasPermission(@NotNull String permission);
 
+    @NotNull String getNick();
+
     boolean hasVoiceChat();
 
     Optional<PlayerModLoader> getModLoader();

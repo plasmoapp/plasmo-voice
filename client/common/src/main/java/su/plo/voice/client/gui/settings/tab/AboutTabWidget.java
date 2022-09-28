@@ -37,18 +37,21 @@ public final class AboutTabWidget extends TabWidget {
 
         addEntry(new CategoryEntry(madeBy(), 24));
         addEntry(new DeveloperEntry(
+                UUID.fromString("8f552657-df1d-42cd-89c6-c176e195f703"),
                 "Apehum",
                 TextComponent.translatable("gui.plasmovoice.about.programming"),
                 "Telegram",
                 "https://t.me/arehum"
         ));
         addEntry(new DeveloperEntry(
+                UUID.fromString("2714d55f-ffef-4655-a93e-d8ca13230e76"),
                 "KPidS",
                 TextComponent.translatable("gui.plasmovoice.about.huix"),
                 "Twitch",
                 "https://twitch.tv/kpids"
         ));
         addEntry(new DeveloperEntry(
+                UUID.fromString("cfb727e7-efcc-4596-8c2b-9c6e38c8eea4"),
                 "Venterok",
                 TextComponent.translatable("gui.plasmovoice.about.artist"),
                 "Telegram",
@@ -130,16 +133,19 @@ public final class AboutTabWidget extends TabWidget {
 
     class DeveloperEntry extends Entry {
 
+        private final UUID playerId;
         private final LiteralText nick;
         private final TextComponent role;
         private final Button link;
 
-        public DeveloperEntry(@NotNull String nick,
+        public DeveloperEntry(@NotNull UUID playerId,
+                              @NotNull String nick,
                               @NotNull TextComponent role,
                               @Nullable String link,
                               @Nullable String linkUrl) {
             super(44);
 
+            this.playerId = playerId;
             this.nick = TextComponent.literal(nick);
             this.role = role;
             if (link != null && linkUrl != null) {
@@ -167,7 +173,7 @@ public final class AboutTabWidget extends TabWidget {
             renderBackground(render, x, y, entryWidth);
 
             render.setShaderColor(1F, 1F, 1F, 1F);
-            render.setShaderTexture(0, minecraft.getPlayerSkins().getSkin(nick.getText()));
+            render.setShaderTexture(0, minecraft.getPlayerSkins().getSkin(playerId, nick.getText()));
 
             render.blit(x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
             render.blit(x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);

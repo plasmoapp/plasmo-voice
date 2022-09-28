@@ -18,6 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class VoicePlayerInfo implements PacketSerializable {
 
     private UUID playerId;
+    private String playerNick;
     private boolean muted;
     private boolean voiceDisabled;
     private boolean microphoneMuted;
@@ -25,6 +26,7 @@ public class VoicePlayerInfo implements PacketSerializable {
     @Override
     public void deserialize(ByteArrayDataInput in) {
         this.playerId = PacketUtil.readUUID(in);
+        this.playerNick = in.readUTF();
         this.muted = in.readBoolean();
         this.voiceDisabled = in.readBoolean();
         this.microphoneMuted = in.readBoolean();
@@ -33,6 +35,7 @@ public class VoicePlayerInfo implements PacketSerializable {
     @Override
     public void serialize(ByteArrayDataOutput out) {
         PacketUtil.writeUUID(out, checkNotNull(playerId));
+        out.writeUTF(checkNotNull(playerNick));
         out.writeBoolean(muted);
         out.writeBoolean(voiceDisabled);
         out.writeBoolean(microphoneMuted);

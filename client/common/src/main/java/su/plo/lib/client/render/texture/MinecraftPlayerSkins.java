@@ -10,5 +10,5 @@ public interface MinecraftPlayerSkins {
 
     CompletableFuture<String> loadSkin(@NotNull UUID playerId, @NotNull String nick, @Nullable String fallback);
 
-    @NotNull String getSkin(@NotNull String nick);
+    @NotNull String getSkin(@NotNull UUID playerId, @NotNull String nick);
 }

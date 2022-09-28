@@ -154,6 +154,7 @@
 
     "gui.plasmovoice.volumes.sources": "Sources Volume",
     "gui.plasmovoice.volumes.players": "Players Volume",
+    "gui.plasmovoice.volumes.players_search": "Search...",
 
 
     "gui.plasmovoice.about.made_by": "%s is made by",

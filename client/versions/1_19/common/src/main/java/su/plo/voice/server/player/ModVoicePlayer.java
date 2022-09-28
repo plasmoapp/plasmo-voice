@@ -111,6 +111,11 @@ public final class ModVoicePlayer extends BaseVoicePlayer {
     }
 
     @Override
+    public @NotNull String getNick() {
+        return player.getGameProfile().getName();
+    }
+
+    @Override
     public boolean hasVoiceChat() {
         return voiceServer.getUdpConnectionManager()
                 .getConnectionByUUID(getUUID())

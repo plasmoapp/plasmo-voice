@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings.tab;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +81,9 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
         // todo: use something like predicate in updateOptionEntries
         for (Entry e : entries) {
-            if ((!entry.isPresent() || entry.get() != e) && e instanceof OptionEntry) {
+            if (!entry.isPresent() || entry.get() != e) {
+                if (e.widgets().size() < 1) continue;
+
                 if (e.widgets().get(0) instanceof DropDownWidget
                         || e.widgets().get(0) instanceof HotKeyWidget) {
                     if (e.mouseClicked(mouseX, mouseY, button)) {
@@ -88,7 +91,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                     }
                 }
 
-                if (e.widgets().get(0) instanceof NumberTextFieldWidget) {
+                if (e.widgets().get(0) instanceof TextFieldWidget) {
                     if (e.mouseClicked(mouseX, mouseY, button)) {
                         this.setFocused(e);
                         this.setDragging(true);
@@ -250,6 +253,37 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
     }
 
+    public final class FullWidthEntry<W extends GuiAbstractWidget> extends Entry {
+
+        private final W element;
+
+        private final List<? extends GuiWidgetListener> widgets;
+
+        public FullWidthEntry(@NotNull W element) {
+           this(element, 24);
+        }
+
+        public FullWidthEntry(@NotNull W element, int height) {
+            super(height);
+
+            this.element = element;
+            this.widgets = ImmutableList.of(element);
+        }
+
+        @Override
+        public void render(@NotNull GuiRender render, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            element.setX(x);
+            element.setY(y);
+            element.setWidth(entryWidth);
+            element.render(render, mouseX, mouseY, delta);
+        }
+
+        @Override
+        public List<? extends GuiWidgetListener> widgets() {
+            return widgets;
+        }
+    }
+
     public class OptionEntry<W extends GuiAbstractWidget> extends Entry {
 
         protected final TextComponent text;
@@ -265,28 +299,38 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry,
                            @NotNull TabWidget.OptionResetAction<W> action) {
-            this(text, widget, entry, Collections.emptyList(), action);
+            this(text, widget, entry, Collections.emptyList(), action, 24);
         }
 
         public OptionEntry(@NotNull TextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry,
                            @NotNull List<TextComponent> tooltip) {
-            this(text, widget, entry, tooltip, null);
+            this(text, widget, entry, tooltip, null, 24);
         }
 
         public OptionEntry(@NotNull TextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry) {
-            this(text, widget, entry, Collections.emptyList(), null);
+            this(text, widget, entry, Collections.emptyList(), null, 24);
         }
+
 
         public OptionEntry(@NotNull TextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry,
                            @NotNull List<TextComponent> tooltip,
                            @Nullable TabWidget.OptionResetAction<W> resetAction) {
-            super(24);
+            this(text, widget, entry, tooltip, resetAction, 24);
+        }
+
+        public OptionEntry(@NotNull TextComponent text,
+                           @NotNull W widget,
+                           @NotNull ConfigEntry<?> entry,
+                           @NotNull List<TextComponent> tooltip,
+                           @Nullable TabWidget.OptionResetAction<W> resetAction,
+                           int height) {
+            super(height);
 
             this.text = text;
             this.element = widget;
@@ -379,14 +423,23 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         private final List<Button> buttons;
         private final List<GuiAbstractWidget> widgets;
 
-
         public ButtonOptionEntry(@NotNull TextComponent text,
                                  @NotNull W widget,
                                  @NotNull List<Button> buttons,
                                  @NotNull ConfigEntry<?> entry,
                                  @NotNull List<TextComponent> tooltip,
                                  @Nullable OptionResetAction<W> resetAction) {
-            super(text, widget, entry, tooltip, resetAction);
+            this(text, widget, buttons, entry, tooltip, resetAction, 24);
+        }
+
+        public ButtonOptionEntry(@NotNull TextComponent text,
+                                 @NotNull W widget,
+                                 @NotNull List<Button> buttons,
+                                 @NotNull ConfigEntry<?> entry,
+                                 @NotNull List<TextComponent> tooltip,
+                                 @Nullable OptionResetAction<W> resetAction,
+                                 int height) {
+            super(text, widget, entry, tooltip, resetAction, height);
 
             this.buttons = buttons;
             this.widgets = Lists.newArrayList(element, resetButton);
