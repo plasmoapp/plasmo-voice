@@ -40,7 +40,7 @@ public final class VoiceServerPlayerSource extends BaseServerSource implements S
 
     private boolean filterVanish(@NotNull VoicePlayer player) {
         return
-//                !player.equals(this.player) &&
+                !player.equals(this.player) &&
                 player.canSee(this.player);
     }
 

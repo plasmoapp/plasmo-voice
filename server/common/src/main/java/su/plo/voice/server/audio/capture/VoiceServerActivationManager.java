@@ -41,7 +41,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                 voiceConfig.getDistances(),
                 voiceConfig.getDefaultDistance(),
                 true,
-                true,
+                false,
                 1
         );
     }

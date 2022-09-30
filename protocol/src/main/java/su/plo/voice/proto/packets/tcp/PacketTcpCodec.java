@@ -26,6 +26,7 @@ public class PacketTcpCodec {
 
         PACKETS.register(++lastPacketId, PlayerListPacket.class);
         PACKETS.register(++lastPacketId, PlayerInfoUpdatePacket.class);
+        PACKETS.register(++lastPacketId, PlayerDisconnectPacket.class);
         PACKETS.register(++lastPacketId, PlayerInfoPacket.class);
         PACKETS.register(++lastPacketId, PlayerStatePacket.class);
         PACKETS.register(++lastPacketId, PlayerAudioEndPacket.class);

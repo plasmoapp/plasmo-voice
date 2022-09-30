@@ -7,7 +7,6 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
-import org.apache.logging.log4j.LogManager;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
@@ -35,10 +34,7 @@ public final class FabricClientChannelHandler implements ClientPlayNetworking.Pl
 
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
-                    .ifPresent(packet -> {
-                        LogManager.getLogger().info("Channel packet received {}", packet);
-                        packet.handle(connection);
-                    });
+                    .ifPresent(connection::handle);
         } catch (IOException e) {
             e.printStackTrace();
         }

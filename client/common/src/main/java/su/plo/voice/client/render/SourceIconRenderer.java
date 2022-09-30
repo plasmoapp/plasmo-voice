@@ -103,6 +103,7 @@ public final class SourceIconRenderer {
         renderEntity(
                 event.getRender(),
                 event.getCamera(),
+                event.getLight(),
                 player,
                 iconLocation,
                 event.hasLabel()
@@ -111,6 +112,7 @@ public final class SourceIconRenderer {
 
     public void renderEntity(@NotNull GuiRender render,
                              @NotNull MinecraftCamera camera,
+                             int light,
                              @NotNull MinecraftEntity entity,
                              @NotNull String iconLocation,
                              boolean hasLabel) {
@@ -120,8 +122,6 @@ public final class SourceIconRenderer {
         double distance = cameraPos.distanceSquared(position);
         if (distance > 4096D) return;
 
-        double yOffset = 0.5D;
-
         /* todo: player volumes
          if (PlayerVolumeHandler.isShow(player)) {
             renderPercent(player, distance, matrices, hasLabel, vertexConsumers, light);
@@ -129,54 +129,75 @@ public final class SourceIconRenderer {
         }
          */
 
-        if (hasLabel) {
-            yOffset += 0.3D;
-
-            if (entity instanceof MinecraftPlayer) {
-                MinecraftPlayer player = (MinecraftPlayer) entity;
-
-                if (player.hasLabelScoreboard() && distance < 100D) {
-                    yOffset += 0.3D;
-                }
-            }
-        }
-
-        render.turnOnLightLayer();
-        render.depthMask(false);
-        render.enableBlend();
-        render.setShaderTexture(0, iconLocation);
-        render.setShaderColor(1F, 1F, 1F, 1F);
-
         MinecraftMatrix matrix = render.getMatrix();
         MinecraftTesselator tesselator = render.getTesselator();
         VertexBuilder bufferBuilder = tesselator.getBuilder();
 
         matrix.push();
-        matrix.translate(0D, entity.getHitBoxHeight() + yOffset, 0D);
+        if (hasLabel) {
+            matrix.translate(0D, 0.3D, 0D);
+
+            if (entity instanceof MinecraftPlayer) {
+                MinecraftPlayer player = (MinecraftPlayer) entity;
+
+                if (player.hasLabelScoreboard() && distance < 100D) {
+                    matrix.translate(0D, 0.3D, 0D);
+                }
+            }
+        }
+
+        matrix.translate(0D, entity.getHitBoxHeight() + 0.5D, 0D);
         matrix.multiply(camera.getRotation());
         matrix.scale(-0.025F, -0.025F, 0.025F);
         matrix.translate(-5D, -1D, 0D);
 
-        if (entity.isSneaking()) {
-            render.disableDepthTest();
-            vertices(render, tesselator, bufferBuilder, matrix, 40, 15);
-        } else {
-            render.enableBlend();
-            render.disableDepthTest();
-            vertices(render, tesselator, bufferBuilder, matrix, 40, 15);
+        // SHADER
+        render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT);
+        // TEXTURE
+        render.enableTexture();
+        render.setShaderTexture(0, iconLocation);
+        render.setShaderColor(1F, 1F, 1F, 1F);
+        // TRANSLUCENT_TRANSPARENCY
+        render.enableBlend();
+        render.blendFuncSeparate(
+                770, // SourceFactor.SRC_ALPHA
+                771, // DestFactor.ONE_MINUS_SRC_ALPHA
+                1, // SourceFactor.ONE
+                771 // DestFactor.ONE_MINUS_SRC_ALPHA
+        );
+        // LIGHTMAP
+        render.turnOnLightLayer();
 
+        render.depthMask(false);
+
+
+        if (entity.isSneaking()) {
+            render.enableDepthTest();
+            render.depthMask(true);
+            vertices(tesselator, bufferBuilder, matrix, 40, light);
+        } else {
             render.disableBlend();
             render.enableDepthTest();
             render.depthMask(true);
-            vertices(render, tesselator, bufferBuilder, matrix, 255, 15);
+            vertices(tesselator, bufferBuilder, matrix, 255, light);
+
+            render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT_SEE_THROUGH);
+            render.enableBlend();
+            render.disableDepthTest();
+            vertices(tesselator, bufferBuilder, matrix, 40, light);
         }
 
         matrix.pop();
 
+        // TRANSLUCENT_TRANSPARENCY
+        render.disableBlend();
+        render.defaultBlendFunc();
+        // LIGHTMAP
+        render.turnOffLightLayer();
+
         render.enableDepthTest();
         render.depthFunc(515);
         render.depthMask(true);
-        render.turnOffLightLayer();
     }
 
     private void renderStatic(@NotNull GuiRender render,
@@ -207,11 +228,11 @@ public final class SourceIconRenderer {
         matrix.translate(-5D, 0D, 0D);
 
         render.disableDepthTest();
-        vertices(render, tesselator, bufferBuilder, matrix, 40, 15);
+        vertices(tesselator, bufferBuilder, matrix, 40, 15);
 
         render.enableDepthTest();
         render.depthMask(true);
-        vertices(render, tesselator, bufferBuilder, matrix, 255, 15);
+        vertices(tesselator, bufferBuilder, matrix, 255, 15);
 
         matrix.pop();
 
@@ -220,13 +241,11 @@ public final class SourceIconRenderer {
         render.turnOffLightLayer();
     }
 
-    private void vertices(@NotNull GuiRender render,
-                          @NotNull MinecraftTesselator tesselator,
+    private void vertices(@NotNull MinecraftTesselator tesselator,
                           @NotNull VertexBuilder bufferBuilder,
                           @Nullable MinecraftMatrix matrix,
                           int alpha,
                           int light) {
-        render.setShader(VertexBuilder.Shader.POSITION_COLOR_TEX_LIGHTMAP);
         bufferBuilder.begin(VertexBuilder.Mode.QUADS, VertexBuilder.Format.POSITION_COLOR_TEX_LIGHTMAP);
 
         vertex(bufferBuilder, matrix, 0F, 10F, 0F, 0F, 1F, alpha, light);

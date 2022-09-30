@@ -2,8 +2,11 @@ package su.plo.voice.server.connection;
 
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.UdpConnectEvent;
@@ -13,6 +16,7 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketUdpHandler;
+import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.util.Collection;
 import java.util.Map;
@@ -22,6 +26,8 @@ import java.util.function.Predicate;
 
 @AllArgsConstructor
 public final class VoiceUdpConnectionManager implements UdpServerConnectionManager {
+
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceServer server;
 
@@ -117,6 +123,7 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
         secretByPlayerId.remove(connection.getPlayer().getUUID());
         playerIdBySecret.remove(connection.getSecret());
 
+        LOGGER.info("{} disconnected", connection.getPlayer());
         server.getEventBus().call(new UdpDisconnectEvent(connection));
     }
 
@@ -131,5 +138,10 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     @Override
     public void broadcast(@NotNull Packet<ClientPacketUdpHandler> packet) {
         broadcast(packet, null);
+    }
+
+    @EventSubscribe
+    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+        getConnectionByUUID(event.getPlayerId()).ifPresent(this::removeConnection);
     }
 }

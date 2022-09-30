@@ -14,7 +14,7 @@ import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
-import su.plo.voice.api.client.event.connection.ServerInfoUpdateEvent;
+import su.plo.voice.api.client.event.connection.*;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectEvent;
 import su.plo.voice.api.client.socket.UdpClient;
@@ -27,6 +27,8 @@ import su.plo.voice.client.socket.NettyUdpClient;
 import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
+import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
@@ -92,6 +94,15 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         close();
     }
 
+    public void handle(Packet<PacketHandler> packet) {
+        TcpClientPacketReceivedEvent event = new TcpClientPacketReceivedEvent(this, packet);
+        voiceClient.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
+        LogManager.getLogger().info("Channel packet received {}", packet);
+        packet.handle(this);
+    }
+
     @Override
     public void handle(@NotNull ConnectionPacket packet) {
         voiceClient.getUdpClientManager().removeClient(UdpClientClosedEvent.Reason.RECONNECT);
@@ -151,8 +162,6 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
                 packet
         );
 
-        ServerInfo oldServerInfo = voiceClient.getServerInfo().orElse(null);
-
         voiceClient.setServerInfo(serverInfo);
 
         Optional<ClientConfig.Server> configServer = voiceClient.getConfig().getServers().getById(serverInfo.getServerId());
@@ -198,7 +207,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
             return;
         }
 
-        ServerInfoUpdateEvent event = new ServerInfoUpdateEvent(oldServerInfo, serverInfo, packet);
+        ServerInfoInitializedEvent event = new ServerInfoInitializedEvent(serverInfo, packet);
         voiceClient.getEventBus().call(event);
     }
 
@@ -228,7 +237,17 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull PlayerInfoUpdatePacket packet) {
-        playerById.put(packet.getPlayerInfo().getPlayerId(), packet.getPlayerInfo());
+        if (playerById.put(packet.getPlayerInfo().getPlayerId(), packet.getPlayerInfo()) == null) {
+            voiceClient.getEventBus().call(new VoicePlayerConnectedEvent(packet.getPlayerInfo()));
+        } else {
+            voiceClient.getEventBus().call(new VoicePlayerUpdateEvent(packet.getPlayerInfo()));
+        }
+    }
+
+    @Override
+    public void handle(@NotNull PlayerDisconnectPacket packet) {
+        playerById.remove(packet.getPlayerId());
+        voiceClient.getEventBus().call(new VoicePlayerDisconnectedEvent(packet.getPlayerId()));
     }
 
     @Override

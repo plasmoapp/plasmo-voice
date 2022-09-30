@@ -184,7 +184,7 @@ public final class ClientConfig {
 
                 distances.forEach((activationId, distance) -> {
                     IntConfigEntry entry = new IntConfigEntry(0, 0, Short.MAX_VALUE);
-                    entry.set((int) distance);
+                    entry.set(((Long) distance).intValue());
 
                     put(UUID.fromString(activationId), entry);
                 });

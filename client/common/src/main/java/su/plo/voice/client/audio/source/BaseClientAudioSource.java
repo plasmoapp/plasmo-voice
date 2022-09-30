@@ -214,8 +214,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         }
 
         if (lastSequenceNumber >= 0 && packet.getSequenceNumber() <= lastSequenceNumber) {
-            LOGGER.info("Drop packet with bad order");
-            return;
+            if (lastSequenceNumber - packet.getSequenceNumber() < 10L) {
+                LOGGER.info("Drop packet with bad order");
+                return;
+            }
+
+            this.lastSequenceNumber = -1L;
         }
 
         try {

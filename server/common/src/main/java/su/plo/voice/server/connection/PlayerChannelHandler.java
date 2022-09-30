@@ -9,12 +9,14 @@ import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
+import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.TcpPacketReceivedEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
+import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
@@ -26,6 +28,7 @@ import java.util.Optional;
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     private final PlasmoVoiceServer voiceServer;
+    private final TcpServerConnectionManager tcpConnections;
     private final ServerActivationManager activations;
     private final ServerSourceLineManager lines;
     private final ServerSourceManager sources;
@@ -34,6 +37,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
                                 @NotNull VoicePlayer player) {
         this.voiceServer = voiceServer;
+        this.tcpConnections = voiceServer.getTcpConnectionManager();
         this.activations = voiceServer.getActivationManager();
         this.lines = voiceServer.getSourceLineManager();
         this.sources = voiceServer.getSourceManager();
@@ -67,10 +71,10 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
             return;
         }
 
-        voiceServer.getTcpConnectionManager().sendConfigInfo(player);
-        voiceServer.getTcpConnectionManager().sendPlayerList(player);
+        tcpConnections.sendConfigInfo(player);
+        tcpConnections.sendPlayerList(player);
 
-        // todo: broadcast connected player
+        tcpConnections.broadcast(new PlayerInfoUpdatePacket(player.getInfo()));
     }
 
     @Override
@@ -79,7 +83,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
         voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
 
-        voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
+        tcpConnections.broadcastPlayerInfoUpdate(player);
     }
 
     @Override

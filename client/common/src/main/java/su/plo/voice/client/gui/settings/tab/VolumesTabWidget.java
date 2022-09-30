@@ -12,6 +12,9 @@ import su.plo.lib.client.gui.widget.GuiAbstractWidget;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
+import su.plo.voice.api.client.event.connection.VoicePlayerConnectedEvent;
+import su.plo.voice.api.client.event.connection.VoicePlayerDisconnectedEvent;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.chat.TextComponent;
 import su.plo.voice.chat.TextStyle;
 import su.plo.voice.client.config.ClientConfig;
@@ -22,6 +25,7 @@ import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.VoicePlayerInfo;
 
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -51,7 +55,17 @@ public final class VolumesTabWidget extends TabWidget {
 
         addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volumes.players"), 24));
         createPlayersSearch();
-        createPlayersEntries();
+        refreshPlayerEntries();
+    }
+
+    @EventSubscribe
+    public void onPlayerConnected(@NotNull VoicePlayerConnectedEvent event) {
+        refreshPlayerEntries();
+    }
+
+    @EventSubscribe
+    public void onPlayerDisconnected(@NotNull VoicePlayerDisconnectedEvent event) {
+        refreshPlayerEntries();
     }
 
     private void createSourceLineVolume(@NotNull ClientSourceLine sourceLine) {
@@ -85,7 +99,7 @@ public final class VolumesTabWidget extends TabWidget {
 
         textField.setResponder((value) -> {
             this.currentSearch = value.toLowerCase();
-            createPlayersEntries();
+            refreshPlayerEntries();
         });
 
         addEntry(new FullWidthEntry<>(
@@ -94,7 +108,7 @@ public final class VolumesTabWidget extends TabWidget {
         ));
     }
 
-    private void createPlayersEntries() {
+    private void refreshPlayerEntries() {
         List<Entry> entries = this.entries.stream()
                 .filter((entry) -> !(entry instanceof PlayerVolumeEntry))
                 .collect(Collectors.toList());
@@ -107,6 +121,7 @@ public final class VolumesTabWidget extends TabWidget {
                     connection.getPlayers()
                             .stream()
                             .filter(player -> player.getPlayerNick().toLowerCase().contains(currentSearch))
+                            .sorted(Comparator.comparing(VoicePlayerInfo::getPlayerNick))
                             .forEach(this::createPlayerVolume);
                 });
     }

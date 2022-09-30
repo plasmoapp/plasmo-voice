@@ -6,7 +6,6 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoRequestPacket;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.socket.NettyPacketUdp;
@@ -25,17 +24,17 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         UUID secret = packet.getSecret();
 
-        Optional<UdpConnection> optConnection = voiceServer.getUdpConnectionManager().getConnectionBySecret(secret);
-        if (optConnection.isPresent()) {
-            UdpConnection connection = optConnection.get();
+        if (voiceServer.getUdpConnectionManager().getConnectionBySecret(secret)
+                .map(connection -> {
+                    if (!connection.getRemoteAddress().equals(nettyPacket.getSender())) {
+                        connection.setRemoteAddress(nettyPacket.getSender());
+                    }
 
-            if (!connection.getRemoteAddress().equals(nettyPacket.getSender())) {
-                connection.setRemoteAddress(nettyPacket.getSender());
-            }
-
-            connection.handlePacket(packet.getPacket());
-            return;
-        }
+                    connection.handlePacket(packet.getPacket());
+                    return true;
+                })
+                .orElse(false)
+        ) return;
 
         Optional<UUID> playerId = voiceServer.getUdpConnectionManager().getPlayerIdBySecret(secret);
         if (!playerId.isPresent()) return;

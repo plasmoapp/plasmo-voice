@@ -17,7 +17,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.event.connection.ServerInfoUpdateEvent;
+import su.plo.voice.api.client.event.connection.ServerInfoInitializedEvent;
 import su.plo.voice.api.client.event.connection.UdpClientPacketSendEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.socket.UdpClient;
@@ -135,7 +135,7 @@ public final class NettyUdpClient implements UdpClient {
     }
 
     @EventSubscribe
-    public void onServerInfoUpdate(ServerInfoUpdateEvent event) {
+    public void onServerInfoUpdate(ServerInfoInitializedEvent event) {
         logger.info("Connected to {}", channel.remoteAddress());
         this.connected = true;
     }

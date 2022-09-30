@@ -17,7 +17,6 @@ public final class UdpClientPacketSendEvent extends EventCancellableBase {
 
     @Getter
     private final UdpClient client;
-
     @Getter
     @Setter
     private Packet<?> packet;

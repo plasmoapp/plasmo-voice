@@ -355,11 +355,13 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
         parent.addWidget(tabButton);
 
+        voiceClient.getEventBus().register(voiceClient, tabWidget);
         tabWidgets.add(tabWidget);
         tabButtons.add(tabButton);
     }
 
     public void clearTabs() {
+        tabWidgets.forEach(tabWidget -> voiceClient.getEventBus().unregister(voiceClient, tabWidget));
         tabWidgets.clear();
         tabButtons.clear();
     }
