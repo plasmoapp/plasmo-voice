@@ -22,7 +22,21 @@ public final class ModEntityRenderer extends ModRenderer {
         super(minecraft, voiceClient);
     }
 
-    public void render(@NotNull PoseStack poseStack, @NotNull Camera camera, @NotNull AbstractClientPlayer player, boolean hasLabel) {
+    public void render(@NotNull PoseStack poseStack, @NotNull Camera camera, int light, @NotNull Entity entity, boolean hasLabel) {
+        if (entity instanceof AbstractClientPlayer) {
+            this.render(poseStack, camera, light, (AbstractClientPlayer) entity, hasLabel);
+        }
+
+        if (this.camera == null) {
+            this.camera = new ModCamera(camera);
+        }
+
+        setPoseStack(poseStack);
+
+        voiceClient.getEventBus().call(new EntityRenderEvent(render, this.camera, light, new ModEntity(entity)));
+    }
+
+    private void render(@NotNull PoseStack poseStack, @NotNull Camera camera, int light, @NotNull AbstractClientPlayer player, boolean hasLabel) {
         if (this.camera == null) {
             this.camera = new ModCamera(camera);
         }
@@ -38,18 +52,9 @@ public final class ModEntityRenderer extends ModRenderer {
                 render,
                 this.camera,
                 new ModPlayer(player),
+                light,
                 hasLabel,
                 isFakePlayer
         ));
-    }
-
-    public void render(@NotNull PoseStack poseStack, @NotNull Camera camera, @NotNull Entity entity) {
-        if (this.camera == null) {
-            this.camera = new ModCamera(camera);
-        }
-
-        setPoseStack(poseStack);
-
-        voiceClient.getEventBus().call(new EntityRenderEvent(render, this.camera, new ModEntity(entity)));
     }
 }

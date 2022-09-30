@@ -38,7 +38,7 @@ public final class FabricVoiceClient extends ModVoiceClient implements ClientMod
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> super.onShutdown());
         HudRenderCallback.EVENT.register(hudRenderer::render);
         WorldRenderEvents.AFTER_TRANSLUCENT.register(
-                (context) -> levelRenderer.render(context.matrixStack(), context.camera(), context.tickDelta())
+                (context) -> levelRenderer.render(context.world(), context.matrixStack(), context.camera(), context.tickDelta())
         );
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             super.onServerDisconnect();

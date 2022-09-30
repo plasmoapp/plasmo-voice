@@ -51,11 +51,14 @@ public final class SourceIconRenderer {
                     .getLineById(source.getInfo().getLineId());
             if (!sourceLine.isPresent()) return;
 
+            Pos3d sourcePosition = ((StaticSourceInfo) source.getInfo()).getPosition();
+
             renderStatic(
                     event.getRender(),
                     event.getCamera(),
+                    event.getLightSupplier().getLight(sourcePosition),
                     sourceLine.get().getIcon(),
-                    ((StaticSourceInfo) source.getInfo()).getPosition()
+                    sourcePosition
             );
         }
     }
@@ -168,21 +171,16 @@ public final class SourceIconRenderer {
         // LIGHTMAP
         render.turnOnLightLayer();
 
-        render.depthMask(false);
-
+        render.enableDepthTest();
 
         if (entity.isSneaking()) {
-            render.enableDepthTest();
-            render.depthMask(true);
             vertices(tesselator, bufferBuilder, matrix, 40, light);
         } else {
-            render.disableBlend();
-            render.enableDepthTest();
-            render.depthMask(true);
+//            render.disableBlend();
             vertices(tesselator, bufferBuilder, matrix, 255, light);
 
             render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT_SEE_THROUGH);
-            render.enableBlend();
+//            render.enableBlend();
             render.disableDepthTest();
             vertices(tesselator, bufferBuilder, matrix, 40, light);
         }
@@ -197,21 +195,30 @@ public final class SourceIconRenderer {
 
         render.enableDepthTest();
         render.depthFunc(515);
-        render.depthMask(true);
     }
 
     private void renderStatic(@NotNull GuiRender render,
                               @NotNull MinecraftCamera camera,
+                              int light,
                               @NotNull String iconLocation,
                               @NotNull Pos3d position) {
         Pos3d cameraPos = camera.getPosition();
         if (cameraPos.distanceSquared(position) > 4096D) return;
 
-        render.turnOnLightLayer();
-        render.depthMask(false);
         render.enableBlend();
+        // TEXTURE
         render.setShaderTexture(0, iconLocation);
         render.setShaderColor(1F, 1F, 1F, 1F);
+        // TRANSLUCENT_TRANSPARENCY
+        render.enableBlend();
+        render.blendFuncSeparate(
+                770, // SourceFactor.SRC_ALPHA
+                771, // DestFactor.ONE_MINUS_SRC_ALPHA
+                1, // SourceFactor.ONE
+                771 // DestFactor.ONE_MINUS_SRC_ALPHA
+        );
+        // LIGHTMAP
+        render.turnOnLightLayer();
 
         MinecraftMatrix matrix = render.getMatrix();
         MinecraftTesselator tesselator = render.getTesselator();
@@ -227,18 +234,24 @@ public final class SourceIconRenderer {
         matrix.scale(-0.025F, -0.025F, 0.025F);
         matrix.translate(-5D, 0D, 0D);
 
-        render.disableDepthTest();
-        vertices(tesselator, bufferBuilder, matrix, 40, 15);
-
         render.enableDepthTest();
-        render.depthMask(true);
-        vertices(tesselator, bufferBuilder, matrix, 255, 15);
+        render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT);
+        vertices(tesselator, bufferBuilder, matrix, 255, light);
+
+        render.disableDepthTest();
+        render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT_SEE_THROUGH);
+        vertices(tesselator, bufferBuilder, matrix, 40, light);
 
         matrix.pop();
 
+        // TRANSLUCENT_TRANSPARENCY
+        render.disableBlend();
+        render.defaultBlendFunc();
+        // LIGHTMAP
+        render.turnOffLightLayer();
+
         render.enableDepthTest();
         render.depthFunc(515);
-        render.turnOffLightLayer();
     }
 
     private void vertices(@NotNull MinecraftTesselator tesselator,

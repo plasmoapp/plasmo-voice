@@ -5,10 +5,10 @@
     "compatibilityLevel": "JAVA_16",
     "mixins": [],
     "client": [
+        "MixinEntityRenderer",
         "MixinGameRenderer",
         "MixinKeyboardHandler",
-        "MixinMouseHandler",
-        "MixinPlayerRenderer"
+        "MixinMouseHandler"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -16,6 +16,8 @@ public final class PlayerRenderEvent implements Event {
     @Getter
     private final MinecraftCamera camera;
     @Getter
+    private final int light;
+    @Getter
     private final MinecraftPlayer player;
     private final boolean label;
     @Getter
@@ -24,10 +26,12 @@ public final class PlayerRenderEvent implements Event {
     public PlayerRenderEvent(@NotNull GuiRender render,
                              @NotNull MinecraftCamera camera,
                              @NotNull MinecraftPlayer player,
+                             int light,
                              boolean label,
                              boolean fakePlayer) {
         this.render = checkNotNull(render);
         this.camera = checkNotNull(camera);
+        this.light = light;
         this.player = player;
         this.label = label;
         this.fakePlayer = fakePlayer;

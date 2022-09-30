@@ -16,13 +16,17 @@ public final class EntityRenderEvent implements Event {
     @Getter
     private final MinecraftCamera camera;
     @Getter
+    private final int light;
+    @Getter
     private final MinecraftEntity entity;
 
     public EntityRenderEvent(@NotNull GuiRender render,
                              @NotNull MinecraftCamera camera,
+                             int light,
                              @NotNull MinecraftEntity entity) {
         this.render = checkNotNull(render);
         this.camera = checkNotNull(camera);
+        this.light = light;
         this.entity = entity;
     }
 }
