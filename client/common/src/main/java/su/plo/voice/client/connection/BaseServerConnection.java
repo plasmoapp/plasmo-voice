@@ -309,4 +309,9 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull ActivationUnregisterPacket packet) {
         activations.unregister(packet.getActivationId());
     }
+
+    @Override
+    public void handle(@NotNull DistanceVisualizePacket packet) {
+        voiceClient.getDistanceVisualizer().render(packet.getRadius(), packet.getHexColor());
+    }
 }

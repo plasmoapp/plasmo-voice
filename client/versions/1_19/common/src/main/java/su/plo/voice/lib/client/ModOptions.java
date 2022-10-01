@@ -11,4 +11,9 @@ public final class ModOptions implements MinecraftOptions {
     public boolean isGuiHidden() {
         return minecraft.options.hideGui;
     }
+
+    @Override
+    public int getRenderDistance() {
+        return minecraft.options.renderDistance().get();
+    }
 }

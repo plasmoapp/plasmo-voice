@@ -14,7 +14,7 @@ public abstract class ModRenderer {
 
 
     public ModRenderer(@NotNull ModClientLib minecraft,
-                          @NotNull PlasmoVoiceClient voiceClient) {
+                       @NotNull PlasmoVoiceClient voiceClient) {
         this.voiceClient = voiceClient;
 
         this.render = new ModGuiRender(minecraft.getTesselator(), minecraft.getTextConverter(), minecraft.getResources());

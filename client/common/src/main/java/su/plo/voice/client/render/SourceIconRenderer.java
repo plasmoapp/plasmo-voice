@@ -205,7 +205,6 @@ public final class SourceIconRenderer {
         Pos3d cameraPos = camera.getPosition();
         if (cameraPos.distanceSquared(position) > 4096D) return;
 
-        render.enableBlend();
         // TEXTURE
         render.setShaderTexture(0, iconLocation);
         render.setShaderColor(1F, 1F, 1F, 1F);

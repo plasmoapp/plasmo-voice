@@ -37,6 +37,13 @@ public interface VertexBuilder {
 
     enum Mode {
 
+        LINES,
+        LINE_STRIP,
+        DEBUG_LINES,
+        DEBUG_LINE_STRIP,
+        TRIANGLES,
+        TRIANGLE_STRIP,
+        TRIANGLE_FAN,
         QUADS
     }
 
@@ -45,6 +52,7 @@ public interface VertexBuilder {
         POSITION,
         POSITION_TEX,
         POSITION_COLOR,
+        POSITION_COLOR_LIGHTMAP,
         POSITION_TEX_COLOR,
         POSITION_TEX_SOLID_COLOR,
         POSITION_COLOR_TEX_LIGHTMAP,
@@ -57,6 +65,7 @@ public interface VertexBuilder {
         POSITION,
         POSITION_TEX,
         POSITION_COLOR,
+        POSITION_COLOR_LIGHTMAP,
         POSITION_TEX_COLOR,
         POSITION_TEX_SOLID_COLOR,
         POSITION_COLOR_TEX_LIGHTMAP

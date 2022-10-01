@@ -233,6 +233,13 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     private void onDistanceChange(int distance) {
         voiceClient.getServerConnection()
                 .ifPresent((connection) -> {
+                    if (id.equals(PROXIMITY_ID)) {
+                        voiceClient.getDistanceVisualizer().render(
+                                distance,
+                                0x00a000
+                        );
+                    }
+
                     Map<UUID, Integer> distanceByActivationId = Maps.newHashMap();
                     distanceByActivationId.put(id, distance);
 

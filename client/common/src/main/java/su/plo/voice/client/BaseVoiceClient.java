@@ -22,6 +22,7 @@ import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.VoiceClientInitializedEvent;
 import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
+import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
@@ -36,6 +37,7 @@ import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.render.HudIconRenderer;
 import su.plo.voice.client.render.SourceIconRenderer;
+import su.plo.voice.client.render.VoiceDistanceVisualizer;
 
 import java.io.File;
 import java.io.IOException;
@@ -68,6 +70,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     private ClientActivationManager activationManager;
     @Getter
     private ClientSourceLineManager sourceLineManager;
+    @Getter
+    private DistanceVisualizer distanceVisualizer;
 
     @Getter
     protected ClientConfig config;
@@ -127,17 +131,22 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             throw new IllegalStateException("Failed to load the config", e);
         }
 
+        MinecraftClientLib minecraft = getMinecraft();
+
+        this.distanceVisualizer = new VoiceDistanceVisualizer(minecraft, config);
+
         this.deviceManager = new VoiceDeviceManager(this, config);
         this.sourceLineManager = new VoiceClientSourceLineManager(config);
-        this.activationManager = new VoiceClientActivationManager(getMinecraft(), this, config);
-        this.audioCapture = new VoiceAudioCapture(getMinecraft(), this, config);
+        this.activationManager = new VoiceClientActivationManager(minecraft, this, config);
+        this.audioCapture = new VoiceAudioCapture(minecraft, this, config);
 
         // hotkey actions
-        new HotkeyActions(getMinecraft(), getKeyBindings(), config).register();
+        new HotkeyActions(minecraft, getKeyBindings(), config).register();
 
         // render
-        eventBus.register(this, new HudIconRenderer(getMinecraft(), this, config));
-        eventBus.register(this, new SourceIconRenderer(getMinecraft(), this, config));
+        eventBus.register(this, distanceVisualizer);
+        eventBus.register(this, new HudIconRenderer(minecraft, this, config));
+        eventBus.register(this, new SourceIconRenderer(minecraft, this, config));
 
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }

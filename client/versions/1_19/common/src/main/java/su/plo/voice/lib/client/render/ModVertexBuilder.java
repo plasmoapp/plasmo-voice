@@ -17,6 +17,7 @@ public final class ModVertexBuilder implements VertexBuilder {
         return switch (format) {
             case POSITION -> DefaultVertexFormat.POSITION;
             case POSITION_COLOR -> DefaultVertexFormat.POSITION_COLOR;
+            case POSITION_COLOR_LIGHTMAP -> DefaultVertexFormat.POSITION_COLOR_LIGHTMAP;
             case POSITION_TEX -> DefaultVertexFormat.POSITION_TEX;
             case POSITION_TEX_COLOR -> DefaultVertexFormat.POSITION_TEX_COLOR;
             case POSITION_TEX_SOLID_COLOR -> ModShaders.POSITION_TEX_SOLID_COLOR;
@@ -98,10 +99,16 @@ public final class ModVertexBuilder implements VertexBuilder {
         return this;
     }
 
-    private @Nullable VertexFormat.Mode getMode(@NotNull Mode mode) {
+    private VertexFormat.Mode getMode(@NotNull Mode mode) {
         return switch (mode) {
+            case LINES -> VertexFormat.Mode.LINES;
+            case LINE_STRIP -> VertexFormat.Mode.LINE_STRIP;
+            case DEBUG_LINES -> VertexFormat.Mode.DEBUG_LINES;
+            case DEBUG_LINE_STRIP -> VertexFormat.Mode.DEBUG_LINE_STRIP;
+            case TRIANGLES -> VertexFormat.Mode.TRIANGLES;
+            case TRIANGLE_STRIP -> VertexFormat.Mode.TRIANGLE_STRIP;
+            case TRIANGLE_FAN -> VertexFormat.Mode.TRIANGLE_FAN;
             case QUADS -> VertexFormat.Mode.QUADS;
-            default -> null;
         };
     }
 }

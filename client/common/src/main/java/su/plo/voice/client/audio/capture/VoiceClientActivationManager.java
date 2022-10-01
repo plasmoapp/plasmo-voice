@@ -81,6 +81,10 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 }
 
                 this.parentActivation = activation;
+                voiceClient.getDistanceVisualizer().render(
+                        activation.getDistance(),
+                        0x00a000
+                );
             }
         }
 

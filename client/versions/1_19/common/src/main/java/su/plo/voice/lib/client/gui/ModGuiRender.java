@@ -452,11 +452,42 @@ public final class ModGuiRender implements GuiRender {
         minecraft.gameRenderer.lightTexture().turnOffLightLayer();
     }
 
+    @Override
+    public void enableCull() {
+        RenderSystem.enableCull();
+    }
+
+    @Override
+    public void disableCull() {
+        RenderSystem.disableCull();
+    }
+
+    @Override
+    public void enablePolygonOffset() {
+        RenderSystem.enablePolygonOffset();
+    }
+
+    @Override
+    public void disablePolygonOffset() {
+        RenderSystem.disablePolygonOffset();
+    }
+
+    @Override
+    public void polygonOffset(float o1, float o2) {
+        RenderSystem.polygonOffset(o1, o2);
+    }
+
+    @Override
+    public void lineWidth(float width) {
+        RenderSystem.lineWidth(width);
+    }
+
     private Supplier<ShaderInstance> getMinecraftShader(@NotNull VertexBuilder.Shader shader) {
         return switch (shader) {
             case POSITION -> GameRenderer::getPositionShader;
             case POSITION_TEX -> GameRenderer::getPositionTexShader;
             case POSITION_COLOR -> GameRenderer::getPositionColorShader;
+            case POSITION_COLOR_LIGHTMAP -> GameRenderer::getPositionColorLightmapShader;
             case POSITION_TEX_COLOR -> GameRenderer::getPositionTexColorShader;
             case POSITION_TEX_SOLID_COLOR -> ModShaders::getPositionTexSolidColorShader;
             case POSITION_COLOR_TEX_LIGHTMAP -> GameRenderer::getPositionColorTexLightmapShader;

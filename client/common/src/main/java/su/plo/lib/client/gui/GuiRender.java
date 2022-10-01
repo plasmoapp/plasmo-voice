@@ -109,6 +109,18 @@ public interface GuiRender {
 
     void turnOffLightLayer();
 
+    void enableCull();
+
+    void disableCull();
+
+    void enablePolygonOffset();
+
+    void disablePolygonOffset();
+
+    void polygonOffset(float o1, float o2);
+
+    void lineWidth(float width);
+
     @NotNull MinecraftTesselator getTesselator();
 
     @NotNull MinecraftMatrix getMatrix();
