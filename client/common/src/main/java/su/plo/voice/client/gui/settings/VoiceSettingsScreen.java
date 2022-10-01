@@ -10,9 +10,12 @@ import su.plo.lib.client.gui.screen.GuiScreen;
 import su.plo.lib.client.gui.screen.TooltipScreen;
 import su.plo.lib.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.client.locale.MinecraftLanguage;
-import su.plo.voice.api.client.PlasmoVoiceClient;
+import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
+import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.chat.TextComponent;
 import su.plo.voice.chat.TextStyle;
+import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.tab.*;
 
@@ -22,7 +25,7 @@ import java.util.Objects;
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
 
-    private final PlasmoVoiceClient voiceClient;
+    private final BaseVoiceClient voiceClient;
     private final ClientConfig config;
     private final TextComponent title;
     @Getter
@@ -36,7 +39,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     private List<TextComponent> tooltip;
 
     public VoiceSettingsScreen(@NotNull MinecraftClientLib minecraft,
-                               @NotNull PlasmoVoiceClient voiceClient,
+                               @NotNull BaseVoiceClient voiceClient,
                                @NotNull ClientConfig config) {
         super(minecraft);
 
@@ -51,6 +54,8 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         );
         this.aboutFeature = new VoiceSettingsAboutFeature(minecraft, this);
         this.testController = new MicrophoneTestController(voiceClient, config);
+
+        voiceClient.getEventBus().register(voiceClient, this);
     }
 
     // GuiScreen impl & override
@@ -98,6 +103,8 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     public void removed() {
         navigation.removed();
         testController.stop();
+
+        voiceClient.getEventBus().unregister(voiceClient, this);
     }
 
     @Override
@@ -148,6 +155,16 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     public boolean isTitleHovered(double mouseX, double mouseY) {
         return mouseX >= 14 && mouseX <= (14 + titleWidth) &&
                 mouseY >= 15 && mouseY <= (15 + font.getLineHeight());
+    }
+
+    @EventSubscribe
+    public void onTimedOut(@NotNull UdpClientTimedOutEvent event) {
+        if (event.isTimedOut()) voiceClient.openNotAvailable();
+    }
+
+    @EventSubscribe
+    public void onClosed(@NotNull UdpClientClosedEvent event) {
+        voiceClient.openNotAvailable();
     }
 
     private TextComponent getSettingsTitle() {

@@ -1,5 +1,6 @@
 package su.plo.voice.lib.client;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -75,6 +76,14 @@ public final class ModClientLib implements MinecraftClientLib {
 
     @Override
     public void setScreen(@Nullable GuiScreen screen) {
+        if (RenderSystem.isOnRenderThread()) {
+            setScreenSync(screen);
+        } else {
+            minecraft.execute(() -> setScreenSync(screen));
+        }
+    }
+
+    private void setScreenSync(@Nullable GuiScreen screen) {
         if (screen == null) {
             minecraft.setScreen(null);
             return;

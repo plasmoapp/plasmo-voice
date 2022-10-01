@@ -8,14 +8,17 @@ import su.plo.voice.api.event.Event;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the udp client is connected to a server
+ * This event is fired once the udp client change timed out state
  */
-public final class UdpClientConnectedEvent implements Event {
+public final class UdpClientTimedOutEvent implements Event {
 
     @Getter
     private final UdpClient client;
+    @Getter
+    private final boolean timedOut;
 
-    public UdpClientConnectedEvent(@NotNull UdpClient client) {
+    public UdpClientTimedOutEvent(@NotNull UdpClient client, boolean timedOut) {
         this.client = checkNotNull(client, "client cannot be null");
+        this.timedOut = timedOut;
     }
 }

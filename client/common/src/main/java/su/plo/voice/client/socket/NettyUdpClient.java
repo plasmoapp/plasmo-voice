@@ -11,7 +11,6 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
-import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -20,6 +19,8 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.connection.ServerInfoInitializedEvent;
 import su.plo.voice.api.client.event.connection.UdpClientPacketSendEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
+import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
+import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.proto.data.EncryptionInfo;
@@ -51,7 +52,6 @@ public final class NettyUdpClient implements UdpClient {
     @Getter
     private boolean connected;
     @Getter
-    @Setter
     private boolean timedOut;
 
     public NettyUdpClient(@NotNull PlasmoVoiceClient voiceClient, @NotNull UUID secret, @Nullable EncryptionInfo encryptionInfo) {
@@ -134,9 +134,21 @@ public final class NettyUdpClient implements UdpClient {
         return Optional.ofNullable(encryptionInfo);
     }
 
+    public void setTimedOut(boolean timedOut) {
+        this.timedOut = timedOut;
+        voiceClient.getEventBus().call(new UdpClientTimedOutEvent(this, timedOut));
+    }
+
     @EventSubscribe
     public void onServerInfoUpdate(ServerInfoInitializedEvent event) {
+        try {
+            Thread.sleep(3000L);
+        } catch (InterruptedException ignored) {
+        }
+
         logger.info("Connected to {}", channel.remoteAddress());
         this.connected = true;
+
+        voiceClient.getEventBus().call(new UdpClientConnectedEvent(this));
     }
 }

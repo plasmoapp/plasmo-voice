@@ -22,6 +22,7 @@ import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.VoiceClientInitializedEvent;
 import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
+import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
@@ -31,6 +32,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.gui.ScreenContainer;
+import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.render.HudIconRenderer;
 import su.plo.voice.client.render.SourceIconRenderer;
@@ -71,6 +73,47 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected ClientConfig config;
 
     protected VoiceSettingsScreen settingsScreen;
+
+    public void openSettings() {
+        MinecraftClientLib minecraft = getMinecraft();
+
+        Optional<ScreenContainer> screen = minecraft.getScreen();
+        if (screen.isPresent() && screen.get().get() instanceof VoiceSettingsScreen) {
+            minecraft.setScreen(null);
+            return;
+        }
+
+        if (!udpClientManager.isConnected()) {
+            openNotAvailable();
+            return;
+        }
+
+        if (settingsScreen == null) {
+            this.settingsScreen = new VoiceSettingsScreen(
+                    minecraft,
+                    this,
+                    config
+            );
+        }
+        minecraft.setScreen(settingsScreen);
+    }
+
+    public void openNotAvailable() {
+        MinecraftClientLib minecraft = getMinecraft();
+
+        VoiceNotAvailableScreen notAvailableScreen = new VoiceNotAvailableScreen(minecraft, this);
+
+        Optional<UdpClient> udpClient = udpClientManager.getClient();
+        if (udpClient.isPresent()) {
+            if (udpClient.get().isClosed()) {
+                notAvailableScreen.setCannotConnect();
+            } else {
+                notAvailableScreen.setConnecting();
+            }
+        }
+
+        minecraft.setScreen(notAvailableScreen);
+    }
 
     protected void onInitialize() {
         try {
@@ -113,25 +156,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected void onServerDisconnect() {
         udpClientManager.removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
         getServerConnection().ifPresent(ServerConnection::close);
-    }
-
-    protected void openSettings() {
-        MinecraftClientLib minecraft = getMinecraft();
-
-        Optional<ScreenContainer> screen = minecraft.getScreen();
-        if (screen.isPresent() && screen.get().get() instanceof VoiceSettingsScreen) {
-            minecraft.setScreen(null);
-        } else {
-            if (settingsScreen == null) {
-                this.settingsScreen = new VoiceSettingsScreen(
-                        minecraft,
-                        this,
-                        config
-                );
-            }
-
-            minecraft.setScreen(settingsScreen);
-        }
     }
 
     @Override

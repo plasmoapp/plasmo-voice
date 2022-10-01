@@ -3,14 +3,14 @@ package su.plo.voice.api.client.event.socket;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.socket.UdpClient;
-import su.plo.voice.api.event.EventCancellableBase;
+import su.plo.voice.api.event.Event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This event is fired once the udp client is closed
  */
-public class UdpClientClosedEvent extends EventCancellableBase {
+public final class UdpClientClosedEvent implements Event {
 
     @Getter
     private final UdpClient client;
@@ -19,7 +19,7 @@ public class UdpClientClosedEvent extends EventCancellableBase {
     private final Reason reason;
 
     public UdpClientClosedEvent(@NotNull UdpClient client, @NotNull Reason reason) {
-        this.client = checkNotNull(client, "server cannot be null");
+        this.client = checkNotNull(client, "client cannot be null");
         this.reason = checkNotNull(reason, "reason cannot be null");
     }
 

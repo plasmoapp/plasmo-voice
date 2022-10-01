@@ -76,11 +76,8 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     private void tick() {
         if (!client.getRemoteAddress().isPresent()) return;
 
-        if (!client.isConnected()) {
-            this.keepAlive = System.currentTimeMillis();
+        if (!client.isConnected())
             client.sendPacket(new PingPacket());
-            return;
-        }
 
         // todo: config for max timeout keepalive?
         long diff = System.currentTimeMillis() - keepAlive;
