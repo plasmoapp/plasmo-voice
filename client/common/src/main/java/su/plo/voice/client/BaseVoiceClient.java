@@ -32,6 +32,7 @@ import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
+import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.gui.ScreenContainer;
 import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -142,11 +143,13 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         // hotkey actions
         new HotkeyActions(minecraft, getKeyBindings(), config).register();
+        PlayerVolumeAction volumeAction = createPlayerVolumeAction(minecraft);
+        eventBus.register(this, volumeAction);
 
         // render
         eventBus.register(this, distanceVisualizer);
         eventBus.register(this, new HudIconRenderer(minecraft, this, config));
-        eventBus.register(this, new SourceIconRenderer(minecraft, this, config));
+        eventBus.register(this, new SourceIconRenderer(minecraft, this, config, volumeAction));
 
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }
@@ -185,4 +188,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     public abstract String getServerIp();
 
     public abstract MinecraftClientLib getMinecraft();
+
+    protected abstract PlayerVolumeAction createPlayerVolumeAction(@NotNull MinecraftClientLib minecraft);
 }

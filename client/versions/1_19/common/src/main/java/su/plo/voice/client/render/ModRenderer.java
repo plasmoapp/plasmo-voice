@@ -1,6 +1,7 @@
 package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.MultiBufferSource;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.lib.client.ModClientLib;
@@ -22,5 +23,9 @@ public abstract class ModRenderer {
 
     protected void setPoseStack(@NotNull PoseStack poseStack) {
         render.getMatrix().setPoseStack(poseStack);
+    }
+
+    protected void setMultiBufferSource(@NotNull MultiBufferSource bufferSource) {
+        render.setMultiBufferSource(bufferSource);
     }
 }

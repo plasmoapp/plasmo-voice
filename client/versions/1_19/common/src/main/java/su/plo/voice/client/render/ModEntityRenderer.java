@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.event.render.EntityRenderEvent;
@@ -22,9 +23,15 @@ public final class ModEntityRenderer extends ModRenderer {
         super(minecraft, voiceClient);
     }
 
-    public void render(@NotNull PoseStack poseStack, @NotNull Camera camera, int light, @NotNull Entity entity, boolean hasLabel) {
+    public void render(@NotNull PoseStack poseStack,
+                       @NotNull MultiBufferSource multiBufferSource,
+                       @NotNull Camera camera,
+                       int light,
+                       @NotNull Entity entity,
+                       boolean hasLabel) {
         if (entity instanceof AbstractClientPlayer) {
-            this.render(poseStack, camera, light, (AbstractClientPlayer) entity, hasLabel);
+            this.render(poseStack, multiBufferSource, camera, light, (AbstractClientPlayer) entity, hasLabel);
+            return;
         }
 
         if (this.camera == null) {
@@ -32,16 +39,23 @@ public final class ModEntityRenderer extends ModRenderer {
         }
 
         setPoseStack(poseStack);
+        setMultiBufferSource(multiBufferSource);
 
         voiceClient.getEventBus().call(new EntityRenderEvent(render, this.camera, light, new ModEntity(entity)));
     }
 
-    private void render(@NotNull PoseStack poseStack, @NotNull Camera camera, int light, @NotNull AbstractClientPlayer player, boolean hasLabel) {
+    private void render(@NotNull PoseStack poseStack,
+                        @NotNull MultiBufferSource multiBufferSource,
+                        @NotNull Camera camera,
+                        int light,
+                        @NotNull AbstractClientPlayer player,
+                        boolean hasLabel) {
         if (this.camera == null) {
             this.camera = new ModCamera(camera);
         }
 
         setPoseStack(poseStack);
+        setMultiBufferSource(multiBufferSource);
 
         boolean isFakePlayer = false;
         if (Minecraft.getInstance().player != null) {

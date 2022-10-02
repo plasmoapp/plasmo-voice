@@ -16,4 +16,9 @@ public final class ModOptions implements MinecraftOptions {
     public int getRenderDistance() {
         return minecraft.options.renderDistance().get();
     }
+
+    @Override
+    public float getBackgroundOpacity(float m) {
+        return minecraft.options.getBackgroundOpacity(m);
+    }
 }

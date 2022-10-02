@@ -40,6 +40,7 @@ public abstract class MixinMouseHandler {
                 horizontal,
                 vertical
         );
+        ModVoiceClient.INSTANCE.getEventBus().call(event);
 
         if (event.isCancelled()) ci.cancel();
     }

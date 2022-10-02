@@ -9,6 +9,7 @@ import su.plo.lib.client.entity.MinecraftPlayer;
 import su.plo.lib.client.event.render.LevelRenderEvent;
 import su.plo.lib.client.event.render.PlayerRenderEvent;
 import su.plo.lib.client.gui.GuiRender;
+import su.plo.lib.client.gui.MinecraftFont;
 import su.plo.lib.client.render.MinecraftCamera;
 import su.plo.lib.client.render.MinecraftMatrix;
 import su.plo.lib.client.render.MinecraftTesselator;
@@ -18,7 +19,10 @@ import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.gui.PlayerVolumeAction;
+import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
@@ -30,13 +34,16 @@ public final class SourceIconRenderer {
     private final MinecraftClientLib minecraft;
     private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
+    private final PlayerVolumeAction volumeAction;
 
     public SourceIconRenderer(@NotNull MinecraftClientLib minecraft,
                               @NotNull PlasmoVoiceClient voiceClient,
-                              @NotNull ClientConfig config) {
+                              @NotNull ClientConfig config,
+                              @NotNull PlayerVolumeAction volumeAction) {
         this.minecraft = minecraft;
         this.voiceClient = voiceClient;
         this.config = config;
+        this.volumeAction = volumeAction;
     }
 
     @EventSubscribe
@@ -79,6 +86,7 @@ public final class SourceIconRenderer {
                 || player.isInvisibleTo(clientPlayer.get())
         ) return;
 
+        boolean hasPercent = false;
         String iconLocation;
 
         Optional<VoicePlayerInfo> playerInfo = connection.get().getPlayerById(player.getUUID());
@@ -93,6 +101,18 @@ public final class SourceIconRenderer {
         } else {
             Optional<ClientAudioSource<?>> source = voiceClient.getSourceManager()
                     .getSourceById(player.getUUID(), false);
+
+            hasPercent = volumeAction.isShown(player);
+            if (hasPercent) {
+                renderPercent(
+                        event.getRender(),
+                        event.getCamera(),
+                        event.getLight(),
+                        player,
+                        event.hasLabel()
+                );
+            }
+
             if (!source.isPresent() || !source.get().isActivated()) return;
 
             Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
@@ -109,7 +129,8 @@ public final class SourceIconRenderer {
                 event.getLight(),
                 player,
                 iconLocation,
-                event.hasLabel()
+                event.hasLabel(),
+                hasPercent
         );
     }
 
@@ -118,41 +139,22 @@ public final class SourceIconRenderer {
                              int light,
                              @NotNull MinecraftEntity entity,
                              @NotNull String iconLocation,
-                             boolean hasLabel) {
+                             boolean hasLabel,
+                             boolean hasPercent) {
         Pos3d position = entity.getPosition();
 
         Pos3d cameraPos = camera.getPosition();
         double distance = cameraPos.distanceSquared(position);
         if (distance > 4096D) return;
 
-        /* todo: player volumes
-         if (PlayerVolumeHandler.isShow(player)) {
-            renderPercent(player, distance, matrices, hasLabel, vertexConsumers, light);
-            yOffset += 0.3D;
-        }
-         */
-
         MinecraftMatrix matrix = render.getMatrix();
         MinecraftTesselator tesselator = render.getTesselator();
         VertexBuilder bufferBuilder = tesselator.getBuilder();
 
         matrix.push();
-        if (hasLabel) {
-            matrix.translate(0D, 0.3D, 0D);
 
-            if (entity instanceof MinecraftPlayer) {
-                MinecraftPlayer player = (MinecraftPlayer) entity;
-
-                if (player.hasLabelScoreboard() && distance < 100D) {
-                    matrix.translate(0D, 0.3D, 0D);
-                }
-            }
-        }
-
-        matrix.translate(0D, entity.getHitBoxHeight() + 0.5D, 0D);
-        matrix.multiply(camera.getRotation());
-        matrix.scale(-0.025F, -0.025F, 0.025F);
-        matrix.translate(-5D, -1D, 0D);
+        if (hasPercent) matrix.translate(0D, 0.3D, 0D);
+        translateEntityMatrix(matrix, camera, entity, distance, hasLabel);
 
         // SHADER
         render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT);
@@ -176,11 +178,9 @@ public final class SourceIconRenderer {
         if (entity.isSneaking()) {
             vertices(tesselator, bufferBuilder, matrix, 40, light);
         } else {
-//            render.disableBlend();
             vertices(tesselator, bufferBuilder, matrix, 255, light);
 
             render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT_SEE_THROUGH);
-//            render.enableBlend();
             render.disableDepthTest();
             vertices(tesselator, bufferBuilder, matrix, 40, light);
         }
@@ -195,6 +195,64 @@ public final class SourceIconRenderer {
 
         render.enableDepthTest();
         render.depthFunc(515);
+    }
+
+    private void renderPercent(@NotNull GuiRender render,
+                               @NotNull MinecraftCamera camera,
+                               int light,
+                               @NotNull MinecraftEntity entity,
+                               boolean hasLabel) {
+        Pos3d position = entity.getPosition();
+
+        Pos3d cameraPos = camera.getPosition();
+        double distance = cameraPos.distanceSquared(position);
+        if (distance > 4096D) return;
+
+        MinecraftMatrix matrix = render.getMatrix();
+
+        matrix.push();
+
+        translateEntityMatrix(matrix, camera, entity, distance, hasLabel);
+        matrix.translate(5D, 0D, 0D);
+
+        // render percents
+        DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + entity.getUUID());
+        MinecraftFont font = minecraft.getFont();
+
+        boolean isSneaking = entity.isSneaking();
+        TextComponent text = TextComponent.literal((int) Math.round((volume.value() * 100D)) + "%");
+        int backgroundColor = (int) (minecraft.getOptions().getBackgroundOpacity(0.25F) * 255.0F) << 24;
+
+        int xOffset = -font.width(text) / 2;
+        render.drawString(text, xOffset, 0, 553648127, false, !isSneaking, backgroundColor, light);
+        if (!isSneaking) {
+            render.drawString(text, xOffset, 0, -1, false, false, 0, light);
+        }
+
+        matrix.pop();
+    }
+
+    private void translateEntityMatrix(@NotNull MinecraftMatrix matrix,
+                                       @NotNull MinecraftCamera camera,
+                                       @NotNull MinecraftEntity entity,
+                                       double distance,
+                                       boolean hasLabel) {
+        if (hasLabel) {
+            matrix.translate(0D, 0.3D, 0D);
+
+            if (entity instanceof MinecraftPlayer) {
+                MinecraftPlayer player = (MinecraftPlayer) entity;
+
+                if (player.hasLabelScoreboard() && distance < 100D) {
+                    matrix.translate(0D, 0.3D, 0D);
+                }
+            }
+        }
+
+        matrix.translate(0D, entity.getHitBoxHeight() + 0.5D, 0D);
+        matrix.multiply(camera.getRotation());
+        matrix.scale(-0.025F, -0.025F, 0.025F);
+        matrix.translate(-5D, -1D, 0D);
     }
 
     private void renderStatic(@NotNull GuiRender render,
@@ -218,6 +276,7 @@ public final class SourceIconRenderer {
         );
         // LIGHTMAP
         render.turnOnLightLayer();
+        render.depthFunc(515);
 
         MinecraftMatrix matrix = render.getMatrix();
         MinecraftTesselator tesselator = render.getTesselator();
@@ -250,7 +309,6 @@ public final class SourceIconRenderer {
         render.turnOffLightLayer();
 
         render.enableDepthTest();
-        render.depthFunc(515);
     }
 
     private void vertices(@NotNull MinecraftTesselator tesselator,

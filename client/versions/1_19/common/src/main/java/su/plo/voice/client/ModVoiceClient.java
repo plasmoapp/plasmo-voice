@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
+import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
@@ -12,9 +13,11 @@ import su.plo.voice.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.source.ModClientSourceManager;
+import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.ModEntityRenderer;
 import su.plo.voice.client.render.ModHudRenderer;
 import su.plo.voice.client.render.ModLevelRenderer;
+import su.plo.voice.client.render.ModPlayerVolumeAction;
 import su.plo.voice.lib.client.ModClientLib;
 
 import java.io.InputStream;
@@ -100,5 +103,10 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
     @Override
     public MinecraftClientLib getMinecraft() {
         return minecraftLib;
+    }
+
+    @Override
+    protected PlayerVolumeAction createPlayerVolumeAction(@NotNull MinecraftClientLib minecraft) {
+        return new ModPlayerVolumeAction(minecraft, this, config);
     }
 }

@@ -18,7 +18,7 @@ public class DoubleConfigEntry extends ConfigEntry<Double> {
 
     @Override
     public void set(Double value) {
-        if (min != max && min > 0) {
+        if (min != max) {
             super.set(Math.max(Math.min(value, max), min));
         } else {
             super.set(value);

@@ -18,12 +18,13 @@ public abstract class MixinEntityRenderer {
 
     @Shadow protected abstract boolean shouldShowName(Entity par1);
 
-    @Inject(method = "render", at = @At(value = "HEAD"))
+    @Inject(method = "render", at = @At(value = "RETURN"))
     public void render(LivingEntity entity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
         if (ModVoiceClient.INSTANCE.getServerInfo().isEmpty()) return;
 
         ModVoiceClient.INSTANCE.getEntityRenderer().render(
                 poseStack,
+                multiBufferSource,
                 Minecraft.getInstance().gameRenderer.getMainCamera(),
                 i,
                 entity,

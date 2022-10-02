@@ -1,7 +1,6 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.client.MathLib;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiRender;
 import su.plo.lib.client.gui.components.AbstractSlider;
@@ -63,6 +62,6 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
     }
 
     private double calculateValue(double value) {
-        return (MathLib.floor((value * entry.getMax() * 100D) / 5) * 5) / (entry.getMax() * 100D);
+        return (Math.round((value * entry.getMax() * 100D) / 5) * 5) / (entry.getMax() * 100D);
     }
 }

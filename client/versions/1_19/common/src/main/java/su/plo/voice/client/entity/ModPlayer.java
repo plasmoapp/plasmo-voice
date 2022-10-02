@@ -1,18 +1,20 @@
 package su.plo.voice.client.entity;
 
 import lombok.Getter;
-import net.minecraft.client.player.AbstractClientPlayer;
+import lombok.ToString;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.scores.Objective;
 import net.minecraft.world.scores.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.entity.MinecraftPlayer;
 
+@ToString
 public class ModPlayer extends ModEntity implements MinecraftPlayer {
 
     @Getter
-    private final AbstractClientPlayer instance;
+    private final Player instance;
 
-    public ModPlayer(@NotNull AbstractClientPlayer player) {
+    public ModPlayer(@NotNull Player player) {
         super(player);
 
         this.instance = player;

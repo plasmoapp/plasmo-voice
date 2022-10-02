@@ -11,6 +11,7 @@ import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
@@ -29,6 +30,7 @@ import su.plo.voice.lib.client.texture.ResourceCache;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 @RequiredArgsConstructor
@@ -44,6 +46,8 @@ public final class ModGuiRender implements GuiRender {
     private final ModMatrix matrix = new ModMatrix();
 
     @Setter
+    private MultiBufferSource multiBufferSource;
+    @Setter
     @Getter
     private int blitOffset;
 
@@ -52,11 +56,11 @@ public final class ModGuiRender implements GuiRender {
         Window window = minecraft.getWindow();
         int i = window.getHeight();
         double d = window.getGuiScale();
-        double e = (double)x0 * d;
-        double f = (double)i - (double)y1 * d;
-        double g = (double)(x1 - x0) * d;
-        double h = (double)(y1 - y0) * d;
-        RenderSystem.enableScissor((int)e, (int)f, Math.max(0, (int)g), Math.max(0, (int)h));
+        double e = (double) x0 * d;
+        double f = (double) i - (double) y1 * d;
+        double g = (double) (x1 - x0) * d;
+        double h = (double) (y1 - y0) * d;
+        RenderSystem.enableScissor((int) e, (int) f, Math.max(0, (int) g), Math.max(0, (int) h));
     }
 
     @Override
@@ -104,20 +108,20 @@ public final class ModGuiRender implements GuiRender {
             y1 = n;
         }
 
-        float f = (float)(color >> 24 & 255) / 255.0F;
-        float g = (float)(color >> 16 & 255) / 255.0F;
-        float h = (float)(color >> 8 & 255) / 255.0F;
-        float o = (float)(color & 255) / 255.0F;
+        float f = (float) (color >> 24 & 255) / 255.0F;
+        float g = (float) (color >> 16 & 255) / 255.0F;
+        float h = (float) (color >> 8 & 255) / 255.0F;
+        float o = (float) (color & 255) / 255.0F;
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         RenderSystem.enableBlend();
         RenderSystem.disableTexture();
         RenderSystem.defaultBlendFunc();
         RenderSystem.setShader(GameRenderer::getPositionColorShader);
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        bufferBuilder.vertex(matrix4f, (float)x0, (float)y1, 0F).color(g, h, o, f).endVertex();
-        bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, 0F).color(g, h, o, f).endVertex();
-        bufferBuilder.vertex(matrix4f, (float)x1, (float)y0, 0F).color(g, h, o, f).endVertex();
-        bufferBuilder.vertex(matrix4f, (float)x0, (float)y0, 0F).color(g, h, o, f).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x0, (float) y1, 0F).color(g, h, o, f).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, 0F).color(g, h, o, f).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x1, (float) y0, 0F).color(g, h, o, f).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x0, (float) y0, 0F).color(g, h, o, f).endVertex();
         BufferUploader.drawWithShader(bufferBuilder.end());
         RenderSystem.enableTexture();
         RenderSystem.disableBlend();
@@ -159,7 +163,7 @@ public final class ModGuiRender implements GuiRender {
 
         fillGradient(
                 matrix.getPoseStack().last().pose(), builder, startX, startY, endX, endY, z,
-                startRed, startBlue,  startGreen, startAlpha,
+                startRed, startBlue, startGreen, startAlpha,
                 endRed, endBlue, endGreen, endAlpha
         );
 
@@ -171,23 +175,23 @@ public final class ModGuiRender implements GuiRender {
     private void fillGradient(Matrix4f matrix, BufferBuilder builder, int startX, int startY, int endX, int endY, int z,
                               int startRed, int startBlue, int startGreen, int startAlpha,
                               int endRed, int endBlue, int endGreen, int endAlpha) {
-        builder.vertex(matrix, (float)endX, (float)startY, (float)z)
+        builder.vertex(matrix, (float) endX, (float) startY, (float) z)
                 .color(startRed, startGreen, startBlue, startAlpha)
                 .endVertex();
-        builder.vertex(matrix, (float)startX, (float)startY, (float)z)
+        builder.vertex(matrix, (float) startX, (float) startY, (float) z)
                 .color(startRed, startGreen, startBlue, startAlpha)
                 .endVertex();
-        builder.vertex(matrix, (float)startX, (float)endY, (float)z)
+        builder.vertex(matrix, (float) startX, (float) endY, (float) z)
                 .color(endRed, endGreen, endBlue, endAlpha)
                 .endVertex();
-        builder.vertex(matrix, (float)endX, (float)endY, (float)z)
+        builder.vertex(matrix, (float) endX, (float) endY, (float) z)
                 .color(endRed, endGreen, endBlue, endAlpha)
                 .endVertex();
     }
 
     @Override
     public int drawCenteredString(String string, int x, int y, int color) {
-        return minecraft.font.drawShadow(matrix.getPoseStack(), string, (float)(x - minecraft.font.width(string) / 2), (float)y, color);
+        return minecraft.font.drawShadow(matrix.getPoseStack(), string, (float) (x - minecraft.font.width(string) / 2), (float) y, color);
     }
 
     @Override
@@ -195,7 +199,7 @@ public final class ModGuiRender implements GuiRender {
         Component component = textConverter.convert(text);
 
         FormattedCharSequence formattedCharSequence = component.getVisualOrderText();
-        return minecraft.font.drawShadow(matrix.getPoseStack(), formattedCharSequence, (float)(x - minecraft.font.width(formattedCharSequence) / 2), (float)y, color);
+        return minecraft.font.drawShadow(matrix.getPoseStack(), formattedCharSequence, (float) (x - minecraft.font.width(formattedCharSequence) / 2), (float) y, color);
     }
 
     @Override
@@ -205,7 +209,35 @@ public final class ModGuiRender implements GuiRender {
 
     @Override
     public int drawString(TextComponent text, int x, int y, int color) {
-        return minecraft.font.drawShadow(matrix.getPoseStack(), textConverter.convert(text), (float)x, (float)y, color);
+        return minecraft.font.drawShadow(matrix.getPoseStack(), textConverter.convert(text), (float) x, (float) y, color);
+    }
+
+    @Override
+    public int drawString(TextComponent component, float x, float y, int color, boolean dropShadow, boolean seeThrough, int backgroundColor, int light) {
+        MultiBufferSource bufferSource;
+        bufferSource = Objects.requireNonNullElseGet(
+                multiBufferSource,
+                () -> MultiBufferSource.immediate(Tesselator.getInstance().getBuilder())
+        );
+
+        int width = minecraft.font.drawInBatch(
+                textConverter.convert(component),
+                x,
+                y,
+                color,
+                dropShadow,
+                matrix.getPoseStack().last().pose(),
+                bufferSource,
+                seeThrough,
+                backgroundColor,
+                light
+        );
+
+        if (multiBufferSource == null) {
+            ((MultiBufferSource.BufferSource) bufferSource).endBatch();
+        }
+
+        return width;
     }
 
     @Override
@@ -246,7 +278,7 @@ public final class ModGuiRender implements GuiRender {
 
     @Override
     public void blit(int x, int y, int u, int v, int width, int height) {
-        blit(x, y, blitOffset, (float)u, (float)v, width, height, 256, 256);
+        blit(x, y, blitOffset, (float) u, (float) v, width, height, 256, 256);
     }
 
     @Override
@@ -266,7 +298,7 @@ public final class ModGuiRender implements GuiRender {
 
     @Override
     public void blit(int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
-        blit(x0, x1, y0, y1, z, (u + 0.0F) / (float)textureWidth, (u + (float)regionWidth) / (float)textureWidth, (v + 0.0F) / (float)textureHeight, (v + (float)regionHeight) / (float)textureHeight);
+        blit(x0, x1, y0, y1, z, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
     }
 
     @Override
@@ -276,10 +308,10 @@ public final class ModGuiRender implements GuiRender {
         RenderSystem.setShader(GameRenderer::getPositionTexShader);
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        bufferBuilder.vertex(matrix4f, (float)x0, (float)y1, (float)z).uv(u0, v1).endVertex();
-        bufferBuilder.vertex(matrix4f, (float)x1, (float)y1, (float)z).uv(u1, v1).endVertex();
-        bufferBuilder.vertex(matrix4f, (float)x1, (float)y0, (float)z).uv(u1, v0).endVertex();
-        bufferBuilder.vertex(matrix4f, (float)x0, (float)y0, (float)z).uv(u0, v0).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x0, (float) y1, (float) z).uv(u0, v1).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x1, (float) y1, (float) z).uv(u1, v1).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x1, (float) y0, (float) z).uv(u1, v0).endVertex();
+        bufferBuilder.vertex(matrix4f, (float) x0, (float) y0, (float) z).uv(u0, v0).endVertex();
         BufferUploader.drawWithShader(bufferBuilder.end());
     }
 
@@ -332,22 +364,22 @@ public final class ModGuiRender implements GuiRender {
         BufferBuilder bufferBuilder = Tesselator.getInstance().getBuilder();
         bufferBuilder.begin(VertexFormat.Mode.QUADS, vertexFormat);
         bufferBuilder
-                .vertex(matrix4f, (float)x0, (float)y1, (float)z)
+                .vertex(matrix4f, (float) x0, (float) y1, (float) z)
                 .uv(u0, v1)
                 .color(red, green, blue, alpha)
                 .endVertex();
         bufferBuilder
-                .vertex(matrix4f, (float)x1, (float)y1, (float)z)
+                .vertex(matrix4f, (float) x1, (float) y1, (float) z)
                 .uv(u1, v1)
                 .color(red, green, blue, alpha)
                 .endVertex();
         bufferBuilder
-                .vertex(matrix4f, (float)x1, (float)y0, (float)z)
+                .vertex(matrix4f, (float) x1, (float) y0, (float) z)
                 .uv(u1, v0)
                 .color(red, green, blue, alpha)
                 .endVertex();
         bufferBuilder
-                .vertex(matrix4f, (float)x0, (float)y0, (float)z)
+                .vertex(matrix4f, (float) x0, (float) y0, (float) z)
                 .uv(u0, v0)
                 .color(red, green, blue, alpha)
                 .endVertex();
