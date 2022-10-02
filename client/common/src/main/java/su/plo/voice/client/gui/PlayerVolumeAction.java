@@ -2,7 +2,7 @@ package su.plo.voice.client.gui;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.entity.MinecraftPlayer;
+import su.plo.lib.entity.MinecraftPlayer;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.connection.ServerConnection;

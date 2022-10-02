@@ -39,7 +39,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
     }
 
     @Override
-    public void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
+    public synchronized void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
         checkNotNull(params, "params cannot be null");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
@@ -66,7 +66,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         if (!isOpen()) {
             device.stop();
             device.flush();

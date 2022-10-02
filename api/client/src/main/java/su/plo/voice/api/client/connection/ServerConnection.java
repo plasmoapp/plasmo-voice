@@ -14,6 +14,8 @@ public interface ServerConnection {
 
     Optional<VoicePlayerInfo> getPlayerById(@NotNull UUID playerId);
 
+    Optional<VoicePlayerInfo> getClientPlayer();
+
     void sendPacket(Packet<?> packet);
 
     void close();

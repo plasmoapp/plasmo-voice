@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiRender;
 import su.plo.lib.client.gui.components.AbstractSlider;
@@ -11,7 +12,6 @@ import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;

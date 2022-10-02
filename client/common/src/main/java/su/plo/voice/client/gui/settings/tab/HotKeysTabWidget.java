@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.tab;
 
+import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
-import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.audio.capture.VoiceClientActivation;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;

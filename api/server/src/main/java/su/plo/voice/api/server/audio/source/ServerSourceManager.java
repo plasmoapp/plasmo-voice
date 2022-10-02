@@ -2,11 +2,11 @@ package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.server.entity.MinecraftServerEntity;
+import su.plo.lib.server.world.ServerPos3d;
 import su.plo.voice.api.audio.source.AudioSourceManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
-import su.plo.voice.api.server.entity.VoiceEntity;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.pos.ServerPos3d;
 
 public interface ServerSourceManager extends AudioSourceManager<ServerAudioSource> {
 
@@ -17,7 +17,7 @@ public interface ServerSourceManager extends AudioSourceManager<ServerAudioSourc
                                                    boolean stereo);
 
     @NotNull ServerEntitySource createEntitySource(@Nullable Object addonObject,
-                                                   @NotNull VoiceEntity entity,
+                                                   @NotNull MinecraftServerEntity entity,
                                                    @NotNull ServerSourceLine line,
                                                    @Nullable String codec,
                                                    boolean stereo);

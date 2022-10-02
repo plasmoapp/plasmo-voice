@@ -26,14 +26,6 @@ public final class VoiceServerSourceLineManager implements ServerSourceLineManag
     public VoiceServerSourceLineManager(@NotNull PlasmoVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
         this.addons = voiceServer.getAddonManager();
-
-        register(
-                voiceServer,
-                VoiceSourceLine.PROXIMITY_NAME,
-                "key.plasmovoice.proximity",
-                "plasmovoice:textures/icons/speaker.png",
-                1
-        );
     }
 
     @Override

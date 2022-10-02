@@ -180,5 +180,43 @@
     "message.plasmovoice.off": "Off",
 
     "message.plasmovoice.occlusion_changed": "Sound Occlusion: %s",
-    "message.plasmovoice.distance_changed": "%s Voice Distance: %d"
+    "message.plasmovoice.distance_changed": "%s Voice Distance: %d",
+
+
+    "commands.plasmovoice.no_permissions": "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.",
+    "commands.plasmovoice.player_not_found": "Player not found",
+
+    "commands.plasmovoice.mute.usage": "Usage: /vmute <player> [duration] [reason]",
+    "commands.plasmovoice.mute.already_muted": "%s already muted",
+    "commands.plasmovoice.mute.temporally_muted": "Muted %1$s %2$s. Reason: %3$s",
+    "commands.plasmovoice.mute.permanently_muted": "%1$s is permanently muted. Reason: %2$s",
+
+    "commands.plasmovoice.unmute.usage": "Usage: /vunmute <player>",
+    "commands.plasmovoice.unmute.not_muted": "%s not muted",
+    "commands.plasmovoice.unmute.unmuted": "Unmuted %s",
+
+    "commands.plasmovoice.mute_list.header": "Muted players:",
+    "commands.plasmovoice.mute_list.entry": "%1$s, expires: %2$s. Reason: %3$s",
+    "commands.plasmovoice.mute_list.entry_muted_by": "%1$s muted by %2$s, expires: %3$s. Reason: %4$s",
+    "commands.plasmovoice.mute_list.empty": "No players are muted",
+    "commands.plasmovoice.mute_list.never_expires": "never",
+
+    "commands.plasmovoice.list": "Clients (%1$s/%2$s): %3$s",
+    "commands.plasmovoice.list.empty": "no players with Plasmo Voice installed",
+
+    "commands.plasmovoice.reconnect": "Reconnect packet sent",
+
+    "commands.plasmovoice.reload": "Config reloaded",
+
+    "message.plasmovoice.mute.empty_reason": "not specified",
+    "message.plasmovoice.mute.temporally_muted": "You've been muted %1$s. Reason: %2$s",
+    "message.plasmovoice.mute.permanently_muted": "You've been permanently muted. Reason: %s",
+
+    "message.plasmovoice.mute.unmuted": "You've been unmuted",
+
+    "message.plasmovoice.mute.duration.seconds": "for %s sec",
+    "message.plasmovoice.mute.duration.minutes": "for %s min",
+    "message.plasmovoice.mute.duration.hours": "for %s h",
+    "message.plasmovoice.mute.duration.days": "for %s d",
+    "message.plasmovoice.mute.duration.weeks": "for %s w"
 }

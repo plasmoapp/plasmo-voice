@@ -3,7 +3,7 @@ package su.plo.voice.api.server.event.socket;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.event.EventCancellableBase;
+import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.socket.UdpServer;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * You can replace a server with yours
  * Default server is a netty udp server
  */
-public class UdpServerCreateEvent extends EventCancellableBase {
+public class UdpServerCreateEvent implements Event {
 
     @Getter
     @Setter

@@ -26,6 +26,7 @@ import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
@@ -189,7 +190,10 @@ public final class VoiceAudioCapture implements AudioCapture {
 
                 ClientActivation parentActivation = activations.getParentActivation().get();
 
-                if (captureEvent.isSendEnd() || config.getVoice().getMicrophoneDisabled().value()) {
+                if (captureEvent.isSendEnd()
+                        || config.getVoice().getMicrophoneDisabled().value()
+                        || isServerMuted()
+                ) {
                     if (parentActivation.isActivated()) {
                         parentActivation.reset();
                         sendVoiceEndPacket(parentActivation);
@@ -210,6 +214,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 processActivation(device.get(), parentActivation, result, samples, encoded);
 
                 for (ClientActivation activation : activations.getActivations()) {
+                    // todo: activations permissions
                     if (activation.isDisabled() || activation.equals(parentActivation)) continue;
 
                     if (activation.getType() == ClientActivation.Type.INHERIT ||
@@ -227,6 +232,15 @@ public final class VoiceAudioCapture implements AudioCapture {
         }
 
         cleanup();
+    }
+
+    @Override
+    public boolean isServerMuted() {
+        return voiceClient.getServerConnection()
+                .map(connection -> connection.getClientPlayer()
+                        .map(VoicePlayerInfo::isMuted)
+                        .orElse(false))
+                .orElse(false);
     }
 
     private void cleanup() {

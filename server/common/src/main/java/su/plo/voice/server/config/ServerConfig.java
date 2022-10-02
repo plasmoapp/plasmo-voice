@@ -1,6 +1,7 @@
 package su.plo.voice.server.config;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
@@ -31,6 +32,7 @@ public final class ServerConfig {
 
     @Config
     @Data
+    @EqualsAndHashCode
     public static class Host {
 
         @ConfigField
@@ -45,6 +47,7 @@ public final class ServerConfig {
 
         @Config
         @Data
+        @EqualsAndHashCode
         public static class Public {
             @ConfigField
             private String ip = "127.0.0.1";

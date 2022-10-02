@@ -141,6 +141,8 @@ public final class NettyUdpClient implements UdpClient {
 
     @EventSubscribe
     public void onServerInfoUpdate(ServerInfoInitializedEvent event) {
+        if (this.connected) return;
+
         logger.info("Connected to {}", channel.remoteAddress());
         this.connected = true;
 

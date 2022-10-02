@@ -55,7 +55,8 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
 
     @Override
     public void connect(@NotNull VoicePlayer player) {
-        UUID secret = voiceServer.getUdpConnectionManager().getSecretByPlayerId(player.getUUID());
+        UUID secret = voiceServer.getUdpConnectionManager()
+                .getSecretByPlayerId(player.getInstance().getUUID());
 
         ServerConfig.Host host = voiceServer.getConfig().getHost();
         ServerConfig.Host.Public hostPublic = host.getHostPublic();
@@ -118,7 +119,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
             receiver.sendPacket(new PlayerListPacket(
                     voiceServer.getUdpConnectionManager().getConnections()
                             .stream()
-                            .filter(connection -> receiver.canSee(connection.getPlayer()))
+                            .filter(connection -> receiver.getInstance().canSee(connection.getPlayer().getInstance()))
                             .map(connection -> connection.getPlayer().getInfo())
                             .collect(Collectors.toList())
             ));
@@ -130,7 +131,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         synchronized (playerStateLock) {
             broadcast(new PlayerInfoUpdatePacket(
                     player.getInfo()
-            ), (player1) -> player1.canSee(player));
+            ), (player1) -> player1.getInstance().canSee(player.getInstance()));
         }
     }
 
@@ -140,7 +141,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         voiceServer.getPlayerManager()
                 .getSynchronizedPermissions()
                 .forEach(permission ->
-                        permissions.put(permission, player.hasPermission(permission))
+                        permissions.put(permission, player.getInstance().hasPermission(permission))
                 );
 
         return permissions;

@@ -4,15 +4,15 @@ import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.server.entity.MinecraftServerEntity;
+import su.plo.lib.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.*;
-import su.plo.voice.api.server.entity.VoiceEntity;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.util.Collection;
@@ -53,7 +53,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                                                           @NotNull ServerSourceLine line,
                                                           @Nullable String codec,
                                                           boolean stereo) {
-        return sourceByPlayerId.computeIfAbsent(player.getUUID(), (playerId) -> {
+        return sourceByPlayerId.computeIfAbsent(player.getInstance().getUUID(), (playerId) -> {
             Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
             if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
@@ -74,7 +74,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public @NotNull ServerEntitySource createEntitySource(@Nullable Object addonObject,
-                                                          @NotNull VoiceEntity entity,
+                                                          @NotNull MinecraftServerEntity entity,
                                                           @NotNull ServerSourceLine line,
                                                           @Nullable String codec,
                                                           boolean stereo) {

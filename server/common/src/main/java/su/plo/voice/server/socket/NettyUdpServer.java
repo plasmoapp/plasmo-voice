@@ -14,6 +14,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
+import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
+import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -75,14 +77,19 @@ public final class NettyUdpServer implements UdpServer {
             throw e;
         }
         logger.info("UDP server is started on {}", socketAddress);
+
+        voiceServer.getEventBus().call(new UdpServerStartedEvent(this));
     }
 
     @Override
     public void stop() {
+        voiceServer.getUdpConnectionManager().clearConnections();
         if (keepAlive != null) keepAlive.close();
         channelGroup.close();
         loopGroup.shutdownGracefully();
         logger.info("UDP server is stopped");
+
+        voiceServer.getEventBus().call(new UdpServerStoppedEvent(this));
     }
 
     @Override

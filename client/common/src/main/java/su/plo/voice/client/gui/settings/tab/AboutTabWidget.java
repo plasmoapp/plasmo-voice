@@ -3,6 +3,8 @@ package su.plo.voice.client.gui.settings.tab;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.chat.LiteralText;
+import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiRender;
 import su.plo.lib.client.gui.components.Button;
@@ -11,8 +13,6 @@ import su.plo.lib.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.client.locale.MinecraftLanguage;
 import su.plo.lib.client.render.texture.MinecraftPlayerSkins;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.chat.LiteralText;
-import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 

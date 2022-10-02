@@ -98,7 +98,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     }
 
     @Override
-    public void start() {
+    public synchronized void start() {
         if (!isOpen() || started) return;
 
         ALC11.alcCaptureStart(devicePointer);
@@ -108,7 +108,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     }
 
     @Override
-    public void stop() {
+    public synchronized void stop() {
         if (!isOpen() || !started) return;
 
         ALC11.alcCaptureStop(devicePointer);

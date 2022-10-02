@@ -17,6 +17,8 @@ import su.plo.voice.event.VoiceEventBus;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class BaseVoice implements PlasmoVoice {
 
@@ -28,10 +30,20 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
     protected final CodecManager codecs = new VoiceCodecManager();
 
+    protected ScheduledExecutorService executor;
+
     protected BaseVoice() {
         encryption.register(new AesEncryptionSupplier());
 
         codecs.register(new OpusCodecSupplier());
+    }
+
+    protected void onInitialize() {
+        this.executor = Executors.newSingleThreadScheduledExecutor();
+    }
+
+    protected void onShutdown() {
+        executor.shutdown();
     }
 
     @Override
@@ -54,17 +66,13 @@ public abstract class BaseVoice implements PlasmoVoice {
         return eventBus;
     }
 
+    public abstract File configFolder();
+
+    public abstract InputStream getResource(String name);
+
     protected abstract Logger getLogger();
-
-    protected abstract void onInitialize();
-
-    protected abstract void onShutdown();
-
-    protected abstract File configFolder();
 
     protected abstract File modsFolder();
 
     protected abstract File addonsFolder();
-
-    protected abstract InputStream getResource(String name);
 }

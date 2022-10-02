@@ -8,6 +8,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.lib.client.MinecraftClientLib;
+import su.plo.lib.client.gui.ScreenContainer;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
@@ -33,7 +34,6 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.gui.PlayerVolumeAction;
-import su.plo.voice.client.gui.ScreenContainer;
 import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.render.HudIconRenderer;
@@ -43,8 +43,6 @@ import su.plo.voice.client.render.VoiceDistanceVisualizer;
 import java.io.File;
 import java.io.IOException;
 import java.util.Optional;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
 
@@ -53,7 +51,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     protected final Logger logger = LogManager.getLogger("PlasmoVoiceClient");
-    protected final ExecutorService executor = Executors.newSingleThreadExecutor();
 
     @Getter
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
@@ -120,7 +117,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         minecraft.setScreen(notAvailableScreen);
     }
 
+    @Override
     protected void onInitialize() {
+        super.onInitialize();
+
         try {
             File configFile = new File(configFolder(), "client.toml");
             this.config = toml.load(ClientConfig.class, configFile, true);
@@ -154,13 +154,14 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }
 
+    @Override
     protected void onShutdown() {
         logger.info("Shutting down");
 
         if (config != null) config.save(false);
 
         eventBus.unregister(this);
-        executor.shutdown();
+        super.onShutdown();
 
         getEventBus().call(new VoiceClientShutdownEvent(this));
     }

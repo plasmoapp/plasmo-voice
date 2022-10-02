@@ -1,15 +1,12 @@
 package su.plo.voice.server;
 
+import com.mojang.brigadier.CommandDispatcher;
+import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.entity.EntityManager;
-import su.plo.voice.api.server.pos.WorldManager;
-import su.plo.voice.server.entity.ModEntityManager;
-import su.plo.voice.server.player.BasePlayerManager;
-import su.plo.voice.server.player.ModPlayerManager;
-import su.plo.voice.server.player.PermissionSupplier;
-import su.plo.voice.server.pos.ModWorldManager;
+import su.plo.lib.server.MinecraftServerLib;
+import su.plo.lib.server.ModServerLib;
 
 import java.io.InputStream;
 
@@ -19,35 +16,35 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
 
     protected final String modId = "plasmovoice";
 
+    protected final ModServerLib minecraftServerLib = new ModServerLib();
+
     protected MinecraftServer server;
 
     @Override
-    protected InputStream getResource(String name) {
+    public InputStream getResource(String name) {
         return getClass().getClassLoader().getResourceAsStream(name);
     }
 
     protected void onInitialize(MinecraftServer server) {
         this.server = server;
+        minecraftServerLib.setServer(server);
+        minecraftServerLib.setPermissions(createPermissionSupplier());
         super.onInitialize();
     }
 
     protected void onShutdown(MinecraftServer server) {
         super.onShutdown();
         this.server = null;
+        minecraftServerLib.onShutdown();
+    }
+
+    protected void onCommandRegister(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
+        registerDefaultCommandsAndPermissions();
+        minecraftServerLib.getCommandManager().registerCommands(dispatcher);
     }
 
     @Override
-    protected BasePlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier) {
-        return new ModPlayerManager(this, permissionSupplier, server);
-    }
-
-    @Override
-    protected EntityManager createEntityManager() {
-        return new ModEntityManager(this, server);
-    }
-
-    @Override
-    protected WorldManager createWorldManager() {
-        return new ModWorldManager();
+    public @NotNull MinecraftServerLib getMinecraftServer() {
+        return minecraftServerLib;
     }
 }

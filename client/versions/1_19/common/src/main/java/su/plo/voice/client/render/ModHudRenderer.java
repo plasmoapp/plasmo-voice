@@ -2,9 +2,9 @@ package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.ModClientLib;
 import su.plo.lib.client.event.render.HudRenderEvent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.lib.client.ModClientLib;
 
 public final class ModHudRenderer extends ModRenderer {
 

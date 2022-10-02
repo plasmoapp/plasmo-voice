@@ -28,11 +28,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @Environment(EnvType.CLIENT)
 public final class FabricVoiceClient extends ModVoiceClient implements ClientModInitializer {
 
-    private final FabricClientChannelHandler handler = new FabricClientChannelHandler(this);
+    private FabricClientChannelHandler handler;
 
     @Override
     public void onInitializeClient() {
         super.onInitialize();
+
+        this.handler = new FabricClientChannelHandler(this, minecraftLib);
 
         // todo: должно ли это быть тут?
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> super.onShutdown());
@@ -74,7 +76,7 @@ public final class FabricVoiceClient extends ModVoiceClient implements ClientMod
     }
 
     @Override
-    protected File configFolder() {
+    public File configFolder() {
         return new File("config/" + modId);
     }
 

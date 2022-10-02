@@ -102,7 +102,7 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
         channel.disconnect();
         connected = false;
 
-        voiceServer.getTcpConnectionManager().broadcast(new PlayerDisconnectPacket(player.getUUID()));
+        voiceServer.getTcpConnectionManager().broadcast(new PlayerDisconnectPacket(player.getInstance().getUUID()));
     }
 
     @Override

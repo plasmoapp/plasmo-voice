@@ -7,13 +7,12 @@ import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
-import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoicePlayerManager;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationUnregisterPacket;
-import su.plo.voice.server.config.ServerConfig;
-import su.plo.voice.server.player.BaseVoicePlayer;
+import su.plo.voice.server.player.VoiceServerPlayer;
 
 import java.util.*;
 
@@ -21,29 +20,13 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
     private final PlasmoVoiceServer voiceServer;
     private final AddonManager addons;
-    private final PlayerManager players;
+    private final VoicePlayerManager players;
     private final Map<UUID, ServerActivation> activationById = Maps.newConcurrentMap();
 
-    public VoiceServerActivationManager(@NotNull PlasmoVoiceServer voiceServer,
-                                        @NotNull ServerConfig.Voice voiceConfig) {
+    public VoiceServerActivationManager(@NotNull PlasmoVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
         this.addons = voiceServer.getAddonManager();
         this.players = voiceServer.getPlayerManager();
-
-        Optional<AddonContainer> voiceAddon = addons.getAddon("plasmovoice");
-        if (!voiceAddon.isPresent()) throw new IllegalArgumentException("Plasmo Voice addon is not registered");
-
-        register(
-                voiceServer,
-                VoiceActivation.PROXIMITY_NAME,
-                "key.plasmovoice.proximity",
-                "plasmovoice:textures/icons/microphone.png",
-                voiceConfig.getDistances(),
-                voiceConfig.getDefaultDistance(),
-                true,
-                false,
-                1
-        );
     }
 
     @Override
@@ -105,7 +88,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
             players.getPlayers()
                     .stream()
                     .filter(VoicePlayer::hasVoiceChat)
-                    .forEach((player) -> ((BaseVoicePlayer) player).removeActivationDistance(activation));
+                    .forEach((player) -> ((VoiceServerPlayer) player).removeActivationDistance(activation));
 
             voiceServer.getTcpConnectionManager()
                     .broadcast(new ActivationUnregisterPacket(activation.getId()));

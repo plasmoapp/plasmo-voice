@@ -4,6 +4,10 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.chat.TextComponent;
+import su.plo.lib.chat.TextConverter;
+import su.plo.lib.chat.TextStyle;
+import su.plo.lib.chat.TranslatableText;
 
 import java.util.List;
 import java.util.stream.Collectors;

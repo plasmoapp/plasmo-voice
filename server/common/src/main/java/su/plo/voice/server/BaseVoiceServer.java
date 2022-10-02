@@ -3,9 +3,12 @@ package su.plo.voice.server;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.lib.server.MinecraftServerLib;
+import su.plo.lib.server.command.MinecraftCommandManager;
+import su.plo.lib.server.permission.PermissionDefault;
+import su.plo.lib.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
@@ -13,28 +16,36 @@ import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.entity.EntityManager;
 import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
+import su.plo.voice.api.server.event.mute.MuteStorageCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
-import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
-import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
-import su.plo.voice.api.server.pos.WorldManager;
+import su.plo.voice.api.server.mute.MuteManager;
+import su.plo.voice.api.server.mute.storage.MuteStorage;
+import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.api.server.socket.UdpServer;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
+import su.plo.voice.server.command.*;
 import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
-import su.plo.voice.server.player.BasePlayerManager;
+import su.plo.voice.server.mute.VoiceMuteManager;
+import su.plo.voice.server.mute.storage.MuteStorageFactory;
 import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
+import su.plo.voice.server.player.VoiceServerPlayerManager;
 import su.plo.voice.server.socket.NettyUdpServer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
@@ -54,15 +65,16 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Getter
     protected PermissionSupplier permissionSupplier;
     @Getter
-    protected BasePlayerManager playerManager;
-    @Getter
-    protected EntityManager entityManager;
-    @Getter
-    protected WorldManager worldManager;
+    protected VoiceServerPlayerManager playerManager;
     @Getter
     protected ServerActivationManager activationManager;
     @Getter
     protected ServerSourceLineManager sourceLineManager;
+
+    @Getter
+    protected MuteStorage muteStorage;
+    @Getter
+    protected MuteManager muteManager;
 
     protected LuckPermsListener luckPermsListener;
 
@@ -71,26 +83,38 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     @Override
     protected void onInitialize() {
+        super.onInitialize();
+
         eventBus.call(new VoiceServerInitializeEvent(this));
         eventBus.register(this, sourceManager);
         eventBus.register(this, udpConnectionManager);
-
-        try {
-            this.config = toml.load(ServerConfig.class, new File(configFolder(), "config.toml"), true);
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load config", e);
-        }
+        eventBus.register(this, getMinecraftServer());
 
         this.permissionSupplier = createPermissionSupplier();
 
-        this.playerManager = createPlayerManager(permissionSupplier);
+        this.playerManager = new VoiceServerPlayerManager(this, getMinecraftServer());
         eventBus.register(this, playerManager);
-        this.entityManager = createEntityManager();
 
-        this.worldManager = createWorldManager();
-
-        this.activationManager = new VoiceServerActivationManager(this, config.getVoice());
+        this.activationManager = new VoiceServerActivationManager(this);
         this.sourceLineManager = new VoiceServerSourceLineManager(this);
+
+        // mutes
+        MuteStorageFactory muteStorageFactory = new MuteStorageFactory(this, executor);
+        MuteStorage muteStorage = muteStorageFactory.createStorage("json");
+
+        MuteStorageCreateEvent muteStorageCreateEvent = new MuteStorageCreateEvent(muteStorage);
+        eventBus.call(muteStorageCreateEvent);
+        this.muteStorage = muteStorageCreateEvent.getStorage();
+
+        try {
+            this.muteStorage.init();
+        } catch (Exception e) {
+            getLogger().error("Failed to initialize mute storage: {}", e.toString());
+            e.printStackTrace();
+            return;
+        }
+
+        this.muteManager = new VoiceMuteManager(this, this.muteStorage, executor);
 
         try {
             Class.forName("net.luckperms.api.LuckPermsProvider");
@@ -100,28 +124,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             // luckperms not found
         }
 
-        UdpServer server = new NettyUdpServer(this, config);
-
-        UdpServerCreateEvent createEvent = new UdpServerCreateEvent(server);
-        eventBus.call(createEvent);
-        if (createEvent.isCancelled()) return;
-
-        server = createEvent.getServer();
-
-        try {
-            int port = config.getHost().getPort();
-            if (port == 0) {
-                port = getMinecraftServerPort();
-                if (port <= 0) port = 0;
-            }
-
-            server.start(config.getHost().getIp(), port);
-            eventBus.call(new UdpServerStartedEvent(server));
-            this.udpServer = server;
-        } catch (Exception e) {
-            getLogger().error("Failed to start the udp server", e);
-            return;
-        }
+        // load config
+        loadConfig();
     }
 
     @Override
@@ -133,10 +137,17 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             this.luckPermsListener = null;
         }
 
+        if (muteStorage != null) {
+            try {
+                muteStorage.close();
+            } catch (Exception e) {
+                getLogger().error("Failed to close mute storage: {}", e.toString());
+                e.printStackTrace();
+            }
+        }
+
         if (udpServer != null) {
-            udpConnectionManager.clearConnections();
             udpServer.stop();
-            eventBus.call(new UdpServerStoppedEvent(udpServer));
 
             this.udpServer = null;
         }
@@ -154,6 +165,104 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         playerManager.clear();
 
         eventBus.unregister(this);
+        super.onShutdown();
+    }
+
+    public void loadConfig() {
+        boolean restartUdpServer = true;
+
+        try {
+            ServerConfig oldConfig = config;
+
+            this.config = toml.load(ServerConfig.class, new File(configFolder(), "config.toml"), true);
+
+            if (oldConfig != null) {
+                restartUdpServer = !config.getHost().equals(oldConfig.getHost());
+            }
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load config", e);
+        }
+
+        // register proximity activation
+        activationManager.register(
+                this,
+                VoiceActivation.PROXIMITY_NAME,
+                "key.plasmovoice.proximity",
+                "plasmovoice:textures/icons/microphone.png",
+                config.getVoice().getDistances(),
+                config.getVoice().getDefaultDistance(),
+                true,
+                false,
+                1
+        );
+
+        // register proximity line
+        sourceLineManager.register(
+                this,
+                VoiceSourceLine.PROXIMITY_NAME,
+                "key.plasmovoice.proximity",
+                "plasmovoice:textures/icons/speaker.png",
+                1
+        );
+
+        if (restartUdpServer) startUdpServer();
+    }
+
+    public void startUdpServer() {
+        Collection<VoicePlayer> connectedPlayers = null;
+        if (this.udpServer != null) {
+            connectedPlayers = udpConnectionManager.getConnections()
+                    .stream()
+                    .map(UdpConnection::getPlayer)
+                    .collect(Collectors.toList());
+            this.udpServer.stop();
+            this.udpServer = null;
+        }
+
+        UdpServer server = new NettyUdpServer(this, config);
+
+        UdpServerCreateEvent createUdpServerEvent = new UdpServerCreateEvent(server);
+        eventBus.call(createUdpServerEvent);
+
+        server = createUdpServerEvent.getServer();
+
+        try {
+            int port = config.getHost().getPort();
+            if (port == 0) {
+                port = getMinecraftServerPort();
+                if (port <= 0) port = 0;
+            }
+
+            server.start(config.getHost().getIp(), port);
+            this.udpServer = server;
+
+            if (connectedPlayers != null) {
+                connectedPlayers.forEach(tcpConnectionManager::connect);
+            }
+        } catch (Exception e) {
+            getLogger().error("Failed to start the udp server", e);
+        }
+    }
+
+    protected void registerDefaultCommandsAndPermissions() {
+        // register permissions
+        PermissionsManager permissions = getMinecraftServer().getPermissionsManager();
+        permissions.clear();
+
+        permissions.register("voice.list", PermissionDefault.TRUE);
+        permissions.register("voice.reconnect", PermissionDefault.TRUE);
+
+        // register commands
+        MinecraftCommandManager commandManager = getMinecraftServer().getCommandManager();
+        commandManager.clear();
+
+        commandManager.register("vlist", new VoiceListCommand(this));
+        commandManager.register("vrc", new VoiceReconnectCommand(this));
+        commandManager.register("vreload", new VoiceReloadCommand(this));
+
+        commandManager.register("vmute", new VoiceMuteCommand(this, getMinecraftServer()));
+        commandManager.register("vunmute", new VoiceUnmuteCommand(this, getMinecraftServer()));
+        commandManager.register("vmutelist", new VoiceMuteListCommand(this, getMinecraftServer()));
     }
 
     @Override
@@ -168,11 +277,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     public abstract int getMinecraftServerPort();
 
+    public abstract MinecraftServerLib getMinecraftServer();
+
     protected abstract PermissionSupplier createPermissionSupplier();
-
-    protected abstract BasePlayerManager createPlayerManager(@NotNull PermissionSupplier permissionSupplier);
-
-    protected abstract EntityManager createEntityManager();
-
-    protected abstract WorldManager createWorldManager();
 }

@@ -2,10 +2,10 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiRender;
 import su.plo.lib.client.gui.widget.GuiAbstractWidget;
-import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 import java.util.List;

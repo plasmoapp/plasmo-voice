@@ -6,10 +6,10 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.ModClientLib;
 import su.plo.lib.client.event.render.LevelRenderEvent;
+import su.plo.lib.client.render.ModCamera;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.lib.client.ModClientLib;
-import su.plo.voice.lib.client.render.ModCamera;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Objects;

@@ -7,13 +7,13 @@ import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.ModClientLib;
 import su.plo.lib.client.event.render.EntityRenderEvent;
 import su.plo.lib.client.event.render.PlayerRenderEvent;
+import su.plo.lib.client.render.ModCamera;
+import su.plo.lib.entity.ModEntity;
+import su.plo.lib.entity.ModPlayer;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.client.entity.ModEntity;
-import su.plo.voice.client.entity.ModPlayer;
-import su.plo.voice.lib.client.ModClientLib;
-import su.plo.voice.lib.client.render.ModCamera;
 
 public final class ModEntityRenderer extends ModRenderer {
 
@@ -65,7 +65,7 @@ public final class ModEntityRenderer extends ModRenderer {
         voiceClient.getEventBus().call(new PlayerRenderEvent(
                 render,
                 this.camera,
-                new ModPlayer(player),
+                new ModPlayer<>(player),
                 light,
                 hasLabel,
                 isFakePlayer

@@ -1,11 +1,11 @@
 package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
 

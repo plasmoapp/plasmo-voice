@@ -4,12 +4,12 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
@@ -103,7 +103,7 @@ public abstract class BaseServerSource implements ServerAudioSource {
                 if (!filter.test(connection.getPlayer())) continue L;
             }
 
-            connection.getPlayer().getPosition(playerPosition);
+            connection.getPlayer().getInstance().getServerPosition(playerPosition);
             if (sourcePosition.distanceSquared(playerPosition) <= distanceSquared) {
                 connection.sendPacket(packet);
             }
@@ -123,7 +123,7 @@ public abstract class BaseServerSource implements ServerAudioSource {
                 if (!filter.test(connection.getPlayer())) continue L;
             }
 
-            connection.getPlayer().getPosition(playerPosition);
+            connection.getPlayer().getInstance().getServerPosition(playerPosition);
             if (sourcePosition.distanceSquared(playerPosition) <= distanceSquared) {
                 connection.getPlayer().sendPacket(packet);
             }

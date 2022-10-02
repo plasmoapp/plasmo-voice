@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
+import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiUtil;
 import su.plo.lib.client.gui.components.Button;
@@ -8,7 +9,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.OutputDevice;
-import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.ActivationIconPositionScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;

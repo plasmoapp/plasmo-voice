@@ -3,12 +3,12 @@ package su.plo.voice.server.audio.source;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerDirectSource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
@@ -95,7 +95,7 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
                 stereo,
                 iconVisible,
                 angle,
-                sender == null ? null : sender.getUUID(),
+                sender == null ? null : sender.getInstance().getUUID(),
                 relativePosition,
                 lookAngle,
                 cameraRelative
@@ -104,7 +104,7 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
 
     @Override
     public @NotNull ServerPos3d getPosition() {
-        return player.getPosition();
+        return player.getInstance().getServerPosition();
     }
 
     @Override
@@ -119,7 +119,7 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
 
     @Override
     public void sendAudioPacket(SourceAudioPacket packet, short distance) {
-        udpConnections.getConnectionByUUID(player.getUUID())
+        udpConnections.getConnectionByUUID(player.getInstance().getUUID())
                 .ifPresent(connection -> connection.sendPacket(packet));
     }
 

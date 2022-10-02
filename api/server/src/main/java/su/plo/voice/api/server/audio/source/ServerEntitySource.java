@@ -1,9 +1,9 @@
 package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.entity.VoiceEntity;
+import su.plo.lib.server.entity.MinecraftServerEntity;
 
 public interface ServerEntitySource extends ServerAudioSource {
 
-    @NotNull VoiceEntity getEntity();
+    @NotNull MinecraftServerEntity getEntity();
 }

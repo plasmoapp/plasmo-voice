@@ -14,8 +14,8 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.player.PlayerManager;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoicePlayerManager;
 import su.plo.voice.server.event.player.PlayerPermissionUpdateEvent;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ import java.util.Optional;
 public final class LuckPermsListener {
 
     private final PlasmoVoiceServer voiceServer;
-    private final PlayerManager players;
+    private final VoicePlayerManager players;
 
     private final LuckPerms luckPerms = LuckPermsProvider.get();
     private final List<EventSubscription<?>> subscriptions = new ArrayList<>();
@@ -81,7 +81,7 @@ public final class LuckPermsListener {
             // iterate all online players and check if they are in group
             if (synchronizedPermissions.contains(node.getKey())) {
                 for (VoicePlayer player : players.getPlayers()) {
-                    if (player.hasPermission("group." + group.getName())) {
+                    if (player.getInstance().hasPermission("group." + group.getName())) {
                         onChanged(player, node.getKey());
                     }
                 }

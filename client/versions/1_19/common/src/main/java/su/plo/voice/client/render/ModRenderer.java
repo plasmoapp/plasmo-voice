@@ -3,9 +3,9 @@ package su.plo.voice.client.render;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.renderer.MultiBufferSource;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.ModClientLib;
+import su.plo.lib.client.gui.ModGuiRender;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.lib.client.ModClientLib;
-import su.plo.voice.lib.client.gui.ModGuiRender;
 
 public abstract class ModRenderer {
 

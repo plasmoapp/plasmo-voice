@@ -3,9 +3,9 @@ package su.plo.voice.client.gui.settings.widget;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.components.Button;
-import su.plo.voice.chat.TextComponent;
 
 import java.util.List;
 

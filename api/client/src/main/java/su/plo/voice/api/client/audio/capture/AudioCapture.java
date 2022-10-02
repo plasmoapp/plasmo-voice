@@ -34,4 +34,6 @@ public interface AudioCapture {
     void stop();
 
     boolean isActive();
+
+    boolean isServerMuted();
 }

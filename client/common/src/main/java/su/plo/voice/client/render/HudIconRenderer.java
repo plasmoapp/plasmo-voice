@@ -37,6 +37,12 @@ public final class HudIconRenderer {
             return;
         }
 
+        // server mute
+        if (voiceClient.getAudioCapture().isServerMuted()) {
+            renderIcon(event.getRender(), "plasmovoice:textures/icons/microphone_muted.png");
+            return;
+        }
+
         if (config.getVoice().getMicrophoneDisabled().value()) {
             renderIcon(event.getRender(), "plasmovoice:textures/icons/microphone_disabled.png");
             return;

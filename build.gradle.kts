@@ -51,6 +51,18 @@ subprojects {
             toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
         }
 
+        compileJava {
+            options.encoding = Charsets.UTF_8.name()
+        }
+
+        javadoc {
+            options.encoding = Charsets.UTF_8.name()
+        }
+
+        processResources {
+            filteringCharset = Charsets.UTF_8.name()
+        }
+
 //        jar {
 //            archiveClassifier.set("dev")
 //        }

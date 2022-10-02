@@ -91,51 +91,53 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
         }
 
         runInContext(() -> {
-            this.devicePointer = openDevice(name);
-            this.format = format;
-            this.params = params;
-            this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
+            synchronized (this) {
+                this.devicePointer = openDevice(name);
+                this.format = format;
+                this.params = params;
+                this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
 
-            ALCCapabilities aLCCapabilities = ALC.createCapabilities(devicePointer);
-            if (AlUtil.checkAlcErrors(devicePointer, "Get capabilities")) {
-                throw new DeviceException("Failed to get OpenAL capabilities");
-            } else if (!aLCCapabilities.OpenALC11) {
-                throw new DeviceException("OpenAL 1.1 not supported");
+                ALCCapabilities aLCCapabilities = ALC.createCapabilities(devicePointer);
+                if (AlUtil.checkAlcErrors(devicePointer, "Get capabilities")) {
+                    throw new DeviceException("Failed to get OpenAL capabilities");
+                } else if (!aLCCapabilities.OpenALC11) {
+                    throw new DeviceException("OpenAL 1.1 not supported");
+                }
+
+                this.contextPointer = ALC11.alcCreateContext(this.devicePointer, (IntBuffer) null);
+                EXTThreadLocalContext.alcSetThreadContext(this.contextPointer);
+
+                ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
+                AlUtil.checkErrors("Initialization");
+                if (!aLCapabilities.AL_EXT_source_distance_model) {
+                    throw new DeviceException("AL_EXT_source_distance_model is not supported");
+                }
+
+                this.hrtfSupported = aLCCapabilities.ALC_SOFT_HRTF;
+
+                if (params.containsKey("hrtf") && hrtfSupported) {
+                    Object hrtf = params.get("hrtf");
+                    if (hrtf.equals(true)) enableHrtf();
+                }
+
+                AL10.alEnable(512);
+                if (!aLCapabilities.AL_EXT_LINEAR_DISTANCE) {
+                    throw new DeviceException("AL_EXT_LINEAR_DISTANCE is not supported");
+                }
+
+                AlUtil.checkErrors("Enable per-source distance models");
+                LOGGER.info("Device " + name + " initialized");
+
+                AL11.alListenerf(AL11.AL_GAIN, 1.0F);
+
+                AL11.alListener3f(AL11.AL_POSITION, 0.0F, 0.0F, 0.0F);
+                AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
+                        0.0F, 0.0F, -1.0F,
+                        0.0F, 1.0F, 0.0F
+                });
+
+                client.getEventBus().call(new DeviceOpenEvent(this));
             }
-
-            this.contextPointer = ALC11.alcCreateContext(this.devicePointer, (IntBuffer) null);
-            EXTThreadLocalContext.alcSetThreadContext(this.contextPointer);
-
-            ALCapabilities aLCapabilities = AL.createCapabilities(aLCCapabilities);
-            AlUtil.checkErrors("Initialization");
-            if (!aLCapabilities.AL_EXT_source_distance_model) {
-                throw new DeviceException("AL_EXT_source_distance_model is not supported");
-            }
-
-            this.hrtfSupported = aLCCapabilities.ALC_SOFT_HRTF;
-
-            if (params.containsKey("hrtf") && hrtfSupported) {
-                Object hrtf = params.get("hrtf");
-                if (hrtf.equals(true)) enableHrtf();
-            }
-
-            AL10.alEnable(512);
-            if (!aLCapabilities.AL_EXT_LINEAR_DISTANCE) {
-                throw new DeviceException("AL_EXT_LINEAR_DISTANCE is not supported");
-            }
-
-            AlUtil.checkErrors("Enable per-source distance models");
-            LOGGER.info("Device " + name + " initialized");
-
-            AL11.alListenerf(AL11.AL_GAIN, 1.0F);
-
-            AL11.alListener3f(AL11.AL_POSITION, 0.0F, 0.0F, 0.0F);
-            AL11.alListenerfv(AL11.AL_ORIENTATION, new float[]{
-                    0.0F, 0.0F, -1.0F,
-                    0.0F, 1.0F, 0.0F
-            });
-
-            client.getEventBus().call(new DeviceOpenEvent(this));
         });
     }
 
@@ -145,19 +147,21 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
         closeSources();
         runInContext(() -> {
-            EXTThreadLocalContext.alcSetThreadContext(0L);
+            synchronized (this) {
+                EXTThreadLocalContext.alcSetThreadContext(0L);
 
-            ALC11.alcDestroyContext(contextPointer);
-            if (devicePointer != 0L) {
-                ALC11.alcCloseDevice(devicePointer);
+                ALC11.alcDestroyContext(contextPointer);
+                if (devicePointer != 0L) {
+                    ALC11.alcCloseDevice(devicePointer);
+                }
+
+                this.contextPointer = 0L;
+                this.devicePointer = 0L;
+
+                LOGGER.info("Device " + name + " closed");
+
+                client.getEventBus().call(new DeviceClosedEvent(this));
             }
-
-            this.contextPointer = 0L;
-            this.devicePointer = 0L;
-
-            LOGGER.info("Device " + name + " closed");
-
-            client.getEventBus().call(new DeviceClosedEvent(this));
         });
     }
 

@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.OutputDevice;
@@ -45,14 +46,17 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final BaseVoiceClient voiceClient;
+    private final MinecraftClientLib minecraft;
     private final ClientSourceLineManager sourceLines;
     private final ClientActivationManager activations;
     private final ClientSourceManager sources;
 
     private final Map<UUID, VoicePlayerInfo> playerById = Maps.newConcurrentMap();
 
-    public BaseServerConnection(@NotNull BaseVoiceClient voiceClient) {
+    public BaseServerConnection(@NotNull BaseVoiceClient voiceClient,
+                                @NotNull MinecraftClientLib minecraft) {
         this.voiceClient = voiceClient;
+        this.minecraft = minecraft;
         this.sourceLines = voiceClient.getSourceLineManager();
         this.activations = voiceClient.getActivationManager();
         this.sources = voiceClient.getSourceManager();
@@ -66,6 +70,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     @Override
     public Optional<VoicePlayerInfo> getPlayerById(@NotNull UUID playerId) {
         return Optional.ofNullable(playerById.get(playerId));
+    }
+
+    @Override
+    public Optional<VoicePlayerInfo> getClientPlayer() {
+        return minecraft.getClientPlayer()
+                .flatMap(player -> getPlayerById(player.getUUID()));
     }
 
     @Override
@@ -174,12 +184,14 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         // register source lines
         ClientSourceLineManager sourceLines = voiceClient.getSourceLineManager();
+        sourceLines.clear();
         sourceLines.register(serverInfo.getVoiceInfo().getSourceLines());
 
         // register activations & send activations distances to the server
         Map<UUID, Integer> distanceByActivationId = Maps.newHashMap();
 
         ClientActivationManager activations = voiceClient.getActivationManager();
+        activations.clear();
         activations.register(serverInfo.getServerId(), serverInfo.getVoiceInfo().getActivations())
                 .forEach((activation) -> distanceByActivationId.put(activation.getId(), activation.getDistance()));
 

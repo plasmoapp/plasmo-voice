@@ -3,19 +3,19 @@ package su.plo.voice.server.audio.source;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.server.entity.MinecraftServerEntity;
+import su.plo.lib.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerEntitySource;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.entity.VoiceEntity;
-import su.plo.voice.api.server.pos.ServerPos3d;
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 public final class VoiceServerEntitySource extends BaseServerSource implements ServerEntitySource {
 
     @Getter
-    private final VoiceEntity entity;
+    private final MinecraftServerEntity entity;
     private final ServerPos3d playerPosition = new ServerPos3d();
 
     public VoiceServerEntitySource(UdpServerConnectionManager udpConnections,
@@ -23,7 +23,7 @@ public final class VoiceServerEntitySource extends BaseServerSource implements S
                                    @NotNull ServerSourceLine line,
                                    @Nullable String codec,
                                    boolean stereo,
-                                   @NotNull VoiceEntity entity) {
+                                   @NotNull MinecraftServerEntity entity) {
         super(udpConnections, addon, entity.getUUID(), line, codec, stereo);
 
         this.entity = entity;
@@ -31,7 +31,7 @@ public final class VoiceServerEntitySource extends BaseServerSource implements S
 
     @Override
     public @NotNull ServerPos3d getPosition() {
-        return entity.getPosition(playerPosition);
+        return entity.getServerPosition(playerPosition);
     }
 
     @Override

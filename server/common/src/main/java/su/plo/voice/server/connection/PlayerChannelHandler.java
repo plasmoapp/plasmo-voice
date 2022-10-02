@@ -1,6 +1,7 @@
 package su.plo.voice.server.connection;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.chat.TextComponent;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
@@ -20,7 +21,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
-import su.plo.voice.server.player.BaseVoicePlayer;
+import su.plo.voice.server.player.VoiceServerPlayer;
 import su.plo.voice.util.VersionUtil;
 
 import java.util.Optional;
@@ -45,6 +46,8 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     }
 
     public void handlePacket(Packet<PacketHandler> packet) {
+        if (!voiceServer.getUdpServer().isPresent()) return;
+
         TcpPacketReceivedEvent event = new TcpPacketReceivedEvent(player, packet);
         voiceServer.getEventBus().call(event);
         if (event.isCancelled()) return;
@@ -58,16 +61,16 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         int[] clientVersion = VersionUtil.parseVersion(packet.getVersion());
 
         if (clientVersion[0] > serverVersion[0]) {
-            player.sendTranslatableMessage(
+            player.getInstance().sendMessage(TextComponent.translatable(
                     "message.plasmovoice.version_not_supported",
                     String.format("%d.X.X", serverVersion[0])
-            );
+            ));
             return;
         } else if (clientVersion[0] < serverVersion[0]) {
-            player.sendTranslatableMessage(
+            player.getInstance().sendMessage(TextComponent.translatable(
                     "message.plasmovoice.min_version",
                     String.format("%d.X.X", serverVersion[0])
-            );
+            ));
             return;
         }
 
@@ -79,7 +82,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerStatePacket packet) {
-        BaseVoicePlayer voicePlayer = (BaseVoicePlayer) player;
+        VoiceServerPlayer voicePlayer = (VoiceServerPlayer) player;
         voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
         voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
 
@@ -88,7 +91,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerActivationDistancesPacket packet) {
-        BaseVoicePlayer voicePlayer = (BaseVoicePlayer) player;
+        VoiceServerPlayer voicePlayer = (VoiceServerPlayer) player;
         packet.getDistanceByActivationId().forEach((activationId, distance) -> {
             Optional<ServerActivation> activation = voiceServer.getActivationManager().getActivationById(activationId);
             if (!activation.isPresent()) return;

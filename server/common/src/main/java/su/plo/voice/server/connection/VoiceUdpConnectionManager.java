@@ -62,7 +62,7 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
         if (connectEvent.isCancelled()) return;
 
         UdpConnection bySecret = connectionBySecret.put(connection.getSecret(), connection);
-        UdpConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getUUID(), connection);
+        UdpConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getInstance().getUUID(), connection);
 
         if (bySecret != null) bySecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
@@ -73,7 +73,7 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     @Override
     public boolean removeConnection(UdpConnection connection) {
         UdpConnection bySecret = connectionBySecret.remove(connection.getSecret());
-        UdpConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getUUID());
+        UdpConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
 
         if (bySecret != null) disconnect(bySecret);
         if (byPlayer != null && !byPlayer.equals(bySecret)) disconnect(byPlayer);
@@ -83,7 +83,7 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
 
     @Override
     public boolean removeConnection(VoicePlayer player) {
-        UdpConnection connection = connectionByPlayerId.remove(player.getUUID());
+        UdpConnection connection = connectionByPlayerId.remove(player.getInstance().getUUID());
         if (connection != null) disconnect(connection);
 
         return connection != null;
@@ -120,7 +120,7 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     private void disconnect(UdpConnection connection) {
         connection.disconnect();
 
-        secretByPlayerId.remove(connection.getPlayer().getUUID());
+        secretByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
         playerIdBySecret.remove(connection.getSecret());
 
         LOGGER.info("{} disconnected", connection.getPlayer());

@@ -2,11 +2,11 @@ package su.plo.voice.client.gui.settings;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.EnumConfigEntry;
+import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiRender;
 import su.plo.lib.client.gui.components.Button;
 import su.plo.lib.client.gui.screen.GuiScreen;
-import su.plo.voice.chat.TextComponent;
 import su.plo.voice.client.config.ClientConfig;
 
 public final class ActivationIconPositionScreen extends GuiScreen {

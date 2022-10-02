@@ -10,10 +10,10 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.entity.MinecraftPlayer;
+import su.plo.lib.entity.MinecraftPlayer;
+import su.plo.lib.entity.ModPlayer;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.client.entity.ModPlayer;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 
 import java.util.Optional;
@@ -56,7 +56,7 @@ public final class ModPlayerVolumeAction extends PlayerVolumeAction {
                 if (box.contains(playerEntity.getX(), playerEntity.getY(), playerEntity.getZ()) &&
                         !playerEntity.isInvisibleTo(player) &&
                         !player.getUUID().equals(playerEntity.getUUID())) {
-                    return Optional.of(new ModPlayer(playerEntity));
+                    return Optional.of(new ModPlayer<>(playerEntity));
                 }
             }
         }

@@ -2,6 +2,7 @@ package su.plo.voice.server;
 
 import me.lucko.fabric.api.permissions.v0.Permissions;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -11,6 +12,7 @@ import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.server.permission.PermissionDefault;
 import su.plo.voice.server.connection.FabricServerChannelHandler;
 import su.plo.voice.server.event.player.PlayerJoinEvent;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
@@ -39,6 +41,9 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
         ServerPlayConnectionEvents.DISCONNECT.register((handler, mcServer) ->
                 eventBus.call(new PlayerQuitEvent(handler.getPlayer(), handler.getPlayer().getUUID()))
         );
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) ->
+                onCommandRegister(dispatcher)
+        );
 
         S2CPlayChannelEvents.REGISTER.register(handler);
         ServerPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
@@ -65,7 +70,7 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
     }
 
     @Override
-    protected File configFolder() {
+    public File configFolder() {
         return new File("config/" + modId);
     }
 
@@ -84,7 +89,15 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
         return (player, permission) -> {
             if (!(player instanceof ServerPlayer serverPlayer))
                 throw new IllegalArgumentException("player is not " + ServerPlayer.class);
-            return Permissions.check(serverPlayer, permission);
+
+            PermissionDefault permissionDefault = minecraftServerLib.getPermissionsManager().getPermissionDefault(permission);
+            boolean isOp = server.getPlayerList().isOp(serverPlayer.getGameProfile());
+
+            return Permissions.check(
+                    serverPlayer,
+                    permission,
+                    permissionDefault.getValue(isOp)
+            );
         };
     }
 }
