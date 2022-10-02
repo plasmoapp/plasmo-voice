@@ -181,7 +181,7 @@ public final class VolumesTabWidget extends TabWidget {
                 20,
                 buttonClick,
                 Button.NO_TOOLTIP,
-                "plasmovoice:textures/icons/speaker.png",
+                "plasmovoice:textures/icons/speaker_menu.png",
                 true
         );
 
@@ -193,7 +193,7 @@ public final class VolumesTabWidget extends TabWidget {
                 20,
                 buttonClick,
                 Button.NO_TOOLTIP,
-                "plasmovoice:textures/icons/speaker_disabled.png",
+                "plasmovoice:textures/icons/speaker_menu_disabled.png",
                 true
         );
 

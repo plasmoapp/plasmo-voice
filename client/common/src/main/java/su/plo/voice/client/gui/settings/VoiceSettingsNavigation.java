@@ -110,7 +110,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(TextStyle.GRAY)
                     ));
                 },
-                "plasmovoice:textures/icons/microphone.png",
+                "plasmovoice:textures/icons/microphone_menu.png",
                 true
         );
 
@@ -141,7 +141,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(TextStyle.GRAY)
                     ));
                 },
-                "plasmovoice:textures/icons/microphone_disabled.png",
+                "plasmovoice:textures/icons/microphone_menu_disabled.png",
                 true
         );
 
@@ -184,7 +184,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(TextStyle.GRAY)
                     ));
                 },
-                "plasmovoice:textures/icons/speaker.png",
+                "plasmovoice:textures/icons/speaker_menu.png",
                 true
         );
 
@@ -214,7 +214,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(TextStyle.GRAY)
                     ));
                 },
-                "plasmovoice:textures/icons/speaker_disabled.png",
+                "plasmovoice:textures/icons/speaker_menu_disabled.png",
                 true
         );
 

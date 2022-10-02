@@ -345,7 +345,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                     20,
                     this::onReset,
                     Button.NO_TOOLTIP,
-                    "plasmovoice:textures/icons/speaker.png",
+                    "plasmovoice:textures/icons/reset.png",
                     true
             );
 
