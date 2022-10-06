@@ -8,8 +8,9 @@ import su.plo.lib.server.MinecraftServerLib;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
 import su.plo.lib.server.profile.MinecraftGameProfile;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
+import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.mute.VoiceMuteManager;
 
 import java.text.SimpleDateFormat;
@@ -20,14 +21,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class VoiceMuteListCommand implements MinecraftCommand {
 
-    private static final SimpleDateFormat EXPIRATION_FORMAT = new SimpleDateFormat("yyyy.MM.dd, HH:mm:ss");
-
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
     private final MinecraftServerLib minecraftServer;
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
         VoiceMuteManager muteManager = (VoiceMuteManager) voiceServer.getMuteManager();
+        ServerConfig config = voiceServer.getConfig();
 
         Collection<ServerMuteInfo> mutedPlayers = muteManager.getMutedPlayers();
 
@@ -45,8 +45,16 @@ public final class VoiceMuteListCommand implements MinecraftCommand {
             }
             if (!player.isPresent()) return;
 
+            Date date = new Date(muteInfo.getMutedToTime());
+            SimpleDateFormat expirationFormatDate = new SimpleDateFormat(
+                    config.getCommands().getMuteList().getExpirationDate()
+            );
+            SimpleDateFormat expirationFormatTime = new SimpleDateFormat(
+                    config.getCommands().getMuteList().getExpirationTime()
+            );
+
             TextComponent expires = muteInfo.getMutedToTime() > 0
-                    ? TextComponent.literal(EXPIRATION_FORMAT.format(new Date(muteInfo.getMutedToTime())))
+                    ? TextComponent.translatable("commands.plasmovoice.mute_list.expire_at", expirationFormatDate.format(date), expirationFormatTime.format(date))
                     : TextComponent.translatable("commands.plasmovoice.mute_list.never_expires");
 
             TextComponent reason = muteManager.formatMuteReason(muteInfo.getReason());

@@ -30,6 +30,9 @@ public final class ServerConfig {
     @ConfigField
     private Voice voice = new Voice();
 
+    @ConfigField
+    private Commands commands = new Commands();
+
     @Config
     @Data
     @EqualsAndHashCode
@@ -196,6 +199,27 @@ public final class ServerConfig {
                 long keepAliveTimeout = (Long) o;
                 return keepAliveTimeout >= 1_000 && keepAliveTimeout <= 120_000;
             }
+        }
+    }
+
+    @Config
+    @Data
+    @EqualsAndHashCode
+    public static class Commands {
+
+        @ConfigField(path = "mute_list")
+        private MuteList muteList = new MuteList();
+
+        @Config
+        @Data
+        @EqualsAndHashCode
+        public static class MuteList {
+
+            @ConfigField(path = "expiration_date")
+            private String expirationDate = "yyyy.MM.dd";
+
+            @ConfigField(path = "expiration_time")
+            private String expirationTime = "HH:mm:ss";
         }
     }
 }

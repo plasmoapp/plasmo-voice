@@ -199,6 +199,7 @@
     "commands.plasmovoice.mute_list.entry": "%1$s, expires: %2$s. Reason: %3$s",
     "commands.plasmovoice.mute_list.entry_muted_by": "%1$s muted by %2$s, expires: %3$s. Reason: %4$s",
     "commands.plasmovoice.mute_list.empty": "No players are muted",
+    "commands.plasmovoice.mute_list.expire_at": "%1$s at %2$s",
     "commands.plasmovoice.mute_list.never_expires": "never",
 
     "commands.plasmovoice.list": "Clients (%1$s/%2$s): %3$s",
