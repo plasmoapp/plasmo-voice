@@ -184,14 +184,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         // register source lines
         ClientSourceLineManager sourceLines = voiceClient.getSourceLineManager();
-        sourceLines.clear();
         sourceLines.register(serverInfo.getVoiceInfo().getSourceLines());
 
         // register activations & send activations distances to the server
         Map<UUID, Integer> distanceByActivationId = Maps.newHashMap();
 
         ClientActivationManager activations = voiceClient.getActivationManager();
-        activations.clear();
         activations.register(serverInfo.getServerId(), serverInfo.getVoiceInfo().getActivations())
                 .forEach((activation) -> distanceByActivationId.put(activation.getId(), activation.getDistance()));
 

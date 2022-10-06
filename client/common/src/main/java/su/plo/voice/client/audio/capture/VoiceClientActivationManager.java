@@ -32,6 +32,8 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     private final List<ClientActivation> activations = new CopyOnWriteArrayList<>();
     private final Map<UUID, ClientActivation> activationById = Maps.newConcurrentMap();
 
+    private boolean initialized = false;
+
     @Override
     public Optional<ClientActivation> getParentActivation() {
         return Optional.ofNullable(parentActivation);
@@ -39,6 +41,8 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
     @Override
     public @NotNull ClientActivation register(@NotNull ClientActivation activation) {
+        unregister(activation.getId());
+
         int index;
         for (index = 0; index < activations.size(); index++) {
             ClientActivation act = activations.get(index);
@@ -81,10 +85,12 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 }
 
                 this.parentActivation = activation;
-                voiceClient.getDistanceVisualizer().render(
-                        activation.getDistance(),
-                        0x00a000
-                );
+                if (!initialized) {
+                    voiceClient.getDistanceVisualizer().render(
+                            activation.getDistance(),
+                            0x00a000
+                    );
+                }
             }
         }
 
@@ -117,6 +123,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             );
         }
 
+        this.initialized = true;
         return getActivations();
     }
 
@@ -161,5 +168,6 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     public void clear() {
         activations.clear();
         activationById.clear();
+        this.initialized = false;
     }
 }

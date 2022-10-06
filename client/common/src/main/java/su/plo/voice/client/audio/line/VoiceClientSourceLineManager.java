@@ -65,6 +65,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     @Override
     public @NotNull ClientSourceLine register(@NotNull SourceLine line) {
+        unregister(line.getId());
         return lineById.computeIfAbsent(
                 line.getId(),
                 (id) -> {

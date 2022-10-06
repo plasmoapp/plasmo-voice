@@ -47,6 +47,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+// todo: refactor server
+//  need to initialize it after MinecraftServer is created
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
     public static final String CHANNEL_STRING = "plasmo:voice";
@@ -163,6 +165,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         // cleanup players
         playerManager.clear();
+
+        this.config = null;
 
         eventBus.unregister(this);
         super.onShutdown();
