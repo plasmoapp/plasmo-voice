@@ -36,6 +36,8 @@ public interface GuiRender {
 
     int drawString(TextComponent text, int x, int y, int color);
 
+    int drawString(TextComponent text, int x, int y, int color, boolean dropShadow);
+
     int drawString(TextComponent component, float x, float y, int color, boolean dropShadow, boolean seeThrough, int backgroundColor, int light);
 
     int drawStringMultiLine(TextComponent text, int x, int y, int color, int width);

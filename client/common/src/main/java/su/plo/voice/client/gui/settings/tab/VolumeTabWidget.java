@@ -280,7 +280,7 @@ public final class VolumeTabWidget extends TabWidget {
             // render helm
             render.blit(x, helmY, 24, 24, 8F, 8F, 8, 8, 64, 64);
             render.enableBlend();
-            render.blit(x, y, 24, 24, 40F, 8F, 8, 8, 64, 64);
+            render.blit(x, helmY, 24, 24, 40F, 8F, 8, 8, 64, 64);
             render.disableBlend();
 
             render.drawString(text, x + 30, y + height / 2 - minecraft.getFont().getLineHeight() / 2, 0xFFFFFF);

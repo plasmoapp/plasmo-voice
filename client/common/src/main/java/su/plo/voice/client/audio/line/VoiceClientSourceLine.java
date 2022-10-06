@@ -6,14 +6,12 @@ import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSourceLine {
 
     private final DoubleConfigEntry volumeEntry;
-    private final Set<UUID> players = new CopyOnWriteArraySet<>();
 
     public VoiceClientSourceLine(@NotNull DoubleConfigEntry volumeEntry,
                                  @NotNull SourceLine line) {
@@ -21,7 +19,8 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
                 line.getName(),
                 line.getTranslation(),
                 line.getIcon(),
-                line.getWeight()
+                line.getWeight(),
+                line.hasPlayers() ? new CopyOnWriteArraySet<>(line.getPlayers()) : null
         );
 
         this.volumeEntry = volumeEntry;

@@ -7,4 +7,6 @@ public interface MinecraftOptions {
     int getRenderDistance();
 
     float getBackgroundOpacity(float m);
+
+    int getBackgroundColor(int m);
 }

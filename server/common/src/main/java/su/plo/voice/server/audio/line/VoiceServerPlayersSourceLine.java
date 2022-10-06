@@ -10,14 +10,11 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerAddPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerRemovePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayersClearPacket;
 
-import java.util.HashSet;
-import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 @ToString(callSuper = true)
 public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine implements ServerSourceLine, PlayersSourceLine {
-
-    private final Set<UUID> players = new HashSet<>();
 
     public VoiceServerPlayersSourceLine(@NotNull PlasmoVoiceServer voiceServer,
                                         @NotNull AddonContainer addon,
@@ -26,6 +23,8 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
                                         @NotNull String icon,
                                         int weight) {
         super(voiceServer, addon, name, translation, icon, weight);
+
+        this.players = new CopyOnWriteArraySet<>();
     }
 
     @Override

@@ -11,4 +11,12 @@ public interface MinecraftPlayerSkins {
     CompletableFuture<String> loadSkin(@NotNull UUID playerId, @NotNull String nick, @Nullable String fallback);
 
     @NotNull String getSkin(@NotNull UUID playerId, @NotNull String nick);
+
+    default @NotNull String getSteveSkin() {
+        return "textures/entity/steve.png";
+    }
+
+    default @NotNull String getAlexSkin() {
+        return "textures/entity/alex.png";
+    }
 }

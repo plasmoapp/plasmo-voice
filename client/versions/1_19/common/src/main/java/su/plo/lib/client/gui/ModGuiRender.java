@@ -204,7 +204,14 @@ public final class ModGuiRender implements GuiRender {
 
     @Override
     public int drawString(TextComponent text, int x, int y, int color) {
-        return minecraft.font.drawShadow(matrix.getPoseStack(), textConverter.convert(text), (float) x, (float) y, color);
+        return drawString(text, x, y, color, true);
+    }
+
+    @Override
+    public int drawString(TextComponent text, int x, int y, int color, boolean dropShadow) {
+        return dropShadow
+                ? minecraft.font.drawShadow(matrix.getPoseStack(), textConverter.convert(text), (float) x, (float) y, color)
+                : minecraft.font.draw(matrix.getPoseStack(), textConverter.convert(text), (float) x, (float) y, color);
     }
 
     @Override

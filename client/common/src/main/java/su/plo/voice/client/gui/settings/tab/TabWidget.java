@@ -157,6 +157,10 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
     }
 
+    protected CategoryEntry createCategoryEntry(@NotNull String translatable) {
+        return new CategoryEntry(TextComponent.translatable(translatable));
+    }
+
     protected OptionEntry<ToggleButton> createToggleEntry(@NotNull String translatable,
                                                           @Nullable String tooltipTranslatable,
                                                           @NotNull ConfigEntry<Boolean> entry) {

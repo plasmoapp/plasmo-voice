@@ -3,7 +3,7 @@ package su.plo.voice.config.entry;
 import lombok.Getter;
 import su.plo.config.entry.ConfigEntry;
 
-public class IntConfigEntry extends ConfigEntry<Integer> {
+public final class IntConfigEntry extends ConfigEntry<Integer> {
 
     @Getter
     private int min;

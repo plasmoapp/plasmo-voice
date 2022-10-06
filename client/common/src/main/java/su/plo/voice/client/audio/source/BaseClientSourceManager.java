@@ -1,6 +1,8 @@
 package su.plo.voice.client.audio.source;
 
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Multimaps;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -18,10 +20,15 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 @RequiredArgsConstructor
 public abstract class BaseClientSourceManager implements ClientSourceManager {
 
+    protected final ListMultimap<UUID, ClientAudioSource<?>> sourcesByLineId = Multimaps.newListMultimap(
+            Maps.newConcurrentMap(),
+            CopyOnWriteArrayList::new
+    );
     protected final Map<UUID, ClientAudioSource<?>> sourceById = Maps.newConcurrentMap();
     protected final Map<UUID, Long> sourceRequestById = Maps.newConcurrentMap();
 
@@ -46,6 +53,11 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     }
 
     @Override
+    public Collection<ClientAudioSource<?>> getSourcesByLineId(@NotNull UUID lineId) {
+        return sourcesByLineId.get(lineId);
+    }
+
+    @Override
     public Optional<ClientAudioSource<?>> getSourceById(@NotNull UUID sourceId) {
         return getSourceById(sourceId, true);
     }
@@ -58,10 +70,11 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     @Override
     public synchronized void clear() {
         sourceById.values().forEach(ClientAudioSource::close);
+        sourcesByLineId.clear();
         sourceRequestById.clear();
     }
 
-    @Override
+    @Override // todo: refactor somehow pepega
     public void update(@NotNull SourceInfo sourceInfo) {
         try {
             if (sourceById.containsKey(sourceInfo.getId())) {
@@ -71,7 +84,6 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
                     return;
                 }
 
-                // todo: waytoodank
                 if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
                     ((ClientAudioSource<StaticSourceInfo>) source).initialize((StaticSourceInfo) sourceInfo);
                 } else if (source.getInfo() instanceof PlayerSourceInfo && sourceInfo instanceof PlayerSourceInfo) {
@@ -87,21 +99,25 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
                 source.initialize((PlayerSourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
+                sourcesByLineId.put(sourceInfo.getLineId(), source);
             } else if (sourceInfo instanceof EntitySourceInfo) {
                 ClientAudioSource<EntitySourceInfo> source = createEntitySource();
                 source.initialize((EntitySourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
+                sourcesByLineId.put(sourceInfo.getLineId(), source);
             } else if (sourceInfo instanceof StaticSourceInfo) {
                 ClientAudioSource<StaticSourceInfo> source = createStaticSource();
                 source.initialize((StaticSourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
+                sourcesByLineId.put(sourceInfo.getLineId(), source);
             } else if (sourceInfo instanceof DirectSourceInfo) {
                 ClientAudioSource<DirectSourceInfo> source = createDirectSource();
                 source.initialize((DirectSourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
+                sourcesByLineId.put(sourceInfo.getLineId(), source);
             } else {
                 throw new IllegalArgumentException("Invalid source type");
             }

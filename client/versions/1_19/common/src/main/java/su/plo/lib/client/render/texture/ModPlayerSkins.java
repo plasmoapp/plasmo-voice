@@ -21,8 +21,8 @@ public final class ModPlayerSkins implements MinecraftPlayerSkins {
 
     private final Minecraft minecraft = Minecraft.getInstance();
 
-    private final ResourceLocation steveSkin = new ResourceLocation("textures/entity/steve.png");
-    private final ResourceLocation alexSkin = new ResourceLocation("textures/entity/alex.png");
+    private final ResourceLocation steveSkin = new ResourceLocation(getSteveSkin());
+    private final ResourceLocation alexSkin = new ResourceLocation(getAlexSkin());
     private final Map<String, ResourceLocation> skins = new HashMap<>();
 
 

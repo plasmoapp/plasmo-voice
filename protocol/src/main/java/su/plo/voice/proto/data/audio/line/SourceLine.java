@@ -3,7 +3,6 @@ package su.plo.voice.proto.data.audio.line;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.UUID;
 
 public interface SourceLine {
@@ -50,12 +49,15 @@ public interface SourceLine {
     }
 
     /**
+     * Check if line can contain players
+     */
+    boolean hasPlayers();
+
+    /**
      * Gets the line's players
      *
      * @return the line's players
      */
     @NotNull
-    default Collection<UUID> getPlayers() {
-        return Collections.emptyList();
-    }
+    Collection<UUID> getPlayers();
 }

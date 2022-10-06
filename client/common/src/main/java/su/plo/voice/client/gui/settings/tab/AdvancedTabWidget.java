@@ -4,15 +4,12 @@ import com.google.common.collect.ImmutableList;
 import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiUtil;
-import su.plo.lib.client.gui.components.Button;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.OutputDevice;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.client.gui.settings.ActivationIconPositionScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
 
 import java.util.List;
@@ -39,10 +36,6 @@ public final class AdvancedTabWidget extends TabWidget {
     @Override
     public void init() {
         super.init();
-
-        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.advanced.icons")));
-        addEntry(createShowIcons());
-        addEntry(createActivationIconPosition());
 
         addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.advanced.visual")));
         addEntry(createToggleEntry(
@@ -73,52 +66,6 @@ public final class AdvancedTabWidget extends TabWidget {
                 config.getAdvanced().getLimiterThreshold(),
                 "dB"
         ));
-    }
-
-    private OptionEntry<DropDownWidget> createShowIcons() {
-        DropDownWidget dropdown = new DropDownWidget(
-                minecraft,
-                parent,
-                0,
-                0,
-                ELEMENT_WIDTH,
-                20,
-                ICONS_LIST.get(config.getAdvanced().getShowIcons().value()),
-                ICONS_LIST,
-                true,
-                (index) -> config.getAdvanced().getShowIcons().set(index)
-        );
-
-        return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.advanced.show_icons"),
-                dropdown,
-                config.getAdvanced().getShowIcons(),
-                (button, element) -> element.setText(ICONS_LIST.get(config.getAdvanced().getShowIcons().value()))
-        );
-    }
-
-    private OptionEntry<Button> createActivationIconPosition() {
-        Button button = new Button(
-                minecraft,
-                0,
-                0,
-                ELEMENT_WIDTH,
-                20,
-                TextComponent.translatable(config.getAdvanced().getActivationIconPosition().value().getTranslation()),
-                (btn) -> {
-                    minecraft.setScreen(new ActivationIconPositionScreen(minecraft, parent, config.getAdvanced().getActivationIconPosition()));
-                },
-                Button.NO_TOOLTIP
-        );
-
-        return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.advanced.icon_position"),
-                button,
-                config.getAdvanced().getActivationIconPosition(),
-                (btn, element) -> element.setText(
-                        TextComponent.translatable(config.getAdvanced().getActivationIconPosition().value().getTranslation())
-                )
-        );
     }
 
     private OptionEntry<ToggleButton> createStereoToMonoSources() {

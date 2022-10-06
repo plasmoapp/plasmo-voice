@@ -20,4 +20,9 @@ public final class ModOptions implements MinecraftOptions {
     public float getBackgroundOpacity(float m) {
         return minecraft.options.getBackgroundOpacity(m);
     }
+
+    @Override
+    public int getBackgroundColor(int m) {
+        return minecraft.options.getBackgroundColor(m);
+    }
 }

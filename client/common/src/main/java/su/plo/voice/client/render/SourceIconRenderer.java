@@ -48,7 +48,9 @@ public final class SourceIconRenderer {
 
     @EventSubscribe
     public void onLevelRender(@NotNull LevelRenderEvent event) {
-        if (isIconHidden()) return;
+        if (isIconHidden() ||
+                !config.getOverlay().getShowStaticSourceIcons().value()
+        ) return;
 
         for (ClientAudioSource<?> source : voiceClient.getSourceManager().getSources()) {
             if (!(source.getInfo() instanceof StaticSourceInfo)
@@ -346,7 +348,7 @@ public final class SourceIconRenderer {
     }
 
     private boolean isIconHidden() {
-        int showIcons = config.getAdvanced().getShowIcons().value();
+        int showIcons = config.getOverlay().getShowSourceIcons().value();
         return showIcons == 2 || (minecraft.getOptions().isGuiHidden() && showIcons == 0);
     }
 }

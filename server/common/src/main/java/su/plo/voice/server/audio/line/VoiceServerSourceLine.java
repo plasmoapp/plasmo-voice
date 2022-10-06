@@ -22,7 +22,7 @@ public class VoiceServerSourceLine extends VoiceSourceLine implements ServerSour
                                  @NotNull String translation,
                                  @NotNull String icon,
                                  int weight) {
-        super(name, translation, icon, weight);
+        super(name, translation, icon, weight, null);
 
         this.voiceServer = voiceServer;
         this.addon = addon;

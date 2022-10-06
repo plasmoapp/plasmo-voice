@@ -10,6 +10,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.IconPosition;
 
 import java.util.List;
 
@@ -24,7 +25,8 @@ public final class HudIconRenderer {
     public void onHudRender(@NotNull HudRenderEvent event) {
         if (!voiceClient.getServerInfo().isPresent() ||
                 !voiceClient.getUdpClientManager().getClient().isPresent() ||
-                !minecraft.getClientPlayer().isPresent()
+                !minecraft.getClientPlayer().isPresent() ||
+                !config.getOverlay().getShowActivationIcon().value()
         ) return;
 
         if (voiceClient.getUdpClientManager().getClient().get().isTimedOut()) {
@@ -66,7 +68,7 @@ public final class HudIconRenderer {
     }
 
     private void renderIcon(@NotNull GuiRender render, @NotNull String iconLocation) {
-        ClientConfig.Advanced.ActivationIconPosition iconPosition = config.getAdvanced().getActivationIconPosition().value();
+        IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
         render.setShader(VertexBuilder.Shader.POSITION_TEX);
         render.setShaderColor(1F, 1F, 1F, 1F);

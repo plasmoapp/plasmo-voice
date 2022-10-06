@@ -99,20 +99,6 @@
 
     "gui.plasmovoice.advanced": "Advanced",
 
-    "gui.plasmovoice.advanced.icons": "Icons",
-    "gui.plasmovoice.advanced.show_icons": "Show Icons",
-    "gui.plasmovoice.advanced.show_icons.hud": "GUI Only",
-    "gui.plasmovoice.advanced.show_icons.always": "Always",
-    "gui.plasmovoice.advanced.show_icons.hidden": "Hidden",
-    "gui.plasmovoice.advanced.icon_position": "Mic Icon Position",
-    "gui.plasmovoice.advanced.icon_position.choose": "Choose Icon Position",
-    "gui.plasmovoice.advanced.icon_position.top_left": "Top Left",
-    "gui.plasmovoice.advanced.icon_position.top_center": "Top Center",
-    "gui.plasmovoice.advanced.icon_position.top_right": "Top Right",
-    "gui.plasmovoice.advanced.icon_position.bottom_left": "Bottom Left",
-    "gui.plasmovoice.advanced.icon_position.bottom_center": "Bottom Center",
-    "gui.plasmovoice.advanced.icon_position.bottom_right": "Bottom Right",
-
     "gui.plasmovoice.advanced.visual": "Visual & UI",
     "gui.plasmovoice.advanced.visualize_voice_distance": "Visualise Voice Distance",
 
@@ -166,6 +152,40 @@
 
     "gui.plasmovoice.about.links": "%s on",
     "gui.plasmovoice.about.copyright": "Please use only official sources and don’t redistribute the mod without our permission",
+
+
+    "gui.plasmovoice.overlay": "Overlay",
+
+    "gui.plasmovoice.overlay.activation_icon": "Hud Icon",
+    "gui.plasmovoice.overlay.activation_icon_show": "Show Hud Icon",
+    "gui.plasmovoice.overlay.activation_icon_position": "Hud Icon Position",
+    "gui.plasmovoice.overlay.activation_icon_position.choose": "Choose Icon Position",
+    "gui.plasmovoice.overlay.hud_position.top_left": "Top Left",
+    "gui.plasmovoice.overlay.hud_position.top_center": "Top Center",
+    "gui.plasmovoice.overlay.hud_position.top_right": "Top Right",
+    "gui.plasmovoice.overlay.hud_position.bottom_left": "Bottom Left",
+    "gui.plasmovoice.overlay.hud_position.bottom_center": "Bottom Center",
+    "gui.plasmovoice.overlay.hud_position.bottom_right": "Bottom Right",
+
+    "gui.plasmovoice.overlay.source_icons": "Entity Icons",
+    "gui.plasmovoice.overlay.show_source_icons": "Show Entity Icons",
+    "gui.plasmovoice.overlay.show_source_icons.hud": "GUI Only",
+    "gui.plasmovoice.overlay.show_source_icons.always": "Always",
+    "gui.plasmovoice.overlay.show_source_icons.hidden": "Hidden",
+    "gui.plasmovoice.overlay.show_static_source_icons": "Show On Static Sources",
+
+    "gui.plasmovoice.overlay.enable": "Enable Overlay",
+    "gui.plasmovoice.overlay.position": "Overlay Position",
+    "gui.plasmovoice.overlay.position.choose": "Choose Overlay Position",
+    "gui.plasmovoice.overlay.style": "Overlay Style",
+    "gui.plasmovoice.overlay.style.name_skin": "Name And Skin",
+    "gui.plasmovoice.overlay.style.skin": "Only Skin",
+    "gui.plasmovoice.overlay.style.name": "Only Name",
+
+    "gui.plasmovoice.overlay.sources": "Overlay Sources",
+    "gui.plasmovoice.overlay.sources.when_talking": "When Talking",
+    "gui.plasmovoice.overlay.sources.always": "Always",
+    "gui.plasmovoice.overlay.sources.never": "Never",
 
 
     "gui.plasmovoice.not_available": "Plasmo Voice is not installed on this server",

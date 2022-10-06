@@ -15,9 +15,13 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
+import su.plo.voice.client.config.overlay.OverlayPosition;
+import su.plo.voice.client.config.overlay.OverlaySourceState;
+import su.plo.voice.config.entry.BooleanConfigEntry;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.line.SourceLine;
 
 import java.io.File;
 import java.io.IOException;
@@ -40,6 +44,10 @@ public final class ClientConfig {
 
     @ConfigField
     private Activations activations = new Activations();
+
+
+    @ConfigField
+    private Overlay overlay = new Overlay();
 
     @ConfigField
     private ConfigKeyBindings keyBindings = new ConfigKeyBindings();
@@ -312,10 +320,14 @@ public final class ClientConfig {
                     map.forEach((key, serialized) -> {
                         Map<String, Object> value = (Map<String, Object>) serialized;
 
+                        if (value.containsKey("volume")) {
+                            setVolume(key, (double) value.get("volume"));
+                        }
 
+                        if (value.containsKey("muted")) {
+                            setMute(key, (boolean) value.get("muted"));
+                        }
                     });
-
-                    map.forEach((key, value) -> setVolume(key, (double) value));
                 } catch (ClassCastException ignored) {
                 }
             }
@@ -352,15 +364,6 @@ public final class ClientConfig {
     public static class Advanced {
 
         @ConfigField
-        private IntConfigEntry showIcons = new IntConfigEntry(0, 0, 2);
-
-        @ConfigField
-        private EnumConfigEntry<ActivationIconPosition> activationIconPosition = new EnumConfigEntry<>(
-                ActivationIconPosition.class,
-                ActivationIconPosition.BOTTOM_CENTER
-        );
-
-        @ConfigField
         private ConfigEntry<Boolean> visualizeVoiceDistance = new ConfigEntry<>(true);
 
         @ConfigField
@@ -373,28 +376,95 @@ public final class ClientConfig {
         private IntConfigEntry directionalSourcesAngle = new IntConfigEntry(145, 100, 360);
 
         @ConfigField
-        private ConfigEntry<Boolean> stereoSourcesToMono = new ConfigEntry<>(false);
+        private BooleanConfigEntry stereoSourcesToMono = new BooleanConfigEntry(false);
+    }
 
-        public enum ActivationIconPosition {
+    @Config
+    @Data
+    public static class Overlay {
 
-            TOP_LEFT(16, 16, "gui.plasmovoice.advanced.icon_position.top_left"),
-            TOP_CENTER(null, 16, "gui.plasmovoice.advanced.icon_position.top_center"),
-            TOP_RIGHT(-16, 16, "gui.plasmovoice.advanced.icon_position.top_right"),
-            BOTTOM_LEFT(16, -16, "gui.plasmovoice.advanced.icon_position.bottom_left"),
-            BOTTOM_CENTER(null, -38, "gui.plasmovoice.advanced.icon_position.bottom_center"),
-            BOTTOM_RIGHT(-16, -16, "gui.plasmovoice.advanced.icon_position.bottom_right");
+        @ConfigField
+        private BooleanConfigEntry showActivationIcon = new BooleanConfigEntry(true);
 
-            @Getter
-            private final Integer x;
-            @Getter
-            private final Integer y;
-            @Getter
-            private final String translation;
+        @ConfigField
+        private EnumConfigEntry<IconPosition> activationIconPosition = new EnumConfigEntry<>(
+                IconPosition.class,
+                IconPosition.BOTTOM_CENTER
+        );
 
-            ActivationIconPosition(Integer x, Integer y, String translation) {
-                this.x = x;
-                this.y = y;
-                this.translation = translation;
+        @ConfigField
+        private IntConfigEntry showSourceIcons = new IntConfigEntry(0, 0, 2);
+
+        @ConfigField
+        private BooleanConfigEntry showStaticSourceIcons = new BooleanConfigEntry(true);
+
+
+        @ConfigField
+        private BooleanConfigEntry overlayEnabled = new BooleanConfigEntry(true);
+
+        @ConfigField
+        private EnumConfigEntry<OverlayPosition> overlayPosition = new EnumConfigEntry<>(
+                OverlayPosition.class,
+                OverlayPosition.TOP_LEFT
+        );
+
+        @ConfigField
+        private SourceStates sourceStates = new SourceStates();
+
+        @Data
+        public static class SourceStates implements SerializableConfigEntry {
+
+            private Map<String, EnumConfigEntry<OverlaySourceState>> stateByLineName = Maps.newHashMap();
+
+
+            public synchronized void setState(@NotNull String lineName,
+                                              @NotNull OverlaySourceState state) {
+                getState(lineName).set(state);
+            }
+
+            public synchronized EnumConfigEntry<OverlaySourceState> getState(@NotNull String lineName) {
+                return stateByLineName.computeIfAbsent(
+                        lineName,
+                        (c) -> new EnumConfigEntry<>(
+                                OverlaySourceState.class,
+                                OverlaySourceState.ON
+                        )
+                );
+            }
+
+            public synchronized EnumConfigEntry<OverlaySourceState> getState(@NotNull SourceLine sourceLine) {
+                return stateByLineName.computeIfAbsent(
+                        sourceLine.getName(),
+                        (c) -> new EnumConfigEntry<>(
+                                OverlaySourceState.class,
+                                sourceLine.hasPlayers()
+                                        ? OverlaySourceState.WHEN_TALKING
+                                        : OverlaySourceState.ON
+                        )
+                );
+            }
+
+            @Override
+            public synchronized void deserialize(Object object) {
+                try {
+                    Map<String, Object> map = (Map<String, Object>) object;
+
+                    map.forEach((key, value) ->
+                            setState(key, OverlaySourceState.valueOf((String) value))
+                    );
+                } catch (ClassCastException ignored) {
+                }
+            }
+
+            @Override
+            public synchronized Object serialize() {
+                Map<String, String> serialized = Maps.newHashMap();
+
+                stateByLineName.forEach((key, entry) ->
+                        serialized.put(key, entry.value().name())
+                );
+
+                return serialized;
             }
         }
     }

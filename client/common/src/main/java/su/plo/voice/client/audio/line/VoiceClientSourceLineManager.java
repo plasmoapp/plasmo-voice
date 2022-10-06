@@ -10,10 +10,8 @@ import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -21,6 +19,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     private final ClientConfig config;
 
+    private final List<ClientSourceLine> lines = new CopyOnWriteArrayList<>();
     private final Map<UUID, ClientSourceLine> lineById = Maps.newConcurrentMap();
 
     @Override
@@ -35,12 +34,14 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     @Override
     public Collection<ClientSourceLine> getLines() {
-        return lineById.values();
+        return lines;
     }
 
     @Override
     public boolean unregister(@NotNull UUID id) {
-        return lineById.remove(id) != null;
+        ClientSourceLine line = lineById.remove(id);
+        if (line != null) return lines.remove(line);
+        return false;
     }
 
     @Override
@@ -60,19 +61,28 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     @Override
     public @NotNull ClientSourceLine register(@NotNull ClientSourceLine line) {
-        return lineById.put(line.getId(), line);
+        unregister(line.getId());
+
+        int index;
+        for (index = 0; index < lines.size(); index++) {
+            ClientSourceLine act = lines.get(index);
+            if (line.getWeight() >= act.getWeight()) break;
+        }
+
+        lines.add(index, line);
+        lineById.put(line.getId(), line);
+
+        return line;
     }
 
     @Override
     public @NotNull ClientSourceLine register(@NotNull SourceLine line) {
         unregister(line.getId());
-        return lineById.computeIfAbsent(
-                line.getId(),
-                (id) -> {
-                    DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
-                    return new VoiceClientSourceLine(volumeEntry, line);
-                }
-        );
+
+        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
+        ClientSourceLine clientLine = new VoiceClientSourceLine(volumeEntry, line);
+
+        return register(clientLine);
     }
 
     @Override

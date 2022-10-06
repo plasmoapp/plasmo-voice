@@ -37,6 +37,7 @@ import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.render.HudIconRenderer;
+import su.plo.voice.client.render.OverlayRenderer;
 import su.plo.voice.client.render.SourceIconRenderer;
 import su.plo.voice.client.render.VoiceDistanceVisualizer;
 
@@ -150,6 +151,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         eventBus.register(this, distanceVisualizer);
         eventBus.register(this, new HudIconRenderer(minecraft, this, config));
         eventBus.register(this, new SourceIconRenderer(minecraft, this, config, volumeAction));
+        eventBus.register(this, new OverlayRenderer(minecraft, this, config));
 
         getEventBus().call(new VoiceClientInitializedEvent(this));
     }
