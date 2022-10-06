@@ -150,11 +150,11 @@
     "gui.plasmovoice.hotkeys": "Hotkeys",
 
 
-    "gui.plasmovoice.volumes": "Volumes",
+    "gui.plasmovoice.volume": "Volume",
 
-    "gui.plasmovoice.volumes.sources": "Sources Volume",
-    "gui.plasmovoice.volumes.players": "Players Volume",
-    "gui.plasmovoice.volumes.players_search": "Search...",
+    "gui.plasmovoice.volume.sources": "Sources Volume",
+    "gui.plasmovoice.volume.players": "Players Volume",
+    "gui.plasmovoice.volume.players_search": "Search...",
 
 
     "gui.plasmovoice.about.made_by": "%s is made by",

@@ -17,6 +17,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
+import su.plo.voice.client.gui.settings.widget.TabButton;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
 
 import java.util.List;
@@ -339,19 +340,25 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         });
     }
 
-    public void addTab(@NotNull TextComponent name, @NotNull TabWidget tabWidget) {
+    public void addTab(@NotNull TextComponent name,
+                       @NotNull String iconLocation,
+                       @NotNull TabWidget tabWidget) {
         int elementIndex = tabWidgets.size();
-        Button tabButton = new Button(
+        Button tabButton = new TabButton(
                 minecraft,
                 0,
                 0,
-                minecraft.getFont().width(name) + 16,
+                minecraft.getFont().width(name) + 24,
                 20,
                 name,
+                iconLocation,
                 (btn) -> {
                     openTab(elementIndex);
                     // todo: disable mic test
-                }, Button.NO_TOOLTIP);
+                },
+                Button.NO_TOOLTIP,
+                true
+        );
 
         parent.addWidget(tabButton);
 

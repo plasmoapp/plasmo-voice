@@ -29,17 +29,17 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class VolumesTabWidget extends TabWidget {
+public final class VolumeTabWidget extends TabWidget {
 
     private final PlasmoVoiceClient voiceClient;
     private final ClientSourceLineManager sourceLines;
 
     private String currentSearch = "";
 
-    public VolumesTabWidget(@NotNull MinecraftClientLib minecraft,
-                            @NotNull VoiceSettingsScreen parent,
-                            @NotNull PlasmoVoiceClient voiceClient,
-                            @NotNull ClientConfig config) {
+    public VolumeTabWidget(@NotNull MinecraftClientLib minecraft,
+                           @NotNull VoiceSettingsScreen parent,
+                           @NotNull PlasmoVoiceClient voiceClient,
+                           @NotNull ClientConfig config) {
         super(minecraft, parent, voiceClient, config);
 
         this.voiceClient = voiceClient;
@@ -50,10 +50,10 @@ public final class VolumesTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volumes.sources"), 24));
+        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volume.sources"), 24));
         sourceLines.getLines().forEach(this::createSourceLineVolume);
 
-        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volumes.players"), 24));
+        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volume.players"), 24));
         createPlayersSearch();
         refreshPlayerEntries();
     }
@@ -94,7 +94,7 @@ public final class VolumesTabWidget extends TabWidget {
                 0,
                 0,
                 20,
-                TextComponent.translatable("gui.plasmovoice.volumes.players_search").withStyle(TextStyle.GRAY)
+                TextComponent.translatable("gui.plasmovoice.volume.players_search").withStyle(TextStyle.GRAY)
         );
 
         textField.setResponder((value) -> {

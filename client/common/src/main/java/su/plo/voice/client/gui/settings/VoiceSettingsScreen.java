@@ -75,22 +75,27 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
         navigation.addTab(
                 TextComponent.translatable("gui.plasmovoice.devices"),
+                "plasmovoice:textures/icons/tabs/devices.png",
                 new DevicesTabWidget(minecraft, this, voiceClient, config, testController)
         );
         navigation.addTab(
-                TextComponent.translatable("gui.plasmovoice.volumes"),
-                new VolumesTabWidget(minecraft, this, voiceClient, config)
+                TextComponent.translatable("gui.plasmovoice.volume"),
+                "plasmovoice:textures/icons/tabs/volume.png",
+                new VolumeTabWidget(minecraft, this, voiceClient, config)
         );
         navigation.addTab(
                 TextComponent.translatable("gui.plasmovoice.activation"),
+                "plasmovoice:textures/icons/tabs/activation.png",
                 new ActivationTabWidget(minecraft, this, voiceClient, config)
         );
         navigation.addTab(
                 TextComponent.translatable("gui.plasmovoice.advanced"),
+                "plasmovoice:textures/icons/tabs/advanced.png",
                 new AdvancedTabWidget(minecraft, this, voiceClient, config)
         );
         navigation.addTab(
                 TextComponent.translatable("gui.plasmovoice.hotkeys"),
+                "plasmovoice:textures/icons/tabs/hotkeys.png",
                 new HotKeysTabWidget(minecraft, this, voiceClient, config)
         );
 

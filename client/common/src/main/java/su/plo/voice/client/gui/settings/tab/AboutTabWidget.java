@@ -37,18 +37,18 @@ public final class AboutTabWidget extends TabWidget {
 
         addEntry(new CategoryEntry(madeBy(), 24));
         addEntry(new DeveloperEntry(
-                UUID.fromString("8f552657-df1d-42cd-89c6-c176e195f703"),
-                "Apehum",
-                TextComponent.translatable("gui.plasmovoice.about.programming"),
-                "Telegram",
-                "https://t.me/arehum"
-        ));
-        addEntry(new DeveloperEntry(
                 UUID.fromString("2714d55f-ffef-4655-a93e-d8ca13230e76"),
                 "KPidS",
                 TextComponent.translatable("gui.plasmovoice.about.huix"),
                 "Twitch",
                 "https://twitch.tv/kpids"
+        ));
+        addEntry(new DeveloperEntry(
+                UUID.fromString("8f552657-df1d-42cd-89c6-c176e195f703"),
+                "Apehum",
+                TextComponent.translatable("gui.plasmovoice.about.programming"),
+                "Telegram",
+                "https://t.me/arehum"
         ));
         addEntry(new DeveloperEntry(
                 UUID.fromString("cfb727e7-efcc-4596-8c2b-9c6e38c8eea4"),

@@ -56,6 +56,8 @@ public final class IconButton extends Button {
         render.enableDepthTest();
 
         if (hasShadow()) {
+            int shadowColor = active ? this.shadowColor : -6250336;
+
             render.blitColorShader(
                     VertexBuilder.Shader.POSITION_TEX_SOLID_COLOR,
                     VertexBuilder.Format.POSITION_TEX_SOLID_COLOR,
@@ -66,10 +68,10 @@ public final class IconButton extends Button {
                     0,
                     0, 1F,
                     0, 1F,
-                    (int) ((shadowColor >> 24 & 255) * 0.25),
                     (int) ((shadowColor >> 16 & 255) * 0.25),
                     (int) ((shadowColor >> 8 & 255) * 0.25),
-                    shadowColor & 255
+                    (int) ((shadowColor & 255) * 0.25),
+                    shadowColor >> 24 & 255
             );
         }
 
