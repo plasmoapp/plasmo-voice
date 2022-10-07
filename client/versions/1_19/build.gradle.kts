@@ -41,19 +41,30 @@ subprojects {
         }
     }
 
+    configurations {
+        create("shadowCommon")
+    }
+
     dependencies {
         "minecraft"("com.mojang:minecraft:${minecraftVersion}")
         mappingsDependency?.let { "mappings"(it) }
 
         implementation(project(":api:common"))
+        "shadowCommon"(project(":api:common"))
         implementation(project(":api:client"))
+        "shadowCommon"(project(":api:client"))
         implementation(project(":api:server"))
+        "shadowCommon"(project(":api:server"))
 
         implementation(project(":client:common"))
+        "shadowCommon"(project(":client:common"))
         implementation(project(":server:common"))
+        "shadowCommon"(project(":server:common"))
 
         implementation(project(":common"))
+        "shadowCommon"(project(":common"))
         implementation(project(":protocol"))
+        "shadowCommon"(project(":protocol"))
 
         compileOnly(rootProject.libs.config)
     }

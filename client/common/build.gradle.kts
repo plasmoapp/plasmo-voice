@@ -9,7 +9,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":protocol"))
 
-    implementation(rootProject.libs.netty)
+    compileOnly(rootProject.libs.netty)
     implementation(rootProject.libs.config)
     implementation(rootProject.libs.rnnoise)
 }

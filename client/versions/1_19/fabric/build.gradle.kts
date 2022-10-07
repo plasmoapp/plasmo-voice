@@ -8,10 +8,6 @@ val fabricLoaderVersion = "0.14.9"
 val fabricVersion = "0.62.0+1.19.2"
 val fabricPermissionsVersion = "0.2-SNAPSHOT"
 
-configurations {
-    create("shadowCommon")
-}
-
 architectury {
     platformSetupLoomIde()
     fabric()
