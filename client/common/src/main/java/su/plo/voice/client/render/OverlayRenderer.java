@@ -100,6 +100,8 @@ public final class OverlayRenderer {
             y += (ENTRY_HEIGHT + 1) * index;
         }
 
+        int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
+
         // render helm
         render.setShaderTexture(0, loadSkin(connection, sourceId, sourceName));
         render.setShaderColor(1F, 1F, 1F, 1F);
@@ -114,8 +116,8 @@ public final class OverlayRenderer {
         } else {
             x += 16 + 1;
         }
-        render.fill(x, y, x + textWidth, y + ENTRY_HEIGHT, minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE));
-        render.drawString(text, x + 4, y + 4, 0xFFFFFF, false);
+        render.fill(x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor);
+        render.drawString(text, x + 4, y + 4, 0xFFFFFF, false, true, 0, 15728880);
 
         if (activated) {
             if (position.isRight()) {
@@ -123,15 +125,11 @@ public final class OverlayRenderer {
             } else {
                 x += textWidth + 1;
             }
-            render.fill(x, y, x + 16, y + ENTRY_HEIGHT, minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE));
+            render.fill(x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor);
 
             render.enableTexture();
             render.setShaderTexture(0, sourceLine.getIcon());
             render.setShaderColor(1F, 1F, 1F, 1F);
-
-            render.enableBlend();
-            render.defaultBlendFunc();
-            render.enableDepthTest();
 
             render.blit(x, y, 0, 0F, 0F, 16, 16, 16, 16);
         }
