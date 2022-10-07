@@ -49,7 +49,7 @@ public final class VoiceSettingsAboutFeature {
 
             minecraft.getSoundManager().playSound(
                     MinecraftSoundManager.Category.UI,
-                    "UI_BUTTON_CLICK",
+                    "minecraft:ui.button.click",
                     1F
             );
             return;
@@ -60,7 +60,7 @@ public final class VoiceSettingsAboutFeature {
 
         minecraft.getSoundManager().playSound(
                 MinecraftSoundManager.Category.UI,
-                "GRAVEL_HIT",
+                "minecraft:block.gravel.hit",
                 1F
         );
 

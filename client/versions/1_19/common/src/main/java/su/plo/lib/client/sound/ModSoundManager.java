@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Field;
@@ -13,21 +14,30 @@ public final class ModSoundManager implements MinecraftSoundManager {
     private static final Minecraft minecraft = Minecraft.getInstance();
 
     @Override
-    public void playSound(@NotNull Category category, @NotNull String soundId, float pitch) {
-        playSound(category, soundId, pitch, 0.25F);
+    public void playSound(@NotNull Category category, @NotNull String soundLocation, float pitch) {
+        playSound(category, soundLocation, pitch, 0.25F);
     }
 
     @Override
-    public void playSound(@NotNull Category category, @NotNull String soundId, float pitch, float volume) {
-        SoundEvent soundEvent;
-        Field field;
-        try {
-            field = SoundEvents.class.getField(soundId);
-            soundEvent = (SoundEvent) field.get(null);
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            throw new IllegalArgumentException("Sound not found");
+    public void playSound(@NotNull Category category, @NotNull String soundLocation, float pitch, float volume) {
+        SoundEvent soundEvent = null;
+        for (Field field : SoundEvents.class.getFields()) {
+            try {
+                Object object = field.get(null);
+                if (object instanceof SoundEvent fieldSound) {
+                    if (fieldSound.getLocation().toString().equals(soundLocation)) {
+                        soundEvent = fieldSound;
+                        break;
+                    }
+                }
+            } catch (IllegalAccessException ignored) {
+            }
         }
 
+        if (soundEvent == null) {
+            LogManager.getLogger().error("Sound '" + soundLocation + "' not found");
+            return;
+        }
 
         switch (category) {
             case UI -> {

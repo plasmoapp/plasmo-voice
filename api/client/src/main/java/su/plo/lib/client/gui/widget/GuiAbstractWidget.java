@@ -203,7 +203,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     protected void playDownSound() {
         minecraft.getSoundManager().playSound(
                 MinecraftSoundManager.Category.UI,
-                "UI_BUTTON_CLICK",
+                "minecraft:ui.button.click",
                 1F
         );
     }

@@ -4,9 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 public interface MinecraftSoundManager {
 
-    void playSound(@NotNull Category category, @NotNull String soundId, float pitch);
+    void playSound(@NotNull Category category, @NotNull String soundLocation, float pitch);
 
-    void playSound(@NotNull Category category, @NotNull String soundId, float pitch, float volume);
+    void playSound(@NotNull Category category, @NotNull String soundLocation, float pitch, float volume);
 
     enum Category {
 
