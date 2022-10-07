@@ -57,7 +57,7 @@ public final class HudIconRenderer {
         for (int index = activations.size() - 1; index >= 0; index--) {
             ClientActivation activation = activations.get(index);
 
-            if (!activation.isActivated()) continue;
+            if (!activation.isActivated() || !voiceClient.getAudioCapture().hasPermission(activation)) continue;
 
             currentActivation = activation;
             if (!activation.isTransitive()) break;

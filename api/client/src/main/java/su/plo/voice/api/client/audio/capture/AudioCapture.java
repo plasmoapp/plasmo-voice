@@ -36,4 +36,6 @@ public interface AudioCapture {
     boolean isActive();
 
     boolean isServerMuted();
+
+    boolean hasPermission(@NotNull ClientActivation activation);
 }

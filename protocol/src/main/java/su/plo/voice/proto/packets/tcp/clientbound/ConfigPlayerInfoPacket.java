@@ -28,7 +28,7 @@ public class ConfigPlayerInfoPacket implements Packet<ClientPacketTcpHandler> {
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         int size = in.readInt();
-        for (int i = 0; i < size; size++) {
+        for (int i = 0; i < size; i++) {
             String key = in.readUTF();
             boolean value = in.readBoolean();
 

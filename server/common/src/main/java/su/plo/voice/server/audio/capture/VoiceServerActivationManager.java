@@ -7,6 +7,8 @@ import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
+import su.plo.voice.api.server.event.audio.capture.ServerActivationRegisterEvent;
+import su.plo.voice.api.server.event.audio.capture.ServerActivationUnregisterEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoicePlayerManager;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
@@ -45,7 +47,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
     }
 
     @Override
-    public @NotNull ServerActivation register(@NotNull Object addonObject,
+    public Optional<ServerActivation> register(@NotNull Object addonObject,
                                               @NotNull String name,
                                               @NotNull String translation,
                                               @NotNull String icon,
@@ -57,34 +59,46 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         Optional<AddonContainer> addon = addons.getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
-        return activationById.computeIfAbsent(
-                VoiceActivation.generateId(name),
-                (id) -> {
-                    VoiceServerActivation activation = new VoiceServerActivation(
-                            voiceServer,
-                            addon.get(),
-                            name,
-                            translation,
-                            icon,
-                            distances,
-                            defaultDistance,
-                            transitive,
-                            stereoSupported,
-                            weight
-                    );
+        VoiceServerActivation activation = (VoiceServerActivation) activationById.get(VoiceActivation.generateId(name));
+        if (activation != null) return Optional.of(activation);
 
-                    voiceServer.getTcpConnectionManager()
-                            .broadcast(new ActivationRegisterPacket(activation));
-
-                    return activation;
-                }
+        activation = new VoiceServerActivation(
+                voiceServer,
+                addon.get(),
+                name,
+                translation,
+                icon,
+                distances,
+                defaultDistance,
+                transitive,
+                stereoSupported,
+                weight
         );
+
+        ServerActivationRegisterEvent event = new ServerActivationRegisterEvent(activation);
+        voiceServer.getEventBus().call(event);
+        if (event.isCancelled()) return Optional.empty();
+
+        activationById.put(activation.getId(), activation);
+
+        voiceServer.getTcpConnectionManager()
+                .broadcast(new ActivationRegisterPacket(activation));
+
+        voiceServer.getPlayerManager().registerPermission("voice.activation." + name);
+
+        return Optional.of(activation);
     }
 
     @Override
     public boolean unregister(@NotNull UUID id) {
-        ServerActivation activation = activationById.remove(id);
+        ServerActivation activation = activationById.get(id);
         if (activation != null) {
+            ServerActivationUnregisterEvent event = new ServerActivationUnregisterEvent(activation);
+            voiceServer.getEventBus().call(event);
+            if (event.isCancelled()) return false;
+
+            activationById.remove(id);
+
             players.getPlayers()
                     .stream()
                     .filter(VoicePlayer::hasVoiceChat)
@@ -92,6 +106,9 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
             voiceServer.getTcpConnectionManager()
                     .broadcast(new ActivationUnregisterPacket(activation.getId()));
+
+            String activationPermission = "voice.activation." + activation.getName();
+            voiceServer.getPlayerManager().unregisterPermission(activationPermission);
 
             return true;
         }

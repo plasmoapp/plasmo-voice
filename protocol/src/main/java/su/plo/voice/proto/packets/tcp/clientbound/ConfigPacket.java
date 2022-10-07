@@ -73,6 +73,8 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
             activation.deserialize(in);
             activations.add(activation);
         }
+
+        super.read(in);
     }
 
     @Override
@@ -87,6 +89,8 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         // activations
         out.writeInt(activations.size());
         activations.forEach(activation -> activation.serialize(out));
+
+        super.write(out);
     }
 
     @Override

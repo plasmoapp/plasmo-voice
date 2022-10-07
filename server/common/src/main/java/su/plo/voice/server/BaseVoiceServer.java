@@ -25,8 +25,8 @@ import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.api.server.socket.UdpServer;
-import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.server.audio.capture.ProximityServerActivation;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
@@ -70,6 +70,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected VoiceServerPlayerManager playerManager;
     @Getter
     protected ServerActivationManager activationManager;
+    protected final ProximityServerActivation proximityActivation = new ProximityServerActivation(this);
     @Getter
     protected ServerSourceLineManager sourceLineManager;
 
@@ -91,6 +92,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         eventBus.register(this, sourceManager);
         eventBus.register(this, udpConnectionManager);
         eventBus.register(this, getMinecraftServer());
+        eventBus.register(this, proximityActivation);
 
         this.permissionSupplier = createPermissionSupplier();
 
@@ -188,17 +190,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         }
 
         // register proximity activation
-        activationManager.register(
-                this,
-                VoiceActivation.PROXIMITY_NAME,
-                "key.plasmovoice.proximity",
-                "plasmovoice:textures/icons/microphone.png",
-                config.getVoice().getDistances(),
-                config.getVoice().getDefaultDistance(),
-                true,
-                false,
-                1
-        );
+        proximityActivation.register(config);
 
         // register proximity line
         sourceLineManager.register(

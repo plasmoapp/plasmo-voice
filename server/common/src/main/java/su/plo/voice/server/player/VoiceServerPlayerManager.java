@@ -70,7 +70,7 @@ public final class VoiceServerPlayerManager implements VoicePlayerManager {
     }
 
     @EventSubscribe
-    public void onPermissionUpdate(PlayerPermissionUpdateEvent event) {
+    public void onPermissionUpdate(@NotNull PlayerPermissionUpdateEvent event) {
         VoicePlayer player = event.getPlayer();
         String permission = event.getPermission();
 

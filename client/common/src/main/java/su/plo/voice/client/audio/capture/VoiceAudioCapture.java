@@ -28,6 +28,7 @@ import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
@@ -164,15 +165,37 @@ public final class VoiceAudioCapture implements AudioCapture {
         return thread != null;
     }
 
+    @Override
+    public boolean isServerMuted() {
+        return voiceClient.getServerConnection()
+                .map(connection -> connection.getClientPlayer()
+                        .map(VoicePlayerInfo::isMuted)
+                        .orElse(false))
+                .orElse(false);
+    }
+
+    @Override
+    public boolean hasPermission(@NotNull ClientActivation activation) {
+        return voiceClient.getServerInfo()
+                .map(info -> info.getPlayerInfo()
+                        .get("voice.activation." + activation.getName())
+                        .orElse(false)
+                ).orElse(false);
+
+    }
+
     private void run() {
         while (!thread.isInterrupted()) {
             try {
                 Optional<InputDevice> device = getDevice();
+                Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
 
                 if (!device.isPresent()
                         || !device.get().isOpen()
                         || !voiceClient.getUdpClientManager().isConnected()
-                        || !activations.getParentActivation().isPresent()) {
+                        || !serverInfo.isPresent()
+                        || !activations.getParentActivation().isPresent()
+                ) {
                     Thread.sleep(1_000L);
                     continue;
                 }
@@ -211,11 +234,15 @@ public final class VoiceAudioCapture implements AudioCapture {
                 ClientActivation.Result result = parentActivation.process(samples);
 
                 EncodedCapture encoded = new EncodedCapture();
-                processActivation(device.get(), parentActivation, result, samples, encoded);
+                if (parentActivation.getId() == VoiceActivation.PROXIMITY_ID && hasPermission(parentActivation)) {
+                    processActivation(device.get(), parentActivation, result, samples, encoded);
+                }
 
                 for (ClientActivation activation : activations.getActivations()) {
-                    // todo: activations permissions
-                    if (activation.isDisabled() || activation.equals(parentActivation)) continue;
+                    if (activation.isDisabled() ||
+                            activation.equals(parentActivation) ||
+                            !hasPermission(activation)
+                    ) continue;
 
                     if (activation.getType() == ClientActivation.Type.INHERIT ||
                             activation.getType() == ClientActivation.Type.VOICE) {
@@ -232,15 +259,6 @@ public final class VoiceAudioCapture implements AudioCapture {
         }
 
         cleanup();
-    }
-
-    @Override
-    public boolean isServerMuted() {
-        return voiceClient.getServerConnection()
-                .map(connection -> connection.getClientPlayer()
-                        .map(VoicePlayerInfo::isMuted)
-                        .orElse(false))
-                .orElse(false);
     }
 
     private void cleanup() {
