@@ -234,7 +234,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 ClientActivation.Result result = parentActivation.process(samples);
 
                 EncodedCapture encoded = new EncodedCapture();
-                if (parentActivation.getId() == VoiceActivation.PROXIMITY_ID && hasPermission(parentActivation)) {
+                if (parentActivation.getId().equals(VoiceActivation.PROXIMITY_ID) && hasPermission(parentActivation)) {
                     processActivation(device.get(), parentActivation, result, samples, encoded);
                 }
 
