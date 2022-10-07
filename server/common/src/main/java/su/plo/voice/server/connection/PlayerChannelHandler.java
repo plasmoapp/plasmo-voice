@@ -102,6 +102,8 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
+        if (!packet.getActivationId().equals(VoiceActivation.PROXIMITY_ID)) return;
+
         Optional<ServerActivation> activation = activations.getActivationById(VoiceActivation.PROXIMITY_ID);
         if (!activation.isPresent()) return;
 

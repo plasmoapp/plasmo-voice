@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.lib.chat.TextComponent;
@@ -146,7 +147,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     }
 
     @Override
-    public @NotNull Result process(short[] samples) {
+    public @NotNull Result process(short[] samples, @Nullable Result result) {
         if (isDisabled()) {
             if (this.activated) {
                 this.activated = false;
@@ -159,7 +160,9 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         if (getType() == Type.PUSH_TO_TALK) {
             return handlePTT();
         } else if (getType() == Type.VOICE) {
-            return handleVoice(samples);
+            return handleVoice(samples, result);
+        } else if (getType() == Type.INHERIT) {
+            return handleInherit(result);
         }
 
         return Result.NOT_ACTIVATED;
@@ -186,7 +189,27 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         return activated ? Result.ACTIVATED : Result.NOT_ACTIVATED;
     }
 
-    private @NotNull Result handleVoice(short[] samples) {
+    private @NotNull Result handleVoice(short[] samples, @Nullable Result result) {
+        if (configToggle.value()) {
+            if (activated) {
+                this.activated = false;
+                return Result.END;
+            }
+
+            return Result.NOT_ACTIVATED;
+        }
+
+        if (result != null) {
+            if (result == Result.ACTIVATED) {
+                this.activated = true;
+                this.lastActivation = System.currentTimeMillis();
+                return result;
+            } else if (result == Result.END) {
+                this.activated = false;
+                return result;
+            }
+        }
+
         boolean lastActivated = System.currentTimeMillis() - lastActivation <= 500L;
         boolean voiceDetected = AudioUtil.containsMinAudioLevel(samples, config.getVoice().getActivationThreshold().value());
         if (lastActivated || voiceDetected) {
@@ -204,9 +227,21 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         return Result.NOT_ACTIVATED;
     }
 
+    private @NotNull Result handleInherit(@Nullable Result result) {
+        if (result == null) return Result.NOT_ACTIVATED;
+
+        this.activated = !configToggle.value() && result.isActivated();
+        if (activated) this.lastActivation = System.currentTimeMillis();
+
+        return activated ? Result.ACTIVATED : Result.NOT_ACTIVATED;
+    }
+
     private void onToggle(@NotNull KeyBinding.Action action) {
-        if (action != KeyBinding.Action.DOWN || getType() != Type.VOICE) return;
+        if (action != KeyBinding.Action.DOWN || getType() == Type.PUSH_TO_TALK) return;
         configToggle.set(!configToggle.value());
+        if (configToggle.value()) {
+            this.activated = false;
+        }
     }
 
     private void onDistanceIncrease(@NotNull KeyBinding.Action action) {

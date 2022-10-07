@@ -1,6 +1,7 @@
 package su.plo.voice.api.client.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.proto.data.audio.capture.Activation;
 
@@ -44,7 +45,7 @@ public interface ClientActivation extends Activation {
 
     int getDistance();
 
-    @NotNull Result process(short[] samples);
+    @NotNull Result process(short[] samples, @Nullable Result result);
 
     void reset();
 

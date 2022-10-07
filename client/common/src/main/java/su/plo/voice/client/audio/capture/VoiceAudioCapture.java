@@ -231,27 +231,38 @@ public final class VoiceAudioCapture implements AudioCapture {
                     continue;
                 }
 
-                ClientActivation.Result result = parentActivation.process(samples);
+                ClientActivation.Result parentResult = parentActivation.process(samples, null);
 
                 EncodedCapture encoded = new EncodedCapture();
-                if (parentActivation.getId().equals(VoiceActivation.PROXIMITY_ID) && hasPermission(parentActivation)) {
-                    processActivation(device.get(), parentActivation, result, samples, encoded);
-                }
+                boolean inherited = false;
 
                 for (ClientActivation activation : activations.getActivations()) {
-                    if (activation.isDisabled() ||
+                    if ((activation.isDisabled() && !activation.isActivated()) ||
                             activation.equals(parentActivation) ||
                             !hasPermission(activation)
                     ) continue;
 
-                    if (activation.getType() == ClientActivation.Type.INHERIT ||
-                            activation.getType() == ClientActivation.Type.VOICE) {
-                        processActivation(device.get(), activation, result, samples, encoded);
+                    ClientActivation.Result activationResult = activation.process(samples, parentResult);
+
+                    if (activation.getType() == ClientActivation.Type.INHERIT && activationResult.isActivated()) {
+                        processActivation(device.get(), activation, parentResult, samples, encoded);
+                        inherited = true;
+                    } else if (activation.getType() == ClientActivation.Type.VOICE) {
+                        processActivation(device.get(), activation, activationResult, samples, encoded);
                     } else {
-                        processActivation(device.get(), activation, activation.process(samples), samples, encoded);
+                        processActivation(device.get(), activation, activationResult, samples, encoded);
                     }
 
-                    if (!activation.isTransitive()) break;
+                    if (activationResult.isActivated() && !activation.isTransitive()) {
+                        inherited = true;
+                        break;
+                    }
+                }
+
+                if (parentActivation.getId().equals(VoiceActivation.PROXIMITY_ID) &&
+                        hasPermission(parentActivation) &&
+                        !inherited) {
+                    processActivation(device.get(), parentActivation, parentResult, samples, encoded);
                 }
             } catch (InterruptedException ignored) {
                 break;
@@ -355,6 +366,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         connection.get().sendPacket(new PlayerAudioEndPacket(
                 sequenceNumber++,
+                activation.getId(),
                 (short) activation.getDistance()
         ));
     }
