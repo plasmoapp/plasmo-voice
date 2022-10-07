@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings.tab;
 
+import com.google.common.collect.Lists;
 import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -12,6 +13,8 @@ import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
 
@@ -35,10 +38,9 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
                 .asMap()
                 .forEach(this::createCategory);
 
-        activations.getParentActivation()
-                .ifPresent(this::createActivation);
-        activations.getActivations()
-                .forEach(this::createActivation);
+        List<ClientActivation> activations = Lists.newArrayList(this.activations.getActivations());
+        Collections.reverse(activations);
+        activations.forEach(this::createActivation);
     }
 
     private void createActivation(ClientActivation activation) {

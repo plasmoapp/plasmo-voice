@@ -6,5 +6,9 @@ public enum OverlaySourceState {
     ON,
     WHEN_TALKING,
     ALWAYS,
-    NEVER
+    NEVER;
+
+    public boolean isProximityOnly() {
+        return this == OFF || this == ON;
+    }
 }

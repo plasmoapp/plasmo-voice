@@ -3,9 +3,11 @@ package su.plo.voice.client.audio.line;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.EnumConfigEntry;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.overlay.OverlaySourceState;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
@@ -78,6 +80,19 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
     @Override
     public @NotNull ClientSourceLine register(@NotNull SourceLine line) {
         unregister(line.getId());
+
+        EnumConfigEntry<OverlaySourceState> stateEntry = config.getOverlay().getSourceStates().getState(line);
+        if (line.hasPlayers()) {
+            if (stateEntry.value().isProximityOnly()) {
+                stateEntry.set(OverlaySourceState.WHEN_TALKING);
+            }
+            stateEntry.setDefault(OverlaySourceState.WHEN_TALKING);
+        } else {
+            if (!stateEntry.value().isProximityOnly()) {
+                stateEntry.set(OverlaySourceState.OFF);
+            }
+            stateEntry.setDefault(OverlaySourceState.OFF);
+        }
 
         DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
         ClientSourceLine clientLine = new VoiceClientSourceLine(volumeEntry, line);

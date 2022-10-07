@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
@@ -21,6 +22,7 @@ import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.OverlaySourceStateButton;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 
+import java.util.Collections;
 import java.util.List;
 
 public final class OverlayTabWidget extends TabWidget {
@@ -77,7 +79,10 @@ public final class OverlayTabWidget extends TabWidget {
         addEntry(createOverlayPosition());
 
         addEntry(createCategoryEntry("gui.plasmovoice.overlay.sources"));
-        sourceLines.getLines().forEach(this::createOverlaySource);
+
+        List<ClientSourceLine> sourceLines = Lists.newArrayList(this.sourceLines.getLines());
+        Collections.reverse(sourceLines);
+        sourceLines.forEach(this::createOverlaySource);
     }
 
     private void createOverlaySource(@NotNull ClientSourceLine sourceLine) {

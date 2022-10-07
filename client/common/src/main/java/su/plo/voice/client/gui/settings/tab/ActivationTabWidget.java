@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
@@ -21,6 +22,7 @@ import su.plo.voice.client.gui.settings.widget.NumberTextFieldWidget;
 import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -55,7 +57,9 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 createActivation(activation, false)
         );
 
-        activations.getActivations().stream()
+        List<ClientActivation> activations = Lists.newArrayList(this.activations.getActivations());
+        Collections.reverse(activations);
+        activations.stream()
                 .filter(activation -> !activation.getId().equals(VoiceActivation.PROXIMITY_ID))
                 .forEach(activation -> createActivation(activation, true));
     }

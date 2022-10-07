@@ -51,7 +51,10 @@ public final class VolumeTabWidget extends TabWidget {
         super.init();
 
         addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volume.sources"), 24));
-        sourceLines.getLines().forEach(this::createSourceLineVolume);
+
+        List<ClientSourceLine> sourceLines = Lists.newArrayList(this.sourceLines.getLines());
+        Collections.reverse(sourceLines);
+        sourceLines.forEach(this::createSourceLineVolume);
 
         addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volume.players"), 24));
         createPlayersSearch();
