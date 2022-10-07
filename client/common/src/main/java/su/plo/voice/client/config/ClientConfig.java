@@ -427,7 +427,7 @@ public final class ClientConfig {
                         lineName,
                         (c) -> new EnumConfigEntry<>(
                                 OverlaySourceState.class,
-                                OverlaySourceState.ON
+                                OverlaySourceState.OFF
                         )
                 );
             }
@@ -439,7 +439,7 @@ public final class ClientConfig {
                                 OverlaySourceState.class,
                                 sourceLine.hasPlayers()
                                         ? OverlaySourceState.WHEN_TALKING
-                                        : OverlaySourceState.ON
+                                        : OverlaySourceState.OFF
                         )
                 );
             }
