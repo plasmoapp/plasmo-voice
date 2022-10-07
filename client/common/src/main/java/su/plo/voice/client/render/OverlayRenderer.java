@@ -7,6 +7,7 @@ import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.event.render.HudRenderEvent;
 import su.plo.lib.client.gui.GuiRender;
+import su.plo.lib.entity.MinecraftPlayer;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
@@ -15,7 +16,6 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.overlay.OverlayPosition;
 import su.plo.voice.client.config.overlay.OverlaySourceState;
-import su.plo.voice.proto.data.VoicePlayerInfo;
 
 import java.util.Map;
 import java.util.UUID;
@@ -74,11 +74,15 @@ public final class OverlayRenderer {
                              int index,
                              @NotNull UUID sourceId,
                              boolean activated) {
+        if (!minecraft.getWorld().isPresent()) return;
+
         ServerConnection connection = voiceClient.getServerConnection()
                 .orElseThrow(() -> new IllegalStateException("Not connected"));
 
-        String sourceName = connection.getPlayerById(sourceId)
-                .map(VoicePlayerInfo::getPlayerNick)
+        // todo: entity renderer?
+        String sourceName = minecraft.getWorld().get()
+                .getPlayerById(sourceId)
+                .map(MinecraftPlayer::getName)
                 .orElse(sourceLine.getTranslation());
         TextComponent text = TextComponent.translatable(sourceName);
 

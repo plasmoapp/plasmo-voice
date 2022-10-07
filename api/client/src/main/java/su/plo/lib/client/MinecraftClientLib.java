@@ -13,14 +13,26 @@ import su.plo.lib.client.render.MinecraftWindow;
 import su.plo.lib.client.render.particle.MinecraftParticles;
 import su.plo.lib.client.render.texture.MinecraftPlayerSkins;
 import su.plo.lib.client.sound.MinecraftSoundManager;
+import su.plo.lib.client.world.MinecraftClientWorld;
 
 import java.util.Optional;
 
 public interface MinecraftClientLib {
 
+    default void onInitialize() {
+    }
+
+    default void onShutdown() {
+    }
+
+    default void onServerDisconnect() {
+    }
+
     TextConverter<?> getTextConverter();
 
     Optional<MinecraftClientPlayer> getClientPlayer();
+
+    Optional<MinecraftClientWorld> getWorld();
 
     Optional<ScreenContainer> getScreen();
 

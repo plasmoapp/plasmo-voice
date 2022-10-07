@@ -121,6 +121,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Override
     protected void onInitialize() {
         super.onInitialize();
+        getMinecraft().onInitialize();
 
         try {
             File configFile = new File(configFolder(), "client.toml");
@@ -163,6 +164,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         if (config != null) config.save(false);
 
         eventBus.unregister(this);
+
+        getMinecraft().onShutdown();
         super.onShutdown();
 
         getEventBus().call(new VoiceClientShutdownEvent(this));
@@ -171,6 +174,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected void onServerDisconnect() {
         udpClientManager.removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
         getServerConnection().ifPresent(ServerConnection::close);
+        getMinecraft().onServerDisconnect();
     }
 
     @Override

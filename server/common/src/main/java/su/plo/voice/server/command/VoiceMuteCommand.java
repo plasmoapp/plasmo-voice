@@ -34,7 +34,7 @@ public final class VoiceMuteCommand implements MinecraftCommand {
             return;
         }
 
-        Optional<MinecraftServerPlayer> player = minecraftServer.getPlayer(arguments[0]);
+        Optional<MinecraftServerPlayer> player = minecraftServer.getPlayerByName(arguments[0]);
         if (!player.isPresent()) {
             source.sendMessage(TextComponent.translatable("commands.plasmovoice.player_not_found"));
             return;

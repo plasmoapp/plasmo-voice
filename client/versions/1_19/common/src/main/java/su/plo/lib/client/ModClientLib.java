@@ -27,6 +27,8 @@ import su.plo.lib.client.render.texture.ModPlayerSkins;
 import su.plo.lib.client.sound.MinecraftSoundManager;
 import su.plo.lib.client.sound.ModSoundManager;
 import su.plo.lib.client.texture.ResourceCache;
+import su.plo.lib.client.world.MinecraftClientWorld;
+import su.plo.lib.client.world.ModClientWorld;
 import su.plo.voice.chat.ComponentTextConverter;
 
 import java.util.Optional;
@@ -57,11 +59,39 @@ public final class ModClientLib implements MinecraftClientLib {
     @Getter
     private final ResourceCache resources = new ResourceCache();
 
+    private @Nullable MinecraftClientPlayer clientPlayer;
+    private @Nullable ModClientWorld world;
+
+    @Override
+    public void onServerDisconnect() {
+        this.clientPlayer = null;
+        this.world = null;
+    }
+
     @Override
     public Optional<MinecraftClientPlayer> getClientPlayer() {
-        if (minecraft.player == null) return Optional.empty();
+        if (clientPlayer == null || minecraft.player != clientPlayer.getInstance()) {
+            if (minecraft.player == null) {
+                this.clientPlayer = null;
+            } else {
+                this.clientPlayer = new ModClientPlayer(minecraft.player, textConverter);
+            }
+        }
 
-        return Optional.of(new ModClientPlayer(minecraft.player, textConverter));
+        return Optional.ofNullable(clientPlayer);
+    }
+
+    @Override
+    public Optional<MinecraftClientWorld> getWorld() {
+        if (world == null || minecraft.level != world.getLevel()) {
+            if (minecraft.level == null) {
+                this.world = null;
+            } else {
+                this.world = new ModClientWorld(minecraft.level);
+            }
+        }
+
+        return Optional.ofNullable(world);
     }
 
     @Override

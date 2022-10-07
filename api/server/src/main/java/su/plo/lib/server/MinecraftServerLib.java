@@ -14,11 +14,19 @@ import java.util.UUID;
 
 public interface MinecraftServerLib {
 
+    default void onInitialize() {
+    }
+
+    default void onShutdown() {
+    }
+
     @NotNull MinecraftServerWorld getWorld(@NotNull Object instance);
 
-    @NotNull MinecraftServerPlayer getPlayer(@NotNull Object instance);
+    @NotNull MinecraftServerPlayer getPlayerByInstance(@NotNull Object instance);
 
-    Optional<MinecraftServerPlayer> getPlayer(@NotNull String name);
+    Optional<MinecraftServerPlayer> getPlayerByName(@NotNull String name);
+
+    Optional<MinecraftServerPlayer> getPlayerById(@NotNull UUID playerId);
 
     Optional<MinecraftGameProfile> getGameProfile(@NotNull UUID playerId);
 

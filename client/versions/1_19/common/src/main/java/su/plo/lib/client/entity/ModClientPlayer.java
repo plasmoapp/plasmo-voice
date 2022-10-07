@@ -8,7 +8,7 @@ import su.plo.lib.chat.TextComponent;
 import su.plo.lib.chat.TextConverter;
 import su.plo.lib.entity.ModPlayer;
 
-public final class ModClientPlayer extends ModPlayer implements MinecraftClientPlayer {
+public final class ModClientPlayer extends ModPlayer<LocalPlayer> implements MinecraftClientPlayer {
 
     private final Minecraft minecraft = Minecraft.getInstance();
     private final LocalPlayer player;

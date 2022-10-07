@@ -52,6 +52,7 @@ public final class ModServerLib implements MinecraftServerLib {
 
     private final Map<UUID, MinecraftServerPlayer> playerById = Maps.newConcurrentMap();
 
+    @Override
     public void onShutdown() {
         this.server = null;
         this.permissions = null;
@@ -68,7 +69,7 @@ public final class ModServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public @NotNull MinecraftServerPlayer getPlayer(@NotNull Object instance) {
+    public @NotNull MinecraftServerPlayer getPlayerByInstance(@NotNull Object instance) {
         if (!(instance instanceof ServerPlayer serverPlayer))
             throw new IllegalArgumentException("instance is not " + ServerPlayer.class);
 
@@ -85,11 +86,19 @@ public final class ModServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public Optional<MinecraftServerPlayer> getPlayer(@NotNull String name) {
+    public Optional<MinecraftServerPlayer> getPlayerByName(@NotNull String name) {
         ServerPlayer player = server.getPlayerList().getPlayerByName(name);
         if (player == null) return Optional.empty();
 
-        return Optional.of(getPlayer(player));
+        return Optional.of(getPlayerByInstance(player));
+    }
+
+    @Override
+    public Optional<MinecraftServerPlayer> getPlayerById(@NotNull UUID playerId) {
+        ServerPlayer player = server.getPlayerList().getPlayer(playerId);
+        if (player == null) return Optional.empty();
+
+        return Optional.of(getPlayerByInstance(player));
     }
 
     @Override
@@ -122,7 +131,7 @@ public final class ModServerLib implements MinecraftServerLib {
 
     @EventSubscribe
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
-        getPlayer(event.getPlayer());
+        getPlayerByInstance(event.getPlayer());
     }
 
     @EventSubscribe

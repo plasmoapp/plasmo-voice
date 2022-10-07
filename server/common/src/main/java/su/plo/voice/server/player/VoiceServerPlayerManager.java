@@ -33,7 +33,7 @@ public final class VoiceServerPlayerManager implements VoicePlayerManager {
 
     @Override
     public @NotNull VoicePlayer wrap(@NotNull Object instance) {
-        MinecraftServerPlayer serverPlayer = minecraftServer.getPlayer(instance);
+        MinecraftServerPlayer serverPlayer = minecraftServer.getPlayerByInstance(instance);
 
         return playerById.computeIfAbsent(
                 serverPlayer.getUUID(),

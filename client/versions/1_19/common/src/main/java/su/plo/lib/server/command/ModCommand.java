@@ -82,7 +82,7 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
     private MinecraftCommandSource getCommandSource(CommandSourceStack source) {
         Entity entity = source.getEntity();
         if (entity instanceof Player) {
-            return minecraftServer.getPlayer(entity);
+            return minecraftServer.getPlayerByInstance(entity);
         }
 
         return new ModDefaultCommandSource(source);

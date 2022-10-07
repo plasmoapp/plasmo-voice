@@ -29,6 +29,7 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
         this.server = server;
         minecraftServerLib.setServer(server);
         minecraftServerLib.setPermissions(createPermissionSupplier());
+        minecraftServerLib.onInitialize();
         super.onInitialize();
     }
 
