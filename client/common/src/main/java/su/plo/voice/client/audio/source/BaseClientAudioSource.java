@@ -18,7 +18,7 @@ import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent;
-import su.plo.voice.api.client.event.audio.device.source.AlSourceStoppedEvent;
+import su.plo.voice.api.client.event.audio.device.source.AlStreamSourceStoppedEvent;
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
@@ -210,7 +210,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
-    public void onSourceStopped(@NotNull AlSourceStoppedEvent event) {
+    public void onSourceStopped(@NotNull AlStreamSourceStoppedEvent event) {
         if (closed.get() || !sourceGroup.getSources().contains(event.getSource())) return;
         reset();
     }

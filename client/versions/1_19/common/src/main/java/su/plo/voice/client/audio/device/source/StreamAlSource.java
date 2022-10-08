@@ -229,7 +229,7 @@ public final class StreamAlSource extends BaseAlSource {
                 queueWithEmptyBuffers();
                 fillQueue();
 
-                client.getEventBus().call(new AlSourceStoppedEvent(this));
+                client.getEventBus().call(new AlStreamSourceStoppedEvent(this));
 
                 play();
                 AL11.alSourcePlay(pointer);

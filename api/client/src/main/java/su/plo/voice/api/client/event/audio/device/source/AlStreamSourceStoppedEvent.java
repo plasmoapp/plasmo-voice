@@ -6,9 +6,9 @@ import su.plo.voice.api.client.audio.device.source.AlSource;
 /**
  * This event is fired once the {@link AlSource#play()} has been stopped
  */
-public final class AlSourceStoppedEvent extends AlSourceEvent {
+public final class AlStreamSourceStoppedEvent extends AlSourceEvent {
 
-    public AlSourceStoppedEvent(@NotNull AlSource source) {
+    public AlStreamSourceStoppedEvent(@NotNull AlSource source) {
         super(source);
     }
 }
