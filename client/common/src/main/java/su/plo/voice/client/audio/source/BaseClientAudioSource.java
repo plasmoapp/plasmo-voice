@@ -18,6 +18,7 @@ import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent;
+import su.plo.voice.api.client.event.audio.device.source.AlSourceStoppedEvent;
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
@@ -61,6 +62,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     protected long lastActivation = 0L;
     protected double lastOcclusion = -1D;
     protected AtomicBoolean closed = new AtomicBoolean(false);
+    protected AtomicBoolean resetted = new AtomicBoolean(false);
     protected AtomicBoolean activated = new AtomicBoolean(false);
 
     public BaseClientAudioSource(@NotNull PlasmoVoiceClient voiceClient, ClientConfig config) {
@@ -207,6 +209,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         close();
     }
 
+    @EventSubscribe(priority = EventPriority.LOWEST)
+    public void onSourceStopped(@NotNull AlSourceStoppedEvent event) {
+        if (closed.get() || !sourceGroup.getSources().contains(event.getSource())) return;
+        reset();
+    }
+
     private void processAudioPacket(@NotNull SourceAudioPacket packet) {
         if (sourceInfo == null || packet.getSourceState() != sourceInfo.getState()) {
             LOGGER.info("Drop packet with bad source state");
@@ -313,6 +321,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         this.lastSequenceNumber = packet.getSequenceNumber();
         this.lastActivation = System.currentTimeMillis();
         activated.set(true);
+        resetted.set(false);
     }
 
     private void processAudioEndPacket(@NotNull SourceAudioEndPacket packet) {
@@ -322,10 +331,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     private void reset() {
-        for (DeviceSource source : sourceGroup.getSources()) {
-            source.write(null);
-        }
-
+        if (!resetted.compareAndSet(false, true)) return;
         if (decoder != null) decoder.reset();
         activated.set(false);
     }
