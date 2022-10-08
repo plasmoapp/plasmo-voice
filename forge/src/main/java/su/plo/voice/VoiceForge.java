@@ -29,9 +29,9 @@ public class VoiceForge {
 
         EventNetworkChannel channel = NetworkRegistry.newEventChannel(
                 VoiceServer.PLASMO_VOICE,
-                () -> NetworkRegistry.ACCEPTVANILLA,
-                NetworkRegistry.ACCEPTVANILLA::equals,
-                NetworkRegistry.ACCEPTVANILLA::equals
+                () -> NetworkRegistry.ABSENT,
+                NetworkRegistry.ABSENT::equals,
+                NetworkRegistry.ABSENT::equals
         );
 
         channel.addListener(e -> {
