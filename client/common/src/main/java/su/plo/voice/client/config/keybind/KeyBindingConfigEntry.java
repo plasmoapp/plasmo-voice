@@ -11,7 +11,13 @@ public final class KeyBindingConfigEntry extends ConfigEntry<KeyBinding> {
 
     @Override
     public void reset() {
-        this.value = ((VoiceKeyBinding) defaultValue).copy();
+        if (value == null) {
+            this.value = ((VoiceKeyBinding) defaultValue).copy();
+            return;
+        }
+
+        value.getKeys().clear();
+        value.getKeys().addAll(this.defaultValue.getKeys());
     }
 
     @Override
