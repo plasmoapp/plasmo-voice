@@ -6,20 +6,16 @@ import su.plo.lib.chat.TextComponent;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
-import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
-import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
+import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.api.server.event.connection.TcpPacketReceivedEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.proto.data.audio.capture.VoiceActivation;
-import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
-import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
 import su.plo.voice.server.player.VoiceServerPlayer;
@@ -117,24 +113,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
-        if (!packet.getActivationId().equals(VoiceActivation.PROXIMITY_ID)) return;
-
-        Optional<ServerActivation> activation = activations.getActivationById(VoiceActivation.PROXIMITY_ID);
-        if (!activation.isPresent()) return;
-
-        Optional<ServerSourceLine> sourceLine = lines.getLineById(VoiceSourceLine.PROXIMITY_ID);
-        if (!sourceLine.isPresent()) return;
-
-        ServerPlayerSource source = sources.createPlayerSource(
-                voiceServer,
-                player,
-                sourceLine.get(),
-                "opus",
-                activation.get().isStereoSupported()
-        );
-
-        SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());
-        source.sendPacket(sourcePacket, packet.getDistance());
+        voiceServer.getEventBus().call(new PlayerSpeakEndEvent(player, packet));
     }
 
     @Override

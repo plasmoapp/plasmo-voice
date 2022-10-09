@@ -25,7 +25,7 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@ToString(doNotUseGetters = true)
+@ToString(doNotUseGetters = true, exclude = "publicKey")
 public final class VoiceServerPlayer implements VoicePlayer {
 
     private final PlasmoVoiceServer voiceServer;
