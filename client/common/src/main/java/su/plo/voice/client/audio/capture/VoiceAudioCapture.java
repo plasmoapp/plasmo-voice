@@ -1,5 +1,7 @@
 package su.plo.voice.client.audio.capture;
 
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,8 +36,7 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.*;
 
 public final class VoiceAudioCapture implements AudioCapture {
 
@@ -47,6 +48,9 @@ public final class VoiceAudioCapture implements AudioCapture {
     private final ClientActivationManager activations;
     private final ClientConfig config;
 
+    private final Set<UUID> activationStreams = Sets.newHashSet();
+    private final Map<UUID, Long> activationSequenceNumbers = Maps.newHashMap();
+
     @Setter
     private volatile AudioEncoder monoEncoder;
     @Setter
@@ -55,8 +59,6 @@ public final class VoiceAudioCapture implements AudioCapture {
     private volatile Encryption encryption;
 
     private Thread thread;
-
-    private long sequenceNumber;
 
     public VoiceAudioCapture(@NotNull MinecraftClientLib minecraft,
                              @NotNull PlasmoVoiceClient voiceClient,
@@ -234,7 +236,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 ClientActivation.Result parentResult = parentActivation.process(samples, null);
 
                 EncodedCapture encoded = new EncodedCapture();
-                boolean inherited = false;
+                boolean processParent = true;
 
                 for (ClientActivation activation : activations.getActivations()) {
                     if ((activation.isDisabled() && !activation.isActivated()) ||
@@ -244,9 +246,8 @@ public final class VoiceAudioCapture implements AudioCapture {
 
                     ClientActivation.Result activationResult = activation.process(samples, parentResult);
 
-                    if (activation.getType() == ClientActivation.Type.INHERIT && activationResult.isActivated()) {
-                        processActivation(device.get(), activation, parentResult, samples, encoded);
-                        inherited = true;
+                    if (activation.getType() == ClientActivation.Type.INHERIT) {
+                        processActivation(device.get(), activation, activationResult, samples, encoded);
                     } else if (activation.getType() == ClientActivation.Type.VOICE) {
                         processActivation(device.get(), activation, activationResult, samples, encoded);
                     } else {
@@ -254,15 +255,18 @@ public final class VoiceAudioCapture implements AudioCapture {
                     }
 
                     if (activationResult.isActivated() && !activation.isTransitive()) {
-                        inherited = true;
-                        break;
+                        processParent = false;
                     }
                 }
 
                 if (parentActivation.getId().equals(VoiceActivation.PROXIMITY_ID) &&
-                        hasPermission(parentActivation) &&
-                        !inherited) {
-                    processActivation(device.get(), parentActivation, parentResult, samples, encoded);
+                        hasPermission(parentActivation)
+                ) {
+                    if (processParent) {
+                        processActivation(device.get(), parentActivation, parentResult, samples, encoded);
+                    } else if (activationStreams.remove(parentActivation.getId())) {
+                        processActivation(device.get(), parentActivation, ClientActivation.Result.END, samples, encoded);
+                    }
                 }
             } catch (InterruptedException ignored) {
                 break;
@@ -273,7 +277,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     private void cleanup() {
-        this.sequenceNumber = 0L;
+        activationSequenceNumbers.clear();
         if (monoEncoder != null) monoEncoder.close();
         if (stereoEncoder != null) stereoEncoder.close();
 
@@ -295,11 +299,17 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         if (result.isActivated()) {
             if (isStereo && encoded.stereo == null) {
-                samples = device.processFilters(samples, (filter) -> (filter instanceof StereoToMonoFilter));
-                encoded.stereo = encode(stereoEncoder, samples);
+                short[] processedSamples = new short[samples.length];
+                System.arraycopy(samples, 0, processedSamples, 0, samples.length);
+
+                processedSamples = device.processFilters(processedSamples, (filter) -> (filter instanceof StereoToMonoFilter));
+                encoded.stereo = encode(stereoEncoder, processedSamples);
             } else if (!isStereo && encoded.mono == null) {
-                samples = device.processFilters(samples);
-                encoded.mono = encode(monoEncoder, samples);
+                short[] processedSamples = new short[samples.length];
+                System.arraycopy(samples, 0, processedSamples, 0, samples.length);
+
+                processedSamples = device.processFilters(processedSamples);
+                encoded.mono = encode(monoEncoder, processedSamples);
             }
         }
 
@@ -307,9 +317,11 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         if (result == ClientActivation.Result.ACTIVATED) {
             sendVoicePacket(activation, isStereo, encodedData);
+            activationStreams.add(activation.getId());
         } else if (result == ClientActivation.Result.END) {
             sendVoicePacket(activation, isStereo, encodedData);
             sendVoiceEndPacket(activation);
+            activationStreams.remove(activation.getId());
         }
     }
 
@@ -347,7 +359,7 @@ public final class VoiceAudioCapture implements AudioCapture {
         if (!udpClient.isPresent()) return;
 
         udpClient.get().sendPacket(new PlayerAudioPacket(
-                sequenceNumber++,
+                getSequenceNumber(activation),
                 encoded,
                 activation.getId(),
                 (short) activation.getDistance(),
@@ -365,10 +377,16 @@ public final class VoiceAudioCapture implements AudioCapture {
         if (!connection.isPresent()) return;
 
         connection.get().sendPacket(new PlayerAudioEndPacket(
-                sequenceNumber++,
+                getSequenceNumber(activation),
                 activation.getId(),
                 (short) activation.getDistance()
         ));
+    }
+
+    private long getSequenceNumber(@NotNull ClientActivation activation) {
+        long sequenceNumber = activationSequenceNumbers.getOrDefault(activation.getId(), 0L) + 1;
+        activationSequenceNumbers.put(activation.getId(), sequenceNumber);
+        return sequenceNumber;
     }
 
     static class EncodedCapture {

@@ -65,6 +65,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
                 new ArrayList<>(activation.getDistances()),
                 activation.getDefaultDistance(),
                 activation.isStereoSupported(),
+                activation.isTransitive(),
                 activation.getWeight()
         );
 
@@ -230,18 +231,24 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     private @NotNull Result handleInherit(@Nullable Result result) {
         if (result == null) return Result.NOT_ACTIVATED;
 
-        this.activated = !configToggle.value() && result.isActivated();
+        if (configToggle.value()) {
+            if (activated) {
+                this.activated = false;
+                return Result.END;
+            }
+
+            return Result.NOT_ACTIVATED;
+        }
+
+        this.activated = result == Result.ACTIVATED;
         if (activated) this.lastActivation = System.currentTimeMillis();
 
-        return activated ? Result.ACTIVATED : Result.NOT_ACTIVATED;
+        return result;
     }
 
     private void onToggle(@NotNull KeyBinding.Action action) {
         if (action != KeyBinding.Action.DOWN || getType() == Type.PUSH_TO_TALK) return;
         configToggle.set(!configToggle.value());
-        if (configToggle.value()) {
-            this.activated = false;
-        }
     }
 
     private void onDistanceIncrease(@NotNull KeyBinding.Action action) {

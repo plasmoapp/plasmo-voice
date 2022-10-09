@@ -18,11 +18,8 @@ public final class AudioCaptureEvent extends EventCancellableBase {
     private final AudioCapture capture;
     @Getter
     private final InputDevice device;
-
     @Getter
-    @Setter
-    private short[] samples;
-
+    private final short[] samples;
     @Getter
     @Setter
     private boolean sendEnd;

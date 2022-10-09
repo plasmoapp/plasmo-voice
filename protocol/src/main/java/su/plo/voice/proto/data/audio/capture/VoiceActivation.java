@@ -39,7 +39,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     @Getter
     protected int defaultDistance;
     @Getter
-    protected boolean transitive = true;
+    protected boolean transitive;
     @Getter
     protected boolean stereoSupported;
     @Getter
@@ -51,6 +51,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
                            List<Integer> distances,
                            int defaultDistance,
                            boolean stereoSupported,
+                           boolean transitive,
                            int weight) {
         this.name = checkNotNull(name);
         this.translation = translation;
@@ -58,6 +59,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.id = generateId(name);
         this.distances = checkNotNull(distances);
         this.defaultDistance = defaultDistance;
+        this.transitive = transitive;
         this.weight = weight;
         this.stereoSupported = stereoSupported;
     }
@@ -87,6 +89,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.id = VoiceActivation.generateId(name);
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
+        this.transitive = in.readBoolean();
         this.weight = in.readInt();
         this.stereoSupported = in.readBoolean();
     }
@@ -98,6 +101,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         out.writeUTF(icon);
         PacketUtil.writeIntList(out, distances);
         out.writeInt(defaultDistance);
+        out.writeBoolean(transitive);
         out.writeInt(weight);
         out.writeBoolean(stereoSupported);
     }

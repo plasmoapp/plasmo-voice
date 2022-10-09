@@ -236,7 +236,6 @@ public final class AudioUtil {
         // todo: better stereo -> mono conversation
         for (int i = 0; i < samples.length; i += 2) {
             mono[i / 2] = (short) ((samples[i] + samples[i + 1]) / 2);
-            ;
         }
 
         return mono;

@@ -3,9 +3,8 @@ package su.plo.voice.server.audio.line;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.audio.line.PlayersSourceLine;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.api.server.audio.line.ServerPlayersSourceLine;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerAddPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerRemovePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayersClearPacket;
@@ -14,7 +13,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @ToString(callSuper = true)
-public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine implements ServerSourceLine, PlayersSourceLine {
+public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine implements ServerPlayersSourceLine {
 
     public VoiceServerPlayersSourceLine(@NotNull PlasmoVoiceServer voiceServer,
                                         @NotNull AddonContainer addon,

@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
@@ -72,8 +73,9 @@ public final class MicrophoneTestController {
     }
 
     @EventSubscribe
-    public void onAudioCapture(AudioCaptureEvent event) {
-        short[] samples = event.getSamples();
+    public void onAudioCapture(@NotNull AudioCaptureEvent event) {
+        short[] samples = new short[event.getSamples().length];
+        System.arraycopy(event.getSamples(), 0, samples, 0, event.getSamples().length);
         samples = event.getDevice().processFilters(
                 samples,
                 (filter) -> isStereo() && (filter instanceof StereoToMonoFilter)
