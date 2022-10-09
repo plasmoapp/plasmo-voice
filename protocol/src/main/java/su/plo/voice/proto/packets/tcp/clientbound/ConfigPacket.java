@@ -7,6 +7,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
@@ -25,11 +27,14 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     private UUID serverId;
     @Getter
     private CaptureInfo codec;
+    @Getter
+    private @Nullable EncryptionInfo encryption;
     private List<VoiceSourceLine> sourceLines;
     private List<VoiceActivation> activations;
 
     public ConfigPacket(@NotNull UUID serverId,
                         @NotNull CaptureInfo codec,
+                        @Nullable EncryptionInfo encryption,
                         @NotNull List<VoiceSourceLine> sourceLines,
                         @NotNull List<VoiceActivation> activations,
                         @NotNull Map<String, Boolean> permissions) {
@@ -37,6 +42,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
 
         this.serverId = serverId;
         this.codec = codec;
+        this.encryption = encryption;
         this.sourceLines = sourceLines;
         this.activations = activations;
     }
@@ -55,6 +61,11 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
 
         this.codec = new CaptureInfo();
         codec.deserialize(in);
+
+        if (in.readBoolean()) {
+            this.encryption = new EncryptionInfo();
+            encryption.deserialize(in);
+        }
 
         // source lines
         this.sourceLines = Lists.newArrayList();
@@ -81,6 +92,11 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     public void write(ByteArrayDataOutput out) throws IOException {
         PacketUtil.writeUUID(out, serverId);
         checkNotNull(codec).serialize(out);
+
+        out.writeBoolean(encryption != null);
+        if (encryption != null) {
+            encryption.serialize(out);
+        }
 
         // source lines
         out.writeInt(sourceLines.size());

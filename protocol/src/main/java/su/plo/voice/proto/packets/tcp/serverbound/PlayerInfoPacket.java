@@ -17,25 +17,38 @@ public final class PlayerInfoPacket extends PlayerStatePacket {
 
     @Getter
     private String version;
+    @Getter
+    private byte[] publicKey;
 
     public PlayerInfoPacket(@NotNull String version,
+                            byte[] publicKey,
                             boolean voiceDisabled,
                             boolean microphoneDisabled) {
         super(voiceDisabled, microphoneDisabled);
 
         this.version = version;
+        this.publicKey = checkNotNull(publicKey, "publicKey");
     }
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         super.read(in);
+
         this.version = in.readUTF();
+
+        this.publicKey = new byte[in.readInt()];
+        in.readFully(publicKey);
     }
 
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
         super.write(out);
+
         out.writeUTF(checkNotNull(version));
+
+        checkNotNull(publicKey);
+        out.writeInt(publicKey.length);
+        out.write(publicKey);
     }
 
     @Override

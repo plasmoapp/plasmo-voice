@@ -5,6 +5,7 @@ import su.plo.lib.server.entity.MinecraftServerPlayer;
 import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 
+import java.security.PublicKey;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -40,6 +41,8 @@ public interface VoicePlayer {
     void visualizeDistance(int radius, int hexColor);
 
     void visualizeDistance(int radius);
+
+    Optional<PublicKey> getPublicKey();
 
     MinecraftServerPlayer getInstance();
 }

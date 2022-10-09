@@ -2,7 +2,6 @@ package su.plo.voice.api.client.socket;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
-import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
 
 import java.net.InetSocketAddress;
@@ -20,8 +19,6 @@ public interface UdpClient {
     @NotNull UUID getSecret();
 
     Optional<InetSocketAddress> getRemoteAddress();
-
-    Optional<EncryptionInfo> getEncryptionInfo();
 
     boolean isClosed();
 

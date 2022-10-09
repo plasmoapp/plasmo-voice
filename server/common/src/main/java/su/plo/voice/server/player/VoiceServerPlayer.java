@@ -18,6 +18,7 @@ import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.proto.packets.tcp.clientbound.DistanceVisualizePacket;
 import su.plo.voice.server.BaseVoiceServer;
 
+import java.security.PublicKey;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -37,6 +38,9 @@ public final class VoiceServerPlayer implements VoicePlayer {
     private boolean voiceDisabled;
     @Setter
     private boolean microphoneMuted;
+
+    @Setter
+    private PublicKey publicKey;
 
     private final Map<UUID, Integer> distanceByActivationId = Maps.newConcurrentMap();
 
@@ -116,6 +120,11 @@ public final class VoiceServerPlayer implements VoicePlayer {
     @Override
     public void visualizeDistance(int radius) {
         sendPacket(new DistanceVisualizePacket(radius, 0x00a000));
+    }
+
+    @Override
+    public Optional<PublicKey> getPublicKey() {
+        return Optional.ofNullable(publicKey);
     }
 
     public void setActivationDistance(@NotNull ServerActivation activation, int distance) {

@@ -3,6 +3,7 @@ package su.plo.voice.server.connection;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
@@ -17,6 +18,8 @@ import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.ServerConfig;
 
+import javax.crypto.Cipher;
+import java.security.PublicKey;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -25,7 +28,7 @@ import java.util.stream.Collectors;
 public final class VoiceTcpConnectionManager implements TcpServerConnectionManager {
 
     private final BaseVoiceServer voiceServer;
-    private final EncryptionInfo aesEncryption;
+    private final byte[] aesEncryptionKey;
 
     private final Object playerStateLock = new Object();
 
@@ -37,7 +40,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         out.writeLong(key.getMostSignificantBits());
         out.writeLong(key.getLeastSignificantBits());
 
-        this.aesEncryption = new EncryptionInfo("AES/CBC/PKCS5Padding", out.toByteArray());
+        this.aesEncryptionKey = out.toByteArray();
     }
 
     @Override
@@ -77,8 +80,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         player.sendPacket(new ConnectionPacket(
                 secret,
                 ip,
-                port,
-                aesEncryption
+                port
         ));
     }
 
@@ -92,6 +94,26 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         codecParams.put("mode", opusConfig.getMode());
         codecParams.put("bitrate", String.valueOf(opusConfig.getBitrate()));
 
+
+        EncryptionInfo aesEncryption;
+        try {
+            PublicKey publicKey = receiver.getPublicKey()
+                    .orElseThrow(() -> new IllegalStateException(receiver + " has empty public key"));
+
+            Cipher encryptCipher = Cipher.getInstance("RSA");
+            encryptCipher.init(Cipher.ENCRYPT_MODE, publicKey);
+
+            aesEncryption = new EncryptionInfo(
+                    "AES/CBC/PKCS5Padding",
+                    encryptCipher.doFinal(aesEncryptionKey)
+            );
+        } catch (Exception e) {
+            LogManager.getLogger().error("Failed to encode encryption data: {}", e.toString());
+            e.printStackTrace();
+            return;
+        }
+
+
         receiver.sendPacket(new ConfigPacket(
                 UUID.fromString(config.getServerId()),
                 new CaptureInfo(
@@ -99,6 +121,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                         voiceConfig.getMtuSize(),
                         new CodecInfo("opus", codecParams)
                 ),
+                aesEncryption,
                 voiceServer.getSourceLineManager()
                         .getLines()
                         .stream()

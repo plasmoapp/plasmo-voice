@@ -1,5 +1,6 @@
 package su.plo.voice.server.connection;
 
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.chat.TextComponent;
 import su.plo.voice.api.server.PlasmoVoiceServer;
@@ -24,6 +25,9 @@ import su.plo.voice.proto.packets.tcp.serverbound.*;
 import su.plo.voice.server.player.VoiceServerPlayer;
 import su.plo.voice.util.VersionUtil;
 
+import java.security.KeyFactory;
+import java.security.spec.EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.Optional;
 
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
@@ -71,6 +75,17 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
                     "message.plasmovoice.min_version",
                     String.format("%d.X.X", serverVersion[0])
             ));
+            return;
+        }
+
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(packet.getPublicKey());
+
+            ((VoiceServerPlayer) player).setPublicKey(keyFactory.generatePublic(publicKeySpec));
+        } catch (Exception e) {
+            LogManager.getLogger().error("Failed to generate RSA public key: {}", e.toString());
+            e.printStackTrace();
             return;
         }
 

@@ -7,6 +7,7 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.FriendlyByteBuf;
+import org.apache.logging.log4j.LogManager;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.client.BaseVoiceClient;
@@ -27,8 +28,14 @@ public final class FabricClientChannelHandler implements ClientPlayNetworking.Pl
     public void receive(Minecraft client, ClientPacketListener handler, FriendlyByteBuf buf, PacketSender responseSender) {
         if (connection == null || handler.getConnection() != connection.getHandler()) {
             if (connection != null) close();
-            this.connection = new ModServerConnection(voiceClient, minecraft, handler.getConnection());
-            voiceClient.getEventBus().register(voiceClient, connection);
+            try {
+                this.connection = new ModServerConnection(voiceClient, minecraft, handler.getConnection());
+                voiceClient.getEventBus().register(voiceClient, connection);
+            } catch (Exception e) {
+                LogManager.getLogger().error("Failed to initialize server connection: {}", e.toString());
+                e.printStackTrace();
+                return;
+            }
         }
 
         byte[] data = new byte[buf.readableBytes()];

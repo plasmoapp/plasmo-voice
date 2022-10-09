@@ -2,9 +2,11 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
@@ -34,8 +36,13 @@ import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 
+import javax.crypto.Cipher;
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -51,15 +58,28 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     private final ClientActivationManager activations;
     private final ClientSourceManager sources;
 
+    @Getter
+    private final PrivateKey privateKey;
+    @Getter
+    private final PublicKey publicKey;
+
     private final Map<UUID, VoicePlayerInfo> playerById = Maps.newConcurrentMap();
 
+    private @Nullable EncryptionInfo encryptionInfo;
+
     public BaseServerConnection(@NotNull BaseVoiceClient voiceClient,
-                                @NotNull MinecraftClientLib minecraft) {
+                                @NotNull MinecraftClientLib minecraft) throws Exception {
         this.voiceClient = voiceClient;
         this.minecraft = minecraft;
         this.sourceLines = voiceClient.getSourceLineManager();
         this.activations = voiceClient.getActivationManager();
         this.sources = voiceClient.getSourceManager();
+
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        KeyPair pair = generator.generateKeyPair();
+        this.privateKey = pair.getPrivate();
+        this.publicKey = pair.getPublic();
     }
 
     @Override
@@ -76,6 +96,11 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public Optional<VoicePlayerInfo> getClientPlayer() {
         return minecraft.getClientPlayer()
                 .flatMap(player -> getPlayerById(player.getUUID()));
+    }
+
+    @Override
+    public Optional<EncryptionInfo> getEncryptionInfo() {
+        return Optional.ofNullable(encryptionInfo);
     }
 
     @Override
@@ -117,7 +142,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull ConnectionPacket packet) {
         voiceClient.getUdpClientManager().removeClient(UdpClientClosedEvent.Reason.RECONNECT);
 
-        UdpClient client = new NettyUdpClient(voiceClient, packet.getSecret(), packet.getEncryption());
+        UdpClient client = new NettyUdpClient(voiceClient, packet.getSecret());
 
         UdpClientConnectEvent connectEvent = new UdpClientConnectEvent(client, packet);
         voiceClient.getEventBus().call(connectEvent);
@@ -152,12 +177,18 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         }
 
         // initialize encryption
+        this.encryptionInfo = packet.getEncryption();
         Encryption encryption = null;
-        if (client.get().getEncryptionInfo().isPresent()) {
-            EncryptionInfo encryptionInfo = client.get().getEncryptionInfo().get();
-
+        if (encryptionInfo != null) {
             try {
-                encryption = voiceClient.getEncryptionManager().create(encryptionInfo.getAlgorithm(), encryptionInfo.getData());
+                Cipher decryptCipher = Cipher.getInstance("RSA");
+                decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+                byte[] encryptionData = decryptCipher.doFinal(encryptionInfo.getData());
+
+                encryption = voiceClient.getEncryptionManager().create(
+                        encryptionInfo.getAlgorithm(),
+                        encryptionData
+                );
             } catch (Exception e) {
                 LOGGER.error("Failed to initialize encryption with name {}", encryptionInfo.getAlgorithm(), e);
                 return;
@@ -225,6 +256,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull PlayerInfoRequestPacket packet) {
         sendPacket(new PlayerInfoPacket(
                 voiceClient.getVersion(),
+                publicKey.getEncoded(),
                 voiceClient.getConfig().getVoice().getDisabled().value(),
                 voiceClient.getConfig().getVoice().getMicrophoneDisabled().value()
         ));

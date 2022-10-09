@@ -14,7 +14,6 @@ import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.connection.ServerInfoInitializedEvent;
 import su.plo.voice.api.client.event.connection.UdpClientPacketSendEvent;
@@ -23,7 +22,6 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -41,7 +39,6 @@ public final class NettyUdpClient implements UdpClient {
     private final PlasmoVoiceClient voiceClient;
     @Getter
     private final UUID secret;
-    private final @Nullable EncryptionInfo encryptionInfo;
 
     private final EventLoopGroup workGroup = new NioEventLoopGroup();
     private final NettyUdpClientHandler handler;
@@ -54,10 +51,9 @@ public final class NettyUdpClient implements UdpClient {
     @Getter
     private boolean timedOut;
 
-    public NettyUdpClient(@NotNull PlasmoVoiceClient voiceClient, @NotNull UUID secret, @Nullable EncryptionInfo encryptionInfo) {
+    public NettyUdpClient(@NotNull PlasmoVoiceClient voiceClient, @NotNull UUID secret) {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
         this.secret = checkNotNull(secret, "secret");
-        this.encryptionInfo = encryptionInfo;
         this.handler = new NettyUdpClientHandler(voiceClient, this);
 
         voiceClient.getEventBus().register(voiceClient, this);
@@ -127,11 +123,6 @@ public final class NettyUdpClient implements UdpClient {
         return channel != null
                 ? Optional.ofNullable(channel.remoteAddress())
                 : Optional.empty();
-    }
-
-    @Override
-    public Optional<EncryptionInfo> getEncryptionInfo() {
-        return Optional.ofNullable(encryptionInfo);
     }
 
     public void setTimedOut(boolean timedOut) {

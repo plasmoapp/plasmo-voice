@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
-import org.jetbrains.annotations.Nullable;
-import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketUtil;
 
@@ -27,18 +25,12 @@ public final class ConnectionPacket implements Packet<ClientPacketTcpHandler> {
     private String ip;
     @Getter
     private int port;
-    @Getter
-    private @Nullable EncryptionInfo encryption;
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         this.secret = PacketUtil.readUUID(in);
         this.ip = in.readUTF();
         this.port = in.readInt();
-        if (in.readBoolean()) {
-            this.encryption = new EncryptionInfo();
-            encryption.deserialize(in);
-        }
     }
 
     @Override
@@ -49,11 +41,6 @@ public final class ConnectionPacket implements Packet<ClientPacketTcpHandler> {
         PacketUtil.writeUUID(out, secret);
         out.writeUTF(ip);
         out.writeInt(port);
-
-        out.writeBoolean(encryption != null);
-        if (encryption != null) {
-            encryption.serialize(out);
-        }
     }
 
     @Override
