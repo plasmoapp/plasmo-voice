@@ -143,18 +143,18 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
                     keys.add(new KeyBinding.Key(keyType, keyCode));
                 });
 
-                if (keyBindings.containsKey(name)) {
-                    Optional<KeyBindingConfigEntry> keybindingEntry = categoryEntries.values()
-                            .stream()
-                            .filter(entry -> entry.value().getName().equals(name))
-                            .findFirst();
-
-                    keybindingEntry.ifPresent(keyBindingConfigEntry ->
-                            keyBindingConfigEntry.set(new VoiceKeyBinding(this, name, keys, anyContext))
-                    );
-                } else {
-                    register(name, keys, category, anyContext);
+                if (!keyBindings.containsKey(name)) {
+                    register(name, ImmutableList.of(), category, anyContext);
                 }
+
+                Optional<KeyBindingConfigEntry> keybindingEntry = categoryEntries.values()
+                        .stream()
+                        .filter(entry -> entry.value().getName().equals(name))
+                        .findFirst();
+
+                keybindingEntry.ifPresent(keyBindingConfigEntry ->
+                        keyBindingConfigEntry.set(new VoiceKeyBinding(this, name, keys, anyContext))
+                );
             });
         } catch (ClassCastException ignored) {
         }
