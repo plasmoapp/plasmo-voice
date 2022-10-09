@@ -51,7 +51,7 @@ import java.util.stream.Collectors;
 //  need to initialize it after MinecraftServer is created
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
-    public static final String CHANNEL_STRING = "plasmo:voice";
+    public static final String CHANNEL_STRING = "plasmo:voice/v2";
 
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
