@@ -1,11 +1,11 @@
 package su.plo.lib.server;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.profile.MinecraftGameProfile;
 import su.plo.lib.server.command.MinecraftCommandManager;
 import su.plo.lib.server.entity.MinecraftServerEntity;
 import su.plo.lib.server.entity.MinecraftServerPlayer;
 import su.plo.lib.server.permission.PermissionsManager;
-import su.plo.lib.server.profile.MinecraftGameProfile;
 import su.plo.lib.server.world.MinecraftServerWorld;
 
 import java.util.Collection;

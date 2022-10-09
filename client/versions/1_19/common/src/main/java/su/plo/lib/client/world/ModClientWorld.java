@@ -3,7 +3,6 @@ package su.plo.lib.client.world;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
@@ -17,8 +16,6 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class ModClientWorld implements MinecraftClientWorld {
 
-    private final Minecraft minecraft = Minecraft.getInstance();
-
     @Getter
     private final ClientLevel level;
 
@@ -27,7 +24,10 @@ public final class ModClientWorld implements MinecraftClientWorld {
     @Override
     public Optional<MinecraftPlayer> getPlayerById(@NotNull UUID playerId) {
         Player player = level.getPlayerByUUID(playerId);
-        if (player == null) return Optional.empty();
+        if (player == null) {
+            playerById.remove(playerId);
+            return Optional.empty();
+        }
 
         return Optional.of(playerById.computeIfAbsent(
                 playerId,

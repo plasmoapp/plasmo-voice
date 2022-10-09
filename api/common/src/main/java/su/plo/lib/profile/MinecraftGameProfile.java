@@ -1,4 +1,4 @@
-package su.plo.lib.server.profile;
+package su.plo.lib.profile;
 
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

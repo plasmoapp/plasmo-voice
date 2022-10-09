@@ -3,6 +3,7 @@ package su.plo.lib.client;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.chat.TextConverter;
+import su.plo.lib.client.connection.MinecraftServerConnection;
 import su.plo.lib.client.entity.MinecraftClientPlayer;
 import su.plo.lib.client.gui.MinecraftFont;
 import su.plo.lib.client.gui.ScreenContainer;
@@ -33,6 +34,8 @@ public interface MinecraftClientLib {
     Optional<MinecraftClientPlayer> getClientPlayer();
 
     Optional<MinecraftClientWorld> getWorld();
+
+    Optional<MinecraftServerConnection> getConnection();
 
     Optional<ScreenContainer> getScreen();
 

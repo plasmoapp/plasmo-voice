@@ -4,10 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.chat.TextComponent;
+import su.plo.lib.profile.MinecraftGameProfile;
 import su.plo.lib.server.MinecraftServerLib;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
-import su.plo.lib.server.profile.MinecraftGameProfile;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.mute.MuteManager;
 

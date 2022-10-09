@@ -7,7 +7,6 @@ import su.plo.lib.chat.TextComponent;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.event.render.HudRenderEvent;
 import su.plo.lib.client.gui.GuiRender;
-import su.plo.lib.entity.MinecraftPlayer;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
@@ -80,9 +79,9 @@ public final class OverlayRenderer {
                 .orElseThrow(() -> new IllegalStateException("Not connected"));
 
         // todo: entity renderer?
-        String sourceName = minecraft.getWorld().get()
-                .getPlayerById(sourceId)
-                .map(MinecraftPlayer::getName)
+        String sourceName = minecraft.getConnection().get()
+                .getPlayerInfo(sourceId)
+                .map((playerInfo) -> playerInfo.getGameProfile().getName())
                 .orElse(sourceLine.getTranslation());
         TextComponent text = TextComponent.translatable(sourceName);
 

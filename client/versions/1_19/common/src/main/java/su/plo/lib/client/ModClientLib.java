@@ -7,6 +7,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.chat.TextConverter;
+import su.plo.lib.client.connection.MinecraftServerConnection;
+import su.plo.lib.client.connection.ModServerConnection;
 import su.plo.lib.client.entity.MinecraftClientPlayer;
 import su.plo.lib.client.entity.ModClientPlayer;
 import su.plo.lib.client.gui.MinecraftFont;
@@ -61,11 +63,13 @@ public final class ModClientLib implements MinecraftClientLib {
 
     private @Nullable MinecraftClientPlayer clientPlayer;
     private @Nullable ModClientWorld world;
+    private @Nullable ModServerConnection connection;
 
     @Override
     public void onServerDisconnect() {
         this.clientPlayer = null;
         this.world = null;
+        this.connection = null;
     }
 
     @Override
@@ -92,6 +96,19 @@ public final class ModClientLib implements MinecraftClientLib {
         }
 
         return Optional.ofNullable(world);
+    }
+
+    @Override
+    public Optional<MinecraftServerConnection> getConnection() {
+        if (connection == null || minecraft.getConnection() != connection.getConnection()) {
+            if (minecraft.level == null) {
+                this.connection = null;
+            } else {
+                this.connection = new ModServerConnection(minecraft.getConnection());
+            }
+        }
+
+        return Optional.ofNullable(connection);
     }
 
     @Override
