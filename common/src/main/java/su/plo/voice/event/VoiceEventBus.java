@@ -7,9 +7,11 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
-import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.event.*;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -30,9 +32,15 @@ public final class VoiceEventBus implements EventBus {
     private final Map<Object, List<EventHandler<?>>> registeredAddonHandlers = Maps.newConcurrentMap();
 
     // class -> handlers
-    private final Map<Class<? extends Event>, EnumMap<EventPriority, List<EventHandler<?>>>> handlers = Maps.newConcurrentMap();
+    private final Map<Class<?>, EnumMap<EventPriority, List<EventHandler<?>>>> handlers = Maps.newConcurrentMap();
 
     private final Executor asyncExecutor = Executors.newSingleThreadExecutor();
+
+    private final PlasmoVoice voice;
+
+    public VoiceEventBus(@NotNull PlasmoVoice voice) {
+        this.voice = voice;
+    }
 
     @Override
     public <E extends Event> void call(@NotNull E event) {
@@ -50,7 +58,8 @@ public final class VoiceEventBus implements EventBus {
 
     @Override
     public <E extends Event> void callAsync(@NotNull E event) {
-        if (event instanceof EventCancellable) throw new IllegalArgumentException("Cancellable event cannot be run async");
+        if (event instanceof EventCancellable)
+            throw new IllegalArgumentException("Cancellable event cannot be run async");
         asyncExecutor.execute(() -> call(event));
     }
 
@@ -199,13 +208,12 @@ public final class VoiceEventBus implements EventBus {
     }
 
     private void checkIfAddon(@NotNull Object addon) {
-        if (!addon.getClass().isAnnotationPresent(Addon.class) && !(addon instanceof PlasmoVoice)) {
-            throw new IllegalArgumentException("object is not annotated with @Addon");
-        }
+        voice.getAddonManager().getAddon(addon)
+                .orElseThrow(() -> new IllegalArgumentException("object " + addon.getClass() + " is not annotated with @Addon"));
     }
 
     private void removeHandlers(List<EventHandler<?>> handlersToRemove) {
-        List<Class<? extends Event>> eventsToRemove = new ArrayList<>();
+        List<Class<?>> eventsToRemove = new ArrayList<>();
 
         handlers.forEach((eventClass, listeners) -> {
             List<EventPriority> listenersToRemove = new ArrayList<>();
@@ -224,5 +232,18 @@ public final class VoiceEventBus implements EventBus {
         });
 
         eventsToRemove.forEach(handlers::remove);
+    }
+
+    private Annotation getAnnotation(AccessibleObject object, Class annotationClass) {
+        for (Annotation a : object.getAnnotations()) {
+            if (a.annotationType().getCanonicalName().equals(annotationClass.getCanonicalName()))
+                return a;
+        }
+
+        return null;
+    }
+
+    private <T> T getAnnotationFieldWithReflection(Annotation annotation, String fieldName) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+        return (T) annotation.annotationType().getMethod(fieldName).invoke(annotation);
     }
 }

@@ -8,14 +8,16 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the Plasmo Voice server is initializing
+ * This event is fired once the server config is loaded
  */
-public final class VoiceServerInitializeEvent implements Event {
+public final class VoiceServerConfigLoadedEvent implements Event {
 
     @Getter
     private final PlasmoVoiceServer server;
 
-    public VoiceServerInitializeEvent(@NotNull PlasmoVoiceServer server) {
+    // todo: api server config?
+
+    public VoiceServerConfigLoadedEvent(@NotNull PlasmoVoiceServer server) {
         this.server = checkNotNull(server, "server cannot be null");
     }
 }

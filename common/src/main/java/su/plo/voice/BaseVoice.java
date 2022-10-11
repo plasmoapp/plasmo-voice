@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonManager;
+import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
@@ -22,13 +23,11 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class BaseVoice implements PlasmoVoice {
 
-    protected final AddonManager addons = new VoiceAddonManager(
-            this,
-            ImmutableList.of(modsFolder(), addonsFolder())
-    );
-    protected final EventBus eventBus = new VoiceEventBus();
+    protected final EventBus eventBus = new VoiceEventBus(this);
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
     protected final CodecManager codecs = new VoiceCodecManager();
+
+    protected final VoiceAddonManager addons = new VoiceAddonManager(this, getScope());
 
     protected ScheduledExecutorService executor;
 
@@ -40,10 +39,13 @@ public abstract class BaseVoice implements PlasmoVoice {
 
     protected void onInitialize() {
         this.executor = Executors.newSingleThreadScheduledExecutor();
+        addonsFolder().mkdirs();
+        addons.load(ImmutableList.of(modsFolder(), addonsFolder()));
     }
 
     protected void onShutdown() {
         executor.shutdown();
+        addons.clear();
     }
 
     @Override
@@ -66,8 +68,6 @@ public abstract class BaseVoice implements PlasmoVoice {
         return eventBus;
     }
 
-    public abstract File configFolder();
-
     public abstract InputStream getResource(String name);
 
     protected abstract Logger getLogger();
@@ -75,4 +75,6 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected abstract File modsFolder();
 
     protected abstract File addonsFolder();
+
+    protected abstract Addon.Scope getScope();
 }

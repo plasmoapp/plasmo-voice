@@ -76,7 +76,7 @@ public final class FabricVoiceClient extends ModVoiceClient implements ClientMod
     }
 
     @Override
-    public File configFolder() {
+    public File getConfigFolder() {
         return new File("config/" + modId);
     }
 
@@ -87,7 +87,7 @@ public final class FabricVoiceClient extends ModVoiceClient implements ClientMod
 
     @Override
     protected File addonsFolder() {
-        return new File(configFolder(), "addons");
+        return new File(getConfigFolder(), "addons");
     }
 
     @Override

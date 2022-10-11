@@ -3,7 +3,6 @@ package su.plo.voice.api.addon;
 import su.plo.voice.api.addon.annotation.Addon;
 
 import java.nio.file.Path;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Pattern;
 
@@ -24,6 +23,27 @@ public interface AddonContainer {
      * @see Addon#id()
      */
     String getId();
+
+    /**
+     * Gets the addon scope
+     *
+     * @return the addon scope
+     */
+    Addon.Scope getScope();
+
+    /**
+     * Gets the addon version
+     *
+     * @return the addon version
+     */
+    String getVersion();
+
+    /**
+     * Gets the addon authors
+     *
+     * @return the addon authors
+     */
+    String[] getAuthors();
 
 //    /**
 //     * Gets a {@link Collection} of all {@link AddonDependency} of the {@link Addon}

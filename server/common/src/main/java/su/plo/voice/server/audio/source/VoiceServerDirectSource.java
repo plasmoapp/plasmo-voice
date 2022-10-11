@@ -14,7 +14,7 @@ import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
-import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.Optional;
 import java.util.UUID;

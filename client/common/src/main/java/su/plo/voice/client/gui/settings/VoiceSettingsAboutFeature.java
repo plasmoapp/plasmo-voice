@@ -68,7 +68,7 @@ public final class VoiceSettingsAboutFeature {
             MinecraftBlockParticle particle = minecraft.getSimpleParticles().createBlockParticle(
                     14 + RandomUtil.randomInt(parent.getTitleWidth()),
                     15 + RandomUtil.randomInt(minecraft.getFont().getLineHeight()),
-                    "DIRT"
+                    "dirt"
             );
             particle.setMaxAge(10 + RandomUtil.randomInt(25));
             particle.setVelocity(RandomUtil.randomFloat(-0.25f, 0.25f), -0.25f);

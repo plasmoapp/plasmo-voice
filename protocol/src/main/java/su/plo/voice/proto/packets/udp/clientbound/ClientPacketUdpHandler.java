@@ -1,4 +1,4 @@
-package su.plo.voice.proto.packets.udp.cllientbound;
+package su.plo.voice.proto.packets.udp.clientbound;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.udp.PacketUdpHandler;

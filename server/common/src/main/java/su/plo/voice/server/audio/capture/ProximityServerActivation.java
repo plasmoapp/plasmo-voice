@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.server.permission.PermissionDefault;
 import su.plo.voice.api.event.EventPriority;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
@@ -17,8 +16,9 @@ import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
-import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
+import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.ServerConfig;
 
 import java.util.Optional;
@@ -26,9 +26,9 @@ import java.util.UUID;
 
 public final class ProximityServerActivation {
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
 
-    public ProximityServerActivation(@NotNull PlasmoVoiceServer voiceServer) {
+    public ProximityServerActivation(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
     }
 
@@ -50,6 +50,8 @@ public final class ProximityServerActivation {
     public void onPlayerSpeak(@NotNull PlayerSpeakEvent event) {
         PlayerAudioPacket packet = event.getPacket();
 
+        if (!voiceServer.getConfig().getVoice().getDistances().contains((int) packet.getDistance())) return;
+
         getPlayerSource(event.getPlayer(), packet.getActivationId(), packet.isStereo()).ifPresent((source) -> {
             SourceAudioPacket sourcePacket = new SourceAudioPacket(
                     packet.getSequenceNumber(),
@@ -66,6 +68,8 @@ public final class ProximityServerActivation {
     public void onPlayerSpeakEnd(@NotNull PlayerSpeakEndEvent event) {
         PlayerAudioEndPacket packet = event.getPacket();
 
+        if (!voiceServer.getConfig().getVoice().getDistances().contains((int) packet.getDistance())) return;
+
         getPlayerSource(event.getPlayer(), packet.getActivationId(), true).ifPresent((source) -> {
             SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());
             source.sendPacket(sourcePacket, packet.getDistance());
@@ -77,11 +81,11 @@ public final class ProximityServerActivation {
         if (event.isCancelled()) return;
 
         ServerActivation activation = event.getActivation();
-        if (activation.getName().equals(VoiceActivation.PROXIMITY_NAME)) {
-            voiceServer.getMinecraftServer()
-                    .getPermissionsManager()
-                    .register("voice.activation." + activation.getName(), PermissionDefault.TRUE);
-        }
+        if (!activation.getName().equals(VoiceActivation.PROXIMITY_NAME)) return;
+
+        voiceServer.getMinecraftServer()
+                .getPermissionsManager()
+                .register("voice.activation." + activation.getName(), PermissionDefault.TRUE);
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
@@ -89,11 +93,11 @@ public final class ProximityServerActivation {
         if (event.isCancelled()) return;
 
         ServerActivation activation = event.getActivation();
-        if (activation.getName().equals(VoiceActivation.PROXIMITY_NAME)) {
-            voiceServer.getMinecraftServer()
-                    .getPermissionsManager()
-                    .unregister("voice.activation." + activation.getName());
-        }
+        if (!activation.getName().equals(VoiceActivation.PROXIMITY_NAME)) return;
+
+        voiceServer.getMinecraftServer()
+                .getPermissionsManager()
+                .unregister("voice.activation." + activation.getName());
     }
 
     private Optional<ServerPlayerSource> getPlayerSource(@NotNull VoicePlayer player,
@@ -117,6 +121,7 @@ public final class ProximityServerActivation {
                 "opus",
                 isStereo
         );
+        source.setLine(sourceLine.get());
         source.setStereo(isStereo);
 
         return Optional.of(source);

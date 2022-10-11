@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
-import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.List;
 

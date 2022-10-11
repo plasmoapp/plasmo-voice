@@ -6,6 +6,8 @@ import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
 
+import java.io.File;
+
 /**
  * The Plasmo Voice API
  */
@@ -52,4 +54,11 @@ public interface PlasmoVoice {
      * @return the Plasmo Voice version
      */
     @NotNull String getVersion();
+
+    /**
+     * Gets ths Plasmo Voice config folder
+     *
+     * @return the config folder
+     */
+    @NotNull File getConfigFolder();
 }

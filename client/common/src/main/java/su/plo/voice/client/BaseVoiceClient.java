@@ -10,6 +10,7 @@ import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.ScreenContainer;
 import su.plo.voice.BaseVoice;
+import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
@@ -124,7 +125,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         getMinecraft().onInitialize();
 
         try {
-            File configFile = new File(configFolder(), "client.toml");
+            File configFile = new File(getConfigFolder(), "client.toml");
             this.config = toml.load(ClientConfig.class, configFile, true);
             config.setConfigFile(configFile);
             config.setAsyncExecutor(executor);
@@ -180,6 +181,11 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Override
     protected Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    protected Addon.Scope getScope() {
+        return Addon.Scope.CLIENT;
     }
 
     @Override

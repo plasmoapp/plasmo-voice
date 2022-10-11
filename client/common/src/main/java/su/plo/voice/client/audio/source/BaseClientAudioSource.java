@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.source;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -31,10 +32,14 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
-import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
-import java.util.concurrent.ExecutorService;
+import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public abstract class BaseClientAudioSource<T extends SourceInfo> implements ClientAudioSource<T> {
@@ -44,7 +49,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
-    protected final ExecutorService executor = Executors.newSingleThreadExecutor();
+    protected final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     protected final float[] playerPosition = new float[3];
     protected final float[] position = new float[3];
@@ -58,7 +63,9 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     protected AudioDecoder decoder;
     protected SourceGroup sourceGroup;
 
-    protected long lastSequenceNumber = -1L;
+    protected ScheduledFuture<?> endRequest;
+
+    protected Map<UUID, Long> lastSequenceNumbers = Maps.newHashMap();
     protected long lastActivation = 0L;
     protected double lastOcclusion = -1D;
     protected AtomicBoolean closed = new AtomicBoolean(false);
@@ -103,10 +110,11 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
                     });
                 }
             }
+            LOGGER.info("Initialize device sources");
         }
 
         // initialize decoder
-        if (this.sourceInfo == null || stereoChanged) {
+        if (this.sourceInfo == null || (sourceInfo.isStereo() != this.sourceInfo.isStereo())) {
             AudioDecoder decoder = null;
             if (Strings.emptyToNull(sourceInfo.getCodec()) != null) {
                 decoder = voiceClient.getCodecManager().createDecoder(
@@ -164,6 +172,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         if (isClosed()) return;
 
         executor.execute(() -> processAudioEndPacket(packet));
+        if (endRequest != null) endRequest.cancel(false);
+        this.endRequest = executor.schedule(
+                this::reset,
+                100L,
+                TimeUnit.MILLISECONDS
+        );
     }
 
     @Override
@@ -221,13 +235,23 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             return;
         }
 
+        long lastSequenceNumber = lastSequenceNumbers.getOrDefault(sourceInfo.getLineId(), -1L);
+
         if (lastSequenceNumber >= 0 && packet.getSequenceNumber() <= lastSequenceNumber) {
             if (lastSequenceNumber - packet.getSequenceNumber() < 10L) {
                 LOGGER.info("Drop packet with bad order");
                 return;
             }
 
-            this.lastSequenceNumber = -1L;
+            lastSequenceNumbers.remove(sourceInfo.getLineId());
+        }
+
+        if (endRequest != null) {
+            if (endRequest.getDelay(TimeUnit.MILLISECONDS) > 40L) {
+                endRequest.cancel(false);
+                this.endRequest = null;
+                return;
+            }
         }
 
         try {
@@ -318,7 +342,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             return;
         }
 
-        this.lastSequenceNumber = packet.getSequenceNumber();
+        lastSequenceNumbers.put(sourceInfo.getLineId(), packet.getSequenceNumber());
         this.lastActivation = System.currentTimeMillis();
         activated.set(true);
         resetted.set(false);
@@ -326,8 +350,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     private void processAudioEndPacket(@NotNull SourceAudioEndPacket packet) {
         if (!activated.get()) return;
-        this.lastSequenceNumber = packet.getSequenceNumber();
-        reset();
+        lastSequenceNumbers.put(sourceInfo.getLineId(), packet.getSequenceNumber());
     }
 
     private void reset() {

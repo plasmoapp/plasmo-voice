@@ -2,7 +2,7 @@ package su.plo.voice.api.server.connection;
 
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
-import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketUdpHandler;
+import su.plo.voice.proto.packets.udp.clientbound.ClientPacketUdpHandler;
 
 import java.util.Collection;
 import java.util.Optional;

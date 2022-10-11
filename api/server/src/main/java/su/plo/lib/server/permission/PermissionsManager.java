@@ -13,7 +13,7 @@ public final class PermissionsManager {
 
     public void register(@NotNull String name, @NotNull PermissionDefault permissionDefault) {
         if (defaultPermissionByName.containsKey(name)) {
-            throw new IllegalArgumentException("Permissions with name '" + "' already exist");
+            throw new IllegalArgumentException("Permissions with name '" + name + "' already exist");
         }
 
         defaultPermissionByName.put(name, permissionDefault);

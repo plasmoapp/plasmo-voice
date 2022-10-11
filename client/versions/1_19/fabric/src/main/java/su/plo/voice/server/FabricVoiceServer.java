@@ -28,9 +28,10 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
 
     @Override
     public void onInitialize() {
-        eventBus.register(this, handler);
-
-        ServerLifecycleEvents.SERVER_STARTED.register(this::onInitialize);
+        ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
+            this.onInitialize(server);
+            eventBus.register(this, handler);
+        });
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onShutdown);
 
         // todo: мб переместить в отдельный файл, но наверное и тут норм.
@@ -70,7 +71,7 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
     }
 
     @Override
-    public File configFolder() {
+    public @NotNull File getConfigFolder() {
         return new File("config/" + modId);
     }
 
@@ -81,7 +82,7 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
 
     @Override
     protected File addonsFolder() {
-        return new File(configFolder(), "addons");
+        return new File(modsFolder(), modId);
     }
 
     @Override

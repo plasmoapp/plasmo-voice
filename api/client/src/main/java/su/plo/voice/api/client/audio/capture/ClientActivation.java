@@ -21,7 +21,7 @@ public interface ClientActivation extends Activation {
      * Sets the activation's disabled state
      *
      * If activation is disabled, it always returns {@link Result#NOT_ACTIVATED} in
-     * the {@link ClientActivation#process(short[])} method
+     * the {@link ClientActivation#process(short[], Result)} method
      *
      * @param disabled
      */

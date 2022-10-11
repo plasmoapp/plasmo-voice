@@ -31,7 +31,7 @@ public interface Activation {
     /**
      * Gets the activation's icon
      *
-     * Minecraft ResourceLocation or base64 in format: "base64;<base64_string>"
+     * Minecraft ResourceLocation or base64 in format: "base64;base64_string"
      *
      * @return the activation's icon
      */

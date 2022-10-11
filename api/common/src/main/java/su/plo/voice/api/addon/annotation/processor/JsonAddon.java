@@ -22,10 +22,16 @@ public final class JsonAddon {
     }.getType();
 
     private final String id;
+    private final Addon.Scope scope;
+    private final String version;
+    private final String[] authors;
     private final String mainClass;
 
-    private JsonAddon(String id, String mainClass) {
+    private JsonAddon(String id, Addon.Scope scope, String version, String[] authors, String mainClass) {
         this.id = checkNotNull(id, "id cannot be null");
+        this.scope = checkNotNull(scope, "scope cannot be null");
+        this.version = checkNotNull(version, "version cannot be null");
+        this.authors = checkNotNull(authors, "authors cannot be null");
         checkArgument(!id.isEmpty(), "id cannot be empty");
         checkArgument(AddonContainer.ID_PATTERN.matcher(id).matches(), "id is not valid");
         this.mainClass = checkNotNull(mainClass, "mainClass cannot be null");
@@ -34,6 +40,9 @@ public final class JsonAddon {
     static JsonAddon from(Addon addon, String qualifiedName) {
         return new JsonAddon(
                 addon.id(),
+                addon.scope(),
+                addon.version(),
+                addon.authors(),
                 qualifiedName
         );
     }

@@ -18,7 +18,7 @@ public final class MuteStorageFactory {
     public MuteStorage createStorage(@NotNull String storageType) {
         switch (storageType) {
             case "json":
-                return new JsonMuteStorage(executor, new File(voiceServer.configFolder(), "voice_mutes.json"));
+                return new JsonMuteStorage(executor, new File(voiceServer.getConfigFolder(), "voice_mutes.json"));
             default:
                 throw new IllegalArgumentException("Unknown storage type: " + storageType);
         }

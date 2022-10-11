@@ -7,7 +7,7 @@ import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.UUID;
 import java.util.function.Predicate;

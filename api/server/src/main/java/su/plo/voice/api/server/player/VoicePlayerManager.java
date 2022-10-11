@@ -32,7 +32,7 @@ public interface VoicePlayerManager {
     /**
      * Gets collection of the players
      *
-     * @return {@link Collection<VoicePlayer>}
+     * @return collection of {@link VoicePlayer}
      */
     Collection<VoicePlayer> getPlayers();
 
@@ -54,7 +54,7 @@ public interface VoicePlayerManager {
     /**
      * Gets the collection of synchronized permissions
      *
-     * @return {@link Collection<String>}
+     * @return collection of {@link String}
      */
     Collection<String> getSynchronizedPermissions();
 }

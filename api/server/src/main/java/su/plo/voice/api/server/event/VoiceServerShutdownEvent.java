@@ -10,12 +10,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * This event is fired when the Plasmo Voice server is shutting down
  */
-public class VoiceServerShutdownEvent implements Event {
+public final class VoiceServerShutdownEvent implements Event {
 
     @Getter
     private final PlasmoVoiceServer server;
 
-    public VoiceServerShutdownEvent(@NotNull PlasmoVoiceServer client) {
-        this.server = checkNotNull(client, "client cannot be null");
+    public VoiceServerShutdownEvent(@NotNull PlasmoVoiceServer server) {
+        this.server = checkNotNull(server, "server cannot be null");
     }
 }

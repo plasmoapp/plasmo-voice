@@ -15,7 +15,7 @@ import su.plo.voice.api.server.event.connection.UdpDisconnectEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketUdpHandler;
+import su.plo.voice.proto.packets.udp.clientbound.ClientPacketUdpHandler;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.util.Collection;

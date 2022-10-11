@@ -58,6 +58,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     @Override
     public void clear() {
+        lines.clear();
         lineById.clear();
     }
 

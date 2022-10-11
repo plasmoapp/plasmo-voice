@@ -10,8 +10,8 @@ import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
-import su.plo.voice.proto.packets.udp.cllientbound.ClientPacketUdpHandler;
-import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
+import su.plo.voice.proto.packets.udp.clientbound.ClientPacketUdpHandler;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import su.plo.voice.socket.NettyPacketUdp;
 
 import java.util.concurrent.Executors;
@@ -65,6 +65,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         voiceClient.getSourceManager().getSourceById(packet.getSourceId())
                 .ifPresent(source -> {
                     if (source.getInfo().getState() != packet.getSourceState()) {
+                        LogManager.getLogger().warn("Drop audio packet with bad source state");
                         voiceClient.getSourceManager().sendSourceInfoRequest(packet.getSourceId());
                         return;
                     }

@@ -1,4 +1,4 @@
-package su.plo.voice.proto.packets.udp.cllientbound;
+package su.plo.voice.proto.packets.udp.clientbound;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;

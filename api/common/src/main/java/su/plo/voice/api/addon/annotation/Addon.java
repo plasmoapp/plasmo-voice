@@ -16,6 +16,27 @@ public @interface Addon {
      */
     String id();
 
+    /**
+     * Returns the addon scope
+     *
+     * @return the addon scope
+     */
+    Scope scope();
+
+    /**
+     * Returns the addon version
+     *
+     * @return the addon version
+     */
+    String version();
+
+    /**
+     * Returns the addon authors
+     *
+     * @return the addon authors
+     */
+    String[] authors();
+
     // todo: addon dependencies
 //    /**
 //     * Returns the addon dependencies
@@ -23,4 +44,10 @@ public @interface Addon {
 //     * @return the addon dependencies
 //     */
 //    Dependency[] dependencies() default {};
+
+    enum Scope {
+
+        CLIENT,
+        SERVER
+    }
 }

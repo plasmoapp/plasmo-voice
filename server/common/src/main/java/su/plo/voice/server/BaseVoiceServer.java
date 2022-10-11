@@ -1,5 +1,6 @@
 package su.plo.voice.server;
 
+import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,12 +11,14 @@ import su.plo.lib.server.command.MinecraftCommandManager;
 import su.plo.lib.server.permission.PermissionDefault;
 import su.plo.lib.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
+import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
+import su.plo.voice.api.server.event.VoiceServerConfigLoadedEvent;
 import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.event.mute.MuteStorageCreateEvent;
@@ -180,7 +183,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         try {
             ServerConfig oldConfig = config;
 
-            this.config = toml.load(ServerConfig.class, new File(configFolder(), "config.toml"), true);
+            this.config = toml.load(ServerConfig.class, new File(getConfigFolder(), "config.toml"), true);
 
             if (oldConfig != null) {
                 restartUdpServer = !config.getHost().equals(oldConfig.getHost());
@@ -191,6 +194,17 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         // register proximity activation
         proximityActivation.register(config);
+        activationManager.register(
+                this,
+                "groups",
+                "Groups",
+                "plasmovoice:textures/icons/microphone_group.png",
+                ImmutableList.of(),
+                0,
+                true,
+                false,
+                3
+        );
 
         // register proximity line
         sourceLineManager.register(
@@ -200,8 +214,16 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 "plasmovoice:textures/icons/speaker.png",
                 1
         );
+        sourceLineManager.registerPlayers(
+                this,
+                "groups",
+                "Groups",
+                "plasmovoice:textures/icons/speaker_groups.png",
+                3
+        );
 
         if (restartUdpServer) startUdpServer();
+        eventBus.call(new VoiceServerConfigLoadedEvent(this));
     }
 
     public void startUdpServer() {
@@ -264,6 +286,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Override
     protected Logger getLogger() {
         return logger;
+    }
+
+    @Override
+    protected Addon.Scope getScope() {
+        return Addon.Scope.SERVER;
     }
 
     @Override

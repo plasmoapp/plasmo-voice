@@ -13,7 +13,7 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
-import su.plo.voice.proto.packets.udp.cllientbound.SourceAudioPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.List;
 import java.util.UUID;
@@ -32,11 +32,10 @@ public abstract class BaseServerSource implements ServerAudioSource {
     protected final String codec;
 
     @Getter
-    @Setter
     protected @NotNull ServerSourceLine line;
     @Getter
     @Setter
-    protected boolean iconVisible = true;
+    protected boolean iconVisible = true; // todo: icon visibility
     @Setter
     protected int angle;
     protected boolean stereo;
@@ -67,7 +66,15 @@ public abstract class BaseServerSource implements ServerAudioSource {
     }
 
     @Override
-    public void setStereo(boolean stereo) {
+    public synchronized void setLine(@NotNull ServerSourceLine line) {
+        if (!this.line.equals(line)) {
+            this.line = line;
+            setDirty();
+        }
+    }
+
+    @Override
+    public synchronized void setStereo(boolean stereo) {
         if (this.stereo != stereo) {
             this.stereo = stereo;
             setDirty();

@@ -84,6 +84,11 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
                     return;
                 }
 
+                if (source.getInfo().getLineId() != sourceInfo.getLineId()) {
+                    sourcesByLineId.remove(source.getInfo().getLineId(), source);
+                    sourcesByLineId.put(sourceInfo.getLineId(), source);
+                }
+
                 if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
                     ((ClientAudioSource<StaticSourceInfo>) source).initialize((StaticSourceInfo) sourceInfo);
                 } else if (source.getInfo() instanceof PlayerSourceInfo && sourceInfo instanceof PlayerSourceInfo) {

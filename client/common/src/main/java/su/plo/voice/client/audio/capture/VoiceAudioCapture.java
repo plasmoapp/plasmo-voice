@@ -265,7 +265,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                     if (processParent) {
                         processActivation(device.get(), parentActivation, parentResult, samples, encoded);
                     } else if (activationStreams.remove(parentActivation.getId())) {
-                        processActivation(device.get(), parentActivation, ClientActivation.Result.END, samples, encoded);
+                        processActivation(device.get(), parentActivation, ClientActivation.Result.END, null, encoded);
                     }
                 }
             } catch (InterruptedException ignored) {
@@ -297,7 +297,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                                    @NotNull EncodedCapture encoded) {
         boolean isStereo = config.getVoice().getStereoCapture().value() && activation.isStereoSupported();
 
-        if (result.isActivated()) {
+        if (result.isActivated() && samples != null) {
             if (isStereo && encoded.stereo == null) {
                 short[] processedSamples = new short[samples.length];
                 System.arraycopy(samples, 0, processedSamples, 0, samples.length);
@@ -319,7 +319,7 @@ public final class VoiceAudioCapture implements AudioCapture {
             sendVoicePacket(activation, isStereo, encodedData);
             activationStreams.add(activation.getId());
         } else if (result == ClientActivation.Result.END) {
-            sendVoicePacket(activation, isStereo, encodedData);
+            if (encodedData != null) sendVoicePacket(activation, isStereo, encodedData);
             sendVoiceEndPacket(activation);
             activationStreams.remove(activation.getId());
         }
