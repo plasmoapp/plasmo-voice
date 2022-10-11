@@ -1,4 +1,4 @@
-package su.plo.lib.client;
+package su.plo.lib;
 
 public final class MathLib {
 

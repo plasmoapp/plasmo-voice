@@ -1,7 +1,7 @@
 package su.plo.lib.client.gui.components;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.client.MathLib;
+import su.plo.lib.MathLib;
 import su.plo.lib.client.MinecraftClientLib;
 import su.plo.lib.client.gui.GuiRender;
 import su.plo.lib.client.gui.widget.GuiAbstractWidget;
