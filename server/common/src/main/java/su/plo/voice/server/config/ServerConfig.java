@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 @Data
 public final class ServerConfig {
 
-    @ConfigField(path = "server_id")
+    @ConfigField(path = "server_id", comment = "Used to store server-related config file on the client\nSet it to a single value on different servers if you want them to share config")
     private String serverId = UUID.randomUUID().toString();
 
     @ConfigField
@@ -76,7 +76,7 @@ public final class ServerConfig {
     @Data
     public static class Voice {
 
-        @ConfigField(path = "sample_rate")
+        @ConfigField(path = "sample_rate", comment = "Supported sample rates:\n8000\n12000\n24000\n48000")
         @ConfigValidator(
                 value = SampleRateValidator.class,
                 allowed = {"8000", "16000", "24000", "48000"}
