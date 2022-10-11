@@ -32,6 +32,8 @@ public class PacketTcpCodec {
         PACKETS.register(++lastPacketId, PlayerAudioEndPacket.class);
         PACKETS.register(++lastPacketId, PlayerActivationDistancesPacket.class);
 
+        PACKETS.register(++lastPacketId, DistanceVisualizePacket.class);
+
         PACKETS.register(++lastPacketId, SourceInfoRequestPacket.class);
         PACKETS.register(++lastPacketId, SourceInfoPacket.class);
         PACKETS.register(++lastPacketId, SourceAudioEndPacket.class);
