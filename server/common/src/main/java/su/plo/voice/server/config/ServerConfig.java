@@ -90,7 +90,7 @@ public final class ServerConfig {
         )
         private int keepAliveTimeoutMs = 15_000;
 
-        @ConfigField
+        @ConfigField(path = "mtu_size")
         @ConfigValidator(
                 value = MtuSizeValidator.class,
                 allowed = "128-5000"
