@@ -1,9 +1,6 @@
 {
     "key.plasmovoice.settings": "Voice Settings",
 
-    "key.plasmovoice.proximity": "Proximity",
-    "key.plasmovoice.parent": "Parent",
-
     "key.plasmovoice.general": "General",
     "key.plasmovoice.general.mute_microphone": "Mute Microphone",
     "key.plasmovoice.general.disable_voice": "Disable Voice Chat",
@@ -194,6 +191,12 @@
     "gui.plasmovoice.cannot_connect_to_udp_1": "Can't connect to the UDP server,",
     "gui.plasmovoice.cannot_connect_to_udp_2": "It's likely that the UDP port is closed. Read wiki:",
     "gui.plasmovoice.cannot_connect_to_udp_3": "%s",
+
+
+    "activation.plasmovoice.proximity": "Proximity",
+    "activation.plasmovoice.parent": "Parent",
+    "activation.plasmovoice.priority": "Priority",
+    "activation.plasmovoice.whisper": "Whisper",
 
 
     "message.plasmovoice.close": "Close",

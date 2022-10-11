@@ -353,7 +353,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     private void sendVoicePacket(@NotNull ClientActivation activation,
                                  boolean isStereo,
                                  byte[] encoded) {
-        if (activation.getTranslation().equals("key.plasmovoice.parent")) return;
+        if (activation.getTranslation().equals("activation.plasmovoice.parent")) return;
 
         Optional<UdpClient> udpClient = voiceClient.getUdpClientManager().getClient();
         if (!udpClient.isPresent()) return;
@@ -368,7 +368,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     private void sendVoiceEndPacket(ClientActivation activation) {
-        if (activation.getTranslation().equals("key.plasmovoice.parent")) return;
+        if (activation.getTranslation().equals("activation.plasmovoice.parent")) return;
 
         if (monoEncoder != null) monoEncoder.reset();
         if (stereoEncoder != null) stereoEncoder.reset();

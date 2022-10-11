@@ -212,7 +212,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         sourceLineManager.register(
                 this,
                 VoiceSourceLine.PROXIMITY_NAME,
-                "key.plasmovoice.proximity",
+                "activation.plasmovoice.proximity",
                 "plasmovoice:textures/icons/speaker.png",
                 1
         );

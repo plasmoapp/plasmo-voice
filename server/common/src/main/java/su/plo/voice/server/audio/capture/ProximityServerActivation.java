@@ -36,7 +36,7 @@ public final class ProximityServerActivation {
         voiceServer.getActivationManager().register(
                 voiceServer,
                 VoiceActivation.PROXIMITY_NAME,
-                "key.plasmovoice.proximity",
+                "activation.plasmovoice.proximity",
                 "plasmovoice:textures/icons/microphone.png",
                 config.getVoice().getProximity().getDistances(),
                 config.getVoice().getProximity().getDefaultDistance(),

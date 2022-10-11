@@ -99,7 +99,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         if (parentActivation == null) {
             Activation serverActivation = new VoiceActivation(
                     VoiceActivation.PROXIMITY_NAME,
-                    "key.plasmovoice.parent",
+                    "activation.plasmovoice.parent",
                     "",
                     Collections.emptyList(),
                     0,
