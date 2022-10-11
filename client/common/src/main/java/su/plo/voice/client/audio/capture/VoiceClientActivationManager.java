@@ -85,7 +85,9 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 }
 
                 this.parentActivation = activation;
-                if (!initialized) {
+                if (!initialized &&
+                        config.getAdvanced().getVisualizeVoiceDistance().value() &&
+                        config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()) {
                     voiceClient.getDistanceVisualizer().render(
                             activation.getDistance(),
                             0x00a000

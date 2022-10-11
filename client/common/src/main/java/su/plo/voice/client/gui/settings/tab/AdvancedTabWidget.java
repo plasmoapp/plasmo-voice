@@ -43,6 +43,11 @@ public final class AdvancedTabWidget extends TabWidget {
                 null,
                 config.getAdvanced().getVisualizeVoiceDistance()
         ));
+        addEntry(createToggleEntry(
+                "gui.plasmovoice.advanced.visualize_voice_distance_on_join",
+                null,
+                config.getAdvanced().getVisualizeVoiceDistanceOnJoin()
+        ));
 
         addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.advanced.audio_engine")));
         addEntry(createIntSliderWidget(

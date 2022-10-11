@@ -367,6 +367,9 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> visualizeVoiceDistance = new ConfigEntry<>(true);
 
         @ConfigField
+        private ConfigEntry<Boolean> visualizeVoiceDistanceOnJoin = new ConfigEntry<>(false);
+
+        @ConfigField
         private IntConfigEntry compressorThreshold = new IntConfigEntry(-10, -60, 0);
 
         @ConfigField

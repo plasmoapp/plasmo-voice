@@ -101,6 +101,7 @@
 
     "gui.plasmovoice.advanced.visual": "Visual & UI",
     "gui.plasmovoice.advanced.visualize_voice_distance": "Visualise Voice Distance",
+    "gui.plasmovoice.advanced.visualize_voice_distance_on_join": "Visualize On Join",
 
     "gui.plasmovoice.advanced.compressor": "Compressor & Limiter",
     "gui.plasmovoice.advanced.compressor.tooltip_1": "Makes loud volume quieter,",
