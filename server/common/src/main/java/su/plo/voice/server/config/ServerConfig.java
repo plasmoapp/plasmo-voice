@@ -114,14 +114,14 @@ public final class ServerConfig {
         @Data
         public static class Opus {
 
-            @ConfigField
+            @ConfigField(comment = "Opus application mode\nSupported values: VOIP, AUDIO, RESTRICTED_LOWDELAY\nDefault is VOIP")
             @ConfigValidator(
                     value = ModeValidator.class,
                     allowed = {"VOIP", "AUDIO", "RESTRICTED_LOWDELAY"}
             )
             private String mode = "VOIP";
 
-            @ConfigField
+            @ConfigField(comment = "Opus bitrate\nSupported values: -1000 (auto), -1 (max), [500-512_000]\nDefault is -1000")
             @ConfigValidator(
                     value = BitrateValidator.class,
                     allowed = {"-1000 (auto)", "-1 (max)", "500-512000"}
