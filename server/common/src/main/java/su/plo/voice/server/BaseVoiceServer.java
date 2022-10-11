@@ -181,9 +181,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         boolean restartUdpServer = true;
 
         try {
+            File configFile = new File(getConfigFolder(), "config.toml");
             ServerConfig oldConfig = config;
 
-            this.config = toml.load(ServerConfig.class, new File(getConfigFolder(), "config.toml"), true);
+            this.config = toml.load(ServerConfig.class, configFile, false);
+            toml.save(ServerConfig.class, config, configFile);
 
             if (oldConfig != null) {
                 restartUdpServer = !config.getHost().equals(oldConfig.getHost());

@@ -126,7 +126,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         try {
             File configFile = new File(getConfigFolder(), "client.toml");
-            this.config = toml.load(ClientConfig.class, configFile, true);
+
+            this.config = toml.load(ClientConfig.class, configFile, false);
+            toml.save(ClientConfig.class, config, configFile);
+
             config.setConfigFile(configFile);
             config.setAsyncExecutor(executor);
 
