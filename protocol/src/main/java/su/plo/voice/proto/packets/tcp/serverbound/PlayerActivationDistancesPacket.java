@@ -44,6 +44,6 @@ public final class PlayerActivationDistancesPacket implements Packet<ServerPacke
 
     @Override
     public void handle(ServerPacketTcpHandler handler) {
-
+        handler.handle(this);
     }
 }
