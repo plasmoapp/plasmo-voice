@@ -38,8 +38,8 @@ public final class ProximityServerActivation {
                 VoiceActivation.PROXIMITY_NAME,
                 "key.plasmovoice.proximity",
                 "plasmovoice:textures/icons/microphone.png",
-                config.getVoice().getDistances(),
-                config.getVoice().getDefaultDistance(),
+                config.getVoice().getProximity().getDistances(),
+                config.getVoice().getProximity().getDefaultDistance(),
                 true,
                 false,
                 1
@@ -50,7 +50,12 @@ public final class ProximityServerActivation {
     public void onPlayerSpeak(@NotNull PlayerSpeakEvent event) {
         PlayerAudioPacket packet = event.getPacket();
 
-        if (!voiceServer.getConfig().getVoice().getDistances().contains((int) packet.getDistance())) return;
+        if (!voiceServer.getConfig()
+                .getVoice()
+                .getProximity()
+                .getDistances()
+                .contains((int) packet.getDistance())
+        ) return;
 
         getPlayerSource(event.getPlayer(), packet.getActivationId(), packet.isStereo()).ifPresent((source) -> {
             SourceAudioPacket sourcePacket = new SourceAudioPacket(
@@ -68,7 +73,12 @@ public final class ProximityServerActivation {
     public void onPlayerSpeakEnd(@NotNull PlayerSpeakEndEvent event) {
         PlayerAudioEndPacket packet = event.getPacket();
 
-        if (!voiceServer.getConfig().getVoice().getDistances().contains((int) packet.getDistance())) return;
+        if (!voiceServer.getConfig()
+                .getVoice()
+                .getProximity()
+                .getDistances()
+                .contains((int) packet.getDistance())
+        ) return;
 
         getPlayerSource(event.getPlayer(), packet.getActivationId(), true).ifPresent((source) -> {
             SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());

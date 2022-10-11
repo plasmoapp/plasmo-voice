@@ -97,18 +97,36 @@ public final class ServerConfig {
         )
         private int mtuSize = 1024;
 
-        @ConfigField
-        @ConfigFieldProcessor(DistancesSorter.class)
-        private List<Integer> distances = Arrays.asList(8, 16, 32);
-
-        @ConfigField(path = "default_distance")
-        private int defaultDistance = 16;
-
         @ConfigField(path = "client_mod_required")
         private boolean clientModRequired = false;
 
         @ConfigField
+        private Proximity proximity = new Proximity();
+
+        @ConfigField
         private Opus opus = new Opus();
+
+        @Config
+        @Data
+        public static class Proximity {
+
+            @ConfigField
+            @ConfigFieldProcessor(DistancesSorter.class)
+            private List<Integer> distances = Arrays.asList(8, 16, 32);
+
+            @ConfigField(path = "default_distance")
+            private int defaultDistance = 16;
+
+            @NoArgsConstructor
+            public static class DistancesSorter implements Function<List<Long>, List<Integer>> {
+
+                @Override
+                public List<Integer> apply(List<Long> distances) {
+                    Collections.sort(distances);
+                    return distances.stream().map(Long::intValue).collect(Collectors.toList());
+                }
+            }
+        }
 
         @Config
         @Data
@@ -161,16 +179,6 @@ public final class ServerConfig {
                 if (!(o instanceof Long)) return false;
                 long mtuSize = (long) o;
                 return mtuSize >= 128 && mtuSize <= 5000;
-            }
-        }
-
-        @NoArgsConstructor
-        public static class DistancesSorter implements Function<List<Long>, List<Integer>> {
-
-            @Override
-            public List<Integer> apply(List<Long> distances) {
-                Collections.sort(distances);
-                return distances.stream().map(Long::intValue).collect(Collectors.toList());
             }
         }
 
