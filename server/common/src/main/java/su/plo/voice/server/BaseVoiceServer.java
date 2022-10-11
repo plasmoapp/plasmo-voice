@@ -194,6 +194,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             throw new IllegalStateException("Failed to load config", e);
         }
 
+        eventBus.call(new VoiceServerConfigLoadedEvent(this));
+
         // register proximity activation
         proximityActivation.register(config);
         activationManager.register(
@@ -225,7 +227,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         );
 
         if (restartUdpServer) startUdpServer();
-        eventBus.call(new VoiceServerConfigLoadedEvent(this));
     }
 
     public void startUdpServer() {
