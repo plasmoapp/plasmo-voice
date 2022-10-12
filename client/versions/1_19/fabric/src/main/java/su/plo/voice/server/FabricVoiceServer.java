@@ -7,12 +7,14 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.server.permission.PermissionDefault;
+import su.plo.lib.server.permission.PermissionTristate;
 import su.plo.voice.server.connection.FabricServerChannelHandler;
 import su.plo.voice.server.event.player.PlayerJoinEvent;
 import su.plo.voice.server.event.player.PlayerQuitEvent;
@@ -87,18 +89,33 @@ public final class FabricVoiceServer extends ModVoiceServer implements ModInitia
 
     @Override
     protected PermissionSupplier createPermissionSupplier() {
-        return (player, permission) -> {
-            if (!(player instanceof ServerPlayer serverPlayer))
-                throw new IllegalArgumentException("player is not " + ServerPlayer.class);
+        return new PermissionSupplier() {
+            @Override
+            public boolean hasPermission(@NotNull Object player, @NotNull String permission) {
+                if (!(player instanceof ServerPlayer serverPlayer))
+                    throw new IllegalArgumentException("player is not " + ServerPlayer.class);
 
-            PermissionDefault permissionDefault = minecraftServerLib.getPermissionsManager().getPermissionDefault(permission);
-            boolean isOp = server.getPlayerList().isOp(serverPlayer.getGameProfile());
+                PermissionDefault permissionDefault = minecraftServerLib.getPermissionsManager().getPermissionDefault(permission);
+                boolean isOp = server.getPlayerList().isOp(serverPlayer.getGameProfile());
 
-            return Permissions.check(
-                    serverPlayer,
-                    permission,
-                    permissionDefault.getValue(isOp)
-            );
+                return getPermission(serverPlayer, permission).booleanValue(permissionDefault.getValue(isOp));
+            }
+
+            @Override
+            public @NotNull PermissionTristate getPermission(@NotNull Object player, @NotNull String permission) {
+                if (!(player instanceof ServerPlayer serverPlayer))
+                    throw new IllegalArgumentException("player is not " + ServerPlayer.class);
+
+                return toPermissionTristate(Permissions.getPermissionValue(serverPlayer, permission));
+            }
+
+            private PermissionTristate toPermissionTristate(TriState triState) {
+                return switch (triState) {
+                    case TRUE -> PermissionTristate.TRUE;
+                    case FALSE -> PermissionTristate.FALSE;
+                    case DEFAULT -> PermissionTristate.UNDEFINED;
+                };
+            }
         };
     }
 }

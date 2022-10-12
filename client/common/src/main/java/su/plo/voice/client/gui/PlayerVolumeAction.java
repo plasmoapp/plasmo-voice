@@ -30,7 +30,7 @@ public abstract class PlayerVolumeAction {
         this.config = config;
 
         voiceClient.getKeyBindings().getKeyBinding("key.plasmovoice.general.action")
-                .ifPresent((key) -> key.onPress(this::onButton));
+                .ifPresent((key) -> key.addPressListener(this::onButton));
     }
 
     public boolean isShown(@NotNull MinecraftPlayer player) {

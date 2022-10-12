@@ -12,7 +12,7 @@ import su.plo.voice.api.server.event.connection.TcpPacketSendEvent;
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.proto.packets.tcp.clientbound.DistanceVisualizePacket;

@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.chat.TextComponent;
+import su.plo.lib.server.permission.PermissionTristate;
 
 @RequiredArgsConstructor
 public final class ModDefaultCommandSource implements MinecraftCommandSource {
@@ -18,5 +19,10 @@ public final class ModDefaultCommandSource implements MinecraftCommandSource {
     @Override
     public boolean hasPermission(@NotNull String permission) {
         return false;
+    }
+
+    @Override
+    public @NotNull PermissionTristate getPermission(@NotNull String permission) {
+        return PermissionTristate.FALSE;
     }
 }

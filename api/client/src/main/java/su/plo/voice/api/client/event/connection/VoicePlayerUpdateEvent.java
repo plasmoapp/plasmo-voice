@@ -3,7 +3,7 @@ package su.plo.voice.api.client.event.connection;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.Event;
-import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 /**
  * This event is fired once the {@link su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket} is received

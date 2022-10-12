@@ -71,8 +71,10 @@ public final class VoiceServerPlayerManager implements VoicePlayerManager {
 
     @EventSubscribe
     public void onPermissionUpdate(@NotNull PlayerPermissionUpdateEvent event) {
-        VoicePlayer player = event.getPlayer();
         String permission = event.getPermission();
+
+        if (synchronizedPermissions.contains(permission)) return;
+        VoicePlayer player = event.getPlayer();
 
         Map<String, Boolean> permissions = Maps.newHashMap();
         permissions.put(permission, player.getInstance().hasPermission(permission));

@@ -85,10 +85,17 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
         this.distanceIncreaseKey = createHotKey(hotKeys, activation, "distance_increase", false);
         this.distanceDecreaseKey = createHotKey(hotKeys, activation, "distance_decrease", false);
 
-        toggleKey.value().onPress(this::onToggle);
-        distanceIncreaseKey.value().onPress(this::onDistanceIncrease);
-        distanceDecreaseKey.value().onPress(this::onDistanceDecrease);
-        activationDistance.onUpdate(this::onDistanceChange);
+        toggleKey.value().clearPressListener();
+        toggleKey.value().addPressListener(this::onToggle);
+
+        distanceIncreaseKey.value().clearPressListener();
+        distanceIncreaseKey.value().addPressListener(this::onDistanceIncrease);
+
+        distanceDecreaseKey.value().clearPressListener();
+        distanceDecreaseKey.value().addPressListener(this::onDistanceDecrease);
+
+        configDistance.clearChangeListeners();
+        configDistance.addChangeListener(this::onDistanceChange);
     }
 
     @Override
@@ -275,13 +282,6 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     private void onDistanceChange(int distance) {
         voiceClient.getServerConnection()
                 .ifPresent((connection) -> {
-                    if (id.equals(PROXIMITY_ID)) {
-                        voiceClient.getDistanceVisualizer().render(
-                                distance,
-                                0x00a000
-                        );
-                    }
-
                     Map<UUID, Integer> distanceByActivationId = Maps.newHashMap();
                     distanceByActivationId.put(id, distance);
 

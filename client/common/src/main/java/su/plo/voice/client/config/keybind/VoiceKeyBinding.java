@@ -59,8 +59,18 @@ public final class VoiceKeyBinding implements KeyBinding {
     }
 
     @Override
-    public void onPress(@NotNull OnPress onPress) {
+    public void addPressListener(@NotNull OnPress onPress) {
         this.onPress.add(onPress);
+    }
+
+    @Override
+    public void removePressListener(@NotNull OnPress onPress) {
+        this.onPress.remove(onPress);
+    }
+
+    @Override
+    public void clearPressListener() {
+        onPress.clear();
     }
 
     public @NotNull VoiceKeyBinding copy() {

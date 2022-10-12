@@ -1,4 +1,4 @@
-package su.plo.voice.proto.data;
+package su.plo.voice.proto.data.player;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;

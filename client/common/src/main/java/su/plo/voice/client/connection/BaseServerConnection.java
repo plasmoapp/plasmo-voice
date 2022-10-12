@@ -27,13 +27,12 @@ import su.plo.voice.api.util.Params;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.socket.NettyUdpClient;
-import su.plo.voice.proto.data.EncryptionInfo;
-import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
+import su.plo.voice.proto.data.encryption.EncryptionInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 
 import javax.crypto.Cipher;
@@ -214,17 +213,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         }
 
         // register source lines
-        ClientSourceLineManager sourceLines = voiceClient.getSourceLineManager();
-        sourceLines.register(serverInfo.getVoiceInfo().getSourceLines());
+        voiceClient.getSourceLineManager()
+                .register(serverInfo.getVoiceInfo().getSourceLines());
 
-        // register activations & send activations distances to the server
-        Map<UUID, Integer> distanceByActivationId = Maps.newHashMap();
-
-        ClientActivationManager activations = voiceClient.getActivationManager();
-        activations.register(serverInfo.getServerId(), serverInfo.getVoiceInfo().getActivations())
-                .forEach((activation) -> distanceByActivationId.put(activation.getId(), activation.getDistance()));
-
-        sendPacket(new PlayerActivationDistancesPacket(distanceByActivationId));
+        // register activations
+        voiceClient.getActivationManager()
+                .register(serverInfo.getVoiceInfo().getActivations());
 
         // initialize capture
         AudioCapture audioCapture = voiceClient.getAudioCapture();
@@ -341,10 +335,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
         if (!serverInfo.isPresent()) return;
 
-        activations.register(
-                serverInfo.get().getServerId(),
-                Lists.newArrayList(packet.getActivation())
-        );
+        activations.register(Lists.newArrayList(packet.getActivation()));
     }
 
     @Override

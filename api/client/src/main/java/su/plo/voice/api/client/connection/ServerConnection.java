@@ -1,8 +1,8 @@
 package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.data.EncryptionInfo;
-import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.encryption.EncryptionInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 
 import java.security.PrivateKey;

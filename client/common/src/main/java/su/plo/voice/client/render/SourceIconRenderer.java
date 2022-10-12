@@ -23,8 +23,8 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.config.entry.DoubleConfigEntry;
-import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Optional;

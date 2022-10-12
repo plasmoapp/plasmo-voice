@@ -24,7 +24,11 @@ public interface KeyBinding {
 
     void updateState(@NotNull Action action);
 
-    void onPress(@NotNull OnPress onPress);
+    void addPressListener(@NotNull OnPress onPress);
+
+    void removePressListener(@NotNull OnPress onPress);
+
+    void clearPressListener();
 
     @FunctionalInterface
     interface OnPress {

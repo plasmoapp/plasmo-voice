@@ -28,10 +28,10 @@ import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.proto.data.VoicePlayerInfo;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
@@ -176,16 +176,6 @@ public final class VoiceAudioCapture implements AudioCapture {
                 .orElse(false);
     }
 
-    @Override
-    public boolean hasPermission(@NotNull ClientActivation activation) {
-        return voiceClient.getServerInfo()
-                .map(info -> info.getPlayerInfo()
-                        .get("voice.activation." + activation.getName())
-                        .orElse(false)
-                ).orElse(false);
-
-    }
-
     private void run() {
         while (!thread.isInterrupted()) {
             try {
@@ -240,8 +230,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
                 for (ClientActivation activation : activations.getActivations()) {
                     if ((activation.isDisabled() && !activation.isActivated()) ||
-                            activation.equals(parentActivation) ||
-                            !hasPermission(activation)
+                            activation.equals(parentActivation)
                     ) continue;
 
                     ClientActivation.Result activationResult = activation.process(samples, parentResult);
@@ -259,9 +248,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                     }
                 }
 
-                if (parentActivation.getId().equals(VoiceActivation.PROXIMITY_ID) &&
-                        hasPermission(parentActivation)
-                ) {
+                if (parentActivation.getId().equals(VoiceActivation.PROXIMITY_ID)) {
                     if (processParent) {
                         processActivation(device.get(), parentActivation, parentResult, samples, encoded);
                     } else if (activationStreams.remove(parentActivation.getId())) {

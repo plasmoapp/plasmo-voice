@@ -59,6 +59,6 @@ public final class HotkeyActions {
     private void setHotkeyAction(@NotNull String name, @NotNull KeyBinding.OnPress onPress) {
         keyBindings
                 .getKeyBinding(name)
-                .ifPresent(hotkey -> hotkey.onPress(onPress));
+                .ifPresent(hotkey -> hotkey.addPressListener(onPress));
     }
 }

@@ -9,11 +9,15 @@ import su.plo.lib.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
+import su.plo.voice.api.client.connection.ServerInfo;
+import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEvent;
+import su.plo.voice.api.client.event.audio.capture.ClientActivationUnregisteredEvent;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -52,17 +56,36 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         activations.add(index, activation);
         activationById.put(activation.getId(), activation);
 
+        if (activation.getId().equals(VoiceActivation.PROXIMITY_ID)) {
+            ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getId(), activation);
+
+            if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
+                LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
+                activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
+            }
+
+            this.parentActivation = activation;
+            if (!initialized &&
+                    config.getAdvanced().getVisualizeVoiceDistance().value() &&
+                    config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()) {
+                voiceClient.getDistanceVisualizer().render(
+                        activation.getDistance(),
+                        0x00a000
+                );
+            }
+        }
+
+        voiceClient.getEventBus().call(new ClientActivationRegisteredEvent(activation));
         return activation;
     }
 
     @Override
-    public @NotNull Collection<ClientActivation> register(@NotNull UUID serverId, @NotNull Collection<Activation> activations) {
-        Optional<ClientConfig.Server> serverConfig = config.getServers().getById(serverId);
-        if (!serverConfig.isPresent()) throw new IllegalStateException("Server config is empty");
+    public @NotNull Collection<ClientActivation> register(@NotNull Collection<Activation> activations) {
+        ClientConfig.Server serverConfig = getServerConfig();
 
         for (Activation serverActivation : activations) {
             ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
-            IntConfigEntry activationDistance = serverConfig.get().getActivationDistance(serverActivation.getId(), serverActivation);
+            IntConfigEntry activationDistance = serverConfig.getActivationDistance(serverActivation.getId(), serverActivation);
             activationDistance.setDefault(
                     serverActivation.getDefaultDistance(),
                     serverActivation.getMinDistance(),
@@ -78,52 +101,15 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                     serverActivation
             ));
 
-            if (activation.getId().equals(VoiceActivation.PROXIMITY_ID)) {
-                if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
-                    LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
-                    activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
-                }
-
-                this.parentActivation = activation;
-                if (!initialized &&
-                        config.getAdvanced().getVisualizeVoiceDistance().value() &&
-                        config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()) {
-                    voiceClient.getDistanceVisualizer().render(
-                            activation.getDistance(),
-                            0x00a000
-                    );
-                }
-            }
+            voiceClient.getServerConnection().ifPresent((connection) -> connection.sendPacket(
+                    new PlayerActivationDistancesPacket(new HashMap<UUID, Integer>() {{
+                        put(activation.getId(), activation.getDistance());
+                    }})
+            ));
         }
 
         if (parentActivation == null) {
-            Activation serverActivation = new VoiceActivation(
-                    VoiceActivation.PROXIMITY_NAME,
-                    "activation.plasmovoice.parent",
-                    "",
-                    Collections.emptyList(),
-                    0,
-                    false,
-                    true,
-                    1
-            );
-
-            ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
-            IntConfigEntry activationDistance = serverConfig.get().getActivationDistance(serverActivation.getId(), serverActivation);
-            activationDistance.setDefault(0, 0, 0);
-            if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
-                LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
-                activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
-            }
-
-            this.parentActivation = new VoiceClientActivation(
-                    minecraft,
-                    voiceClient,
-                    config,
-                    activationConfig,
-                    activationDistance,
-                    serverActivation
-            );
+            this.parentActivation = createParentActivation(serverConfig);
         }
 
         this.initialized = true;
@@ -148,7 +134,16 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     @Override
     public boolean unregister(@NotNull UUID id) {
         ClientActivation activation = activationById.remove(id);
-        if (activation != null) return activations.remove(activation);
+        if (activation != null) {
+            if (id.equals(VoiceActivation.PROXIMITY_ID)) {
+                this.parentActivation = createParentActivation(getServerConfig());
+            }
+
+            boolean removed = activations.remove(activation);
+            voiceClient.getEventBus().call(new ClientActivationUnregisteredEvent(activation));
+            return removed;
+        }
+
         return false;
     }
 
@@ -159,12 +154,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
     @Override
     public boolean unregister(@NotNull ClientActivation activation) {
-        if (activations.remove(activation)) {
-            activationById.remove(activation.getId());
-            return true;
-        }
-
-        return false;
+        return unregister(activation.getId());
     }
 
     @Override
@@ -172,5 +162,43 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         activations.clear();
         activationById.clear();
         this.initialized = false;
+    }
+
+    private ClientConfig.Server getServerConfig() {
+        return config.getServers().getById(
+                voiceClient.getServerInfo()
+                        .map(ServerInfo::getServerId)
+                        .orElseThrow(() -> new IllegalStateException("Not connected"))
+        ).orElseThrow(() -> new IllegalStateException("Server config is empty"));
+    }
+
+    private VoiceClientActivation createParentActivation(@NotNull ClientConfig.Server serverConfig) {
+        Activation serverActivation = new VoiceActivation(
+                VoiceActivation.PROXIMITY_NAME,
+                "activation.plasmovoice.parent",
+                "",
+                Collections.emptyList(),
+                0,
+                false,
+                true,
+                1
+        );
+
+        ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
+        IntConfigEntry activationDistance = serverConfig.getActivationDistance(serverActivation.getId(), serverActivation);
+        activationDistance.setDefault(0, 0, 0);
+        if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
+            LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
+            activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
+        }
+
+        return new VoiceClientActivation(
+                minecraft,
+                voiceClient,
+                config,
+                activationConfig,
+                activationDistance,
+                serverActivation
+        );
     }
 }

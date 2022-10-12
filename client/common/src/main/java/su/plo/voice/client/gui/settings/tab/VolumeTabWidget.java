@@ -22,7 +22,7 @@ import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 import su.plo.voice.client.gui.settings.widget.VolumeSliderWidget;
 import su.plo.voice.config.entry.DoubleConfigEntry;
-import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.util.Collections;
 import java.util.Comparator;

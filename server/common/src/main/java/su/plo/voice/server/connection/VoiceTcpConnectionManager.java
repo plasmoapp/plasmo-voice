@@ -8,11 +8,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.server.BaseVoiceServer;
@@ -131,6 +131,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                         .getActivations()
                         .stream()
                         .map(activation -> (VoiceActivation) activation) // waytoodank
+                        .filter(activation -> receiver.getInstance().hasPermission("voice.activation." + activation.getName()))
                         .collect(Collectors.toList()),
                 getPlayerPermissions(receiver)
         ));

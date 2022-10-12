@@ -48,16 +48,18 @@ public final class ProximityServerActivation {
 
     @EventSubscribe
     public void onPlayerSpeak(@NotNull PlayerSpeakEvent event) {
+        VoicePlayer player = event.getPlayer();
         PlayerAudioPacket packet = event.getPacket();
 
-        if (!voiceServer.getConfig()
-                .getVoice()
-                .getProximity()
-                .getDistances()
-                .contains((int) packet.getDistance())
+        if (!player.getInstance().hasPermission("voice.activation.proximity") ||
+                !voiceServer.getConfig()
+                        .getVoice()
+                        .getProximity()
+                        .getDistances()
+                        .contains((int) packet.getDistance())
         ) return;
 
-        getPlayerSource(event.getPlayer(), packet.getActivationId(), packet.isStereo()).ifPresent((source) -> {
+        getPlayerSource(player, packet.getActivationId(), packet.isStereo()).ifPresent((source) -> {
             SourceAudioPacket sourcePacket = new SourceAudioPacket(
                     packet.getSequenceNumber(),
                     (byte) source.getState(),
@@ -71,16 +73,18 @@ public final class ProximityServerActivation {
 
     @EventSubscribe
     public void onPlayerSpeakEnd(@NotNull PlayerSpeakEndEvent event) {
+        VoicePlayer player = event.getPlayer();
         PlayerAudioEndPacket packet = event.getPacket();
 
-        if (!voiceServer.getConfig()
-                .getVoice()
-                .getProximity()
-                .getDistances()
-                .contains((int) packet.getDistance())
+        if (!player.getInstance().hasPermission("voice.activation.proximity") ||
+                !voiceServer.getConfig()
+                        .getVoice()
+                        .getProximity()
+                        .getDistances()
+                        .contains((int) packet.getDistance())
         ) return;
 
-        getPlayerSource(event.getPlayer(), packet.getActivationId(), true).ifPresent((source) -> {
+        getPlayerSource(player, packet.getActivationId(), true).ifPresent((source) -> {
             SourceAudioEndPacket sourcePacket = new SourceAudioEndPacket(source.getId(), packet.getSequenceNumber());
             source.sendPacket(sourcePacket, packet.getDistance());
         });

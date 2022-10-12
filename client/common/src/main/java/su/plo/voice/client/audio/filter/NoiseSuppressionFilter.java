@@ -21,7 +21,8 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
 
         this.activeEntry = activeEntry;
         if (activeEntry.value()) toggle();
-        activeEntry.onUpdate((active) -> toggle());
+        activeEntry.clearChangeListeners();
+        activeEntry.addChangeListener((active) -> toggle());
     }
 
     private void toggle() {

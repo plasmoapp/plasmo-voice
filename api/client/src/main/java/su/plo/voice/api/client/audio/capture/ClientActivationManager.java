@@ -6,7 +6,6 @@ import su.plo.voice.proto.data.audio.capture.Activation;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.UUID;
 
 public interface ClientActivationManager extends ActivationManager<ClientActivation> {
 
@@ -14,5 +13,5 @@ public interface ClientActivationManager extends ActivationManager<ClientActivat
 
     @NotNull ClientActivation register(@NotNull ClientActivation activation);
 
-    @NotNull Collection<ClientActivation> register(@NotNull UUID serverId, @NotNull Collection<Activation> activations);
+    @NotNull Collection<ClientActivation> register(@NotNull Collection<Activation> activations);
 }

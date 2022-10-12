@@ -103,6 +103,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         eventBus.register(this, playerManager);
 
         this.activationManager = new VoiceServerActivationManager(this);
+        eventBus.register(this, activationManager);
         this.sourceLineManager = new VoiceServerSourceLineManager(this);
 
         // mutes
@@ -125,7 +126,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         try {
             Class.forName("net.luckperms.api.LuckPermsProvider");
-            this.luckPermsListener = new LuckPermsListener(this, playerManager);
+            this.luckPermsListener = new LuckPermsListener(this, playerManager, executor);
             luckPermsListener.subscribe();
         } catch (IllegalStateException | ClassNotFoundException ignored) {
             // luckperms not found

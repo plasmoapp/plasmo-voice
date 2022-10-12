@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.proto.data.VoicePlayerInfo;
+import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.util.UUID;
 

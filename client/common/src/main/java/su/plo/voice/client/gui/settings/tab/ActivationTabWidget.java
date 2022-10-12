@@ -10,6 +10,9 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.connection.ServerInfo;
+import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEvent;
+import su.plo.voice.api.client.event.audio.capture.ClientActivationUnregisteredEvent;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.capture.VoiceClientActivation;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
@@ -62,6 +65,16 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         activations.stream()
                 .filter(activation -> !activation.getId().equals(VoiceActivation.PROXIMITY_ID))
                 .forEach(activation -> createActivation(activation, true));
+    }
+
+    @EventSubscribe
+    public void onActivationRegister(@NotNull ClientActivationRegisteredEvent event) {
+        init();
+    }
+
+    @EventSubscribe
+    public void onActivationUnregister(@NotNull ClientActivationUnregisteredEvent event) {
+        init();
     }
 
     private void createActivation(ClientActivation activation, boolean canInherit) {

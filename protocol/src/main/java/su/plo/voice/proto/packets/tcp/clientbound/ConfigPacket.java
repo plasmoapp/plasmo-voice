@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.proto.data.EncryptionInfo;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;

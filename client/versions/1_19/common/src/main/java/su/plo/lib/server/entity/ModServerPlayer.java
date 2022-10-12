@@ -11,6 +11,7 @@ import su.plo.lib.chat.TextConverter;
 import su.plo.lib.client.texture.ResourceCache;
 import su.plo.lib.entity.ModPlayer;
 import su.plo.lib.server.MinecraftServerLib;
+import su.plo.lib.server.permission.PermissionTristate;
 import su.plo.lib.server.world.MinecraftServerWorld;
 import su.plo.lib.server.world.ServerPos3d;
 import su.plo.voice.server.player.PermissionSupplier;
@@ -87,5 +88,10 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     @Override
     public boolean hasPermission(@NotNull String permission) {
         return permissions.hasPermission(instance, permission);
+    }
+
+    @Override
+    public @NotNull PermissionTristate getPermission(@NotNull String permission) {
+        return permissions.getPermission(instance, permission);
     }
 }
