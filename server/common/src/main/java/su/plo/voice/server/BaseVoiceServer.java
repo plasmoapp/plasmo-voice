@@ -1,6 +1,5 @@
 package su.plo.voice.server;
 
-import com.google.common.collect.ImmutableList;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,7 +27,6 @@ import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.api.server.socket.UdpServer;
-import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.server.audio.capture.ProximityServerActivation;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
@@ -199,33 +197,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         // register proximity activation
         proximityActivation.register(config);
-        activationManager.register(
-                this,
-                "groups",
-                "Groups",
-                "plasmovoice:textures/icons/microphone_group.png",
-                ImmutableList.of(),
-                0,
-                true,
-                false,
-                3
-        );
-
-        // register proximity line
-        sourceLineManager.register(
-                this,
-                VoiceSourceLine.PROXIMITY_NAME,
-                "activation.plasmovoice.proximity",
-                "plasmovoice:textures/icons/speaker.png",
-                1
-        );
-        sourceLineManager.registerPlayers(
-                this,
-                "groups",
-                "Groups",
-                "plasmovoice:textures/icons/speaker_groups.png",
-                3
-        );
 
         if (restartUdpServer) startUdpServer();
     }
