@@ -35,6 +35,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public final class ModServerLib implements MinecraftServerLib {
 
+    public static ModServerLib INSTANCE;
+
     private final Map<ServerLevel, MinecraftServerWorld> worldByInstance = Maps.newConcurrentMap();
 
     @Setter
@@ -46,11 +48,16 @@ public final class ModServerLib implements MinecraftServerLib {
     private final ResourceCache resources = new ResourceCache();
 
     @Getter
-    private final ModCommandManager commandManager = new ModCommandManager(this);
+    private final ModCommandManager commandManager = new ModCommandManager(this, textConverter);
     @Getter
     private final PermissionsManager permissionsManager = new PermissionsManager();
 
     private final Map<UUID, MinecraftServerPlayer> playerById = Maps.newConcurrentMap();
+
+    @Override
+    public void onInitialize() {
+        INSTANCE = this;
+    }
 
     @Override
     public void onShutdown() {

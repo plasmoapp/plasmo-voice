@@ -20,7 +20,6 @@ import su.plo.voice.client.render.ModHudRenderer;
 import su.plo.voice.client.render.ModLevelRenderer;
 import su.plo.voice.client.render.ModPlayerVolumeAction;
 
-import java.io.InputStream;
 import java.net.Inet4Address;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -68,11 +67,6 @@ public abstract class ModVoiceClient extends BaseVoiceClient {
 
         this.sourceManager = new ModClientSourceManager(this, config);
         eventBus.register(this, sourceManager);
-    }
-
-    @Override
-    public InputStream getResource(String name) {
-        return getClass().getClassLoader().getResourceAsStream(name);
     }
 
     @Override

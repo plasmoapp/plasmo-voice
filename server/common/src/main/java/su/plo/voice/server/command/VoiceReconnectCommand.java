@@ -3,22 +3,24 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.chat.TextComponent;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
 import su.plo.lib.server.entity.MinecraftServerPlayer;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.config.ServerLanguage;
 
 @RequiredArgsConstructor
 public final class VoiceReconnectCommand implements MinecraftCommand {
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
+
         if (!(source instanceof MinecraftServerPlayer)) {
-            source.sendMessage(TextComponent.literal("Only player can execute this command"));
+            source.sendMessage(language.playerOnlyCommand());
             return;
         }
 
@@ -26,7 +28,7 @@ public final class VoiceReconnectCommand implements MinecraftCommand {
         VoicePlayer voicePlayer = voiceServer.getPlayerManager().getPlayerById(player.getUUID())
                 .orElseThrow(() -> new IllegalStateException("how?"));
 
-        source.sendMessage(TextComponent.translatable("commands.plasmovoice.reconnect"));
+        source.sendMessage(language.commands().reconnect().message());
         voiceServer.getUdpConnectionManager().removeConnection(voicePlayer);
         voiceServer.getTcpConnectionManager().connect(voicePlayer);
     }

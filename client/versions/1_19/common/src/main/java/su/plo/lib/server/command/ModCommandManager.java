@@ -3,13 +3,16 @@ package su.plo.lib.server.command;
 import com.mojang.brigadier.CommandDispatcher;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.chat.TextConverter;
 import su.plo.lib.server.MinecraftServerLib;
 
 @RequiredArgsConstructor
 public final class ModCommandManager extends MinecraftCommandManager {
 
     private final MinecraftServerLib minecraftServer;
+    private final TextConverter<Component> textConverter;
 
     private boolean registered;
 
@@ -33,7 +36,7 @@ public final class ModCommandManager extends MinecraftCommandManager {
 
     public synchronized void registerCommands(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         commandByName.forEach((name, command) -> {
-            ModCommand modCommand = new ModCommand(minecraftServer, command);
+            ModCommand modCommand = new ModCommand(minecraftServer, textConverter, command);
             modCommand.register(dispatcher, name);
         });
         this.registered = true;

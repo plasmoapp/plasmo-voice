@@ -3,11 +3,11 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.chat.TextComponent;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.config.ServerLanguage;
 
 @RequiredArgsConstructor
 public final class VoiceReloadCommand implements MinecraftCommand {
@@ -16,6 +16,7 @@ public final class VoiceReloadCommand implements MinecraftCommand {
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
         voiceServer.loadConfig();
 
         voiceServer.getPlayerManager().getPlayers()
@@ -23,7 +24,7 @@ public final class VoiceReloadCommand implements MinecraftCommand {
                 .filter(VoicePlayer::hasVoiceChat)
                 .forEach((player) -> voiceServer.getTcpConnectionManager().sendConfigInfo(player));
 
-        source.sendMessage(TextComponent.translatable("commands.plasmovoice.reload"));
+        source.sendMessage(language.commands().reload().message());
     }
 
     @Override

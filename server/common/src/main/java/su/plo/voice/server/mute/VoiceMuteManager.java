@@ -2,13 +2,14 @@ package su.plo.voice.server.mute;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.chat.TextComponent;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoicePlayerManager;
+import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.config.ServerLanguage;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -23,11 +24,11 @@ public final class VoiceMuteManager implements MuteManager {
         return muteInfo.getMutedToTime() == 0 || muteInfo.getMutedToTime() > System.currentTimeMillis();
     }
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
     private final MuteStorage storage;
     private final VoicePlayerManager playerManager;
 
-    public VoiceMuteManager(@NotNull PlasmoVoiceServer voiceServer,
+    public VoiceMuteManager(@NotNull BaseVoiceServer voiceServer,
                             @NotNull MuteStorage storage,
                             @NotNull ScheduledExecutorService executor) {
         this.voiceServer = voiceServer;
@@ -47,6 +48,8 @@ public final class VoiceMuteManager implements MuteManager {
         VoicePlayer player = playerManager.getPlayerById(playerId)
                 .orElseThrow(() -> new IllegalArgumentException("Player not found"));
 
+        ServerLanguage language = voiceServer.getLanguages().getLanguage(player.getInstance());
+
         if (duration > 0 && durationUnit == null) {
             throw new IllegalArgumentException("durationUnit cannot be null if duration > 0");
         }
@@ -56,9 +59,9 @@ public final class VoiceMuteManager implements MuteManager {
             throw new IllegalArgumentException("TIMESTAMP duration should be in the future");
         }
 
-        TextComponent durationMessage = durationUnit == null
-                ? TextComponent.empty()
-                : formatDurationUnit(duration, durationUnit);
+        String durationMessage = durationUnit == null
+                ? ""
+                : language.mutes().durations().format(duration, durationUnit);
         if (duration > 0) {
             duration = durationUnit.multiply(duration);
 
@@ -73,15 +76,15 @@ public final class VoiceMuteManager implements MuteManager {
 
         voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
         if (duration > 0) {
-            player.getInstance().sendMessage(TextComponent.translatable(
-                    "message.plasmovoice.mute.temporally_muted",
+            player.getInstance().sendMessage(String.format(
+                    language.mutes().temporallyMuted(),
                     durationMessage,
-                    formatMuteReason(reason)
+                    formatMuteReason(language, reason)
             ));
         } else {
             player.getInstance().sendMessage(TextComponent.translatable(
-                    "message.plasmovoice.mute.permanently_muted",
-                    formatMuteReason(reason)
+                    language.mutes().permanentlyMuted(),
+                    formatMuteReason(language, reason)
             ));
         }
 
@@ -96,8 +99,10 @@ public final class VoiceMuteManager implements MuteManager {
                 .map(muteInfo -> {
                     playerManager.getPlayerById(playerId)
                             .ifPresent(player -> {
+                                ServerLanguage language = voiceServer.getLanguages().getLanguage(player.getInstance());
+
                                 voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
-                                player.getInstance().sendMessage(TextComponent.translatable("message.plasmovoice.mute.unmuted"));
+                                player.getInstance().sendMessage(language.mutes().unmuted());
                             });
 
                     // todo: voice unmute event
@@ -116,29 +121,10 @@ public final class VoiceMuteManager implements MuteManager {
         return storage.getMutedPlayers();
     }
 
-    public TextComponent formatMuteReason(@org.jetbrains.annotations.Nullable String reason) {
+    public String formatMuteReason(@NotNull ServerLanguage language, @Nullable String reason) {
         return reason == null
-                ? TextComponent.translatable("message.plasmovoice.mute.empty_reason")
-                : TextComponent.literal(reason);
-    }
-
-    public TextComponent formatDurationUnit(long duration, @NotNull MuteDurationUnit durationUnit) {
-        if (durationUnit == MuteDurationUnit.TIMESTAMP) {
-            long diff = duration - System.currentTimeMillis();
-            if (diff <= 0L) {
-                throw new IllegalArgumentException("TIMESTAMP duration should be in the future");
-            }
-
-            return TextComponent.translatable(
-                    MuteDurationUnit.SECOND.getTranslation(),
-                    diff / 1_000L
-            );
-        }
-
-        return TextComponent.translatable(
-                durationUnit.getTranslation(),
-                duration
-        );
+                ? language.mutes().emptyReason()
+                : reason;
     }
 
     private void tick() {

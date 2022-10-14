@@ -1,0 +1,49 @@
+no_permissions = "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
+player_not_found = "Игрок не найден"
+player_only_command = "Only player can execute this command"
+
+[mutes]
+empty_reason = "not specified"
+temporally_muted = "You've been muted %1$s. Reason: %2$s"
+permanently_muted = "You've been permanently muted. Reason: %s"
+unmuted = "You've been unmuted"
+
+[mutes.durations]
+seconds = "for %s sec"
+minutes = "for %s min"
+hours = "for %s h"
+days = "for %s d"
+weeks = "for %s w"
+
+[commands]
+
+[commands.mute]
+usage = "Usage: /vmute <player> [duration] [reason]"
+already_muted = "%s already muted"
+temporally_muted = "Muted %1$s %2$s. Reason: %3$s"
+permanently_muted = "%1$s is permanently muted. Reason: %2$s"
+
+[commands.unmute]
+usage = "Usage: /vunmute <player>"
+not_muted = "%s not muted"
+unmuted = "Unmuted %s"
+
+[commands.mute_list]
+header = "Muted players:"
+entry = "%1$s, expires: %2$s. Reason: %3$s"
+entry_muted_by = "%1$s muted by %2$s, expires: %3$s. Reason: %4$s"
+empty = "No players are muted"
+expire_at = "%1$s at %2$s"
+never_expires = "never"
+expiration_date = "yyyy.MM.dd"
+expiration_time = "HH:mm:ss"
+
+[commands.list]
+message = "Clients (%1$s/%2$s): %3$s"
+empty = "no players with Plasmo Voice installed"
+
+[commands.reconnect]
+message = "Reconnect packet sent"
+
+[commands.reload]
+message = "Config reloaded"

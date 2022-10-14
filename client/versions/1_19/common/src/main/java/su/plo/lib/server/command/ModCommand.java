@@ -15,9 +15,11 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import su.plo.lib.chat.TextComponent;
+import su.plo.lib.chat.TextConverter;
 import su.plo.lib.chat.TextStyle;
 import su.plo.lib.server.MinecraftServerLib;
 
@@ -29,6 +31,7 @@ import java.util.function.Predicate;
 public final class ModCommand implements Command<CommandSourceStack>, Predicate<CommandSourceStack>, SuggestionProvider<CommandSourceStack> {
 
     private final MinecraftServerLib minecraftServer;
+    private final TextConverter<Component> textConverter;
     private final MinecraftCommand command;
 
     public LiteralCommandNode<CommandSourceStack> register(CommandDispatcher<CommandSourceStack> dispatcher, String label) {
@@ -46,7 +49,12 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
         MinecraftCommandSource source = getCommandSource(context.getSource());
 
         int spaceIndex = context.getInput().indexOf(' ');
-        String[] args = context.getInput().substring(spaceIndex + 1).split(" ", -1);
+        String[] args;
+        if (spaceIndex >= 0) {
+            args = context.getInput().substring(spaceIndex + 1).split(" ", -1);
+        } else {
+            args = new String[0];
+        }
 
         if (!command.hasPermission(source, args)) {
             source.sendMessage(TextComponent.translatable("commands.plasmovoice.no_permissions").withStyle(TextStyle.RED));
@@ -85,6 +93,6 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
             return minecraftServer.getPlayerByInstance(entity);
         }
 
-        return new ModDefaultCommandSource(source);
+        return new ModDefaultCommandSource(source, textConverter);
     }
 }

@@ -68,7 +68,9 @@ public abstract class BaseVoice implements PlasmoVoice {
         return eventBus;
     }
 
-    public abstract InputStream getResource(String name);
+    public InputStream getResource(String name) {
+        return getClass().getClassLoader().getResourceAsStream(name);
+    }
 
     protected abstract Logger getLogger();
 

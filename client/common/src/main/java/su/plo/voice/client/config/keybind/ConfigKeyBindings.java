@@ -132,7 +132,7 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
                 String name = (String) configKeyMap.get("name");
                 String category = (String) configKeyMap.get("category");
                 List<Object> configKeys = (List<Object>) configKeyMap.get("keys");
-                boolean anyContext = (Boolean) configKeyMap.get("anyContext");
+                boolean anyContext = (Boolean) configKeyMap.get("any_context");
 
                 List<KeyBinding.Key> keys = new ArrayList<>();
                 configKeys.forEach(serializedKey -> {
@@ -166,6 +166,8 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
 
         categoryEntries.asMap().forEach((category, keyBindings) -> {
             keyBindings.forEach((entry) -> {
+                if (entry.isDefault()) return;
+
                 KeyBinding keyBinding = entry.value();
 
                 Map<String, Object> serializedKeyBinding = Maps.newHashMap();
@@ -185,7 +187,7 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
                                 })
                                 .collect(Collectors.toList())
                 );
-                serializedKeyBinding.put("anyContext", keyBinding.isAnyContext());
+                serializedKeyBinding.put("any_context", keyBinding.isAnyContext());
 
                 serialized.add(serializedKeyBinding);
             });

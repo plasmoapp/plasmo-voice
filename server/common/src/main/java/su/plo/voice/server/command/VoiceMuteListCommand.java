@@ -3,14 +3,13 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.chat.TextComponent;
 import su.plo.lib.profile.MinecraftGameProfile;
 import su.plo.lib.server.MinecraftServerLib;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerConfig;
+import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.mute.VoiceMuteManager;
 
 import java.text.SimpleDateFormat;
@@ -26,14 +25,15 @@ public final class VoiceMuteListCommand implements MinecraftCommand {
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
+
         VoiceMuteManager muteManager = (VoiceMuteManager) voiceServer.getMuteManager();
-        ServerConfig config = voiceServer.getConfig();
 
         Collection<ServerMuteInfo> mutedPlayers = muteManager.getMutedPlayers();
 
-        source.sendMessage(TextComponent.translatable("commands.plasmovoice.mute_list.header"));
+        source.sendMessage(language.commands().muteList().header());
         if (mutedPlayers.isEmpty()) {
-            source.sendMessage(TextComponent.translatable("commands.plasmovoice.mute_list.empty"));
+            source.sendMessage(language.commands().muteList().empty());
             return;
         }
 
@@ -47,29 +47,29 @@ public final class VoiceMuteListCommand implements MinecraftCommand {
 
             Date date = new Date(muteInfo.getMutedToTime());
             SimpleDateFormat expirationFormatDate = new SimpleDateFormat(
-                    config.getCommands().getMuteList().getExpirationDate()
+                    language.commands().muteList().expirationDate()
             );
             SimpleDateFormat expirationFormatTime = new SimpleDateFormat(
-                    config.getCommands().getMuteList().getExpirationTime()
+                    language.commands().muteList().expirationTime()
             );
 
-            TextComponent expires = muteInfo.getMutedToTime() > 0
-                    ? TextComponent.translatable("commands.plasmovoice.mute_list.expire_at", expirationFormatDate.format(date), expirationFormatTime.format(date))
-                    : TextComponent.translatable("commands.plasmovoice.mute_list.never_expires");
+            String expires = muteInfo.getMutedToTime() > 0
+                    ? String.format(language.commands().muteList().expireAt(), expirationFormatDate.format(date), expirationFormatTime.format(date))
+                    : language.commands().muteList().neverExpires();
 
-            TextComponent reason = muteManager.formatMuteReason(muteInfo.getReason());
+            String reason = muteManager.formatMuteReason(language, muteInfo.getReason());
 
             if (mutedBy.isPresent()) {
-                source.sendMessage(TextComponent.translatable(
-                        "commands.plasmovoice.mute_list.entry_muted_by",
+                source.sendMessage(String.format(
+                        language.commands().muteList().entryMutedBy(),
                         player.get().getName(),
                         mutedBy.get().getName(),
                         expires,
                         reason
                 ));
             } else {
-                source.sendMessage(TextComponent.translatable(
-                        "commands.plasmovoice.mute_list.entry",
+                source.sendMessage(String.format(
+                        language.commands().muteList().entry(),
                         player.get().getName(),
                         expires,
                         reason

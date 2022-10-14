@@ -46,7 +46,7 @@ public final class ProximityServerActivation {
         );
 
         voiceServer.getSourceLineManager().register(
-                this,
+                voiceServer,
                 VoiceSourceLine.PROXIMITY_NAME,
                 "activation.plasmovoice.proximity",
                 "plasmovoice:textures/icons/speaker.png",

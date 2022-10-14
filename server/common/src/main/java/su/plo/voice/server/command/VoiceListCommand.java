@@ -3,11 +3,11 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.chat.TextComponent;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.config.ServerLanguage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class VoiceListCommand implements MinecraftCommand {
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
@@ -26,13 +26,14 @@ public final class VoiceListCommand implements MinecraftCommand {
                 .sorted()
                 .collect(Collectors.toList());
 
-        source.sendMessage(TextComponent.translatable(
-                "commands.plasmovoice.list",
+        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
+        source.sendMessage(String.format(
+                language.commands().list().message(),
                 players.size(),
                 voiceServer.getPlayerManager().getPlayers().size(),
                 players.size() > 0
                         ? String.join(", ", players)
-                        : TextComponent.translatable("commands.plasmovoice.list.empty")
+                        : language.commands().list().empty()
         ));
     }
 

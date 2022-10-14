@@ -33,6 +33,7 @@ import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.command.*;
 import su.plo.voice.server.config.ServerConfig;
+import su.plo.voice.server.config.ServerLanguages;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
 import su.plo.voice.server.mute.VoiceMuteManager;
@@ -84,6 +85,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     @Getter
     protected ServerConfig config;
+    @Getter
+    protected ServerLanguages languages;
 
     @Override
     protected void onInitialize() {
@@ -171,6 +174,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         playerManager.clear();
 
         this.config = null;
+        this.languages = null;
 
         eventBus.unregister(this);
         super.onShutdown();
@@ -189,6 +193,9 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             if (oldConfig != null) {
                 restartUdpServer = !config.getHost().equals(oldConfig.getHost());
             }
+
+            this.languages = new ServerLanguages(this);
+            languages.load();
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }

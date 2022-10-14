@@ -2,18 +2,31 @@ package su.plo.lib.server.command;
 
 import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.chat.TextComponent;
+import su.plo.lib.chat.TextConverter;
 import su.plo.lib.server.permission.PermissionTristate;
 
 @RequiredArgsConstructor
 public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     private final CommandSourceStack source;
+    private final TextConverter<Component> textConverter;
 
     @Override
     public void sendMessage(@NotNull TextComponent text) {
+        source.sendSystemMessage(textConverter.convert(text));
+    }
 
+    @Override
+    public void sendMessage(@NotNull String text) {
+        source.sendSystemMessage(Component.literal(text));
+    }
+
+    @Override
+    public @NotNull String getLanguage() {
+        return "en_us";
     }
 
     @Override

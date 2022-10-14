@@ -1,6 +1,8 @@
 package su.plo.lib.server.entity;
 
 import io.netty.buffer.Unpooled;
+import lombok.Getter;
+import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
@@ -22,6 +24,9 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     private final TextConverter<Component> textConverter;
     private final PermissionSupplier permissions;
     private final ResourceCache resources;
+    @Getter
+    @Setter
+    private String language = "en_us";
 
     public ModServerPlayer(@NotNull MinecraftServerLib minecraftServer,
                            @NotNull TextConverter<Component> textConverter,
@@ -78,6 +83,11 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     @Override
     public void sendMessage(@NotNull TextComponent text) {
         instance.sendSystemMessage(textConverter.convert(text));
+    }
+
+    @Override
+    public void sendMessage(@NotNull String text) {
+        instance.sendSystemMessage(Component.literal(text));
     }
 
     @Override

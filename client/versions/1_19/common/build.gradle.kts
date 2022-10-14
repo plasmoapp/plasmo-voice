@@ -21,7 +21,10 @@ tasks {
 sourceSets {
     main {
         resources {
-            srcDirs(project(":client:common").sourceSets.main.get().resources)
+            srcDirs(
+                project(":client:common").sourceSets.main.get().resources,
+                project(":server:common").sourceSets.main.get().resources
+            )
         }
     }
 }

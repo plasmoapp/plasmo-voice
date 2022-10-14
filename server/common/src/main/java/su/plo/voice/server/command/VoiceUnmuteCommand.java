@@ -3,13 +3,13 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.chat.TextComponent;
 import su.plo.lib.profile.MinecraftGameProfile;
 import su.plo.lib.server.MinecraftServerLib;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.mute.MuteManager;
+import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.config.ServerLanguage;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,13 +19,15 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class VoiceUnmuteCommand implements MinecraftCommand {
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
     private final MinecraftServerLib minecraftServer;
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
+
         if (arguments.length == 0) {
-            source.sendMessage(TextComponent.translatable("commands.plasmovoice.unmute.usage"));
+            source.sendMessage(language.commands().unmute().usage());
             return;
         }
 
@@ -37,22 +39,22 @@ public final class VoiceUnmuteCommand implements MinecraftCommand {
         }
 
         if (!player.isPresent()) {
-            source.sendMessage(TextComponent.translatable("commands.plasmovoice.player_not_found"));
+            source.sendMessage(language.playerNotFound());
             return;
         }
 
         MuteManager muteManager = voiceServer.getMuteManager();
 
         if (!muteManager.unmute(player.get().getId(), false).isPresent()) {
-            source.sendMessage(TextComponent.translatable(
-                    "commands.plasmovoice.unmute.not_muted",
+            source.sendMessage(String.format(
+                    language.commands().unmute().notMuted(),
                     player.get().getName()
             ));
             return;
         }
 
-        source.sendMessage(TextComponent.translatable(
-                "commands.plasmovoice.unmute.unmuted",
+        source.sendMessage(String.format(
+                language.commands().unmute().unmuted(),
                 player.get().getName()
         ));
     }

@@ -3,7 +3,9 @@
     "minVersion": "0.8",
     "package": "su.plo.voice.mixin",
     "compatibilityLevel": "JAVA_16",
-    "mixins": [],
+    "mixins": [
+        "MixinServerPlayer"
+    ],
     "client": [
         "MixinEntityRenderer",
         "MixinGameRenderer",

@@ -10,8 +10,9 @@ import su.plo.lib.server.MinecraftServerLib;
 import su.plo.lib.server.command.MinecraftCommand;
 import su.plo.lib.server.command.MinecraftCommandSource;
 import su.plo.lib.server.entity.MinecraftServerPlayer;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
+import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.mute.VoiceMuteManager;
 
 import java.util.*;
@@ -24,27 +25,29 @@ public final class VoiceMuteCommand implements MinecraftCommand {
     private static final Pattern DURATION_PATTERN = Pattern.compile("^([0-9]*)([mhdwsu]|permanent)?$");
     private static final Pattern INTEGER_PATTERN = Pattern.compile("^([0-9]*)$");
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
     private final MinecraftServerLib minecraftServer;
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
+
         if (arguments.length == 0) {
-            source.sendMessage(TextComponent.translatable("commands.plasmovoice.mute.usage"));
+            source.sendMessage(language.commands().mute().usage());
             return;
         }
 
         Optional<MinecraftServerPlayer> player = minecraftServer.getPlayerByName(arguments[0]);
         if (!player.isPresent()) {
-            source.sendMessage(TextComponent.translatable("commands.plasmovoice.player_not_found"));
+            source.sendMessage(language.playerNotFound());
             return;
         }
 
         VoiceMuteManager muteManager = (VoiceMuteManager) voiceServer.getMuteManager();
 
         if (muteManager.getMute(player.get().getUUID()).isPresent()) {
-            source.sendMessage(TextComponent.translatable(
-                    "commands.plasmovoice.mute.already_muted",
+            source.sendMessage(String.format(
+                    language.commands().mute().alreadyMuted(),
                     player.get().getName()
             ));
             return;
@@ -75,18 +78,18 @@ public final class VoiceMuteCommand implements MinecraftCommand {
         }
 
         if (durationUnit == null) {
-            source.sendMessage(TextComponent.translatable(
-                    "commands.plasmovoice.mute.permanently_muted",
+            source.sendMessage(String.format(
+                    language.commands().mute().permanentlyMuted(),
                     player.get().getName(),
-                    muteManager.formatMuteReason(reason)
+                    muteManager.formatMuteReason(language, reason)
             ));
         } else {
             try {
-                source.sendMessage(TextComponent.translatable(
-                        "commands.plasmovoice.mute.temporally_muted",
+                source.sendMessage(String.format(
+                        language.commands().mute().temporallyMuted(),
                         player.get().getName(),
-                        muteManager.formatDurationUnit(duration, durationUnit),
-                        muteManager.formatMuteReason(reason)
+                        language.mutes().durations().format(duration, durationUnit),
+                        muteManager.formatMuteReason(language, reason)
                 ));
             } catch (IllegalArgumentException e) {
                 source.sendMessage(TextComponent.literal(e.getMessage()));

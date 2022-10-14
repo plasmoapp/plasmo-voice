@@ -8,8 +8,6 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.server.MinecraftServerLib;
 import su.plo.lib.server.ModServerLib;
 
-import java.io.InputStream;
-
 public abstract class ModVoiceServer extends BaseVoiceServer {
 
     public static final ResourceLocation CHANNEL = new ResourceLocation(CHANNEL_STRING);
@@ -19,11 +17,6 @@ public abstract class ModVoiceServer extends BaseVoiceServer {
     protected final ModServerLib minecraftServerLib = new ModServerLib();
 
     protected MinecraftServer server;
-
-    @Override
-    public InputStream getResource(String name) {
-        return getClass().getClassLoader().getResourceAsStream(name);
-    }
 
     protected void onInitialize(MinecraftServer server) {
         this.server = server;
