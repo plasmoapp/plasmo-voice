@@ -5,17 +5,7 @@ dependencies {
 }
 
 architectury {
-    common("fabric")
-}
-
-configurations {
-    create("dev")
-}
-
-tasks {
-    artifacts {
-        add("dev", jar)
-    }
+    common("fabric", "forge")
 }
 
 sourceSets {

@@ -3,12 +3,12 @@ package su.plo.voice.client.gui.settings;
 import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.gui.GuiRender;
-import su.plo.lib.client.render.MinecraftTesselator;
-import su.plo.lib.client.render.VertexBuilder;
-import su.plo.lib.client.render.particle.MinecraftBlockParticle;
-import su.plo.lib.client.sound.MinecraftSoundManager;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.gui.GuiRender;
+import su.plo.lib.api.client.render.MinecraftTesselator;
+import su.plo.lib.api.client.render.VertexBuilder;
+import su.plo.lib.api.client.render.particle.MinecraftBlockParticle;
+import su.plo.lib.api.client.sound.MinecraftSoundManager;
 import su.plo.voice.util.RandomUtil;
 
 import java.util.List;

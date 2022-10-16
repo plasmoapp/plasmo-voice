@@ -5,7 +5,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.lib.server.command.MinecraftChatHolder;
+import su.plo.lib.api.server.command.MinecraftChatHolder;
 import su.plo.voice.server.BaseVoiceServer;
 
 import java.io.*;

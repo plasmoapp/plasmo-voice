@@ -1,7 +1,7 @@
 {
     "required": true,
     "minVersion": "0.8",
-    "package": "su.plo.voice.mixin",
+    "package": "su.plo.voice.mod.mixin",
     "compatibilityLevel": "JAVA_16",
     "mixins": [
         "MixinServerPlayer"

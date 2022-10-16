@@ -1,7 +1,7 @@
 package su.plo.voice.api.server.player;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.server.entity.MinecraftServerPlayer;
+import su.plo.lib.api.server.entity.MinecraftServerPlayer;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 

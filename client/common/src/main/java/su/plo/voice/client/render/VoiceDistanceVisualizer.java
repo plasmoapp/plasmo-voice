@@ -2,12 +2,12 @@ package su.plo.voice.client.render;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.event.render.LevelRenderEvent;
-import su.plo.lib.client.gui.GuiRender;
-import su.plo.lib.client.render.MinecraftCamera;
-import su.plo.lib.client.render.MinecraftTesselator;
-import su.plo.lib.client.render.VertexBuilder;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.event.render.LevelRenderEvent;
+import su.plo.lib.api.client.gui.GuiRender;
+import su.plo.lib.api.client.render.MinecraftCamera;
+import su.plo.lib.api.client.render.MinecraftTesselator;
+import su.plo.lib.api.client.render.VertexBuilder;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;

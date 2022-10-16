@@ -54,6 +54,7 @@ file("client/versions").listFilesOrdered {
     include("client:versions:${it.name}")
     include("client:versions:${it.name}:common")
     include("client:versions:${it.name}:fabric")
+    include("client:versions:${it.name}:forge")
 }
 
 // Server

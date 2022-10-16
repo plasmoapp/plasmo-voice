@@ -49,22 +49,20 @@ subprojects {
         "minecraft"("com.mojang:minecraft:${minecraftVersion}")
         mappingsDependency?.let { "mappings"(it) }
 
-        implementation(project(":api:common"))
-        "shadowCommon"(project(":api:common"))
-        implementation(project(":api:client"))
-        "shadowCommon"(project(":api:client"))
-        implementation(project(":api:server"))
-        "shadowCommon"(project(":api:server"))
+        val includedProjects = listOf(
+            ":api:common",
+            ":api:client",
+            ":api:server",
+            ":client:common",
+            ":server:common",
+            ":common",
+            ":protocol"
+        )
 
-        implementation(project(":client:common"))
-        "shadowCommon"(project(":client:common"))
-        implementation(project(":server:common"))
-        "shadowCommon"(project(":server:common"))
-
-        implementation(project(":common"))
-        "shadowCommon"(project(":common"))
-        implementation(project(":protocol"))
-        "shadowCommon"(project(":protocol"))
+        includedProjects.forEach {
+            implementation(project(it))
+            "shadowCommon"(project(it))
+        }
 
         compileOnly(rootProject.libs.config)
     }

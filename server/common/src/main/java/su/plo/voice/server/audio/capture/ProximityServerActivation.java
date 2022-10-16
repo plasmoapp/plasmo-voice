@@ -1,7 +1,7 @@
 package su.plo.voice.server.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.server.permission.PermissionDefault;
+import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.voice.api.event.EventPriority;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.audio.capture.ServerActivation;

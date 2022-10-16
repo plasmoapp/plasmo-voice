@@ -20,13 +20,13 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
         super(sampleRate, -6.0F);
 
         this.activeEntry = activeEntry;
-        if (activeEntry.value()) toggle();
+        if (activeEntry.value()) toggle(true);
         activeEntry.clearChangeListeners();
-        activeEntry.addChangeListener((active) -> toggle());
+        activeEntry.addChangeListener(this::toggle);
     }
 
-    private void toggle() {
-        if (activeEntry.value()) {
+    private void toggle(boolean value) {
+        if (value) {
             try {
                 instance = new Denoiser();
             } catch (Exception e) {

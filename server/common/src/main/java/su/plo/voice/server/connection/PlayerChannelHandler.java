@@ -2,7 +2,7 @@ package su.plo.voice.server.connection;
 
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.chat.TextComponent;
+import su.plo.lib.api.chat.TextComponent;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;

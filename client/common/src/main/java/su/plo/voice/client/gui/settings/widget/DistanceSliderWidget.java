@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.MathLib;
-import su.plo.lib.chat.TextComponent;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.gui.components.AbstractSlider;
+import su.plo.lib.api.MathLib;
+import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.gui.components.AbstractSlider;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.config.entry.IntConfigEntry;
 

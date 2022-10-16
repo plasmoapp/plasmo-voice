@@ -148,6 +148,8 @@ public final class MicrophoneTestController {
         }
 
         public void write(short[] samples) {
+            if (sourceGroup == null) return; // not initialized yet
+
             setVolume(config.getVoice().getVolume().value().floatValue());
 
             for (DeviceSource source : sourceGroup.getSources()) {

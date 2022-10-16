@@ -1,7 +1,7 @@
 package su.plo.voice.server.player;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.server.permission.PermissionTristate;
+import su.plo.lib.api.server.permission.PermissionTristate;
 
 public interface PermissionSupplier {
 

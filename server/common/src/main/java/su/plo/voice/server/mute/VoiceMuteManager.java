@@ -1,7 +1,7 @@
 package su.plo.voice.server.mute;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.chat.TextComponent;
+import su.plo.lib.api.chat.TextComponent;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.ServerMuteInfo;

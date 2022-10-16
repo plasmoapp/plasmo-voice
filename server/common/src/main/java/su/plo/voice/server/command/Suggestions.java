@@ -2,10 +2,10 @@ package su.plo.voice.server.command;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.entity.MinecraftPlayer;
-import su.plo.lib.server.MinecraftServerLib;
-import su.plo.lib.server.command.MinecraftCommandSource;
-import su.plo.lib.server.entity.MinecraftServerPlayer;
+import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.command.MinecraftCommandSource;
+import su.plo.lib.api.server.entity.MinecraftServerPlayer;
 
 import java.util.List;
 import java.util.stream.Collectors;

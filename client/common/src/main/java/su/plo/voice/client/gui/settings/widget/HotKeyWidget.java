@@ -2,12 +2,12 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.MathLib;
-import su.plo.lib.chat.TextComponent;
-import su.plo.lib.chat.TextStyle;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.gui.GuiRender;
-import su.plo.lib.client.gui.components.Button;
+import su.plo.lib.api.MathLib;
+import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.TextStyle;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.gui.GuiRender;
+import su.plo.lib.api.client.gui.components.Button;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;

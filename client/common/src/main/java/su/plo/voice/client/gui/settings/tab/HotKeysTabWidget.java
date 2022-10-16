@@ -1,8 +1,8 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
-import su.plo.lib.chat.TextComponent;
-import su.plo.lib.client.MinecraftClientLib;
+import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;

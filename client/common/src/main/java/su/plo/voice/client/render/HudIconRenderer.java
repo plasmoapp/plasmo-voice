@@ -2,10 +2,10 @@ package su.plo.voice.client.render;
 
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.event.render.HudRenderEvent;
-import su.plo.lib.client.gui.GuiRender;
-import su.plo.lib.client.render.VertexBuilder;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.event.render.HudRenderEvent;
+import su.plo.lib.api.client.gui.GuiRender;
+import su.plo.lib.api.client.render.VertexBuilder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.event.EventSubscribe;

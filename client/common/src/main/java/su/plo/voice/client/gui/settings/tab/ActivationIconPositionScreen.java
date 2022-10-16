@@ -3,10 +3,10 @@ package su.plo.voice.client.gui.settings.tab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.chat.TextComponent;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.gui.components.Button;
-import su.plo.lib.client.gui.screen.GuiScreen;
+import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.gui.components.Button;
+import su.plo.lib.api.client.gui.screen.GuiScreen;
 import su.plo.voice.client.config.IconPosition;
 import su.plo.voice.client.gui.settings.HudPositionScreen;
 

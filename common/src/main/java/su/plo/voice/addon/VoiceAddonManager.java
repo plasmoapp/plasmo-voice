@@ -75,9 +75,11 @@ public final class VoiceAddonManager implements AddonManager {
 
     public void clear() {
         addons.values().forEach((addon) -> {
+            if (addon.getId().equals("plasmovoice")) return;
+
             voice.getEventBus().unregister(addon.getInstance().get());
             LOGGER.info(
-                    "Addon {} v{} by {} loaded",
+                    "Addon {} v{} by {} unloaded",
                     addon.getId(),
                     addon.getVersion(),
                     String.join(", ", addon.getAuthors())

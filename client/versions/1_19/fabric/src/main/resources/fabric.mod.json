@@ -17,15 +17,14 @@
     "environment": "*",
     "entrypoints": {
         "client": [
-            "su.plo.voice.client.FabricVoiceClient"
+            "su.plo.voice.fabric.client.FabricVoiceClient"
         ],
         "main": [
-            "su.plo.voice.server.FabricVoiceServer"
+            "su.plo.voice.fabric.server.FabricVoiceServer"
         ]
     },
     "mixins": [
-        "plasmovoice-common.mixins.json",
-        "plasmovoice.mixins.json"
+        "plasmovoice-common.mixins.json"
     ],
     "depends": {
         "fabricloader": ">=${loader_version}"

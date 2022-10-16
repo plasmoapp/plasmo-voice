@@ -1,7 +1,7 @@
 package su.plo.voice.api.server;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.server.MinecraftServerLib;
+import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;

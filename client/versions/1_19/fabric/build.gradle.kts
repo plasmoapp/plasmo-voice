@@ -18,10 +18,10 @@ dependencies {
     modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricVersion}")
     modImplementation("me.lucko:fabric-permissions-api:${fabricPermissionsVersion}")?.let { include(it) }
 
-    compileOnly(project(":client:versions:1_19:common", "dev")) {
+    compileOnly(project(":client:versions:1_19:common", "namedElements")) {
         isTransitive = false
     }
-    project.configurations.getByName("developmentFabric")(project(":client:versions:1_19:common", "dev")) {
+    "developmentFabric"(project(":client:versions:1_19:common", "namedElements")) {
         isTransitive = false
     }
     "shadowCommon"(project(":client:versions:1_19:common", "transformProductionFabric")) {

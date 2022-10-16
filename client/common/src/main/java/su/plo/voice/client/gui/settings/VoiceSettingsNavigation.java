@@ -5,13 +5,13 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.chat.TextComponent;
-import su.plo.lib.chat.TextStyle;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.gui.GuiRender;
-import su.plo.lib.client.gui.components.Button;
-import su.plo.lib.client.gui.components.IconButton;
-import su.plo.lib.client.gui.widget.GuiWidgetListener;
+import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.TextStyle;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.gui.GuiRender;
+import su.plo.lib.api.client.gui.components.Button;
+import su.plo.lib.api.client.gui.components.IconButton;
+import su.plo.lib.api.client.gui.widget.GuiWidgetListener;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
@@ -23,7 +23,7 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
 import java.util.List;
 import java.util.Optional;
 
-import static su.plo.lib.client.gui.widget.GuiWidget.BACKGROUND_LOCATION;
+import static su.plo.lib.api.client.gui.widget.GuiWidget.BACKGROUND_LOCATION;
 
 public final class VoiceSettingsNavigation implements GuiWidgetListener {
 

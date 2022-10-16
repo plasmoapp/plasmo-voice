@@ -2,11 +2,11 @@ package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.chat.TextComponent;
-import su.plo.lib.client.MinecraftClientLib;
-import su.plo.lib.client.gui.GuiRender;
-import su.plo.lib.client.gui.components.Button;
-import su.plo.lib.client.gui.screen.GuiScreen;
+import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.client.MinecraftClientLib;
+import su.plo.lib.api.client.gui.GuiRender;
+import su.plo.lib.api.client.gui.components.Button;
+import su.plo.lib.api.client.gui.screen.GuiScreen;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;

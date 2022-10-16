@@ -1,7 +1,7 @@
 package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.server.world.ServerPos3d;
+import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;

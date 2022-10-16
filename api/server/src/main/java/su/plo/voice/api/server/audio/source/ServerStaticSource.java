@@ -1,7 +1,7 @@
 package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.server.world.ServerPos3d;
+import su.plo.lib.api.server.world.ServerPos3d;
 
 public interface ServerStaticSource extends ServerAudioSource {
 

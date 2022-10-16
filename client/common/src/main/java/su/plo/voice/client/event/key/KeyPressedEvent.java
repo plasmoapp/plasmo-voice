@@ -2,7 +2,7 @@ package su.plo.voice.client.event.key;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.client.MinecraftClientLib;
+import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.event.Event;
 
