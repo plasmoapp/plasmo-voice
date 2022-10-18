@@ -282,6 +282,11 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull PlayerDisconnectPacket packet) {
+        if (minecraft.getClientPlayer().map(player -> player.getUUID().equals(player.getUUID())).orElse(false)) {
+            voiceClient.getUdpClientManager().removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
+            return;
+        }
+
         playerById.remove(packet.getPlayerId());
         voiceClient.getEventBus().call(new VoicePlayerDisconnectedEvent(packet.getPlayerId()));
     }
