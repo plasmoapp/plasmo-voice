@@ -118,11 +118,6 @@ public final class VoiceServerPlayer implements VoicePlayer {
     }
 
     @Override
-    public void visualizeDistance(int radius) {
-        sendPacket(new DistanceVisualizePacket(radius, 0x00a000));
-    }
-
-    @Override
     public Optional<PublicKey> getPublicKey() {
         return Optional.ofNullable(publicKey);
     }

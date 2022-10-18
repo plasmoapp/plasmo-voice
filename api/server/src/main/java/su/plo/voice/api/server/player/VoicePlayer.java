@@ -40,7 +40,9 @@ public interface VoicePlayer {
 
     void visualizeDistance(int radius, int hexColor);
 
-    void visualizeDistance(int radius);
+    default void visualizeDistance(int radius) {
+        visualizeDistance(radius, 0x00a000);
+    }
 
     Optional<PublicKey> getPublicKey();
 
