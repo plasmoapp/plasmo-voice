@@ -117,7 +117,6 @@ public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends 
         String serverIp = "127.0.0.1";
         if (connection.getRemoteAddress() instanceof InetSocketAddress address) {
             InetAddress inetAddress = address.getAddress();
-            System.out.println(inetAddress.toString());
             String[] ipSplit = inetAddress.toString().split("/");
 
             serverIp = ipSplit[0];
