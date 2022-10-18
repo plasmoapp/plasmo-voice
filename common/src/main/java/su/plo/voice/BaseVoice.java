@@ -77,7 +77,7 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected abstract File modsFolder();
 
     protected File addonsFolder() {
-        return new File(modsFolder(), "plasmovoice/addons");
+        return new File(modsFolder(), "plasmovoice");
     }
 
     protected abstract Addon.Scope getScope();
