@@ -20,6 +20,8 @@ public interface MinecraftServerLib {
     default void onShutdown() {
     }
 
+    void executeInMainThread(@NotNull Runnable runnable);
+
     @NotNull MinecraftServerWorld getWorld(@NotNull Object instance);
 
     @NotNull MinecraftServerPlayer getPlayerByInstance(@NotNull Object instance);

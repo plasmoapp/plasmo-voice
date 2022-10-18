@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
 import su.plo.config.entry.ConfigEntry;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -292,9 +292,9 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     private void sendDistanceChangedMessage() {
         minecraft.getClientPlayer()
                 .ifPresent(player -> {
-                    player.sendActionbarMessage(TextComponent.translatable(
+                    player.sendActionbarMessage(MinecraftTextComponent.translatable(
                             "message.plasmovoice.distance_changed",
-                            TextComponent.translatable(translation),
+                            MinecraftTextComponent.translatable(translation),
                             getDistance()
                     ));
                 });

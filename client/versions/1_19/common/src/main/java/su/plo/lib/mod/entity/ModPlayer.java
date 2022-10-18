@@ -2,8 +2,6 @@ package su.plo.lib.mod.entity;
 
 import lombok.ToString;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.scores.Objective;
-import net.minecraft.world.scores.Scoreboard;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.entity.MinecraftPlayer;
 
@@ -20,9 +18,17 @@ public class ModPlayer<P extends Player> extends ModEntity<P> implements Minecra
     }
 
     @Override
+    public boolean isSpectator() {
+        return instance.isSpectator();
+    }
+
+    @Override
+    public boolean isSneaking() {
+        return instance.isDescending();
+    }
+
+    @Override
     public boolean hasLabelScoreboard() {
-        Scoreboard scoreboard = instance.getScoreboard();
-        Objective scoreboardObjective = scoreboard.getDisplayObjective(2);
-        return scoreboardObjective != null;
+        return instance.getScoreboard().getDisplayObjective(2) != null;
     }
 }

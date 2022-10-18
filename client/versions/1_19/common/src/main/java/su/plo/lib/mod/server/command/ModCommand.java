@@ -18,9 +18,9 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextConverter;
-import su.plo.lib.api.chat.TextStyle;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextConverter;
+import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
@@ -33,7 +33,7 @@ import java.util.function.Predicate;
 public final class ModCommand implements Command<CommandSourceStack>, Predicate<CommandSourceStack>, SuggestionProvider<CommandSourceStack> {
 
     private final MinecraftServerLib minecraftServer;
-    private final TextConverter<Component> textConverter;
+    private final MinecraftTextConverter<Component> textConverter;
     private final MinecraftCommand command;
 
     public LiteralCommandNode<CommandSourceStack> register(CommandDispatcher<CommandSourceStack> dispatcher, String label) {
@@ -59,7 +59,7 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
         }
 
         if (!command.hasPermission(source, args)) {
-            source.sendMessage(TextComponent.translatable("commands.plasmovoice.no_permissions").withStyle(TextStyle.RED));
+            source.sendMessage(MinecraftTextComponent.translatable("commands.plasmovoice.no_permissions").withStyle(MinecraftTextStyle.RED));
             return 1;
         }
 

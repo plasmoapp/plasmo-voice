@@ -3,7 +3,7 @@ package su.plo.lib.api.client.gui;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.locale.MinecraftLanguage;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
@@ -18,42 +18,42 @@ public final class GuiUtil {
     private static final int MAX_TOOLTIP_LINES = 32;
     private static final int OPEN_AL_SOFT_PREFIX_LENGTH = "OpenAL Soft on ".length();
 
-    public static List<TextComponent> multiLineTooltip(@NotNull MinecraftLanguage language,
-                                                       @Nullable String translation) {
+    public static List<MinecraftTextComponent> multiLineTooltip(@NotNull MinecraftLanguage language,
+                                                                @Nullable String translation) {
         if (translation == null) return Collections.emptyList();
 
         if (language.has(translation))
-            return ImmutableList.of(TextComponent.translatable(translation));
+            return ImmutableList.of(MinecraftTextComponent.translatable(translation));
 
-        List<TextComponent> list = new ArrayList<>();
+        List<MinecraftTextComponent> list = new ArrayList<>();
         for (int i = 1; i <= MAX_TOOLTIP_LINES; i++) {
             String line = translation + "_" + i;
             if (!language.has(line)) break;
 
-            list.add(TextComponent.translatable(translation + "_" + i));
+            list.add(MinecraftTextComponent.translatable(translation + "_" + i));
         }
 
         return list;
     }
 
-    public static TextComponent formatDeviceName(@Nullable AudioDevice device, @NotNull DeviceFactory deviceFactory) {
+    public static MinecraftTextComponent formatDeviceName(@Nullable AudioDevice device, @NotNull DeviceFactory deviceFactory) {
         if (device == null)
-            return TextComponent.translatable("gui.plasmovoice.devices.not_available");
+            return MinecraftTextComponent.translatable("gui.plasmovoice.devices.not_available");
 
         return formatDeviceName(device.getName(), deviceFactory);
     }
 
-    public static TextComponent formatDeviceName(@Nullable String deviceName, @NotNull DeviceFactory deviceFactory) {
+    public static MinecraftTextComponent formatDeviceName(@Nullable String deviceName, @NotNull DeviceFactory deviceFactory) {
         if (deviceName == null)
             return formatDeviceName(deviceFactory.getDefaultDeviceName(), deviceFactory);
 
         return deviceName.startsWith("OpenAL Soft on ")
-                ? TextComponent.literal(deviceName.substring("OpenAL Soft on ".length()))
-                : TextComponent.literal(deviceName);
+                ? MinecraftTextComponent.literal(deviceName.substring("OpenAL Soft on ".length()))
+                : MinecraftTextComponent.literal(deviceName);
     }
 
-    public static List<TextComponent> formatDeviceNames(Collection<String> deviceNames, @NotNull DeviceFactory deviceFactory) {
-        List<TextComponent> list = new ArrayList<>();
+    public static List<MinecraftTextComponent> formatDeviceNames(Collection<String> deviceNames, @NotNull DeviceFactory deviceFactory) {
+        List<MinecraftTextComponent> list = new ArrayList<>();
         for (String deviceName : deviceNames) {
             list.add(formatDeviceName(deviceName, deviceFactory));
         }

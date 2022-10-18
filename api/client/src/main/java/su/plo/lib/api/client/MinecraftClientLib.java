@@ -2,7 +2,7 @@ package su.plo.lib.api.client;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.client.connection.MinecraftServerConnection;
 import su.plo.lib.api.client.entity.MinecraftClientPlayer;
 import su.plo.lib.api.client.gui.MinecraftFont;
@@ -29,7 +29,7 @@ public interface MinecraftClientLib {
     default void onServerDisconnect() {
     }
 
-    TextConverter<?> getTextConverter();
+    MinecraftTextConverter<?> getTextConverter();
 
     Optional<MinecraftClientPlayer> getClientPlayer();
 

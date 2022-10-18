@@ -7,8 +7,8 @@ import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.client.gui.narration.NarrationOutput;
 import su.plo.lib.api.client.gui.screen.GuiScreen;
 import su.plo.lib.api.client.gui.screen.MinecraftScreen;
@@ -20,7 +20,7 @@ public final class ModScreenWrapper extends Screen implements MinecraftScreen {
 
     private final GuiScreen screen;
     private final ModGuiRender render;
-    private final TextConverter<Component> textConverter;
+    private final MinecraftTextConverter<Component> textConverter;
 
     public ModScreenWrapper(@NotNull ModClientLib minecraftLib,
                             @NotNull GuiScreen screen) {
@@ -133,12 +133,12 @@ public final class ModScreenWrapper extends Screen implements MinecraftScreen {
     }
 
     @Override
-    public void drawTextShadow(@NotNull TextComponent text, int x, int y, int color) {
+    public void drawTextShadow(@NotNull MinecraftTextComponent text, int x, int y, int color) {
         font.drawShadow(render.getMatrix().getPoseStack(), textConverter.convert(text), x, y, color);
     }
 
     @Override
-    public void renderTooltip(List<TextComponent> tooltip, int mouseX, int mouseY) {
+    public void renderTooltip(List<MinecraftTextComponent> tooltip, int mouseX, int mouseY) {
         renderComponentTooltip(render.getMatrix().getPoseStack(), textConverter.convert(tooltip), mouseX, mouseY);
     }
 
@@ -148,7 +148,7 @@ public final class ModScreenWrapper extends Screen implements MinecraftScreen {
         private final NarrationElementOutput narrationOutput;
 
         @Override
-        public void add(@NotNull Type type, @NotNull TextComponent component) {
+        public void add(@NotNull Type type, @NotNull MinecraftTextComponent component) {
             narrationOutput.add(
                     NarratedElementType.valueOf(type.name()),
                     textConverter.convert(component)

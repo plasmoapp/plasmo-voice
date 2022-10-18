@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.components.AbstractSlider;
 import su.plo.voice.config.entry.IntConfigEntry;
@@ -30,11 +30,11 @@ public final class IntSliderWidget extends AbstractSlider implements UpdatableWi
     protected void updateText() {
         if (suffix != null) {
             setText(
-                    TextComponent.literal(String.valueOf(calculateValue(value)))
-                            .append(TextComponent.literal(" " + suffix))
+                    MinecraftTextComponent.literal(String.valueOf(calculateValue(value)))
+                            .append(MinecraftTextComponent.literal(" " + suffix))
             );
         } else {
-            setText(TextComponent.literal(String.valueOf(calculateValue(value))));
+            setText(MinecraftTextComponent.literal(String.valueOf(calculateValue(value))));
         }
     }
 

@@ -28,7 +28,14 @@ public final class VoiceServerPlayerManager implements VoicePlayerManager {
 
     @Override
     public Optional<VoicePlayer> getPlayerById(@NotNull UUID playerId) {
-        return Optional.ofNullable(playerById.get(playerId));
+        VoicePlayer voicePlayer = playerById.get(playerId);
+        if (voicePlayer != null) return Optional.of(voicePlayer);
+
+        return minecraftServer.getPlayerById(playerId)
+                .map((player) -> playerById.computeIfAbsent(
+                        player.getUUID(),
+                        (pId) -> new VoiceServerPlayer(voiceServer, player)
+                ));
     }
 
     @Override

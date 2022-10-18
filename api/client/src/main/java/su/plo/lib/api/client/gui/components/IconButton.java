@@ -3,7 +3,7 @@ package su.plo.lib.api.client.gui.components;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.render.VertexBuilder;
@@ -41,7 +41,7 @@ public final class IconButton extends Button {
                       @NotNull String iconLocation,
                       boolean shadow,
                       int shadowColor) {
-        super(minecraft, x, y, width, height, TextComponent.empty(), pressAction, tooltipAction);
+        super(minecraft, x, y, width, height, MinecraftTextComponent.empty(), pressAction, tooltipAction);
 
         this.iconLocation = iconLocation;
         this.shadow = shadow;

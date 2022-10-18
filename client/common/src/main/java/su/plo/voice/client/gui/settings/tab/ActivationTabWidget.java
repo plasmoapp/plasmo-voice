@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings.tab;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.components.Button;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -31,14 +31,14 @@ import java.util.Optional;
 
 public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
-    private static final List<TextComponent> TYPES = ImmutableList.of(
-            TextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
-            TextComponent.translatable("gui.plasmovoice.activation.type_voice"),
-            TextComponent.translatable("gui.plasmovoice.activation.type_inherit")
+    private static final List<MinecraftTextComponent> TYPES = ImmutableList.of(
+            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
+            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_voice"),
+            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_inherit")
     );
-    private static final List<TextComponent> NO_INHERIT_TYPES = ImmutableList.of(
-            TextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
-            TextComponent.translatable("gui.plasmovoice.activation.type_voice")
+    private static final List<MinecraftTextComponent> NO_INHERIT_TYPES = ImmutableList.of(
+            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
+            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_voice")
     );
 
     private final ClientActivationManager activations;
@@ -90,7 +90,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         Optional<IntConfigEntry> activationDistance = serverConfig.get().getActivationDistance(activation.getId());
         if (!activationDistance.isPresent()) throw new IllegalStateException("Activation distance config is empty");
 
-        addEntry(new CategoryEntry(TextComponent.translatable(activation.getTranslation())));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable(activation.getTranslation())));
         addEntry(createActivationType(activation, activationConfig.get(), canInherit));
         addEntry(createActivationButton((VoiceClientActivation) activation));
         if (activation.getDistances().size() > 0)
@@ -118,7 +118,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.activation.type"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.activation.type"),
                 button,
                 activationConfig.getConfigType(),
                 (btn, element) -> {
@@ -171,7 +171,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.activation.distance", TextComponent.translatable(activation.getTranslation())),
+                MinecraftTextComponent.translatable("gui.plasmovoice.activation.distance", MinecraftTextComponent.translatable(activation.getTranslation())),
                 sliderWidget,
                 activationDistance
         );
@@ -190,7 +190,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.activation.distance", TextComponent.translatable(activation.getTranslation())),
+                MinecraftTextComponent.translatable("gui.plasmovoice.activation.distance", MinecraftTextComponent.translatable(activation.getTranslation())),
                 textField,
                 activationDistance
         );

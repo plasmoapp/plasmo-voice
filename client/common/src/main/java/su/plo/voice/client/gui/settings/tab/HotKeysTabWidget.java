@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -46,7 +46,7 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
     private void createActivation(ClientActivation activation) {
         if (activation.getDistances().size() == 0) return;
 
-        addEntry(new CategoryEntry(TextComponent.translatable("key.plasmovoice.distance", TextComponent.translatable(activation.getTranslation()))));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("key.plasmovoice.distance", MinecraftTextComponent.translatable(activation.getTranslation()))));
 
         VoiceClientActivation clientActivation = (VoiceClientActivation) activation;
 
@@ -65,7 +65,7 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
     private void createCategory(String category, Collection<KeyBindingConfigEntry> list) {
         if (category.equals("hidden")) return;
 
-        addEntry(new CategoryEntry(TextComponent.translatable(category)));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable(category)));
 
         list.forEach(entry ->
                 addEntry(createHotKey(

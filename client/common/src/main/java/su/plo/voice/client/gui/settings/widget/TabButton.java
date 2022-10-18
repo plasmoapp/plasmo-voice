@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.Button;
@@ -20,7 +20,7 @@ public final class TabButton extends Button {
                      int y,
                      int width,
                      int height,
-                     @NotNull TextComponent text,
+                     @NotNull MinecraftTextComponent text,
                      @NotNull String iconLocation,
                      @NotNull OnPress pressAction,
                      @NotNull OnTooltip tooltipAction,
@@ -33,7 +33,7 @@ public final class TabButton extends Button {
                      int y,
                      int width,
                      int height,
-                     @NotNull TextComponent text,
+                     @NotNull MinecraftTextComponent text,
                      @NotNull String iconLocation,
                      @NotNull OnPress pressAction,
                      @NotNull OnTooltip tooltipAction,

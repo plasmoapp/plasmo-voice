@@ -1,32 +1,34 @@
 package su.plo.voice.mod.server.connection;
 
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import org.apache.logging.log4j.LogManager;
-import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.server.PlasmoVoiceServer;
+import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.server.entity.ModServerPlayer;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
+import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.connection.BaseServerChannelHandler;
 import su.plo.voice.server.connection.PlayerChannelHandler;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.io.IOException;
-import java.util.Map;
-import java.util.UUID;
+import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class ModServerChannelHandler extends BaseServerChannelHandler {
 
-    private final Map<UUID, PlayerChannelHandler> channels = Maps.newHashMap();
-
-    protected ModServerChannelHandler(PlasmoVoiceServer voiceServer) {
-        super(voiceServer);
+    protected ModServerChannelHandler(@NotNull BaseVoiceServer voiceServer,
+                                      @NotNull ScheduledExecutorService executor) {
+        super(voiceServer, executor);
     }
 
-    public void clear() {
-        channels.clear();
+    @Override
+    protected void handleRegisterChannels(List<String> channels, VoicePlayer player) {
+        super.handleRegisterChannels(channels, player);
+        channels.forEach((channel) ->
+                ((ModServerPlayer) player.getInstance()).addChannel(channel)
+        );
     }
 
     protected void receive(ServerPlayer player, FriendlyByteBuf buf) {
@@ -50,10 +52,5 @@ public abstract class ModServerChannelHandler extends BaseServerChannelHandler {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    @EventSubscribe
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        channels.remove(event.getPlayerId());
     }
 }

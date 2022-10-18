@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings.widget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.widget.GuiAbstractWidget;
@@ -11,8 +11,8 @@ import su.plo.voice.client.config.overlay.OverlaySourceState;
 
 public final class OverlaySourceStateButton extends GuiAbstractWidget {
 
-    private static final TextComponent ON = TextComponent.translatable("message.plasmovoice.on");
-    private static final TextComponent OFF = TextComponent.translatable("message.plasmovoice.off");
+    private static final MinecraftTextComponent ON = MinecraftTextComponent.translatable("message.plasmovoice.on");
+    private static final MinecraftTextComponent OFF = MinecraftTextComponent.translatable("message.plasmovoice.off");
 
     private final @Nullable PressAction action;
     private final EnumConfigEntry<OverlaySourceState> entry;
@@ -40,7 +40,7 @@ public final class OverlaySourceStateButton extends GuiAbstractWidget {
     }
 
     @Override
-    public TextComponent getText() {
+    public MinecraftTextComponent getText() {
         return entry.value() == OverlaySourceState.ON ? ON : OFF;
     }
 

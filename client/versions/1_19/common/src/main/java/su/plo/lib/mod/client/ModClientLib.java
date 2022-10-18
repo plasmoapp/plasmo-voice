@@ -6,7 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.MinecraftOptions;
 import su.plo.lib.api.client.connection.MinecraftServerConnection;
@@ -42,7 +42,7 @@ public final class ModClientLib implements MinecraftClientLib {
     private final Minecraft minecraft = Minecraft.getInstance();
 
     @Getter
-    private final TextConverter<Component> textConverter = new ComponentTextConverter();
+    private final MinecraftTextConverter<Component> textConverter = new ComponentTextConverter();
     @Getter
     private final MinecraftFont font = new ModFontWrapper(textConverter);
     @Getter

@@ -1,5 +1,6 @@
 package su.plo.lib.mod.server.entity;
 
+import com.google.common.collect.Sets;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,8 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerPlayer;
 import su.plo.lib.api.server.permission.PermissionTristate;
@@ -19,18 +20,22 @@ import su.plo.lib.mod.client.texture.ResourceCache;
 import su.plo.lib.mod.entity.ModPlayer;
 import su.plo.voice.server.player.PermissionSupplier;
 
+import java.util.Collection;
+import java.util.Set;
+
 public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements MinecraftServerPlayer {
 
     private final MinecraftServerLib minecraftServer;
-    private final TextConverter<Component> textConverter;
+    private final MinecraftTextConverter<Component> textConverter;
     private final PermissionSupplier permissions;
     private final ResourceCache resources;
+    private final Set<String> registeredChannels = Sets.newCopyOnWriteArraySet();
     @Getter
     @Setter
     private String language = "en_us";
 
     public ModServerPlayer(@NotNull MinecraftServerLib minecraftServer,
-                           @NotNull TextConverter<Component> textConverter,
+                           @NotNull MinecraftTextConverter<Component> textConverter,
                            @NotNull PermissionSupplier permissions,
                            @NotNull ResourceCache resources,
                            @NotNull ServerPlayer player) {
@@ -82,7 +87,12 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     }
 
     @Override
-    public void sendMessage(@NotNull TextComponent text) {
+    public void kick(@NotNull MinecraftTextComponent reason) {
+        instance.connection.disconnect(textConverter.convert(reason));
+    }
+
+    @Override
+    public void sendMessage(@NotNull MinecraftTextComponent text) {
         instance.sendSystemMessage(textConverter.convert(text));
     }
 
@@ -97,6 +107,11 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     }
 
     @Override
+    public Collection<String> getRegisteredChannels() {
+        return registeredChannels;
+    }
+
+    @Override
     public boolean hasPermission(@NotNull String permission) {
         return permissions.hasPermission(instance, permission);
     }
@@ -104,5 +119,13 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     @Override
     public @NotNull PermissionTristate getPermission(@NotNull String permission) {
         return permissions.getPermission(instance, permission);
+    }
+
+    public void addChannel(@NotNull String channel) {
+        registeredChannels.add(channel);
+    }
+
+    public void removeChannel(@NotNull String channel) {
+        registeredChannels.remove(channel);
     }
 }

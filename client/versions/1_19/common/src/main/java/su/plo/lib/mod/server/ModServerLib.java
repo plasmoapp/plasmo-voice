@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.profile.MinecraftGameProfile;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
@@ -39,21 +39,20 @@ public final class ModServerLib implements MinecraftServerLib {
     public static ModServerLib INSTANCE;
 
     private final Map<ServerLevel, MinecraftServerWorld> worldByInstance = Maps.newConcurrentMap();
+    private final Map<UUID, MinecraftServerPlayer> playerById = Maps.newConcurrentMap();
 
     @Setter
     private MinecraftServer server;
     @Setter
     private PermissionSupplier permissions;
 
-    private final TextConverter<Component> textConverter = new ComponentTextConverter();
+    private final MinecraftTextConverter<Component> textConverter = new ComponentTextConverter();
     private final ResourceCache resources = new ResourceCache();
 
     @Getter
     private final ModCommandManager commandManager = new ModCommandManager(this, textConverter);
     @Getter
     private final PermissionsManager permissionsManager = new PermissionsManager();
-
-    private final Map<UUID, MinecraftServerPlayer> playerById = Maps.newConcurrentMap();
 
     @Override
     public void onInitialize() {
@@ -66,6 +65,11 @@ public final class ModServerLib implements MinecraftServerLib {
         this.permissions = null;
         commandManager.clear();
         permissionsManager.clear();
+    }
+
+    @Override
+    public void executeInMainThread(@NotNull Runnable runnable) {
+        server.execute(runnable);
     }
 
     @Override
@@ -103,6 +107,9 @@ public final class ModServerLib implements MinecraftServerLib {
 
     @Override
     public Optional<MinecraftServerPlayer> getPlayerById(@NotNull UUID playerId) {
+        MinecraftServerPlayer serverPlayer = playerById.get(playerId);
+        if (serverPlayer != null) return Optional.of(serverPlayer);
+
         ServerPlayer player = server.getPlayerList().getPlayer(playerId);
         if (player == null) return Optional.empty();
 

@@ -105,11 +105,6 @@ public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends 
     }
 
     @Override
-    protected File addonsFolder() {
-        return new File(modsFolder(), "plasmovoice/addons");
-    }
-
-    @Override
     public String getServerIp() {
         if (minecraft.getConnection() == null) throw new IllegalStateException("Not connected to any server");
         Connection connection = minecraft.getConnection().getConnection();

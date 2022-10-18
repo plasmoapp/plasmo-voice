@@ -3,8 +3,8 @@ package su.plo.voice.client.gui.settings.widget;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.MathLib;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextStyle;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.Button;
@@ -28,7 +28,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
                         int y,
                         int width,
                         int height) {
-        super(minecraft, x, y, width, height, TextComponent.empty(), NO_ACTION, NO_TOOLTIP);
+        super(minecraft, x, y, width, height, MinecraftTextComponent.empty(), NO_ACTION, NO_TOOLTIP);
 
         this.parent = parent;
         this.entry = entry;
@@ -38,16 +38,16 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     @Override
     public void updateValue() {
-        TextComponent text = TextComponent.literal("");
+        MinecraftTextComponent text = MinecraftTextComponent.literal("");
         if (entry.value().getKeys().size() == 0) {
-            text.append(TextComponent.translatable("gui.none"));
+            text.append(MinecraftTextComponent.translatable("gui.none"));
         } else {
             formatKeys(text, entry.value().getKeys());
         }
 
         if (isActive()) {
             if (pressedKeys.size() > 0) {
-                text = TextComponent.literal("");
+                text = MinecraftTextComponent.literal("");
                 List<KeyBinding.Key> sorted = pressedKeys.stream()
                         .sorted(Comparator.comparingInt(key -> key.getType().ordinal()))
                         .collect(Collectors.toList());
@@ -56,9 +56,9 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
             }
 
             setText(
-                    TextComponent.literal("> ").withStyle(TextStyle.YELLOW)
-                            .append(text.withStyle(TextStyle.YELLOW))
-                            .append(TextComponent.literal(" <").withStyle(TextStyle.YELLOW))
+                    MinecraftTextComponent.literal("> ").withStyle(MinecraftTextStyle.YELLOW)
+                            .append(text.withStyle(MinecraftTextStyle.YELLOW))
+                            .append(MinecraftTextComponent.literal(" <").withStyle(MinecraftTextStyle.YELLOW))
             );
         } else {
             setText(text);
@@ -180,10 +180,10 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
         parent.setFocusedHotKey(null);
     }
 
-    private void formatKeys(TextComponent text, Collection<KeyBinding.Key> keys) {
+    private void formatKeys(MinecraftTextComponent text, Collection<KeyBinding.Key> keys) {
         for (KeyBinding.Key key : keys) {
             text.append(minecraft.getLanguage().getKeyDisplayName(key));
-            text.append(TextComponent.literal(" + "));
+            text.append(MinecraftTextComponent.literal(" + "));
         }
 
         text.getSiblings().remove(text.getSiblings().size() - 1);

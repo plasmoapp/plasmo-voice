@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.AbstractSlider;
@@ -34,7 +34,7 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
 
     @Override
     protected void updateText() {
-        this.text = TextComponent.literal((int) (value * (entry.getMax() * 100D)) + suffix);
+        this.text = MinecraftTextComponent.literal((int) (value * (entry.getMax() * 100D)) + suffix);
     }
 
     @Override

@@ -10,20 +10,23 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.event.EventNetworkChannel;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.mod.server.connection.ModServerChannelHandler;
+import su.plo.voice.server.BaseVoiceServer;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 public final class ForgeServerChannelHandler extends ModServerChannelHandler {
 
     public static ForgeServerChannelHandler INSTANCE;
 
-    public ForgeServerChannelHandler(PlasmoVoiceServer voiceServer, EventNetworkChannel channel) {
-        super(voiceServer);
+    public ForgeServerChannelHandler(@NotNull BaseVoiceServer voiceServer,
+                                     @NotNull ScheduledExecutorService executor,
+                                     @NotNull EventNetworkChannel channel) {
+        super(voiceServer, executor);
 
         INSTANCE = this;
         channel.addListener(this::receive);

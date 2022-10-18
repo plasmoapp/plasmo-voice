@@ -9,8 +9,11 @@ import java.util.Map;
 public abstract class MinecraftCommandManager {
 
     protected final Map<String, MinecraftCommand> commandByName = Maps.newHashMap();
+    protected boolean registered;
 
     public synchronized void register(@NotNull String name, @NotNull MinecraftCommand command, String... aliases) {
+        if (registered) throw new IllegalStateException("register after commands registration is not supported");
+
         if (commandByName.containsKey(name)) {
             throw new IllegalArgumentException("Command with name '" + name + "' already exist");
         }
@@ -27,15 +30,12 @@ public abstract class MinecraftCommandManager {
         }
     }
 
-    public synchronized boolean unregister(@NotNull String name) {
-        return commandByName.remove(name) != null;
-    }
-
     public synchronized Map<String, MinecraftCommand> getRegisteredCommands() {
         return ImmutableMap.copyOf(commandByName);
     }
 
     public synchronized void clear() {
         commandByName.clear();
+        this.registered = false;
     }
 }

@@ -24,8 +24,6 @@ public interface MinecraftEntity {
 
     boolean isInvisibleTo(@NotNull MinecraftPlayer player);
 
-    boolean isSneaking();
-
     /**
      * Gets the backed entity object
      */

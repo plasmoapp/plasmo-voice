@@ -6,7 +6,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.locale.MinecraftLanguage;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 
@@ -25,7 +25,7 @@ public final class ModLanguageWrapper implements MinecraftLanguage {
     }
 
     @Override
-    public @NotNull TextComponent getKeyDisplayName(@NotNull KeyBinding.Key key) {
+    public @NotNull MinecraftTextComponent getKeyDisplayName(@NotNull KeyBinding.Key key) {
         InputConstants.Key inputKey;
 
         if (key.getType() == KeyBinding.Type.KEYSYM) {
@@ -35,16 +35,16 @@ public final class ModLanguageWrapper implements MinecraftLanguage {
         } else if (key.getType() == KeyBinding.Type.SCANCODE) {
             inputKey = InputConstants.Type.SCANCODE.getOrCreate(key.getCode());
         } else {
-            return TextComponent.translatable("gui.none");
+            return MinecraftTextComponent.translatable("gui.none");
         }
 
         Component displayName = inputKey.getDisplayName();
         if (displayName.getContents() instanceof TranslatableContents translatable) {
-            return TextComponent.translatable(translatable.getKey(), translatable.getArgs());
+            return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
         } else if (displayName.getContents() instanceof LiteralContents literal) {
-            return TextComponent.translatable(literal.text());
+            return MinecraftTextComponent.translatable(literal.text());
         } else {
-            return TextComponent.translatable("gui.none");
+            return MinecraftTextComponent.translatable("gui.none");
         }
     }
 }

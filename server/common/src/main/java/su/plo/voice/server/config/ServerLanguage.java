@@ -19,6 +19,9 @@ public final class ServerLanguage {
     @ConfigField
     private String playerOnlyCommand = "Only player can execute this command";
     @ConfigField
+    private String modMissingKickMessage = "Sorry, you need to install the Plasmo Voice mod to play on this server.\\nDownload here: https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client";
+
+    @ConfigField
     private Mutes mutes = new Mutes();
     @ConfigField
     private Commands commands = new Commands();

@@ -3,8 +3,8 @@ package su.plo.voice.client.gui.settings.tab;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextStyle;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.Button;
@@ -50,13 +50,13 @@ public final class VolumeTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volume.sources"), 24));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.volume.sources"), 24));
 
         List<ClientSourceLine> sourceLines = Lists.newArrayList(this.sourceLines.getLines());
         Collections.reverse(sourceLines);
         sourceLines.forEach(this::createSourceLineVolume);
 
-        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.volume.players"), 24));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.volume.players"), 24));
         createPlayersSearch();
         refreshPlayerEntries();
     }
@@ -79,7 +79,7 @@ public final class VolumeTabWidget extends TabWidget {
         Runnable updateButtons = createMuteButtonAction(buttons, muteEntry);
 
         addEntry(new SourceLineVolumeEntry<>(
-                TextComponent.translatable(sourceLine.getTranslation()),
+                MinecraftTextComponent.translatable(sourceLine.getTranslation()),
                 createVolumeSlider(volumeEntry),
                 createMuteButton(buttons, updateButtons, muteEntry),
                 volumeEntry,
@@ -97,7 +97,7 @@ public final class VolumeTabWidget extends TabWidget {
                 0,
                 0,
                 20,
-                TextComponent.translatable("gui.plasmovoice.volume.players_search").withStyle(TextStyle.GRAY)
+                MinecraftTextComponent.translatable("gui.plasmovoice.volume.players_search").withStyle(MinecraftTextStyle.GRAY)
         );
 
         textField.setResponder((value) -> {
@@ -214,12 +214,12 @@ public final class VolumeTabWidget extends TabWidget {
         private final String iconLocation;
         private final ConfigEntry<Boolean> muteEntry;
 
-        public SourceLineVolumeEntry(@NotNull TextComponent text,
+        public SourceLineVolumeEntry(@NotNull MinecraftTextComponent text,
                                      @NotNull W widget,
                                      @NotNull List<Button> buttons,
                                      @NotNull ConfigEntry<?> entry,
                                      @NotNull ConfigEntry<Boolean> muteEntry,
-                                     @NotNull List<TextComponent> tooltip,
+                                     @NotNull List<MinecraftTextComponent> tooltip,
                                      @NotNull String iconLocation,
                                      @NotNull OptionResetAction<W> resetAction) {
             super(text, widget, buttons, entry, tooltip, resetAction);
@@ -264,10 +264,10 @@ public final class VolumeTabWidget extends TabWidget {
                                  @NotNull List<Button> buttons,
                                  @NotNull ConfigEntry<?> entry,
                                  @NotNull ConfigEntry<Boolean> muteEntry,
-                                 @NotNull List<TextComponent> tooltip,
+                                 @NotNull List<MinecraftTextComponent> tooltip,
                                  @NotNull VoicePlayerInfo player,
                                  @NotNull OptionResetAction<W> resetAction) {
-            super(TextComponent.literal(player.getPlayerNick()), widget, buttons, entry, tooltip, resetAction, 30);
+            super(MinecraftTextComponent.literal(player.getPlayerNick()), widget, buttons, entry, tooltip, resetAction, 30);
 
             this.muteEntry = muteEntry;
             this.player = player;

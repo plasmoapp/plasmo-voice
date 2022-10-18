@@ -4,22 +4,19 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextConverter;
-import su.plo.lib.api.chat.TextStyle;
-import su.plo.lib.api.chat.TranslatableText;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextConverter;
+import su.plo.lib.api.chat.MinecraftTextStyle;
+import su.plo.lib.api.chat.MinecraftTranslatableText;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
-public final class ComponentTextConverter implements TextConverter<Component> {
+public final class ComponentTextConverter implements MinecraftTextConverter<Component> {
 
     @Override
-    public Component convert(@NotNull TextComponent text) {
+    public Component convert(@NotNull MinecraftTextComponent text) {
         MutableComponent component;
 
-        if (text instanceof TranslatableText)
-            component = convertTranslatable((TranslatableText) text);
+        if (text instanceof MinecraftTranslatableText)
+            component = convertTranslatable((MinecraftTranslatableText) text);
         else
             component = Component.literal(text.toString());
 
@@ -27,28 +24,21 @@ public final class ComponentTextConverter implements TextConverter<Component> {
         component.withStyle(getStyles(text));
 
         // add siblings
-        for (TextComponent sibling : text.getSiblings()) {
+        for (MinecraftTextComponent sibling : text.getSiblings()) {
             component.append(convert(sibling));
         }
 
         return component;
     }
 
-    @Override
-    public List<Component> convert(@NotNull List<TextComponent> list) {
-        return list.stream()
-                .map(this::convert)
-                .collect(Collectors.toList());
-    }
-
-    private MutableComponent convertTranslatable(@NotNull TranslatableText text) {
+    private MutableComponent convertTranslatable(@NotNull MinecraftTranslatableText text) {
         Object[] args = new Object[text.getArgs().length];
 
         for (int i = 0; i < args.length; i++) {
             Object arg = text.getArgs()[i];
 
-            if (arg instanceof TextComponent) {
-                args[i] = convert((TextComponent) arg);
+            if (arg instanceof MinecraftTextComponent) {
+                args[i] = convert((MinecraftTextComponent) arg);
             } else {
                 args[i] = arg;
             }
@@ -57,14 +47,14 @@ public final class ComponentTextConverter implements TextConverter<Component> {
         return Component.translatable(text.getKey(), args);
     }
 
-    private ChatFormatting[] getStyles(@NotNull TextComponent text) {
+    private ChatFormatting[] getStyles(@NotNull MinecraftTextComponent text) {
         return text.getStyles()
                 .stream()
                 .map(this::convertStyle)
                 .toArray(ChatFormatting[]::new);
     }
 
-    private ChatFormatting convertStyle(@NotNull TextStyle style) {
+    private ChatFormatting convertStyle(@NotNull MinecraftTextStyle style) {
         return ChatFormatting.valueOf(style.name());
     }
 }

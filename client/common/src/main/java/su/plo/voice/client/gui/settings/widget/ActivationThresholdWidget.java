@@ -2,7 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.AbstractSlider;
@@ -24,7 +24,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
 
     private static final String STOP_ICON = "plasmovoice:textures/icons/speaker_menu.png";
     private static final String START_ICON = "plasmovoice:textures/icons/speaker_menu_disabled.png";
-    private static final TextComponent NOT_AVAILABLE = TextComponent.translatable("gui.plasmovoice.devices.not_available");
+    private static final MinecraftTextComponent NOT_AVAILABLE = MinecraftTextComponent.translatable("gui.plasmovoice.devices.not_available");
 
     private final DoubleConfigEntry entry;
     private final MicrophoneTestController controller;
@@ -83,7 +83,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
 
     @Override
     protected void updateText() {
-        this.text = TextComponent.literal(String.format("%.0f dB", AudioUtil.doubleRangeToAudioLevel(value)));
+        this.text = MinecraftTextComponent.literal(String.format("%.0f dB", AudioUtil.doubleRangeToAudioLevel(value)));
     }
 
     @Override

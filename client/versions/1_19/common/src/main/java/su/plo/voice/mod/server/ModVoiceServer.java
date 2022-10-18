@@ -62,11 +62,6 @@ public abstract class ModVoiceServer<T extends ModServerChannelHandler> extends 
     }
 
     @Override
-    protected File addonsFolder() {
-        return new File(modsFolder(), "plasmovoice/addons");
-    }
-
-    @Override
     public @NotNull MinecraftServerLib getMinecraftServer() {
         return minecraftServerLib;
     }

@@ -2,7 +2,7 @@ package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.Button;
@@ -27,7 +27,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     private int x;
     private int y;
 
-    private List<TextComponent> message;
+    private List<MinecraftTextComponent> message;
 
     public VoiceNotAvailableScreen(@NotNull MinecraftClientLib minecraft,
                                    @NotNull BaseVoiceClient voiceClient) {
@@ -66,7 +66,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
                 0,
                 WIDTH - 20,
                 20,
-                TextComponent.translatable("message.plasmovoice.close"),
+                MinecraftTextComponent.translatable("message.plasmovoice.close"),
                 (button) -> minecraft.setScreen(null),
                 Button.NO_TOOLTIP
         );
@@ -82,7 +82,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     @Override
     public void render(@NotNull GuiRender render, int mouseX, int mouseY, float delta) {
         int maxWidth = 0;
-        for (TextComponent line : message) {
+        for (MinecraftTextComponent line : message) {
             int lineWidth = minecraft.getFont().width(line);
             if (lineWidth > maxWidth) {
                 maxWidth = lineWidth;
@@ -94,7 +94,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
         screen.renderBackground();
 
         for (int i = 0; i < message.size(); i++) {
-            TextComponent line = message.get(i);
+            MinecraftTextComponent line = message.get(i);
             render.drawString(
                     line,
                     getWidth() / 2 - minecraft.getFont().width(line) / 2,
@@ -108,19 +108,19 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
 
     public void setNotAvailable() {
         this.message = ImmutableList.of(
-                TextComponent.translatable("gui.plasmovoice.not_available")
+                MinecraftTextComponent.translatable("gui.plasmovoice.not_available")
         );
     }
 
     public void setConnecting() {
-        this.message = ImmutableList.of(TextComponent.translatable("gui.plasmovoice.connecting"));
+        this.message = ImmutableList.of(MinecraftTextComponent.translatable("gui.plasmovoice.connecting"));
     }
 
     public void setCannotConnect() {
         this.message = ImmutableList.of(
-                TextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_1"),
-                TextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_2"),
-                TextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_3", WIKI_LINK)
+                MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_1"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_2"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_3", WIKI_LINK)
         );
     }
 

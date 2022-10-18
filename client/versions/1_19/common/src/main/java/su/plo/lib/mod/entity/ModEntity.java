@@ -29,11 +29,7 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
 
     @Override
     public @NotNull Pos3d getPosition() {
-        position.setX(instance.position().x());
-        position.setY(instance.position().y());
-        position.setZ(instance.position().z());
-
-        return position;
+        return getPosition(position);
     }
 
     @Override
@@ -58,11 +54,6 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
     @Override
     public boolean isInvisibleTo(@NotNull MinecraftPlayer player) {
         return instance.isInvisibleTo(player.getInstance());
-    }
-
-    @Override
-    public boolean isSneaking() {
-        return instance.isDescending();
     }
 
     @Override

@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
@@ -92,7 +92,7 @@ public final class VoiceMuteCommand implements MinecraftCommand {
                         muteManager.formatMuteReason(language, reason)
                 ));
             } catch (IllegalArgumentException e) {
-                source.sendMessage(TextComponent.literal(e.getMessage()));
+                source.sendMessage(MinecraftTextComponent.literal(e.getMessage()));
             }
         }
 

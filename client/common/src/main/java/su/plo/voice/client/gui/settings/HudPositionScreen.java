@@ -2,7 +2,7 @@ package su.plo.voice.client.gui.settings;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.Button;
@@ -15,12 +15,12 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
 
     protected final GuiScreen parent;
     protected final EnumConfigEntry<E> entry;
-    protected final TextComponent chooseText;
+    protected final MinecraftTextComponent chooseText;
 
     public HudPositionScreen(@NotNull MinecraftClientLib minecraft,
                              @NotNull GuiScreen parent,
                              @NotNull EnumConfigEntry<E> entry,
-                             @NotNull TextComponent chooseText) {
+                             @NotNull MinecraftTextComponent chooseText) {
         super(minecraft);
 
         this.parent = parent;

@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings.widget;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.components.Button;
 
@@ -11,13 +11,13 @@ import java.util.List;
 
 public final class CircularButton extends Button implements UpdatableWidget {
 
-    private final List<TextComponent> values;
+    private final List<MinecraftTextComponent> values;
     private final @Nullable UpdateAction updateAction;
     @Setter
     private int index;
 
     public CircularButton(@NotNull MinecraftClientLib minecraft,
-                          @NotNull List<TextComponent> values,
+                          @NotNull List<MinecraftTextComponent> values,
                           int index,
                           int x,
                           int y,
@@ -25,7 +25,7 @@ public final class CircularButton extends Button implements UpdatableWidget {
                           int height,
                           @Nullable UpdateAction updateAction,
                           @NotNull OnTooltip tooltipAction) {
-        super(minecraft, x, y, width, height, TextComponent.empty(), Button.NO_ACTION, tooltipAction);
+        super(minecraft, x, y, width, height, MinecraftTextComponent.empty(), Button.NO_ACTION, tooltipAction);
 
         this.values = values;
         this.index = index;

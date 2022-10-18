@@ -5,8 +5,8 @@ import com.google.common.collect.Lists;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextStyle;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.Button;
@@ -105,10 +105,10 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
-                            TextComponent.translatable("gui.plasmovoice.toggle.microphone"),
-                            TextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    TextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(TextStyle.GREEN)
-                            ).withStyle(TextStyle.GRAY)
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.microphone"),
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                    MinecraftTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(MinecraftTextStyle.GREEN)
+                            ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
                 "plasmovoice:textures/icons/microphone_menu.png",
@@ -136,10 +136,10 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
-                            TextComponent.translatable("gui.plasmovoice.toggle.microphone"),
-                            TextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    TextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(TextStyle.RED)
-                            ).withStyle(TextStyle.GRAY)
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.microphone"),
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                    MinecraftTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(MinecraftTextStyle.RED)
+                            ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
                 "plasmovoice:textures/icons/microphone_menu_disabled.png",
@@ -179,10 +179,10 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
-                            TextComponent.translatable("gui.plasmovoice.toggle.voice"),
-                            TextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    TextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(TextStyle.GREEN)
-                            ).withStyle(TextStyle.GRAY)
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.voice"),
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                    MinecraftTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(MinecraftTextStyle.GREEN)
+                            ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
                 "plasmovoice:textures/icons/speaker_menu.png",
@@ -209,10 +209,10 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 },
                 (button, matrices, mouseX, mouseY) -> {
                     parent.setTooltip(ImmutableList.of(
-                            TextComponent.translatable("gui.plasmovoice.toggle.voice"),
-                            TextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    TextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(TextStyle.RED)
-                            ).withStyle(TextStyle.GRAY)
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.voice"),
+                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                    MinecraftTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(MinecraftTextStyle.RED)
+                            ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
                 "plasmovoice:textures/icons/speaker_menu_disabled.png",
@@ -340,7 +340,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         });
     }
 
-    public void addTab(@NotNull TextComponent name,
+    public void addTab(@NotNull MinecraftTextComponent name,
                        @NotNull String iconLocation,
                        @NotNull TabWidget tabWidget) {
         int elementIndex = tabWidgets.size();

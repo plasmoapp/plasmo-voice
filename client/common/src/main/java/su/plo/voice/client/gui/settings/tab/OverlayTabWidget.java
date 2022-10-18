@@ -5,7 +5,7 @@ import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.Button;
@@ -27,16 +27,16 @@ import java.util.List;
 
 public final class OverlayTabWidget extends TabWidget {
 
-    private static final List<TextComponent> ICONS_LIST = ImmutableList.of(
-            TextComponent.translatable("gui.plasmovoice.overlay.show_source_icons.hud"),
-            TextComponent.translatable("gui.plasmovoice.overlay.show_source_icons.always"),
-            TextComponent.translatable("gui.plasmovoice.overlay.show_source_icons.hidden")
+    private static final List<MinecraftTextComponent> ICONS_LIST = ImmutableList.of(
+            MinecraftTextComponent.translatable("gui.plasmovoice.overlay.show_source_icons.hud"),
+            MinecraftTextComponent.translatable("gui.plasmovoice.overlay.show_source_icons.always"),
+            MinecraftTextComponent.translatable("gui.plasmovoice.overlay.show_source_icons.hidden")
     );
 
-    private static final List<TextComponent> OVERLAY_DISPLAYS = ImmutableList.of(
-            TextComponent.translatable("gui.plasmovoice.overlay.sources.when_talking"),
-            TextComponent.translatable("gui.plasmovoice.overlay.sources.always"),
-            TextComponent.translatable("gui.plasmovoice.overlay.sources.never")
+    private static final List<MinecraftTextComponent> OVERLAY_DISPLAYS = ImmutableList.of(
+            MinecraftTextComponent.translatable("gui.plasmovoice.overlay.sources.when_talking"),
+            MinecraftTextComponent.translatable("gui.plasmovoice.overlay.sources.always"),
+            MinecraftTextComponent.translatable("gui.plasmovoice.overlay.sources.never")
     );
 
     private final ClientSourceLineManager sourceLines;
@@ -126,7 +126,7 @@ public final class OverlayTabWidget extends TabWidget {
         }
 
         addEntry(new OverlaySourceEntry<>(
-                TextComponent.translatable(sourceLine.getTranslation()),
+                MinecraftTextComponent.translatable(sourceLine.getTranslation()),
                 widget,
                 configEntry,
                 ImmutableList.of(),
@@ -149,7 +149,7 @@ public final class OverlayTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.overlay.show_source_icons"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.overlay.show_source_icons"),
                 dropdown,
                 config.getOverlay().getShowSourceIcons(),
                 (button, element) -> element.setText(ICONS_LIST.get(config.getOverlay().getShowSourceIcons().value()))
@@ -163,7 +163,7 @@ public final class OverlayTabWidget extends TabWidget {
                 0,
                 ELEMENT_WIDTH,
                 20,
-                TextComponent.translatable(config.getOverlay().getActivationIconPosition().value().getTranslation()),
+                MinecraftTextComponent.translatable(config.getOverlay().getActivationIconPosition().value().getTranslation()),
                 (btn) -> {
                     IconPosition disabledPosition = null;
                     try {
@@ -182,11 +182,11 @@ public final class OverlayTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.overlay.activation_icon_position"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.overlay.activation_icon_position"),
                 button,
                 config.getOverlay().getActivationIconPosition(),
                 (btn, element) -> element.setText(
-                        TextComponent.translatable(config.getOverlay().getActivationIconPosition().value().getTranslation())
+                        MinecraftTextComponent.translatable(config.getOverlay().getActivationIconPosition().value().getTranslation())
                 )
         );
     }
@@ -198,7 +198,7 @@ public final class OverlayTabWidget extends TabWidget {
                 0,
                 ELEMENT_WIDTH,
                 20,
-                TextComponent.translatable(config.getOverlay().getOverlayPosition().value().getTranslation()),
+                MinecraftTextComponent.translatable(config.getOverlay().getOverlayPosition().value().getTranslation()),
                 (btn) -> {
                     OverlayPosition disabledPosition = null;
                     try {
@@ -219,11 +219,11 @@ public final class OverlayTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.overlay.position"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.overlay.position"),
                 button,
                 config.getOverlay().getOverlayPosition(),
                 (btn, element) -> element.setText(
-                        TextComponent.translatable(config.getOverlay().getOverlayPosition().value().getTranslation())
+                        MinecraftTextComponent.translatable(config.getOverlay().getOverlayPosition().value().getTranslation())
                 )
         );
     }
@@ -232,10 +232,10 @@ public final class OverlayTabWidget extends TabWidget {
 
         private final String iconLocation;
 
-        public OverlaySourceEntry(@NotNull TextComponent text,
+        public OverlaySourceEntry(@NotNull MinecraftTextComponent text,
                                   @NotNull W widget,
                                   @NotNull ConfigEntry<?> entry,
-                                  @NotNull List<TextComponent> tooltip,
+                                  @NotNull List<MinecraftTextComponent> tooltip,
                                   @NotNull String iconLocation) {
             super(text, widget, entry, tooltip, null);
 

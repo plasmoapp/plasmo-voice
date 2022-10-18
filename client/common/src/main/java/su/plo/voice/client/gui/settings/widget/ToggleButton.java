@@ -3,15 +3,15 @@ package su.plo.voice.client.gui.settings.widget;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.widget.GuiAbstractWidget;
 
 public final class ToggleButton extends GuiAbstractWidget {
 
-    private static final TextComponent ON = TextComponent.translatable("message.plasmovoice.on");
-    private static final TextComponent OFF = TextComponent.translatable("message.plasmovoice.off");
+    private static final MinecraftTextComponent ON = MinecraftTextComponent.translatable("message.plasmovoice.on");
+    private static final MinecraftTextComponent OFF = MinecraftTextComponent.translatable("message.plasmovoice.off");
 
     private final @Nullable PressAction action;
     private final ConfigEntry<Boolean> entry;
@@ -39,7 +39,7 @@ public final class ToggleButton extends GuiAbstractWidget {
     }
 
     @Override
-    public TextComponent getText() {
+    public MinecraftTextComponent getText() {
         return entry.value() ? ON : OFF;
     }
 

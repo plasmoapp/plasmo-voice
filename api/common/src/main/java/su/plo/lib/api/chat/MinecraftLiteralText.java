@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class LiteralText extends TextComponent {
+public final class MinecraftLiteralText extends MinecraftTextComponent {
 
     @Getter
     private final String text;

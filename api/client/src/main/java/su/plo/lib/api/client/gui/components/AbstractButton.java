@@ -1,7 +1,7 @@
 package su.plo.lib.api.client.gui.components;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.widget.GuiAbstractWidget;
 
@@ -12,7 +12,7 @@ public abstract class AbstractButton extends GuiAbstractWidget {
                           int y,
                           int width,
                           int height,
-                          @NotNull TextComponent text) {
+                          @NotNull MinecraftTextComponent text) {
         super(minecraft, x, y, width, height, text);
     }
 

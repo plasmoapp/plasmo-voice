@@ -1,7 +1,7 @@
 package su.plo.lib.api.client.gui.screen;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 
 import java.util.List;
 
@@ -13,7 +13,7 @@ public interface MinecraftScreen {
 
     void renderBackground();
 
-    void drawTextShadow(@NotNull TextComponent text, int x, int y, int color);
+    void drawTextShadow(@NotNull MinecraftTextComponent text, int x, int y, int color);
 
-    void renderTooltip(List<TextComponent> tooltip, int mouseX, int mouseY);
+    void renderTooltip(List<MinecraftTextComponent> tooltip, int mouseX, int mouseY);
 }

@@ -79,7 +79,7 @@ public final class ForgeVoiceServer extends ModVoiceServer<ForgeServerChannelHan
 
     @Override
     protected ForgeServerChannelHandler createChannelHandler() {
-        ForgeServerChannelHandler handler = new ForgeServerChannelHandler(this, channel);
+        ForgeServerChannelHandler handler = new ForgeServerChannelHandler(this, executor, channel);
         MinecraftForge.EVENT_BUS.register(handler);
         return handler;
     }

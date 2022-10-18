@@ -2,7 +2,7 @@ package su.plo.voice.server.connection;
 
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
@@ -61,13 +61,13 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         int[] clientVersion = VersionUtil.parseVersion(packet.getVersion());
 
         if (clientVersion[0] > serverVersion[0]) {
-            player.getInstance().sendMessage(TextComponent.translatable(
+            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
                     "message.plasmovoice.version_not_supported",
                     String.format("%d.X.X", serverVersion[0])
             ));
             return;
         } else if (clientVersion[0] < serverVersion[0]) {
-            player.getInstance().sendMessage(TextComponent.translatable(
+            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
                     "message.plasmovoice.min_version",
                     String.format("%d.X.X", serverVersion[0])
             ));

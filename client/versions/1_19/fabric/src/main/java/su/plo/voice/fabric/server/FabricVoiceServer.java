@@ -10,7 +10,6 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.permission.PermissionDefault;
@@ -49,13 +48,8 @@ public final class FabricVoiceServer extends ModVoiceServer<FabricServerChannelH
     }
 
     @Override
-    protected void onShutdown(MinecraftServer server) {
-        super.onShutdown(server);
-    }
-
-    @Override
     protected FabricServerChannelHandler createChannelHandler() {
-        return new FabricServerChannelHandler(this);
+        return new FabricServerChannelHandler(this, executor);
     }
 
     @Override

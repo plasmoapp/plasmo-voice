@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.MinecraftFont;
@@ -114,11 +114,11 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
             if (immutableList.size() > 1) {
                 narrationOutput.add(
                         NarrationOutput.Type.POSITION,
-                        TextComponent.translatable("narrator.position.screen", searchResult.index + 1, immutableList.size())
+                        MinecraftTextComponent.translatable("narrator.position.screen", searchResult.index + 1, immutableList.size())
                 );
                 if (searchResult.priority == GuiNarrationWidget.NarrationPriority.FOCUSED) {
                     narrationOutput.add(
-                            NarrationOutput.Type.USAGE, TextComponent.translatable("narration.component_list.usage")
+                            NarrationOutput.Type.USAGE, MinecraftTextComponent.translatable("narration.component_list.usage")
                     );
                 }
             }
@@ -175,8 +175,8 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
         return screen.getHeight();
     }
 
-    public TextComponent getTitle() {
-        return TextComponent.empty();
+    public MinecraftTextComponent getTitle() {
+        return MinecraftTextComponent.empty();
     }
 
     public static class NarrationSearchResult {

@@ -1,7 +1,7 @@
 package su.plo.voice.server.mute;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
@@ -82,7 +82,7 @@ public final class VoiceMuteManager implements MuteManager {
                     formatMuteReason(language, reason)
             ));
         } else {
-            player.getInstance().sendMessage(TextComponent.translatable(
+            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
                     language.mutes().permanentlyMuted(),
                     formatMuteReason(language, reason)
             ));

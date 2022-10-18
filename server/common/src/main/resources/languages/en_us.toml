@@ -1,6 +1,7 @@
 no_permissions = "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
 player_not_found = "Player not found"
 player_only_command = "Only player can execute this command"
+mod_missing_kick_message = "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client"
 
 [mutes]
 empty_reason = "not specified"

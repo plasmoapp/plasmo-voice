@@ -2,7 +2,7 @@ package su.plo.voice.client.render;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.entity.MinecraftClientPlayer;
 import su.plo.lib.api.client.event.render.LevelRenderEvent;
@@ -177,7 +177,7 @@ public final class SourceIconRenderer {
 
         render.enableDepthTest();
 
-        if (entity.isSneaking()) {
+        if (isSneaking(entity)) {
             vertices(tesselator, bufferBuilder, matrix, 40, light);
         } else {
             vertices(tesselator, bufferBuilder, matrix, 255, light);
@@ -221,8 +221,8 @@ public final class SourceIconRenderer {
         DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + entity.getUUID());
         MinecraftFont font = minecraft.getFont();
 
-        boolean isSneaking = entity.isSneaking();
-        TextComponent text = TextComponent.literal((int) Math.round((volume.value() * 100D)) + "%");
+        boolean isSneaking = isSneaking(entity);
+        MinecraftTextComponent text = MinecraftTextComponent.literal((int) Math.round((volume.value() * 100D)) + "%");
         int backgroundColor = (int) (minecraft.getOptions().getBackgroundOpacity(0.25F) * 255.0F) << 24;
 
         int xOffset = -font.width(text) / 2;
@@ -350,5 +350,9 @@ public final class SourceIconRenderer {
     private boolean isIconHidden() {
         int showIcons = config.getOverlay().getShowSourceIcons().value();
         return showIcons == 2 || (minecraft.getOptions().isGuiHidden() && showIcons == 0);
+    }
+
+    private boolean isSneaking(@NotNull MinecraftEntity entity) {
+        return entity instanceof MinecraftPlayer && ((MinecraftPlayer) entity).isSneaking();
     }
 }

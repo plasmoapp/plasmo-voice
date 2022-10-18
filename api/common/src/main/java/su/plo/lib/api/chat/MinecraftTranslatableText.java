@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public final class TranslatableText extends TextComponent {
+public final class MinecraftTranslatableText extends MinecraftTextComponent {
 
     @Getter
     private final String key;

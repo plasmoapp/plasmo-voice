@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings.tab;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -56,7 +56,7 @@ public abstract class AbstractHotKeysTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable(translatable),
+                MinecraftTextComponent.translatable(translatable),
                 keyBinding,
                 entry,
                 GuiUtil.multiLineTooltip(minecraft.getLanguage(), tooltipTranslatable)

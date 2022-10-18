@@ -1,7 +1,7 @@
 package su.plo.lib.api.client.gui;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 
 public interface MinecraftFont {
 
@@ -9,7 +9,7 @@ public interface MinecraftFont {
 
     int width(@NotNull String text);
 
-    int width(@NotNull TextComponent text);
+    int width(@NotNull MinecraftTextComponent text);
 
     @NotNull String plainSubstrByWidth(String string, int width, boolean tail);
 

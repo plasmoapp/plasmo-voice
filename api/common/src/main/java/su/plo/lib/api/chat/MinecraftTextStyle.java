@@ -1,6 +1,6 @@
 package su.plo.lib.api.chat;
 
-public enum TextStyle {
+public enum MinecraftTextStyle {
 
     BLACK,
     DARK_BLUE,

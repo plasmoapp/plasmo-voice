@@ -4,8 +4,8 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 import su.plo.lib.api.server.permission.PermissionTristate;
 
@@ -13,10 +13,10 @@ import su.plo.lib.api.server.permission.PermissionTristate;
 public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     private final CommandSourceStack source;
-    private final TextConverter<Component> textConverter;
+    private final MinecraftTextConverter<Component> textConverter;
 
     @Override
-    public void sendMessage(@NotNull TextComponent text) {
+    public void sendMessage(@NotNull MinecraftTextComponent text) {
         source.sendSystemMessage(textConverter.convert(text));
     }
 

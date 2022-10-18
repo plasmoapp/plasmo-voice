@@ -18,8 +18,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.FormattedText;
 import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.render.MinecraftTesselator;
 import su.plo.lib.api.client.render.VertexBuilder;
@@ -40,7 +40,7 @@ public final class ModGuiRender implements GuiRender {
 
     @Getter
     private final MinecraftTesselator tesselator;
-    private final TextConverter<Component> textConverter;
+    private final MinecraftTextConverter<Component> textConverter;
     private final ResourceCache resources;
     @Getter
     private final ModMatrix matrix = new ModMatrix();
@@ -195,7 +195,7 @@ public final class ModGuiRender implements GuiRender {
     }
 
     @Override
-    public int drawCenteredString(TextComponent text, int x, int y, int color) {
+    public int drawCenteredString(MinecraftTextComponent text, int x, int y, int color) {
         Component component = textConverter.convert(text);
 
         FormattedCharSequence formattedCharSequence = component.getVisualOrderText();
@@ -208,19 +208,19 @@ public final class ModGuiRender implements GuiRender {
     }
 
     @Override
-    public int drawString(TextComponent text, int x, int y, int color) {
+    public int drawString(MinecraftTextComponent text, int x, int y, int color) {
         return drawString(text, x, y, color, true);
     }
 
     @Override
-    public int drawString(TextComponent text, int x, int y, int color, boolean dropShadow) {
+    public int drawString(MinecraftTextComponent text, int x, int y, int color, boolean dropShadow) {
         return dropShadow
                 ? minecraft.font.drawShadow(matrix.getPoseStack(), textConverter.convert(text), (float) x, (float) y, color)
                 : minecraft.font.draw(matrix.getPoseStack(), textConverter.convert(text), (float) x, (float) y, color);
     }
 
     @Override
-    public int drawString(TextComponent component, float x, float y, int color, boolean dropShadow, boolean seeThrough, int backgroundColor, int light) {
+    public int drawString(MinecraftTextComponent component, float x, float y, int color, boolean dropShadow, boolean seeThrough, int backgroundColor, int light) {
         MultiBufferSource bufferSource;
         bufferSource = Objects.requireNonNullElseGet(
                 multiBufferSource,
@@ -248,7 +248,7 @@ public final class ModGuiRender implements GuiRender {
     }
 
     @Override
-    public int drawStringMultiLine(TextComponent text, int x, int y, int color, int width) {
+    public int drawStringMultiLine(MinecraftTextComponent text, int x, int y, int color, int width) {
         List<FormattedCharSequence> lines = minecraft.font.split(textConverter.convert(text), width);
         int lineHeight = minecraft.font.lineHeight;
 
@@ -261,7 +261,7 @@ public final class ModGuiRender implements GuiRender {
     }
 
     @Override
-    public int drawCenteredOrderedString(TextComponent text, int width, int x, int y, int color) {
+    public int drawCenteredOrderedString(MinecraftTextComponent text, int width, int x, int y, int color) {
         FormattedCharSequence orderedText = getOrderedText(textConverter.convert(text), width);
         return minecraft.font.drawShadow(
                 matrix.getPoseStack(),
@@ -273,7 +273,7 @@ public final class ModGuiRender implements GuiRender {
     }
 
     @Override
-    public int drawOrderedString(TextComponent text, int width, int x, int y, int color) {
+    public int drawOrderedString(MinecraftTextComponent text, int width, int x, int y, int color) {
         return minecraft.font.drawShadow(
                 matrix.getPoseStack(),
                 getOrderedText(textConverter.convert(text), width),

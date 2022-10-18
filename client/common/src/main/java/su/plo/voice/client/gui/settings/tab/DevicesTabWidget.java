@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -49,7 +49,7 @@ public final class DevicesTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.devices.microphone")));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.devices.microphone")));
         addEntry(createThresholdEntry());
         addEntry(createMicrophoneEntry());
         addEntry(createVolumeSlider(
@@ -65,7 +65,7 @@ public final class DevicesTabWidget extends TabWidget {
         ));
         addEntry(createStereoCaptureEntry());
 
-        addEntry(new CategoryEntry(TextComponent.translatable("gui.plasmovoice.devices.output")));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.devices.output")));
         addEntry(createOutputDeviceEntry());
         addEntry(createVolumeSlider(
                 "gui.plasmovoice.devices.volume",
@@ -107,7 +107,7 @@ public final class DevicesTabWidget extends TabWidget {
         voiceClient.getEventBus().register(voiceClient, threshold);
 
         return new ButtonOptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.devices.activation_threshold"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.devices.activation_threshold"),
                 threshold,
                 threshold.getButtons(),
                 config.getVoice().getActivationThreshold(),
@@ -155,7 +155,7 @@ public final class DevicesTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.devices.microphone"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.devices.microphone"),
                 dropdown,
                 config.getVoice().getInputDevice(),
                 (button, element) -> {
@@ -182,7 +182,7 @@ public final class DevicesTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.devices.stereo_capture"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.devices.stereo_capture"),
                 toggleButton,
                 config.getVoice().getStereoCapture(),
                 GuiUtil.multiLineTooltip(minecraft.getLanguage(), "gui.plasmovoice.devices.stereo_capture.tooltip"),
@@ -222,7 +222,7 @@ public final class DevicesTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.devices.output_device"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.devices.output_device"),
                 dropdown,
                 config.getVoice().getOutputDevice(),
                 (button, element) -> {
@@ -255,7 +255,7 @@ public final class DevicesTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                TextComponent.translatable("gui.plasmovoice.devices.hrtf"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.devices.hrtf"),
                 toggleButton,
                 config.getVoice().getHrtf(),
                 GuiUtil.multiLineTooltip(minecraft.getLanguage(), "gui.plasmovoice.devices.hrtf.tooltip"),

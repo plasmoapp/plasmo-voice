@@ -4,15 +4,15 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
-import su.plo.lib.api.chat.TextConverter;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.client.gui.MinecraftFont;
 
 @RequiredArgsConstructor
 public final class ModFontWrapper implements MinecraftFont {
 
     private static final Minecraft minecraft = Minecraft.getInstance();
-    private final TextConverter<Component> textConverter;
+    private final MinecraftTextConverter<Component> textConverter;
 
     @Override
     public int getLineHeight() {
@@ -25,7 +25,7 @@ public final class ModFontWrapper implements MinecraftFont {
     }
 
     @Override
-    public int width(@NotNull TextComponent text) {
+    public int width(@NotNull MinecraftTextComponent text) {
         return minecraft.font.width(textConverter.convert(text));
     }
 

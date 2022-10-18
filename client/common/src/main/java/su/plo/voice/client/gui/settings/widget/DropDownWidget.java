@@ -2,7 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.widget.GuiAbstractWidget;
@@ -16,7 +16,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
     private static final int ELEMENT_HEIGHT = 16;
 
     private final VoiceSettingsScreen parent;
-    private final List<TextComponent> elements;
+    private final List<MinecraftTextComponent> elements;
     private final boolean tooltip;
     private final Consumer<Integer> onSelect;
 
@@ -28,8 +28,8 @@ public final class DropDownWidget extends GuiAbstractWidget {
                           int y,
                           int width,
                           int height,
-                          @NotNull TextComponent message,
-                          @NotNull List<TextComponent> elements,
+                          @NotNull MinecraftTextComponent message,
+                          @NotNull List<MinecraftTextComponent> elements,
                           boolean tooltip,
                           @NotNull Consumer<Integer> onSelect) {
         super(minecraft, x, y, width, height, message);
@@ -83,7 +83,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
             elementY = y + height;
         }
 
-        for (TextComponent element : elements) {
+        for (MinecraftTextComponent element : elements) {
             render.enableDepthTest();
             render.getMatrix().push();
             render.getMatrix().translate(0D, 0D, 10D);

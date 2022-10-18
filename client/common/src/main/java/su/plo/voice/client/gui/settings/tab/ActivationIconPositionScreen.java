@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings.tab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.components.Button;
 import su.plo.lib.api.client.gui.screen.GuiScreen;
@@ -18,7 +18,7 @@ public final class ActivationIconPositionScreen extends HudPositionScreen<IconPo
                                         @NotNull GuiScreen parent,
                                         @NotNull EnumConfigEntry<IconPosition> entry,
                                         @Nullable IconPosition disabledPosition) {
-        super(minecraft, parent, entry, TextComponent.translatable("gui.plasmovoice.overlay.activation_icon_position.choose"));
+        super(minecraft, parent, entry, MinecraftTextComponent.translatable("gui.plasmovoice.overlay.activation_icon_position.choose"));
 
         this.disabledPosition = disabledPosition;
     }
@@ -76,7 +76,7 @@ public final class ActivationIconPositionScreen extends HudPositionScreen<IconPo
                 y,
                 BUTTON_WIDTH,
                 20,
-                TextComponent.translatable(iconPosition.getTranslation()),
+                MinecraftTextComponent.translatable(iconPosition.getTranslation()),
                 (btn) -> {
                     entry.set(iconPosition);
                     minecraft.setScreen(parent);

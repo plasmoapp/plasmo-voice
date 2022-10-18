@@ -1,7 +1,7 @@
 package su.plo.lib.api.client.gui;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.TextComponent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.render.MinecraftMatrix;
 import su.plo.lib.api.client.render.MinecraftTesselator;
 import su.plo.lib.api.client.render.VertexBuilder;
@@ -30,21 +30,21 @@ public interface GuiRender {
     // text
     int drawCenteredString(String string, int x, int y, int color);
 
-    int drawCenteredString(TextComponent component, int x, int y, int color);
+    int drawCenteredString(MinecraftTextComponent component, int x, int y, int color);
 
     int drawString(String string, int x, int y, int color);
 
-    int drawString(TextComponent text, int x, int y, int color);
+    int drawString(MinecraftTextComponent text, int x, int y, int color);
 
-    int drawString(TextComponent text, int x, int y, int color, boolean dropShadow);
+    int drawString(MinecraftTextComponent text, int x, int y, int color, boolean dropShadow);
 
-    int drawString(TextComponent component, float x, float y, int color, boolean dropShadow, boolean seeThrough, int backgroundColor, int light);
+    int drawString(MinecraftTextComponent component, float x, float y, int color, boolean dropShadow, boolean seeThrough, int backgroundColor, int light);
 
-    int drawStringMultiLine(TextComponent text, int x, int y, int color, int width);
+    int drawStringMultiLine(MinecraftTextComponent text, int x, int y, int color, int width);
 
-    int drawCenteredOrderedString(TextComponent text, int width, int x, int y, int color);
+    int drawCenteredOrderedString(MinecraftTextComponent text, int width, int x, int y, int color);
 
-    int drawOrderedString(TextComponent text, int width, int x, int y, int color);
+    int drawOrderedString(MinecraftTextComponent text, int width, int x, int y, int color);
 
     // textures
     void blit(int x, int y, int u, int v, int width, int height);
