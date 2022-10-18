@@ -115,6 +115,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         testController.stop();
 
         voiceClient.getEventBus().unregister(voiceClient, this);
+        voiceClient.getEventBus().unregister(voiceClient, testController);
     }
 
     @Override
