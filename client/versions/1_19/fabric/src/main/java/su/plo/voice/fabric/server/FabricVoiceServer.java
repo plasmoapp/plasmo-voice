@@ -49,7 +49,7 @@ public final class FabricVoiceServer extends ModVoiceServer<FabricServerChannelH
 
     @Override
     protected FabricServerChannelHandler createChannelHandler() {
-        return new FabricServerChannelHandler(this, executor);
+        return new FabricServerChannelHandler(this);
     }
 
     @Override

@@ -13,14 +13,12 @@ import su.plo.voice.mod.server.connection.ModServerChannelHandler;
 import su.plo.voice.server.BaseVoiceServer;
 
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 public final class FabricServerChannelHandler extends ModServerChannelHandler implements ServerPlayNetworking.PlayChannelHandler, S2CPlayChannelEvents.Register {
 
-    public FabricServerChannelHandler(@NotNull BaseVoiceServer voiceServer,
-                                      @NotNull ScheduledExecutorService executor) {
-        super(voiceServer, executor);
+    public FabricServerChannelHandler(@NotNull BaseVoiceServer voiceServer) {
+        super(voiceServer);
     }
 
     @Override

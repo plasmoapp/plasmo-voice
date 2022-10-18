@@ -1,6 +1,7 @@
 package su.plo.voice;
 
 import com.google.common.collect.ImmutableList;
+import lombok.Getter;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
@@ -29,6 +30,7 @@ public abstract class BaseVoice implements PlasmoVoice {
 
     protected final VoiceAddonManager addons = new VoiceAddonManager(this, getScope());
 
+    @Getter
     protected ScheduledExecutorService executor;
 
     protected BaseVoice() {

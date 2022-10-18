@@ -15,23 +15,19 @@ import su.plo.voice.server.player.VoiceServerPlayer;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 public abstract class BaseServerChannelHandler {
 
     protected final BaseVoiceServer voiceServer;
-    protected final ScheduledExecutorService executor;
 
     protected final Map<UUID, PlayerChannelHandler> channels = Maps.newHashMap();
 
     private final Map<UUID, ScheduledFuture<?>> playerCheckFutures = Maps.newConcurrentMap();
 
-    protected BaseServerChannelHandler(@NotNull BaseVoiceServer voiceServer,
-                                       @NotNull ScheduledExecutorService executor) {
+    protected BaseServerChannelHandler(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
-        this.executor = executor;
     }
 
     public void clear() {
@@ -59,7 +55,7 @@ public abstract class BaseServerChannelHandler {
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         cancelPlayerCheckFuture(event.getPlayerId());
 
-        playerCheckFutures.put(event.getPlayerId(), executor.schedule(() -> {
+        playerCheckFutures.put(event.getPlayerId(), voiceServer.getExecutor().schedule(() -> {
             voiceServer.getPlayerManager().getPlayerById(event.getPlayerId()).ifPresent((player) ->
                 voiceServer.getMinecraftServer().executeInMainThread(() -> kickModRequired(player))
             );

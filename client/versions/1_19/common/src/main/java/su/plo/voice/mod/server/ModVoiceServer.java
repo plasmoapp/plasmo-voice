@@ -24,14 +24,14 @@ public abstract class ModVoiceServer<T extends ModServerChannelHandler> extends 
     protected T handler;
 
     protected void onInitialize(MinecraftServer server) {
-        if (handler == null) {
-            this.handler = createChannelHandler();
-        }
         this.server = server;
         minecraftServerLib.setServer(server);
         minecraftServerLib.setPermissions(createPermissionSupplier());
         minecraftServerLib.onInitialize();
         super.onInitialize();
+        if (handler == null) {
+            this.handler = createChannelHandler();
+        }
     }
 
     protected void onShutdown(MinecraftServer server) {

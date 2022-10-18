@@ -14,13 +14,11 @@ import su.plo.voice.server.connection.PlayerChannelHandler;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class ModServerChannelHandler extends BaseServerChannelHandler {
 
-    protected ModServerChannelHandler(@NotNull BaseVoiceServer voiceServer,
-                                      @NotNull ScheduledExecutorService executor) {
-        super(voiceServer, executor);
+    protected ModServerChannelHandler(@NotNull BaseVoiceServer voiceServer) {
+        super(voiceServer);
     }
 
     @Override

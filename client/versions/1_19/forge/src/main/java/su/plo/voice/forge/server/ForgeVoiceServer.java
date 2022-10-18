@@ -79,14 +79,13 @@ public final class ForgeVoiceServer extends ModVoiceServer<ForgeServerChannelHan
 
     @Override
     protected ForgeServerChannelHandler createChannelHandler() {
-        ForgeServerChannelHandler handler = new ForgeServerChannelHandler(this, executor, channel);
+        ForgeServerChannelHandler handler = new ForgeServerChannelHandler(this, channel);
         MinecraftForge.EVENT_BUS.register(handler);
         return handler;
     }
 
     @SubscribeEvent
     public void onChannelRegister(@NotNull NetworkEvent.ChannelRegistrationChangeEvent event) {
-        System.out.println(event.getRegistrationChangeType());
         if (event.getRegistrationChangeType() != NetworkEvent.RegistrationChangeType.REGISTER) return;
 
         FriendlyByteBuf buf = event.getPayload();
@@ -108,8 +107,6 @@ public final class ForgeVoiceServer extends ModVoiceServer<ForgeServerChannelHan
                 active = new StringBuilder();
             }
         }
-
-        System.out.println(ids);
     }
 
     @SubscribeEvent

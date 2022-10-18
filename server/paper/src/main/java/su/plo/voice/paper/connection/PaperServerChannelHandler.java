@@ -20,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,9 +28,8 @@ public final class PaperServerChannelHandler extends BaseServerChannelHandler im
     private final Map<UUID, List<String>> channelsUpdates = Maps.newConcurrentMap();
     private final Map<UUID, ScheduledFuture<?>> channelsFutures = Maps.newConcurrentMap();
 
-    public PaperServerChannelHandler(@NotNull BaseVoiceServer voiceServer,
-                                     @NotNull ScheduledExecutorService executor) {
-        super(voiceServer, executor);
+    public PaperServerChannelHandler(@NotNull BaseVoiceServer voiceServer) {
+        super(voiceServer);
     }
 
     @Override
@@ -70,7 +68,7 @@ public final class PaperServerChannelHandler extends BaseServerChannelHandler im
         ScheduledFuture<?> future = channelsFutures.get(player.getUniqueId());
         if (future != null) future.cancel(false);
 
-        channelsFutures.put(player.getUniqueId(), executor.schedule(() -> {
+        channelsFutures.put(player.getUniqueId(), voiceServer.getExecutor().schedule(() -> {
             List<String> channels = channelsUpdates.remove(player.getUniqueId());
             channelsFutures.remove(player.getUniqueId());
 

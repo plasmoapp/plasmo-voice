@@ -40,7 +40,7 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
         minecraftServerLib.setPermissions(createPermissionSupplier());
         super.onInitialize();
 
-        this.handler = new PaperServerChannelHandler(this, executor);
+        this.handler = new PaperServerChannelHandler(this);
         eventBus.register(this, handler);
         loader.getServer().getPluginManager().registerEvents(handler, loader);
 

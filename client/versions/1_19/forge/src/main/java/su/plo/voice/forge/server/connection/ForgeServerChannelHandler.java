@@ -16,7 +16,6 @@ import su.plo.voice.server.BaseVoiceServer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ScheduledExecutorService;
 import java.util.stream.Collectors;
 
 public final class ForgeServerChannelHandler extends ModServerChannelHandler {
@@ -24,9 +23,8 @@ public final class ForgeServerChannelHandler extends ModServerChannelHandler {
     public static ForgeServerChannelHandler INSTANCE;
 
     public ForgeServerChannelHandler(@NotNull BaseVoiceServer voiceServer,
-                                     @NotNull ScheduledExecutorService executor,
                                      @NotNull EventNetworkChannel channel) {
-        super(voiceServer, executor);
+        super(voiceServer);
 
         INSTANCE = this;
         channel.addListener(this::receive);
@@ -58,7 +56,6 @@ public final class ForgeServerChannelHandler extends ModServerChannelHandler {
                 channels.stream().map(ResourceLocation::toString).collect(Collectors.toList()),
                 player
         );
-        System.out.println(player + " " + channels);
     }
 
     private void receive(@NotNull NetworkEvent event) {
