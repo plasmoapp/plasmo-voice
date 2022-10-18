@@ -3,7 +3,6 @@ package su.plo.voice.mod.server.connection;
 import com.google.common.io.ByteStreams;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -36,7 +35,7 @@ public abstract class ModServerChannelHandler extends BaseServerChannelHandler {
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
                     .ifPresent(packet -> {
-                        LogManager.getLogger().info("Channel packet received {}", packet);
+//                        LogManager.getLogger().info("Channel packet received {}", packet);
 
                         VoicePlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
 

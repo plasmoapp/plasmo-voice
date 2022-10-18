@@ -3,7 +3,6 @@ package su.plo.voice.paper.connection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteStreams;
-import org.apache.logging.log4j.LogManager;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -37,7 +36,7 @@ public final class PaperServerChannelHandler extends BaseServerChannelHandler im
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(message))
                     .ifPresent(packet -> {
-                        LogManager.getLogger().info("Channel packet received {}", packet);
+//                        LogManager.getLogger().info("Channel packet received {}", packet);
 
                         VoicePlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
 

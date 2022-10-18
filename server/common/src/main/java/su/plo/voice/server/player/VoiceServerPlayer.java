@@ -3,7 +3,6 @@ package su.plo.voice.server.player;
 import com.google.common.collect.Maps;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.entity.MinecraftServerPlayer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
@@ -65,7 +64,7 @@ public final class VoiceServerPlayer implements VoicePlayer {
 
         player.sendPacket(BaseVoiceServer.CHANNEL_STRING, encoded);
 
-        LogManager.getLogger().info("Channel packet {} sent to {}", packet, this);
+//        LogManager.getLogger().info("Channel packet {} sent to {}", packet, this);
     }
 
     @Override

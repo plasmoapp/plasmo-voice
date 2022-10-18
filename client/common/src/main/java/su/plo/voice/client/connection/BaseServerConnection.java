@@ -133,7 +133,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         voiceClient.getEventBus().call(event);
         if (event.isCancelled()) return;
 
-        LogManager.getLogger().info("Channel packet received {}", packet);
+//        LogManager.getLogger().info("Channel packet received {}", packet);
         packet.handle(this);
     }
 
