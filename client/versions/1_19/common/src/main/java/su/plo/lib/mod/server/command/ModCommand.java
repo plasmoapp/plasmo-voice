@@ -59,7 +59,10 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
         }
 
         if (!command.hasPermission(source, args)) {
-            source.sendMessage(MinecraftTextComponent.translatable("commands.plasmovoice.no_permissions").withStyle(MinecraftTextStyle.RED));
+            source.sendMessage( // todo: use ServerLanguage?
+                    MinecraftTextComponent.literal("I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.")
+                            .withStyle(MinecraftTextStyle.RED)
+            );
             return 1;
         }
 

@@ -32,7 +32,7 @@ public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return false;
+        return true;
     }
 
     @Override

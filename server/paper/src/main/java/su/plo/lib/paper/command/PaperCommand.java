@@ -37,7 +37,10 @@ public final class PaperCommand extends Command {
         MinecraftCommandSource source = getCommandSource(sender);
 
         if (!command.hasPermission(source, args)) {
-            source.sendMessage(MinecraftTextComponent.translatable("commands.plasmovoice.no_permissions").withStyle(MinecraftTextStyle.RED));
+            source.sendMessage( // todo: use ServerLanguage?
+                    MinecraftTextComponent.literal("I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.")
+                            .withStyle(MinecraftTextStyle.RED)
+            );
             return true;
         }
 

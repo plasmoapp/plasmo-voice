@@ -31,7 +31,7 @@ public final class PaperDefaultCommandSource implements MinecraftCommandSource {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return false;
+        return true;
     }
 
     @Override
