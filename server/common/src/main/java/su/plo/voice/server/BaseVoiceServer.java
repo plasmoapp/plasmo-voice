@@ -5,7 +5,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
@@ -281,8 +280,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     public abstract int getMinecraftServerPort();
-
-    public abstract MinecraftServerLib getMinecraftServer();
 
     protected abstract PermissionSupplier createPermissionSupplier();
 }
