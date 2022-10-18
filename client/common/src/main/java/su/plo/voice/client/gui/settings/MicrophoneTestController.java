@@ -16,6 +16,7 @@ import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
@@ -78,7 +79,8 @@ public final class MicrophoneTestController {
         System.arraycopy(event.getSamples(), 0, samples, 0, event.getSamples().length);
         samples = event.getDevice().processFilters(
                 samples,
-                (filter) -> isStereo() && (filter instanceof StereoToMonoFilter)
+                (filter) -> isStereo() &&
+                        ((filter instanceof StereoToMonoFilter) || (filter instanceof NoiseSuppressionFilter))
         );
 
         this.microphoneDB = AudioUtil.calculateHighestAudioLevel(samples);

@@ -26,6 +26,7 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
@@ -289,7 +290,11 @@ public final class VoiceAudioCapture implements AudioCapture {
                 short[] processedSamples = new short[samples.length];
                 System.arraycopy(samples, 0, processedSamples, 0, samples.length);
 
-                processedSamples = device.processFilters(processedSamples, (filter) -> (filter instanceof StereoToMonoFilter));
+                processedSamples = device.processFilters(
+                        processedSamples,
+                        (filter) -> (filter instanceof StereoToMonoFilter) ||
+                                (filter instanceof NoiseSuppressionFilter)
+                );
                 encoded.stereo = encode(stereoEncoder, processedSamples);
             } else if (!isStereo && encoded.mono == null) {
                 short[] processedSamples = new short[samples.length];
