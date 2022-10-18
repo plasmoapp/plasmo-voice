@@ -93,8 +93,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
         int r = (color >> 16) & 0xFF;
         int g = (color >> 8) & 0xFF;
-        int b = color & 0xF;
-
+        int b = color & 0xFF;
 
         float r0, r1, alpha0, alpha1, x0, x1, y0, y1, z0, z1, beta;
         float stackStep = (float) (Math.PI / SPHERE_STACK);
