@@ -124,6 +124,11 @@ public final class VolumeTabWidget extends TabWidget {
                     connection.getPlayers()
                             .stream()
                             .filter(player -> player.getPlayerNick().toLowerCase().contains(currentSearch))
+                            .filter(player ->
+                                    minecraft.getClientPlayer()
+                                            .map((clientPlayer) -> !clientPlayer.getUUID().equals(player.getPlayerId()))
+                                            .orElse(true)
+                            )
                             .sorted(Comparator.comparing(VoicePlayerInfo::getPlayerNick))
                             .forEach(this::createPlayerVolume);
                 });
