@@ -23,7 +23,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     private final ClientConfig config;
 
     private int color = 0x00a000;
-    private int alpha = 150;
+    private int alpha = 0;
     private float radius = 8F;
     private long lastChanged;
 
