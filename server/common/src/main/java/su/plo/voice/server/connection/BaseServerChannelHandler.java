@@ -53,13 +53,15 @@ public abstract class BaseServerChannelHandler {
 
     @EventSubscribe
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
-        cancelPlayerCheckFuture(event.getPlayerId());
+        if (voiceServer.getConfig().getVoice().isClientModRequired()) {
+            cancelPlayerCheckFuture(event.getPlayerId());
 
-        playerCheckFutures.put(event.getPlayerId(), voiceServer.getExecutor().schedule(() -> {
-            voiceServer.getPlayerManager().getPlayerById(event.getPlayerId()).ifPresent((player) ->
-                voiceServer.getMinecraftServer().executeInMainThread(() -> kickModRequired(player))
-            );
-        }, 2000L, TimeUnit.MILLISECONDS));
+            playerCheckFutures.put(event.getPlayerId(), voiceServer.getExecutor().schedule(() -> {
+                voiceServer.getPlayerManager().getPlayerById(event.getPlayerId()).ifPresent((player) ->
+                        voiceServer.getMinecraftServer().executeInMainThread(() -> kickModRequired(player))
+                );
+            }, 3000L, TimeUnit.MILLISECONDS));
+        }
     }
 
     @EventSubscribe
