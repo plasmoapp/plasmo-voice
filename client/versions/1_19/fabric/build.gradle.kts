@@ -63,6 +63,8 @@ tasks {
     build {
         doLast {
             shadowJar.get().archiveFile.get().asFile.delete()
+            remapJar.get().archiveFile.get().asFile
+                .copyTo(rootProject.buildDir.resolve("libs/${remapJar.get().archiveFile.get().asFile.name}"), true)
         }
     }
 }

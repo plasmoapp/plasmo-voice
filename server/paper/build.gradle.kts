@@ -40,6 +40,11 @@ tasks {
 
     build {
         dependsOn.add(shadowJar)
+
+        doLast {
+            shadowJar.get().archiveFile.get().asFile
+                .copyTo(rootProject.buildDir.resolve("libs/${shadowJar.get().archiveFile.get().asFile.name}"), true)
+        }
     }
 
     jar {
