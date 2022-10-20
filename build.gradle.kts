@@ -1,3 +1,5 @@
+import java.io.ByteArrayOutputStream
+
 // Version
 val targetJavaVersion: String by rootProject
 val mavenGroup: String by rootProject
@@ -16,7 +18,20 @@ subprojects {
     apply(plugin = "com.github.johnrengelman.shadow")
 
     group = mavenGroup
-    version = buildVersion
+
+    if (buildVersion.contains("-")) {
+        val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
+            rootProject.exec {
+                commandLine("git")
+                    .args("rev-parse", "--verify", "--short", "HEAD")
+                standardOutput = outputStream
+            }
+            outputStream.toString().trim()
+        }
+        version = "$buildVersion+$gitCommitHash"
+    } else {
+        version = buildVersion
+    }
 
     dependencies {
         compileOnly(rootProject.libs.annotations)

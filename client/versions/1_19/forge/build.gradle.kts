@@ -1,8 +1,6 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import net.fabricmc.loom.api.LoomGradleExtensionAPI
 
-val buildVersion: String by rootProject
-
 // todo: придумать как использовать из gradle.properties. Сейчас не получается использовать, потому что это не rootProject
 val minecraftVersion = "1.19.2"
 val forgeLoaderVersion = "43"
@@ -73,7 +71,7 @@ tasks {
 
         filesMatching("META-INF/mods.toml") {
             expand(mutableMapOf(
-                "version" to project.version,
+                "version" to version,
                 "minecraft_version" to minecraftVersion,
                 "loader_version" to forgeLoaderVersion,
                 "forge_version" to forgeVersion

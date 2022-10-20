@@ -179,9 +179,10 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     }
 
     private MinecraftTextComponent getSettingsTitle() {
-        String[] versionSplit = voiceClient.getVersion().split("-");
+        String[] versionSplit = voiceClient.getVersion().split("\\+");
+        versionSplit = versionSplit[0].split("-");
 
-        String version = versionSplit[0]; // remove -* from version
+        String version = versionSplit[0]; // remove -* and +* from version
         MinecraftTextStyle versionColor = MinecraftTextStyle.WHITE;
         if (versionSplit.length > 1) {
             if (Objects.equals(versionSplit[1], "ALPHA")) {
@@ -206,14 +207,14 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     }
 
     private List<MinecraftTextComponent> getVersionTooltip() {
-        String[] versionSplit = voiceClient.getVersion().split("-");
-
+        String[] versionSplit = voiceClient.getVersion().split("\\+");
+        versionSplit = versionSplit[0].split("-");
         if (versionSplit.length < 2) return null;
 
         if (Objects.equals(versionSplit[1].toLowerCase(), "alpha")) {
-            return ImmutableList.of(MinecraftTextComponent.literal("Plasmo Voice Alpha Branch"));
+            return ImmutableList.of(MinecraftTextComponent.literal("Plasmo Voice Alpha"));
         } else {
-            return ImmutableList.of(MinecraftTextComponent.literal("Plasmo Voice Dev Branch"));
+            return ImmutableList.of(MinecraftTextComponent.literal("Plasmo Voice Dev"));
         }
     }
 }
