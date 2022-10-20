@@ -54,12 +54,13 @@ public final class ProximityServerActivation {
         );
     }
 
-    @EventSubscribe
+    @EventSubscribe(priority = EventPriority.HIGHEST)
     public void onPlayerSpeak(@NotNull PlayerSpeakEvent event) {
         VoicePlayer player = event.getPlayer();
         PlayerAudioPacket packet = event.getPacket();
 
-        if (!player.getInstance().hasPermission("voice.activation.proximity") ||
+        if (event.isCancelled() ||
+                !player.getInstance().hasPermission("voice.activation.proximity") ||
                 !voiceServer.getConfig()
                         .getVoice()
                         .getProximity()
@@ -79,12 +80,13 @@ public final class ProximityServerActivation {
         });
     }
 
-    @EventSubscribe
+    @EventSubscribe(priority = EventPriority.HIGHEST)
     public void onPlayerSpeakEnd(@NotNull PlayerSpeakEndEvent event) {
         VoicePlayer player = event.getPlayer();
         PlayerAudioEndPacket packet = event.getPacket();
 
-        if (!player.getInstance().hasPermission("voice.activation.proximity") ||
+        if (event.isCancelled() ||
+                !player.getInstance().hasPermission("voice.activation.proximity") ||
                 !voiceServer.getConfig()
                         .getVoice()
                         .getProximity()
