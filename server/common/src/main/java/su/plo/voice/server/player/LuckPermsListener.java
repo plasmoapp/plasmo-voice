@@ -106,7 +106,6 @@ public final class LuckPermsListener {
     }
 
     private void onPermissionChange(@NotNull VoicePlayer player, @NotNull String permission) {
-        System.out.println(permission);
         voiceServer.getEventBus().call(new PlayerPermissionUpdateEvent(player, permission));
         permissionChanges.remove(player.getInstance().getUUID() + "_" + permission);
     }
