@@ -265,7 +265,10 @@ public final class SourceIconRenderer {
         Pos3d cameraPos = camera.getPosition();
         if (cameraPos.distanceSquared(position) > 4096D) return;
 
+        // SHADER
+        render.setShader(VertexBuilder.Shader.RENDERTYPE_TEXT);
         // TEXTURE
+        render.enableTexture();
         render.setShaderTexture(0, iconLocation);
         render.setShaderColor(1F, 1F, 1F, 1F);
         // TRANSLUCENT_TRANSPARENCY
@@ -278,7 +281,8 @@ public final class SourceIconRenderer {
         );
         // LIGHTMAP
         render.turnOnLightLayer();
-        render.depthFunc(515);
+
+        render.enableDepthTest();
 
         MinecraftMatrix matrix = render.getMatrix();
         MinecraftTesselator tesselator = render.getTesselator();
@@ -311,6 +315,7 @@ public final class SourceIconRenderer {
         render.turnOffLightLayer();
 
         render.enableDepthTest();
+        render.depthFunc(515);
     }
 
     private void vertices(@NotNull MinecraftTesselator tesselator,

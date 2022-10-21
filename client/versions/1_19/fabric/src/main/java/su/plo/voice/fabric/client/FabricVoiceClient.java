@@ -28,7 +28,7 @@ public final class FabricVoiceClient extends ModVoiceClient<FabricClientChannelH
 
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());
         HudRenderCallback.EVENT.register(hudRenderer::render);
-        WorldRenderEvents.LAST.register(
+        WorldRenderEvents.AFTER_ENTITIES.register(
                 (context) -> levelRenderer.render(context.world(), context.matrixStack(), context.camera(), context.tickDelta())
         );
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
