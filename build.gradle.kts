@@ -19,7 +19,7 @@ subprojects {
 
     group = mavenGroup
 
-    if (buildVersion.contains("-")) {
+    if (buildVersion.contains("-") && !project.parent?.name.equals("api")) {
         val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
             rootProject.exec {
                 commandLine("git")
