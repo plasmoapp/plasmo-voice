@@ -46,7 +46,9 @@ public final class VoiceServerStaticSource extends BaseServerSource<StaticSource
 
     @Override
     public void setPosition(@NotNull ServerPos3d position) {
-        this.position = position;
-        setDirty();
+        if (!this.position.equals(position)) {
+            this.position = position;
+            setDirty();
+        }
     }
 }

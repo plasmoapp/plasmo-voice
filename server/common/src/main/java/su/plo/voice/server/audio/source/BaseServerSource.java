@@ -150,7 +150,8 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
         }
     }
 
-    protected void setDirty() {
+    @Override
+    public void setDirty() {
         dirty.set(true);
         state.updateAndGet((operand) -> {
             int value = operand + 1;
