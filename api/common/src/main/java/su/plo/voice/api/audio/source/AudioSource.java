@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 // TODO: doc
-public interface AudioSource {
+public interface AudioSource<S extends SourceInfo> {
 
-    @NotNull SourceInfo getInfo();
+    @NotNull S getInfo();
 }

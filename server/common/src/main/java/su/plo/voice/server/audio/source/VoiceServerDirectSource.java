@@ -5,12 +5,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerDirectSource;
-import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
-import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
@@ -20,7 +19,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-public final class VoiceServerDirectSource extends BaseServerSource implements ServerDirectSource {
+public final class VoiceServerDirectSource extends BaseServerSource<DirectSourceInfo> implements ServerDirectSource {
 
     @Getter
     private final VoicePlayer player;
@@ -30,13 +29,13 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
     private Pos3d lookAngle;
     private boolean cameraRelative = true;
 
-    public VoiceServerDirectSource(UdpServerConnectionManager udpConnections,
+    public VoiceServerDirectSource(@NotNull PlasmoVoiceServer voiceServer,
                                    @NotNull AddonContainer addon,
                                    @NotNull ServerSourceLine line,
                                    @Nullable String codec,
                                    boolean stereo,
                                    @NotNull VoicePlayer player) {
-        super(udpConnections, addon, UUID.randomUUID(), line, codec, stereo);
+        super(voiceServer, addon, UUID.randomUUID(), line, codec, stereo);
         this.player = player;
     }
 
@@ -85,7 +84,7 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
     }
 
     @Override
-    public @NotNull SourceInfo getInfo() {
+    public @NotNull DirectSourceInfo getInfo() {
         return new DirectSourceInfo(
                 addon.getId(),
                 id,
@@ -119,7 +118,8 @@ public final class VoiceServerDirectSource extends BaseServerSource implements S
 
     @Override
     public void sendAudioPacket(SourceAudioPacket packet, short distance) {
-        udpConnections.getConnectionByUUID(player.getInstance().getUUID())
+        voiceServer.getUdpConnectionManager()
+                .getConnectionByUUID(player.getInstance().getUUID())
                 .ifPresent(connection -> connection.sendPacket(packet));
     }
 

@@ -6,13 +6,14 @@ import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.UUID;
 import java.util.function.Predicate;
 
-public interface ServerAudioSource extends AudioSource {
+public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> {
 
     @NotNull AddonContainer getAddon();
 

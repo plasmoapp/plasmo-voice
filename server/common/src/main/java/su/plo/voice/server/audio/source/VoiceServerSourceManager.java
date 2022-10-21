@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
@@ -25,16 +26,16 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     private final PlasmoVoiceServer voiceServer;
 
-    private final Map<UUID, ServerAudioSource> sourceById = Maps.newConcurrentMap();
+    private final Map<UUID, ServerAudioSource<?>> sourceById = Maps.newConcurrentMap();
     private final Map<UUID, ServerPlayerSource> sourceByPlayerId = Maps.newConcurrentMap();
     private final Map<UUID, ServerEntitySource> sourceByEntityId = Maps.newConcurrentMap();
 
     @Override
-    public Optional<ServerAudioSource> getSourceById(@NotNull UUID sourceId) {
+    public Optional<ServerAudioSource<?>> getSourceById(@NotNull UUID sourceId) {
         return Optional.ofNullable(sourceById.get(sourceId));
     }
 
-    public Collection<ServerAudioSource> getSources() {
+    public Collection<ServerAudioSource<?>> getSources() {
         return sourceById.values();
     }
 
@@ -58,7 +59,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
             if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
             ServerPlayerSource source = new VoiceServerPlayerSource(
-                    voiceServer.getUdpConnectionManager(),
+                    voiceServer,
                     addon.get(),
                     line,
                     codec,
@@ -83,7 +84,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
             if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
             ServerEntitySource source = new VoiceServerEntitySource(
-                    voiceServer.getUdpConnectionManager(),
+                    voiceServer,
                     addon.get(),
                     line,
                     codec,
@@ -107,7 +108,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
         ServerStaticSource source = new VoiceServerStaticSource(
-                voiceServer.getUdpConnectionManager(),
+                voiceServer,
                 addon.get(),
                 line,
                 codec,
@@ -129,7 +130,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
         ServerDirectSource source = new VoiceServerDirectSource(
-                voiceServer.getUdpConnectionManager(),
+                voiceServer,
                 addon.get(),
                 line,
                 codec,
@@ -139,6 +140,21 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         sourceById.put(source.getId(), source);
 
         return source;
+    }
+
+    @Override
+    public void remove(@NotNull UUID sourceId) {
+        ServerAudioSource<?> source = sourceById.remove(sourceId);
+        if (source instanceof ServerPlayerSource) {
+            sourceByPlayerId.remove(sourceId);
+        } else if (source instanceof ServerEntitySource) {
+            sourceByEntityId.remove(sourceId);
+        }
+    }
+
+    @Override
+    public void remove(@NotNull AudioSource<?> source) {
+        remove(source.getInfo().getId());
     }
 
 //    @Override

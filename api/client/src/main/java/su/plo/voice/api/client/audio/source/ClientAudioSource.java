@@ -7,11 +7,9 @@ import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
-public interface ClientAudioSource<S extends SourceInfo> extends AudioSource {
+public interface ClientAudioSource<S extends SourceInfo> extends AudioSource<S> {
 
     void initialize(S sourceInfo) throws DeviceException;
-
-    @NotNull S getInfo();
 
     void process(@NotNull SourceAudioPacket packet);
 

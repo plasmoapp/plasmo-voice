@@ -6,11 +6,14 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
-import su.plo.voice.api.server.connection.UdpServerConnectionManager;
+import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
+import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
@@ -22,9 +25,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-public abstract class BaseServerSource implements ServerAudioSource {
+public abstract class BaseServerSource<S extends SourceInfo> implements ServerAudioSource<S> {
 
-    protected final UdpServerConnectionManager udpConnections;
+    protected final PlasmoVoiceServer voiceServer;
     @Getter
     protected final AddonContainer addon;
     @Getter
@@ -46,13 +49,13 @@ public abstract class BaseServerSource implements ServerAudioSource {
     private final List<Predicate<VoicePlayer>> filters = new CopyOnWriteArrayList<>();
     private final ServerPos3d playerPosition = new ServerPos3d();
 
-    public BaseServerSource(@NotNull UdpServerConnectionManager udpConnections,
+    public BaseServerSource(@NotNull PlasmoVoiceServer voiceServer,
                             @NotNull AddonContainer addon,
                             @NotNull UUID id,
                             @NotNull ServerSourceLine line,
                             @Nullable String codec,
                             boolean stereo) {
-        this.udpConnections = udpConnections;
+        this.voiceServer = voiceServer;
         this.addon = addon;
         this.id = id;
         this.line = line;
@@ -94,6 +97,12 @@ public abstract class BaseServerSource implements ServerAudioSource {
 
     @Override
     public void sendAudioPacket(SourceAudioPacket packet, short distance) {
+        ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, distance);
+        voiceServer.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
+        distance = event.getDistance();
+
         packet.setSourceState((byte) state.get());
 
         if (dirty.compareAndSet(true, false))
@@ -105,7 +114,7 @@ public abstract class BaseServerSource implements ServerAudioSource {
         double distanceSquared = distance * distance;
 
         L:
-        for (UdpConnection connection : udpConnections.getConnections()) {
+        for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
             for (Predicate<VoicePlayer> filter : filters) {
                 if (!filter.test(connection.getPlayer())) continue L;
             }
@@ -119,13 +128,17 @@ public abstract class BaseServerSource implements ServerAudioSource {
 
     @Override
     public void sendPacket(Packet<?> packet, short distance) {
-        distance *= 2;
+        ServerSourcePacketEvent event = new ServerSourcePacketEvent(this, packet, distance);
+        voiceServer.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
+        distance = (short) (event.getDistance() * 2);
 
         ServerPos3d sourcePosition = getPosition();
         double distanceSquared = distance * distance;
 
         L:
-        for (UdpConnection connection : udpConnections.getConnections()) {
+        for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
             for (Predicate<VoicePlayer> filter : filters) {
                 if (!filter.test(connection.getPlayer())) continue L;
             }

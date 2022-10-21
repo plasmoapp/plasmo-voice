@@ -118,7 +118,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull SourceInfoRequestPacket packet) {
-        Optional<ServerAudioSource> source = voiceServer.getSourceManager().getSourceById(packet.getSourceId());
+        Optional<ServerAudioSource<?>> source = voiceServer.getSourceManager().getSourceById(packet.getSourceId());
         if (!source.isPresent()) return;
 
         player.sendPacket(new SourceInfoPacket(source.get().getInfo()));

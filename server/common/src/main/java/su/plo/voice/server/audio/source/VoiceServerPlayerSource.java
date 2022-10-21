@@ -4,25 +4,24 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
-import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
-import su.plo.voice.proto.data.audio.source.SourceInfo;
 
-public final class VoiceServerPlayerSource extends BaseServerSource implements ServerPlayerSource {
+public final class VoiceServerPlayerSource extends BaseServerSource<PlayerSourceInfo> implements ServerPlayerSource {
 
     private final VoicePlayer player;
     private final ServerPos3d playerPosition = new ServerPos3d();
 
-    public VoiceServerPlayerSource(UdpServerConnectionManager udpConnections,
+    public VoiceServerPlayerSource(@NotNull PlasmoVoiceServer voiceServer,
                                    @NotNull AddonContainer addon,
                                    @NotNull ServerSourceLine line,
                                    @Nullable String codec,
                                    boolean stereo,
                                    @NotNull VoicePlayer player) {
-        super(udpConnections, addon, player.getInstance().getUUID(), line, codec, stereo);
+        super(voiceServer, addon, player.getInstance().getUUID(), line, codec, stereo);
 
         this.player = player;
         addFilter(this::filterVanish);
@@ -45,7 +44,7 @@ public final class VoiceServerPlayerSource extends BaseServerSource implements S
     }
 
     @Override
-    public @NotNull SourceInfo getInfo() {
+    public @NotNull PlayerSourceInfo getInfo() {
         return new PlayerSourceInfo(
                 addon.getId(),
                 id,
