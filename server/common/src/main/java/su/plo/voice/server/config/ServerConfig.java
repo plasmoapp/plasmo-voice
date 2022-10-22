@@ -45,6 +45,9 @@ public final class ServerConfig {
         @ConfigField(path = "public")
         private @Nullable Public hostPublic = null;
 
+        @ConfigField
+        private boolean proxyProtocol = false;
+
         @Config
         @Data
         @EqualsAndHashCode

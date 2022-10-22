@@ -6,6 +6,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -61,6 +62,10 @@ public final class NettyUdpServer implements UdpServer {
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
 
                 pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceServer));
+
+                if (config.getHost().isProxyProtocol()) {
+                    pipeline.addFirst(executors, "haproxy_handler", new HAProxyMessageDecoder());
+                }
             }
         });
 
