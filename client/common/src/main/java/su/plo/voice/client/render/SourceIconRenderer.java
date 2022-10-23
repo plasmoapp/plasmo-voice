@@ -54,7 +54,9 @@ public final class SourceIconRenderer {
 
         for (ClientAudioSource<?> source : voiceClient.getSourceManager().getSources()) {
             if (!(source.getInfo() instanceof StaticSourceInfo)
-                    || !source.isActivated()) continue;
+                    || !source.getInfo().isIconVisible()
+                    || !source.isActivated()
+            ) continue;
 
             Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
                     .getLineById(source.getInfo().getLineId());
@@ -115,7 +117,10 @@ public final class SourceIconRenderer {
                 );
             }
 
-            if (!source.isPresent() || !source.get().isActivated()) return;
+            if (!source.isPresent() ||
+                    !source.get().isActivated() ||
+                    !source.get().getInfo().isIconVisible()
+            ) return;
 
             Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
                     .getLineById(source.get().getInfo().getLineId());
