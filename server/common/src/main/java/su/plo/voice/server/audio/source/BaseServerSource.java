@@ -37,8 +37,7 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
     @Getter
     protected @NotNull ServerSourceLine line;
     @Getter
-    @Setter
-    protected boolean iconVisible = true; // todo: icon visibility
+    protected boolean iconVisible = true;
     @Setter
     protected int angle;
     protected boolean stereo;
@@ -73,6 +72,7 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
         if (!this.line.equals(line)) {
             this.line = line;
             setDirty();
+            increaseSourceState();
         }
     }
 
@@ -81,6 +81,16 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
         if (this.stereo != stereo) {
             this.stereo = stereo;
             setDirty();
+            increaseSourceState();
+        }
+    }
+
+    @Override
+    public synchronized void setIconVisible(boolean visible) {
+        if (this.iconVisible != visible) {
+            this.iconVisible = visible;
+            setDirty();
+            increaseSourceState();
         }
     }
 
@@ -153,6 +163,9 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
     @Override
     public void setDirty() {
         dirty.set(true);
+    }
+
+    protected void increaseSourceState() {
         state.updateAndGet((operand) -> {
             int value = operand + 1;
             return value > Byte.MAX_VALUE ? Byte.MIN_VALUE : value;
