@@ -167,8 +167,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                     disableVoiceButtons.get(1).setVisible(true);
                     config.getVoice().getDisabled().set(!config.getVoice().getDisabled().value());
 
-                    // todo: clear sources
-//                    SocketClientUDPQueue.closeAll();
+                    voiceClient.getSourceManager().clear();
 
                     if (!config.getVoice().getMicrophoneDisabled().value()) {
                         disableMicrophoneButtons.get(0).setVisible(false);

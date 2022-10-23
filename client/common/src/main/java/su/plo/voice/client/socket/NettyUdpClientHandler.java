@@ -7,6 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
+import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
@@ -25,13 +26,17 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     private final Logger logger = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
+    private final ClientConfig config;
     private final NettyUdpClient client;
     private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     private long keepAlive = System.currentTimeMillis();
 
-    public NettyUdpClientHandler(@NotNull PlasmoVoiceClient voiceClient, @NotNull NettyUdpClient client) {
+    public NettyUdpClientHandler(@NotNull PlasmoVoiceClient voiceClient,
+                                 @NotNull ClientConfig config,
+                                 @NotNull NettyUdpClient client) {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
+        this.config = checkNotNull(config, "config");
         this.client = checkNotNull(client, "client");
 
         executor.scheduleAtFixedRate(this::tick, 0L, 1L, TimeUnit.SECONDS);
@@ -62,6 +67,8 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
 
     @Override
     public void handle(@NotNull SourceAudioPacket packet) {
+        if (config.getVoice().getDisabled().value()) return;
+
         voiceClient.getSourceManager().getSourceById(packet.getSourceId())
                 .ifPresent(source -> {
                     if (source.getInfo().getState() != packet.getSourceState()) {

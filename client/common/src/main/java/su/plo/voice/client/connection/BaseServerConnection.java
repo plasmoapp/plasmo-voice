@@ -52,6 +52,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final BaseVoiceClient voiceClient;
+    private final ClientConfig config;
     private final MinecraftClientLib minecraft;
     private final ClientSourceLineManager sourceLines;
     private final ClientActivationManager activations;
@@ -69,6 +70,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public BaseServerConnection(@NotNull BaseVoiceClient voiceClient,
                                 @NotNull MinecraftClientLib minecraft) throws Exception {
         this.voiceClient = voiceClient;
+        this.config = voiceClient.getConfig();
         this.minecraft = minecraft;
         this.sourceLines = voiceClient.getSourceLineManager();
         this.activations = voiceClient.getActivationManager();
@@ -141,7 +143,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull ConnectionPacket packet) {
         voiceClient.getUdpClientManager().removeClient(UdpClientClosedEvent.Reason.RECONNECT);
 
-        UdpClient client = new NettyUdpClient(voiceClient, packet.getSecret());
+        UdpClient client = new NettyUdpClient(voiceClient, config, packet.getSecret());
 
         UdpClientConnectEvent connectEvent = new UdpClientConnectEvent(client, packet);
         voiceClient.getEventBus().call(connectEvent);
@@ -293,12 +295,16 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull SourceAudioEndPacket packet) {
+        if (config.getVoice().getDisabled().value()) return;
+
         sources.getSourceById(packet.getSourceId())
                 .ifPresent(source -> source.process(packet));
     }
 
     @Override
     public void handle(@NotNull SourceInfoPacket packet) {
+        if (config.getVoice().getDisabled().value()) return;
+
         if (packet.getSourceInfo() instanceof PlayerSourceInfo) {
             PlayerSourceInfo sourceInfo = (PlayerSourceInfo) packet.getSourceInfo();
             playerById.put(sourceInfo.getPlayerInfo().getPlayerId(), sourceInfo.getPlayerInfo());

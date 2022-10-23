@@ -208,6 +208,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
                 if (captureEvent.isSendEnd()
                         || config.getVoice().getMicrophoneDisabled().value()
+                        || config.getVoice().getDisabled().value()
                         || isServerMuted()
                 ) {
                     if (parentActivation.isActivated()) {
