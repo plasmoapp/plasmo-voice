@@ -107,7 +107,7 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
 
     @Override
     public boolean canSee(@NotNull MinecraftServerPlayer player) {
-        return !player.isInvisibleTo(player);
+        return !player.isInvisibleTo(this);
     }
 
     @Override
