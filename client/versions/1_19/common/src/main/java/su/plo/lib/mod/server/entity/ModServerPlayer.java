@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.entity.MinecraftServerPlayer;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
@@ -21,6 +22,7 @@ import su.plo.lib.mod.entity.ModPlayer;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
+import java.util.Optional;
 import java.util.Set;
 
 public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements MinecraftServerPlayer {
@@ -30,9 +32,11 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     private final PermissionSupplier permissions;
     private final ResourceCache resources;
     private final Set<String> registeredChannels = Sets.newCopyOnWriteArraySet();
+
     @Getter
     @Setter
     private String language = "en_us";
+    private MinecraftServerEntity spectatorTarget;
 
     public ModServerPlayer(@NotNull MinecraftServerLib minecraftServer,
                            @NotNull MinecraftTextConverter<Component> textConverter,
@@ -109,6 +113,17 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     @Override
     public Collection<String> getRegisteredChannels() {
         return registeredChannels;
+    }
+
+    @Override
+    public Optional<MinecraftServerEntity> getSpectatorTarget() {
+        if (instance.getCamera() == instance) {
+            this.spectatorTarget = null;
+        } else if (spectatorTarget == null || !instance.getCamera().equals(spectatorTarget.getInstance())) {
+            this.spectatorTarget = minecraftServer.getEntity(instance.getCamera());
+        }
+
+        return Optional.ofNullable(spectatorTarget);
     }
 
     @Override

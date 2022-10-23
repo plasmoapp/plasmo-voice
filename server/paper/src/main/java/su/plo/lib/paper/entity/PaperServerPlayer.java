@@ -7,18 +7,22 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.entity.MinecraftServerPlayer;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.paper.chat.BaseComponentTextConverter;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public final class PaperServerPlayer extends PaperServerEntity<Player> implements MinecraftServerPlayer {
 
     private final JavaPlugin loader;
     private final BaseComponentTextConverter textConverter;
     private final PermissionSupplier permissions;
+
+    private MinecraftServerEntity spectatorTarget;
 
     public PaperServerPlayer(@NotNull JavaPlugin loader,
                              @NotNull MinecraftServerLib minecraftServer,
@@ -95,5 +99,16 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
     @Override
     public Collection<String> getRegisteredChannels() {
         return instance.getListeningPluginChannels();
+    }
+
+    @Override
+    public Optional<MinecraftServerEntity> getSpectatorTarget() {
+        if (instance.getSpectatorTarget() == null) {
+            this.spectatorTarget = null;
+        } else if (!instance.getSpectatorTarget().equals(spectatorTarget.getInstance())) {
+            this.spectatorTarget = minecraftServer.getEntity(instance.getSpectatorTarget());
+        }
+
+        return Optional.ofNullable(spectatorTarget);
     }
 }

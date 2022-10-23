@@ -6,6 +6,7 @@ import su.plo.lib.api.entity.MinecraftPlayer;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface MinecraftServerPlayer extends MinecraftServerEntity, MinecraftCommandSource, MinecraftPlayer {
 
@@ -16,4 +17,6 @@ public interface MinecraftServerPlayer extends MinecraftServerEntity, MinecraftC
     boolean canSee(@NotNull MinecraftServerPlayer player);
 
     Collection<String> getRegisteredChannels();
+
+    Optional<MinecraftServerEntity> getSpectatorTarget();
 }
