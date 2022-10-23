@@ -41,7 +41,7 @@ public final class ModEntityRenderer extends ModRenderer {
         setPoseStack(poseStack);
         setMultiBufferSource(multiBufferSource);
 
-        voiceClient.getEventBus().call(new EntityRenderEvent(render, this.camera, light, new ModEntity(entity)));
+        voiceClient.getEventBus().call(new EntityRenderEvent(render, this.camera, light, new ModEntity<>(entity), hasLabel));
     }
 
     private void render(@NotNull PoseStack poseStack,

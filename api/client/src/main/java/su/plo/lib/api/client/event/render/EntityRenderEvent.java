@@ -19,14 +19,21 @@ public final class EntityRenderEvent implements Event {
     private final int light;
     @Getter
     private final MinecraftEntity entity;
+    private final boolean label;
 
     public EntityRenderEvent(@NotNull GuiRender render,
                              @NotNull MinecraftCamera camera,
                              int light,
-                             @NotNull MinecraftEntity entity) {
+                             @NotNull MinecraftEntity entity,
+                             boolean label) {
         this.render = checkNotNull(render);
         this.camera = checkNotNull(camera);
         this.light = light;
         this.entity = entity;
+        this.label = label;
+    }
+
+    public boolean hasLabel() {
+        return label;
     }
 }

@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.entity.MinecraftClientPlayer;
+import su.plo.lib.api.client.event.render.EntityRenderEvent;
 import su.plo.lib.api.client.event.render.LevelRenderEvent;
 import su.plo.lib.api.client.event.render.PlayerRenderEvent;
 import su.plo.lib.api.client.gui.GuiRender;
@@ -75,7 +76,7 @@ public final class SourceIconRenderer {
     }
 
     @EventSubscribe
-    public void onEntityRender(@NotNull PlayerRenderEvent event) {
+    public void onPlayerRender(@NotNull PlayerRenderEvent event) {
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
 
@@ -138,6 +139,44 @@ public final class SourceIconRenderer {
                 iconLocation,
                 event.hasLabel(),
                 hasPercent
+        );
+    }
+
+    @EventSubscribe
+    public void onEntityRender(@NotNull EntityRenderEvent event) {
+        Optional<ServerConnection> connection = voiceClient.getServerConnection();
+        if (!connection.isPresent()) return;
+
+        MinecraftEntity entity = event.getEntity();
+
+        Optional<MinecraftClientPlayer> clientPlayer = minecraft.getClientPlayer();
+        if (!clientPlayer.isPresent()) return;
+
+        if (isIconHidden() || entity.isInvisibleTo(clientPlayer.get())) return;
+
+        Optional<ClientAudioSource<?>> source = voiceClient.getSourceManager()
+                .getSourceById(entity.getUUID(), false);
+
+        if (!source.isPresent() ||
+                !source.get().isActivated() ||
+                !source.get().getInfo().isIconVisible()
+        ) return;
+
+        Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
+                .getLineById(source.get().getInfo().getLineId());
+        if (!sourceLine.isPresent()) return;
+
+        // speaking
+        String iconLocation = sourceLine.get().getIcon();
+
+        renderEntity(
+                event.getRender(),
+                event.getCamera(),
+                event.getLight(),
+                entity,
+                iconLocation,
+                event.hasLabel(),
+                false
         );
     }
 
