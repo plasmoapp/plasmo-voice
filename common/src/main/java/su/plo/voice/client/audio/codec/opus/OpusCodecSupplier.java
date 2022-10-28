@@ -18,15 +18,24 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
         int application = applicationToMode(params.get("mode", String.class));
         int bitrate = validateBitrate(params.get("bitrate", String.class));
 
-        BaseOpusEncoder encoder = new NativeOpusEncoder(sampleRate, stereo, bufferSize, application, mtuSize);
+        BaseOpusEncoder encoder;
         try {
+            Class.forName("su.plo.opus.Opus");
+
+            encoder = new NativeOpusEncoder(sampleRate, stereo, bufferSize, application, mtuSize);
             encoder.open();
-        } catch (Exception e) {
+        } catch (ClassNotFoundException ignored) {
+            encoder = null;
+        } catch (Exception | LinkageError e) {
+            encoder = null;
             LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+        }
+
+        if (encoder == null) {
             try {
                 encoder = new JavaOpusEncoder(sampleRate, stereo, bufferSize, application, mtuSize);
                 encoder.open();
-            } catch (Exception ex) {
+            } catch (Exception e) {
                 throw new IllegalStateException("Failed to open java opus encoder", e);
             }
         }
@@ -41,20 +50,25 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
     public @NotNull BaseOpusDecoder createDecoder(int sampleRate, boolean stereo, int bufferSize, int mtuSize, @NotNull Params params) {
         checkNotNull(params, "params cannot be null");
 
-        BaseOpusDecoder decoder = new NativeOpusDecoder(sampleRate, stereo, bufferSize, mtuSize);
+        BaseOpusDecoder decoder;
         try {
+            Class.forName("su.plo.opus.Opus");
+
+            decoder = new NativeOpusDecoder(sampleRate, stereo, bufferSize, mtuSize);
             decoder.open();
-        } catch (Exception e) {
+            return decoder;
+        } catch (ClassNotFoundException ignored) {
+        } catch (Exception | LinkageError e) {
             LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
-            try {
-                decoder = new JavaOpusDecoder(sampleRate, stereo, bufferSize, mtuSize);
-                decoder.open();
-            } catch (Exception ex) {
-                throw new IllegalStateException("Failed to open java opus encoder", e);
-            }
         }
 
-        return decoder;
+        try {
+            decoder = new JavaOpusDecoder(sampleRate, stereo, bufferSize, mtuSize);
+            decoder.open();
+            return decoder;
+        } catch (Exception e) {
+            throw new IllegalStateException("Failed to open java opus encoder", e);
+        }
     }
 
     @Override

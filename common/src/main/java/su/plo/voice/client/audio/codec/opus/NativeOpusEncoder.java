@@ -1,8 +1,8 @@
 package su.plo.voice.client.audio.codec.opus;
 
 import com.sun.jna.ptr.PointerByReference;
+import su.plo.opus.Opus;
 import su.plo.voice.api.audio.codec.CodecException;
-import tomp2p.opuswrapper.Opus;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;

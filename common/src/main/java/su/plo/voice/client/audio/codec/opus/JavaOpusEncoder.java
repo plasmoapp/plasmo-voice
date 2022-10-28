@@ -4,7 +4,6 @@ import org.concentus.OpusApplication;
 import org.concentus.OpusEncoder;
 import org.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
-import tomp2p.opuswrapper.Opus;
 
 public final class JavaOpusEncoder implements BaseOpusEncoder {
 
@@ -75,11 +74,11 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
     }
 
     private void setApplication(int application) {
-        if (application == Opus.OPUS_APPLICATION_VOIP) {
+        if (application == 2048) { // Opus.OPUS_APPLICATION_VOIP
             this.application = OpusApplication.OPUS_APPLICATION_VOIP;
-        } else if (application == Opus.OPUS_APPLICATION_AUDIO) {
+        } else if (application == 2049) { // Opus.OPUS_APPLICATION_AUDIO
             this.application = OpusApplication.OPUS_APPLICATION_AUDIO;
-        } else if (application == Opus.OPUS_APPLICATION_RESTRICTED_LOWDELAY) {
+        } else if (application == 2051) { // Opus.OPUS_APPLICATION_RESTRICTED_LOWDELAY
             this.application = OpusApplication.OPUS_APPLICATION_RESTRICTED_LOWDELAY;
         }
     }
