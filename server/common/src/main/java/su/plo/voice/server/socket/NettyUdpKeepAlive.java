@@ -7,7 +7,7 @@ import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
-import su.plo.voice.server.config.ServerConfig;
+import su.plo.voice.server.config.VoiceServerConfig;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -21,11 +21,11 @@ public final class NettyUdpKeepAlive {
 
     private final TcpServerConnectionManager tcpConnections;
     private final UdpServerConnectionManager udpConnections;
-    private final ServerConfig config;
+    private final VoiceServerConfig config;
 
     public NettyUdpKeepAlive(@NotNull TcpServerConnectionManager tcpConnections,
                              @NotNull UdpServerConnectionManager udpConnections,
-                             @NotNull ServerConfig config) {
+                             @NotNull VoiceServerConfig config) {
         this.tcpConnections = tcpConnections;
         this.udpConnections = udpConnections;
         this.config = config;

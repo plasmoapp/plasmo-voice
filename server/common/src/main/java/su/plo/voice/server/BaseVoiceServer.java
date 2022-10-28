@@ -14,6 +14,7 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
+import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.VoiceServerConfigLoadedEvent;
@@ -31,8 +32,8 @@ import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.command.*;
-import su.plo.voice.server.config.ServerConfig;
 import su.plo.voice.server.config.ServerLanguages;
+import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
 import su.plo.voice.server.mute.VoiceMuteManager;
@@ -82,8 +83,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected LuckPermsListener luckPermsListener;
 
-    @Getter
-    protected ServerConfig config;
+    protected VoiceServerConfig config;
     @Getter
     protected ServerLanguages languages;
 
@@ -184,10 +184,10 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         try {
             File configFile = new File(getConfigFolder(), "config.toml");
-            ServerConfig oldConfig = config;
+            VoiceServerConfig oldConfig = config;
 
-            this.config = toml.load(ServerConfig.class, configFile, false);
-            toml.save(ServerConfig.class, config, configFile);
+            this.config = toml.load(VoiceServerConfig.class, configFile, false);
+            toml.save(VoiceServerConfig.class, config, configFile);
 
             if (oldConfig != null) {
                 restartUdpServer = !config.getHost().equals(oldConfig.getHost());
@@ -277,6 +277,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Override
     public Optional<UdpServer> getUdpServer() {
         return Optional.ofNullable(udpServer);
+    }
+
+    @Override
+    public Optional<ServerConfig> getConfig() {
+        return Optional.ofNullable(config);
     }
 
     public abstract int getMinecraftServerPort();

@@ -33,4 +33,11 @@ public interface TcpServerConnectionManager extends ServerConnectionManager<Clie
      * @param player the player
      */
     void broadcastPlayerInfoUpdate(@NotNull VoicePlayer player);
+
+    /**
+     * Gets the aes encryption key
+     *
+     * @return the aes encryption key
+     */
+    byte[] getAesEncryptionKey();
 }

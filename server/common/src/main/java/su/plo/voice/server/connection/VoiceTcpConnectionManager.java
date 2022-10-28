@@ -3,9 +3,11 @@ package su.plo.voice.server.connection;
 import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
@@ -16,7 +18,6 @@ import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerConfig;
 
 import javax.crypto.Cipher;
 import java.security.PublicKey;
@@ -28,6 +29,7 @@ import java.util.stream.Collectors;
 public final class VoiceTcpConnectionManager implements TcpServerConnectionManager {
 
     private final BaseVoiceServer voiceServer;
+    @Getter
     private final byte[] aesEncryptionKey;
 
     private final Object playerStateLock = new Object();
@@ -58,10 +60,12 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
 
     @Override
     public void connect(@NotNull VoicePlayer player) {
+        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
+
         UUID secret = voiceServer.getUdpConnectionManager()
                 .getSecretByPlayerId(player.getInstance().getUUID());
 
-        ServerConfig.Host host = voiceServer.getConfig().getHost();
+        ServerConfig.Host host = voiceServer.getConfig().get().getHost();
         ServerConfig.Host.Public hostPublic = host.getHostPublic();
 
         String ip = host.getIp();
@@ -86,7 +90,9 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
 
     @Override
     public void sendConfigInfo(@NotNull VoicePlayer receiver) {
-        ServerConfig config = voiceServer.getConfig();
+        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
+
+        ServerConfig config = voiceServer.getConfig().get();
         ServerConfig.Voice voiceConfig = config.getVoice();
         ServerConfig.Voice.Opus opusConfig = voiceConfig.getOpus();
 

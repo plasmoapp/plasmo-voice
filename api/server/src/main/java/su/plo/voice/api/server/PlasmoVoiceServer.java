@@ -6,6 +6,7 @@ import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
+import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.mute.MuteManager;
@@ -84,9 +85,16 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
     @NotNull UdpServerConnectionManager getUdpConnectionManager();
 
     /**
-     * Get the {@link UdpServer}
+     * Gets the {@link UdpServer}
      *
      * @return {@link UdpServer}
      */
     Optional<UdpServer> getUdpServer();
+
+    /**
+     * Gets the {@link ServerConfig}
+     *
+     * @return {@link ServerConfig} if its loaded
+     */
+    Optional<ServerConfig> getConfig();
 }

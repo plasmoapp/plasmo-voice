@@ -18,7 +18,7 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.socket.UdpServer;
-import su.plo.voice.server.config.ServerConfig;
+import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
@@ -34,7 +34,7 @@ public final class NettyUdpServer implements UdpServer {
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
     private final PlasmoVoiceServer voiceServer;
-    private final ServerConfig config;
+    private final VoiceServerConfig config;
 
     private NettyUdpKeepAlive keepAlive;
 

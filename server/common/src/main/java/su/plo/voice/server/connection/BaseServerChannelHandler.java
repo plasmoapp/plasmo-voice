@@ -35,7 +35,7 @@ public abstract class BaseServerChannelHandler {
     }
 
     protected void handleRegisterChannels(List<String> channels, VoicePlayer player) {
-        if (!voiceServer.getUdpServer().isPresent()) return;
+        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
 
         if (channels.contains(BaseVoiceServer.CHANNEL_STRING)) {
             voiceServer.getTcpConnectionManager().connect(player);
@@ -46,14 +46,16 @@ public abstract class BaseServerChannelHandler {
                             ? PlayerModLoader.FORGE
                             : PlayerModLoader.FABRIC
             );
-        } else if (voiceServer.getConfig().getVoice().isClientModRequired()) {
+        } else if (voiceServer.getConfig().get().getVoice().isClientModRequired()) {
             kickModRequired(player);
         }
     }
 
     @EventSubscribe
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
-        if (voiceServer.getConfig().getVoice().isClientModRequired()) {
+        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
+
+        if (voiceServer.getConfig().get().getVoice().isClientModRequired()) {
             cancelPlayerCheckFuture(event.getPlayerId());
 
             playerCheckFutures.put(event.getPlayerId(), voiceServer.getExecutor().schedule(() -> {

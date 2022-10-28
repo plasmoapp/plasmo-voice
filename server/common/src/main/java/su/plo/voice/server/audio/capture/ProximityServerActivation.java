@@ -19,7 +19,7 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerConfig;
+import su.plo.voice.server.config.VoiceServerConfig;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -32,7 +32,7 @@ public final class ProximityServerActivation {
         this.voiceServer = voiceServer;
     }
 
-    public void register(@NotNull ServerConfig config) {
+    public void register(@NotNull VoiceServerConfig config) {
         voiceServer.getActivationManager().register(
                 voiceServer,
                 VoiceActivation.PROXIMITY_NAME,
@@ -62,10 +62,11 @@ public final class ProximityServerActivation {
         if (event.isCancelled() ||
                 !player.getInstance().hasPermission("voice.activation.proximity") ||
                 !voiceServer.getConfig()
-                        .getVoice()
-                        .getProximity()
-                        .getDistances()
-                        .contains((int) packet.getDistance())
+                        .map((config) -> config.getVoice()
+                                .getProximity()
+                                .getDistances()
+                                .contains((int) packet.getDistance()))
+                        .orElse(false)
         ) return;
 
         getPlayerSource(player, packet.getActivationId(), packet.isStereo()).ifPresent((source) -> {
@@ -88,10 +89,11 @@ public final class ProximityServerActivation {
         if (event.isCancelled() ||
                 !player.getInstance().hasPermission("voice.activation.proximity") ||
                 !voiceServer.getConfig()
-                        .getVoice()
-                        .getProximity()
-                        .getDistances()
-                        .contains((int) packet.getDistance())
+                        .map((config) -> config.getVoice()
+                                .getProximity()
+                                .getDistances()
+                                .contains((int) packet.getDistance()))
+                        .orElse(false)
         ) return;
 
         getPlayerSource(player, packet.getActivationId(), true).ifPresent((source) -> {

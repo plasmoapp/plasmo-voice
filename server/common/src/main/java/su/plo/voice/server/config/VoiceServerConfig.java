@@ -8,6 +8,7 @@ import su.plo.config.Config;
 import su.plo.config.ConfigField;
 import su.plo.config.ConfigFieldProcessor;
 import su.plo.config.ConfigValidator;
+import su.plo.voice.api.server.config.ServerConfig;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -19,7 +20,7 @@ import java.util.stream.Collectors;
 
 @Config
 @Data
-public final class ServerConfig {
+public final class VoiceServerConfig implements ServerConfig {
 
     @ConfigField(path = "server_id", comment = "Used to store server-related config file on the client\nSet it to a single value on different servers if you want them to share config")
     private String serverId = UUID.randomUUID().toString();
@@ -33,7 +34,7 @@ public final class ServerConfig {
     @Config
     @Data
     @EqualsAndHashCode
-    public static class Host {
+    public static class Host implements ServerConfig.Host {
 
         @ConfigField
         private String ip = "0.0.0.0";
@@ -42,16 +43,17 @@ public final class ServerConfig {
         @ConfigValidator(value = PortValidator.class, allowed = "0-65535")
         private int port = 0;
 
-        @ConfigField(path = "public")
-        private @Nullable Public hostPublic = null;
-
         @ConfigField
         private boolean proxyProtocol = false;
+
+        @ConfigField(path = "public")
+        private @Nullable Public hostPublic = null;
 
         @Config
         @Data
         @EqualsAndHashCode
-        public static class Public {
+        public static class Public implements ServerConfig.Host.Public {
+
             @ConfigField
             private String ip = "127.0.0.1";
 
@@ -74,7 +76,7 @@ public final class ServerConfig {
 
     @Config
     @Data
-    public static class Voice {
+    public static class Voice implements ServerConfig.Voice {
 
         @ConfigField(path = "sample_rate", comment = "Supported sample rates:\n8000\n12000\n24000\n48000")
         @ConfigValidator(
@@ -108,7 +110,7 @@ public final class ServerConfig {
 
         @Config
         @Data
-        public static class Proximity {
+        public static class Proximity implements ServerConfig.Voice.Proximity {
 
             @ConfigField
             @ConfigFieldProcessor(DistancesSorter.class)
@@ -130,7 +132,7 @@ public final class ServerConfig {
 
         @Config
         @Data
-        public static class Opus {
+        public static class Opus implements ServerConfig.Voice.Opus {
 
             @ConfigField(comment = "Opus application mode\nSupported values: VOIP, AUDIO, RESTRICTED_LOWDELAY\nDefault is VOIP")
             @ConfigValidator(

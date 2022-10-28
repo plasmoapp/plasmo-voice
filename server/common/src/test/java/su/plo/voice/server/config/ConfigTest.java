@@ -13,7 +13,7 @@ public class ConfigTest {
         ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
         try {
-            ServerConfig config = toml.load(ServerConfig.class, new File("test.toml"), true);
+            VoiceServerConfig config = toml.load(VoiceServerConfig.class, new File("test.toml"), true);
             System.out.println(config);
 
         } catch (IOException e) {
