@@ -35,6 +35,9 @@ tasks {
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
+
+            exclude("su/plo/opus/*")
+            exclude("natives/opus/**/*")
         }
     }
 
