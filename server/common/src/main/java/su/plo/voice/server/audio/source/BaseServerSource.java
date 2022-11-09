@@ -130,7 +130,9 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
             }
 
             connection.getPlayer().getInstance().getServerPosition(playerPosition);
-            if (sourcePosition.distanceSquared(playerPosition) <= distanceSquared) {
+            if (sourcePosition.getWorld().equals(playerPosition.getWorld()) &&
+                    sourcePosition.distanceSquared(playerPosition) <= distanceSquared
+            ) {
                 connection.sendPacket(packet);
             }
         }
@@ -154,7 +156,9 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
             }
 
             connection.getPlayer().getInstance().getServerPosition(playerPosition);
-            if (sourcePosition.distanceSquared(playerPosition) <= distanceSquared) {
+            if (sourcePosition.getWorld().equals(playerPosition.getWorld()) &&
+                    sourcePosition.distanceSquared(playerPosition) <= distanceSquared
+            ) {
                 connection.getPlayer().sendPacket(packet);
             }
         }
