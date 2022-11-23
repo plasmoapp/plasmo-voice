@@ -2,7 +2,7 @@ package su.plo.lib.paper.entity;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.entity.MinecraftPlayer;
 import su.plo.lib.api.server.MinecraftServerLib;
@@ -14,7 +14,7 @@ import su.plo.voice.proto.data.pos.Pos3d;
 import java.util.UUID;
 
 @RequiredArgsConstructor
-public class PaperServerEntity<E extends Entity> implements MinecraftServerEntity {
+public class PaperServerEntity<E extends LivingEntity> implements MinecraftServerEntity {
 
     protected final MinecraftServerLib minecraftServer;
     protected final E instance;
@@ -48,6 +48,12 @@ public class PaperServerEntity<E extends Entity> implements MinecraftServerEntit
 
         return position;
     }
+
+    @Override
+    public double getEyeHeight() {
+        return instance.getEyeHeight();
+    }
+
     @Override
     public float getHitBoxWidth() {
         return (float) instance.getBoundingBox().getWidthX();

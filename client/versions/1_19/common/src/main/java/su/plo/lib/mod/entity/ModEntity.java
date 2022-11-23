@@ -26,7 +26,6 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
         return instance.getUUID();
     }
 
-
     @Override
     public @NotNull Pos3d getPosition() {
         return getPosition(position);
@@ -39,6 +38,11 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
         position.setZ(instance.position().z());
 
         return position;
+    }
+
+    @Override
+    public double getEyeHeight() {
+        return instance.getEyeHeight();
     }
 
     @Override
