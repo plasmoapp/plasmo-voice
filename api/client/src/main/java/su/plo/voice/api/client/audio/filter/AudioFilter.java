@@ -1,9 +1,18 @@
 package su.plo.voice.api.client.audio.filter;
 
+import org.jetbrains.annotations.NotNull;
+
 /**
  * Audio filters can modify audio before it will be played or sent
  */
 public interface AudioFilter {
+
+    /**
+     * Gets the filter name
+     *
+     * @return the filter name
+     */
+    @NotNull String getName();
 
     /**
      * Process the audio filter

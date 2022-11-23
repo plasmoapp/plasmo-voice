@@ -1,5 +1,6 @@
 package su.plo.voice.client.audio.filter;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
@@ -58,6 +59,11 @@ public class LimiterFilter implements AudioFilter {
             this.envelopeBuf[i] = Math.max(this.envelopeBuf[i], env);
         }
         this.envelope = envelopeBuf[samples.length - 1];
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return "limiter";
     }
 
     @Override

@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.filter;
 
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
 import su.plo.voice.api.util.AudioUtil;
@@ -39,6 +40,11 @@ public final class CompressorFilter implements AudioFilter {
             this.envelopeBuf[i] = Math.max(this.envelopeBuf[i], env);
         }
         this.envelope = envelopeBuf[samples.length - 1];
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return "compressor";
     }
 
     @Override

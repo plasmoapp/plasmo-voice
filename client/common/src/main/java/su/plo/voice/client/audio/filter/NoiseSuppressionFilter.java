@@ -40,6 +40,11 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
     }
 
     @Override
+    public @NotNull String getName() {
+        return "noise_suppression";
+    }
+
+    @Override
     public short[] process(short[] samples) {
         super.process(samples);
 
