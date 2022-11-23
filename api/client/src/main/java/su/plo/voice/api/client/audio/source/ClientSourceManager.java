@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public interface ClientSourceManager extends AudioSourceManager<ClientAudioSource<?>> {
 
+    @NotNull LoopbackSource createLoopbackSource(boolean relative);
+
     Optional<ClientAudioSource<?>> getSourceById(@NotNull UUID sourceId, boolean request);
 
     Collection<ClientAudioSource<?>> getSourcesByLineId(@NotNull UUID lineId);

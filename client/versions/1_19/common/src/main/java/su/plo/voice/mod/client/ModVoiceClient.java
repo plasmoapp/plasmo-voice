@@ -82,7 +82,7 @@ public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends 
     protected void onInitialize() {
         super.onInitialize();
 
-        this.sourceManager = new ModClientSourceManager(this, config);
+        this.sourceManager = new ModClientSourceManager(minecraftLib, this, config);
         eventBus.register(this, sourceManager);
 
         this.handler = createChannelHandler();

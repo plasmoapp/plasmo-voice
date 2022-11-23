@@ -6,16 +6,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
-import su.plo.voice.api.client.audio.device.DeviceType;
-import su.plo.voice.api.client.audio.device.source.AlSource;
-import su.plo.voice.api.client.audio.device.source.DeviceSource;
-import su.plo.voice.api.client.audio.device.source.SourceGroup;
+import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
@@ -44,9 +39,8 @@ public final class MicrophoneTestController {
         if (source == null) return;
         source.close();
 
-        this.source = new LoopbackSource();
         try {
-            source.initialize();
+            initializeLoopbackSource();
         } catch (DeviceException e) {
             LOGGER.error("Failed to initialize source for mic test", e);
             this.source = null;
@@ -54,9 +48,8 @@ public final class MicrophoneTestController {
     }
 
     public void start() {
-        this.source = new LoopbackSource();
         try {
-            source.initialize();
+            initializeLoopbackSource();
         } catch (DeviceException e) {
             LOGGER.error("Failed to initialize source for mic test", e);
             this.source = null;
@@ -105,59 +98,17 @@ public final class MicrophoneTestController {
         }
     }
 
-    private boolean isStereo() {
-        return config.getVoice().getStereoCapture().value() && !config.getAdvanced().getStereoSourcesToMono().value();
+    private void initializeLoopbackSource() throws DeviceException {
+        this.source = voiceClient.getSourceManager().createLoopbackSource(true);
+        try {
+            source.initialize(isStereo());
+        } catch (DeviceException e) {
+            this.source = null;
+            throw e;
+        }
     }
 
-    private class LoopbackSource {
-
-        private SourceGroup sourceGroup;
-
-        public void initialize() throws DeviceException {
-            this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup(DeviceType.OUTPUT);
-            sourceGroup.create(isStereo(), Params.EMPTY);
-
-            for (DeviceSource source : sourceGroup.getSources()) {
-                if (source instanceof AlSource) {
-                    AlSource alSource = (AlSource) source;
-                    AlAudioDevice device = (AlAudioDevice) alSource.getDevice();
-
-                    device.runInContext(() -> {
-                        alSource.setFloat(0x100E, 4F); // AL_MAX_GAIN
-                        alSource.setInt(0x202, 1); // AL_SOURCE_RELATIVE
-
-                        alSource.play();
-                    });
-                }
-            }
-        }
-
-        public void close() {
-            if (sourceGroup == null) return;
-            sourceGroup.clear();
-            LOGGER.info("Loopback source closed");
-        }
-
-        private void setVolume(float volume) {
-            for (DeviceSource source : sourceGroup.getSources()) {
-                if (source instanceof AlSource) {
-                    AlSource alSource = (AlSource) source;
-                    AlAudioDevice device = (AlAudioDevice) alSource.getDevice();
-
-                    device.runInContext(() -> alSource.setVolume(volume));
-                }
-            }
-        }
-
-        public void write(short[] samples) {
-            if (sourceGroup == null) return; // not initialized yet
-
-            setVolume(config.getVoice().getVolume().value().floatValue());
-
-            for (DeviceSource source : sourceGroup.getSources()) {
-                samples = source.getDevice().processFilters(samples);
-                source.write(AudioUtil.shortsToBytes(samples));
-            }
-        }
+    private boolean isStereo() {
+        return config.getVoice().getStereoCapture().value() && !config.getAdvanced().getStereoSourcesToMono().value();
     }
 }

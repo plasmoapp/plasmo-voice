@@ -5,10 +5,12 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
+import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent;
 import su.plo.voice.api.event.EventSubscribe;
@@ -32,8 +34,14 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     protected final Map<UUID, ClientAudioSource<?>> sourceById = Maps.newConcurrentMap();
     protected final Map<UUID, Long> sourceRequestById = Maps.newConcurrentMap();
 
+    protected final MinecraftClientLib minecraft;
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
+
+    @Override
+    public @NotNull LoopbackSource createLoopbackSource(boolean relative) {
+        return new ClientLoopbackSource(minecraft, voiceClient, config, relative);
+    }
 
     @Override
     public Optional<ClientAudioSource<?>> getSourceById(@NotNull UUID sourceId, boolean request) {
