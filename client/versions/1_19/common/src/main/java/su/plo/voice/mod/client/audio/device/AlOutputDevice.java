@@ -43,25 +43,17 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
 
     private static final Logger LOGGER = LogManager.getLogger(AlOutputDevice.class);
 
-    private final PlasmoVoiceClient client;
-    private final @Nullable String name;
-
     private final ExecutorService executor;
     @Getter
     private final Listener listener = new AlListener();
     private final Set<AlSource> sources = new CopyOnWriteArraySet<>();
 
-    private AudioFormat format;
-    private Params params;
     private boolean hrtfSupported;
-    @Getter
-    private int bufferSize;
     private long devicePointer;
     private long contextPointer;
 
     public AlOutputDevice(PlasmoVoiceClient client, @Nullable String name) {
-        this.client = client;
-        this.name = name;
+        super(client, name);
         this.executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(
                     null,
@@ -164,6 +156,12 @@ public final class AlOutputDevice extends BaseAudioDevice implements AlAudioDevi
                 client.getEventBus().call(new DeviceClosedEvent(this));
             }
         });
+    }
+
+    @Override
+    public void reload() throws DeviceException {
+        close();
+        open(format, params);
     }
 
     @Override

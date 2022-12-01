@@ -2,19 +2,43 @@ package su.plo.voice.client.audio.device;
 
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Multimaps;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AudioDevice;
+import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
+import su.plo.voice.api.util.Params;
 
+import javax.sound.sampled.AudioFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.function.Predicate;
 
+@RequiredArgsConstructor
 public abstract class BaseAudioDevice implements AudioDevice {
-    private final ListMultimap<AudioFilter.Priority, AudioFilter> filters = Multimaps.synchronizedListMultimap(
+
+    protected final PlasmoVoiceClient client;
+    protected final @Nullable String name;
+
+    protected AudioFormat format;
+    protected Params params;
+    @Getter
+    protected int bufferSize;
+
+    protected final ListMultimap<AudioFilter.Priority, AudioFilter> filters = Multimaps.synchronizedListMultimap(
             Multimaps.newListMultimap(new HashMap<>(), ArrayList::new)
     );
+
+    @Override
+    public void reload() throws DeviceException {
+        if (!isOpen()) throw new DeviceException("Device is not open");
+
+        close();
+        open(format, params);
+    }
 
     @Override
     public void addFilter(AudioFilter filter, AudioFilter.Priority priority) {

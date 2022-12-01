@@ -1,6 +1,5 @@
 package su.plo.voice.mod.client.audio.device;
 
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -28,19 +27,11 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
     private static final Logger LOGGER = LogManager.getLogger(AlInputDevice.class);
 
-    private final PlasmoVoiceClient client;
-    private final @Nullable String name;
-
-    private AudioFormat format;
-    private Params params;
-    @Getter
-    private int bufferSize;
     private long devicePointer;
     private boolean started = false;
 
     public AlInputDevice(PlasmoVoiceClient client, @Nullable String name) {
-        this.client = client;
-        this.name = name;
+        super(client, name);
     }
 
     @Override

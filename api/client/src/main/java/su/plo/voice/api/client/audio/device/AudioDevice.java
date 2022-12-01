@@ -25,6 +25,11 @@ public interface AudioDevice {
     void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException;
 
     /**
+     * Reloads the device
+     */
+    void reload() throws DeviceException;
+
+    /**
      * Closes the device
      */
     void close();
