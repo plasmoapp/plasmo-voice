@@ -15,6 +15,8 @@ public final class VoiceAddon implements AddonContainer {
     @Getter
     private final String id;
     @Getter
+    private final String name;
+    @Getter
     private final Addon.Scope scope;
     @Getter
     private final String version;
@@ -28,12 +30,14 @@ public final class VoiceAddon implements AddonContainer {
     private @Nullable Object object;
 
     public VoiceAddon(String id,
+                      String name,
                       Addon.Scope scope,
                       String version,
                       String[] authors,
                       Path path,
                       Class<?> mainClass) {
         this.id = checkNotNull(id, "id cannot be null");
+        this.name = checkNotNull(name, "name cannot be null");
         this.scope = checkNotNull(scope, "scope cannot be null");
         this.version = checkNotNull(version, "version cannot be null");
         this.authors = checkNotNull(authors, "authors cannot be null");

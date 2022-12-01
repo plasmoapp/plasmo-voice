@@ -186,6 +186,9 @@
     "gui.plasmovoice.overlay.sources.never": "Never",
 
 
+    "gui.plasmovoice.addons": "Addons",
+
+
     "gui.plasmovoice.not_available": "Plasmo Voice is not installed on this server",
     "gui.plasmovoice.connecting": "Connecting to the UDP server...",
     "gui.plasmovoice.cannot_connect_to_udp_1": "Can't connect to the UDP server,",

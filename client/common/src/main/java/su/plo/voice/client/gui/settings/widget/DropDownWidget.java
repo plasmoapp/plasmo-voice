@@ -68,6 +68,10 @@ public final class DropDownWidget extends GuiAbstractWidget {
 
     @Override
     protected void renderBackground(@NotNull GuiRender render, int mouseX, int mouseY) {
+        render.enableBlend();
+        render.defaultBlendFunc();
+        render.enableDepthTest();
+
         render.fill(x, y, x + width, y + height, -6250336);
         render.fill(x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
     }
@@ -130,6 +134,10 @@ public final class DropDownWidget extends GuiAbstractWidget {
 
     private void renderArrow(@NotNull GuiRender render) {
         if (!active) return;
+
+        render.enableBlend();
+        render.defaultBlendFunc();
+        render.enableDepthTest();
 
         if (open) {
             for (int i = 0; i < 5; i++) {

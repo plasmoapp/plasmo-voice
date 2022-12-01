@@ -15,9 +15,6 @@ import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.overlay.OverlayPosition;
 import su.plo.voice.client.config.overlay.OverlaySourceState;
-import su.plo.voice.config.entry.BooleanConfigEntry;
-import su.plo.voice.config.entry.DoubleConfigEntry;
-import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 
@@ -28,6 +25,7 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executor;
 
+// todo: need to rewrite this class, it's a mess
 @Config
 @Data
 public final class ClientConfig {
@@ -52,6 +50,9 @@ public final class ClientConfig {
 
     @ConfigField
     private Servers servers = new Servers();
+
+    @ConfigField
+    private Addons addons = new Addons();
 
     @Getter
     @Setter
@@ -417,7 +418,6 @@ public final class ClientConfig {
 
             private Map<String, EnumConfigEntry<OverlaySourceState>> stateByLineName = Maps.newHashMap();
 
-
             public synchronized void setState(@NotNull String lineName,
                                               @NotNull OverlaySourceState state) {
                 getState(lineName).set(state);
@@ -464,6 +464,88 @@ public final class ClientConfig {
                 stateByLineName.forEach((key, entry) ->
                         serialized.put(key, entry.value().name())
                 );
+
+                return serialized;
+            }
+        }
+    }
+
+    @Data
+    public static class Addons implements SerializableConfigEntry {
+
+        private final Map<String, Addon> addons = Maps.newHashMap();
+
+        public synchronized @NotNull Addon getAddon(@NotNull String addonId) {
+            return addons.computeIfAbsent(
+                    addonId,
+                    (aId) -> new Addon()
+            );
+        }
+
+        @Override
+        public synchronized void deserialize(Object object) {
+            Map<String, Object> map = (Map<String, Object>) object;
+
+            map.forEach((key, value) -> {
+                Addon addon = new Addon();
+                addon.deserialize(value);
+                addons.put(key, addon);
+            });
+        }
+
+        @Override
+        public synchronized Object serialize() {
+            Map<String, Object> serialized = Maps.newHashMap();
+
+            addons.forEach((key, value) -> {
+                if (value.entries.size() > 0) {
+                    serialized.put(key, value.serialize());
+                }
+            });
+
+            return serialized;
+        }
+
+        @Data
+        public static class Addon implements SerializableConfigEntry {
+
+            private final Map<String, ConfigEntry<?>> entries = Maps.newHashMap();
+
+            public synchronized void setEntry(@NotNull String key, @NotNull ConfigEntry<?> entry) {
+                entries.put(key, entry);
+            }
+
+            public synchronized Optional<ConfigEntry<?>> getEntry(@NotNull String key) {
+                return Optional.ofNullable(entries.get(key));
+            }
+
+            @Override
+            public synchronized void deserialize(Object object) {
+                Map<String, Object> map = (Map<String, Object>) object;
+
+                // what the fuck
+                map.forEach((key, value) -> {
+                    if (value instanceof Boolean) {
+                        entries.put(key, new BooleanConfigEntry((Boolean) value));
+                    } else if (value instanceof Long) {
+                        entries.put(key, new IntConfigEntry(((Long) value).intValue(), 0, 0));
+                    } else if (value instanceof Double) {
+                        entries.put(key, new DoubleConfigEntry((Double) value, 0, 0));
+                    } else if (value instanceof String) {
+                        entries.put(key, new ConfigEntry<>(value));
+                    }
+                });
+            }
+
+            @Override
+            public synchronized Object serialize() {
+                Map<String, Object> serialized = Maps.newHashMap();
+
+                entries.forEach((key, entry) -> {
+                    if (!entry.isDefault()) {
+                        serialized.put(key, entry.value());
+                    }
+                });
 
                 return serialized;
             }

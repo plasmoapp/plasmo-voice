@@ -1,5 +1,6 @@
 package su.plo.voice.client;
 
+import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
@@ -10,6 +11,7 @@ import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.ScreenContainer;
 import su.plo.voice.BaseVoice;
+import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
@@ -17,6 +19,7 @@ import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
+import su.plo.voice.api.client.config.addon.AddonConfig;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
@@ -33,6 +36,7 @@ import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.gui.PlayerVolumeAction;
@@ -45,6 +49,7 @@ import su.plo.voice.client.render.VoiceDistanceVisualizer;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Map;
 import java.util.Optional;
 
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
@@ -76,6 +81,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Getter
     protected ClientConfig config;
+    @Getter
+    protected final Map<String, AddonConfig> addonConfigs = Maps.newHashMap();
 
     protected VoiceSettingsScreen settingsScreen;
 
@@ -205,6 +212,17 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Override
     public @NotNull KeyBindings getKeyBindings() {
         return config.getKeyBindings();
+    }
+
+    @Override
+    public synchronized @NotNull AddonConfig getAddonConfig(@NotNull Object addonInstance) {
+        AddonContainer addon = addons.getAddon(addonInstance)
+                .orElseThrow(() -> new IllegalArgumentException("Addon not found"));
+
+        return addonConfigs.computeIfAbsent(
+                addon.getId(),
+                (addonId) -> new VoiceAddonConfig(addon, config.getAddons().getAddon(addon.getId()))
+        );
     }
 
     public abstract String getServerIp();

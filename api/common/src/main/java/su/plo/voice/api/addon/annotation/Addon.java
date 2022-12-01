@@ -17,6 +17,15 @@ public @interface Addon {
     String id();
 
     /**
+     * Returns the addon name
+     * <p></p>
+     * Can be translatable
+     *
+     * @return the addon name
+     */
+    String name() default "";
+
+    /**
      * Returns the addon scope
      *
      * @return the addon scope

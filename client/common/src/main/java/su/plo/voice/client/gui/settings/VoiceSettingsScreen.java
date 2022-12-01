@@ -103,6 +103,13 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
                 "plasmovoice:textures/icons/tabs/hotkeys.png",
                 new HotKeysTabWidget(minecraft, this, voiceClient, config)
         );
+        if (voiceClient.getAddonConfigs().size() > 0) {
+            navigation.addTab(
+                    MinecraftTextComponent.translatable("gui.plasmovoice.addons"),
+                    "plasmovoice:textures/icons/tabs/addons.png",
+                    new AddonsTabWidget(minecraft, this, voiceClient, config)
+            );
+        }
 
         addWidget(navigation);
 
@@ -180,9 +187,8 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     private MinecraftTextComponent getSettingsTitle() {
         String[] versionSplit = voiceClient.getVersion().split("\\+");
-        versionSplit = versionSplit[0].split("-");
 
-        String version = versionSplit[0]; // remove -* and +* from version
+        String version = versionSplit[0];
         MinecraftTextStyle versionColor = MinecraftTextStyle.WHITE;
         if (versionSplit.length > 1) {
             if (Objects.equals(versionSplit[1], "ALPHA")) {
@@ -208,7 +214,6 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     private List<MinecraftTextComponent> getVersionTooltip() {
         String[] versionSplit = voiceClient.getVersion().split("\\+");
-        versionSplit = versionSplit[0].split("-");
         if (versionSplit.length < 2) return null;
 
         if (Objects.equals(versionSplit[1].toLowerCase(), "alpha")) {

@@ -22,13 +22,15 @@ public final class JsonAddon {
     }.getType();
 
     private final String id;
+    private final String name;
     private final Addon.Scope scope;
     private final String version;
     private final String[] authors;
     private final String mainClass;
 
-    private JsonAddon(String id, Addon.Scope scope, String version, String[] authors, String mainClass) {
+    private JsonAddon(String id, String name, Addon.Scope scope, String version, String[] authors, String mainClass) {
         this.id = checkNotNull(id, "id cannot be null");
+        this.name = checkNotNull(name, "name cannot be null");
         this.scope = checkNotNull(scope, "scope cannot be null");
         this.version = checkNotNull(version, "version cannot be null");
         this.authors = checkNotNull(authors, "authors cannot be null");
@@ -40,6 +42,7 @@ public final class JsonAddon {
     static JsonAddon from(Addon addon, String qualifiedName) {
         return new JsonAddon(
                 addon.id(),
+                addon.name(),
                 addon.scope(),
                 addon.version(),
                 addon.authors(),

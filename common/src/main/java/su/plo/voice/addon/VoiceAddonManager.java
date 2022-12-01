@@ -1,5 +1,6 @@
 package su.plo.voice.addon;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import org.apache.logging.log4j.LogManager;
@@ -154,6 +155,9 @@ public final class VoiceAddonManager implements AddonManager {
 
         return new VoiceAddon(
                 jsonAddon.getId(),
+                Strings.emptyToNull(jsonAddon.getName()) == null
+                        ? jsonAddon.getId()
+                        : jsonAddon.getName(),
                 jsonAddon.getScope(),
                 jsonAddon.getVersion(),
                 jsonAddon.getAuthors(),

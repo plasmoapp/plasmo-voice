@@ -22,6 +22,11 @@ public final class PlasmoVoiceAddon implements AddonContainer {
     }
 
     @Override
+    public String getName() {
+        return "PlasmoVoice";
+    }
+
+    @Override
     public @NotNull Addon.Scope getScope() {
         return scope;
     }

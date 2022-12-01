@@ -25,6 +25,14 @@ public interface AddonContainer {
     String getId();
 
     /**
+     * Gets the addon name
+     *
+     * @return the addon name
+     * @see Addon#name()
+     */
+    String getName();
+
+    /**
      * Gets the addon scope
      *
      * @return the addon scope
