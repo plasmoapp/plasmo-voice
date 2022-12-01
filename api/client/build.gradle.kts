@@ -13,6 +13,9 @@ dependencies {
 
     implementation(project(":protocol"))
     shadow(project(":protocol"))
+
+    implementation(libs.config)
+    shadow(libs.config)
 }
 
 tasks {

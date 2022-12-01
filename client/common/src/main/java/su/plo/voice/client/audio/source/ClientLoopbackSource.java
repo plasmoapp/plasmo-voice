@@ -2,6 +2,8 @@ package su.plo.voice.client.audio.source;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
@@ -32,6 +34,8 @@ public final class ClientLoopbackSource implements LoopbackSource {
     private SourceGroup sourceGroup;
     @Getter
     private boolean stereo;
+    @Setter
+    private DoubleConfigEntry volumeEntry;
 
     @Override
     public Optional<SourceGroup> getSourceGroup() {
@@ -79,7 +83,11 @@ public final class ClientLoopbackSource implements LoopbackSource {
             });
         }
 
-        updateSources(config.getVoice().getVolume().value().floatValue());
+        float volume = config.getVoice().getVolume().value().floatValue();
+        if (volumeEntry != null) {
+            volume *= volumeEntry.value().floatValue();
+        }
+        updateSources(volume);
         for (DeviceSource source : sourceGroup.getSources()) {
             samples = source.getDevice().processFilters(samples);
             source.write(AudioUtil.shortsToBytes(samples));
