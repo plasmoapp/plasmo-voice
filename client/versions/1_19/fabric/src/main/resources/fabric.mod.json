@@ -12,7 +12,7 @@
         "sources": "https://github.com/plasmoapp/plasmo-voice",
         "issues": "https://github.com/plasmoapp/plasmo-voice/issues"
     },
-    "license": "All rights reserved",
+    "license": "LGPL-3.0",
     "icon": "assets/plasmovoice/icon.png",
     "environment": "*",
     "entrypoints": {

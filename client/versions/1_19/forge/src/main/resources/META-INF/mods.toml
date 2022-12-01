@@ -1,6 +1,6 @@
 modLoader="javafml"
 loaderVersion="[${loader_version},)"
-license="All rights reserved"
+license="LGPL-3.0"
 issueTrackerURL="https://github.com/plasmoapp/plasmo-voice/issues"
 [[mods]]
 modId="plasmovoice"
