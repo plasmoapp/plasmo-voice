@@ -137,11 +137,11 @@ public final class VoiceAddonConfig implements AddonConfig {
     }
 
     @Override
-    public <T> Optional<T> getValue(@NotNull String translatable) {
+    public <T extends ConfigEntry<?>> Optional<T> getValue(@NotNull String translatable) {
         ConfigWidget widget = widgetsByTranslatable.get(translatable);
         if (widget == null) return Optional.empty();
 
-        return Optional.of((T) widget.getConfigEntry().value());
+        return Optional.of((T) widget.getConfigEntry());
     }
 
     @Override

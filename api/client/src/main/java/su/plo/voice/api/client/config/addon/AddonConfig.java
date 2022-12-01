@@ -3,6 +3,7 @@ package su.plo.voice.api.client.config.addon;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.BooleanConfigEntry;
+import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 
@@ -44,7 +45,7 @@ public interface AddonConfig {
 
     boolean removeWidget(@NotNull String translatable);
 
-    <T> Optional<T> getValue(@NotNull String translatable);
+    <T extends ConfigEntry<?>> Optional<T> getValue(@NotNull String translatable);
 
     void clear();
 }
