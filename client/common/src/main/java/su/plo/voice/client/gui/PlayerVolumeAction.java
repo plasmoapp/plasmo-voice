@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.entity.MinecraftPlayer;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -9,7 +10,6 @@ import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.event.key.MouseScrollEvent;
-import su.plo.voice.config.entry.DoubleConfigEntry;
 
 import java.util.Optional;
 

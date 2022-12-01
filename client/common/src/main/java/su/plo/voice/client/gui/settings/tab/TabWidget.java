@@ -5,6 +5,8 @@ import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.config.entry.DoubleConfigEntry;
+import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
@@ -19,8 +21,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.*;
-import su.plo.voice.config.entry.DoubleConfigEntry;
-import su.plo.voice.config.entry.IntConfigEntry;
 
 import java.util.Collections;
 import java.util.List;

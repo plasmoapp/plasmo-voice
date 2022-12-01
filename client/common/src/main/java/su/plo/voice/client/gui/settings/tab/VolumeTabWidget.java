@@ -3,6 +3,7 @@ package su.plo.voice.client.gui.settings.tab;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.api.client.MinecraftClientLib;
@@ -21,7 +22,6 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 import su.plo.voice.client.gui.settings.widget.VolumeSliderWidget;
-import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.util.Collections;

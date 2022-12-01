@@ -3,6 +3,7 @@ package su.plo.voice.client.gui.settings.tab;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.components.Button;
@@ -22,7 +23,6 @@ import su.plo.voice.client.gui.settings.widget.CircularButton;
 import su.plo.voice.client.gui.settings.widget.DistanceSliderWidget;
 import su.plo.voice.client.gui.settings.widget.HotKeyWidget;
 import su.plo.voice.client.gui.settings.widget.NumberTextFieldWidget;
-import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
 import java.util.Collections;

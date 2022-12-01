@@ -264,7 +264,6 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private void reloadOutputDevice() {
-
         try {
             OutputDevice<AlSource> outputDevice = devices.openOutputDevice(null, Params.EMPTY);
 

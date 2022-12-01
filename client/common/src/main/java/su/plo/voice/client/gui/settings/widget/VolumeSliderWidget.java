@@ -1,13 +1,13 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.gui.components.AbstractSlider;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
-import su.plo.voice.config.entry.DoubleConfigEntry;
 
 public final class VolumeSliderWidget extends AbstractSlider implements UpdatableWidget {
 

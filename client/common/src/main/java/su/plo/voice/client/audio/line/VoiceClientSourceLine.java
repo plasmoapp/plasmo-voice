@@ -1,8 +1,8 @@
 package su.plo.voice.client.audio.line;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
-import su.plo.voice.config.entry.DoubleConfigEntry;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 

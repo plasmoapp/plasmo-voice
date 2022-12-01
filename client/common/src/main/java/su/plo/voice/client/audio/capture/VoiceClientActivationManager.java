@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -14,7 +15,6 @@ import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEve
 import su.plo.voice.api.client.event.audio.capture.ClientActivationUnregisteredEvent;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
-import su.plo.voice.config.entry.IntConfigEntry;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;

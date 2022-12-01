@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.GuiRender;
@@ -16,7 +17,6 @@ import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.config.entry.DoubleConfigEntry;
 
 import java.util.List;
 

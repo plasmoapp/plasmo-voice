@@ -3,9 +3,9 @@ package su.plo.voice.client.audio.filter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.config.entry.IntConfigEntry;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.config.entry.IntConfigEntry;
 
 public class LimiterFilter implements AudioFilter {
 

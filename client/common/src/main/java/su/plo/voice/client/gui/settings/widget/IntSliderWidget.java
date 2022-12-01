@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.components.AbstractSlider;
-import su.plo.voice.config.entry.IntConfigEntry;
 
 public final class IntSliderWidget extends AbstractSlider implements UpdatableWidget {
 

@@ -3,10 +3,10 @@ package su.plo.voice.client.audio.filter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.CircularBuffer;
-import su.plo.voice.config.entry.DoubleConfigEntry;
 
 // https://stackoverflow.com/questions/36355992/how-to-increase-volume-amplitude-on-raw-audio-bytes
 @RequiredArgsConstructor
