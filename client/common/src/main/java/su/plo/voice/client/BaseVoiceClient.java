@@ -28,6 +28,7 @@ import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
+import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
@@ -77,6 +78,11 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected ClientConfig config;
 
     protected VoiceSettingsScreen settingsScreen;
+
+    protected BaseVoiceClient() {
+        // JavaX input
+        getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
+    }
 
     public void openSettings() {
         MinecraftClientLib minecraft = getMinecraft();

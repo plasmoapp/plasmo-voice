@@ -1,4 +1,4 @@
-package su.plo.voice.mod.client.audio.device;
+package su.plo.voice.client.audio.device;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +13,6 @@ import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
-import su.plo.voice.client.audio.device.BaseAudioDevice;
 
 import javax.sound.sampled.*;
 import java.util.Optional;

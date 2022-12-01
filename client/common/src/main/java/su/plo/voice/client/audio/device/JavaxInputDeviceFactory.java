@@ -1,4 +1,4 @@
-package su.plo.voice.mod.client.audio.device;
+package su.plo.voice.client.audio.device;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;

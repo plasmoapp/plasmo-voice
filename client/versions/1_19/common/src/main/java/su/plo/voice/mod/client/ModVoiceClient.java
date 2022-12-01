@@ -18,7 +18,6 @@ import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.mod.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.mod.client.audio.device.AlOutputDeviceFactory;
-import su.plo.voice.mod.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.mod.client.audio.source.ModClientSourceManager;
 import su.plo.voice.mod.client.connection.ModClientChannelHandler;
 import su.plo.voice.mod.client.render.ModEntityRenderer;
@@ -64,12 +63,9 @@ public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends 
     protected ModVoiceClient() {
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
 
-        // OpenAL in&out
+        // OpenAL input
         factoryManager.registerDeviceFactory(new AlOutputDeviceFactory(this));
         factoryManager.registerDeviceFactory(new AlInputDeviceFactory(this));
-
-        // JavaX input
-        factoryManager.registerDeviceFactory(new JavaxInputDeviceFactory(this));
 
         this.hudRenderer = new ModHudRenderer(minecraftLib, this);
         this.levelRenderer = new ModLevelRenderer(minecraftLib, this);
