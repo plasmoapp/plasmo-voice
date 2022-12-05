@@ -158,7 +158,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         this.deviceManager = new VoiceDeviceManager(this, config);
         this.sourceLineManager = new VoiceClientSourceLineManager(config);
         this.activationManager = new VoiceClientActivationManager(minecraft, this, config);
-        this.audioCapture = new VoiceAudioCapture(minecraft, this, config);
+        this.audioCapture = new VoiceAudioCapture(this, config);
 
         // hotkey actions
         new HotkeyActions(minecraft, getKeyBindings(), config).register();

@@ -7,7 +7,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -21,6 +20,9 @@ import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureInitializeEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureStartEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureStopEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
@@ -43,7 +45,6 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     private static final Logger LOGGER = LogManager.getLogger();
 
-    private final MinecraftClientLib minecraft;
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;
     private final ClientActivationManager activations;
@@ -61,10 +62,8 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     private Thread thread;
 
-    public VoiceAudioCapture(@NotNull MinecraftClientLib minecraft,
-                             @NotNull PlasmoVoiceClient voiceClient,
+    public VoiceAudioCapture(@NotNull PlasmoVoiceClient voiceClient,
                              @NotNull ClientConfig config) {
-        this.minecraft = minecraft;
         this.voiceClient = voiceClient;
         this.devices = voiceClient.getDeviceManager();
         this.activations = voiceClient.getActivationManager();
@@ -93,6 +92,10 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     @Override
     public void initialize(@NotNull ServerInfo serverInfo) {
+        AudioCaptureInitializeEvent event = new AudioCaptureInitializeEvent(this);
+        voiceClient.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
         // initialize input device
         AudioFormat format = serverInfo.getVoiceInfo().getFormat(
                 config.getVoice().getStereoCapture().value()
@@ -144,6 +147,10 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     @Override
     public void start() {
+        AudioCaptureStartEvent event = new AudioCaptureStartEvent(this);
+        voiceClient.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
         if (thread != null) {
             thread.interrupt();
             try {
@@ -160,6 +167,10 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     @Override
     public void stop() {
+        AudioCaptureStopEvent event = new AudioCaptureStopEvent(this);
+        voiceClient.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
         if (thread != null) thread.interrupt();
     }
 
