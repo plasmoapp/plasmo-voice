@@ -160,16 +160,14 @@ public class GeneralTabWidget extends TabWidget {
 
         MicrophoneThresholdWidget activationThreshold = new MicrophoneThresholdWidget(0, 0, 97, true, parent);
         String[] activations = new String[]{"gui.plasmo_voice.general.activation.ptt", "gui.plasmo_voice.general.activation.voice"};
-        Button voiceActivation = new Button(0, 0, 97, 20, onOff(VoiceClient.getClientConfig().voiceActivation.get()
-                        && !VoiceClient.getServerConfig().isVoiceActivationDisabled(),
-                activations),
+        Button voiceActivation = Button.builder(onOff(VoiceClient.getClientConfig().voiceActivation.get() && !VoiceClient.getServerConfig().isVoiceActivationDisabled(), activations),
                 button -> {
                     VoiceClient.getClientConfig().voiceActivation.invert();
                     boolean enableVoiceActivation = VoiceClient.getClientConfig().voiceActivation.get()
                             && !VoiceClient.getServerConfig().isVoiceActivationDisabled();
                     button.setMessage(onOff(enableVoiceActivation, activations));
                     activationThreshold.active = enableVoiceActivation;
-                });
+                }).width(97).build();
 
         voiceActivation.active = !VoiceClient.getServerConfig().isVoiceActivationDisabled();
         activationThreshold.active = VoiceClient.getClientConfig().voiceActivation.get();
@@ -221,10 +219,9 @@ public class GeneralTabWidget extends TabWidget {
         );
         this.addEntry(new OptionEntry(
                 Component.translatable("gui.plasmo_voice.general.icons.position"),
-                new Button(0, 0, 97, 20, VoiceClient.getClientConfig().micIconPosition.get().translate(),
-                        button -> {
-                            client.setScreen(new MicIconPositionScreen(parent));
-                        }),
+                Button.builder(VoiceClient.getClientConfig().micIconPosition.get().translate(),
+                        button -> client.setScreen(new MicIconPositionScreen(parent))
+                ).width(97).build(),
                 VoiceClient.getClientConfig().micIconPosition,
                 (button, element) -> {
                     element.setMessage(VoiceClient.getClientConfig().micIconPosition.get().translate());

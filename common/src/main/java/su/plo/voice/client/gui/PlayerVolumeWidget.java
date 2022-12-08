@@ -32,8 +32,8 @@ public class PlayerVolumeWidget extends AbstractSliderButton {
     public void render(PoseStack matrices, int mouseX, int mouseY, float delta, int x, int y, int entryWidth, int entryHeight) {
         if (this.visible) {
             this.setWidth((entryWidth / 2) - 22);
-            this.x = x + entryHeight;
-            this.y = y + 6;
+            this.setX(x + entryHeight);
+            this.setY(y + 6);
 
             super.render(matrices, mouseX, mouseY, delta);
         }
@@ -43,7 +43,7 @@ public class PlayerVolumeWidget extends AbstractSliderButton {
         RenderSystem.setShaderTexture(0, WIDGETS_LOCATION);
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
         int i = (this.isHoveredOrFocused() ? 2 : 1) * 20;
-        blit(matrices, this.x + (int) (this.value * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
-        blit(matrices, this.x + (int) (this.value * (double) (this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
+        blit(matrices, this.getX() + (int) (this.value * (double) (this.width - 8)), this.getY(), 0, 46 + i, 4, 20);
+        blit(matrices, this.getX() + (int) (this.value * (double) (this.width - 8)) + 4, this.getY(), 196, 46 + i, 4, 20);
     }
 }

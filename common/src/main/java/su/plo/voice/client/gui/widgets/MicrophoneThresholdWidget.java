@@ -90,7 +90,7 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        if (mouseX >= this.x && mouseX <= this.x + this.width && slider) {
+        if (mouseX >= this.getX() && mouseX <= this.getX() + this.width && slider) {
             return super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         } else {
             return false;
@@ -112,8 +112,8 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        blit(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-        blit(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+        blit(matrices, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
+        blit(matrices, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
 
         if (parent.getMicrophoneValue() > 0.95D) {
             RenderSystem.setShaderColor(1.0F, 0.0F, 0.0F, this.alpha);
@@ -122,21 +122,21 @@ public class MicrophoneThresholdWidget extends AbstractSliderButton {
         } else {
             RenderSystem.setShaderColor(0.0F, 1.0F, 0.0F, this.alpha);
         }
-        blit(matrices, this.x + 1, this.y + 1, 1, 47, (int) ((this.width - 2) * parent.getMicrophoneValue()), this.height - 2);
+        blit(matrices, this.getX() + 1, this.getY() + 1, 1, 47, (int) ((this.width - 2) * parent.getMicrophoneValue()), this.height - 2);
 
         if (slider) {
             this.renderBg(matrices, client, mouseX, mouseY);
             int j = this.active ? 16777215 : 10526880;
-            drawCenteredString(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+            drawCenteredString(matrices, textRenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
         }
 
         //            drawCenteredString(matrices, textRenderer, Component.literal(String.format("%.2f dB", parent.getHighestDB())),
-        //            this.x + this.width / 2, this.y + (this.height - 8) / 2, 16777215);
+        //            this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, 16777215);
 
         RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, this.alpha);
         for (BackgroundImageButton button : this.microphoneTest) {
-            button.x = this.x + this.width + 2;
-            button.y = this.y;
+            button.setX(this.getX() + this.width + 2);
+            button.setY(this.getY());
 
             button.render(matrices, mouseX, mouseY, delta);
 

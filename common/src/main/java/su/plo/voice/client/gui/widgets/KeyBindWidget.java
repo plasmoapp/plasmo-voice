@@ -8,6 +8,8 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
+import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipPositioner;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -29,8 +31,7 @@ public class KeyBindWidget extends Button {
     private final List<InputConstants.Key> pressedKeys = new ArrayList<>();
 
     public KeyBindWidget(KeyBindingsTabWidget parent, int x, int y, int width, int height, ClientConfig.KeyBindingConfigEntry entry) {
-        super(x, y, width, height, Component.empty(), button -> {
-        });
+        super(x, y, width, height, Component.empty(), button -> {}, DEFAULT_NARRATION);
         this.parent = parent;
         this.entry = entry;
 
@@ -148,14 +149,8 @@ public class KeyBindWidget extends Button {
     }
 
     @Override
-    public void renderToolTip(PoseStack matrices, int mouseX, int mouseY) {
-        if (parent.getFocusedBinding() == null || !parent.getFocusedBinding().equals(this)) {
-            int width = Minecraft.getInstance().font.width(getMessage());
-            if (width > this.width - 16) {
-                parent.setTooltip(ImmutableList.of(getMessage()));
-            }
-        }
-        super.renderToolTip(matrices, mouseX, mouseY);
+    protected ClientTooltipPositioner createTooltipPositioner() {
+        return super.createTooltipPositioner();
     }
 
     @Override
@@ -169,21 +164,24 @@ public class KeyBindWidget extends Button {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        blit(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-        blit(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+        blit(matrices, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
+        blit(matrices, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
         this.renderBg(matrices, minecraftClient, mouseX, mouseY);
         int j = this.active ? 16777215 : 10526880;
 
         if (parent.getFocusedBinding() != null && parent.getFocusedBinding().equals(this)) {
-            drawCenteredString(matrices, textRenderer, this.getMessage(), this.x + this.width / 2, this.y + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
+            drawCenteredString(matrices, textRenderer, this.getMessage(), this.getX() + this.width / 2, this.getY() + (this.height - 8) / 2, j | Mth.ceil(this.alpha * 255.0F) << 24);
         } else {
             FormattedCharSequence orderedText = TextUtils.getOrderedText(textRenderer, getMessage(), this.width - 16);
-            textRenderer.drawShadow(matrices, orderedText, (float) ((this.x + this.width / 2) - textRenderer.width(orderedText) / 2), this.y + (this.height - 8) / 2,
+            textRenderer.drawShadow(matrices, orderedText, (float) ((this.getX() + this.width / 2) - textRenderer.width(orderedText) / 2), this.getY() + (this.height - 8) / 2,
                     j | Mth.ceil(this.alpha * 255.0F) << 24);
         }
 
-        if (this.isHoveredOrFocused()) {
-            this.renderToolTip(matrices, mouseX, mouseY);
+        if (this.isHoveredOrFocused() && (parent.getFocusedBinding() == null || !parent.getFocusedBinding().equals(this))) {
+            int width = Minecraft.getInstance().font.width(getMessage());
+            if (width > this.width - 16) {
+                parent.setTooltip(ImmutableList.of(getMessage()));
+            }
         }
     }
 }

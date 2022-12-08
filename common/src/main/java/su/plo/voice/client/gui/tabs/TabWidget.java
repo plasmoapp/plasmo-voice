@@ -295,14 +295,14 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
             this.entry = entry;
             this.tooltip = tooltip;
 
-            this.resetButton = new Button(0, 0, 46, 20, Component.translatable("controls.reset"), button -> {
+            this.resetButton = Button.builder(Component.translatable("controls.reset"), button -> {
                 if (entry != null) {
                     entry.reset();
                     if (action != null) {
                         action.onReset(button, element);
                     }
                 }
-            });
+            }).width(46).build();
         }
 
         @Override
@@ -311,16 +311,16 @@ public class TabWidget extends ContainerObjectSelectionList<TabWidget.Entry> {
             Objects.requireNonNull(TabWidget.this.minecraft.font);
             TabWidget.this.minecraft.font.drawShadow(matrices, this.text, x, (float)(elementY - 9 - 1), 16777215);
 
-            element.x = x + entryWidth - 147;
-            element.y = y;
+            element.setX(x + entryWidth - 147);
+            element.setY(y);
             element.render(matrices, mouseX, mouseY, tickDelta);
 
-            resetButton.x = x + entryWidth - 46;
-            resetButton.y = y;
+            resetButton.setX(x + entryWidth - 46);
+            resetButton.setY(y);
             resetButton.active = entry != null && !entry.isDefault();
             resetButton.render(matrices, mouseX, mouseY, tickDelta);
 
-            if (hovered && mouseX < (element.x - 4)) {
+            if (hovered && mouseX < (element.getX() - 4)) {
                 TabWidget.this.setTooltip(tooltip);
             }
         }

@@ -44,8 +44,8 @@ public class NumberTextFieldWidget extends EditBox {
 
     @Override
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
-        this.x += 1;
-        this.y += 1;
+        this.setX(this.getX() + 1);
+        this.setY(this.getY() + 1);
         matrices.pushPose();
         RenderSystem.enableDepthTest();
         matrices.translate(0.0D, 0.0D, 0.0D);

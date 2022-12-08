@@ -14,6 +14,7 @@ import net.minecraft.Util;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.screens.ConfirmLinkScreen;
@@ -106,34 +107,25 @@ public class AboutTabWidget extends TabWidget {
         }
         this.addEntry(new CategoryEntry(links));
         this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, Component.literal("Github"), button -> {
-                    openLink("https://github.com/plasmoapp/plasmo-voice");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(Component.literal("https://github.com/plasmoapp/plasmo-voice")));
-                }),
-                new Button(0, 0, 0, 20, Component.literal("Discord"), button -> {
-                    openLink("https://discord.com/invite/uueEqzwCJJ");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(Component.literal("https://discord.com/invite/uueEqzwCJJ")));
-                })
+                createLink("GitHub", "https://github.com/plasmoapp/plasmo-voice"),
+                createLink("Discord", "https://discord.com/invite/uueEqzwCJJ")
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, Component.literal("Modrinth"), button -> {
-                    openLink("https://modrinth.com/mod/plasmo-voice");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(Component.literal("https://modrinth.com/mod/plasmo-voice")));
-                }),
-                new Button(0, 0, 0, 20, Component.literal("Spigot"), button -> {
-                    openLink("https://www.spigotmc.org/resources/plasmo-voice-server.91064/");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(Component.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/")));
-                })
+                createLink("Modrinth", "https://modrinth.com/mod/plasmo-voice"),
+                createLink("SpigotMC", "https://www.spigotmc.org/resources/plasmo-voice.91064/")
         )));
         this.addEntry(new TextEntry(Component.translatable("gui.plasmo_voice.about.copyright")));
     }
 
     protected void openLink(String linkUrl) {
         AboutTabWidget.this.minecraft.setScreen(new ConfirmLinkScreen(ok -> AboutTabWidget.this.confirmLink(ok, linkUrl), linkUrl, true));
+    }
+
+    private Button createLink(String linkName, String linkUrl) {
+        return Button.builder(Component.literal(linkName), button -> openLink(linkUrl))
+                .width(0)
+                .tooltip(Tooltip.create(Component.literal(linkUrl)))
+                .build();
     }
 
     private void confirmLink(boolean ok, String linkUrl) {
@@ -180,8 +172,8 @@ public class AboutTabWidget extends TabWidget {
             int elementX = x;
 
             for (AbstractWidget element : list) {
-                element.x = elementX;
-                element.y = y;
+                element.setX(elementX);
+                element.setY(y);
                 element.setWidth(elementWidth);
 
                 element.render(matrices, mouseX, mouseY, tickDelta);
@@ -301,13 +293,9 @@ public class AboutTabWidget extends TabWidget {
             this.nick = Component.literal(nick);
             this.role = role;
             if (link != null) {
-                this.link = new Button(0, 0, 56, 20, Component.literal(link), button -> {
+                this.link = Button.builder(Component.literal(link), button -> {
                     openLink(linkUrl);
-                }, (button, matrices, mouseX, mouseY) -> {
-                    AboutTabWidget.this.setTooltip(ImmutableList.of(
-                            Component.literal(linkUrl)
-                    ));
-                });
+                }).size(56, 20).tooltip(Tooltip.create(Component.literal(linkUrl))).build();
             } else {
                 this.link = null;
             }
@@ -346,8 +334,8 @@ public class AboutTabWidget extends TabWidget {
             AboutTabWidget.this.minecraft.font.drawShadow(matrices, role, x + 40, y + 21, -5592406);
 
             if (link != null) {
-                link.x = x + entryWidth - 62;
-                link.y = y + 10;
+                link.setX(x + entryWidth - 62);
+                link.setY(y + 10);
                 link.render(matrices, mouseX, mouseY, tickDelta);
             }
         }

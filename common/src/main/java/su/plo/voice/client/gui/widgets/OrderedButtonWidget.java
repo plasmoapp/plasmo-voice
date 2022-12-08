@@ -15,11 +15,11 @@ public class OrderedButtonWidget extends Button {
     private FormattedCharSequence orderedText;
 
     public OrderedButtonWidget(int x, int y, int width, int height, FormattedCharSequence message, OnPress onPress) {
-        super(x, y, width, height, Component.literal("Pepega"), onPress);
+        super(x, y, width, height, Component.literal("Pepega"), onPress, DEFAULT_NARRATION);
         this.orderedText = message;
     }
 
-    public OrderedButtonWidget(int x, int y, int width, int height, FormattedCharSequence message, OnPress onPress, OnTooltip tooltipSupplier) {
+    public OrderedButtonWidget(int x, int y, int width, int height, FormattedCharSequence message, OnPress onPress, CreateNarration tooltipSupplier) {
         super(x, y, width, height, Component.empty(), onPress, tooltipSupplier);
         this.orderedText = message;
     }
@@ -38,16 +38,12 @@ public class OrderedButtonWidget extends Button {
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.enableDepthTest();
-        blit(matrices, this.x, this.y, 0, 46 + i * 20, this.width / 2, this.height);
-        blit(matrices, this.x + this.width / 2, this.y, 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
+        blit(matrices, this.getX(), this.getY(), 0, 46 + i * 20, this.width / 2, this.height);
+        blit(matrices, this.getX() + this.width / 2, this.getY(), 200 - this.width / 2, 46 + i * 20, this.width / 2, this.height);
         this.renderBg(matrices, client, mouseX, mouseY);
         int j = this.active ? 16777215 : 10526880;
 
-        textRenderer.drawShadow(matrices, orderedText, (float) ((this.x + this.width / 2) - textRenderer.width(orderedText) / 2), this.y + (this.height - 8) / 2,
+        textRenderer.drawShadow(matrices, orderedText, (float) ((this.getX() + this.width / 2) - textRenderer.width(orderedText) / 2), this.getY() + (this.height - 8) / 2,
                 j | Mth.ceil(this.alpha * 255.0F) << 24);
-
-        if (this.isHoveredOrFocused()) {
-            this.renderToolTip(matrices, mouseX, mouseY);
-        }
     }
 }

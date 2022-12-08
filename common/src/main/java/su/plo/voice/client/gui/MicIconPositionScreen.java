@@ -8,6 +8,10 @@ import su.plo.voice.client.VoiceClient;
 import su.plo.voice.client.config.MicrophoneIconPosition;
 
 public class MicIconPositionScreen extends Screen {
+
+    private static final int OFFSET = 25;
+    private static final int BUTTON_WIDTH = 100;
+
     private final Screen parent;
 
     public MicIconPositionScreen(Screen parent) {
@@ -38,44 +42,21 @@ public class MicIconPositionScreen extends Screen {
     protected void init() {
         super.init();
 
-        int offset = 25;
-        int buttonWidth = 100;
+        addRenderableWidget(createButton(OFFSET, OFFSET, MicrophoneIconPosition.TOP_LEFT));
+        addRenderableWidget(createButton((this.width / 2) - (BUTTON_WIDTH / 2), OFFSET, MicrophoneIconPosition.TOP_CENTER));
+        addRenderableWidget(createButton(this.width - OFFSET - BUTTON_WIDTH, OFFSET, MicrophoneIconPosition.TOP_RIGHT));
+        addRenderableWidget(createButton(OFFSET, (this.height / 2) - (BUTTON_WIDTH / 2), MicrophoneIconPosition.BOTTOM_LEFT));
+        addRenderableWidget(createButton((this.width / 2) - (BUTTON_WIDTH / 2), this.height - 20 - OFFSET, MicrophoneIconPosition.BOTTOM_CENTER));
+        addRenderableWidget(createButton(this.width - OFFSET - BUTTON_WIDTH, this.height - 20 - OFFSET, MicrophoneIconPosition.BOTTOM_RIGHT));
+    }
 
-        addRenderableWidget(new Button(offset, offset, buttonWidth, 20,
-                MicrophoneIconPosition.TOP_LEFT.translate(), (button) -> {
-            VoiceClient.getClientConfig().micIconPosition.set(MicrophoneIconPosition.TOP_LEFT);
-            this.minecraft.setScreen(parent);
-        }));
-
-        addRenderableWidget(new Button((this.width / 2) - (buttonWidth / 2), offset, buttonWidth, 20,
-                MicrophoneIconPosition.TOP_CENTER.translate(), (button) -> {
-            VoiceClient.getClientConfig().micIconPosition.set(MicrophoneIconPosition.TOP_CENTER);
-            this.minecraft.setScreen(parent);
-        }));
-
-        addRenderableWidget(new Button(this.width - offset - buttonWidth, offset, buttonWidth, 20,
-                MicrophoneIconPosition.TOP_RIGHT.translate(), (button) -> {
-            VoiceClient.getClientConfig().micIconPosition.set(MicrophoneIconPosition.TOP_RIGHT);
-            this.minecraft.setScreen(parent);
-        }));
-
-
-        addRenderableWidget(new Button(offset, this.height - 20 - offset, buttonWidth, 20,
-                MicrophoneIconPosition.BOTTOM_LEFT.translate(), (button) -> {
-            VoiceClient.getClientConfig().micIconPosition.set(MicrophoneIconPosition.BOTTOM_LEFT);
-            this.minecraft.setScreen(parent);
-        }));
-
-        addRenderableWidget(new Button((this.width / 2) - (buttonWidth / 2), this.height - 20 - offset, buttonWidth, 20,
-                MicrophoneIconPosition.BOTTOM_CENTER.translate(), (button) -> {
-            VoiceClient.getClientConfig().micIconPosition.set(MicrophoneIconPosition.BOTTOM_CENTER);
-            this.minecraft.setScreen(parent);
-        }));
-
-        addRenderableWidget(new Button(this.width - offset - buttonWidth, this.height - 20 - offset, buttonWidth, 20,
-                MicrophoneIconPosition.BOTTOM_RIGHT.translate(), (button) -> {
-            VoiceClient.getClientConfig().micIconPosition.set(MicrophoneIconPosition.BOTTOM_RIGHT);
-            this.minecraft.setScreen(parent);
-        }));
+    private Button createButton(int x, int y, MicrophoneIconPosition position) {
+        return Button.builder(position.translate(), (button) -> {
+                    VoiceClient.getClientConfig().micIconPosition.set(position);
+                    this.minecraft.setScreen(parent);
+                })
+                .pos(x, y)
+                .width(BUTTON_WIDTH)
+                .build();
     }
 }

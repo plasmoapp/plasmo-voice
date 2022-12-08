@@ -65,7 +65,7 @@ public class DistanceSlider extends AbstractSliderButton {
 
         float stepValue = (float) VoiceClient.getServerConfig().getDistances().indexOf((int) VoiceClient.getServerConfig().getDistance()) / ((float) maxSteps - 1);
 
-        blit(matrices, this.x + (int) (stepValue * (double) (this.width - 8)), this.y, 0, 46 + i, 4, 20);
-        blit(matrices, this.x + (int) (stepValue * (double) (this.width - 8)) + 4, this.y, 196, 46 + i, 4, 20);
+        blit(matrices, this.getX() + (int) (stepValue * (double) (this.width - 8)), this.getY(), 0, 46 + i, 4, 20);
+        blit(matrices, this.getX() + (int) (stepValue * (double) (this.width - 8)) + 4, this.getY(), 196, 46 + i, 4, 20);
     }
 }

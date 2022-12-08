@@ -6,7 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.components.AbstractWidget;
-import net.minecraft.client.gui.components.Widget;
+import net.minecraft.client.gui.components.Renderable;
 import net.minecraft.client.gui.narration.NarratableEntry;
 import net.minecraft.client.gui.narration.NarrationElementOutput;
 import net.minecraft.locale.Language;
@@ -18,7 +18,7 @@ import su.plo.voice.client.gui.VoiceSettingsScreen;
 import java.util.List;
 import java.util.function.Consumer;
 
-public class DropDownWidget extends AbstractWidget implements Widget, NarratableEntry {
+public class DropDownWidget extends AbstractWidget implements Renderable, NarratableEntry {
     private boolean open;
     private final Minecraft client = Minecraft.getInstance();
     private final Font textRenderer;
@@ -61,10 +61,10 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
 
     private boolean elementClicked(double mouseX, double mouseY, int button) {
         if (isValidClickButton(button)) {
-            if (this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) {
-                if ((mouseX >= x && mouseX <= x + width) &&
-                        (mouseY >= y + 1 - (elements.size() * (elementHeight + 1)) && mouseY <= y + 1)) {
-                    int i = (int) Math.floor((mouseY - (y + 1 - (elements.size() * (elementHeight + 1)))) / (elementHeight + 1));
+            if (this.getY() + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) {
+                if ((mouseX >= getX() && mouseX <= getX() + width) &&
+                        (mouseY >= getY() + 1 - (elements.size() * (elementHeight + 1)) && mouseY <= getY() + 1)) {
+                    int i = (int) Math.floor((mouseY - (getY() + 1 - (elements.size() * (elementHeight + 1)))) / (elementHeight + 1));
                     this.playDownSound(client.getSoundManager());
                     this.setMessage(elements.get(i));
                     if (this.onSelect != null) {
@@ -73,9 +73,9 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
                     return true;
                 }
             } else {
-                if ((mouseX >= x && mouseX <= x + width) &&
-                        (mouseY >= y + 1 + height && mouseY <= y + 1 + height + (elements.size() * (elementHeight + 1)))) {
-                    int i = (int) Math.floor((mouseY - (y + height + 1)) / (elementHeight + 1));
+                if ((mouseX >= getX() && mouseX <= getX() + width) &&
+                        (mouseY >= getY() + 1 + height && mouseY <= getY() + 1 + height + (elements.size() * (elementHeight + 1)))) {
+                    int i = (int) Math.floor((mouseY - (getY() + height + 1)) / (elementHeight + 1));
                     this.playDownSound(client.getSoundManager());
                     this.setMessage(elements.get(i));
                     if (this.onSelect != null) {
@@ -96,13 +96,13 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
 
         if (open) {
             for (int i = 0; i < 5; i++) {
-                fill(matrices, this.x + this.width - (9 + i), this.y + ((this.height - 5) / 2) + i,
-                        this.x + this.width - (8 - i), (this.y + (this.height - 5) / 2) + 2 + i, -6250336);
+                fill(matrices, this.getX() + this.width - (9 + i), this.getY() + ((this.height - 5) / 2) + i,
+                        this.getX() + this.width - (8 - i), (this.getY() + (this.height - 5) / 2) + 2 + i, -6250336);
             }
         } else {
             for (int i = 0; i < 5; i++) {
-                fill(matrices, this.x + this.width - (13 - i), this.y + ((this.height - 5) / 2) + (i > 0 ? (1 + i) : 0),
-                        this.x + this.width - (4 + i), (this.y + (this.height - 5) / 2) + 2 + i, -6250336);
+                fill(matrices, this.getX() + this.width - (13 - i), this.getY() + ((this.height - 5) / 2) + (i > 0 ? (1 + i) : 0),
+                        this.getX() + this.width - (4 + i), (this.getY() + (this.height - 5) / 2) + 2 + i, -6250336);
             }
         }
     }
@@ -110,35 +110,35 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
     @Override
     public void renderButton(PoseStack matrices, int mouseX, int mouseY, float delta) {
         RenderSystem.enableDepthTest();
-        fill(matrices, this.x, this.y, this.x + this.width + 1, this.y + this.height + 1, -6250336);
-        fill(matrices, this.x + 1, this.y + 1, this.x + this.width, this.y + this.height, -16777216);
+        fill(matrices, this.getX(), this.getY(), this.getX() + this.width + 1, this.getY() + this.height + 1, -6250336);
+        fill(matrices, this.getX() + 1, this.getY() + 1, this.getX() + this.width, this.getY() + this.height, -16777216);
 
         renderArrow(matrices);
 
         this.textRenderer.drawShadow(matrices, orderedText(client, getMessage(), this.active ? (this.width - 21) : (this.width - 5)),
-                (float)this.x + 5, (float)this.y + 1 + (this.height - 8) / 2, this.active ? 14737632 : 7368816);
+                (float)this.getX() + 5, (float)this.getY() + 1 + (this.height - 8) / 2, this.active ? 14737632 : 7368816);
 
         if (open) {
-            if ((this.y + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) &&
+            if ((this.getY() + this.height + 1 + (elements.size() * (elementHeight + 1)) > client.getWindow().getGuiScaledHeight()) &&
                     (parent.getHeaderHeight() + this.height + 1 + (elements.size() * (elementHeight + 1)) < client.getWindow().getGuiScaledHeight())) {
-                int elementY = this.y + 1 - (elements.size() * (elementHeight + 1));
+                int elementY = this.getY() + 1 - (elements.size() * (elementHeight + 1));
 
                 for (Component element : elements) {
                     matrices.pushPose();
                     RenderSystem.enableDepthTest();
                     matrices.translate(0.0D, 0.0D, 10.0D);
 
-                    fill(matrices, this.x, elementY - 1, this.x + this.width + 1, elementY + elementHeight, -12171706);
-                    fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -16777216);
-                    if ((mouseX >= x && mouseX <= x + width) &&
+                    fill(matrices, this.getX(), elementY - 1, this.getX() + this.width + 1, elementY + elementHeight, -12171706);
+                    fill(matrices, this.getX() + 1, elementY, this.getX() + this.width, elementY + elementHeight, -16777216);
+                    if ((mouseX >= getX() && mouseX <= getX() + width) &&
                             (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
                         if (tooltip && this.textRenderer.width(element) > (this.width - 10)) {
                             parent.setTooltip(ImmutableList.of(element));
                         }
-                        fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -13487566);
+                        fill(matrices, this.getX() + 1, elementY, this.getX() + this.width, elementY + elementHeight, -13487566);
                     }
                     this.textRenderer.drawShadow(matrices, orderedText(client, element, this.width - 10),
-                            (float)this.x + 5, (float)elementY + 1 + (elementHeight - 8) / 2, 14737632);
+                            (float)this.getX() + 5, (float)elementY + 1 + (elementHeight - 8) / 2, 14737632);
 
 
                     matrices.popPose();
@@ -146,24 +146,24 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
                     elementY += elementHeight + 1;
                 }
             } else {
-                int elementY = this.y + this.height + 1;
+                int elementY = this.getY() + this.height + 1;
 
                 for (Component element : elements) {
                     matrices.pushPose();
                     RenderSystem.enableDepthTest();
                     matrices.translate(0.0D, 0.0D, 10.0D);
 
-                    fill(matrices, this.x, elementY, this.x + this.width + 1, elementY + elementHeight + 1, -12171706);
-                    fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -16777216);
-                    if ((mouseX >= x && mouseX <= x + width) &&
+                    fill(matrices, this.getX(), elementY, this.getX() + this.width + 1, elementY + elementHeight + 1, -12171706);
+                    fill(matrices, this.getX() + 1, elementY, this.getX() + this.width, elementY + elementHeight, -16777216);
+                    if ((mouseX >= getX() && mouseX <= getX() + width) &&
                             (mouseY >= elementY && mouseY <= elementY + elementHeight)) {
                         if (tooltip && this.textRenderer.width(element) > (this.width - 10)) {
                             parent.setTooltip(ImmutableList.of(element));
                         }
-                        fill(matrices, this.x + 1, elementY, this.x + this.width, elementY + elementHeight, -13487566);
+                        fill(matrices, this.getX() + 1, elementY, this.getX() + this.width, elementY + elementHeight, -13487566);
                     }
                     this.textRenderer.drawShadow(matrices, orderedText(client, element, this.width - 10),
-                            (float)this.x + 5, (float)elementY + 1 + (elementHeight - 8) / 2, 14737632);
+                            (float)this.getX() + 5, (float)elementY + 1 + (elementHeight - 8) / 2, 14737632);
 
 
                     matrices.popPose();
@@ -185,7 +185,7 @@ public class DropDownWidget extends AbstractWidget implements Widget, Narratable
     }
 
     @Override
-    public void updateNarration(NarrationElementOutput narrationElementOutput) {
+    protected void updateWidgetNarration(NarrationElementOutput narrationElementOutput) {
         this.defaultButtonNarrationText(narrationElementOutput);
     }
 }

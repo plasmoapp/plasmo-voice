@@ -1,13 +1,13 @@
 package su.plo.voice.client.sound.openal;
 
 import com.mojang.blaze3d.audio.Listener;
-import com.mojang.math.Vector3f;
 import lombok.Getter;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.phys.Vec3;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.*;
 import su.plo.voice.client.VoiceClient;

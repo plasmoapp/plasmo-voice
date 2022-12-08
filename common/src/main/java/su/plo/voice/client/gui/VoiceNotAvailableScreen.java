@@ -16,9 +16,10 @@ public class VoiceNotAvailableScreen extends BackgroundScreen {
 
     public VoiceNotAvailableScreen() {
         super(Component.empty(), 248, 50, null, true);
-        button = new Button(0, 0, 0, 20, Component.translatable("gui.plasmo_voice.close"), button -> {
+
+        this.button = Button.builder(Component.translatable("gui.plasmo_voice.close"), button -> {
             minecraft.setScreen(null);
-        });
+        }).width(0).build();
     }
 
     public void setConnecting() {
@@ -85,8 +86,8 @@ public class VoiceNotAvailableScreen extends BackgroundScreen {
         this.setHeight(50 + (minecraft.font.lineHeight * message.size()));
 
         button.setWidth(xSize - 20);
-        button.x = guiLeft + 10;
-        button.y = guiTop + (minecraft.font.lineHeight * message.size()) + 20;
+        button.setX(guiLeft + 10);
+        button.setY(guiTop + (minecraft.font.lineHeight * message.size()) + 20);
 
         this.renderBackground(matrices);
         super.render(matrices, mouseX, mouseY, delta);

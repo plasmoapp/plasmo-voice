@@ -10,6 +10,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.components.events.GuiEventListener;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.renderer.GameRenderer;
@@ -25,6 +26,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.particle.BlockDustParticle2D;
 import su.plo.voice.client.gui.tabs.*;
 import su.plo.voice.client.gui.widgets.MicrophoneThresholdWidget;
+import su.plo.voice.client.gui.widgets.TooltipImageButton;
 import su.plo.voice.client.socket.SocketClientUDPQueue;
 import su.plo.voice.client.sound.Compressor;
 import su.plo.voice.client.sound.openal.CustomSource;
@@ -188,83 +190,83 @@ public class VoiceSettingsScreen extends Screen {
 //        active = tabButtons.get(0);
 
         // mute mic
-        ImageButton muteMicHide = new ImageButton(this.width - 52, 8, 20, 20, 0, 32, 20,
+        ImageButton muteMicHide = new TooltipImageButton(this, this.width - 52, 8, 20, 20, 0, 32, 20,
                 VoiceClient.ICONS, 256, 256, button -> {
-            this.muteMicButtons.get(0).visible = false;
-            this.muteMicButtons.get(1).visible = true;
-            config.microphoneMuted.set(true);
-        }, (button, matrices, mouseX, mouseY) -> {
-            setTooltip(ImmutableList.of(
-                    Component.translatable("gui.plasmo_voice.toggle.microphone"),
-                    Component.translatable("gui.plasmo_voice.toggle.currently",
-                            Component.translatable("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
-                    ).withStyle(ChatFormatting.GRAY)
-            ));
-        }, null);
+            minecraft.tell(() -> {
+                this.muteMicButtons.get(0).visible = false;
+                this.muteMicButtons.get(1).visible = true;
+                config.microphoneMuted.set(true);
+            });
+        }, () -> ImmutableList.of(
+                Component.translatable("gui.plasmo_voice.toggle.microphone"),
+                Component.translatable("gui.plasmo_voice.toggle.currently",
+                        Component.translatable("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
+                ).withStyle(ChatFormatting.GRAY)
+        ));
 
-        ImageButton muteMicShow = new ImageButton(this.width - 52, 8, 20, 20, 20, 32, 20,
+        ImageButton muteMicShow = new TooltipImageButton(this, this.width - 52, 8, 20, 20, 20, 32, 20,
                 VoiceClient.ICONS, 256, 256, button -> {
-            this.muteMicButtons.get(0).visible = true;
-            this.muteMicButtons.get(1).visible = false;
-            config.microphoneMuted.set(false);
+            minecraft.tell(() -> {
+                this.muteMicButtons.get(0).visible = true;
+                this.muteMicButtons.get(1).visible = false;
+                config.microphoneMuted.set(false);
 
-            if (config.speakerMuted.get()) {
-                this.muteSpeakerButtons.get(0).visible = true;
-                this.muteSpeakerButtons.get(1).visible = false;
-                config.speakerMuted.set(false);
-            }
-        }, (button, matrices, mouseX, mouseY) -> {
-            setTooltip(ImmutableList.of(
-                    Component.translatable("gui.plasmo_voice.toggle.microphone"),
-                    Component.translatable("gui.plasmo_voice.toggle.currently",
-                            Component.translatable("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
-                    ).withStyle(ChatFormatting.GRAY)
-            ));
-        }, null);
+                if (config.speakerMuted.get()) {
+                    this.muteSpeakerButtons.get(0).visible = true;
+                    this.muteSpeakerButtons.get(1).visible = false;
+                    config.speakerMuted.set(false);
+                }
+            });
+        }, () -> ImmutableList.of(
+                Component.translatable("gui.plasmo_voice.toggle.microphone"),
+                Component.translatable("gui.plasmo_voice.toggle.currently",
+                        Component.translatable("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
+                ).withStyle(ChatFormatting.GRAY)
+        ));
 
         muteMicHide.visible = !config.microphoneMuted.get() && !config.speakerMuted.get();
         muteMicShow.visible = config.microphoneMuted.get() || config.speakerMuted.get();
 
         // mute speaker
-        ImageButton muteSpeakerHide = new ImageButton(this.width - 28, 8, 20, 20, 0, 72, 20,
+        ImageButton muteSpeakerHide = new TooltipImageButton(this, this.width - 28, 8, 20, 20, 0, 72, 20,
                 VoiceClient.ICONS, 256, 256, button -> {
-            this.muteSpeakerButtons.get(0).visible = false;
-            this.muteSpeakerButtons.get(1).visible = true;
-            config.speakerMuted.invert();
+            minecraft.tell(() -> {
+                this.muteSpeakerButtons.get(0).visible = false;
+                this.muteSpeakerButtons.get(1).visible = true;
+                config.speakerMuted.invert();
 
-            SocketClientUDPQueue.closeAll();
+                SocketClientUDPQueue.closeAll();
 
-            if (!config.microphoneMuted.get()) {
-                this.muteMicButtons.get(0).visible = false;
-                this.muteMicButtons.get(1).visible = true;
-            }
-        }, (button, matrices, mouseX, mouseY) -> {
-            setTooltip(ImmutableList.of(
-                    Component.translatable("gui.plasmo_voice.toggle.voice"),
-                    Component.translatable("gui.plasmo_voice.toggle.currently",
-                            Component.translatable("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
-                    ).withStyle(ChatFormatting.GRAY)
-            ));
-        }, null);
+                if (!config.microphoneMuted.get()) {
+                    this.muteMicButtons.get(0).visible = false;
+                    this.muteMicButtons.get(1).visible = true;
+                }
+            });
+        }, () -> ImmutableList.of(
+                Component.translatable("gui.plasmo_voice.toggle.voice"),
+                Component.translatable("gui.plasmo_voice.toggle.currently",
+                        Component.translatable("gui.plasmo_voice.toggle.enabled").withStyle(ChatFormatting.GREEN)
+                ).withStyle(ChatFormatting.GRAY)
+        ));
 
-        ImageButton muteSpeakerShow = new ImageButton(this.width - 28, 8, 20, 20, 20, 72, 20,
+        ImageButton muteSpeakerShow = new TooltipImageButton(this, this.width - 28, 8, 20, 20, 20, 72, 20,
                 VoiceClient.ICONS, 256, 256, button -> {
-            this.muteSpeakerButtons.get(0).visible = true;
-            this.muteSpeakerButtons.get(1).visible = false;
-            config.speakerMuted.invert();
+            minecraft.tell(() -> {
+                this.muteSpeakerButtons.get(0).visible = true;
+                this.muteSpeakerButtons.get(1).visible = false;
+                config.speakerMuted.invert();
 
-            if (!config.microphoneMuted.get()) {
-                this.muteMicButtons.get(0).visible = true;
-                this.muteMicButtons.get(1).visible = false;
-            }
-        }, (button, matrices, mouseX, mouseY) -> {
-            setTooltip(ImmutableList.of(
-                    Component.translatable("gui.plasmo_voice.toggle.voice"),
-                    Component.translatable("gui.plasmo_voice.toggle.currently",
-                            Component.translatable("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
-                    ).withStyle(ChatFormatting.GRAY)
-            ));
-        }, null);
+                if (!config.microphoneMuted.get()) {
+                    this.muteMicButtons.get(0).visible = true;
+                    this.muteMicButtons.get(1).visible = false;
+                }
+            });
+        }, () -> ImmutableList.of(
+                Component.translatable("gui.plasmo_voice.toggle.voice"),
+                Component.translatable("gui.plasmo_voice.toggle.currently",
+                        Component.translatable("gui.plasmo_voice.toggle.disabled").withStyle(ChatFormatting.RED)
+                ).withStyle(ChatFormatting.GRAY)
+        ));
 
         muteSpeakerHide.visible = !config.speakerMuted.get();
         muteSpeakerShow.visible = config.speakerMuted.get();
@@ -291,8 +293,7 @@ public class VoiceSettingsScreen extends Screen {
     private void addTab(Component text, TabWidget drawable) {
         int textWidth = font.width(text) + 16;
         final int elementIndex = tabWidgets.size();
-        Button button = new Button(0, 0, textWidth, 20,
-                text, btn -> {
+        Button button = Button.builder(text, btn -> {
             active = elementIndex;
             about = false;
             for (TabWidget widget : tabWidgets) {
@@ -301,7 +302,7 @@ public class VoiceSettingsScreen extends Screen {
             aboutWidget.setScrollAmount(0);
 
             this.closeSpeaker();
-        });
+        }).width(textWidth).build();
         tabButtons.add(button);
         tabWidgets.add(drawable);
     }
@@ -388,9 +389,9 @@ public class VoiceSettingsScreen extends Screen {
             Button button = tabButtons.get(i);
             button.active = about || i != active;
 
-            button.x = buttonX;
+            button.setX(buttonX);
             buttonX += button.getWidth() + 4;
-            button.y = buttonY;
+            button.setY(buttonY);
 
             RenderSystem.enableDepthTest();
             RenderSystem.depthFunc(519);

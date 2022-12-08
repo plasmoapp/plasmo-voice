@@ -1,8 +1,8 @@
 package su.plo.voice.client.gui.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Vector3f;
 import net.minecraft.util.Mth;
+import org.joml.Vector3f;
 
 public abstract class BillboardParticle2D extends Particle2D {
     protected float scale;
