@@ -106,10 +106,14 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
     }
 
     @Override
-    public void sendAudioPacket(SourceAudioPacket packet, short distance) {
-        ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, distance);
-        voiceServer.getEventBus().call(event);
-        if (event.isCancelled()) return;
+    public boolean sendAudioPacket(@NotNull SourceAudioPacket packet, short distance) {
+        return sendAudioPacket(packet, distance, null);
+    }
+
+    @Override
+    public boolean sendAudioPacket(@NotNull SourceAudioPacket packet, short distance, @Nullable UUID activationId) {
+        ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, distance, activationId);
+        if (!voiceServer.getEventBus().call(event)) return false;
 
         distance = event.getDistance();
 
@@ -136,13 +140,14 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
                 connection.sendPacket(packet);
             }
         }
+
+        return true;
     }
 
     @Override
-    public void sendPacket(Packet<?> packet, short distance) {
+    public boolean sendPacket(Packet<?> packet, short distance) {
         ServerSourcePacketEvent event = new ServerSourcePacketEvent(this, packet, distance);
-        voiceServer.getEventBus().call(event);
-        if (event.isCancelled()) return;
+        if (!voiceServer.getEventBus().call(event)) return false;
 
         distance = (short) (event.getDistance() * 2);
 
@@ -162,6 +167,8 @@ public abstract class BaseServerSource<S extends SourceInfo> implements ServerAu
                 connection.getPlayer().sendPacket(packet);
             }
         }
+
+        return true;
     }
 
     @Override

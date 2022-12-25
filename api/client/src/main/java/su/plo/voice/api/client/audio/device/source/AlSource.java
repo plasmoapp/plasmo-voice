@@ -41,6 +41,8 @@ public interface AlSource extends DeviceSource {
 
     void setFloatArray(int param, float[] values);
 
+    void setCloseTimeoutMs(long timeoutMs);
+
     enum State {
         INITIAL(4113),
         PLAYING(4114),

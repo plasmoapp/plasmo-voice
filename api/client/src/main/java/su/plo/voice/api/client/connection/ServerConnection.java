@@ -5,8 +5,7 @@ import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.KeyPair;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,9 +22,9 @@ public interface ServerConnection {
 
     void close();
 
-    @NotNull PrivateKey getPrivateKey();
+    @NotNull KeyPair getKeyPair();
 
-    @NotNull PublicKey getPublicKey();
+    void setKeyPair(@NotNull KeyPair keyPair);
 
     Optional<EncryptionInfo> getEncryptionInfo();
 }

@@ -20,7 +20,7 @@ public final class ModServerConnection extends BaseServerConnection {
 
     public ModServerConnection(@NotNull BaseVoiceClient voiceClient,
                                @NotNull MinecraftClientLib minecraft,
-                               @NotNull Connection connection) throws Exception {
+                               @NotNull Connection connection) {
         super(voiceClient, minecraft);
 
         this.connection = connection;

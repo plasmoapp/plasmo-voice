@@ -43,6 +43,8 @@ public abstract class BaseVoice implements PlasmoVoice {
         this.executor = Executors.newSingleThreadScheduledExecutor();
         addonsFolder().mkdirs();
         addons.load(ImmutableList.of(modsFolder(), addonsFolder()));
+
+        eventBus.register(this, this);
     }
 
     protected void onShutdown() {

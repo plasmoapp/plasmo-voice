@@ -43,8 +43,8 @@ public final class VoiceEventBus implements EventBus {
     }
 
     @Override
-    public <E extends Event> void call(@NotNull E event) {
-        if (!this.handlers.containsKey(event.getClass())) return;
+    public <E extends Event> boolean call(@NotNull E event) {
+        if (!this.handlers.containsKey(event.getClass())) return true;
 
         for (Map.Entry<EventPriority, List<EventHandler<?>>> entry :
                 this.handlers.get(event.getClass()).entrySet()) {
@@ -54,6 +54,12 @@ public final class VoiceEventBus implements EventBus {
                 listener.execute(event);
             }
         }
+
+        if (event instanceof EventCancellable) {
+            return !((EventCancellable) event).isCancelled();
+        }
+
+        return true;
     }
 
     @Override
@@ -89,6 +95,11 @@ public final class VoiceEventBus implements EventBus {
 
             method.setAccessible(true);
             EventHandler<?> handler = (event) -> {
+                if (entry.ignoreCancelled() &&
+                        event instanceof EventCancellable &&
+                        ((EventCancellable) event).isCancelled()
+                ) return;
+
                 try {
                     method.invoke(listener, event);
                 } catch (Throwable e) {

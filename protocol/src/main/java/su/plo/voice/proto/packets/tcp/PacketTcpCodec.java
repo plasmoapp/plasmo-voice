@@ -36,6 +36,7 @@ public class PacketTcpCodec {
 
         PACKETS.register(++lastPacketId, SourceInfoRequestPacket.class);
         PACKETS.register(++lastPacketId, SourceInfoPacket.class);
+        PACKETS.register(++lastPacketId, SelfSourceInfoPacket.class);
         PACKETS.register(++lastPacketId, SourceAudioEndPacket.class);
 
         PACKETS.register(++lastPacketId, ActivationRegisterPacket.class);

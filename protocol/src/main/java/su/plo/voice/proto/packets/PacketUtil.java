@@ -19,6 +19,20 @@ public class PacketUtil {
         return new UUID(in.readLong(), in.readLong());
     }
 
+    public static void writeUUIDList(ByteArrayDataOutput out, List<UUID> uuids) {
+        out.writeInt(uuids.size());
+        for (UUID uuid : uuids) {
+            writeUUID(out, uuid);
+        }
+    }
+
+    public static List<UUID> readUUIDList(ByteArrayDataInput in) {
+        int size = in.readInt();
+        List<UUID> uuids = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) uuids.add(readUUID(in));
+        return uuids;
+    }
+
     public static void writeIntList(ByteArrayDataOutput out, List<Integer> list) {
         out.writeInt(list.size());
         list.forEach(out::writeInt);
@@ -27,9 +41,7 @@ public class PacketUtil {
     public static List<Integer> readIntList(ByteArrayDataInput in) {
         int size = in.readInt();
         List<Integer> list = new ArrayList<>(size);
-
         for (int i = 0; i < size; i++) list.add(in.readInt());
-
         return list;
     }
 

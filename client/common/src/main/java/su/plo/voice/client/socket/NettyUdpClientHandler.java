@@ -6,17 +6,20 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.PlasmoVoiceClient;
+import su.plo.voice.api.client.event.connection.UdpClientPacketReceivedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
+import su.plo.voice.client.BaseVoiceClient;
+import su.plo.voice.client.audio.source.VoiceClientSelfSourceInfo;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.proto.packets.udp.clientbound.ClientPacketUdpHandler;
+import su.plo.voice.proto.packets.udp.clientbound.SelfAudioInfoPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import su.plo.voice.socket.NettyPacketUdp;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -28,27 +31,38 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
     private final NettyUdpClient client;
-    private final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    private final ScheduledFuture<?> ticker;
 
     private long keepAlive = System.currentTimeMillis();
 
-    public NettyUdpClientHandler(@NotNull PlasmoVoiceClient voiceClient,
+    public NettyUdpClientHandler(@NotNull BaseVoiceClient voiceClient,
                                  @NotNull ClientConfig config,
                                  @NotNull NettyUdpClient client) {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
         this.config = checkNotNull(config, "config");
         this.client = checkNotNull(client, "client");
 
-        executor.scheduleAtFixedRate(this::tick, 0L, 1L, TimeUnit.SECONDS);
+        this.ticker = voiceClient.getExecutor().scheduleAtFixedRate(
+                this::tick,
+                0L,
+                1L,
+                TimeUnit.SECONDS
+        );
     }
 
     public void close() {
-        executor.shutdown();
+        if (ticker.isDone()) return;
+        ticker.cancel(false);
     }
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp packetUdp) throws Exception {
         Packet<ClientPacketUdpHandler> packet = packetUdp.getPacketUdp().getPacket();
+
+        UdpClientPacketReceivedEvent event = new UdpClientPacketReceivedEvent(client, packet);
+        voiceClient.getEventBus().call(event);
+        if (event.isCancelled()) return;
+
         logger.debug("UDP packet received {}", packet);
         packet.handle(this);
     }
@@ -78,6 +92,19 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
                     }
 
                     source.process(packet);
+                });
+    }
+
+    @Override
+    public void handle(@NotNull SelfAudioInfoPacket packet) {
+        if (config.getVoice().getDisabled().value()) return;
+
+        voiceClient.getSourceManager().getSelfSourceInfo(packet.getSourceId())
+                .ifPresent((sourceInfo) -> {
+                    VoiceClientSelfSourceInfo selfSourceInfo = (VoiceClientSelfSourceInfo) sourceInfo;
+
+                    selfSourceInfo.setSequenceNumber(packet.getSequenceNumber());
+                    selfSourceInfo.setDistance(packet.getDistance());
                 });
     }
 

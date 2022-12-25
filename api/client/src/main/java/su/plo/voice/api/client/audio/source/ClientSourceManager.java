@@ -2,6 +2,7 @@ package su.plo.voice.api.client.audio.source;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.audio.source.AudioSourceManager;
+import su.plo.voice.proto.data.audio.source.SelfSourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 import java.util.Collection;
@@ -19,4 +20,10 @@ public interface ClientSourceManager extends AudioSourceManager<ClientAudioSourc
     void update(@NotNull SourceInfo sourceInfo);
 
     void sendSourceInfoRequest(@NotNull UUID sourceId);
+
+    void updateSelfSourceInfo(@NotNull SelfSourceInfo selfSourceInfo);
+
+    Optional<ClientSelfSourceInfo> getSelfSourceInfo(@NotNull UUID sourceId);
+
+    Collection<? extends ClientSelfSourceInfo> getSelfSourceInfos();
 }

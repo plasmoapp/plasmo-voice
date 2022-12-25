@@ -2,7 +2,7 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import lombok.Getter;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -40,8 +40,6 @@ import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
@@ -58,29 +56,21 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     private final ClientActivationManager activations;
     private final ClientSourceManager sources;
 
-    @Getter
-    private final PrivateKey privateKey;
-    @Getter
-    private final PublicKey publicKey;
+    @Setter
+    private KeyPair keyPair;
 
     private final Map<UUID, VoicePlayerInfo> playerById = Maps.newConcurrentMap();
 
     private @Nullable EncryptionInfo encryptionInfo;
 
     public BaseServerConnection(@NotNull BaseVoiceClient voiceClient,
-                                @NotNull MinecraftClientLib minecraft) throws Exception {
+                                @NotNull MinecraftClientLib minecraft) {
         this.voiceClient = voiceClient;
         this.config = voiceClient.getConfig();
         this.minecraft = minecraft;
         this.sourceLines = voiceClient.getSourceLineManager();
         this.activations = voiceClient.getActivationManager();
         this.sources = voiceClient.getSourceManager();
-
-        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-        generator.initialize(2048);
-        KeyPair pair = generator.generateKeyPair();
-        this.privateKey = pair.getPrivate();
-        this.publicKey = pair.getPublic();
     }
 
     @Override
@@ -97,6 +87,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public Optional<VoicePlayerInfo> getClientPlayer() {
         return minecraft.getClientPlayer()
                 .flatMap(player -> getPlayerById(player.getUUID()));
+    }
+
+    @Override
+    public @NotNull KeyPair getKeyPair() {
+        if (keyPair == null) throw new IllegalStateException("KeyPair is not initialized");
+        return keyPair;
     }
 
     @Override
@@ -123,6 +119,17 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         // cleanup devices
         voiceClient.getDeviceManager().clear(null);
+    }
+
+    public void generateKeyPair() throws Exception {
+        KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
+        generator.initialize(2048);
+        KeyPair pair = generator.generateKeyPair();
+
+        ConnectionKeyPairGenerateEvent event = new ConnectionKeyPairGenerateEvent(pair);
+        voiceClient.getEventBus().call(event);
+
+        this.keyPair = event.getKeyPair();
     }
 
     @EventSubscribe
@@ -152,6 +159,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         client = connectEvent.getClient();
 
         voiceClient.getUdpClientManager().setClient(client);
+        voiceClient.getEventBus().register(voiceClient, client);
 
         String ip = packet.getIp();
         if (ip.equals("0.0.0.0")) ip = voiceClient.getServerIp();
@@ -183,7 +191,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         if (encryptionInfo != null) {
             try {
                 Cipher decryptCipher = Cipher.getInstance("RSA");
-                decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+                decryptCipher.init(Cipher.DECRYPT_MODE, keyPair.getPrivate());
                 byte[] encryptionData = decryptCipher.doFinal(encryptionInfo.getData());
 
                 encryption = voiceClient.getEncryptionManager().create(
@@ -252,7 +260,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull PlayerInfoRequestPacket packet) {
         sendPacket(new PlayerInfoPacket(
                 voiceClient.getVersion(),
-                publicKey.getEncoded(),
+                keyPair.getPublic().getEncoded(),
                 voiceClient.getConfig().getVoice().getDisabled().value(),
                 voiceClient.getConfig().getVoice().getMicrophoneDisabled().value()
         ));
@@ -284,7 +292,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     @Override
     public void handle(@NotNull PlayerDisconnectPacket packet) {
-        if (minecraft.getClientPlayer().map(player -> player.getUUID().equals(player.getUUID())).orElse(false)) {
+        if (minecraft.getClientPlayer().map(player -> player.getUUID().equals(packet.getPlayerId())).orElse(false)) {
             voiceClient.getUdpClientManager().removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
             return;
         }
@@ -297,7 +305,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     public void handle(@NotNull SourceAudioEndPacket packet) {
         if (config.getVoice().getDisabled().value()) return;
 
-        sources.getSourceById(packet.getSourceId())
+        sources.getSourceById(packet.getSourceId(), false)
                 .ifPresent(source -> source.process(packet));
     }
 
@@ -311,6 +319,11 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         }
 
         sources.update(packet.getSourceInfo());
+    }
+
+    @Override
+    public void handle(@NotNull SelfSourceInfoPacket packet) {
+        sources.updateSelfSourceInfo(packet.getSourceInfo());
     }
 
     @Override

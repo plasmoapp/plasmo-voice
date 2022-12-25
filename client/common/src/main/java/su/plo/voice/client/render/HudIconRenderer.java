@@ -8,6 +8,7 @@ import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.render.VertexBuilder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
+import su.plo.voice.api.client.event.render.HudActivationRenderEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.IconPosition;
@@ -53,11 +54,12 @@ public final class HudIconRenderer {
         List<ClientActivation> activations = (List<ClientActivation>) voiceClient.getActivationManager().getActivations();
 
         ClientActivation currentActivation = null;
-
         for (int index = activations.size() - 1; index >= 0; index--) {
             ClientActivation activation = activations.get(index);
+            HudActivationRenderEvent renderEvent = new HudActivationRenderEvent(activation, activation.isActivated());
+            voiceClient.getEventBus().call(renderEvent);
 
-            if (!activation.isActivated()) continue;
+            if (!renderEvent.isRender()) continue;
 
             currentActivation = activation;
             if (!activation.isTransitive()) break;

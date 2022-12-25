@@ -1,8 +1,10 @@
 package su.plo.voice.forge.client;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
-import net.minecraftforge.client.event.*;
+import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
+import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.ModList;
@@ -46,14 +48,6 @@ public final class ForgeVoiceClient extends ModVoiceClient<ForgeClientChannelHan
     @SubscribeEvent
     public void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
         event.register(menuKey);
-    }
-
-    @SubscribeEvent
-    public void onInput(InputEvent.Key event) {
-        final LocalPlayer player = minecraft.player;
-        if (player == null) return;
-
-        if (menuKey.consumeClick()) openSettings();
     }
 
     @Override

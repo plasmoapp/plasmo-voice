@@ -8,6 +8,8 @@ import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerDirectSource;
+import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
+import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
@@ -117,15 +119,23 @@ public final class VoiceServerDirectSource extends BaseServerSource<DirectSource
     }
 
     @Override
-    public void sendAudioPacket(SourceAudioPacket packet, short distance) {
+    public boolean sendAudioPacket(@NotNull SourceAudioPacket packet, short distance, @Nullable UUID activationId) {
+        ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, distance, activationId);
+        if (!voiceServer.getEventBus().call(event)) return false;
+
         voiceServer.getUdpConnectionManager()
                 .getConnectionByUUID(player.getInstance().getUUID())
                 .ifPresent(connection -> connection.sendPacket(packet));
+        return true;
     }
 
     @Override
-    public void sendPacket(Packet<?> packet, short distance) {
+    public boolean sendPacket(Packet<?> packet, short distance) {
+        ServerSourcePacketEvent event = new ServerSourcePacketEvent(this, packet, distance);
+        if (!voiceServer.getEventBus().call(event)) return false;
+
         player.sendPacket(packet);
+        return true;
     }
 
     private void updateSourceInfo() {

@@ -42,6 +42,7 @@ public abstract class ModClientChannelHandler {
             if (this.connection != null) close();
             try {
                 this.connection = new ModServerConnection(voiceClient, minecraft, connection);
+                this.connection.generateKeyPair();
                 voiceClient.getEventBus().register(voiceClient, this.connection);
             } catch (Exception e) {
                 LogManager.getLogger().error("Failed to initialize server connection: {}", e.toString());

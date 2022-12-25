@@ -2,8 +2,8 @@ package su.plo.voice.mod.client.audio.source;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.client.MinecraftClientLib;
-import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
+import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.audio.source.BaseClientSourceManager;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
@@ -14,7 +14,7 @@ import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 public final class ModClientSourceManager extends BaseClientSourceManager {
 
     public ModClientSourceManager(@NotNull MinecraftClientLib minecraft,
-                                  @NotNull PlasmoVoiceClient voiceClient,
+                                  @NotNull BaseVoiceClient voiceClient,
                                   @NotNull ClientConfig config) {
         super(minecraft, voiceClient, config);
     }

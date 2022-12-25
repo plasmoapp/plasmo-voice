@@ -3,17 +3,17 @@ package su.plo.voice.client.audio.source;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.client.MinecraftClientLib;
-import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
+import su.plo.voice.api.client.audio.source.ClientSelfSourceInfo;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.audio.source.*;
 import su.plo.voice.proto.packets.tcp.serverbound.SourceInfoRequestPacket;
@@ -23,9 +23,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.TimeUnit;
 
-@RequiredArgsConstructor
 public abstract class BaseClientSourceManager implements ClientSourceManager {
+
+    private static final long TIMEOUT_MS = 25_000L;
 
     protected final ListMultimap<UUID, ClientAudioSource<?>> sourcesByLineId = Multimaps.newListMultimap(
             Maps.newConcurrentMap(),
@@ -34,9 +36,24 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     protected final Map<UUID, ClientAudioSource<?>> sourceById = Maps.newConcurrentMap();
     protected final Map<UUID, Long> sourceRequestById = Maps.newConcurrentMap();
 
+    protected final Map<UUID, VoiceClientSelfSourceInfo> selfSourceInfoById = Maps.newConcurrentMap();
+
     protected final MinecraftClientLib minecraft;
-    protected final PlasmoVoiceClient voiceClient;
+    protected final BaseVoiceClient voiceClient;
     protected final ClientConfig config;
+
+    public BaseClientSourceManager(@NotNull MinecraftClientLib minecraft,
+                                   @NotNull BaseVoiceClient voiceClient,
+                                   @NotNull ClientConfig config) {
+        this.minecraft = minecraft;
+        this.voiceClient = voiceClient;
+        this.config = config;
+
+        voiceClient.getExecutor().scheduleAtFixedRate(
+                this::tickSelfSourceInfo,
+                0L, 5L, TimeUnit.SECONDS
+        );
+    }
 
     @Override
     public @NotNull LoopbackSource createLoopbackSource(boolean relative) {
@@ -156,12 +173,42 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
         connection.sendPacket(new SourceInfoRequestPacket(sourceId));
     }
 
+    @Override
+    public void updateSelfSourceInfo(@NotNull SelfSourceInfo selfSourceInfo) {
+        selfSourceInfoById.computeIfAbsent(
+                selfSourceInfo.getSourceInfo().getId(),
+                (sourceId) -> new VoiceClientSelfSourceInfo()
+        ).setSelfSourceInfo(selfSourceInfo);
+
+        if (getSourceById(selfSourceInfo.getSourceInfo().getId(), false).isPresent()) {
+            update(selfSourceInfo.getSourceInfo());
+        }
+    }
+
+    @Override
+    public Optional<ClientSelfSourceInfo> getSelfSourceInfo(@NotNull UUID sourceId) {
+        return Optional.ofNullable(selfSourceInfoById.get(sourceId));
+    }
+
+    @Override
+    public Collection<? extends ClientSelfSourceInfo> getSelfSourceInfos() {
+        return selfSourceInfoById.values();
+    }
+
     @EventSubscribe
     public synchronized void onAudioSourceClosed(AudioSourceClosedEvent event) {
         ClientAudioSource<?> source = event.getSource();
         voiceClient.getEventBus().unregister(voiceClient, source);
 
         sourceById.remove(source.getInfo().getId());
+    }
+
+    private void tickSelfSourceInfo() {
+        selfSourceInfoById.values()
+                .stream()
+                .filter((selfSourceInfo) -> System.currentTimeMillis() - selfSourceInfo.getLastUpdate() > TIMEOUT_MS)
+                .map((selfSourceInfo) -> selfSourceInfo.getSelfSourceInfo().getSourceInfo().getId())
+                .forEach(selfSourceInfoById::remove);
     }
 
     protected abstract ClientAudioSource<PlayerSourceInfo> createPlayerSource();

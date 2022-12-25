@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.source;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -22,6 +23,7 @@ import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.source.AlStreamSourceStoppedEvent;
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent;
+import su.plo.voice.api.client.event.audio.source.AudioSourceInitializedEvent;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.event.EventPriority;
@@ -35,6 +37,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -62,6 +65,9 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     protected Encryption encryption;
     protected AudioDecoder decoder;
     protected SourceGroup sourceGroup;
+
+    @Setter
+    protected long closeTimeoutMs = 500L;
 
     protected ScheduledFuture<?> endRequest;
 
@@ -153,6 +159,8 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         }
 
         this.sourceInfo = sourceInfo;
+
+        voiceClient.getEventBus().call(new AudioSourceInitializedEvent(this));
     }
 
     @Override
@@ -205,7 +213,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     @Override
     public boolean isActivated() {
         if (activated.get()) {
-            if (System.currentTimeMillis() - lastActivation > 500L) {
+            if (closeTimeoutMs > 0L && System.currentTimeMillis() - lastActivation > closeTimeoutMs) {
                 LOGGER.warn("Voice end packet was not received. Resetting audio source");
                 reset();
                 return false;
@@ -217,6 +225,11 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         return false;
     }
 
+    @Override
+    public Optional<SourceGroup> getSourceGroup() {
+        return Optional.ofNullable(sourceGroup);
+    }
+
     @EventSubscribe(priority = EventPriority.LOWEST)
     public void onSourceClosed(@NotNull AlSourceClosedEvent event) {
         if (closed.get() || !sourceGroup.getSources().contains(event.getSource())) return;
@@ -225,7 +238,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     public void onSourceStopped(@NotNull AlStreamSourceStoppedEvent event) {
-        if (closed.get() || !sourceGroup.getSources().contains(event.getSource())) return;
+        if (closed.get() || !sourceGroup.getSources().contains(event.getSource()) || closeTimeoutMs == 0L) return;
         reset();
     }
 

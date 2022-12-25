@@ -8,6 +8,7 @@ import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SelfAudioInfoPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
@@ -27,6 +28,7 @@ public class PacketUdpCodec {
         PACKETS.register(++lastPacketId, PingPacket.class);
         PACKETS.register(++lastPacketId, PlayerAudioPacket.class);
         PACKETS.register(++lastPacketId, SourceAudioPacket.class);
+        PACKETS.register(++lastPacketId, SelfAudioInfoPacket.class);
         PACKETS.register(0x100, CustomPacket.class);
     }
 
@@ -51,7 +53,7 @@ public class PacketUdpCodec {
     }
 
     public static Optional<PacketUdp> decode(ByteArrayDataInput in) throws IOException {
-        if (in.readInt() != MAGIC_NUMBER) return null; // bad packet
+        if (in.readInt() != MAGIC_NUMBER) return Optional.empty(); // bad packet
 
         Packet<?> packet = PACKETS.byType(in.readByte());
         if (packet != null) {

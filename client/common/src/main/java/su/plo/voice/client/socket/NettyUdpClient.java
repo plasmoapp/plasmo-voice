@@ -22,6 +22,7 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
@@ -53,15 +54,13 @@ public final class NettyUdpClient implements UdpClient {
     @Getter
     private boolean timedOut;
 
-    public NettyUdpClient(@NotNull PlasmoVoiceClient voiceClient,
+    public NettyUdpClient(@NotNull BaseVoiceClient voiceClient,
                           @NotNull ClientConfig config,
                           @NotNull UUID secret) {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
         this.config = checkNotNull(config, "config");
         this.secret = checkNotNull(secret, "secret");
         this.handler = new NettyUdpClientHandler(voiceClient, config, this);
-
-        voiceClient.getEventBus().register(voiceClient, this);
     }
 
     @Override

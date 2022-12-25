@@ -1,5 +1,6 @@
 package su.plo.voice.mod.client.audio.device.source;
 
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.lwjgl.openal.AL11;
@@ -23,7 +24,9 @@ public final class StreamAlSource extends BaseAlSource {
 
     private static final Logger LOGGER = LogManager.getLogger(StreamAlSource.class);
     private static final int DEFAULT_NUM_BUFFERS = 8;
-    private static final long TIMEOUT_MS = 25_000L;
+
+    @Setter
+    private long closeTimeoutMs = 25_000L;
 
     public static AlSource create(AlAudioDevice device, PlasmoVoiceClient client, boolean stereo, int numBuffers) {
         CompletableFuture<AlSource> future = new CompletableFuture<>();
@@ -211,6 +214,11 @@ public final class StreamAlSource extends BaseAlSource {
                         LOGGER.warn("Corrupted stream");
                         continue;
                     }
+
+                    if (availableBuffer[0] != -1) {
+                        AlSourceBufferUnqueuedEvent unqueuedEvent = new AlSourceBufferUnqueuedEvent(this, availableBuffer[0]);
+                        client.getEventBus().call(unqueuedEvent);
+                    }
                 }
 
                 if (availableBuffer[0] != -1 && fillAndPushBuffer(availableBuffer[0])) {
@@ -239,7 +247,7 @@ public final class StreamAlSource extends BaseAlSource {
                 AlUtil.checkErrors("Source play");
             }
 
-            if (System.currentTimeMillis() - lastBufferTime > TIMEOUT_MS) {
+            if (closeTimeoutMs > 0L && System.currentTimeMillis() - lastBufferTime > closeTimeoutMs) {
                 LOGGER.info("Stream timed out. Closing...");
                 close();
                 break;
@@ -276,7 +284,12 @@ public final class StreamAlSource extends BaseAlSource {
         if (AlUtil.checkErrors("Assigning buffer data")) return false;
 
         AL11.alSourceQueueBuffers(pointer, new int[]{ buffer });
-        return !AlUtil.checkErrors("Queue buffer data");
+        if (AlUtil.checkErrors("Queue buffer data")) return false;
+
+        AlSourceBufferQueuedEvent event = new AlSourceBufferQueuedEvent(this, byteBuffer, buffer);
+        client.getEventBus().call(event);
+
+        return true;
     }
 
     private void removeProcessedBuffers() {

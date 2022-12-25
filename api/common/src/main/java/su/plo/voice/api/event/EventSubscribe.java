@@ -24,4 +24,11 @@ public @interface EventSubscribe {
      * @return the priority
      */
     EventPriority priority() default EventPriority.NORMAL;
+
+    /**
+     * If the event is cancelled, subscribers with ignoreCancelled = false will not be called.
+     *
+     * @return true if the subscriber should ignore cancelled events
+     */
+    boolean ignoreCancelled() default true;
 }

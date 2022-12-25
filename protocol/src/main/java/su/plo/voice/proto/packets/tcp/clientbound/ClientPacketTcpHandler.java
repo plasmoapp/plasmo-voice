@@ -23,6 +23,8 @@ public interface ClientPacketTcpHandler extends PacketTcpHandler {
 
     void handle(@NotNull SourceInfoPacket packet);
 
+    void handle(@NotNull SelfSourceInfoPacket packet);
+
     void handle(@NotNull SourceLineRegisterPacket packet);
 
     void handle(@NotNull SourceLineUnregisterPacket packet);

@@ -1,4 +1,4 @@
-package su.plo.voice.proto.packets.udp.bothbound;
+package su.plo.voice.proto.packets.tcp.clientbound;
 
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
@@ -6,40 +6,34 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import su.plo.voice.proto.data.audio.source.SelfSourceInfo;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.udp.PacketUdpHandler;
 
 import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
-public class CustomPacket implements Packet<PacketUdpHandler> {
+@NoArgsConstructor
+@ToString // todo: rename?
+public final class SelfSourceInfoPacket implements Packet<ClientPacketTcpHandler> {
 
     @Getter
-    private String addonId;
-    @Getter
-    private byte[] payload;
+    private SelfSourceInfo sourceInfo;
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
-        this.addonId = in.readUTF();
+        this.sourceInfo = new SelfSourceInfo();
+        sourceInfo.deserialize(in);
     }
 
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
-        checkNotNull(addonId, "addonId cannot be null");
-        checkNotNull(payload, "payload cannot be null");
-
-        out.writeUTF(addonId);
-        out.writeInt(payload.length);
-        out.write(payload);
+        checkNotNull(this.sourceInfo, "sourceInfo").serialize(out);
     }
 
     @Override
-    public void handle(PacketUdpHandler handler) {
+    public void handle(ClientPacketTcpHandler handler) {
         handler.handle(this);
     }
 }

@@ -153,7 +153,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         MinecraftClientLib minecraft = getMinecraft();
 
-        this.distanceVisualizer = new VoiceDistanceVisualizer(minecraft, config);
+        this.distanceVisualizer = new VoiceDistanceVisualizer(minecraft, this, config);
 
         this.deviceManager = new VoiceDeviceManager(this, config);
         this.sourceLineManager = new VoiceClientSourceLineManager(config);
@@ -189,6 +189,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     protected void onServerDisconnect() {
+        System.out.println("disconnect");
         udpClientManager.removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
         getServerConnection().ifPresent(ServerConnection::close);
         getMinecraft().onServerDisconnect();

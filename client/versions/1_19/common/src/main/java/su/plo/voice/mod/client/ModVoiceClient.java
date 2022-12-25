@@ -14,7 +14,9 @@ import su.plo.lib.mod.client.ModClientLib;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.connection.ServerConnection;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
+import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.mod.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.mod.client.audio.device.AlOutputDeviceFactory;
@@ -88,6 +90,12 @@ public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends 
     protected void onServerDisconnect() {
         super.onServerDisconnect();
         handler.close();
+    }
+
+    @EventSubscribe
+    public void onKeyPressed(@NotNull KeyPressedEvent event) {
+        if (minecraftLib.getClientPlayer().isEmpty()) return;
+        if (menuKey.consumeClick()) openSettings();
     }
 
     @Override

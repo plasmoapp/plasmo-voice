@@ -4,7 +4,6 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -12,7 +11,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
-import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.fabric.client.connection.FabricClientChannelHandler;
 import su.plo.voice.mod.client.ModVoiceClient;
@@ -34,14 +32,7 @@ public final class FabricVoiceClient extends ModVoiceClient<FabricClientChannelH
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
 
-        var menuKey = KeyBindingHelper.registerKeyBinding(this.menuKey);
-
-        ClientTickEvents.END_CLIENT_TICK.register(minecraft -> {
-            final LocalPlayer player = minecraft.player;
-            if (player == null) return;
-
-            if (menuKey.consumeClick()) openSettings();
-        });
+        KeyBindingHelper.registerKeyBinding(this.menuKey);
     }
 
     @Override

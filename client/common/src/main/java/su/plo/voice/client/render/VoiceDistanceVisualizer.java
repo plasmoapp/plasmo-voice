@@ -8,6 +8,8 @@ import su.plo.lib.api.client.gui.GuiRender;
 import su.plo.lib.api.client.render.MinecraftCamera;
 import su.plo.lib.api.client.render.MinecraftTesselator;
 import su.plo.lib.api.client.render.VertexBuilder;
+import su.plo.voice.api.client.PlasmoVoiceClient;
+import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
@@ -20,6 +22,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     private static final int SPHERE_SLICE = 36;
 
     private final MinecraftClientLib minecraft;
+    private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
 
     private int color = 0x00a000;
@@ -30,6 +33,10 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     @Override
     public void render(int radius, int color) {
         if (!config.getAdvanced().getVisualizeVoiceDistance().value()) return;
+
+        VoiceDistanceRenderEvent event = new VoiceDistanceRenderEvent(this, radius, color);
+        voiceClient.getEventBus().call(event);
+        if (event.isCancelled()) return;
 
         this.color = color;
         this.radius = radius;

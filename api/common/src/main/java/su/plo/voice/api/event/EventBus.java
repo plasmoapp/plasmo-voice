@@ -7,8 +7,10 @@ public interface EventBus {
      * Calls the event
      *
      * @param event the event to call
+     *
+     * @return false if the event was cancelled
      */
-    <E extends Event> void call(@NotNull E event);
+    <E extends Event> boolean call(@NotNull E event);
 
     /**
      * Calls the event asynchronously
