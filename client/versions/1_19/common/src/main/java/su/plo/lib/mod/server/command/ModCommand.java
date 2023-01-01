@@ -18,6 +18,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
+import org.apache.logging.log4j.LogManager;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.chat.MinecraftTextStyle;
@@ -66,7 +67,12 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
             return 1;
         }
 
-        command.execute(source, args);
+        try {
+            command.execute(source, args);
+        } catch (Exception e) {
+            LogManager.getLogger().error("Error while executing command", e);
+            throw e;
+        }
         return 1;
     }
 
