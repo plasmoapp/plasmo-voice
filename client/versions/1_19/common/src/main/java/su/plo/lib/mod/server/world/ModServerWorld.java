@@ -1,7 +1,9 @@
 package su.plo.lib.mod.server.world;
 
 import lombok.RequiredArgsConstructor;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
 
 import java.util.Objects;
@@ -9,7 +11,13 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public final class ModServerWorld implements MinecraftServerWorld {
 
+    private final ResourceLocation key;
     private final ServerLevel level;
+
+    @Override
+    public @NotNull String getKey() {
+        return key.toString();
+    }
 
     @Override
     public <T> T getInstance() {

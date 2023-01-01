@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public final class PaperServerLib implements MinecraftServerLib {
@@ -68,6 +69,17 @@ public final class PaperServerLib implements MinecraftServerLib {
             throw new IllegalArgumentException("instance is not " + World.class);
 
         return worldByInstance.computeIfAbsent(((World) instance), PaperServerWorld::new);
+    }
+
+    @Override
+    public Collection<MinecraftServerWorld> getWorlds() {
+        if (Bukkit.getWorlds().size() == worldByInstance.size()) {
+            return worldByInstance.values();
+        }
+
+        return Bukkit.getWorlds().stream()
+                .map(this::getWorld)
+                .collect(Collectors.toList());
     }
 
     @Override

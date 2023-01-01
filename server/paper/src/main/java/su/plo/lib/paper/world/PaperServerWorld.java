@@ -2,6 +2,7 @@ package su.plo.lib.paper.world;
 
 import lombok.RequiredArgsConstructor;
 import org.bukkit.World;
+import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
 
 import java.util.Objects;
@@ -10,6 +11,11 @@ import java.util.Objects;
 public final class PaperServerWorld implements MinecraftServerWorld {
 
     private final World level;
+
+    @Override
+    public @NotNull String getKey() {
+        return level.getKey().toString();
+    }
 
     @Override
     public <T> T getInstance() {

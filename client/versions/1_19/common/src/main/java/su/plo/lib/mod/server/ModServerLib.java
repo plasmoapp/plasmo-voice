@@ -32,6 +32,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
 public final class ModServerLib implements MinecraftServerLib {
@@ -77,7 +78,21 @@ public final class ModServerLib implements MinecraftServerLib {
         if (!(instance instanceof ServerLevel))
             throw new IllegalArgumentException("instance is not " + ServerLevel.class);
 
-        return worldByInstance.computeIfAbsent(((ServerLevel) instance), ModServerWorld::new);
+        return worldByInstance.computeIfAbsent(
+                ((ServerLevel) instance),
+                (level) -> new ModServerWorld(level.dimension().location(), level)
+        );
+    }
+
+    @Override
+    public Collection<MinecraftServerWorld> getWorlds() {
+        if (server.levelKeys().size() == worldByInstance.size()) {
+            return worldByInstance.values();
+        }
+
+        return StreamSupport.stream(server.getAllLevels().spliterator(), false)
+                .map(this::getWorld)
+                .toList();
     }
 
     @Override

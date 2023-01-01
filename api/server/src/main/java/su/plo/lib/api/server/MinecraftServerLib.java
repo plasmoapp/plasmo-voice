@@ -24,6 +24,8 @@ public interface MinecraftServerLib {
 
     @NotNull MinecraftServerWorld getWorld(@NotNull Object instance);
 
+    Collection<MinecraftServerWorld> getWorlds();
+
     @NotNull MinecraftServerPlayer getPlayerByInstance(@NotNull Object instance);
 
     Optional<MinecraftServerPlayer> getPlayerByName(@NotNull String name);
