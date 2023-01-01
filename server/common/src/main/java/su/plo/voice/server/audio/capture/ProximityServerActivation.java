@@ -77,7 +77,7 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
                         .orElse(false)
         ) return;
 
-        getPlayerSource(player, packet.getActivationId(), true)
+        getPlayerSource(player, packet.getActivationId(), null)
                 .ifPresent((source) -> sendAudioEndPacket(source, packet));
     }
 }

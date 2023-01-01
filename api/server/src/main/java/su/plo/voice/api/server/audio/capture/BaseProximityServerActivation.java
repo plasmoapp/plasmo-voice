@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.voice.api.event.EventPriority;
 import su.plo.voice.api.event.EventSubscribe;
@@ -122,7 +123,7 @@ public abstract class BaseProximityServerActivation {
 
     protected Optional<ServerPlayerSource> getPlayerSource(@NotNull VoicePlayer player,
                                                          @NotNull UUID activationId,
-                                                         boolean isStereo) {
+                                                         @Nullable Boolean isStereo) {
         if (!activationId.equals(this.activationId)) return Optional.empty();
 
         Optional<ServerActivation> activation = voiceServer.getActivationManager()
@@ -133,16 +134,15 @@ public abstract class BaseProximityServerActivation {
                 .getLineById(sourceLineId);
         if (!sourceLine.isPresent()) return Optional.empty();
 
-        isStereo = isStereo && activation.get().isStereoSupported();
         ServerPlayerSource source = voiceServer.getSourceManager().createPlayerSource(
                 voiceServer,
                 player,
                 sourceLine.get(),
                 "opus",
-                isStereo
+                false
         );
         source.setLine(sourceLine.get());
-        source.setStereo(isStereo);
+        if (isStereo != null) source.setStereo(isStereo && activation.get().isStereoSupported());
 
         return Optional.of(source);
     }
