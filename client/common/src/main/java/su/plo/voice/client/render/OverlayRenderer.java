@@ -15,6 +15,8 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.overlay.OverlayPosition;
 import su.plo.voice.client.config.overlay.OverlaySourceState;
+import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 import java.util.Map;
 import java.util.UUID;
@@ -53,7 +55,19 @@ public final class OverlayRenderer {
                 boolean isActivated = source.isActivated();
 
                 if (isActivated || (sourceLine.hasPlayers() && sourceState == OverlaySourceState.ALWAYS)) {
-                    toRender.put(source.getInfo().getId(), isActivated);
+                    SourceInfo sourceInfo = source.getInfo();
+
+                    UUID sourceId = null;
+                    if (sourceInfo instanceof DirectSourceInfo) {
+                        DirectSourceInfo directSourceInfo = (DirectSourceInfo) sourceInfo;
+                        if (directSourceInfo.getSenderId() != null) {
+                            sourceId = directSourceInfo.getSenderId();
+                        }
+                    }
+
+                    if (sourceId == null) sourceId = sourceInfo.getId();
+
+                    toRender.put(sourceId, isActivated);
                 }
             }
 
