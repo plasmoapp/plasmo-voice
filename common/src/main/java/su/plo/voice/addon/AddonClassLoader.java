@@ -3,10 +3,8 @@ package su.plo.voice.addon;
 import su.plo.voice.api.PlasmoVoice;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.nio.file.Path;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
@@ -24,14 +22,6 @@ public final class AddonClassLoader extends URLClassLoader {
 
     public void addToClassloaders() {
         loaders.add(this);
-    }
-
-    void addPath(Path path) {
-        try {
-            addURL(path.toUri().toURL());
-        } catch (MalformedURLException e) {
-            throw new AssertionError(e);
-        }
     }
 
     @Override
