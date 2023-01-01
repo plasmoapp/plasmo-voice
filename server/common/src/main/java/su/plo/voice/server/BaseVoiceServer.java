@@ -244,6 +244,9 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     protected void registerDefaultCommandsAndPermissions() {
+        // load addons
+        loadAddons();
+
         // register permissions
         PermissionsManager permissions = getMinecraftServer().getPermissionsManager();
         permissions.clear();

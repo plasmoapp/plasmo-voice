@@ -134,7 +134,9 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Override
     protected void onInitialize() {
+        loadAddons();
         super.onInitialize();
+
         getMinecraft().onInitialize();
 
         try {
