@@ -15,6 +15,7 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
     protected final E instance;
 
     private final Pos3d position = new Pos3d();
+    private final Pos3d lookAngle = new Pos3d();
 
     @Override
     public int getId() {
@@ -38,6 +39,20 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
         position.setZ(instance.position().z());
 
         return position;
+    }
+
+    @Override
+    public @NotNull Pos3d getLookAngle() {
+        return getLookAngle(lookAngle);
+    }
+
+    @Override
+    public @NotNull Pos3d getLookAngle(@NotNull Pos3d lookAngle) {
+        lookAngle.setX(instance.getLookAngle().x());
+        lookAngle.setY(instance.getLookAngle().y());
+        lookAngle.setZ(instance.getLookAngle().z());
+
+        return lookAngle;
     }
 
     @Override

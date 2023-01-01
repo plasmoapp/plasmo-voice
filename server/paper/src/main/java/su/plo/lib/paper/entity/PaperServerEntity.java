@@ -3,6 +3,7 @@ package su.plo.lib.paper.entity;
 import lombok.RequiredArgsConstructor;
 import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.entity.MinecraftPlayer;
 import su.plo.lib.api.server.MinecraftServerLib;
@@ -20,6 +21,7 @@ public class PaperServerEntity<E extends LivingEntity> implements MinecraftServe
     protected final E instance;
 
     private final Pos3d position = new Pos3d();
+    private final Pos3d lookAngle = new Pos3d();
 
     private Location location;
 
@@ -47,6 +49,21 @@ public class PaperServerEntity<E extends LivingEntity> implements MinecraftServe
         position.setZ(location.getZ());
 
         return position;
+    }
+
+    @Override
+    public @NotNull Pos3d getLookAngle() {
+        return getLookAngle(lookAngle);
+    }
+
+    @Override
+    public @NotNull Pos3d getLookAngle(@NotNull Pos3d lookAngle) {
+        Vector vector = instance.getLocation().getDirection();
+        lookAngle.setX(vector.getX());
+        lookAngle.setY(vector.getY());
+        lookAngle.setZ(vector.getZ());
+
+        return lookAngle;
     }
 
     @Override

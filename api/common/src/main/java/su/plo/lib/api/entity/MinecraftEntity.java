@@ -18,6 +18,10 @@ public interface MinecraftEntity {
 
     @NotNull Pos3d getPosition(@NotNull Pos3d position);
 
+    @NotNull Pos3d getLookAngle();
+
+    @NotNull Pos3d getLookAngle(@NotNull Pos3d lookAngle);
+
     double getEyeHeight();
 
     float getHitBoxWidth();
