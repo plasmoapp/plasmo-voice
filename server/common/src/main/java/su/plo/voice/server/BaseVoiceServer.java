@@ -20,6 +20,7 @@ import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.VoiceServerConfigLoadedEvent;
 import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
+import su.plo.voice.api.server.event.command.CommandsRegisterEvent;
 import su.plo.voice.api.server.event.mute.MuteStorageCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.mute.MuteManager;
@@ -32,8 +33,9 @@ import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.command.*;
-import su.plo.voice.server.config.ServerLanguages;
+import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.config.VoiceServerConfig;
+import su.plo.voice.server.config.VoiceServerLanguages;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpConnectionManager;
 import su.plo.voice.server.mute.VoiceMuteManager;
@@ -85,7 +87,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected VoiceServerConfig config;
     @Getter
-    protected ServerLanguages languages;
+    protected VoiceServerLanguages languages;
 
     @Override
     protected void onInitialize() {
@@ -193,8 +195,13 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 restartUdpServer = !config.getHost().equals(oldConfig.getHost());
             }
 
-            this.languages = new ServerLanguages(this);
-            languages.load();
+            this.languages = new VoiceServerLanguages();
+            languages.register(
+                    this::getResource,
+                    new File(getConfigFolder(), "languages"),
+                    ServerLanguage.class,
+                    "en_us"
+            );
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }
@@ -257,6 +264,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         // register commands
         MinecraftCommandManager commandManager = getMinecraftServer().getCommandManager();
         commandManager.clear();
+
+        eventBus.call(new CommandsRegisterEvent(this, commandManager));
 
         commandManager.register("vlist", new VoiceListCommand(this));
         commandManager.register("vrc", new VoiceReconnectCommand(this));

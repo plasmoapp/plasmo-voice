@@ -7,6 +7,7 @@ import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.config.ServerConfig;
+import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.mute.MuteManager;
@@ -97,4 +98,11 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
      * @return {@link ServerConfig} if its loaded
      */
     Optional<ServerConfig> getConfig();
+
+    /**
+     * Get the {@link ServerLanguages}
+     *
+     * @return {@link ServerLanguages}
+     */
+    ServerLanguages getLanguages();
 }
