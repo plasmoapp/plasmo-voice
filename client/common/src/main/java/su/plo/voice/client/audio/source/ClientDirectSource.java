@@ -1,8 +1,7 @@
-package su.plo.voice.mod.client.audio.source;
+package su.plo.voice.client.audio.source;
 
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
@@ -10,11 +9,15 @@ import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.audio.device.source.DeviceSource;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
+import su.plo.voice.proto.data.pos.Pos3d;
 
-public final class ModClientDirectSource extends ModClientAudioSource<DirectSourceInfo> {
+public final class ClientDirectSource extends BaseClientAudioSource<DirectSourceInfo> {
 
-    public ModClientDirectSource(@NotNull PlasmoVoiceClient voiceClient, ClientConfig config) {
-        super(voiceClient, config);
+    public ClientDirectSource(@NotNull MinecraftClientLib minecraft,
+                              @NotNull PlasmoVoiceClient voiceClient,
+                              @NotNull ClientConfig config,
+                              @NotNull SoundOcclusionSupplier soundOcclusionSupplier) {
+        super(minecraft, voiceClient, config, soundOcclusionSupplier);
     }
 
     @Override
@@ -31,7 +34,7 @@ public final class ModClientDirectSource extends ModClientAudioSource<DirectSour
                 position[1] = (float) sourceInfo.getRelativePosition().getY();
                 position[2] = (float) sourceInfo.getRelativePosition().getZ();
             } else {
-                position = getAbsoluteSourcePosition(position);
+                return getAbsoluteSourcePosition(position);
             }
         } else {
             position[0] = 0F;
@@ -52,13 +55,21 @@ public final class ModClientDirectSource extends ModClientAudioSource<DirectSour
         return lookAngle;
     }
 
-    private float[] getAbsoluteSourcePosition(float[] position) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null || sourceInfo.getRelativePosition() == null) return position;
+    @Override
+    protected boolean shouldCalculateOcclusion() {
+        return false; // todo: relative position occlusion
+    }
 
-        position[0] = (float) (player.getX() + sourceInfo.getRelativePosition().getX());
-        position[1] = (float) (player.getEyeY() + sourceInfo.getRelativePosition().getY());
-        position[2] = (float) (player.getZ() + sourceInfo.getRelativePosition().getZ());
+    private float[] getAbsoluteSourcePosition(float[] position) {
+        if (sourceInfo.getRelativePosition() == null) return position;
+
+        minecraft.getClientPlayer().ifPresent((player) -> {
+            Pos3d playerPosition = player.getPosition();
+
+            position[0] = (float) (playerPosition.getX() + sourceInfo.getRelativePosition().getX());
+            position[1] = (float) (playerPosition.getY() + player.getEyeHeight() + sourceInfo.getRelativePosition().getY());
+            position[2] = (float) (playerPosition.getZ() + sourceInfo.getRelativePosition().getZ());
+        });
 
         return position;
     }

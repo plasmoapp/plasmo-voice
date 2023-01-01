@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
+import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -33,6 +34,7 @@ import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.codec.AudioDecoderPlc;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
+import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
@@ -50,8 +52,11 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     private static final float[] ZERO_VECTOR = new float[]{0F, 0F, 0F};
     protected static final Logger LOGGER = LogManager.getLogger();
 
+    protected final MinecraftClientLib minecraft;
     protected final PlasmoVoiceClient voiceClient;
     protected final ClientConfig config;
+    protected final SoundOcclusionSupplier soundOcclusionSupplier;
+
     protected final ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
 
     protected final float[] playerPosition = new float[3];
@@ -78,9 +83,14 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     protected AtomicBoolean resetted = new AtomicBoolean(false);
     protected AtomicBoolean activated = new AtomicBoolean(false);
 
-    public BaseClientAudioSource(@NotNull PlasmoVoiceClient voiceClient, ClientConfig config) {
+    public BaseClientAudioSource(@NotNull MinecraftClientLib minecraft,
+                                 @NotNull PlasmoVoiceClient voiceClient,
+                                 @NotNull ClientConfig config,
+                                 @NotNull SoundOcclusionSupplier soundOcclusionSupplier) {
+        this.minecraft = minecraft;
         this.voiceClient = voiceClient;
         this.config = config;
+        this.soundOcclusionSupplier = soundOcclusionSupplier;
     }
 
     @Override
@@ -280,9 +290,9 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
 
         double volume = config.getVoice().getVolume().value() * sourceVolume.value() * lineVolume.value();
 
-        if (config.getVoice().getSoundOcclusion().value()) {
+        if (shouldCalculateOcclusion()) {
             // todo: disable occlusion via client addon?
-            double occlusion = getOccludedPercent(position);
+            double occlusion = soundOcclusionSupplier.getOccludedPercent(position);
             if (lastOcclusion >= 0) {
                 if (occlusion > lastOcclusion) {
                     lastOcclusion = Math.max(lastOcclusion + 0.05, 0.0D);
@@ -438,9 +448,22 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         return config.getAdvanced().getDirectionalSourcesAngle().value();
     }
 
-    protected abstract double getOccludedPercent(float[] position);
+    protected float[] getPlayerPosition(float[] position) {
+        minecraft.getClientPlayer()
+                .ifPresent(player -> {
+                    Pos3d playerPosition = player.getPosition();
 
-    protected abstract float[] getPlayerPosition(float[] position);
+                    position[0] = (float) playerPosition.getX();
+                    position[1] = (float) (playerPosition.getY() + player.getEyeHeight());
+                    position[2] = (float) playerPosition.getZ();
+                });
+
+        return position;
+    }
+
+    protected boolean shouldCalculateOcclusion() {
+        return config.getVoice().getSoundOcclusion().value();
+    }
 
     protected abstract float[] getPosition(float[] position);
 

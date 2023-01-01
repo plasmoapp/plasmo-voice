@@ -41,13 +41,16 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
     protected final MinecraftClientLib minecraft;
     protected final BaseVoiceClient voiceClient;
     protected final ClientConfig config;
+    protected final SoundOcclusionSupplier soundOcclusionSupplier;
 
     public BaseClientSourceManager(@NotNull MinecraftClientLib minecraft,
                                    @NotNull BaseVoiceClient voiceClient,
-                                   @NotNull ClientConfig config) {
+                                   @NotNull ClientConfig config,
+                                   @NotNull SoundOcclusionSupplier soundOcclusionSupplier) {
         this.minecraft = minecraft;
         this.voiceClient = voiceClient;
         this.config = config;
+        this.soundOcclusionSupplier = soundOcclusionSupplier;
 
         voiceClient.getExecutor().scheduleAtFixedRate(
                 this::tickSelfSourceInfo,
@@ -211,11 +214,27 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
                 .forEach(selfSourceInfoById::remove);
     }
 
-    protected abstract ClientAudioSource<PlayerSourceInfo> createPlayerSource();
+    private ClientAudioSource<PlayerSourceInfo> createPlayerSource() {
+        ClientAudioSource<PlayerSourceInfo> source = new ClientPlayerSource(minecraft, voiceClient, config, soundOcclusionSupplier);
+        voiceClient.getEventBus().register(voiceClient, source);
+        return source;
+    }
 
-    protected abstract ClientAudioSource<EntitySourceInfo> createEntitySource();
+    private ClientAudioSource<EntitySourceInfo> createEntitySource() {
+        ClientAudioSource<EntitySourceInfo> source = new ClientEntitySource(minecraft, voiceClient, config, soundOcclusionSupplier);
+        voiceClient.getEventBus().register(voiceClient, source);
+        return source;
+    }
 
-    protected abstract ClientAudioSource<DirectSourceInfo> createDirectSource();
+    private ClientAudioSource<DirectSourceInfo> createDirectSource() {
+        ClientAudioSource<DirectSourceInfo> source = new ClientDirectSource(minecraft, voiceClient, config, soundOcclusionSupplier);
+        voiceClient.getEventBus().register(voiceClient, source);
+        return source;
+    }
 
-    protected abstract ClientAudioSource<StaticSourceInfo> createStaticSource();
+    protected ClientAudioSource<StaticSourceInfo> createStaticSource() {
+        ClientAudioSource<StaticSourceInfo> source = new ClientStaticSource(minecraft, voiceClient, config, soundOcclusionSupplier);
+        voiceClient.getEventBus().register(voiceClient, source);
+        return source;
+    }
 }

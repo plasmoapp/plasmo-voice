@@ -1,14 +1,18 @@
-package su.plo.voice.mod.client.audio.source;
+package su.plo.voice.client.audio.source;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 
-public final class ModClientStaticSource extends ModClientAudioSource<StaticSourceInfo> {
+public final class ClientStaticSource extends BaseClientAudioSource<StaticSourceInfo> {
 
-    public ModClientStaticSource(@NotNull PlasmoVoiceClient voiceClient, ClientConfig config) {
-        super(voiceClient, config);
+    public ClientStaticSource(@NotNull MinecraftClientLib minecraft,
+                              @NotNull PlasmoVoiceClient voiceClient,
+                              @NotNull ClientConfig config,
+                              @NotNull SoundOcclusionSupplier soundOcclusionSupplier) {
+        super(minecraft, voiceClient, config, soundOcclusionSupplier);
     }
 
     @Override
