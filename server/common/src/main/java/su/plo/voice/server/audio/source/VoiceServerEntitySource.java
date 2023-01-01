@@ -11,7 +11,7 @@ import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerEntitySource;
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
 
-public final class VoiceServerEntitySource extends BaseServerSource<EntitySourceInfo> implements ServerEntitySource {
+public final class VoiceServerEntitySource extends VoiceServerPositionalSource<EntitySourceInfo> implements ServerEntitySource {
 
     @Getter
     private final MinecraftServerEntity entity;

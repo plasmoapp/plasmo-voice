@@ -27,6 +27,12 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
 
     public ServerSourceAudioPacketEvent(@NotNull ServerAudioSource source,
                                         @NotNull SourceAudioPacket packet,
+                                        @Nullable UUID activationId) {
+        this(source, packet, (short) -1, activationId);
+    }
+
+    public ServerSourceAudioPacketEvent(@NotNull ServerAudioSource source,
+                                        @NotNull SourceAudioPacket packet,
                                         short distance,
                                         @Nullable UUID activationId) {
         this.source = source;

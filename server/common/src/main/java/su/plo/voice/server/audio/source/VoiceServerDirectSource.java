@@ -1,9 +1,7 @@
 package su.plo.voice.server.audio.source;
 
-import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
@@ -11,34 +9,33 @@ import su.plo.voice.api.server.audio.source.ServerDirectSource;
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 public final class VoiceServerDirectSource extends BaseServerSource<DirectSourceInfo> implements ServerDirectSource {
-
-    @Getter
-    private final VoicePlayer player;
 
     private VoicePlayer sender;
     private Pos3d relativePosition;
     private Pos3d lookAngle;
     private boolean cameraRelative = true;
 
+    private Supplier<Collection<VoicePlayer>> playersSupplier;
+
     public VoiceServerDirectSource(@NotNull PlasmoVoiceServer voiceServer,
                                    @NotNull AddonContainer addon,
                                    @NotNull ServerSourceLine line,
                                    @Nullable String codec,
-                                   boolean stereo,
-                                   @NotNull VoicePlayer player) {
+                                   boolean stereo) {
         super(voiceServer, addon, UUID.randomUUID(), line, codec, stereo);
-        this.player = player;
     }
 
     @Override
@@ -86,6 +83,11 @@ public final class VoiceServerDirectSource extends BaseServerSource<DirectSource
     }
 
     @Override
+    public void setPlayers(@Nullable Supplier<Collection<VoicePlayer>> playersSupplier) {
+        this.playersSupplier = playersSupplier;
+    }
+
+    @Override
     public @NotNull DirectSourceInfo getInfo() {
         return new DirectSourceInfo(
                 addon.getId(),
@@ -104,42 +106,59 @@ public final class VoiceServerDirectSource extends BaseServerSource<DirectSource
     }
 
     @Override
-    public @NotNull ServerPos3d getPosition() {
-        return player.getInstance().getServerPosition();
+    public boolean sendAudioPacket(@NotNull SourceAudioPacket packet) {
+        return sendAudioPacket(packet, null);
     }
 
     @Override
-    public void addFilter(Predicate<VoicePlayer> filter) {
-        throw new IllegalStateException("This source type is not supports filters");
-    }
-
-    @Override
-    public void removeFilter(Predicate<VoicePlayer> filter) {
-        throw new IllegalStateException("This source type is not supports filters");
-    }
-
-    @Override
-    public boolean sendAudioPacket(@NotNull SourceAudioPacket packet, short distance, @Nullable UUID activationId) {
-        ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, distance, activationId);
+    public boolean sendAudioPacket(@NotNull SourceAudioPacket packet, @Nullable UUID activationId) {
+        ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, activationId);
         if (!voiceServer.getEventBus().call(event)) return false;
 
-        voiceServer.getUdpConnectionManager()
-                .getConnectionByUUID(player.getInstance().getUUID())
-                .ifPresent(connection -> connection.sendPacket(packet));
+        packet.setSourceState((byte) state.get());
+
+        if (dirty.compareAndSet(true, false))
+            sendPacket(new SourceInfoPacket(getInfo()));
+
+        if (playersSupplier != null) {
+            for (VoicePlayer player : playersSupplier.get()) {
+                if (testPlayer(player)) continue;
+
+                voiceServer.getUdpConnectionManager().getConnectionByUUID(player.getInstance().getUUID())
+                        .ifPresent(connection -> connection.sendPacket(packet));
+            }
+        } else {
+            for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
+                if (!testPlayer(connection.getPlayer())) continue;
+                connection.sendPacket(packet);
+            }
+        }
+
         return true;
     }
 
     @Override
-    public boolean sendPacket(Packet<?> packet, short distance) {
-        ServerSourcePacketEvent event = new ServerSourcePacketEvent(this, packet, distance);
+    public boolean sendPacket(Packet<?> packet) {
+        ServerSourcePacketEvent event = new ServerSourcePacketEvent(this, packet);
         if (!voiceServer.getEventBus().call(event)) return false;
 
-        player.sendPacket(packet);
+        if (playersSupplier != null) {
+            for (VoicePlayer player : playersSupplier.get()) {
+                if (testPlayer(player)) continue;
+                player.sendPacket(packet);
+            }
+        } else {
+            for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
+                if (!testPlayer(connection.getPlayer())) continue;
+                connection.getPlayer().sendPacket(packet);
+            }
+        }
+
         return true;
     }
 
     private void updateSourceInfo() {
-        player.sendPacket(new SourceInfoPacket(getInfo()));
+        sendPacket(new SourceInfoPacket(getInfo()));
     }
 }
 

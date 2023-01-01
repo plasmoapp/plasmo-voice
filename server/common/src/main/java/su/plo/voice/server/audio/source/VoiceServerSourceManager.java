@@ -122,7 +122,6 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
-                                                          @NotNull VoicePlayer player,
                                                           @NotNull ServerSourceLine line,
                                                           @Nullable String codec,
                                                           boolean stereo) {
@@ -134,8 +133,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
                 addon.get(),
                 line,
                 codec,
-                stereo,
-                player
+                stereo
         );
         sourceById.put(source.getId(), source);
 

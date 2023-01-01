@@ -12,7 +12,7 @@ import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 
 import java.util.UUID;
 
-public final class VoiceServerStaticSource extends BaseServerSource<StaticSourceInfo> implements ServerStaticSource {
+public final class VoiceServerStaticSource extends VoiceServerPositionalSource<StaticSourceInfo> implements ServerStaticSource {
 
     @Getter
     private ServerPos3d position;

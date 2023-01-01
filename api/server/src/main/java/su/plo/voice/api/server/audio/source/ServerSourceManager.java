@@ -32,7 +32,6 @@ public interface ServerSourceManager extends AudioSourceManager<ServerAudioSourc
                                                    boolean stereo);
 
     @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
-                                                   @NotNull VoicePlayer player,
                                                    @NotNull ServerSourceLine line,
                                                    @Nullable String codec,
                                                    boolean stereo);

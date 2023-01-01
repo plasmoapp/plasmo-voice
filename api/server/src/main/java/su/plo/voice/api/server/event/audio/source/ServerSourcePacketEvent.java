@@ -21,6 +21,11 @@ public final class ServerSourcePacketEvent extends EventCancellableBase {
     private short distance;
 
     public ServerSourcePacketEvent(@NotNull ServerAudioSource source,
+                                   @NotNull Packet<?> packet) {
+        this(source, packet, (short) -1);
+    }
+
+    public ServerSourcePacketEvent(@NotNull ServerAudioSource source,
                                    @NotNull Packet<?> packet,
                                    short distance) {
         this.source = source;

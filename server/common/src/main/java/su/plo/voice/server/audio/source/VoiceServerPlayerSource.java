@@ -10,7 +10,7 @@ import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 
-public final class VoiceServerPlayerSource extends BaseServerSource<PlayerSourceInfo> implements ServerPlayerSource {
+public final class VoiceServerPlayerSource extends VoiceServerPositionalSource<PlayerSourceInfo> implements ServerPlayerSource {
 
     private final VoicePlayer player;
     private final ServerPos3d playerPosition = new ServerPos3d();
