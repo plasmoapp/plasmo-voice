@@ -359,7 +359,9 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
 
     @Override
     public Set<Player> getConnectedPlayers() {
-        return SocketServerUDP.clients.keySet();
+        return SocketServerUDP.clients.values().stream()
+                .map(SocketClientUDP::getPlayer)
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -375,7 +377,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
         }
 
         try {
-            SocketServerUDP.sendTo(bytes, SocketServerUDP.clients.get(recipient));
+            SocketServerUDP.sendTo(bytes, SocketServerUDP.clients.get(recipient.getUniqueId()));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -415,7 +417,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
     public boolean hasVoiceChat(UUID player) {
         return SocketServerUDP.clients.entrySet()
                 .stream()
-                .anyMatch(entry -> entry.getKey().getUniqueId().equals(player));
+                .anyMatch(entry -> entry.getKey().equals(player));
     }
 
     @Nullable

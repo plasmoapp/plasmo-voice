@@ -1,5 +1,6 @@
 package su.plo.voice.socket;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
@@ -14,7 +15,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class SocketServerUDP extends Thread {
-    public static final ConcurrentHashMap<Player, SocketClientUDP> clients = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<UUID, SocketClientUDP> clients = new ConcurrentHashMap<>();
     public static final ConcurrentHashMap<InetSocketAddress, SocketClientUDP> clientByAddress = new ConcurrentHashMap<>();
 
     public static final Map<UUID, Long> talking = new HashMap<>();
@@ -44,11 +45,13 @@ public class SocketServerUDP extends Thread {
         final Location playerLocation = player.getLocation();
         final Location receiverLocation = playerLocation.clone();
 
-        SocketServerUDP.clients.forEach((receiver, sock) -> {
-            if (!player.getUniqueId().equals(receiver.getUniqueId())) {
+        SocketServerUDP.clients.forEach((receiverId, sock) -> {
+            if (!player.getUniqueId().equals(receiverId)) {
                 if (maxDistanceSquared > 0) {
-                    receiver.getLocation(receiverLocation);
+                    Player receiver = Bukkit.getPlayer(receiverId);
+                    if (receiver == null) return;
 
+                    receiver.getLocation(receiverLocation);
                     if (!playerLocation.getWorld().getName().equals(receiverLocation.getWorld().getName())) {
                         return;
                     }

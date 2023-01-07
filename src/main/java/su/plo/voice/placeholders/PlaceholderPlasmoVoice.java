@@ -29,7 +29,7 @@ public class PlaceholderPlasmoVoice extends PlaceholderExpansion {
     @Override
     public String onPlaceholderRequest(Player player, @NotNull String params) {
         if (params.equalsIgnoreCase("installed") && player != null) {
-            return SocketServerUDP.clients.containsKey(player) ? "true" : "false";
+            return SocketServerUDP.clients.containsKey(player.getUniqueId()) ? "true" : "false";
         } else if (params.equalsIgnoreCase("players")) {
             return String.valueOf(SocketServerUDP.clients.size());
         }

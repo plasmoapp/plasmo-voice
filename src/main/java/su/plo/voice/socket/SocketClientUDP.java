@@ -36,7 +36,7 @@ public class SocketClientUDP {
     }
 
     public void close() {
-        if (SocketServerUDP.clients.containsKey(player)) {
+        if (SocketServerUDP.clients.containsKey(player.getUniqueId())) {
             // call event
             Bukkit.getScheduler().runTask(PlasmoVoice.getInstance(), () ->
                     Bukkit.getPluginManager().callEvent(new PlayerVoiceDisconnectedEvent(player)));
@@ -44,7 +44,7 @@ public class SocketClientUDP {
             if (!PlasmoVoice.getInstance().getConfig().getBoolean("disable_logs")) {
                 PlasmoVoice.getVoiceLogger().info("Remove client UDP: " + this.player.getName());
             }
-            SocketServerUDP.clients.remove(player);
+            SocketServerUDP.clients.remove(player.getUniqueId());
             SocketServerUDP.clientByAddress.remove(socketAddress);
         }
     }

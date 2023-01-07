@@ -52,8 +52,8 @@ public class SocketServerUDPQueue extends Thread {
                         String type = player.get().getListeningPluginChannels().contains("fml:handshake") ? "forge" : "fabric";
                         SocketClientUDP sock = new SocketClientUDP(player.get(), type, message.getInetSocketAddress());
 
-                        if (!SocketServerUDP.clients.containsKey(player.get())) {
-                            SocketServerUDP.clients.put(player.get(), sock);
+                        if (!SocketServerUDP.clients.containsKey(player.get().getUniqueId())) {
+                            SocketServerUDP.clients.put(player.get().getUniqueId(), sock);
                             SocketServerUDP.clientByAddress.put(
                                     message.getInetSocketAddress(),
                                     sock
@@ -61,9 +61,9 @@ public class SocketServerUDPQueue extends Thread {
 
                             // Clients list packet
                             List<UUID> clients = new ArrayList<>();
-                            SocketServerUDP.clients.forEach((p, c) -> {
-                                if (player.get().canSee(p)) {
-                                    clients.add(p.getUniqueId());
+                            SocketServerUDP.clients.forEach((playerId, c) -> {
+                                if (player.get().canSee(c.getPlayer())) {
+                                    clients.add(playerId);
                                 }
                             });
 

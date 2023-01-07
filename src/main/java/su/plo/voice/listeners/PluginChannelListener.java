@@ -80,9 +80,11 @@ public class PluginChannelListener implements PluginMessageListener {
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
                 byte[] pkt = PacketTCP.write(packet);
-                Enumeration<Player> it = SocketServerUDP.clients.keys();
+                Enumeration<UUID> it = SocketServerUDP.clients.keys();
                 while (it.hasMoreElements()) {
-                    Player player = it.nextElement();
+                    Player player = Bukkit.getPlayer(it.nextElement());
+                    if (player == null) continue;
+
                     if (sender != null) {
                         if (player.canSee(sender)) {
                             player.sendPluginMessage(PlasmoVoice.getInstance(), "plasmo:voice", pkt);
@@ -101,9 +103,11 @@ public class PluginChannelListener implements PluginMessageListener {
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
                 byte[] pkt = PacketTCP.write(packet);
-                Enumeration<Player> it = SocketServerUDP.clients.keys();
+                Enumeration<UUID> it = SocketServerUDP.clients.keys();
                 while (it.hasMoreElements()) {
-                    Player player = it.nextElement();
+                    Player player = Bukkit.getPlayer(it.nextElement());
+                    if (player == null) continue;
+
                     if (!player.getUniqueId().equals(except)) {
                         if (sender != null) {
                             if (player.canSee(sender)) {

@@ -15,6 +15,7 @@ import su.plo.voice.socket.SocketServerUDP;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.UUID;
 
 public class VoiceReload implements CommandExecutor {
     @Override
@@ -26,9 +27,10 @@ public class VoiceReload implements CommandExecutor {
 
         Bukkit.getScheduler().runTaskAsynchronously(PlasmoVoice.getInstance(), () -> {
             try {
-                Enumeration<Player> it = SocketServerUDP.clients.keys();
+                Enumeration<UUID> it = SocketServerUDP.clients.keys();
                 while (it.hasMoreElements()) {
-                    Player player = it.nextElement();
+                    Player player = Bukkit.getPlayer(it.nextElement());
+                    if (player == null) continue;
 
                     ConfigPacket configPacket = new ConfigPacket(
                             config.getSampleRate(),
