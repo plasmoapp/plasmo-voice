@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -20,6 +21,9 @@ public class PacketUDP {
     private InetAddress address;
     private int port;
 
+    private Class<? extends Packet> packetClass;
+    private ByteArrayDataInput input;
+
     public PacketUDP(Packet packet, String secret) {
         this(packet);
     }
@@ -27,6 +31,7 @@ public class PacketUDP {
     public PacketUDP(Packet packet) {
         this();
         this.packet = packet;
+        this.packetClass = packet.getClass();
     }
 
     private PacketUDP() {
@@ -35,7 +40,8 @@ public class PacketUDP {
         this.port = -1;
     }
 
-    public Packet getPacket() {
+    public Packet getPacket() throws Exception {
+        if (packet == null) decodePacket();
         return packet;
     }
 
@@ -53,6 +59,22 @@ public class PacketUDP {
 
     public int getPort() {
         return port;
+    }
+
+    public InetSocketAddress getInetSocketAddress() {
+        return new InetSocketAddress(address, port);
+    }
+
+    public Class<? extends Packet> getPacketClass() {
+        return packetClass;
+    }
+
+    private synchronized void decodePacket() throws Exception {
+        if (packetClass == null || input == null) return;
+
+        this.packet = packetClass.getDeclaredConstructor().newInstance();
+        packet.read(input);
+        this.input = null;
     }
 
     private static final Map<Byte, Class<? extends Packet>> packetRegistry;
@@ -77,7 +99,7 @@ public class PacketUDP {
         return -1;
     }
 
-    public static PacketUDP read(DatagramSocket socket) throws IllegalStateException, IllegalAccessException, InstantiationException, IOException, NoSuchMethodException, InvocationTargetException {
+    public static PacketUDP read(DatagramSocket socket) throws Exception {
         DatagramPacket packet = new DatagramPacket(new byte[4096], 4096);
         socket.receive(packet);
 
@@ -90,13 +112,12 @@ public class PacketUDP {
         if (packetClass == null) {
             throw new InstantiationException("Could not find packet with ID " + packetType);
         }
-        Packet p = packetClass.getDeclaredConstructor().newInstance();
 
         PacketUDP message = new PacketUDP();
         message.address = packet.getAddress();
         message.port = packet.getPort();
-        p.read(input);
-        message.packet = p;
+        message.packetClass = packetClass;
+        message.input = input;
 
         return message;
     }

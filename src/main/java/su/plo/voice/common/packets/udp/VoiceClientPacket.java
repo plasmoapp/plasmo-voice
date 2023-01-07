@@ -34,6 +34,10 @@ public class VoiceClientPacket implements Packet {
     @Override
     public void read(ByteArrayDataInput buf) throws IOException {
         int length = buf.readInt();
+        if (length <= 0 || length > 2048) {
+            throw new IOException("Invalid voice data length: " + length);
+        }
+
         byte[] data = new byte[length];
         buf.readFully(data);
         this.data = data;
