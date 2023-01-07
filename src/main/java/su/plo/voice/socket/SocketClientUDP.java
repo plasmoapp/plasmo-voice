@@ -9,23 +9,30 @@ import su.plo.voice.PlasmoVoice;
 import su.plo.voice.events.PlayerVoiceDisconnectedEvent;
 
 import java.net.InetAddress;
+import java.net.InetSocketAddress;
 
 @Data
 public class SocketClientUDP {
     private final Player player;
-    private final InetAddress address;
-    private final int port;
+    private final InetSocketAddress socketAddress;
     private long keepAlive;
     private long sentKeepAlive;
     @Setter(AccessLevel.PROTECTED)
     private String type;
 
-    public SocketClientUDP(Player player, String type, InetAddress address, int port) {
+    public SocketClientUDP(Player player, String type, InetSocketAddress socketAddress) {
         this.player = player;
         this.type = type;
-        this.address = address;
-        this.port = port;
+        this.socketAddress = socketAddress;
         this.keepAlive = System.currentTimeMillis();
+    }
+
+    public InetAddress getAddress() {
+        return socketAddress.getAddress();
+    }
+
+    public int getPort() {
+        return socketAddress.getPort();
     }
 
     public void close() {
@@ -38,6 +45,7 @@ public class SocketClientUDP {
                 PlasmoVoice.getVoiceLogger().info("Remove client UDP: " + this.player.getName());
             }
             SocketServerUDP.clients.remove(player);
+            SocketServerUDP.clientByAddress.remove(socketAddress);
         }
     }
 }

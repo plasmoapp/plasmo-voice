@@ -1,5 +1,6 @@
 package su.plo.voice.socket;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import su.plo.voice.PlasmoVoice;
 import su.plo.voice.common.packets.Packet;
@@ -14,6 +15,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class SocketServerUDP extends Thread {
     public static final ConcurrentHashMap<Player, SocketClientUDP> clients = new ConcurrentHashMap<>();
+    public static final ConcurrentHashMap<InetSocketAddress, SocketClientUDP> clientByAddress = new ConcurrentHashMap<>();
+
     public static final Map<UUID, Long> talking = new HashMap<>();
     private final SocketAddress addr;
 
@@ -38,15 +41,20 @@ public class SocketServerUDP extends Thread {
             return;
         }
 
-        SocketServerUDP.clients.forEach((p, sock) -> {
-            if (!player.getUniqueId().equals(p.getUniqueId())) {
+        final Location playerLocation = player.getLocation();
+        final Location receiverLocation = playerLocation.clone();
+
+        SocketServerUDP.clients.forEach((receiver, sock) -> {
+            if (!player.getUniqueId().equals(receiver.getUniqueId())) {
                 if (maxDistanceSquared > 0) {
-                    if (!player.getLocation().getWorld().getName().equals(p.getLocation().getWorld().getName())) {
+                    receiver.getLocation(receiverLocation);
+
+                    if (!playerLocation.getWorld().getName().equals(receiverLocation.getWorld().getName())) {
                         return;
                     }
 
                     try {
-                        if (player.getLocation().distanceSquared(p.getLocation()) > maxDistanceSquared) {
+                        if (playerLocation.distanceSquared(receiverLocation) > maxDistanceSquared) {
                             return;
                         }
                     } catch (IllegalArgumentException ignored) {
@@ -64,10 +72,7 @@ public class SocketServerUDP extends Thread {
     }
 
     public static SocketClientUDP getSender(PacketUDP packet) {
-        return clients.values().stream()
-                .filter(connection -> connection.getAddress()
-                        .equals(packet.getAddress()) && connection.getPort() == packet.getPort())
-                .findAny().orElse(null);
+        return clientByAddress.get(packet.getInetSocketAddress());
     }
 
     public static void sendTo(byte[] data, SocketClientUDP connection) throws IOException {

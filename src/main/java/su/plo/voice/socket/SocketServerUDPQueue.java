@@ -34,11 +34,11 @@ public class SocketServerUDPQueue extends Thread {
                 this.keepAlive();
 
                 PacketUDP message = queue.poll(10, TimeUnit.MILLISECONDS);
-                if (message == null || message.getPacket() == null || System.currentTimeMillis() - message.getTimestamp() > message.getTTL()) {
+                if (message == null || System.currentTimeMillis() - message.getTimestamp() > message.getTTL()) {
                     continue;
                 }
 
-                if (message.getPacket() instanceof AuthPacket) {
+                if (message.getPacketClass().equals(AuthPacket.class)) {
                     AuthPacket packet = (AuthPacket) message.getPacket();
                     AtomicReference<Player> player = new AtomicReference<>();
 
@@ -50,10 +50,14 @@ public class SocketServerUDPQueue extends Thread {
 
                     if (player.get() != null) {
                         String type = player.get().getListeningPluginChannels().contains("fml:handshake") ? "forge" : "fabric";
-                        SocketClientUDP sock = new SocketClientUDP(player.get(), type, message.getAddress(), message.getPort());
+                        SocketClientUDP sock = new SocketClientUDP(player.get(), type, message.getInetSocketAddress());
 
                         if (!SocketServerUDP.clients.containsKey(player.get())) {
                             SocketServerUDP.clients.put(player.get(), sock);
+                            SocketServerUDP.clientByAddress.put(
+                                    message.getInetSocketAddress(),
+                                    sock
+                            );
 
                             // Clients list packet
                             List<UUID> clients = new ArrayList<>();
@@ -118,6 +122,7 @@ public class SocketServerUDPQueue extends Thread {
                             e.printStackTrace();
                         }
                     }
+                    continue;
                 }
 
                 SocketClientUDP client = SocketServerUDP.getSender(message);
@@ -197,10 +202,10 @@ public class SocketServerUDPQueue extends Thread {
                         Bukkit.getPluginManager().callEvent(new PlayerEndSpeakEvent(player));
                     }
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             } catch (InterruptedException ignored) {
                 break;
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
     }
