@@ -455,7 +455,7 @@ public final class PlasmoVoice extends JavaPlugin implements PlasmoVoiceAPI {
             throw new IllegalArgumentException("fadeDivisor should be >= 1");
         }
 
-        if (hasVoiceChat(playerId)) {
+        if (!hasVoiceChat(playerId)) {
             throw new IllegalArgumentException("Player does not have Plasmo Voice installed");
         }
 
