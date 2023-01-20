@@ -117,7 +117,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                 voiceServer.getActivationManager()
                         .getActivations()
                         .stream()
-                        .filter(activation -> receiver.getInstance().hasPermission(activation.getPermission()))
+                        .filter(activation -> activation.checkPermissions(receiver))
                         .map(activation -> (VoiceActivation) activation) // waytoodank
                         .collect(Collectors.toSet()),
                 getPlayerPermissions(receiver)

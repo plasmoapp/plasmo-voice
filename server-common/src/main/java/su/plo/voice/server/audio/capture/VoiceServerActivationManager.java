@@ -1,6 +1,7 @@
 package su.plo.voice.server.audio.capture;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
@@ -72,7 +73,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         VoiceServerActivation activation = (VoiceServerActivation) activationById.get(VoiceActivation.generateId(name));
         if (activation != null) throw new IllegalStateException("Activation with name " + name + " already exists");
 
-        return new VoiceServerActivationBuilder(addon.get(), name, translation, icon, permission, weight);
+        return new VoiceServerActivationBuilder(addon.get(), name, translation, icon, Sets.newHashSet(permission), weight);
     }
 
     @Override
@@ -92,7 +93,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
             tcpConnections.broadcast(
                     new ActivationUnregisterPacket(activation.getId()),
-                    (player) -> player.getInstance().hasPermission(activation.getPermission())
+                    activation::checkPermissions
             );
 
             return true;
@@ -124,7 +125,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
         if (activationById.values()
                 .stream()
-                .noneMatch((activation) -> activation.getPermission().equals(permission))
+                .noneMatch((activation) -> activation.getPermissions().contains(permission))
         ) return;
 
         if (permission.equals(WILDCARD_ACTIVATION_PERMISSION)) {
@@ -141,7 +142,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                     break;
                 case UNDEFINED:
                     activationById.forEach((activationId, activation) -> {
-                        if (player.getInstance().hasPermission(activation.getPermission())) {
+                        if (activation.checkPermissions(player)) {
                             player.sendPacket(new ActivationRegisterPacket((VoiceActivation) activation));
                         } else {
                             player.sendPacket(new ActivationUnregisterPacket(activationId));
@@ -154,7 +155,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
         String[] permissionSplit = permission.split("\\.");
         getActivationByName(permissionSplit[permissionSplit.length - 1]).ifPresent((activation) -> {
-            if (player.getInstance().hasPermission(activation.getPermission())) {
+            if (activation.checkPermissions(player)) {
                 player.sendPacket(new ActivationRegisterPacket((VoiceActivation) activation));
             } else {
                 player.sendPacket(new ActivationUnregisterPacket(activation.getId()));
@@ -169,7 +170,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         private final @NotNull String name;
         private final @NotNull String translation;
         private final @NotNull String icon;
-        private final @NotNull String permission;
+        private final @NotNull Set<String> permissions;
         private final int weight;
 
         private List<Integer> distances = Collections.emptyList();
@@ -177,6 +178,12 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         private boolean transitive = true;
         private boolean proximity = true;
         private boolean stereoSupported = false;
+
+        @Override
+        public ServerActivation.@NotNull Builder addPermission(@NotNull String permission) {
+            permissions.add(permission);
+            return this;
+        }
 
         @Override
         public @NotNull ServerActivation.Builder setDistances(@NotNull List<Integer> distances) {
@@ -218,7 +225,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                     name,
                     translation,
                     icon,
-                    permission,
+                    permissions,
                     distances,
                     defaultDistance,
                     proximity,
@@ -234,7 +241,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
             activationById.put(activation.getId(), activation);
             tcpConnections.broadcast(
                     new ActivationRegisterPacket(activation),
-                    (player) -> player.getInstance().hasPermission(activation.getPermission())
+                    activation::checkPermissions
             );
 
             return activation;

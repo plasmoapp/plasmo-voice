@@ -58,7 +58,7 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
         PlayerAudioPacket packet = event.getPacket();
 
         if (event.isCancelled() ||
-                !player.getInstance().hasPermission(activation.getPermission()) ||
+                !activation.checkPermissions(player) ||
                 voiceServer.getConfig() == null ||
                 !voiceServer.getConfig()
                         .voice()
@@ -79,7 +79,7 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
         PlayerAudioEndPacket packet = event.getPacket();
 
         if (event.isCancelled() ||
-                !player.getInstance().hasPermission(activation.getPermission()) ||
+                !activation.checkPermissions(player) ||
                 voiceServer.getConfig() == null ||
                 !voiceServer.getConfig()
                         .voice()

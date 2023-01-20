@@ -3,11 +3,14 @@ package su.plo.voice.server.audio.capture;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
+import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -18,13 +21,13 @@ public final class VoiceServerActivation extends VoiceActivation implements Serv
 
     @Getter
     @Setter
-    private String permission;
+    private final Set<String> permissions;
 
     public VoiceServerActivation(@NotNull AddonContainer addon,
                                  @NotNull String name,
                                  @NotNull String translation,
                                  @NotNull String icon,
-                                 @NotNull String permission,
+                                 Set<String> permissions,
                                  List<Integer> distances,
                                  int defaultDistance,
                                  boolean proximity,
@@ -35,7 +38,32 @@ public final class VoiceServerActivation extends VoiceActivation implements Serv
 
         this.addon = addon;
         this.transitive = transitive;
-        this.permission = permission;
+        this.permissions = permissions;
+    }
+
+    @Override
+    public void addPermission(@NotNull String permission) {
+        permissions.add(permission);
+    }
+
+    @Override
+    public void removePermission(@NotNull String permission) {
+        permissions.remove(permission);
+    }
+
+    @Override
+    public void clearPermissions() {
+        permissions.clear();
+    }
+
+    @Override
+    public boolean checkPermissions(@NotNull VoicePlayer<?> player) {
+        return checkPermissions(player.getInstance());
+    }
+
+    @Override
+    public boolean checkPermissions(@NotNull MinecraftServerPlayer serverPlayer) {
+        return permissions.stream().anyMatch(serverPlayer::hasPermission);
     }
 
     @Override

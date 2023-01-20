@@ -1,9 +1,12 @@
 package su.plo.voice.api.server.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.capture.Activation;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ServerActivation extends Activation {
@@ -18,14 +21,32 @@ public interface ServerActivation extends Activation {
     /**
      * Gets the activation's permission
      */
-    @NotNull String getPermission();
+    @NotNull Collection<String> getPermissions();
 
     /**
-     * Sets the activation's permission
-     *
-     * @param permission the activation's permission
+     * Adds a permission to the activation
      */
-    void setPermission(@NotNull String permission);
+    void addPermission(@NotNull String permission);
+
+    /**
+     * Removes a permission from the activation
+     */
+    void removePermission(@NotNull String permission);
+
+    /**
+     * Clears all permissions from the activation
+     */
+    void clearPermissions();
+
+    /**
+     * Checks if player has any permission
+     */
+    boolean checkPermissions(@NotNull VoicePlayer<?> player);
+
+    /**
+     * Checks if player has any permission
+     */
+    boolean checkPermissions(@NotNull MinecraftServerPlayer serverPlayer);
 
     /**
      * Sets the activation's available distances
@@ -43,6 +64,11 @@ public interface ServerActivation extends Activation {
     void setProximity(boolean transitive);
 
     interface Builder {
+
+        /**
+         * Adds a permission to the activation
+         */
+        @NotNull Builder addPermission(@NotNull String permission);
 
         /**
          * Sets the activation's available distances

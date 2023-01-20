@@ -49,9 +49,11 @@ public abstract class BaseProximityServerActivation {
         ServerActivation activation = event.getActivation();
         if (!activation.getName().equals(activationName)) return;
 
-        voiceServer.getMinecraftServer()
-                .getPermissionsManager()
-                .register(activation.getPermission(), defaultPermission);
+        activation.getPermissions().forEach((permission) ->
+                voiceServer.getMinecraftServer()
+                        .getPermissionsManager()
+                        .register(permission, defaultPermission)
+        );
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
@@ -59,9 +61,11 @@ public abstract class BaseProximityServerActivation {
         ServerActivation activation = event.getActivation();
         if (!activation.getName().equals(activationName)) return;
 
-        voiceServer.getMinecraftServer()
-                .getPermissionsManager()
-                .unregister(activation.getPermission());
+        activation.getPermissions().forEach((permission) ->
+                voiceServer.getMinecraftServer()
+                        .getPermissionsManager()
+                        .unregister(permission)
+        );
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
@@ -122,8 +126,8 @@ public abstract class BaseProximityServerActivation {
     }
 
     protected Optional<ServerPlayerSource> getPlayerSource(@NotNull VoiceServerPlayer player,
-                                                         @NotNull UUID activationId,
-                                                         @Nullable Boolean isStereo) {
+                                                           @NotNull UUID activationId,
+                                                           @Nullable Boolean isStereo) {
         if (!activationId.equals(this.activationId)) return Optional.empty();
 
         Optional<ServerActivation> activation = voiceServer.getActivationManager()
