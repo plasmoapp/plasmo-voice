@@ -1,6 +1,7 @@
 package su.plo.lib.mod.server;
 
 import com.google.common.collect.Maps;
+import com.mojang.authlib.GameProfile;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -11,10 +12,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextConverter;
-import su.plo.lib.api.profile.MinecraftGameProfile;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
-import su.plo.lib.api.server.entity.MinecraftServerPlayer;
+import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
 import su.plo.lib.mod.client.texture.ResourceCache;
@@ -23,15 +23,17 @@ import su.plo.lib.mod.server.entity.ModServerEntity;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
 import su.plo.lib.mod.server.world.ModServerWorld;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.server.event.player.PlayerJoinEvent;
+import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.mod.chat.ComponentTextConverter;
-import su.plo.voice.server.event.player.PlayerJoinEvent;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 @RequiredArgsConstructor
@@ -40,7 +42,7 @@ public final class ModServerLib implements MinecraftServerLib {
     public static ModServerLib INSTANCE;
 
     private final Map<ServerLevel, MinecraftServerWorld> worldByInstance = Maps.newConcurrentMap();
-    private final Map<UUID, MinecraftServerPlayer> playerById = Maps.newConcurrentMap();
+    private final Map<UUID, MinecraftServerPlayerEntity> playerById = Maps.newConcurrentMap();
 
     @Setter
     private MinecraftServer server;
@@ -96,7 +98,7 @@ public final class ModServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public @NotNull MinecraftServerPlayer getPlayerByInstance(@NotNull Object instance) {
+    public @NotNull MinecraftServerPlayerEntity getPlayerByInstance(@NotNull Object instance) {
         if (!(instance instanceof ServerPlayer serverPlayer))
             throw new IllegalArgumentException("instance is not " + ServerPlayer.class);
 
@@ -113,7 +115,7 @@ public final class ModServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public Optional<MinecraftServerPlayer> getPlayerByName(@NotNull String name) {
+    public Optional<MinecraftServerPlayerEntity> getPlayerByName(@NotNull String name) {
         ServerPlayer player = server.getPlayerList().getPlayerByName(name);
         if (player == null) return Optional.empty();
 
@@ -121,8 +123,8 @@ public final class ModServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public Optional<MinecraftServerPlayer> getPlayerById(@NotNull UUID playerId) {
-        MinecraftServerPlayer serverPlayer = playerById.get(playerId);
+    public Optional<MinecraftServerPlayerEntity> getPlayerById(@NotNull UUID playerId) {
+        MinecraftServerPlayerEntity serverPlayer = playerById.get(playerId);
         if (serverPlayer != null) return Optional.of(serverPlayer);
 
         ServerPlayer player = server.getPlayerList().getPlayer(playerId);
@@ -134,17 +136,31 @@ public final class ModServerLib implements MinecraftServerLib {
     @Override
     public Optional<MinecraftGameProfile> getGameProfile(@NotNull UUID playerId) {
         return server.getProfileCache().get(playerId)
-                .map(profile -> new MinecraftGameProfile(profile.getId(), profile.getName()));
+                .map(this::getGameProfile);
     }
 
     @Override
     public Optional<MinecraftGameProfile> getGameProfile(@NotNull String name) {
         return server.getProfileCache().get(name)
-                .map(profile -> new MinecraftGameProfile(profile.getId(), profile.getName()));
+                .map(this::getGameProfile);
+    }
+
+    private MinecraftGameProfile getGameProfile(@NotNull GameProfile gameProfile) {
+        return new MinecraftGameProfile(
+                gameProfile.getId(),
+                gameProfile.getName(),
+                gameProfile.getProperties().values().stream()
+                        .map((property) -> new MinecraftGameProfile.Property(
+                                property.getName(),
+                                property.getValue(),
+                                property.getSignature()
+                        ))
+                        .collect(Collectors.toList())
+        );
     }
 
     @Override
-    public @NotNull Collection<MinecraftServerPlayer> getPlayers() {
+    public @NotNull Collection<MinecraftServerPlayerEntity> getPlayers() {
         return playerById.values();
     }
 
@@ -157,6 +173,11 @@ public final class ModServerLib implements MinecraftServerLib {
                 this,
                 ((Entity) instance)
         );
+    }
+
+    @Override
+    public int getPort() {
+        return server.getPort();
     }
 
     @EventSubscribe

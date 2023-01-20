@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,7 +34,7 @@ public final class PlayerSourceInfo extends SourceInfo {
     }
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         super.deserialize(in);
 
         this.playerInfo = new VoicePlayerInfo();
@@ -41,7 +42,7 @@ public final class PlayerSourceInfo extends SourceInfo {
     }
 
     @Override
-    public void serialize(ByteArrayDataOutput out) {
+    public void serialize(ByteArrayDataOutput out) throws IOException {
         super.serialize(out);
 
         checkNotNull(playerInfo, "playerInfo").serialize(out);

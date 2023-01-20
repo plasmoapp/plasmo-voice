@@ -7,14 +7,13 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.*;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
-import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
+import su.plo.voice.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 
 import java.util.Collection;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public @NotNull ServerPlayerSource createPlayerSource(@Nullable Object addonObject,
-                                                          @NotNull VoicePlayer player,
+                                                          @NotNull VoiceServerPlayer player,
                                                           @NotNull ServerSourceLine line,
                                                           @Nullable String codec,
                                                           boolean stereo) {
@@ -122,14 +121,15 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
-                                                          @NotNull ServerSourceLine line,
-                                                          @Nullable String codec,
-                                                          boolean stereo) {
+                                                                            @NotNull ServerSourceLine line,
+                                                                            @Nullable String codec,
+                                                                            boolean stereo) {
         Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
-        ServerDirectSource source = new VoiceServerDirectSource(
+        ServerDirectSource source = new VoiceServerAudioDirectSource(
                 voiceServer,
+                voiceServer.getUdpConnectionManager(),
                 addon.get(),
                 line,
                 codec,
@@ -142,7 +142,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public void remove(@NotNull UUID sourceId) {
-        ServerAudioSource<?> source = sourceById.remove(sourceId);
+        AudioSource<?, VoiceServerPlayer> source = sourceById.remove(sourceId);
         if (source instanceof ServerPlayerSource) {
             sourceByPlayerId.remove(sourceId);
         } else if (source instanceof ServerEntitySource) {
@@ -151,8 +151,8 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     }
 
     @Override
-    public void remove(@NotNull AudioSource<?> source) {
-        remove(source.getInfo().getId());
+    public void remove(@NotNull ServerAudioSource<?> source) {
+        remove(source.getId());
     }
 
 //    @Override
@@ -172,7 +172,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @EventSubscribe
     public void onPlayerQuit(PlayerQuitEvent event) {
-        ServerAudioSource source = sourceByPlayerId.remove(event.getPlayerId());
+        AudioSource source = sourceByPlayerId.remove(event.getPlayerId());
         if (source == null) return;
 
         sourceById.remove(source.getId());

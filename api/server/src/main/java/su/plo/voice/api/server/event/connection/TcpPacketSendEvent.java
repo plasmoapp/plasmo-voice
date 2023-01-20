@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventCancellable;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -20,7 +20,7 @@ public final class TcpPacketSendEvent extends PlayerEvent implements EventCancel
 
     private boolean cancel;
 
-    public TcpPacketSendEvent(@NotNull VoicePlayer player, @NotNull Packet<?> packet) {
+    public TcpPacketSendEvent(@NotNull VoiceServerPlayer player, @NotNull Packet<?> packet) {
         super(player);
 
         this.packet = checkNotNull(packet, "packet cannot be null");

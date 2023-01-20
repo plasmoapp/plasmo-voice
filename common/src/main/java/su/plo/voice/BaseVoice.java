@@ -7,7 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonManager;
-import su.plo.voice.api.addon.annotation.Addon;
+import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
@@ -31,7 +31,7 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected final VoiceAddonManager addons = new VoiceAddonManager(this, getScope());
 
     @Getter
-    protected ScheduledExecutorService executor;
+    protected ScheduledExecutorService backgroundExecutor;
 
     protected BaseVoice() {
         encryption.register(new AesEncryptionSupplier());
@@ -40,12 +40,12 @@ public abstract class BaseVoice implements PlasmoVoice {
     }
 
     protected void onInitialize() {
-        this.executor = Executors.newSingleThreadScheduledExecutor();
+        this.backgroundExecutor = Executors.newSingleThreadScheduledExecutor();
         eventBus.register(this, this);
     }
 
     protected void onShutdown() {
-        executor.shutdown();
+        backgroundExecutor.shutdown();
         addons.clear();
     }
 
@@ -86,5 +86,5 @@ public abstract class BaseVoice implements PlasmoVoice {
         return new File(modsFolder(), "plasmovoice");
     }
 
-    protected abstract Addon.Scope getScope();
+    protected abstract AddonScope getScope();
 }

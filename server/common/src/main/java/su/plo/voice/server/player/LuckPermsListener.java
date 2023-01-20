@@ -15,9 +15,9 @@ import net.luckperms.api.model.user.User;
 import net.luckperms.api.node.Node;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent;
 import su.plo.voice.api.server.player.VoicePlayerManager;
-import su.plo.voice.server.event.player.PlayerPermissionUpdateEvent;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,7 +31,7 @@ import java.util.concurrent.TimeUnit;
 public final class LuckPermsListener {
 
     private final PlasmoVoiceServer voiceServer;
-    private final VoicePlayerManager players;
+    private final VoicePlayerManager<VoiceServerPlayer> players;
     private final ScheduledExecutorService executor;
 
     private final LuckPerms luckPerms = LuckPermsProvider.get();
@@ -73,7 +73,7 @@ public final class LuckPermsListener {
     private void onNodeMutate(NodeMutateEvent event, Node node) {
         if (event.isUser()) {
             User user = (User) event.getTarget();
-            Optional<VoicePlayer> player = players.getPlayerById(user.getUniqueId());
+            Optional<VoiceServerPlayer> player = players.getPlayerById(user.getUniqueId());
             if (!player.isPresent() || !player.get().hasVoiceChat()) return;
 
             onLpPermissionChange(player.get(), node.getKey());
@@ -81,7 +81,7 @@ public final class LuckPermsListener {
             Group group = (Group) event.getTarget();
 
             // iterate all online players and check if they are in group
-            for (VoicePlayer player : players.getPlayers()) {
+            for (VoiceServerPlayer player : players.getPlayers()) {
                 if (player.getInstance().hasPermission("group." + group.getName())) {
                     onLpPermissionChange(player, node.getKey());
                 }
@@ -89,7 +89,7 @@ public final class LuckPermsListener {
         }
     }
 
-    private synchronized void onLpPermissionChange(@NotNull VoicePlayer player, @NotNull String permission) {
+    private synchronized void onLpPermissionChange(@NotNull VoiceServerPlayer player, @NotNull String permission) {
         String playerPermissionKey = player.getInstance().getUUID() + "_" + permission;
 
         ScheduledFuture<?> future = permissionChanges.get(playerPermissionKey);
@@ -105,7 +105,7 @@ public final class LuckPermsListener {
         );
     }
 
-    private void onPermissionChange(@NotNull VoicePlayer player, @NotNull String permission) {
+    private void onPermissionChange(@NotNull VoiceServerPlayer player, @NotNull String permission) {
         voiceServer.getEventBus().call(new PlayerPermissionUpdateEvent(player, permission));
         permissionChanges.remove(player.getInstance().getUUID() + "_" + permission);
     }

@@ -6,7 +6,6 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.handler.codec.haproxy.HAProxyMessageDecoder;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
@@ -27,7 +26,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class NettyUdpServer implements UdpServer {
 
-    private final Logger logger = LogManager.getLogger(NettyUdpServer.class);
+    private final Logger logger = LogManager.getLogger();
 
     private final EventLoopGroup loopGroup = new NioEventLoopGroup();
     private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
@@ -51,7 +50,6 @@ public final class NettyUdpServer implements UdpServer {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(loopGroup)
                 .channel(NioDatagramChannel.class)
-                .option(ChannelOption.AUTO_CLOSE, true)
                 .option(ChannelOption.SO_BROADCAST, true);
 
         bootstrap.handler(new ChannelInitializer<NioDatagramChannel>() {
@@ -62,10 +60,6 @@ public final class NettyUdpServer implements UdpServer {
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
 
                 pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceServer));
-
-                if (config.getHost().isProxyProtocol()) {
-                    pipeline.addFirst(executors, "haproxy_handler", new HAProxyMessageDecoder());
-                }
             }
         });
 

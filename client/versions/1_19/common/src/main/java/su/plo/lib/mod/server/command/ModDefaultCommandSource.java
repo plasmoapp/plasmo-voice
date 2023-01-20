@@ -16,13 +16,23 @@ public final class ModDefaultCommandSource implements MinecraftCommandSource {
     private final MinecraftTextConverter<Component> textConverter;
 
     @Override
+    public void sendMessage(@NotNull String text) {
+        source.sendSystemMessage(Component.literal(text));
+    }
+
+    @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
         source.sendSystemMessage(textConverter.convert(text));
     }
 
     @Override
-    public void sendMessage(@NotNull String text) {
+    public void sendActionBar(@NotNull String text) {
         source.sendSystemMessage(Component.literal(text));
+    }
+
+    @Override
+    public void sendActionBar(@NotNull MinecraftTextComponent text) {
+        source.sendSystemMessage(textConverter.convert(text));
     }
 
     @Override

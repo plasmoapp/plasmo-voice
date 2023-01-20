@@ -8,7 +8,7 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.BaseProximityServerActivation;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
@@ -27,8 +27,9 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
                 VoiceActivation.PROXIMITY_NAME,
                 "activation.plasmovoice.proximity",
                 "plasmovoice:textures/icons/microphone.png",
-                config.getVoice().getProximity().getDistances(),
-                config.getVoice().getProximity().getDefaultDistance(),
+                config.voice().proximity().distances(),
+                config.voice().proximity().defaultDistance(),
+                true,
                 true,
                 false,
                 1
@@ -45,17 +46,17 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
     public void onPlayerSpeak(@NotNull PlayerSpeakEvent event) {
-        VoicePlayer player = event.getPlayer();
+        VoiceServerPlayer player = (VoiceServerPlayer) event.getPlayer();
         PlayerAudioPacket packet = event.getPacket();
 
         if (event.isCancelled() ||
                 !player.getInstance().hasPermission(getActivationPermission()) ||
+                voiceServer.getConfig() == null ||
                 !voiceServer.getConfig()
-                        .map((config) -> config.getVoice()
-                                .getProximity()
-                                .getDistances()
-                                .contains((int) packet.getDistance()))
-                        .orElse(false)
+                        .voice()
+                        .proximity()
+                        .distances()
+                        .contains((int) packet.getDistance())
         ) return;
 
         getPlayerSource(player, packet.getActivationId(), packet.isStereo())
@@ -64,17 +65,17 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
     public void onPlayerSpeakEnd(@NotNull PlayerSpeakEndEvent event) {
-        VoicePlayer player = event.getPlayer();
+        VoiceServerPlayer player = (VoiceServerPlayer) event.getPlayer();
         PlayerAudioEndPacket packet = event.getPacket();
 
         if (event.isCancelled() ||
                 !player.getInstance().hasPermission(getActivationPermission()) ||
+                voiceServer.getConfig() == null ||
                 !voiceServer.getConfig()
-                        .map((config) -> config.getVoice()
-                                .getProximity()
-                                .getDistances()
-                                .contains((int) packet.getDistance()))
-                        .orElse(false)
+                        .voice()
+                        .proximity()
+                        .distances()
+                        .contains((int) packet.getDistance())
         ) return;
 
         getPlayerSource(player, packet.getActivationId(), null)

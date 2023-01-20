@@ -37,7 +37,8 @@ public final class SelfAudioInfoPacket implements Packet<ClientPacketUdpHandler>
         this.sourceId = PacketUtil.readUUID(in);
         this.sequenceNumber = in.readLong();
         if (in.readBoolean()) {
-            byte[] data = new byte[in.readInt()];
+            int length = PacketUtil.readSafeInt(in, 1, 2048);
+            byte[] data = new byte[length];
             in.readFully(data);
             this.data = data;
         }

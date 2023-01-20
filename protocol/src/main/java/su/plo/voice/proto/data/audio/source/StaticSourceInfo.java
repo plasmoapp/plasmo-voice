@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.data.pos.Pos3d;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -38,7 +39,7 @@ public final class StaticSourceInfo extends SourceInfo {
     }
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         super.deserialize(in);
 
         this.position = new Pos3d();
@@ -48,7 +49,7 @@ public final class StaticSourceInfo extends SourceInfo {
     }
 
     @Override
-    public void serialize(ByteArrayDataOutput out) {
+    public void serialize(ByteArrayDataOutput out) throws IOException {
         super.serialize(out);
 
         checkNotNull(position, "position").serialize(out);

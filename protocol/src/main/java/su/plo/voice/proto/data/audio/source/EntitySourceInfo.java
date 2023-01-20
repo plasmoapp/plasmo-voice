@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -31,14 +32,14 @@ public final class EntitySourceInfo extends SourceInfo {
     }
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         super.deserialize(in);
 
         this.entityId = in.readInt();
     }
 
     @Override
-    public void serialize(ByteArrayDataOutput out) {
+    public void serialize(ByteArrayDataOutput out) throws IOException {
         super.serialize(out);
 
         out.writeInt(entityId);

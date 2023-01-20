@@ -10,7 +10,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.event.EventNetworkChannel;
 import su.plo.voice.forge.client.ForgeVoiceClient;
 import su.plo.voice.forge.server.ForgeVoiceServer;
-import su.plo.voice.mod.client.ModVoiceClient;
+import su.plo.voice.mod.server.ModVoiceServer;
 
 @Mod("plasmovoice")
 public final class ForgeVoice {
@@ -31,7 +31,14 @@ public final class ForgeVoice {
     @SubscribeEvent
     public void onCommonSetup(FMLCommonSetupEvent event) {
         this.channel = NetworkRegistry.newEventChannel(
-                ModVoiceClient.CHANNEL,
+                ModVoiceServer.CHANNEL,
+                () -> NetworkRegistry.ACCEPTVANILLA,
+                NetworkRegistry.ACCEPTVANILLA::equals,
+                NetworkRegistry.ACCEPTVANILLA::equals
+        );
+
+        EventNetworkChannel serviceChannel = NetworkRegistry.newEventChannel(
+                ModVoiceServer.SERVICE_CHANNEL,
                 () -> NetworkRegistry.ACCEPTVANILLA,
                 NetworkRegistry.ACCEPTVANILLA::equals,
                 NetworkRegistry.ACCEPTVANILLA::equals
@@ -39,6 +46,6 @@ public final class ForgeVoice {
 
         ForgeVoiceServer voiceServer = new ForgeVoiceServer();
         MinecraftForge.EVENT_BUS.register(voiceServer);
-        voiceServer.onInitialize(channel);
+        voiceServer.onInitialize(channel, serviceChannel);
     }
 }

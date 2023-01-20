@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.server.config.VoiceServerConfig;
 
@@ -41,8 +41,8 @@ public final class NettyUdpKeepAlive {
         long now = System.currentTimeMillis();
         PingPacket packet = new PingPacket();
 
-        for (UdpConnection connection : udpConnections.getConnections()) {
-            if (now - connection.getKeepAlive() > config.getVoice().getKeepAliveTimeoutMs()) {
+        for (UdpServerConnection connection : udpConnections.getConnections()) {
+            if (now - connection.getKeepAlive() > config.voice().keepAliveTimeoutMs()) {
                 logger.info("{} timed out. Reconnect packet sent", connection);
                 udpConnections.removeConnection(connection);
                 tcpConnections.connect(connection.getPlayer());

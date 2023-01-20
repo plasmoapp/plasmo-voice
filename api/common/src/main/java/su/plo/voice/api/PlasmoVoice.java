@@ -7,11 +7,21 @@ import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
 
 import java.io.File;
+import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * The Plasmo Voice API
  */
 public interface PlasmoVoice {
+
+    /**
+     * Gets the {@link ScheduledExecutorService}
+     *
+     * Executor used for background tasks
+     *
+     * @return the {@link ScheduledExecutorService}
+     */
+    @NotNull ScheduledExecutorService getBackgroundExecutor();
 
     /**
      * Gets the {@link AddonManager}

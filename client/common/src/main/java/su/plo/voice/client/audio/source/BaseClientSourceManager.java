@@ -52,7 +52,7 @@ public abstract class BaseClientSourceManager implements ClientSourceManager {
         this.config = config;
         this.soundOcclusionSupplier = soundOcclusionSupplier;
 
-        voiceClient.getExecutor().scheduleAtFixedRate(
+        voiceClient.getBackgroundExecutor().scheduleAtFixedRate(
                 this::tickSelfSourceInfo,
                 0L, 5L, TimeUnit.SECONDS
         );

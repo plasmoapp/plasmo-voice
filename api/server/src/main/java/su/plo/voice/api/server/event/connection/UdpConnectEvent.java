@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventCancellableBase;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.api.server.socket.UdpServerConnection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -15,9 +15,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class UdpConnectEvent extends EventCancellableBase {
 
     @Getter
-    private final UdpConnection connection;
+    private final UdpServerConnection connection;
 
-    public UdpConnectEvent(@NotNull UdpConnection connection) {
+    public UdpConnectEvent(@NotNull UdpServerConnection connection) {
         this.connection = checkNotNull(connection, "connection cannot be null");
     }
 }

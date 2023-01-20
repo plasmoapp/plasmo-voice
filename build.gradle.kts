@@ -9,6 +9,7 @@ plugins {
     java
     idea
     alias(libs.plugins.shadow)
+    alias(libs.plugins.idea.ext)
 }
 
 subprojects {
@@ -16,6 +17,7 @@ subprojects {
     apply(plugin = "idea")
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "org.jetbrains.gradle.plugin.idea-ext")
 
     group = mavenGroup
 
@@ -99,5 +101,9 @@ allprojects {
         mavenCentral()
 
         maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
+        maven {
+            name = "papermc"
+            url = uri("https://repo.papermc.io/repository/maven-public/")
+        }
     }
 }

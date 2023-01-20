@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface AudioSourceManager<T extends AudioSource> {
+public interface AudioSourceManager<T extends AudioSource<?>> {
 
     Optional<T> getSourceById(@NotNull UUID sourceId);
 

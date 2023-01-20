@@ -9,7 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerRegisterChannelEvent;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.connection.BaseServerChannelHandler;
@@ -38,7 +38,7 @@ public final class PaperServerChannelHandler extends BaseServerChannelHandler im
                     .ifPresent(packet -> {
 //                        LogManager.getLogger().info("Channel packet received {}", packet);
 
-                        VoicePlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
+                        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
 
                         PlayerChannelHandler channel = channels.computeIfAbsent(
                                 player.getUniqueId(),
@@ -67,7 +67,7 @@ public final class PaperServerChannelHandler extends BaseServerChannelHandler im
         ScheduledFuture<?> future = channelsFutures.get(player.getUniqueId());
         if (future != null) future.cancel(false);
 
-        channelsFutures.put(player.getUniqueId(), voiceServer.getExecutor().schedule(() -> {
+        channelsFutures.put(player.getUniqueId(), voiceServer.getBackgroundExecutor().schedule(() -> {
             List<String> channels = channelsUpdates.remove(player.getUniqueId());
             channelsFutures.remove(player.getUniqueId());
 

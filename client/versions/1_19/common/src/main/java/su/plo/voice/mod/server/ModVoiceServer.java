@@ -8,13 +8,15 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.mod.server.ModServerLib;
 import su.plo.voice.mod.server.connection.ModServerChannelHandler;
+import su.plo.voice.mod.server.connection.ModServerServiceChannelHandler;
 import su.plo.voice.server.BaseVoiceServer;
 
 import java.io.File;
 
-public abstract class ModVoiceServer<T extends ModServerChannelHandler> extends BaseVoiceServer {
+public abstract class ModVoiceServer<T extends ModServerChannelHandler, S extends ModServerServiceChannelHandler> extends BaseVoiceServer {
 
     public static final ResourceLocation CHANNEL = new ResourceLocation(CHANNEL_STRING);
+    public static final ResourceLocation SERVICE_CHANNEL = new ResourceLocation(SERVICE_CHANNEL_STRING);
 
     protected final String modId = "plasmovoice";
 
@@ -22,6 +24,7 @@ public abstract class ModVoiceServer<T extends ModServerChannelHandler> extends 
 
     protected MinecraftServer server;
     protected T handler;
+    protected S serviceHandler;
 
     protected void onInitialize(MinecraftServer server) {
         this.server = server;
@@ -31,6 +34,10 @@ public abstract class ModVoiceServer<T extends ModServerChannelHandler> extends 
         super.onInitialize();
         if (handler == null) {
             this.handler = createChannelHandler();
+        }
+
+        if (serviceHandler == null) {
+            this.serviceHandler = createServiceChannelHandler();
         }
     }
 
@@ -44,11 +51,6 @@ public abstract class ModVoiceServer<T extends ModServerChannelHandler> extends 
     protected void onCommandRegister(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         registerDefaultCommandsAndPermissions();
         minecraftServerLib.getCommandManager().registerCommands(dispatcher);
-    }
-
-    @Override
-    public int getMinecraftServerPort() {
-        return server != null ? server.getPort() : -1;
     }
 
     @Override
@@ -67,4 +69,6 @@ public abstract class ModVoiceServer<T extends ModServerChannelHandler> extends 
     }
 
     protected abstract T createChannelHandler();
+
+    protected abstract S createServiceChannelHandler();
 }

@@ -12,11 +12,11 @@ import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.UdpConnectEvent;
 import su.plo.voice.api.server.event.connection.UdpConnectedEvent;
 import su.plo.voice.api.server.event.connection.UdpDisconnectEvent;
-import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
+import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.clientbound.ClientPacketUdpHandler;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
 
 import java.util.Collection;
 import java.util.Map;
@@ -34,8 +34,8 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     private final Map<UUID, UUID> secretByPlayerId = Maps.newConcurrentMap();
     private final Map<UUID, UUID> playerIdBySecret = Maps.newConcurrentMap();
 
-    private final Map<UUID, UdpConnection> connectionBySecret = Maps.newConcurrentMap();
-    private final Map<UUID, UdpConnection> connectionByPlayerId = Maps.newConcurrentMap();
+    private final Map<UUID, UdpServerConnection> connectionBySecret = Maps.newConcurrentMap();
+    private final Map<UUID, UdpServerConnection> connectionByPlayerId = Maps.newConcurrentMap();
 
     @Override
     public Optional<UUID> getPlayerIdBySecret(UUID secret) {
@@ -56,13 +56,13 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     }
 
     @Override
-    public void addConnection(UdpConnection connection) {
+    public void addConnection(UdpServerConnection connection) {
         UdpConnectEvent connectEvent = new UdpConnectEvent(connection);
         server.getEventBus().call(connectEvent);
         if (connectEvent.isCancelled()) return;
 
-        UdpConnection bySecret = connectionBySecret.put(connection.getSecret(), connection);
-        UdpConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getInstance().getUUID(), connection);
+        UdpServerConnection bySecret = connectionBySecret.put(connection.getSecret(), connection);
+        UdpServerConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getInstance().getUUID(), connection);
 
         if (bySecret != null) bySecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
@@ -71,9 +71,9 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     }
 
     @Override
-    public boolean removeConnection(UdpConnection connection) {
-        UdpConnection bySecret = connectionBySecret.remove(connection.getSecret());
-        UdpConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
+    public boolean removeConnection(UdpServerConnection connection) {
+        UdpServerConnection bySecret = connectionBySecret.remove(connection.getSecret());
+        UdpServerConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
 
         if (bySecret != null) disconnect(bySecret);
         if (byPlayer != null && !byPlayer.equals(bySecret)) disconnect(byPlayer);
@@ -82,8 +82,8 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     }
 
     @Override
-    public boolean removeConnection(VoicePlayer player) {
-        UdpConnection connection = connectionByPlayerId.remove(player.getInstance().getUUID());
+    public boolean removeConnection(VoiceServerPlayer player) {
+        UdpServerConnection connection = connectionByPlayerId.remove(player.getInstance().getUUID());
         if (connection != null) disconnect(connection);
 
         return connection != null;
@@ -91,24 +91,24 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
 
     @Override
     public boolean removeConnection(UUID secret) {
-        UdpConnection connection = connectionBySecret.remove(secret);
+        UdpServerConnection connection = connectionBySecret.remove(secret);
         if (connection != null) disconnect(connection);
 
         return connection != null;
     }
 
     @Override
-    public Optional<UdpConnection> getConnectionBySecret(UUID secret) {
+    public Optional<UdpServerConnection> getConnectionBySecret(@NotNull UUID secret) {
         return Optional.ofNullable(connectionBySecret.get(secret));
     }
 
     @Override
-    public Optional<UdpConnection> getConnectionByUUID(UUID playerUUID) {
-        return Optional.ofNullable(connectionByPlayerId.get(playerUUID));
+    public Optional<UdpServerConnection> getConnectionByPlayerId(@NotNull UUID playerId) {
+        return Optional.ofNullable(connectionByPlayerId.get(playerId));
     }
 
     @Override
-    public Collection<UdpConnection> getConnections() {
+    public Collection<UdpServerConnection> getConnections() {
         return connectionByPlayerId.values();
     }
 
@@ -117,7 +117,7 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
         getConnections().forEach(this::removeConnection);
     }
 
-    private void disconnect(UdpConnection connection) {
+    private void disconnect(UdpServerConnection connection) {
         connection.disconnect();
 
         secretByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
@@ -128,20 +128,15 @@ public final class VoiceUdpConnectionManager implements UdpServerConnectionManag
     }
 
     @Override
-    public void broadcast(@NotNull Packet<ClientPacketUdpHandler> packet, @Nullable Predicate<VoicePlayer> filter) {
-        for (UdpConnection connection : getConnections()) {
+    public void broadcast(@NotNull Packet<ClientPacketUdpHandler> packet, @Nullable Predicate<VoiceServerPlayer> filter) {
+        for (UdpServerConnection connection : getConnections()) {
             if (filter == null || filter.test(connection.getPlayer()))
                 connection.sendPacket(packet);
         }
     }
 
-    @Override
-    public void broadcast(@NotNull Packet<ClientPacketUdpHandler> packet) {
-        broadcast(packet, null);
-    }
-
     @EventSubscribe
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        getConnectionByUUID(event.getPlayerId()).ifPresent(this::removeConnection);
+        getConnectionByPlayerId(event.getPlayerId()).ifPresent(this::removeConnection);
     }
 }

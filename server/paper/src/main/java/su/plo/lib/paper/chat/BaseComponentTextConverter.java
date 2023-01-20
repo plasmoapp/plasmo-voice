@@ -48,7 +48,7 @@ public class BaseComponentTextConverter implements MinecraftTextConverter<BaseCo
     }
 
     private void applyStyles(@NotNull BaseComponent component,
-                                         @NotNull MinecraftTextComponent text) {
+                             @NotNull MinecraftTextComponent text) {
         text.getStyles().forEach(
                 (style) -> component.setColor(ChatColor.of(style.name()))
         );

@@ -9,7 +9,8 @@ import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.UUID;
 
-public interface ServerPositionalSource<S extends SourceInfo> extends ServerAudioSource<S> {
+public interface ServerPositionalSource<S extends SourceInfo>
+        extends ServerAudioSource<S> {
 
     @NotNull ServerPos3d getPosition();
 

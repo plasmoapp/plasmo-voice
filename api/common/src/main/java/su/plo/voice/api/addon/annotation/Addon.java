@@ -1,5 +1,7 @@
 package su.plo.voice.api.addon.annotation;
 
+import su.plo.voice.api.addon.AddonScope;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,7 +32,7 @@ public @interface Addon {
      *
      * @return the addon scope
      */
-    Scope scope();
+    AddonScope scope();
 
     /**
      * Returns the addon version
@@ -53,10 +55,4 @@ public @interface Addon {
 //     * @return the addon dependencies
 //     */
 //    Dependency[] dependencies() default {};
-
-    enum Scope {
-
-        CLIENT,
-        SERVER
-    }
 }

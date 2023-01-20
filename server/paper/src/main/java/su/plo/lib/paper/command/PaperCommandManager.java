@@ -4,11 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 import su.plo.lib.paper.chat.BaseComponentTextConverter;
 
 @RequiredArgsConstructor
-public final class PaperCommandManager extends MinecraftCommandManager {
+public final class PaperCommandManager extends MinecraftCommandManager<MinecraftCommand> {
 
     private final MinecraftServerLib minecraftServer;
     private final BaseComponentTextConverter textConverter;

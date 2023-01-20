@@ -1,5 +1,6 @@
 package su.plo.lib.paper.entity;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -8,15 +9,16 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
-import su.plo.lib.api.server.entity.MinecraftServerPlayer;
+import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.paper.chat.BaseComponentTextConverter;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
 import java.util.Optional;
 
-public final class PaperServerPlayer extends PaperServerEntity<Player> implements MinecraftServerPlayer {
+public final class PaperServerPlayer extends PaperServerEntity<Player> implements MinecraftServerPlayerEntity {
 
     private final JavaPlugin loader;
     private final BaseComponentTextConverter textConverter;
@@ -34,6 +36,12 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
         this.loader = loader;
         this.textConverter = textConverter;
         this.permissions = permissions;
+    }
+
+    @Override
+    public @NotNull MinecraftGameProfile getGameProfile() {
+        return minecraftServer.getGameProfile(instance.getUniqueId())
+                .orElseThrow(() -> new IllegalStateException("Game profile not found"));
     }
 
     @Override
@@ -67,6 +75,16 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
     }
 
     @Override
+    public void sendActionBar(@NotNull String text) {
+        instance.sendActionBar(Component.text(text));
+    }
+
+    @Override
+    public void sendActionBar(@NotNull MinecraftTextComponent text) {
+        instance.sendActionBar(textConverter.convert(text));
+    }
+
+    @Override
     public @NotNull String getLanguage() {
         return instance.getLocale();
     }
@@ -92,7 +110,7 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
     }
 
     @Override
-    public boolean canSee(@NotNull MinecraftServerPlayer player) {
+    public boolean canSee(@NotNull MinecraftServerPlayerEntity player) {
         return instance.canSee(((PaperServerPlayer) player).instance);
     }
 

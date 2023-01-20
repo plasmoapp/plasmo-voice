@@ -4,5 +4,4 @@ group = "$mavenGroup.api"
 
 dependencies {
     implementation(project(":protocol"))
-    shadow(project(":protocol"))
 }

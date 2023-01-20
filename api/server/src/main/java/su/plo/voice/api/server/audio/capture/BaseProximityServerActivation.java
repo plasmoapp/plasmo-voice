@@ -11,7 +11,7 @@ import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.event.audio.capture.ServerActivationRegisterEvent;
 import su.plo.voice.api.server.event.audio.capture.ServerActivationUnregisterEvent;
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket;
@@ -41,7 +41,7 @@ public abstract class BaseProximityServerActivation {
         this.activationId = VoiceActivation.generateId(activationName);
         this.sourceLineId = VoiceSourceLine.generateId(activationName);
         this.defaultPermission = defaultPermission;
-        this.selfActivationInfo = new SelfActivationInfo(voiceServer);
+        this.selfActivationInfo = new SelfActivationInfo(voiceServer.getUdpConnectionManager());
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
@@ -98,13 +98,13 @@ public abstract class BaseProximityServerActivation {
         source.sendPacket(sourcePacket, distance);
     }
 
-    protected void sendAudioPacket(@NotNull VoicePlayer player,
+    protected void sendAudioPacket(@NotNull VoiceServerPlayer player,
                                    @NotNull ServerPlayerSource source,
                                    @NotNull PlayerAudioPacket packet) {
         sendAudioPacket(player, source, packet, packet.getDistance());
     }
 
-    protected void sendAudioPacket(@NotNull VoicePlayer player,
+    protected void sendAudioPacket(@NotNull VoiceServerPlayer player,
                                    @NotNull ServerPlayerSource source,
                                    @NotNull PlayerAudioPacket packet,
                                    short distance) {
@@ -121,7 +121,7 @@ public abstract class BaseProximityServerActivation {
         }
     }
 
-    protected Optional<ServerPlayerSource> getPlayerSource(@NotNull VoicePlayer player,
+    protected Optional<ServerPlayerSource> getPlayerSource(@NotNull VoiceServerPlayer player,
                                                          @NotNull UUID activationId,
                                                          @Nullable Boolean isStereo) {
         if (!activationId.equals(this.activationId)) return Optional.empty();

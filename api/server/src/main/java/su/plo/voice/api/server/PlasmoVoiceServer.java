@@ -12,6 +12,7 @@ import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.player.VoicePlayerManager;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServer;
 
 import java.util.Optional;
@@ -35,14 +36,14 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
      *
      * @return {@link VoicePlayerManager}
      */
-    @NotNull VoicePlayerManager getPlayerManager();
+    @NotNull VoicePlayerManager<VoiceServerPlayer> getPlayerManager();
 
     /**
      * Gets the {@link MuteManager}
      *
      * This manager can be used to mute or unmute players voice
      *
-     *
+     * @return {@link MuteManager}
      */
     @NotNull MuteManager getMuteManager();
 
@@ -95,14 +96,14 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
     /**
      * Gets the {@link ServerConfig}
      *
-     * @return {@link ServerConfig} if its loaded
+     * @return {@link ServerConfig}
      */
-    Optional<ServerConfig> getConfig();
+    ServerConfig getConfig();
 
     /**
      * Get the {@link ServerLanguages}
      *
      * @return {@link ServerLanguages}
      */
-    ServerLanguages getLanguages();
+    @NotNull ServerLanguages getLanguages();
 }

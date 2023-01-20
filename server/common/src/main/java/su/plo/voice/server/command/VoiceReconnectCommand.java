@@ -5,8 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
-import su.plo.lib.api.server.entity.MinecraftServerPlayer;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.ServerLanguage;
 
@@ -19,13 +19,13 @@ public final class VoiceReconnectCommand implements MinecraftCommand {
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
         ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
 
-        if (!(source instanceof MinecraftServerPlayer)) {
+        if (!(source instanceof MinecraftServerPlayerEntity)) {
             source.sendMessage(language.playerOnlyCommand());
             return;
         }
 
-        MinecraftServerPlayer player = (MinecraftServerPlayer) source;
-        VoicePlayer voicePlayer = voiceServer.getPlayerManager().getPlayerById(player.getUUID())
+        MinecraftServerPlayerEntity player = (MinecraftServerPlayerEntity) source;
+        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerById(player.getUUID())
                 .orElseThrow(() -> new IllegalStateException("how?"));
 
         source.sendMessage(language.commands().reconnect().message());

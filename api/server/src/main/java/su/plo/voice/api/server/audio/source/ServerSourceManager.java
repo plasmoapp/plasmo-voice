@@ -4,17 +4,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.world.ServerPos3d;
-import su.plo.voice.api.audio.source.AudioSource;
-import su.plo.voice.api.audio.source.AudioSourceManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 
-import java.util.UUID;
-
-public interface ServerSourceManager extends AudioSourceManager<ServerAudioSource<?>> {
+public interface ServerSourceManager extends BaseServerSourceManager<ServerAudioSource<?>> {
 
     @NotNull ServerPlayerSource createPlayerSource(@Nullable Object addonObject,
-                                                   @NotNull VoicePlayer player,
+                                                   @NotNull VoiceServerPlayer player,
                                                    @NotNull ServerSourceLine line,
                                                    @Nullable String codec,
                                                    boolean stereo);
@@ -32,11 +28,7 @@ public interface ServerSourceManager extends AudioSourceManager<ServerAudioSourc
                                                    boolean stereo);
 
     @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
-                                                   @NotNull ServerSourceLine line,
-                                                   @Nullable String codec,
-                                                   boolean stereo);
-
-    void remove(@NotNull UUID sourceId);
-
-    void remove(@NotNull AudioSource<?> source);
+                                                                     @NotNull ServerSourceLine line,
+                                                                     @Nullable String codec,
+                                                                     boolean stereo);
 }

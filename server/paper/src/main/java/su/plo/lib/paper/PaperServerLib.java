@@ -1,5 +1,6 @@
 package su.plo.lib.paper;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -11,10 +12,9 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.profile.MinecraftGameProfile;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
-import su.plo.lib.api.server.entity.MinecraftServerPlayer;
+import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
 import su.plo.lib.paper.chat.BaseComponentTextConverter;
@@ -23,8 +23,9 @@ import su.plo.lib.paper.entity.PaperServerEntity;
 import su.plo.lib.paper.entity.PaperServerPlayer;
 import su.plo.lib.paper.world.PaperServerWorld;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.server.event.player.PlayerJoinEvent;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
+import su.plo.voice.api.server.event.player.PlayerJoinEvent;
+import su.plo.voice.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
@@ -42,7 +43,7 @@ public final class PaperServerLib implements MinecraftServerLib {
     private PermissionSupplier permissions;
 
     private final Map<World, MinecraftServerWorld> worldByInstance = Maps.newConcurrentMap();
-    private final Map<UUID, MinecraftServerPlayer> playerById = Maps.newConcurrentMap();
+    private final Map<UUID, MinecraftServerPlayerEntity> playerById = Maps.newConcurrentMap();
 
     private final BaseComponentTextConverter textConverter = new BaseComponentTextConverter();
 
@@ -83,7 +84,7 @@ public final class PaperServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public @NotNull MinecraftServerPlayer getPlayerByInstance(@NotNull Object instance) {
+    public @NotNull MinecraftServerPlayerEntity getPlayerByInstance(@NotNull Object instance) {
         if (!(instance instanceof Player))
             throw new IllegalArgumentException("instance is not " + Player.class);
         Player serverPlayer = (Player) instance;
@@ -101,7 +102,7 @@ public final class PaperServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public Optional<MinecraftServerPlayer> getPlayerByName(@NotNull String name) {
+    public Optional<MinecraftServerPlayerEntity> getPlayerByName(@NotNull String name) {
         Player player = Bukkit.getPlayer(name);
         if (player == null) return Optional.empty();
 
@@ -109,8 +110,8 @@ public final class PaperServerLib implements MinecraftServerLib {
     }
 
     @Override
-    public Optional<MinecraftServerPlayer> getPlayerById(@NotNull UUID playerId) {
-        MinecraftServerPlayer serverPlayer = playerById.get(playerId);
+    public Optional<MinecraftServerPlayerEntity> getPlayerById(@NotNull UUID playerId) {
+        MinecraftServerPlayerEntity serverPlayer = playerById.get(playerId);
         if (serverPlayer != null) return Optional.of(serverPlayer);
 
         Player player = Bukkit.getPlayer(playerId);
@@ -123,18 +124,23 @@ public final class PaperServerLib implements MinecraftServerLib {
     public Optional<MinecraftGameProfile> getGameProfile(@NotNull UUID playerId) {
         return Optional.of(Bukkit.getServer().getOfflinePlayer(playerId))
                 .filter(OfflinePlayer::hasPlayedBefore)
-                .map(offlinePlayer -> new MinecraftGameProfile(offlinePlayer.getUniqueId(), offlinePlayer.getName()));
+                .map(this::getGameProfile);
     }
 
     @Override
     public Optional<MinecraftGameProfile> getGameProfile(@NotNull String name) {
         return Optional.of(Bukkit.getServer().getOfflinePlayer(name))
                 .filter(OfflinePlayer::hasPlayedBefore)
-                .map(offlinePlayer -> new MinecraftGameProfile(offlinePlayer.getUniqueId(), offlinePlayer.getName()));
+                .map(this::getGameProfile);
+    }
+
+    private MinecraftGameProfile getGameProfile(@NotNull OfflinePlayer offlinePlayer) {
+        // todo: use game profile properties?
+        return new MinecraftGameProfile(offlinePlayer.getUniqueId(), offlinePlayer.getName(), ImmutableList.of());
     }
 
     @Override
-    public @NotNull Collection<MinecraftServerPlayer> getPlayers() {
+    public @NotNull Collection<MinecraftServerPlayerEntity> getPlayers() {
         return playerById.values();
     }
 
@@ -147,6 +153,11 @@ public final class PaperServerLib implements MinecraftServerLib {
                 this,
                 ((LivingEntity) instance)
         );
+    }
+
+    @Override
+    public int getPort() {
+        return Bukkit.getServer().getPort();
     }
 
     @EventSubscribe

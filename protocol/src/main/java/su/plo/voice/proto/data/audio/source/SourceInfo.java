@@ -9,6 +9,7 @@ import lombok.ToString;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -18,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ToString
 public abstract class SourceInfo implements PacketSerializable {
 
-    public static SourceInfo of(ByteArrayDataInput in) {
+    public static SourceInfo of(ByteArrayDataInput in) throws IOException {
         SourceInfo sourceInfo = null;
         switch (Type.valueOf(in.readUTF())) {
             case PLAYER:
@@ -59,7 +60,7 @@ public abstract class SourceInfo implements PacketSerializable {
     protected int angle;
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         this.addonId = in.readUTF();
         this.id = PacketUtil.readUUID(in);
         this.state = in.readByte();
@@ -71,7 +72,7 @@ public abstract class SourceInfo implements PacketSerializable {
     }
 
     @Override
-    public void serialize(ByteArrayDataOutput out) {
+    public void serialize(ByteArrayDataOutput out) throws IOException {
         out.writeUTF(getType().name());
         out.writeUTF(checkNotNull(addonId));
         PacketUtil.writeUUID(out, checkNotNull(id));

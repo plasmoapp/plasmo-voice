@@ -42,7 +42,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         this.config = checkNotNull(config, "config");
         this.client = checkNotNull(client, "client");
 
-        this.ticker = voiceClient.getExecutor().scheduleAtFixedRate(
+        this.ticker = voiceClient.getBackgroundExecutor().scheduleAtFixedRate(
                 this::tick,
                 0L,
                 1L,
@@ -63,7 +63,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         voiceClient.getEventBus().call(event);
         if (event.isCancelled()) return;
 
-        logger.debug("UDP packet received {}", packet);
+        logger.info("UDP packet received {}", packet);
         packet.handle(this);
     }
 

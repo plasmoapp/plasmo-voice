@@ -1,19 +1,15 @@
 package su.plo.voice.server.connection;
 
 import com.google.common.collect.Maps;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
-import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
@@ -29,51 +25,37 @@ import java.util.stream.Collectors;
 public final class VoiceTcpConnectionManager implements TcpServerConnectionManager {
 
     private final BaseVoiceServer voiceServer;
-    @Getter
-    private final byte[] aesEncryptionKey;
 
     private final Object playerStateLock = new Object();
 
-    public VoiceTcpConnectionManager(BaseVoiceServer voiceServer) {
+    public VoiceTcpConnectionManager(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
-
-        UUID key = UUID.randomUUID();
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeLong(key.getMostSignificantBits());
-        out.writeLong(key.getLeastSignificantBits());
-
-        this.aesEncryptionKey = out.toByteArray();
     }
 
     @Override
-    public void broadcast(@NotNull Packet<ClientPacketTcpHandler> packet, @Nullable Predicate<VoicePlayer> filter) {
-        for (VoicePlayer player : voiceServer.getPlayerManager().getPlayers()) {
+    public void broadcast(@NotNull Packet<ClientPacketTcpHandler> packet, @Nullable Predicate<VoiceServerPlayer> filter) {
+        for (VoiceServerPlayer player : voiceServer.getPlayerManager().getPlayers()) {
             if ((filter == null || filter.test(player)) && player.hasVoiceChat())
                 player.sendPacket(packet);
         }
     }
 
     @Override
-    public void broadcast(@NotNull Packet<ClientPacketTcpHandler> packet) {
-        broadcast(packet, null);
-    }
-
-    @Override
-    public void connect(@NotNull VoicePlayer player) {
-        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
+    public void connect(@NotNull VoiceServerPlayer player) {
+        if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
         UUID secret = voiceServer.getUdpConnectionManager()
                 .getSecretByPlayerId(player.getInstance().getUUID());
 
-        ServerConfig.Host host = voiceServer.getConfig().get().getHost();
-        ServerConfig.Host.Public hostPublic = host.getHostPublic();
+        ServerConfig.Host host = voiceServer.getConfig().host();
+        ServerConfig.Host.Public hostPublic = host.hostPublic();
 
-        String ip = host.getIp();
-        if (ip.isEmpty() && hostPublic != null) ip = hostPublic.getIp();
+        String ip = host.ip();
+        if (ip.isEmpty() && hostPublic != null) ip = hostPublic.ip();
 
-        int port = hostPublic != null ? hostPublic.getPort() : host.getPort();
+        int port = hostPublic != null ? hostPublic.port() : host.port();
         if (port == 0) {
-            port = host.getPort();
+            port = host.port();
             if (port == 0) {
                 port = voiceServer.getUdpServer().get()
                         .getRemoteAddress().get()
@@ -89,16 +71,16 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     }
 
     @Override
-    public void sendConfigInfo(@NotNull VoicePlayer receiver) {
-        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
+    public void sendConfigInfo(@NotNull VoiceServerPlayer receiver) {
+        if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
-        ServerConfig config = voiceServer.getConfig().get();
-        ServerConfig.Voice voiceConfig = config.getVoice();
-        ServerConfig.Voice.Opus opusConfig = voiceConfig.getOpus();
+        ServerConfig config = voiceServer.getConfig();
+        ServerConfig.Voice voiceConfig = config.voice();
+        ServerConfig.Voice.Opus opusConfig = voiceConfig.opus();
 
         Map<String, String> codecParams = Maps.newHashMap();
-        codecParams.put("mode", opusConfig.getMode());
-        codecParams.put("bitrate", String.valueOf(opusConfig.getBitrate()));
+        codecParams.put("mode", opusConfig.mode());
+        codecParams.put("bitrate", String.valueOf(opusConfig.bitrate()));
 
 
         EncryptionInfo aesEncryption;
@@ -111,7 +93,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
 
             aesEncryption = new EncryptionInfo(
                     "AES/CBC/PKCS5Padding",
-                    encryptCipher.doFinal(aesEncryptionKey)
+                    encryptCipher.doFinal(voiceConfig.aesEncryptionKey())
             );
         } catch (Exception e) {
             LogManager.getLogger().error("Failed to encode encryption data: {}", e.toString());
@@ -119,32 +101,31 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
             return;
         }
 
-
         receiver.sendPacket(new ConfigPacket(
-                UUID.fromString(config.getServerId()),
+                UUID.fromString(config.serverId()),
                 new CaptureInfo(
-                        voiceConfig.getSampleRate(),
-                        voiceConfig.getMtuSize(),
+                        voiceConfig.sampleRate(),
+                        voiceConfig.mtuSize(),
                         new CodecInfo("opus", codecParams)
                 ),
                 aesEncryption,
                 voiceServer.getSourceLineManager()
                         .getLines()
                         .stream()
-                        .map(line -> (VoiceSourceLine) line)
-                        .collect(Collectors.toList()),
+                        .map(line -> line.getPlayerSourceLine(receiver))
+                        .collect(Collectors.toSet()),
                 voiceServer.getActivationManager()
                         .getActivations()
                         .stream()
                         .map(activation -> (VoiceActivation) activation) // waytoodank
                         .filter(activation -> receiver.getInstance().hasPermission("voice.activation." + activation.getName()))
-                        .collect(Collectors.toList()),
+                        .collect(Collectors.toSet()),
                 getPlayerPermissions(receiver)
         ));
     }
 
     @Override
-    public void sendPlayerList(@NotNull VoicePlayer receiver) {
+    public void sendPlayerList(@NotNull VoiceServerPlayer receiver) {
         synchronized (playerStateLock) {
             receiver.sendPacket(new PlayerListPacket(
                     voiceServer.getUdpConnectionManager().getConnections()
@@ -157,7 +138,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     }
 
     @Override
-    public void broadcastPlayerInfoUpdate(@NotNull VoicePlayer player) {
+    public void broadcastPlayerInfoUpdate(@NotNull VoiceServerPlayer player) {
         synchronized (playerStateLock) {
             broadcast(new PlayerInfoUpdatePacket(
                     player.getInfo()
@@ -165,7 +146,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
         }
     }
 
-    private Map<String, Boolean> getPlayerPermissions(@NotNull VoicePlayer player) {
+    private Map<String, Boolean> getPlayerPermissions(@NotNull VoiceServerPlayer player) {
         Map<String, Boolean> permissions = Maps.newHashMap();
 
         voiceServer.getPlayerManager()

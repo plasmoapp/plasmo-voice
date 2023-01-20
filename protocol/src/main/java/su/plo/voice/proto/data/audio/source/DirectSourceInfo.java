@@ -7,9 +7,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.proto.data.pos.Pos3d;
-import su.plo.voice.proto.packets.PacketUtil;
 
+import java.io.IOException;
 import java.util.UUID;
 
 @NoArgsConstructor
@@ -17,7 +18,7 @@ import java.util.UUID;
 public final class DirectSourceInfo extends SourceInfo {
 
     @Getter
-    private @Nullable UUID senderId;
+    private @Nullable MinecraftGameProfile sender;
     @Getter
     private @Nullable Pos3d relativePosition;
     @Getter
@@ -33,23 +34,26 @@ public final class DirectSourceInfo extends SourceInfo {
                             boolean stereo,
                             boolean iconVisible,
                             int angle,
-                            @Nullable UUID senderId,
+                            @Nullable MinecraftGameProfile sender,
                             @Nullable Pos3d relativePosition,
                             @Nullable Pos3d lookAngle,
                             boolean cameraRelative) {
         super(addonId, sourceId, lineId, state, codec, stereo, iconVisible, angle);
 
-        this.senderId = senderId;
+        this.sender = sender;
         this.relativePosition = relativePosition;
         this.lookAngle = lookAngle;
         this.cameraRelative = cameraRelative;
     }
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         super.deserialize(in);
 
-        if (in.readBoolean()) this.senderId = PacketUtil.readUUID(in);
+        if (in.readBoolean()) {
+            this.sender = new MinecraftGameProfile();
+            sender.deserialize(in);
+        }
 
         if (in.readBoolean()) {
             this.relativePosition = new Pos3d();
@@ -60,11 +64,11 @@ public final class DirectSourceInfo extends SourceInfo {
     }
 
     @Override
-    public void serialize(ByteArrayDataOutput out) {
+    public void serialize(ByteArrayDataOutput out) throws IOException {
         super.serialize(out);
 
-        out.writeBoolean(senderId != null);
-        if (senderId != null) PacketUtil.writeUUID(out, senderId);
+        out.writeBoolean(sender != null);
+        if (sender != null) sender.serialize(out);
 
         out.writeBoolean(relativePosition != null);
         if (relativePosition != null) relativePosition.serialize(out);

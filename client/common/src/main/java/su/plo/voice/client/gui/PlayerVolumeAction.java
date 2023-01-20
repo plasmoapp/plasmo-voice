@@ -3,7 +3,7 @@ package su.plo.voice.client.gui;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.api.client.MinecraftClientLib;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.connection.ServerConnection;
@@ -19,7 +19,7 @@ public abstract class PlayerVolumeAction {
     private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
 
-    private MinecraftPlayer focusedPlayer;
+    private MinecraftPlayerEntity focusedPlayer;
     private long lastScroll;
 
     public PlayerVolumeAction(@NotNull MinecraftClientLib minecraft,
@@ -33,7 +33,7 @@ public abstract class PlayerVolumeAction {
                 .ifPresent((key) -> key.addPressListener(this::onButton));
     }
 
-    public boolean isShown(@NotNull MinecraftPlayer player) {
+    public boolean isShown(@NotNull MinecraftPlayerEntity player) {
         return focusedPlayer != null &&
                 focusedPlayer.getUUID().equals(player.getUUID()) &&
                 lastScroll != 0L &&
@@ -69,5 +69,5 @@ public abstract class PlayerVolumeAction {
         }
     }
 
-    protected abstract Optional<MinecraftPlayer> getPlayerBySight();
+    protected abstract Optional<MinecraftPlayerEntity> getPlayerBySight();
 }

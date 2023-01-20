@@ -1,33 +1,35 @@
 package su.plo.voice.server;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
-import su.plo.voice.api.addon.annotation.Addon;
+import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
-import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.event.VoiceServerConfigLoadedEvent;
 import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.event.command.CommandsRegisterEvent;
+import su.plo.voice.api.server.event.config.VoiceServerConfigLoadedEvent;
 import su.plo.voice.api.server.event.mute.MuteStorageCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
-import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServer;
+import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.server.audio.capture.ProximityServerActivation;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
@@ -47,17 +49,18 @@ import su.plo.voice.server.socket.NettyUdpServer;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
-// todo: refactor server
-//  need to initialize it after MinecraftServer is created
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
     public static final String CHANNEL_STRING = "plasmo:voice/v2";
+    public static final String SERVICE_CHANNEL_STRING = "plasmo:voice/proxy/v2";
 
-    protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
+    protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     protected final Logger logger = LogManager.getLogger();
     @Getter
@@ -85,6 +88,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected LuckPermsListener luckPermsListener;
 
+    @Getter
     protected VoiceServerConfig config;
     @Getter
     protected VoiceServerLanguages languages;
@@ -104,12 +108,12 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         this.playerManager = new VoiceServerPlayerManager(this, getMinecraftServer());
         eventBus.register(this, playerManager);
 
-        this.activationManager = new VoiceServerActivationManager(this);
+        this.activationManager = new VoiceServerActivationManager(this, tcpConnectionManager, playerManager);
         eventBus.register(this, activationManager);
-        this.sourceLineManager = new VoiceServerSourceLineManager(this);
+        this.sourceLineManager = new VoiceServerSourceLineManager(tcpConnectionManager, addons);
 
         // mutes
-        MuteStorageFactory muteStorageFactory = new MuteStorageFactory(this, executor);
+        MuteStorageFactory muteStorageFactory = new MuteStorageFactory(this, backgroundExecutor);
         MuteStorage muteStorage = muteStorageFactory.createStorage("json");
 
         MuteStorageCreateEvent muteStorageCreateEvent = new MuteStorageCreateEvent(muteStorage);
@@ -124,11 +128,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             return;
         }
 
-        this.muteManager = new VoiceMuteManager(this, this.muteStorage, executor);
+        this.muteManager = new VoiceMuteManager(this, this.muteStorage, backgroundExecutor);
 
         try {
             Class.forName("net.luckperms.api.LuckPermsProvider");
-            this.luckPermsListener = new LuckPermsListener(this, playerManager, executor);
+            this.luckPermsListener = new LuckPermsListener(this, playerManager, backgroundExecutor);
             luckPermsListener.subscribe();
         } catch (IllegalStateException | ClassNotFoundException ignored) {
             // luckperms not found
@@ -158,7 +162,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         if (udpServer != null) {
             udpServer.stop();
-
             this.udpServer = null;
         }
 
@@ -188,11 +191,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             File configFile = new File(getConfigFolder(), "config.toml");
             VoiceServerConfig oldConfig = config;
 
-            this.config = toml.load(VoiceServerConfig.class, configFile, false);
-            toml.save(VoiceServerConfig.class, config, configFile);
+            this.config = TOML.load(VoiceServerConfig.class, configFile, false);
+            TOML.save(VoiceServerConfig.class, config, configFile);
 
             if (oldConfig != null) {
-                restartUdpServer = !config.getHost().equals(oldConfig.getHost());
+                restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
             this.languages = new VoiceServerLanguages();
@@ -202,6 +205,26 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                     ServerLanguage.class,
                     "en_us"
             );
+
+            // load forwarding secret
+            // todo: use env
+            File forwardingSecretFile = new File(getConfigFolder(), "forwarding-secret");
+            if (forwardingSecretFile.exists()) {
+                UUID forwardingSecret = UUID.fromString(new String(Files.readAllBytes(forwardingSecretFile.toPath())));
+                config.host().forwardingSecret(forwardingSecret);
+            }
+
+            // load AES key
+            if (oldConfig != null && oldConfig.voice().aesEncryptionKey() != null) {
+                config.voice().aesEncryptionKey(oldConfig.voice().aesEncryptionKey());
+            } else {
+                UUID aesEncryptionKey = UUID.randomUUID();
+                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                out.writeLong(aesEncryptionKey.getMostSignificantBits());
+                out.writeLong(aesEncryptionKey.getLeastSignificantBits());
+
+                config.voice().aesEncryptionKey(out.toByteArray());
+            }
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }
@@ -214,12 +237,12 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         if (restartUdpServer) startUdpServer();
     }
 
-    public void startUdpServer() {
-        Collection<VoicePlayer> connectedPlayers = null;
+    private void startUdpServer() {
+        Collection<VoiceServerPlayer> connectedPlayers = null;
         if (this.udpServer != null) {
             connectedPlayers = udpConnectionManager.getConnections()
                     .stream()
-                    .map(UdpConnection::getPlayer)
+                    .map(UdpServerConnection::getPlayer)
                     .collect(Collectors.toList());
             this.udpServer.stop();
             this.udpServer = null;
@@ -233,13 +256,13 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         server = createUdpServerEvent.getServer();
 
         try {
-            int port = config.getHost().getPort();
+            int port = config.host().port();
             if (port == 0) {
-                port = getMinecraftServerPort();
+                port = getMinecraftServer().getPort();
                 if (port <= 0) port = 0;
             }
 
-            server.start(config.getHost().getIp(), port);
+            server.start(config.host().ip(), port);
             this.udpServer = server;
 
             if (connectedPlayers != null) {
@@ -262,7 +285,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         permissions.register("voice.reconnect", PermissionDefault.TRUE);
 
         // register commands
-        MinecraftCommandManager commandManager = getMinecraftServer().getCommandManager();
+        MinecraftCommandManager<MinecraftCommand> commandManager = getMinecraftServer().getCommandManager();
         commandManager.clear();
 
         eventBus.call(new CommandsRegisterEvent(this, commandManager));
@@ -282,21 +305,14 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     @Override
-    protected Addon.Scope getScope() {
-        return Addon.Scope.SERVER;
+    protected AddonScope getScope() {
+        return AddonScope.SERVER;
     }
 
     @Override
     public Optional<UdpServer> getUdpServer() {
         return Optional.ofNullable(udpServer);
     }
-
-    @Override
-    public Optional<ServerConfig> getConfig() {
-        return Optional.ofNullable(config);
-    }
-
-    public abstract int getMinecraftServerPort();
 
     protected abstract PermissionSupplier createPermissionSupplier();
 }

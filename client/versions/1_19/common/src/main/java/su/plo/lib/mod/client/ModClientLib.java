@@ -18,7 +18,6 @@ import su.plo.lib.api.client.locale.MinecraftLanguage;
 import su.plo.lib.api.client.render.MinecraftTesselator;
 import su.plo.lib.api.client.render.MinecraftWindow;
 import su.plo.lib.api.client.render.particle.MinecraftParticles;
-import su.plo.lib.api.client.render.texture.MinecraftPlayerSkins;
 import su.plo.lib.api.client.sound.MinecraftSoundManager;
 import su.plo.lib.api.client.world.MinecraftClientWorld;
 import su.plo.lib.mod.client.connection.ModServerConnection;
@@ -56,7 +55,7 @@ public final class ModClientLib implements MinecraftClientLib {
     @Getter
     private final MinecraftParticles simpleParticles = new ModSimpleParticles();
     @Getter
-    private final MinecraftPlayerSkins playerSkins = new ModPlayerSkins();
+    private final ModPlayerSkins playerSkins = new ModPlayerSkins();
     @Getter
     private final MinecraftOptions options = new ModOptions();
 

@@ -9,6 +9,7 @@ import lombok.ToString;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
+import java.io.IOException;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -28,7 +29,7 @@ public class SelfSourceInfo implements PacketSerializable {
     private long sequenceNumber;
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         this.sourceInfo = SourceInfo.of(in);
         this.playerId = PacketUtil.readUUID(in);
         this.activationId = PacketUtil.readUUID(in);
@@ -36,7 +37,7 @@ public class SelfSourceInfo implements PacketSerializable {
     }
 
     @Override
-    public void serialize(ByteArrayDataOutput out) {
+    public void serialize(ByteArrayDataOutput out) throws IOException {
         checkNotNull(sourceInfo).serialize(out);
         PacketUtil.writeUUID(out, playerId);
         PacketUtil.writeUUID(out, activationId);

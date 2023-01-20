@@ -19,22 +19,27 @@ import net.minecraftforge.server.permission.nodes.PermissionNode;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
+import su.plo.voice.api.server.event.player.PlayerJoinEvent;
+import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.forge.server.connection.ForgeServerChannelHandler;
+import su.plo.voice.forge.server.connection.ForgeServerServiceChannelHandler;
 import su.plo.voice.mod.server.ModVoiceServer;
-import su.plo.voice.server.event.player.PlayerJoinEvent;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public final class ForgeVoiceServer extends ModVoiceServer<ForgeServerChannelHandler> {
+public final class ForgeVoiceServer
+        extends ModVoiceServer<ForgeServerChannelHandler, ForgeServerServiceChannelHandler> {
 
     private EventNetworkChannel channel;
+    private EventNetworkChannel serviceChannel;
 
-    public void onInitialize(EventNetworkChannel channel) {
+    public void onInitialize(@NotNull EventNetworkChannel channel,
+                             @NotNull EventNetworkChannel serviceChannel) {
         this.channel = channel;
+        this.serviceChannel = serviceChannel;
     }
 
     @Override
@@ -75,11 +80,16 @@ public final class ForgeVoiceServer extends ModVoiceServer<ForgeServerChannelHan
         };
     }
 
-
-
     @Override
     protected ForgeServerChannelHandler createChannelHandler() {
-        ForgeServerChannelHandler handler = new ForgeServerChannelHandler(this, channel);
+        ForgeServerChannelHandler handler = new ForgeServerChannelHandler(this, serviceChannel);
+        MinecraftForge.EVENT_BUS.register(handler);
+        return handler;
+    }
+
+    @Override
+    protected ForgeServerServiceChannelHandler createServiceChannelHandler() {
+        ForgeServerServiceChannelHandler handler = new ForgeServerServiceChannelHandler(this, serviceChannel);
         MinecraftForge.EVENT_BUS.register(handler);
         return handler;
     }

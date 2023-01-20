@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -17,6 +18,7 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 public class VoiceActivation implements Activation, PacketSerializable {
 
@@ -28,6 +30,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     }
 
     @Getter
+    @EqualsAndHashCode.Include
     protected UUID id;
     @Getter
     protected String name;
@@ -38,6 +41,8 @@ public class VoiceActivation implements Activation, PacketSerializable {
     protected List<Integer> distances = ImmutableList.of();
     @Getter
     protected int defaultDistance;
+    @Getter
+    protected boolean proximity;
     @Getter
     protected boolean transitive;
     @Getter
@@ -50,6 +55,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
                            @NotNull String icon,
                            List<Integer> distances,
                            int defaultDistance,
+                           boolean proximity,
                            boolean stereoSupported,
                            boolean transitive,
                            int weight) {
@@ -59,6 +65,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.id = generateId(name);
         this.distances = checkNotNull(distances);
         this.defaultDistance = defaultDistance;
+        this.proximity = proximity;
         this.transitive = transitive;
         this.weight = weight;
         this.stereoSupported = stereoSupported;
@@ -89,6 +96,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.id = VoiceActivation.generateId(name);
         this.distances = PacketUtil.readIntList(in);
         this.defaultDistance = in.readInt();
+        this.proximity = in.readBoolean();
         this.transitive = in.readBoolean();
         this.weight = in.readInt();
         this.stereoSupported = in.readBoolean();
@@ -101,6 +109,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         out.writeUTF(icon);
         PacketUtil.writeIntList(out, distances);
         out.writeInt(defaultDistance);
+        out.writeBoolean(proximity);
         out.writeBoolean(transitive);
         out.writeInt(weight);
         out.writeBoolean(stereoSupported);

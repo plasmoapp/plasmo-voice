@@ -4,13 +4,13 @@ import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.server.event.player.PlayerJoinEvent;
+import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.server.player.PlayerModLoader;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.ServerLanguage;
-import su.plo.voice.server.event.player.PlayerJoinEvent;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
-import su.plo.voice.server.player.VoiceServerPlayer;
+import su.plo.voice.server.player.BaseVoicePlayer;
 
 import java.util.List;
 import java.util.Map;
@@ -34,31 +34,31 @@ public abstract class BaseServerChannelHandler {
         channels.clear();
     }
 
-    protected void handleRegisterChannels(List<String> channels, VoicePlayer player) {
-        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
+    protected void handleRegisterChannels(List<String> channels, VoiceServerPlayer player) {
+        if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
         if (channels.contains(BaseVoiceServer.CHANNEL_STRING)) {
             voiceServer.getTcpConnectionManager().connect(player);
             cancelPlayerCheckFuture(player.getInstance().getUUID());
 
-            ((VoiceServerPlayer) player).setModLoader(
+            ((BaseVoicePlayer<?>) player).setModLoader(
                     channels.contains("fml:handshake")
                             ? PlayerModLoader.FORGE
                             : PlayerModLoader.FABRIC
             );
-        } else if (voiceServer.getConfig().get().getVoice().isClientModRequired()) {
+        } else if (voiceServer.getConfig().voice().clientModRequired()) {
             kickModRequired(player);
         }
     }
 
     @EventSubscribe
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
-        if (!voiceServer.getUdpServer().isPresent() || !voiceServer.getConfig().isPresent()) return;
+        if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
-        if (voiceServer.getConfig().get().getVoice().isClientModRequired()) {
+        if (voiceServer.getConfig().voice().clientModRequired()) {
             cancelPlayerCheckFuture(event.getPlayerId());
 
-            playerCheckFutures.put(event.getPlayerId(), voiceServer.getExecutor().schedule(() -> {
+            playerCheckFutures.put(event.getPlayerId(), voiceServer.getBackgroundExecutor().schedule(() -> {
                 voiceServer.getPlayerManager().getPlayerById(event.getPlayerId()).ifPresent((player) ->
                         voiceServer.getMinecraftServer().executeInMainThread(() -> kickModRequired(player))
                 );
@@ -78,7 +78,7 @@ public abstract class BaseServerChannelHandler {
         if (future != null) future.cancel(false);
     }
 
-    private void kickModRequired(VoicePlayer player) {
+    private void kickModRequired(VoiceServerPlayer player) {
         ServerLanguage language = voiceServer.getLanguages().getLanguage(player.getInstance().getLanguage());
         player.getInstance().kick(MinecraftTextComponent.literal(
                 language.modMissingKickMessage()

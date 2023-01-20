@@ -9,8 +9,10 @@ dependencies {
 
     implementation(project(":api:common"))
     implementation(project(":api:server"))
+    implementation(project(":api:server-common"))
 
     implementation(project(":server:common"))
+    implementation(project(":server-common"))
     implementation(project(":common"))
 
     implementation(project(":protocol"))

@@ -10,7 +10,7 @@ import net.minecraftforge.network.NetworkDirection;
 import net.minecraftforge.network.NetworkEvent;
 import net.minecraftforge.network.event.EventNetworkChannel;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.mod.server.connection.ModServerChannelHandler;
 import su.plo.voice.server.BaseVoiceServer;
 
@@ -51,7 +51,7 @@ public final class ForgeServerChannelHandler extends ModServerChannelHandler {
             }
         }
 
-        VoicePlayer player = voiceServer.getPlayerManager().wrap(serverPlayer);
+        VoiceServerPlayer player = voiceServer.getPlayerManager().wrap(serverPlayer);
         handleRegisterChannels(
                 channels.stream().map(ResourceLocation::toString).collect(Collectors.toList()),
                 player

@@ -13,8 +13,8 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
-import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
+import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerDisconnectPacket;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
@@ -27,7 +27,7 @@ import java.net.InetSocketAddress;
 import java.util.UUID;
 
 @ToString(of = {"channel", "secret", "player", "keepAlive", "sentKeepAlive"})
-public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpHandler {
+public final class NettyUdpConnection implements UdpServerConnection, ServerPacketUdpHandler {
 
     private final PlasmoVoiceServer voiceServer;
     private final NioDatagramChannel channel;
@@ -38,7 +38,7 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
     @Getter
     private final UUID secret;
     @Getter
-    private final VoicePlayer player;
+    private final VoiceServerPlayer player;
     @Getter
     private long keepAlive = System.currentTimeMillis();
     @Getter
@@ -51,7 +51,7 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
     public NettyUdpConnection(@NotNull PlasmoVoiceServer voiceServer,
                               @NotNull NioDatagramChannel channel,
                               @NotNull UUID secret,
-                              @NotNull VoicePlayer player) {
+                              @NotNull VoiceServerPlayer player) {
         this.voiceServer = voiceServer;
         this.channel = channel;
         this.secret = secret;
@@ -76,8 +76,7 @@ public final class NettyUdpConnection implements UdpConnection, ServerPacketUdpH
     @Override
     public void handlePacket(Packet<ServerPacketUdpHandler> packet) {
         UdpPacketReceivedEvent event = new UdpPacketReceivedEvent(this, packet);
-        voiceServer.getEventBus().call(event);
-        if (event.isCancelled()) return;
+        if (!voiceServer.getEventBus().call(event)) return;
 
         packet.handle(this);
     }

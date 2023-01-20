@@ -7,12 +7,14 @@ import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 
-public final class VoiceServerPlayerSource extends VoiceServerPositionalSource<PlayerSourceInfo> implements ServerPlayerSource {
+public final class VoiceServerPlayerSource
+        extends VoiceServerPositionalSource<PlayerSourceInfo>
+        implements ServerPlayerSource {
 
-    private final VoicePlayer player;
+    private final VoiceServerPlayer player;
     private final ServerPos3d playerPosition = new ServerPos3d();
 
     public VoiceServerPlayerSource(@NotNull PlasmoVoiceServer voiceServer,
@@ -20,7 +22,7 @@ public final class VoiceServerPlayerSource extends VoiceServerPositionalSource<P
                                    @NotNull ServerSourceLine line,
                                    @Nullable String codec,
                                    boolean stereo,
-                                   @NotNull VoicePlayer player) {
+                                   @NotNull VoiceServerPlayer player) {
         super(voiceServer, addon, player.getInstance().getUUID(), line, codec, stereo);
 
         this.player = player;
@@ -28,7 +30,7 @@ public final class VoiceServerPlayerSource extends VoiceServerPositionalSource<P
     }
 
     @Override
-    public @NotNull VoicePlayer getPlayer() {
+    public @NotNull VoiceServerPlayer getPlayer() {
         return player;
     }
 
@@ -37,7 +39,7 @@ public final class VoiceServerPlayerSource extends VoiceServerPositionalSource<P
         return player.getInstance().getServerPosition(playerPosition);
     }
 
-    private boolean filterVanish(@NotNull VoicePlayer player) {
+    private boolean filterVanish(@NotNull VoiceServerPlayer player) {
         return
                 !player.equals(this.player) &&
                 player.getInstance().canSee(this.player.getInstance());

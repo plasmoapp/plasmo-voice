@@ -25,6 +25,16 @@ public final class PaperDefaultCommandSource implements MinecraftCommandSource {
     }
 
     @Override
+    public void sendActionBar(@NotNull String text) {
+        source.sendMessage(text);
+    }
+
+    @Override
+    public void sendActionBar(@NotNull MinecraftTextComponent text) {
+        source.sendMessage(textConverter.convert(text));
+    }
+
+    @Override
     public @NotNull String getLanguage() {
         return "en_us";
     }

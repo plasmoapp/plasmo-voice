@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
+import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 
@@ -28,7 +29,7 @@ public abstract class BaseAudioPacket<T extends PacketHandler> implements Packet
     public void read(ByteArrayDataInput in) throws IOException {
         this.sequenceNumber = in.readLong();
 
-        int length = in.readInt();
+        int length = PacketUtil.readSafeInt(in, 1, 2048);
         byte[] data = new byte[length];
         in.readFully(data);
         this.data = data;

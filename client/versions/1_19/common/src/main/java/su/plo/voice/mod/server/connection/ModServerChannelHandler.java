@@ -5,7 +5,7 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.connection.BaseServerChannelHandler;
@@ -21,7 +21,7 @@ public abstract class ModServerChannelHandler extends BaseServerChannelHandler {
     }
 
     @Override
-    protected void handleRegisterChannels(List<String> channels, VoicePlayer player) {
+    protected void handleRegisterChannels(List<String> channels, VoiceServerPlayer player) {
         super.handleRegisterChannels(channels, player);
         channels.forEach((channel) ->
                 ((ModServerPlayer) player.getInstance()).addChannel(channel)
@@ -37,7 +37,7 @@ public abstract class ModServerChannelHandler extends BaseServerChannelHandler {
                     .ifPresent(packet -> {
 //                        LogManager.getLogger().info("Channel packet received {}", packet);
 
-                        VoicePlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
+                        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
 
                         PlayerChannelHandler channel = channels.computeIfAbsent(
                                 player.getUUID(),

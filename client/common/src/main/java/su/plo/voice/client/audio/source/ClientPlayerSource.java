@@ -2,7 +2,7 @@ package su.plo.voice.client.audio.source;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.client.MinecraftClientLib;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
@@ -45,7 +45,7 @@ public final class ClientPlayerSource extends BaseClientAudioSource<PlayerSource
         return lookAngle;
     }
 
-    private Optional<MinecraftPlayer> getSourcePlayer() {
+    private Optional<MinecraftPlayerEntity> getSourcePlayer() {
         return minecraft.getWorld().flatMap(world -> world.getPlayerById(sourceInfo.getPlayerInfo().getPlayerId()));
     }
 }

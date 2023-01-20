@@ -3,6 +3,7 @@ package su.plo.voice.proto.data.audio.line;
 import com.google.common.base.Charsets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -19,6 +20,7 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @ToString
 public class VoiceSourceLine implements SourceLine, PacketSerializable {
 
@@ -30,6 +32,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     }
 
     @Getter
+    @EqualsAndHashCode.Include
     protected UUID id;
     @Getter
     protected String name;

@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.AddonManager;
-import su.plo.voice.api.addon.annotation.Addon;
+import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.addon.annotation.processor.JsonAddon;
 
 import java.io.BufferedInputStream;
@@ -38,12 +38,12 @@ public final class VoiceAddonManager implements AddonManager {
     private static final Logger LOGGER = LogManager.getLogger(VoiceAddonManager.class);
 
     private final BaseVoice voice;
-    private final Addon.Scope scope;
+    private final AddonScope scope;
 
     private final Map<Object, AddonContainer> addonByInstance = Maps.newHashMap();
     private final Map<String, AddonContainer> addons = Maps.newHashMap();
 
-    public VoiceAddonManager(BaseVoice voice, Addon.Scope scope) {
+    public VoiceAddonManager(BaseVoice voice, AddonScope scope) {
         this.voice = voice;
         this.scope = scope;
     }

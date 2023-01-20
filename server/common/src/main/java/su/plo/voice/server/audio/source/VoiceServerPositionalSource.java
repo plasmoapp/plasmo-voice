@@ -9,7 +9,8 @@ import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerPositionalSource;
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
-import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
+import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
@@ -18,8 +19,10 @@ import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import java.util.UUID;
 
 public abstract class VoiceServerPositionalSource<S extends SourceInfo>
-        extends BaseServerSource<S>
+        extends BaseServerAudioSource<S, VoiceServerPlayer>
         implements ServerPositionalSource<S> {
+
+    private final PlasmoVoiceServer voiceServer;
 
     private final ServerPos3d playerPosition = new ServerPos3d();
 
@@ -29,7 +32,9 @@ public abstract class VoiceServerPositionalSource<S extends SourceInfo>
                                        @NotNull ServerSourceLine line,
                                        @Nullable String codec,
                                        boolean stereo) {
-        super(voiceServer, addon, id, line, codec, stereo);
+        super(addon, id, line, codec, stereo);
+
+        this.voiceServer = voiceServer;
     }
 
     @Override
@@ -53,7 +58,7 @@ public abstract class VoiceServerPositionalSource<S extends SourceInfo>
         ServerPos3d sourcePosition = getPosition();
         double distanceSquared = distance * distance;
 
-        for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
+        for (UdpServerConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
             if (!testPlayer(connection.getPlayer())) continue;
 
             connection.getPlayer().getInstance().getServerPosition(playerPosition);
@@ -77,7 +82,7 @@ public abstract class VoiceServerPositionalSource<S extends SourceInfo>
         ServerPos3d sourcePosition = getPosition();
         double distanceSquared = distance * distance;
 
-        for (UdpConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
+        for (UdpServerConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
             if (!testPlayer(connection.getPlayer())) continue;
 
             connection.getPlayer().getInstance().getServerPosition(playerPosition);

@@ -2,21 +2,17 @@ package su.plo.lib.api.client.render.texture;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 public interface MinecraftPlayerSkins {
 
-    CompletableFuture<String> loadSkin(@NotNull UUID playerId, @NotNull String nick, @Nullable String fallback);
+    void loadSkin(@NotNull UUID playerId, @NotNull String nick, @Nullable String fallback);
+
+    void loadSkin(@NotNull MinecraftGameProfile gameProfile);
 
     @NotNull String getSkin(@NotNull UUID playerId, @NotNull String nick);
 
-    default @NotNull String getSteveSkin() {
-        return "textures/entity/steve.png";
-    }
-
-    default @NotNull String getAlexSkin() {
-        return "textures/entity/alex.png";
-    }
+    @NotNull String getDefaultSkin(@NotNull UUID playerId);
 }

@@ -3,7 +3,7 @@ package su.plo.voice.api.server.event.connection;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventCancellableBase;
-import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.Packet;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -15,12 +15,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class UdpPacketReceivedEvent extends EventCancellableBase {
 
     @Getter
-    private final UdpConnection connection;
+    private final UdpServerConnection connection;
 
     @Getter
     private final Packet<?> packet;
 
-    public UdpPacketReceivedEvent(@NotNull UdpConnection connection, @NotNull Packet<?> packet) {
+    public UdpPacketReceivedEvent(@NotNull UdpServerConnection connection, @NotNull Packet<?> packet) {
         this.connection = checkNotNull(connection, "connection cannot be null");
         this.packet = checkNotNull(packet, "packet cannot be null");
     }

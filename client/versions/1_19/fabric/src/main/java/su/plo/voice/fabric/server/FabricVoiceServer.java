@@ -14,15 +14,18 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
+import su.plo.voice.api.server.event.player.PlayerJoinEvent;
+import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.fabric.server.connection.FabricServerChannelHandler;
+import su.plo.voice.fabric.server.connection.FabricServerServiceChannelHandler;
 import su.plo.voice.mod.server.ModVoiceServer;
-import su.plo.voice.server.event.player.PlayerJoinEvent;
-import su.plo.voice.server.event.player.PlayerQuitEvent;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class FabricVoiceServer extends ModVoiceServer<FabricServerChannelHandler> implements ModInitializer {
+public final class FabricVoiceServer
+        extends ModVoiceServer<FabricServerChannelHandler, FabricServerServiceChannelHandler>
+        implements ModInitializer {
 
     @Override
     public void onInitialize() {
@@ -45,11 +48,19 @@ public final class FabricVoiceServer extends ModVoiceServer<FabricServerChannelH
         this.handler = createChannelHandler();
         S2CPlayChannelEvents.REGISTER.register(handler);
         ServerPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
+
+        this.serviceHandler = createServiceChannelHandler();
+        ServerPlayNetworking.registerGlobalReceiver(SERVICE_CHANNEL, handler);
     }
 
     @Override
     protected FabricServerChannelHandler createChannelHandler() {
         return new FabricServerChannelHandler(this);
+    }
+
+    @Override
+    protected FabricServerServiceChannelHandler createServiceChannelHandler() {
+        return new FabricServerServiceChannelHandler(this);
     }
 
     @Override

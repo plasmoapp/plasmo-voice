@@ -5,7 +5,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
@@ -82,7 +82,7 @@ public class PaperServerEntity<E extends LivingEntity> implements MinecraftServe
     }
 
     @Override
-    public boolean isInvisibleTo(@NotNull MinecraftPlayer player) {
+    public boolean isInvisibleTo(@NotNull MinecraftPlayerEntity player) {
         throw new IllegalStateException("Not implemented"); // todo: implement
     }
 

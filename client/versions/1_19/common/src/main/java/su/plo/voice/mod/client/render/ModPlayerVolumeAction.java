@@ -10,7 +10,7 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.client.MinecraftClientLib;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.lib.mod.entity.ModPlayer;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
@@ -28,7 +28,7 @@ public final class ModPlayerVolumeAction extends PlayerVolumeAction {
     }
 
     @Override
-    protected Optional<MinecraftPlayer> getPlayerBySight() {
+    protected Optional<MinecraftPlayerEntity> getPlayerBySight() {
         Level level = minecraft.level;
         LocalPlayer player = minecraft.player;
         if (level == null || player == null) return Optional.empty();

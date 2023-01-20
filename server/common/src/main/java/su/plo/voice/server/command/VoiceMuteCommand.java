@@ -9,7 +9,7 @@ import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
-import su.plo.lib.api.server.entity.MinecraftServerPlayer;
+import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.ServerLanguage;
@@ -37,7 +37,7 @@ public final class VoiceMuteCommand implements MinecraftCommand {
             return;
         }
 
-        Optional<MinecraftServerPlayer> player = minecraftServer.getPlayerByName(arguments[0]);
+        Optional<MinecraftServerPlayerEntity> player = minecraftServer.getPlayerByName(arguments[0]);
         if (!player.isPresent()) {
             source.sendMessage(language.playerNotFound());
             return;
@@ -97,8 +97,8 @@ public final class VoiceMuteCommand implements MinecraftCommand {
         }
 
         UUID mutedBy = null;
-        if (source instanceof MinecraftServerPlayer) {
-            mutedBy = ((MinecraftServerPlayer) source).getUUID();
+        if (source instanceof MinecraftServerPlayerEntity) {
+            mutedBy = ((MinecraftServerPlayerEntity) source).getUUID();
         }
 
         muteManager.mute(

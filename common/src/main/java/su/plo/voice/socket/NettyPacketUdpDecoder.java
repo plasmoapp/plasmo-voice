@@ -18,7 +18,7 @@ public final class NettyPacketUdpDecoder extends MessageToMessageDecoder<Datagra
         if (readableBytes <= 0) return;
 
         byte[] bytes = new byte[readableBytes];
-        packet.content().readBytes(bytes);
+        packet.content().duplicate().readBytes(bytes);
 
         Optional<PacketUdp> packetUdp = PacketUdpCodec.decode(ByteStreams.newDataInput(bytes));
         if (!packetUdp.isPresent()) return;
@@ -26,6 +26,6 @@ public final class NettyPacketUdpDecoder extends MessageToMessageDecoder<Datagra
 
         if (System.currentTimeMillis() - decoded.getTimestamp() > PacketUdp.TTL) return;
 
-        out.add(new NettyPacketUdp(decoded, packet.sender()));
+        out.add(new NettyPacketUdp(packet, bytes, decoded));
     }
 }

@@ -10,56 +10,61 @@ import java.util.Collection;
  */
 public interface ServerConfig {
 
-    @NotNull String getServerId();
+    @NotNull String serverId();
 
-    @NotNull Host getHost();
+    @NotNull Host host();
 
-    @NotNull Voice getVoice();
+    @NotNull Voice voice();
 
     interface Host {
 
-        @NotNull String getIp();
+        @NotNull String ip();
 
-        int getPort();
+        int port();
 
-        boolean isProxyProtocol();
-
-        @Nullable Public getHostPublic();
+        @Nullable Public hostPublic();
 
         interface Public {
 
-            @NotNull String getIp();
+            @NotNull String ip();
 
-            int getPort();
+            int port();
         }
     }
 
     interface Voice {
 
-        int getSampleRate();
+        int sampleRate();
 
-        int getKeepAliveTimeoutMs();
+        int keepAliveTimeoutMs();
 
-        int getMtuSize();
+        int mtuSize();
 
-        boolean isClientModRequired();
+        boolean clientModRequired();
 
-        @NotNull Proximity getProximity();
+        /**
+         * Gets the aes encryption key
+         *
+         * @return the aes encryption key
+         */
+        byte[] aesEncryptionKey();
 
-        @NotNull Opus getOpus();
+        @NotNull Proximity proximity();
+
+        @NotNull Opus opus();
 
         interface Proximity {
 
-            Collection<Integer> getDistances();
+            Collection<Integer> distances();
 
-            int getDefaultDistance();
+            int defaultDistance();
         }
 
         interface Opus {
 
-            @NotNull String getMode();
+            @NotNull String mode();
 
-            int getBitrate();
+            int bitrate();
         }
     }
 }

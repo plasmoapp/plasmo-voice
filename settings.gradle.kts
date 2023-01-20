@@ -57,9 +57,19 @@ file("client/versions").listFilesOrdered {
     include("client:versions:${it.name}:forge")
 }
 
+// Server Common (Module for common code between server and proxy implementations)
+include("server-common")
+
 // Server
 file("server").listFilesOrdered {
     return@listFilesOrdered it.isDirectory && it.name != "build"
 }.forEach {
     include("server:${it.name}")
+}
+
+// Proxy
+file("proxy").listFilesOrdered {
+    return@listFilesOrdered it.isDirectory && it.name != "build"
+}.forEach {
+    include("proxy:${it.name}")
 }

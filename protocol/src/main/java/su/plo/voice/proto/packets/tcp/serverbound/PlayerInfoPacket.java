@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 
@@ -36,7 +37,8 @@ public final class PlayerInfoPacket extends PlayerStatePacket {
 
         this.version = in.readUTF();
 
-        this.publicKey = new byte[in.readInt()];
+        int length = PacketUtil.readSafeInt(in, 1, 2048);
+        this.publicKey = new byte[length];
         in.readFully(publicKey);
     }
 

@@ -202,7 +202,6 @@ public abstract class BaseAlSource implements AlSource {
 
     private boolean callParamEvent(int param, Object value) {
         AlSourceUpdateParamEvent event = new AlSourceUpdateParamEvent(this, param, value);
-        client.getEventBus().call(event);
-        return !event.isCancelled();
+        return client.getEventBus().call(event);
     }
 }

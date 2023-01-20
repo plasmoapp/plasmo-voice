@@ -6,10 +6,10 @@ import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
-import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.api.server.player.VoicePlayerManager;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.ServerLanguage;
+import su.plo.voice.server.player.VoiceServerPlayerManager;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
@@ -26,7 +26,7 @@ public final class VoiceMuteManager implements MuteManager {
 
     private final BaseVoiceServer voiceServer;
     private final MuteStorage storage;
-    private final VoicePlayerManager playerManager;
+    private final VoiceServerPlayerManager playerManager;
 
     public VoiceMuteManager(@NotNull BaseVoiceServer voiceServer,
                             @NotNull MuteStorage storage,
@@ -45,7 +45,7 @@ public final class VoiceMuteManager implements MuteManager {
                                          @Nullable MuteDurationUnit durationUnit,
                                          @Nullable String reason,
                                          boolean silent) {
-        VoicePlayer player = playerManager.getPlayerById(playerId)
+        VoiceServerPlayer player = playerManager.getPlayerById(playerId)
                 .orElseThrow(() -> new IllegalArgumentException("Player not found"));
 
         ServerLanguage language = voiceServer.getLanguages().getLanguage(player.getInstance());

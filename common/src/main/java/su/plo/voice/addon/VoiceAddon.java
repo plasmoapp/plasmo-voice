@@ -3,7 +3,7 @@ package su.plo.voice.addon;
 import lombok.Getter;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.addon.annotation.Addon;
+import su.plo.voice.api.addon.AddonScope;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -17,7 +17,7 @@ public final class VoiceAddon implements AddonContainer {
     @Getter
     private final String name;
     @Getter
-    private final Addon.Scope scope;
+    private final AddonScope scope;
     @Getter
     private final String version;
     @Getter
@@ -31,7 +31,7 @@ public final class VoiceAddon implements AddonContainer {
 
     public VoiceAddon(String id,
                       String name,
-                      Addon.Scope scope,
+                      AddonScope scope,
                       String version,
                       String[] authors,
                       Path path,

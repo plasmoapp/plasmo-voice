@@ -180,6 +180,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 Collections.emptyList(),
                 0,
                 false,
+                false,
                 true,
                 1
         );

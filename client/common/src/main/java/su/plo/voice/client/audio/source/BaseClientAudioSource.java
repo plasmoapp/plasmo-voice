@@ -309,13 +309,14 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
             }
         }
 
-        if (isStereo(sourceInfo)) {
+        if (isStereo(sourceInfo) && distance > 0) {
             int sourceDistance = Math.min(getSourceDistance(position), distance);
 
             float distanceGain = (1F - (float) sourceDistance / (float) distance);
             volume *= distanceGain;
         }
 
+        System.out.println(volume);
         updateSource((float) volume, packet.getDistance());
 
         // packet compensation
@@ -396,7 +397,9 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
                     alSource.setVolume(volume);
                     alSource.setFloatArray(0x1004, position); // AL_POSITION
                     alSource.setFloat(0x1020, 0); // AL_REFERENCE_DISTANCE
-                    alSource.setFloat(0x1023, maxDistance); // AL_MAX_DISTANCE
+                    if (maxDistance > 0) {
+                        alSource.setFloat(0x1023, maxDistance); // AL_MAX_DISTANCE
+                    }
 
                     if (config.getVoice().getDirectionalSources().value()) {
                         alSource.setFloatArray(0x1005, lookAngle); // AL_DIRECTION

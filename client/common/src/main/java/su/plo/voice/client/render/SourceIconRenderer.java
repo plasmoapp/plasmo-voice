@@ -16,7 +16,7 @@ import su.plo.lib.api.client.render.MinecraftMatrix;
 import su.plo.lib.api.client.render.MinecraftTesselator;
 import su.plo.lib.api.client.render.VertexBuilder;
 import su.plo.lib.api.entity.MinecraftEntity;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
@@ -80,7 +80,7 @@ public final class SourceIconRenderer {
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
 
-        MinecraftPlayer player = event.getPlayer();
+        MinecraftPlayerEntity player = event.getPlayer();
 
         Optional<MinecraftClientPlayer> clientPlayer = minecraft.getClientPlayer();
         if (!clientPlayer.isPresent()) return;
@@ -286,8 +286,8 @@ public final class SourceIconRenderer {
         if (hasLabel) {
             matrix.translate(0D, 0.3D, 0D);
 
-            if (entity instanceof MinecraftPlayer) {
-                MinecraftPlayer player = (MinecraftPlayer) entity;
+            if (entity instanceof MinecraftPlayerEntity) {
+                MinecraftPlayerEntity player = (MinecraftPlayerEntity) entity;
 
                 if (player.hasLabelScoreboard() && distance < 100D) {
                     matrix.translate(0D, 0.3D, 0D);
@@ -402,6 +402,6 @@ public final class SourceIconRenderer {
     }
 
     private boolean isSneaking(@NotNull MinecraftEntity entity) {
-        return entity instanceof MinecraftPlayer && ((MinecraftPlayer) entity).isSneaking();
+        return entity instanceof MinecraftPlayerEntity && ((MinecraftPlayerEntity) entity).isSneaking();
     }
 }

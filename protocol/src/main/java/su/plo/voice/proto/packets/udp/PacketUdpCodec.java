@@ -32,6 +32,14 @@ public class PacketUdpCodec {
         PACKETS.register(0x100, CustomPacket.class);
     }
 
+    public static byte[] replaceSecret(byte[] data, UUID secret) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        PacketUtil.writeUUID(out, secret);
+
+        System.arraycopy(out.toByteArray(), 0, data, 5, 16);
+        return data;
+    }
+
     public static byte[] encode(Packet<?> packet, UUID secret) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
@@ -59,9 +67,8 @@ public class PacketUdpCodec {
         if (packet != null) {
             UUID secret = PacketUtil.readUUID(in);
             long timestamp = in.readLong();
-            packet.read(in);
 
-            return Optional.of(new PacketUdp(secret, timestamp, packet));
+            return Optional.of(new PacketUdp(secret, timestamp, packet, in));
         }
 
         return Optional.empty();

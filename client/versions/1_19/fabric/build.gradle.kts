@@ -3,7 +3,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 // todo: придумать как использовать из gradle.properties. Сейчас не получается использовать, потому что это не rootProject
 val minecraftVersion = "1.19.2"
 val fabricLoaderVersion = "0.14.9"
-val fabricVersion = "0.62.0+1.19.2"
+val fabricVersion = "0.72.0+1.19.2"
 val fabricPermissionsVersion = "0.2-SNAPSHOT"
 
 architectury {

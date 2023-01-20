@@ -12,7 +12,7 @@ import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.gui.ScreenContainer;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.addon.annotation.Addon;
+import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
@@ -146,7 +146,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             toml.save(ClientConfig.class, config, configFile);
 
             config.setConfigFile(configFile);
-            config.setAsyncExecutor(executor);
+            config.setAsyncExecutor(backgroundExecutor);
 
             eventBus.register(this, config.getKeyBindings());
         } catch (IOException e) {
@@ -203,8 +203,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     @Override
-    protected Addon.Scope getScope() {
-        return Addon.Scope.CLIENT;
+    protected AddonScope getScope() {
+        return AddonScope.CLIENT;
     }
 
     @Override

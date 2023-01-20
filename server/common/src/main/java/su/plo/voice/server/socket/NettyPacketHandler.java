@@ -4,12 +4,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
+import org.apache.logging.log4j.LogManager;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoRequestPacket;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.socket.NettyPacketUdp;
 
+import java.io.IOException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -26,11 +28,17 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         if (voiceServer.getUdpConnectionManager().getConnectionBySecret(secret)
                 .map(connection -> {
-                    if (!connection.getRemoteAddress().equals(nettyPacket.getSender())) {
-                        connection.setRemoteAddress(nettyPacket.getSender());
+                    if (!connection.getRemoteAddress().equals(nettyPacket.getDatagramPacket().sender())) {
+                        connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
                     }
 
-                    connection.handlePacket(packet.getPacket());
+                    try {
+                        System.out.println("Received packet from " + nettyPacket.getDatagramPacket().sender());
+                        connection.handlePacket(packet.getPacket());
+                    } catch (IOException e) {
+                        LogManager.getLogger().warn("Failed to decode packet", e); // todo: optional bad packet logging?
+                    }
+
                     return true;
                 })
                 .orElse(false)
@@ -39,7 +47,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         Optional<UUID> playerId = voiceServer.getUdpConnectionManager().getPlayerIdBySecret(secret);
         if (!playerId.isPresent()) return;
 
-        Optional<VoicePlayer> player = voiceServer.getPlayerManager().getPlayerById(playerId.get());
+        Optional<VoiceServerPlayer> player = voiceServer.getPlayerManager().getPlayerById(playerId.get());
         if (!player.isPresent()) return;
 
         NettyUdpConnection connection = new NettyUdpConnection(
@@ -48,9 +56,10 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 secret,
                 player.get()
         );
-        connection.setRemoteAddress(nettyPacket.getSender());
+        connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
         voiceServer.getUdpConnectionManager().addConnection(connection);
 
         player.get().sendPacket(new PlayerInfoRequestPacket());
+        System.out.println("Received connection from " + nettyPacket.getDatagramPacket().sender());
     }
 }

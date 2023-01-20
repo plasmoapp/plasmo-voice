@@ -12,13 +12,13 @@ import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.api.server.event.connection.TcpPacketReceivedEvent;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
-import su.plo.voice.server.player.VoiceServerPlayer;
+import su.plo.voice.server.player.BaseVoicePlayer;
 import su.plo.voice.util.VersionUtil;
 
 import java.security.KeyFactory;
@@ -33,10 +33,10 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     private final ServerActivationManager activations;
     private final ServerSourceLineManager lines;
     private final ServerSourceManager sources;
-    private final VoicePlayer player;
+    private final VoiceServerPlayer player;
 
     public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
-                                @NotNull VoicePlayer player) {
+                                @NotNull VoiceServerPlayer player) {
         this.voiceServer = voiceServer;
         this.tcpConnections = voiceServer.getTcpConnectionManager();
         this.activations = voiceServer.getActivationManager();
@@ -78,7 +78,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(packet.getPublicKey());
 
-            ((VoiceServerPlayer) player).setPublicKey(keyFactory.generatePublic(publicKeySpec));
+            ((BaseVoicePlayer<?>) player).setPublicKey(keyFactory.generatePublic(publicKeySpec));
         } catch (Exception e) {
             LogManager.getLogger().error("Failed to generate RSA public key: {}", e.toString());
             e.printStackTrace();
@@ -93,7 +93,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerStatePacket packet) {
-        VoiceServerPlayer voicePlayer = (VoiceServerPlayer) player;
+        BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
         voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
         voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
 
@@ -102,7 +102,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerActivationDistancesPacket packet) {
-        VoiceServerPlayer voicePlayer = (VoiceServerPlayer) player;
+        BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
         packet.getDistanceByActivationId().forEach((activationId, distance) -> {
             Optional<ServerActivation> activation = voiceServer.getActivationManager().getActivationById(activationId);
             if (!activation.isPresent()) return;
@@ -122,9 +122,5 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         if (!source.isPresent()) return;
 
         player.sendPacket(new SourceInfoPacket(source.get().getInfo()));
-    }
-
-    private boolean selfFilter(VoicePlayer player) {
-        return player.equals(this.player);
     }
 }

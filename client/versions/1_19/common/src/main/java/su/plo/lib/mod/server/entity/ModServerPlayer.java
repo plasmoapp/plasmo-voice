@@ -7,25 +7,29 @@ import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
-import su.plo.lib.api.server.entity.MinecraftServerPlayer;
+import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.lib.mod.client.texture.ResourceCache;
 import su.plo.lib.mod.entity.ModPlayer;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements MinecraftServerPlayer {
+public final class ModServerPlayer
+        extends ModPlayer<ServerPlayer>
+        implements MinecraftServerPlayerEntity {
 
     private final MinecraftServerLib minecraftServer;
     private final MinecraftTextConverter<Component> textConverter;
@@ -83,6 +87,12 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     }
 
     @Override
+    public @NotNull MinecraftGameProfile getGameProfile() {
+        return minecraftServer.getGameProfile(instance.getUUID())
+                .orElseThrow(() -> new IllegalStateException("Game profile not found"));
+    }
+
+    @Override
     public void sendPacket(@NotNull String channel, byte[] data) {
         instance.connection.send(new ClientboundCustomPayloadPacket(
                 resources.getLocation(channel),
@@ -106,7 +116,21 @@ public final class ModServerPlayer extends ModPlayer<ServerPlayer> implements Mi
     }
 
     @Override
-    public boolean canSee(@NotNull MinecraftServerPlayer player) {
+    public void sendActionBar(@NotNull String text) {
+        instance.connection.send(new ClientboundSetActionBarTextPacket(
+                Component.literal(text)
+        ));
+    }
+
+    @Override
+    public void sendActionBar(@NotNull MinecraftTextComponent text) {
+        instance.connection.send(new ClientboundSetActionBarTextPacket(
+                textConverter.convert(text)
+        ));
+    }
+
+    @Override
+    public boolean canSee(@NotNull MinecraftServerPlayerEntity player) {
         return !player.isInvisibleTo(this);
     }
 

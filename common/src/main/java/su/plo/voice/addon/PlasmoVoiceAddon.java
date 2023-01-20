@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.addon.annotation.Addon;
+import su.plo.voice.api.addon.AddonScope;
 
 import java.nio.file.Path;
 import java.util.Optional;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public final class PlasmoVoiceAddon implements AddonContainer {
 
     private final @NotNull PlasmoVoice object;
-    private final @NotNull Addon.Scope scope;
+    private final @NotNull AddonScope scope;
 
     @Override
     public String getId() {
@@ -27,7 +27,7 @@ public final class PlasmoVoiceAddon implements AddonContainer {
     }
 
     @Override
-    public @NotNull Addon.Scope getScope() {
+    public @NotNull AddonScope getScope() {
         return scope;
     }
 

@@ -3,10 +3,10 @@ package su.plo.lib.mod.entity;
 import lombok.ToString;
 import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 
 @ToString
-public class ModPlayer<P extends Player> extends ModEntity<P> implements MinecraftPlayer {
+public class ModPlayer<P extends Player> extends ModEntity<P> implements MinecraftPlayerEntity {
 
     public ModPlayer(@NotNull P player) {
         super(player);

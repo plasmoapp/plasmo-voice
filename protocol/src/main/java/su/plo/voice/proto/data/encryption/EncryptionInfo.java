@@ -7,6 +7,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import su.plo.voice.proto.packets.PacketSerializable;
+import su.plo.voice.proto.packets.PacketUtil;
+
+import java.io.IOException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,10 +25,11 @@ public final class EncryptionInfo implements PacketSerializable {
     private byte[] data;
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         this.algorithm = in.readUTF();
 
-        byte[] data = new byte[in.readInt()];
+        int length = PacketUtil.readSafeInt(in, 1, Integer.MAX_VALUE);
+        byte[] data = new byte[length];
         in.readFully(data);
         this.data = data;
     }

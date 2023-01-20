@@ -2,6 +2,7 @@ package su.plo.voice.api.server.event.command;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.PlasmoVoiceServer;
@@ -16,10 +17,10 @@ public final class CommandsRegisterEvent implements Event {
     @Getter
     private final PlasmoVoiceServer voiceServer;
     @Getter
-    private final MinecraftCommandManager commandManager;
+    private final MinecraftCommandManager<MinecraftCommand> commandManager;
 
     public CommandsRegisterEvent(@NotNull PlasmoVoiceServer voiceServer,
-                                 @NotNull MinecraftCommandManager commandManager) {
+                                 @NotNull MinecraftCommandManager<MinecraftCommand> commandManager) {
         this.voiceServer = checkNotNull(voiceServer, "voiceServer cannot be null");
         this.commandManager = checkNotNull(commandManager, "commandManager cannot be null");
     }

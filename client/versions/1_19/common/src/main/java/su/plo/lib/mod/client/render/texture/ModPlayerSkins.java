@@ -1,41 +1,46 @@
 package su.plo.lib.mod.client.render.texture;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.hash.Hashing;
 import com.mojang.authlib.GameProfile;
 import com.mojang.authlib.minecraft.MinecraftProfileTexture;
+import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.DynamicTexture;
+import net.minecraft.client.resources.DefaultPlayerSkin;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.client.render.texture.MinecraftPlayerSkins;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 
 public final class ModPlayerSkins implements MinecraftPlayerSkins {
 
     private final Minecraft minecraft = Minecraft.getInstance();
 
-    private final ResourceLocation steveSkin = new ResourceLocation(getSteveSkin());
-    private final ResourceLocation alexSkin = new ResourceLocation(getAlexSkin());
-    private final Map<String, ResourceLocation> skins = new HashMap<>();
-
+    private final Cache<String, ResourceLocation> skins = CacheBuilder
+            .newBuilder()
+            .expireAfterAccess(15L, TimeUnit.SECONDS)
+            .build();
 
     @Override
-    public synchronized CompletableFuture<String> loadSkin(@NotNull UUID playerId,
+    public synchronized void loadSkin(@NotNull UUID playerId,
                                                            @NotNull String nick,
                                                            @Nullable String fallback) {
-        if (skins.containsKey(nick)) {
-            return CompletableFuture.completedFuture(skins.get(nick).toString());
-        }
+        PlayerInfo playerInfo = minecraft.player.connection.getPlayerInfo(playerId);
+        if (playerInfo != null) return;
 
-        CompletableFuture<String> future = new CompletableFuture<>();
+        ResourceLocation skinLocation = skins.getIfPresent(nick);
+        if (skinLocation != null) return;
 
         if (fallback != null) {
             RenderSystem.recordRenderCall(() -> {
@@ -58,8 +63,9 @@ public final class ModPlayerSkins implements MinecraftPlayerSkins {
 
         GameProfile profile = new GameProfile(playerId, nick);
 
-        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = minecraft.getSkinManager().getInsecureSkinInformation(profile);
-        if (textures == null || textures.isEmpty()) {
+        Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = minecraft.getSkinManager()
+                .getInsecureSkinInformation(profile);
+        if (textures.isEmpty()) {
             minecraft.getSkinManager().registerSkins(
                     profile,
                     (type, identifier, texture) -> {
@@ -73,18 +79,47 @@ public final class ModPlayerSkins implements MinecraftPlayerSkins {
             ResourceLocation identifier = new ResourceLocation("skins/" + hash);
             skins.put(profile.getName(), identifier);
         }
+    }
 
-        future.complete(getSkin(playerId, nick));
+    @Override
+    public synchronized void loadSkin(@NotNull MinecraftGameProfile gameProfile) {
+        PlayerInfo playerInfo = minecraft.player.connection.getPlayerInfo(gameProfile.getId());
+        if (playerInfo != null) return;
 
-        return future;
+        ResourceLocation skinLocation = skins.getIfPresent(gameProfile.getName());
+        if (skinLocation != null) return;
+
+        GameProfile profile = new GameProfile(
+                gameProfile.getId(),
+                gameProfile.getName()
+        );
+        gameProfile.getProperties().forEach((property) -> {
+            profile.getProperties().put(property.getName(), new Property(
+                    property.getName(),
+                    property.getValue(),
+                    property.getSignature()
+            ));
+        });
+
+        skinLocation = minecraft.getSkinManager().getInsecureSkinLocation(profile);
+        skins.put(gameProfile.getName(), skinLocation);
     }
 
     @Override
     public synchronized @NotNull String getSkin(@NotNull UUID playerId, @NotNull String nick) {
-        return skins.getOrDefault(nick, shouldUseSlimModel(playerId) ? alexSkin : steveSkin).toString();
+        PlayerInfo playerInfo = minecraft.player.connection.getPlayerInfo(playerId);
+        if (playerInfo != null) {
+            return playerInfo.getSkinLocation().toString();
+        }
+
+        ResourceLocation skinLocation = skins.getIfPresent(nick);
+        if (skinLocation != null) return skinLocation.toString();
+
+        return getDefaultSkin(playerId);
     }
 
-    private static boolean shouldUseSlimModel(@NotNull UUID playerId) {
-        return (playerId.hashCode() & 1) == 1;
+    @Override
+    public @NotNull String getDefaultSkin(@NotNull UUID playerId) {
+        return DefaultPlayerSkin.getDefaultSkin(playerId).toString();
     }
 }

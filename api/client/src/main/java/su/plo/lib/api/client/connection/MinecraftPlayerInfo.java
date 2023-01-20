@@ -2,7 +2,7 @@ package su.plo.lib.api.client.connection;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import su.plo.lib.api.profile.MinecraftGameProfile;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 
 @RequiredArgsConstructor
 public final class MinecraftPlayerInfo {

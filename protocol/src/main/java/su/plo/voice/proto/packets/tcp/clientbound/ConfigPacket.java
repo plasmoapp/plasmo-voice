@@ -1,6 +1,6 @@
 package su.plo.voice.proto.packets.tcp.clientbound;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.Getter;
@@ -15,7 +15,10 @@ import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,14 +32,14 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     private CaptureInfo codec;
     @Getter
     private @Nullable EncryptionInfo encryption;
-    private List<VoiceSourceLine> sourceLines;
-    private List<VoiceActivation> activations;
+    private Set<VoiceSourceLine> sourceLines;
+    private Set<VoiceActivation> activations;
 
     public ConfigPacket(@NotNull UUID serverId,
                         @NotNull CaptureInfo codec,
                         @Nullable EncryptionInfo encryption,
-                        @NotNull List<VoiceSourceLine> sourceLines,
-                        @NotNull List<VoiceActivation> activations,
+                        @NotNull Set<VoiceSourceLine> sourceLines,
+                        @NotNull Set<VoiceActivation> activations,
                         @NotNull Map<String, Boolean> permissions) {
         super(permissions);
 
@@ -68,7 +71,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         }
 
         // source lines
-        this.sourceLines = Lists.newArrayList();
+        this.sourceLines = Sets.newHashSet();
         int size = in.readInt();
         for (int i = 0; i < size; i++) {
             VoiceSourceLine sourceLine = new VoiceSourceLine();
@@ -77,7 +80,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         }
 
         // activations
-        this.activations = new ArrayList<>();
+        this.activations = Sets.newHashSet();
         size = in.readInt();
         for (int i = 0; i < size; i++) {
             VoiceActivation activation = new VoiceActivation();

@@ -7,10 +7,11 @@ import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 
 @RequiredArgsConstructor
-public final class ModCommandManager extends MinecraftCommandManager {
+public final class ModCommandManager extends MinecraftCommandManager<MinecraftCommand> {
 
     private final MinecraftServerLib minecraftServer;
     private final MinecraftTextConverter<Component> textConverter;

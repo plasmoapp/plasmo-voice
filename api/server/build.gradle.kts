@@ -3,6 +3,7 @@ group = "$mavenGroup.api"
 
 val javadocProjects = listOf(
     project(":api:server"),
+    project(":api:server-common"),
     project(":api:common"),
     project(":protocol")
 )
@@ -10,6 +11,9 @@ val javadocProjects = listOf(
 dependencies {
     implementation(project(":api:common"))
     shadow(project(":api:common"))
+
+    implementation(project(":api:server-common"))
+    shadow(project(":api:server-common"))
 
     implementation(project(":protocol"))
     shadow(project(":protocol"))

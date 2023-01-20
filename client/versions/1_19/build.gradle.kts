@@ -52,9 +52,11 @@ subprojects {
         val includedProjects = listOf(
             ":api:common",
             ":api:client",
+            ":api:server-common",
             ":api:server",
             ":client:common",
             ":server:common",
+            ":server-common",
             ":common",
             ":protocol"
         )

@@ -5,9 +5,12 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
+import su.plo.config.ConfigFieldProcessor;
+import su.plo.voice.api.server.config.ServerLanguageProcessor;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 
 @Config
+@ConfigFieldProcessor(ServerLanguageProcessor.class)
 @Data
 @Accessors(fluent = true)
 public final class ServerLanguage {

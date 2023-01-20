@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.client.world.MinecraftClientWorld;
 import su.plo.lib.api.entity.MinecraftEntity;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.lib.mod.entity.ModEntity;
 import su.plo.lib.mod.entity.ModPlayer;
 
@@ -24,11 +24,11 @@ public final class ModClientWorld implements MinecraftClientWorld {
     private final ClientLevel level;
 
     // todo: cleanup?
-    private final Map<UUID, MinecraftPlayer> playerById = Maps.newConcurrentMap();
+    private final Map<UUID, MinecraftPlayerEntity> playerById = Maps.newConcurrentMap();
     private final Map<Integer, MinecraftEntity> entityById = Maps.newConcurrentMap();
 
     @Override
-    public Optional<MinecraftPlayer> getPlayerById(@NotNull UUID playerId) {
+    public Optional<MinecraftPlayerEntity> getPlayerById(@NotNull UUID playerId) {
         Player player = level.getPlayerByUUID(playerId);
         if (player == null) {
             playerById.remove(playerId);

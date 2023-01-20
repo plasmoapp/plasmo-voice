@@ -36,7 +36,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class NettyUdpClient implements UdpClient {
 
-    private final Logger logger = LogManager.getLogger(NettyUdpClient.class);
+    private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
@@ -81,7 +81,7 @@ public final class NettyUdpClient implements UdpClient {
         });
 
         try {
-            logger.info("Connecting to {}:{}", ip, port);
+            LOGGER.info("Connecting to {}:{}", ip, port);
             ChannelFuture channelFuture = bootstrap.connect(ip, port).sync();
             this.channel = (NioDatagramChannel) channelFuture.channel();
         } catch (InterruptedException e) {
@@ -94,7 +94,11 @@ public final class NettyUdpClient implements UdpClient {
 
     @Override
     public void close(@NotNull UdpClientClosedEvent.Reason reason) {
-        logger.info("Disconnecting from {} with reason {}", channel.remoteAddress(), reason);
+        if (channel == null) {
+            LOGGER.info("Disconnecting before connecting with reason {}", reason);
+        } else {
+            LOGGER.info("Disconnecting from {} with reason {}", channel.remoteAddress(), reason);
+        }
 
         handler.close();
         workGroup.shutdownGracefully();
@@ -113,11 +117,10 @@ public final class NettyUdpClient implements UdpClient {
 
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
 
-        logger.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
+        LOGGER.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
 
         UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
-        voiceClient.getEventBus().call(event);
-        if (event.isCancelled()) return;
+        if (!voiceClient.getEventBus().call(event)) return;
 
         channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()));
     }
@@ -138,7 +141,7 @@ public final class NettyUdpClient implements UdpClient {
     public void onServerInfoUpdate(ServerInfoInitializedEvent event) {
         if (this.connected) return;
 
-        logger.info("Connected to {}", channel.remoteAddress());
+        LOGGER.info("Connected to {}", channel.remoteAddress());
         this.connected = true;
 
         voiceClient.getEventBus().call(new UdpClientConnectedEvent(this));

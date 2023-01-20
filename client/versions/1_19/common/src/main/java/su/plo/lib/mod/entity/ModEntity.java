@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.entity.MinecraftEntity;
-import su.plo.lib.api.entity.MinecraftPlayer;
+import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.UUID;
@@ -71,7 +71,7 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
     }
 
     @Override
-    public boolean isInvisibleTo(@NotNull MinecraftPlayer player) {
+    public boolean isInvisibleTo(@NotNull MinecraftPlayerEntity player) {
         return instance.isInvisibleTo(player.getInstance());
     }
 

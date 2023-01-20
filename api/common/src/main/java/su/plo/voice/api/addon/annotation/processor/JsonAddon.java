@@ -5,6 +5,7 @@ import com.google.gson.Gson;
 import lombok.Data;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.addon.annotation.Addon;
 
 import java.io.Reader;
@@ -23,12 +24,12 @@ public final class JsonAddon {
 
     private final String id;
     private final String name;
-    private final Addon.Scope scope;
+    private final AddonScope scope;
     private final String version;
     private final String[] authors;
     private final String mainClass;
 
-    private JsonAddon(String id, String name, Addon.Scope scope, String version, String[] authors, String mainClass) {
+    private JsonAddon(String id, String name, AddonScope scope, String version, String[] authors, String mainClass) {
         this.id = checkNotNull(id, "id cannot be null");
         this.name = checkNotNull(name, "name cannot be null");
         this.scope = checkNotNull(scope, "scope cannot be null");

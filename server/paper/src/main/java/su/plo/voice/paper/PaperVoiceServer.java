@@ -1,6 +1,5 @@
 package su.plo.voice.paper;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +12,7 @@ import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.paper.PaperServerLib;
 import su.plo.voice.paper.connection.PaperServerChannelHandler;
+import su.plo.voice.paper.connection.PaperServerServiceChannelHandler;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.player.PermissionSupplier;
 
@@ -22,7 +22,9 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
 
     private final JavaPlugin loader;
     private final PaperServerLib minecraftServerLib;
+
     private PaperServerChannelHandler handler;
+    private PaperServerServiceChannelHandler serviceChannel;
 
     public PaperVoiceServer(@NotNull JavaPlugin loader) {
         this.loader = loader;
@@ -43,9 +45,12 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
         this.handler = new PaperServerChannelHandler(this);
         eventBus.register(this, handler);
         loader.getServer().getPluginManager().registerEvents(handler, loader);
-
         loader.getServer().getMessenger().registerIncomingPluginChannel(loader, CHANNEL_STRING, handler);
         loader.getServer().getMessenger().registerOutgoingPluginChannel(loader, CHANNEL_STRING);
+
+        this.serviceChannel = new PaperServerServiceChannelHandler(this);
+        loader.getServer().getMessenger().registerIncomingPluginChannel(loader, SERVICE_CHANNEL_STRING, serviceChannel);
+        loader.getServer().getMessenger().registerOutgoingPluginChannel(loader, SERVICE_CHANNEL_STRING);
 
         minecraftServerLib.getPlayers().forEach((player) -> playerManager.getPlayerById(player.getUUID())
                 .ifPresent((voicePlayer) -> {
@@ -58,6 +63,7 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
     public void onShutdown() {
         super.onShutdown();
         this.handler = null;
+        this.serviceChannel = null;
     }
 
     @Override
@@ -78,11 +84,6 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
     @Override
     protected File addonsFolder() {
         return new File(modsFolder(), "PlasmoVoice/addons");
-    }
-
-    @Override
-    public int getMinecraftServerPort() {
-        return Bukkit.getServer().getPort();
     }
 
     @Override
@@ -121,12 +122,12 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
     @EventHandler
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        eventBus.call(new su.plo.voice.server.event.player.PlayerJoinEvent(player, player.getUniqueId()));
+        eventBus.call(new su.plo.voice.api.server.event.player.PlayerJoinEvent(player, player.getUniqueId()));
     }
 
     @EventHandler
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
         Player player = event.getPlayer();
-        eventBus.call(new su.plo.voice.server.event.player.PlayerQuitEvent(player, player.getUniqueId()));
+        eventBus.call(new su.plo.voice.api.server.event.player.PlayerQuitEvent(player, player.getUniqueId()));
     }
 }

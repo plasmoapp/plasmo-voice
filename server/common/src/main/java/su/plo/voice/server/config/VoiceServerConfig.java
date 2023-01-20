@@ -3,6 +3,7 @@ package su.plo.voice.server.config;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Config
 @Data
+@Accessors(fluent = true)
 public final class VoiceServerConfig implements ServerConfig {
 
     @ConfigField(path = "server_id", comment = "Used to store server-related config file on the client\nSet it to a single value on different servers if you want them to share config")
@@ -33,8 +35,11 @@ public final class VoiceServerConfig implements ServerConfig {
 
     @Config
     @Data
+    @Accessors(fluent = true)
     @EqualsAndHashCode
     public static class Host implements ServerConfig.Host {
+
+        private UUID forwardingSecret = null;
 
         @ConfigField
         private String ip = "0.0.0.0";
@@ -43,14 +48,12 @@ public final class VoiceServerConfig implements ServerConfig {
         @ConfigValidator(value = PortValidator.class, allowed = "0-65535")
         private int port = 0;
 
-        @ConfigField
-        private boolean proxyProtocol = false;
-
         @ConfigField(path = "public")
         private @Nullable Public hostPublic = null;
 
         @Config
         @Data
+        @Accessors(fluent = true)
         @EqualsAndHashCode
         public static class Public implements ServerConfig.Host.Public {
 
@@ -76,7 +79,10 @@ public final class VoiceServerConfig implements ServerConfig {
 
     @Config
     @Data
+    @Accessors(fluent = true)
     public static class Voice implements ServerConfig.Voice {
+
+        private byte[] aesEncryptionKey = null;
 
         @ConfigField(path = "sample_rate", comment = "Supported sample rates:\n8000\n12000\n24000\n48000")
         @ConfigValidator(
@@ -110,6 +116,7 @@ public final class VoiceServerConfig implements ServerConfig {
 
         @Config
         @Data
+        @Accessors(fluent = true)
         public static class Proximity implements ServerConfig.Voice.Proximity {
 
             @ConfigField
@@ -132,6 +139,7 @@ public final class VoiceServerConfig implements ServerConfig {
 
         @Config
         @Data
+        @Accessors(fluent = true)
         public static class Opus implements ServerConfig.Voice.Opus {
 
             @ConfigField(comment = "Opus application mode\nSupported values: VOIP, AUDIO, RESTRICTED_LOWDELAY\nDefault is VOIP")

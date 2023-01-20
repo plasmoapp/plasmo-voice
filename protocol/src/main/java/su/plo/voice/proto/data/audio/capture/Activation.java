@@ -66,6 +66,15 @@ public interface Activation {
     int getMaxDistance();
 
     /**
+     * Checks if activation has proximity output
+     * <p>
+     * todo: doc
+     *
+     * @return true if activation has proximity output
+     */
+    boolean isProximity();
+
+    /**
      * Checks if activation is transitive
      * <p>
      * todo: doc

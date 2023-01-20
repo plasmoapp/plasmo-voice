@@ -17,6 +17,7 @@ import su.plo.voice.client.config.overlay.OverlayPosition;
 import su.plo.voice.client.config.overlay.OverlaySourceState;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 
 import java.util.Map;
 import java.util.UUID;
@@ -40,43 +41,32 @@ public final class OverlayRenderer {
 
         OverlayPosition position = config.getOverlay().getOverlayPosition().value();
 
+        int index = 0;
         for (ClientSourceLine sourceLine : voiceClient.getSourceLineManager().getLines()) {
             OverlaySourceState sourceState = config.getOverlay().getSourceStates().getState(sourceLine).value();
             if (sourceState == OverlaySourceState.OFF || sourceState == OverlaySourceState.NEVER) continue;
 
-            Map<UUID, Boolean> toRender = Maps.newHashMap();
+            Map<SourceInfo, Boolean> toRender = Maps.newHashMap();
             if (sourceLine.hasPlayers() && sourceState == OverlaySourceState.ALWAYS) {
-                for (UUID playerId : sourceLine.getPlayers()) {
-                    toRender.put(playerId, false);
-                }
+                // todo: source line players
+//                for (UUID playerId : sourceLine.getPlayers()) {
+//                    toRender.put(playerId, false);
+//                }
             }
 
             for (ClientAudioSource<?> source : voiceClient.getSourceManager().getSourcesByLineId(sourceLine.getId())) {
                 boolean isActivated = source.isActivated();
 
                 if (isActivated || (sourceLine.hasPlayers() && sourceState == OverlaySourceState.ALWAYS)) {
-                    SourceInfo sourceInfo = source.getInfo();
-
-                    UUID sourceId = null;
-                    if (sourceInfo instanceof DirectSourceInfo) {
-                        DirectSourceInfo directSourceInfo = (DirectSourceInfo) sourceInfo;
-                        if (directSourceInfo.getSenderId() != null) {
-                            sourceId = directSourceInfo.getSenderId();
-                        }
-                    }
-
-                    if (sourceId == null) sourceId = sourceInfo.getId();
-
-                    toRender.put(sourceId, isActivated);
+                    toRender.put(source.getInfo(), isActivated);
                 }
             }
 
-            int index = 0;
-            for (Map.Entry<UUID, Boolean> entry : toRender.entrySet()) {
-                UUID sourceId = entry.getKey();
+            for (Map.Entry<SourceInfo, Boolean> entry : toRender.entrySet()) {
+                SourceInfo sourceInfo = entry.getKey();
                 boolean activated = entry.getValue();
 
-                renderEntry(event.getRender(), sourceLine, position, index++, sourceId, activated);
+                renderEntry(event.getRender(), sourceLine, position, index++, sourceInfo, activated);
             }
         }
     }
@@ -85,7 +75,7 @@ public final class OverlayRenderer {
                              @NotNull ClientSourceLine sourceLine,
                              @NotNull OverlayPosition position,
                              int index,
-                             @NotNull UUID sourceId,
+                             @NotNull SourceInfo sourceInfo,
                              boolean activated) {
         if (!minecraft.getWorld().isPresent()) return;
 
@@ -93,10 +83,7 @@ public final class OverlayRenderer {
                 .orElseThrow(() -> new IllegalStateException("Not connected"));
 
         // todo: entity renderer?
-        String sourceName = minecraft.getConnection().get()
-                .getPlayerInfo(sourceId)
-                .map((playerInfo) -> playerInfo.getGameProfile().getName())
-                .orElse(sourceLine.getTranslation());
+        String sourceName = getSourceSenderName(sourceInfo, sourceLine);
         MinecraftTextComponent text = MinecraftTextComponent.translatable(sourceName);
 
         int textWidth = minecraft.getFont().width(text) + 8;
@@ -116,7 +103,7 @@ public final class OverlayRenderer {
         int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
 
         // render helm
-        render.setShaderTexture(0, loadSkin(connection, sourceId, sourceName));
+        render.setShaderTexture(0, loadSkin(connection, sourceInfo, sourceName));
         render.setShaderColor(1F, 1F, 1F, 1F);
 
         render.blit(x, y, 16, 16, 8F, 8F, 8, 8, 64, 64);
@@ -148,17 +135,67 @@ public final class OverlayRenderer {
         }
     }
 
-    private String loadSkin(@NotNull ServerConnection connection, @NotNull UUID sourceId, @NotNull String sourceName) {
-        return connection.getPlayerById(sourceId)
-                .map((player) -> {
-                    minecraft.getPlayerSkins().loadSkin(
-                            player.getPlayerId(),
-                            player.getPlayerNick(),
-                            null
-                    );
-                    return minecraft.getPlayerSkins().getSkin(player.getPlayerId(), player.getPlayerNick());
-                })
-                .orElseGet(() -> minecraft.getPlayerSkins().getSteveSkin());
+    private String getSourceSenderName(@NotNull SourceInfo sourceInfo,
+                                       @NotNull ClientSourceLine sourceLine) {
+        if (sourceInfo instanceof DirectSourceInfo) {
+            DirectSourceInfo directSourceInfo = (DirectSourceInfo) sourceInfo;
+
+            if (directSourceInfo.getSender() != null) {
+                return directSourceInfo.getSender().getName();
+            }
+        }
+
+        return minecraft.getConnection().get()
+                .getPlayerInfo(sourceInfo.getId())
+                .map((playerInfo) -> playerInfo.getGameProfile().getName())
+                .orElse(sourceLine.getTranslation());
+    }
+
+    private UUID getSourceSenderId(@NotNull SourceInfo sourceInfo) {
+        UUID sourceId = sourceInfo.getId();
+        if (sourceInfo instanceof DirectSourceInfo) {
+            DirectSourceInfo directSourceInfo = (DirectSourceInfo) sourceInfo;
+
+            if (directSourceInfo.getSender() != null) {
+                sourceId = directSourceInfo.getSender().getId();
+            }
+        }
+
+        return sourceId;
+    }
+
+    private String loadSkin(@NotNull ServerConnection connection, @NotNull SourceInfo sourceInfo, @NotNull String sourceName) {
+        UUID sourceId = getSourceSenderId(sourceInfo);
+
+        return minecraft.getConnection().get()
+                .getPlayerInfo(sourceId)
+                .map((player) -> loadSkin(player.getGameProfile().getId(), player.getGameProfile().getName()))
+                .orElseGet(() -> {
+                    if (sourceInfo instanceof DirectSourceInfo) {
+                        DirectSourceInfo directSourceInfo = (DirectSourceInfo) sourceInfo;
+
+                        if (directSourceInfo.getSender() != null) {
+                            return loadSkin(directSourceInfo.getSender());
+                        }
+                    }
+
+                    return minecraft.getPlayerSkins().getDefaultSkin(sourceId);
+                });
+    }
+
+    private String loadSkin(@NotNull MinecraftGameProfile gameProfile) {
+        minecraft.getPlayerSkins().loadSkin(gameProfile);
+        return minecraft.getPlayerSkins().getSkin(gameProfile.getId(), gameProfile.getName());
+    }
+
+    private String loadSkin(@NotNull UUID playerId, @NotNull String playerName) {
+        minecraft.getPlayerSkins().loadSkin(
+                playerId,
+                playerName,
+                null
+        );
+
+        return minecraft.getPlayerSkins().getSkin(playerId, playerName);
     }
 
     private int calcPositionX(int x) {
