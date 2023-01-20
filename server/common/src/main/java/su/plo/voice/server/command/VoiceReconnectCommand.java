@@ -35,6 +35,6 @@ public final class VoiceReconnectCommand implements MinecraftCommand {
 
     @Override
     public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
-        return source.hasPermission("voice.reconnect");
+        return source.hasPermission("pv.reconnect");
     }
 }

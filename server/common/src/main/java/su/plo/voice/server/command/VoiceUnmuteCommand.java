@@ -61,7 +61,7 @@ public final class VoiceUnmuteCommand implements MinecraftCommand {
 
     @Override
     public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
-        return source.hasPermission("voice.unmute");
+        return source.hasPermission("pv.unmute");
     }
 
     @Override

@@ -281,8 +281,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         PermissionsManager permissions = getMinecraftServer().getPermissionsManager();
         permissions.clear();
 
-        permissions.register("voice.list", PermissionDefault.TRUE);
-        permissions.register("voice.reconnect", PermissionDefault.TRUE);
+        permissions.register("pv.list", PermissionDefault.TRUE);
+        permissions.register("pv.reconnect", PermissionDefault.TRUE);
 
         // register commands
         MinecraftCommandManager<MinecraftCommand> commandManager = getMinecraftServer().getCommandManager();

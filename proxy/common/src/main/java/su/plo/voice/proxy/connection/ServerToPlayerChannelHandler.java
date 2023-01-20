@@ -106,8 +106,8 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
                     voiceProxy.getActivationManager()
                             .getActivations()
                             .stream()
+                            .filter(activation -> player.getInstance().hasPermission(activation.getPermission()))
                             .map(activation -> (VoiceActivation) activation) // waytoodank
-                            .filter(activation -> player.getInstance().hasPermission("voice.activation." + activation.getName()))
                             .collect(Collectors.toSet())
             );
 

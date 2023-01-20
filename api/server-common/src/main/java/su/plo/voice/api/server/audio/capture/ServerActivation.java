@@ -16,6 +16,18 @@ public interface ServerActivation extends Activation {
     @NotNull AddonContainer getAddon();
 
     /**
+     * Gets the activation's permission
+     */
+    @NotNull String getPermission();
+
+    /**
+     * Sets the activation's permission
+     *
+     * @param permission the activation's permission
+     */
+    void setPermission(@NotNull String permission);
+
+    /**
      * Sets the activation's available distances
      */
     void setDistances(List<Integer> distances);
@@ -29,6 +41,49 @@ public interface ServerActivation extends Activation {
      * Sets the activation's proximity
      */
     void setProximity(boolean transitive);
+
+    interface Builder {
+
+        /**
+         * Sets the activation's available distances
+         * <p>
+         * Default: empty list
+         */
+        @NotNull Builder setDistances(@NotNull List<Integer> distances);
+
+        /**
+         * Sets the activation's default distance
+         * <p>
+         * Default: 0
+         */
+        @NotNull Builder setDefaultDistance(int defaultDistance);
+
+        /**
+         * Sets the activation's transitivity
+         * <p>
+         * Default: true
+         */
+        @NotNull Builder setTransitive(boolean transitive);
+
+        /**
+         * Sets the activation's proximity, used by client to determine proximity activations
+         * <p>
+         * Default: true
+         */
+        @NotNull Builder setProximity(boolean proximity);
+
+        /**
+         * Sets the activation's stereo support
+         * <p>
+         * Default: false
+         */
+        @NotNull Builder setStereoSupported(boolean stereoSupported);
+
+        /**
+         * Builds the activation
+         */
+        @NotNull ServerActivation build();
+    }
 
 //    /**
 //     * Sets the activation's handler

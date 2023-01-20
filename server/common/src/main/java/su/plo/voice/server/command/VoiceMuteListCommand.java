@@ -80,7 +80,7 @@ public final class VoiceMuteListCommand implements MinecraftCommand {
 
     @Override
     public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
-        return source.hasPermission("voice.mutelist");
+        return source.hasPermission("pv.mutelist");
     }
 
 }

@@ -39,6 +39,6 @@ public final class VoiceListCommand implements MinecraftCommand {
 
     @Override
     public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
-        return source.hasPermission("voice.list");
+        return source.hasPermission("pv.list");
     }
 }

@@ -6,6 +6,7 @@ import su.plo.voice.api.event.EventPriority;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.BaseProximityServerActivation;
+import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
@@ -17,23 +18,28 @@ import su.plo.voice.server.config.VoiceServerConfig;
 
 public final class ProximityServerActivation extends BaseProximityServerActivation {
 
+    private ServerActivation activation;
+
     public ProximityServerActivation(@NotNull PlasmoVoiceServer voiceServer) {
         super(voiceServer, "proximity", PermissionDefault.TRUE);
     }
 
     public void register(@NotNull VoiceServerConfig config) {
-        voiceServer.getActivationManager().register(
+        ServerActivation.Builder builder = voiceServer.getActivationManager().createBuilder(
                 voiceServer,
                 VoiceActivation.PROXIMITY_NAME,
                 "activation.plasmovoice.proximity",
                 "plasmovoice:textures/icons/microphone.png",
-                config.voice().proximity().distances(),
-                config.voice().proximity().defaultDistance(),
-                true,
-                true,
-                false,
+                "pv.activation.proximity",
                 1
         );
+        this.activation = builder
+                .setDistances(config.voice().proximity().distances())
+                .setDefaultDistance(config.voice().proximity().defaultDistance())
+                .setProximity(true)
+                .setTransitive(true)
+                .setStereoSupported(false)
+                .build();
 
         voiceServer.getSourceLineManager().register(
                 voiceServer,
@@ -46,11 +52,13 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
     public void onPlayerSpeak(@NotNull PlayerSpeakEvent event) {
+        if (activation == null) return;
+
         VoiceServerPlayer player = (VoiceServerPlayer) event.getPlayer();
         PlayerAudioPacket packet = event.getPacket();
 
         if (event.isCancelled() ||
-                !player.getInstance().hasPermission(getActivationPermission()) ||
+                !player.getInstance().hasPermission(activation.getPermission()) ||
                 voiceServer.getConfig() == null ||
                 !voiceServer.getConfig()
                         .voice()
@@ -65,11 +73,13 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
     public void onPlayerSpeakEnd(@NotNull PlayerSpeakEndEvent event) {
+        if (activation == null) return;
+
         VoiceServerPlayer player = (VoiceServerPlayer) event.getPlayer();
         PlayerAudioEndPacket packet = event.getPacket();
 
         if (event.isCancelled() ||
-                !player.getInstance().hasPermission(getActivationPermission()) ||
+                !player.getInstance().hasPermission(activation.getPermission()) ||
                 voiceServer.getConfig() == null ||
                 !voiceServer.getConfig()
                         .voice()

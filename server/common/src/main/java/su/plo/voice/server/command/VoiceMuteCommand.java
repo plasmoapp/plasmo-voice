@@ -113,7 +113,7 @@ public final class VoiceMuteCommand implements MinecraftCommand {
 
     @Override
     public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
-        return source.hasPermission("voice.mute");
+        return source.hasPermission("pv.mute");
     }
 
     @Override

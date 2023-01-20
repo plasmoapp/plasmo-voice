@@ -29,6 +29,6 @@ public final class VoiceReloadCommand implements MinecraftCommand {
 
     @Override
     public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
-        return source.hasPermission("voice.reload");
+        return source.hasPermission("pv.reload");
     }
 }

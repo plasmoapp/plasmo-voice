@@ -51,7 +51,7 @@ public abstract class BaseProximityServerActivation {
 
         voiceServer.getMinecraftServer()
                 .getPermissionsManager()
-                .register(getActivationPermission(), defaultPermission);
+                .register(activation.getPermission(), defaultPermission);
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
@@ -61,7 +61,7 @@ public abstract class BaseProximityServerActivation {
 
         voiceServer.getMinecraftServer()
                 .getPermissionsManager()
-                .unregister(getActivationPermission());
+                .unregister(activation.getPermission());
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
@@ -145,9 +145,5 @@ public abstract class BaseProximityServerActivation {
         if (isStereo != null) source.setStereo(isStereo && activation.get().isStereoSupported());
 
         return Optional.of(source);
-    }
-
-    protected String getActivationPermission() {
-        return "voice.activation." + activationName;
     }
 }
