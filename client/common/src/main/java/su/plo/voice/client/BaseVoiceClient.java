@@ -228,8 +228,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         );
     }
 
-    public abstract String getServerIp();
-
     public abstract MinecraftClientLib getMinecraft();
 
     protected abstract PlayerVolumeAction createPlayerVolumeAction(@NotNull MinecraftClientLib minecraft);

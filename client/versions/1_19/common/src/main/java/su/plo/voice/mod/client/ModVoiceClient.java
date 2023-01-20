@@ -1,11 +1,9 @@
 package su.plo.voice.mod.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import io.netty.channel.local.LocalAddress;
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.network.Connection;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.glfw.GLFW;
@@ -28,9 +26,6 @@ import su.plo.voice.mod.client.render.ModLevelRenderer;
 import su.plo.voice.mod.client.render.ModPlayerVolumeAction;
 
 import java.io.File;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.util.Optional;
 
 public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends BaseVoiceClient {
@@ -106,30 +101,6 @@ public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends 
     @Override
     protected File modsFolder() {
         return new File("mods");
-    }
-
-    @Override
-    public String getServerIp() {
-        if (minecraft.getConnection() == null) throw new IllegalStateException("Not connected to any server");
-        Connection connection = minecraft.getConnection().getConnection();
-        SocketAddress socketAddress = connection.getRemoteAddress();
-
-        if (!(socketAddress instanceof InetSocketAddress) && !(socketAddress instanceof LocalAddress)) {
-            throw new IllegalStateException("Not connected to any server");
-        }
-
-        String serverIp = "127.0.0.1";
-        if (connection.getRemoteAddress() instanceof InetSocketAddress address) {
-            InetAddress inetAddress = address.getAddress();
-            String[] ipSplit = inetAddress.toString().split("/");
-
-            serverIp = ipSplit[0];
-            if (ipSplit.length > 1) {
-                serverIp = ipSplit[1];
-            }
-        }
-
-        return serverIp;
     }
 
     @Override

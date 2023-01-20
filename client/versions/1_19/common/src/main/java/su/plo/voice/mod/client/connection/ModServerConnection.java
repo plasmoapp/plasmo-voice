@@ -13,6 +13,8 @@ import su.plo.voice.mod.client.ModVoiceClient;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 
+import java.net.SocketAddress;
+
 public final class ModServerConnection extends BaseServerConnection {
 
     @Getter
@@ -24,6 +26,11 @@ public final class ModServerConnection extends BaseServerConnection {
         super(voiceClient, minecraft);
 
         this.connection = connection;
+    }
+
+    @Override
+    public @NotNull SocketAddress getRemoteAddress() {
+        return connection.getRemoteAddress();
     }
 
     @Override

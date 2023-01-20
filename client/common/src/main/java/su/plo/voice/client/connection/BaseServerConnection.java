@@ -2,6 +2,7 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import io.netty.channel.local.LocalAddress;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,6 +39,7 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 import javax.crypto.Cipher;
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
+import java.net.SocketAddress;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Collection;
@@ -71,6 +73,22 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         this.sourceLines = voiceClient.getSourceLineManager();
         this.activations = voiceClient.getActivationManager();
         this.sources = voiceClient.getSourceManager();
+    }
+
+    @Override
+    public @NotNull String getRemoteIp() {
+        SocketAddress socketAddress = getRemoteAddress();
+
+        if (!(socketAddress instanceof InetSocketAddress) && !(socketAddress instanceof LocalAddress)) {
+            throw new IllegalStateException("Not connected to any server");
+        }
+
+        String serverIp = "127.0.0.1";
+        if (socketAddress instanceof InetSocketAddress) {
+            serverIp = ((InetSocketAddress) socketAddress).getHostName();
+        }
+
+        return serverIp;
     }
 
     @Override
@@ -162,7 +180,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         voiceClient.getEventBus().register(voiceClient, client);
 
         String ip = packet.getIp();
-        if (ip.equals("0.0.0.0")) ip = voiceClient.getServerIp();
+        if (ip.equals("0.0.0.0")) ip = getRemoteIp();
 
         try {
             client.connect(ip, packet.getPort());
