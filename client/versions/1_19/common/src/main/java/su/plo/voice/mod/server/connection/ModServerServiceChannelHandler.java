@@ -1,5 +1,6 @@
 package su.plo.voice.mod.server.connection;
 
+import io.netty.buffer.ByteBufUtil;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
@@ -16,8 +17,7 @@ public abstract class ModServerServiceChannelHandler extends BaseServerServiceCh
     }
 
     protected void receive(ServerPlayer player, FriendlyByteBuf buf) {
-        byte[] data = new byte[buf.readableBytes()];
-        buf.duplicate().readBytes(data);
+        byte[] data = ByteBufUtil.getBytes(buf.duplicate());
 
         try {
             VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);

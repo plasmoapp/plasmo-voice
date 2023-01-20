@@ -1,6 +1,7 @@
 package su.plo.voice.mod.client.connection;
 
 import com.google.common.io.ByteStreams;
+import io.netty.buffer.ByteBufUtil;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.logging.log4j.LogManager;
@@ -51,8 +52,7 @@ public abstract class ModClientChannelHandler {
             }
         }
 
-        byte[] data = new byte[buf.readableBytes()];
-        buf.duplicate().readBytes(data);
+        byte[] data = ByteBufUtil.getBytes(buf.duplicate());
 
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))

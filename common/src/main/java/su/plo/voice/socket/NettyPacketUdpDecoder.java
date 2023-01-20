@@ -1,6 +1,7 @@
 package su.plo.voice.socket;
 
 import com.google.common.io.ByteStreams;
+import io.netty.buffer.ByteBufUtil;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.handler.codec.MessageToMessageDecoder;
@@ -14,11 +15,7 @@ public final class NettyPacketUdpDecoder extends MessageToMessageDecoder<Datagra
 
     @Override
     protected void decode(ChannelHandlerContext ctx, DatagramPacket packet, List<Object> out) throws Exception {
-        int readableBytes = packet.content().readableBytes();
-        if (readableBytes <= 0) return;
-
-        byte[] bytes = new byte[readableBytes];
-        packet.content().duplicate().readBytes(bytes);
+        byte[] bytes = ByteBufUtil.getBytes(packet.content());
 
         Optional<PacketUdp> packetUdp = PacketUdpCodec.decode(ByteStreams.newDataInput(bytes));
         if (!packetUdp.isPresent()) return;
