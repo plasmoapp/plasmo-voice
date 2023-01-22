@@ -1,13 +1,14 @@
 package su.plo.voice.client.audio.line;
 
+import com.google.common.collect.Sets;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArraySet;
 
 public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSourceLine {
 
@@ -20,7 +21,7 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
                 line.getTranslation(),
                 line.getIcon(),
                 line.getWeight(),
-                line.hasPlayers() ? new CopyOnWriteArraySet<>(line.getPlayers()) : null
+                line.hasPlayers() ? Sets.newConcurrentHashSet(line.getPlayers()) : Sets.newConcurrentHashSet()
         );
 
         this.volumeEntry = volumeEntry;
@@ -41,13 +42,13 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
     }
 
     @Override
-    public void addPlayer(@NotNull UUID playerId) {
+    public void addPlayer(@NotNull MinecraftGameProfile playerId) {
         players.add(playerId);
     }
 
     @Override
     public boolean removePlayer(@NotNull UUID playerId) {
-        return players.remove(playerId);
+        return players.removeIf((player) -> player.getId().equals(playerId));
     }
 
     @Override

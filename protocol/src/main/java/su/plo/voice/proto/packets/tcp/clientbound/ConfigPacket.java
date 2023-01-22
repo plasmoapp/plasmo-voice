@@ -103,7 +103,9 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
 
         // source lines
         out.writeInt(sourceLines.size());
-        sourceLines.forEach(sourceLine -> sourceLine.serialize(out));
+        for (VoiceSourceLine sourceLine : sourceLines) {
+            sourceLine.serialize(out);
+        }
 
         // activations
         out.writeInt(activations.size());

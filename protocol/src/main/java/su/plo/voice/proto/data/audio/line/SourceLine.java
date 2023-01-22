@@ -1,6 +1,7 @@
 package su.plo.voice.proto.data.audio.line;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 
 import java.util.Collection;
 import java.util.UUID;
@@ -59,5 +60,5 @@ public interface SourceLine {
      * @return the line's players
      */
     @NotNull
-    Collection<UUID> getPlayers();
+    Collection<MinecraftGameProfile> getPlayers();
 }

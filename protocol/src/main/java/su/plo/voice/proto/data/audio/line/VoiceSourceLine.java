@@ -9,9 +9,10 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.proto.packets.PacketSerializable;
-import su.plo.voice.proto.packets.PacketUtil;
 
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
@@ -42,13 +43,13 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     protected String icon;
     @Getter
     protected int weight;
-    protected Set<UUID> players = null;
+    protected Set<MinecraftGameProfile> players = null;
 
     public VoiceSourceLine(@NotNull String name,
                            @NotNull String translation,
                            @NotNull String icon,
                            int weight,
-                           @Nullable Set<UUID> players) {
+                           @Nullable Set<MinecraftGameProfile> players) {
         this.name = checkNotNull(name);
         this.translation = translation;
         this.icon = checkNotNull(icon);
@@ -58,7 +59,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     }
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         this.name = in.readUTF();
         this.id = generateId(name);
         this.translation = in.readUTF();
@@ -68,13 +69,15 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
             this.players = new HashSet<>();
             int size = in.readInt();
             for (int i = 0; i < size; i++) {
-                players.add(PacketUtil.readUUID(in));
+                MinecraftGameProfile player = new MinecraftGameProfile();
+                player.deserialize(in);
+                players.add(player);
             }
         }
     }
 
     @Override
-    public void serialize(ByteArrayDataOutput out) {
+    public void serialize(ByteArrayDataOutput out) throws IOException {
         out.writeUTF(name);
         out.writeUTF(translation);
         out.writeUTF(icon);
@@ -82,7 +85,9 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
         out.writeBoolean(hasPlayers());
         if (hasPlayers()) {
             out.writeInt(players.size());
-            players.forEach((playerId) -> PacketUtil.writeUUID(out, playerId));
+            for (MinecraftGameProfile player : players) {
+                player.serialize(out);
+            }
         }
     }
 
@@ -92,7 +97,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     }
 
     @Override
-    public @NotNull Collection<UUID> getPlayers() {
+    public @NotNull Collection<MinecraftGameProfile> getPlayers() {
         return players;
     }
 }

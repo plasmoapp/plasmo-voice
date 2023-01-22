@@ -33,7 +33,7 @@ public interface ClientPacketTcpHandler extends PacketTcpHandler {
 
     void handle(@NotNull SourceLinePlayerRemovePacket packet);
 
-    void handle(@NotNull SourceLinePlayersClearPacket packet);
+    void handle(@NotNull SourceLinePlayersListPacket packet);
 
     void handle(@NotNull ActivationRegisterPacket packet);
 

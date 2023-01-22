@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketUtil;
 
@@ -22,18 +23,19 @@ public final class SourceLinePlayerAddPacket implements Packet<ClientPacketTcpHa
     @Getter
     private UUID lineId;
     @Getter
-    private UUID playerId;
+    private MinecraftGameProfile player;
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         this.lineId = PacketUtil.readUUID(in);
-        this.playerId = PacketUtil.readUUID(in);
+        this.player = new MinecraftGameProfile();
+        player.deserialize(in);
     }
 
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
         PacketUtil.writeUUID(out, checkNotNull(lineId));
-        PacketUtil.writeUUID(out, checkNotNull(playerId));
+        checkNotNull(player).serialize(out);
     }
 
     @Override

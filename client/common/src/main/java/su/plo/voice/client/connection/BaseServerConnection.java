@@ -13,7 +13,6 @@ import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.OutputDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
-import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.connection.ServerConnection;
@@ -357,7 +356,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     @Override
     public void handle(@NotNull SourceLinePlayerAddPacket packet) {
         sourceLines.getLineById(packet.getLineId())
-                .ifPresent((line) -> line.addPlayer(packet.getPlayerId()));
+                .ifPresent((line) -> line.addPlayer(packet.getPlayer()));
     }
 
     @Override
@@ -367,9 +366,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     }
 
     @Override
-    public void handle(@NotNull SourceLinePlayersClearPacket packet) {
+    public void handle(@NotNull SourceLinePlayersListPacket packet) {
         sourceLines.getLineById(packet.getLineId())
-                .ifPresent(ClientSourceLine::clearPlayers);
+                .ifPresent((sourceLine) -> {
+                    sourceLine.clearPlayers();
+                    packet.getPlayers().forEach(sourceLine::addPlayer);
+                });
     }
 
     @Override

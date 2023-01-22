@@ -214,7 +214,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
     }
 
     @Override
-    public void handle(@NotNull SourceLinePlayersClearPacket packet) {
+    public void handle(@NotNull SourceLinePlayersListPacket packet) {
     }
 
     @Override
