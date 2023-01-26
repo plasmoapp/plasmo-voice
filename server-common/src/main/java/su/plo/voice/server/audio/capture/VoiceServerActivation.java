@@ -57,7 +57,7 @@ public final class VoiceServerActivation extends VoiceActivation implements Serv
     }
 
     @Override
-    public boolean checkPermissions(@NotNull VoicePlayer<?> player) {
+    public boolean checkPermissions(@NotNull VoicePlayer player) {
         return checkPermissions(player.getInstance());
     }
 

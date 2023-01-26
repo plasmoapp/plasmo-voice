@@ -26,4 +26,9 @@ public final class ModOptions implements MinecraftOptions {
     public int getBackgroundColor(int m) {
         return minecraft.options.getBackgroundColor(m);
     }
+
+    @Override
+    public String getLanguageCode() {
+        return minecraft.options.languageCode;
+    }
 }

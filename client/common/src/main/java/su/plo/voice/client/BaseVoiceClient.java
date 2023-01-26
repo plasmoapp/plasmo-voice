@@ -35,6 +35,7 @@ import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
+import su.plo.voice.client.chat.ClientLanguageSupplier;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
@@ -226,6 +227,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
                 addon.getId(),
                 (addonId) -> new VoiceAddonConfig(addon, config.getAddons().getAddon(addon.getId()))
         );
+    }
+
+    protected ClientLanguageSupplier createLanguageSupplier() {
+        return () -> getServerConnection().map(ServerConnection::getLanguage);
     }
 
     public abstract MinecraftClientLib getMinecraft();

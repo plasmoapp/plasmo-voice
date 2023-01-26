@@ -175,7 +175,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     private VoiceClientActivation createParentActivation(@NotNull ClientConfig.Server serverConfig) {
         Activation serverActivation = new VoiceActivation(
                 VoiceActivation.PROXIMITY_NAME,
-                "activation.plasmovoice.parent",
+                "pv.activation.parent",
                 "",
                 Collections.emptyList(),
                 0,

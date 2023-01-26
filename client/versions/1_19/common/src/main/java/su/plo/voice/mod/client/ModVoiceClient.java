@@ -36,7 +36,7 @@ public abstract class ModVoiceClient<T extends ModClientChannelHandler> extends 
 
     protected final String modId = "plasmovoice";
     protected final Minecraft minecraft = Minecraft.getInstance();
-    protected final ModClientLib minecraftLib = new ModClientLib();
+    protected final ModClientLib minecraftLib = new ModClientLib(createLanguageSupplier());
 
     protected final KeyMapping menuKey = new KeyMapping(
             "PV settings",

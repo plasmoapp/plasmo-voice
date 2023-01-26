@@ -1,5 +1,6 @@
 package su.plo.voice.proxy.connection;
 
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
@@ -19,6 +20,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -96,6 +98,15 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
 
     @Override
     public void handle(@NotNull PlayerInfoRequestPacket packet) {
+    }
+
+    @Override
+    public void handle(@NotNull LanguagePacket packet) {
+        Map<String, String> language = Maps.newHashMap(packet.getLanguage());
+        language.putAll(voiceProxy.getLanguages().getClientLanguage(packet.getLanguageName()));
+
+        player.sendPacket(new LanguagePacket(packet.getLanguageName(), language));
+        throw new CancelForwardingException();
     }
 
     @Override

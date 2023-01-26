@@ -12,7 +12,9 @@ import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
 
 @ToString(doNotUseGetters = true, callSuper = true)
-public final class VoiceServerPlayerEntity extends BaseVoicePlayer<MinecraftServerPlayerEntity> implements VoiceServerPlayer {
+public final class VoiceServerPlayerEntity
+        extends BaseVoicePlayer<MinecraftServerPlayerEntity>
+        implements VoiceServerPlayer {
 
     private final PlasmoVoiceServer voiceServer;
 
@@ -55,5 +57,4 @@ public final class VoiceServerPlayerEntity extends BaseVoicePlayer<MinecraftServ
                 isMicrophoneMuted()
         );
     }
-
 }

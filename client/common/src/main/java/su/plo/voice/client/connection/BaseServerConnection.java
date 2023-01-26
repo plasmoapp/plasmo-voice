@@ -3,6 +3,7 @@ package su.plo.voice.client.connection;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.channel.local.LocalAddress;
+import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -26,6 +27,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.event.language.LanguageChangedEvent;
 import su.plo.voice.client.socket.NettyUdpClient;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.encryption.EncryptionInfo;
@@ -33,6 +35,7 @@ import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
+import su.plo.voice.proto.packets.tcp.serverbound.LanguageRequestPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 
 import javax.crypto.Cipher;
@@ -62,6 +65,8 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
     private final Map<UUID, VoicePlayerInfo> playerById = Maps.newConcurrentMap();
 
+    @Getter
+    private @NotNull Map<String, String> language = Maps.newHashMap();
     private @Nullable EncryptionInfo encryptionInfo;
 
     public BaseServerConnection(@NotNull BaseVoiceClient voiceClient,
@@ -147,11 +152,6 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         voiceClient.getEventBus().call(event);
 
         this.keyPair = event.getKeyPair();
-    }
-
-    @EventSubscribe
-    public void onUdpClosed(@NotNull UdpClientClosedEvent event) {
-        close();
     }
 
     public void handle(Packet<PacketHandler> packet) {
@@ -271,6 +271,9 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
 
         ServerInfoInitializedEvent event = new ServerInfoInitializedEvent(serverInfo, packet);
         voiceClient.getEventBus().call(event);
+
+        // request language
+        sendPacket(new LanguageRequestPacket(minecraft.getOptions().getLanguageCode()));
     }
 
     @Override
@@ -281,6 +284,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
                 voiceClient.getConfig().getVoice().getDisabled().value(),
                 voiceClient.getConfig().getVoice().getMicrophoneDisabled().value()
         ));
+    }
+
+    @Override
+    public void handle(@NotNull LanguagePacket packet) {
+        this.language = packet.getLanguage();
+        System.out.println("new language: " + packet.getLanguageName() + " (" + packet.getLanguage() + ")");
     }
 
     @Override
@@ -390,5 +399,15 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     @Override
     public void handle(@NotNull DistanceVisualizePacket packet) {
         voiceClient.getDistanceVisualizer().render(packet.getRadius(), packet.getHexColor());
+    }
+
+    @EventSubscribe
+    public void onUdpClosed(@NotNull UdpClientClosedEvent event) {
+        close();
+    }
+
+    @EventSubscribe
+    public void onLanguageChanged(@NotNull LanguageChangedEvent event) {
+        sendPacket(new LanguageRequestPacket(event.getLanguage()));
     }
 }

@@ -28,7 +28,7 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
 
     public PaperVoiceServer(@NotNull JavaPlugin loader) {
         this.loader = loader;
-        this.minecraftServerLib = new PaperServerLib(loader);
+        this.minecraftServerLib = new PaperServerLib(loader, this::getLanguages);
     }
 
     public void onLoad() {

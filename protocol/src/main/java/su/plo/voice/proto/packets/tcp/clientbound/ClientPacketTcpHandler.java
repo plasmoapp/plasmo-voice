@@ -11,6 +11,8 @@ public interface ClientPacketTcpHandler extends PacketTcpHandler {
 
     void handle(@NotNull PlayerInfoRequestPacket packet);
 
+    void handle(@NotNull LanguagePacket packet);
+
     void handle(@NotNull ConfigPacket packet);
 
     void handle(@NotNull PlayerListPacket packet);

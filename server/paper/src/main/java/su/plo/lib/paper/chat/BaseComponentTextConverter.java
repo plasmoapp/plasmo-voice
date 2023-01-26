@@ -6,10 +6,17 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.TranslatableComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.chat.MinecraftTranslatableText;
+import su.plo.lib.api.server.chat.ServerTextConverter;
+import su.plo.voice.api.server.config.ServerLanguages;
 
-public class BaseComponentTextConverter implements MinecraftTextConverter<BaseComponent> {
+import java.util.function.Supplier;
+
+public class BaseComponentTextConverter extends ServerTextConverter<BaseComponent> {
+
+    public BaseComponentTextConverter(Supplier<ServerLanguages> languages) {
+        super(languages);
+    }
 
     @Override
     public BaseComponent convert(@NotNull MinecraftTextComponent text) {

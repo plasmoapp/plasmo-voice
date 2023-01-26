@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.event.EventCancellableBase;
-import su.plo.voice.api.server.audio.source.AudioSource;
+import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.Optional;
@@ -17,7 +17,7 @@ import java.util.UUID;
 public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
 
     @Getter
-    private final AudioSource source;
+    private final ServerAudioSource source;
     @Getter
     private final SourceAudioPacket packet;
     @Getter
@@ -25,13 +25,13 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
     private short distance;
     private UUID activationId;
 
-    public ServerSourceAudioPacketEvent(@NotNull AudioSource source,
+    public ServerSourceAudioPacketEvent(@NotNull ServerAudioSource source,
                                         @NotNull SourceAudioPacket packet,
                                         @Nullable UUID activationId) {
         this(source, packet, (short) -1, activationId);
     }
 
-    public ServerSourceAudioPacketEvent(@NotNull AudioSource source,
+    public ServerSourceAudioPacketEvent(@NotNull ServerAudioSource source,
                                         @NotNull SourceAudioPacket packet,
                                         short distance,
                                         @Nullable UUID activationId) {

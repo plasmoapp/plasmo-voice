@@ -7,7 +7,7 @@ import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 
-public interface ServerSourceManager extends BaseServerSourceManager<ServerAudioSource<?>> {
+public interface ServerSourceManager extends BaseServerSourceManager {
 
     @NotNull ServerPlayerSource createPlayerSource(@Nullable Object addonObject,
                                                    @NotNull VoiceServerPlayer player,
@@ -26,9 +26,4 @@ public interface ServerSourceManager extends BaseServerSourceManager<ServerAudio
                                                    @NotNull ServerSourceLine line,
                                                    @Nullable String codec,
                                                    boolean stereo);
-
-    @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
-                                                                     @NotNull ServerSourceLine line,
-                                                                     @Nullable String codec,
-                                                                     boolean stereo);
 }

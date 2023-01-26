@@ -8,7 +8,9 @@ import su.plo.voice.api.server.socket.UdpConnection;
 import java.util.UUID;
 
 // todo: doc
-public interface UdpProxyConnection extends UdpConnection<VoiceProxyPlayer> {
+public interface UdpProxyConnection extends UdpConnection {
+
+    @NotNull VoiceProxyPlayer getPlayer();
 
     @NotNull UUID getRemoteSecret();
 

@@ -3,7 +3,6 @@ package su.plo.lib.paper;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -23,6 +22,7 @@ import su.plo.lib.paper.entity.PaperServerEntity;
 import su.plo.lib.paper.entity.PaperServerPlayer;
 import su.plo.lib.paper.world.PaperServerWorld;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.event.player.PlayerJoinEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
@@ -32,9 +32,9 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
 public final class PaperServerLib implements MinecraftServerLib {
 
     private final JavaPlugin loader;
@@ -45,12 +45,21 @@ public final class PaperServerLib implements MinecraftServerLib {
     private final Map<World, MinecraftServerWorld> worldByInstance = Maps.newConcurrentMap();
     private final Map<UUID, MinecraftServerPlayerEntity> playerById = Maps.newConcurrentMap();
 
-    private final BaseComponentTextConverter textConverter = new BaseComponentTextConverter();
+    @Getter
+    private final BaseComponentTextConverter textConverter;
 
     @Getter
-    private final PaperCommandManager commandManager = new PaperCommandManager(this, textConverter);
+    private final PaperCommandManager commandManager;
     @Getter
     private final PermissionsManager permissionsManager = new PermissionsManager();
+
+    public PaperServerLib(@NotNull JavaPlugin loader,
+                          @NotNull Supplier<ServerLanguages> languagesSupplier) {
+        this.loader = loader;
+        this.textConverter = new BaseComponentTextConverter(languagesSupplier);
+        this.commandManager = new PaperCommandManager(this, textConverter);
+    }
+
 
     @Override
     public void onShutdown() {

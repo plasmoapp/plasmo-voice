@@ -41,7 +41,7 @@ public interface ServerActivation extends Activation {
     /**
      * Checks if player has any permission
      */
-    boolean checkPermissions(@NotNull VoicePlayer<?> player);
+    boolean checkPermissions(@NotNull VoicePlayer player);
 
     /**
      * Checks if player has any permission

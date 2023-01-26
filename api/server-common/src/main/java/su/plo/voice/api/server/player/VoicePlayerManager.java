@@ -9,7 +9,7 @@ import java.util.UUID;
 /**
  * This manager can be used to get voice players
  */
-public interface VoicePlayerManager<P extends VoicePlayer<?>> {
+public interface VoicePlayerManager<P extends VoicePlayer> {
 
     /**
      * Gets the {@link P} by uuid

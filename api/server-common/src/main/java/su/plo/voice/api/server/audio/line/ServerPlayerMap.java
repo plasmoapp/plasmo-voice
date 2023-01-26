@@ -8,11 +8,11 @@ import java.util.UUID;
 
 public interface ServerPlayerMap {
 
-    void addPlayer(@NotNull VoicePlayer<?> player);
+    void addPlayer(@NotNull VoicePlayer player);
 
     boolean removePlayer(@NotNull UUID playerId);
 
     void clearPlayers();
 
-    Collection<VoicePlayer<?>> getPlayers();
+    Collection<VoicePlayer> getPlayers();
 }

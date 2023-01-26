@@ -19,7 +19,6 @@ import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.proxy.audio.source.VoiceProxySourceManager;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
-import su.plo.voice.proxy.config.VoiceProxyLanguages;
 import su.plo.voice.proxy.connection.VoiceUdpProxyConnectionManager;
 import su.plo.voice.proxy.player.VoiceProxyPlayerManager;
 import su.plo.voice.proxy.server.VoiceRemoteServer;
@@ -28,6 +27,7 @@ import su.plo.voice.proxy.socket.NettyUdpProxyServer;
 import su.plo.voice.proxy.util.AddressUtil;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
+import su.plo.voice.server.config.VoiceServerLanguages;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,7 +59,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     @Getter
     protected ServerActivationManager activationManager;
     @Getter
-    protected VoiceProxyLanguages languages;
+    protected VoiceServerLanguages languages;
     @Getter
     protected final ProxySourceManager sourceManager = new VoiceProxySourceManager(this);
 
@@ -110,7 +110,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceProxyLanguages();
+            this.languages = new VoiceServerLanguages(config.defaultLanguage());
 //            languages.register(
 //                    this::getResource,
 //                    new File(getConfigFolder(), "languages"),

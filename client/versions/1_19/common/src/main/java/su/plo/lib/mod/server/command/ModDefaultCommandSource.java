@@ -5,7 +5,7 @@ import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextConverter;
+import su.plo.lib.api.server.chat.ServerTextConverter;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 import su.plo.lib.api.server.permission.PermissionTristate;
 
@@ -13,7 +13,7 @@ import su.plo.lib.api.server.permission.PermissionTristate;
 public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     private final CommandSourceStack source;
-    private final MinecraftTextConverter<Component> textConverter;
+    private final ServerTextConverter<Component> textConverter;
 
     @Override
     public void sendMessage(@NotNull String text) {
@@ -22,7 +22,7 @@ public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
-        source.sendSystemMessage(textConverter.convert(text));
+        source.sendSystemMessage(textConverter.convert(this, text));
     }
 
     @Override
@@ -32,7 +32,7 @@ public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
-        source.sendSystemMessage(textConverter.convert(text));
+        source.sendSystemMessage(textConverter.convert(this, text));
     }
 
     @Override

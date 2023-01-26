@@ -19,7 +19,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @ToString(doNotUseGetters = true, callSuper = true)
-public final class VoiceProxyPlayer implements VoicePlayer<MinecraftProxyPlayer> {
+public final class VoiceProxyPlayer implements VoicePlayer {
 
     private final PlasmoVoiceProxy voiceProxy;
     @Getter

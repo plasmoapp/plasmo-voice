@@ -17,5 +17,5 @@ public interface ServerSourceLine extends SourceLine {
 
     void setIcon(@NotNull String icon);
 
-    @NotNull VoiceSourceLine getPlayerSourceLine(@NotNull VoicePlayer<?> player);
+    @NotNull VoiceSourceLine getPlayerSourceLine(@NotNull VoicePlayer player);
 }

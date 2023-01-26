@@ -9,11 +9,11 @@ import java.net.InetSocketAddress;
 import java.util.UUID;
 
 // todo: doc
-public interface UdpConnection<P extends VoicePlayer<?>> {
+public interface UdpConnection {
 
     @NotNull UUID getSecret();
 
-    @NotNull P getPlayer();
+    @NotNull VoicePlayer getPlayer();
 
     @NotNull InetSocketAddress getRemoteAddress();
 

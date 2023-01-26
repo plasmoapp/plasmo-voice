@@ -3,11 +3,11 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerLanguage;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -26,14 +26,13 @@ public final class VoiceListCommand implements MinecraftCommand {
                 .sorted()
                 .collect(Collectors.toList());
 
-        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
-        source.sendMessage(String.format(
-                language.commands().list().message(),
+        source.sendMessage(MinecraftTextComponent.translatable(
+                "pv.command.list.message",
                 players.size(),
                 voiceServer.getPlayerManager().getPlayers().size(),
                 players.size() > 0
                         ? String.join(", ", players)
-                        : language.commands().list().empty()
+                        : MinecraftTextComponent.translatable("pv.command.list.empty")
         ));
     }
 

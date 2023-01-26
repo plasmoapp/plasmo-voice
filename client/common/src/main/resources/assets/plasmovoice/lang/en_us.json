@@ -196,10 +196,7 @@
     "gui.plasmovoice.cannot_connect_to_udp_3": "%s",
 
 
-    "activation.plasmovoice.proximity": "Proximity",
-    "activation.plasmovoice.parent": "Parent",
-    "activation.plasmovoice.priority": "Priority",
-    "activation.plasmovoice.whisper": "Whisper",
+    "pv.activation.parent": "Parent",
 
 
     "message.plasmovoice.close": "Close",

@@ -17,7 +17,7 @@ public final class VelocityDefaultCommandSource implements MinecraftCommandSourc
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
-        source.sendMessage(textConverter.convert(text));
+        source.sendMessage(textConverter.convert(this, text));
     }
 
     @Override
@@ -32,7 +32,7 @@ public final class VelocityDefaultCommandSource implements MinecraftCommandSourc
 
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
-        source.sendActionBar(textConverter.convert(text));
+        source.sendActionBar(textConverter.convert(this, text));
     }
 
     @Override

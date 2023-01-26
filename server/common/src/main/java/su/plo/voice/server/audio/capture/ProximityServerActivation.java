@@ -28,7 +28,7 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
         ServerActivation.Builder builder = voiceServer.getActivationManager().createBuilder(
                 voiceServer,
                 VoiceActivation.PROXIMITY_NAME,
-                "activation.plasmovoice.proximity",
+                "pv.activation.proximity",
                 "plasmovoice:textures/icons/microphone.png",
                 "pv.activation.proximity",
                 1
@@ -44,7 +44,7 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
         voiceServer.getSourceLineManager().register(
                 voiceServer,
                 VoiceSourceLine.PROXIMITY_NAME,
-                "activation.plasmovoice.proximity",
+                "pv.activation.proximity",
                 "plasmovoice:textures/icons/speaker.png",
                 1
         );

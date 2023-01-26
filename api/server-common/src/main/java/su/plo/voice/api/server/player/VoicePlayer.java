@@ -12,7 +12,7 @@ import java.util.UUID;
 /**
  * Represents "proxy" player to an actual server player object
  */
-public interface VoicePlayer<P extends MinecraftServerPlayer> {
+public interface VoicePlayer {
 
     /**
      * Sends a packet to the player via minecraft channel
@@ -45,5 +45,5 @@ public interface VoicePlayer<P extends MinecraftServerPlayer> {
 
     Optional<PublicKey> getPublicKey();
 
-    P getInstance();
+    @NotNull MinecraftServerPlayer getInstance();
 }

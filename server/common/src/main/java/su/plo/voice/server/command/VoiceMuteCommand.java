@@ -12,7 +12,6 @@ import su.plo.lib.api.server.command.MinecraftCommandSource;
 import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.mute.VoiceMuteManager;
 
 import java.util.*;
@@ -30,24 +29,22 @@ public final class VoiceMuteCommand implements MinecraftCommand {
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
-        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
-
         if (arguments.length == 0) {
-            source.sendMessage(language.commands().mute().usage());
+            source.sendMessage(MinecraftTextComponent.translatable("pv.error.no_permissions"));
             return;
         }
 
         Optional<MinecraftServerPlayerEntity> player = minecraftServer.getPlayerByName(arguments[0]);
         if (!player.isPresent()) {
-            source.sendMessage(language.playerNotFound());
+            source.sendMessage(MinecraftTextComponent.translatable("pv.error.player_not_found"));
             return;
         }
 
         VoiceMuteManager muteManager = (VoiceMuteManager) voiceServer.getMuteManager();
 
         if (muteManager.getMute(player.get().getUUID()).isPresent()) {
-            source.sendMessage(String.format(
-                    language.commands().mute().alreadyMuted(),
+            source.sendMessage(MinecraftTextComponent.translatable(
+                    "pv.command.mute.already_muted",
                     player.get().getName()
             ));
             return;
@@ -78,18 +75,18 @@ public final class VoiceMuteCommand implements MinecraftCommand {
         }
 
         if (durationUnit == null) {
-            source.sendMessage(String.format(
-                    language.commands().mute().permanentlyMuted(),
+            source.sendMessage(MinecraftTextComponent.translatable(
+                    "pv.command.mute.permanently_muted",
                     player.get().getName(),
-                    muteManager.formatMuteReason(language, reason)
+                    muteManager.formatMuteReason(reason)
             ));
         } else {
             try {
-                source.sendMessage(String.format(
-                        language.commands().mute().temporallyMuted(),
+                source.sendMessage(MinecraftTextComponent.translatable(
+                        "pv.command.mute.temporarily_muted",
                         player.get().getName(),
-                        language.mutes().durations().format(duration, durationUnit),
-                        muteManager.formatMuteReason(language, reason)
+                        durationUnit.translate(duration),
+                        muteManager.formatMuteReason(reason)
                 ));
             } catch (IllegalArgumentException e) {
                 source.sendMessage(MinecraftTextComponent.literal(e.getMessage()));

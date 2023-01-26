@@ -6,10 +6,11 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
-import su.plo.voice.api.proxy.audio.source.ProxyAudioSource;
-import su.plo.voice.api.proxy.audio.source.ProxyDirectSource;
 import su.plo.voice.api.proxy.audio.source.ProxySourceManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.api.server.audio.source.ServerAudioSource;
+import su.plo.voice.api.server.audio.source.ServerDirectSource;
+import su.plo.voice.server.audio.source.VoiceServerDirectSource;
 
 import java.util.Collection;
 import java.util.Map;
@@ -21,14 +22,14 @@ public class VoiceProxySourceManager implements ProxySourceManager {
 
     private final PlasmoVoiceProxy voiceProxy;
 
-    private final Map<UUID, ProxyAudioSource<?>> sourceById = Maps.newConcurrentMap();
+    private final Map<UUID, ServerAudioSource<?>> sourceById = Maps.newConcurrentMap();
 
     @Override
-    public Optional<ProxyAudioSource<?>> getSourceById(@NotNull UUID sourceId) {
+    public Optional<ServerAudioSource<?>> getSourceById(@NotNull UUID sourceId) {
         return Optional.ofNullable(sourceById.get(sourceId));
     }
 
-    public Collection<ProxyAudioSource<?>> getSources() {
+    public Collection<ServerAudioSource<?>> getSources() {
         return sourceById.values();
     }
 
@@ -40,14 +41,14 @@ public class VoiceProxySourceManager implements ProxySourceManager {
     }
 
     @Override
-    public @NotNull ProxyDirectSource createDirectSource(@NotNull Object addonObject,
-                                                         @NotNull ServerSourceLine line,
-                                                         @Nullable String codec,
-                                                         boolean stereo) {
+    public @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
+                                                          @NotNull ServerSourceLine line,
+                                                          @Nullable String codec,
+                                                          boolean stereo) {
         Optional<AddonContainer> addon = voiceProxy.getAddonManager().getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
-        ProxyDirectSource source = new VoiceProxyAudioDirectSource(
+        ServerDirectSource source = new VoiceServerDirectSource(
                 voiceProxy,
                 voiceProxy.getUdpConnectionManager(),
                 addon.get(),
@@ -66,7 +67,7 @@ public class VoiceProxySourceManager implements ProxySourceManager {
     }
 
     @Override
-    public void remove(@NotNull ProxyAudioSource<?> source) {
+    public void remove(@NotNull ServerAudioSource<?> source) {
         remove(source.getId());
     }
 

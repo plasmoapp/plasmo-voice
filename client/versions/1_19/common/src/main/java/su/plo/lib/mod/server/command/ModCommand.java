@@ -20,9 +20,8 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import org.apache.logging.log4j.LogManager;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextConverter;
-import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.chat.ServerTextConverter;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 
@@ -34,7 +33,7 @@ import java.util.function.Predicate;
 public final class ModCommand implements Command<CommandSourceStack>, Predicate<CommandSourceStack>, SuggestionProvider<CommandSourceStack> {
 
     private final MinecraftServerLib minecraftServer;
-    private final MinecraftTextConverter<Component> textConverter;
+    private final ServerTextConverter<Component> textConverter;
     private final MinecraftCommand command;
 
     public LiteralCommandNode<CommandSourceStack> register(CommandDispatcher<CommandSourceStack> dispatcher, String label) {
@@ -60,10 +59,7 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
         }
 
         if (!command.hasPermission(source, args)) {
-            source.sendMessage( // todo: use ServerLanguage?
-                    MinecraftTextComponent.literal("I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.")
-                            .withStyle(MinecraftTextStyle.RED)
-            );
+            source.sendMessage(MinecraftTextComponent.translatable("pv.error.no_permissions"));
             return 1;
         }
 

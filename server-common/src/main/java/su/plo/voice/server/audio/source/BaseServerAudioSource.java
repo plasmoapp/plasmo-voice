@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
-import su.plo.voice.api.server.audio.source.AudioSource;
+import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 
@@ -18,7 +18,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Predicate;
 
-public abstract class BaseServerAudioSource<S extends SourceInfo, P extends VoicePlayer<?>> implements AudioSource<S, P> {
+public abstract class BaseServerAudioSource<S extends SourceInfo>
+        implements ServerAudioSource<S> {
 
     @Getter
     protected final AddonContainer addon;
@@ -37,7 +38,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo, P extends Voic
     protected final AtomicBoolean dirty = new AtomicBoolean(true);
     protected final AtomicInteger state = new AtomicInteger(1);
 
-    protected final List<Predicate<P>> filters = new CopyOnWriteArrayList<>();
+    protected final List<Predicate<VoicePlayer>> filters = new CopyOnWriteArrayList<>();
 
     protected BaseServerAudioSource(@NotNull AddonContainer addon,
                                  @NotNull UUID id,
@@ -84,18 +85,18 @@ public abstract class BaseServerAudioSource<S extends SourceInfo, P extends Voic
     }
 
     @Override
-    public void addFilter(Predicate<P> filter) {
+    public void addFilter(Predicate<VoicePlayer> filter) {
         if (filters.contains(filter)) throw new IllegalArgumentException("Filter already exist");
         filters.add(filter);
     }
 
     @Override
-    public void removeFilter(Predicate<P> filter) {
+    public void removeFilter(Predicate<VoicePlayer> filter) {
         filters.remove(filter);
     }
 
     @Override
-    public @NotNull Collection<Predicate<P>> getFilters() {
+    public @NotNull Collection<Predicate<VoicePlayer>> getFilters() {
         return filters;
     }
 
@@ -109,8 +110,8 @@ public abstract class BaseServerAudioSource<S extends SourceInfo, P extends Voic
         dirty.set(true);
     }
 
-    protected boolean testPlayer(@NotNull P player) {
-        for (Predicate<P> filter : filters) {
+    protected boolean testPlayer(@NotNull VoicePlayer player) {
+        for (Predicate<VoicePlayer> filter : filters) {
             if (!filter.test(player)) return false;
         }
 

@@ -12,11 +12,11 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 public final class PlayerSpeakEndEvent extends EventCancellableBase {
 
     @Getter
-    private final VoicePlayer<?> player;
+    private final VoicePlayer player;
     @Getter
     private final PlayerAudioEndPacket packet;
 
-    public PlayerSpeakEndEvent(@NotNull VoicePlayer<?> player,
+    public PlayerSpeakEndEvent(@NotNull VoicePlayer player,
                                @NotNull PlayerAudioEndPacket packet) {
         this.player = player;
         this.packet = packet;

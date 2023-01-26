@@ -31,6 +31,9 @@ public final class VoiceProxyConfig implements ProxyConfig {
     private UUID forwardingSecret = null;
 
     @ConfigField
+    private String defaultLanguage = "en_us";
+
+    @ConfigField
     private VoiceHost host = new VoiceHost();
 
     @ConfigField

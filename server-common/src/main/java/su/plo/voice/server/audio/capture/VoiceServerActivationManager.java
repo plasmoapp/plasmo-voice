@@ -31,13 +31,13 @@ public final class VoiceServerActivationManager implements ServerActivationManag
     private static final String WILDCARD_ACTIVATION_PERMISSION = "pv.activation.*";
 
     private final PlasmoVoice voice;
-    private final ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer<?>> tcpConnections;
+    private final ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer> tcpConnections;
     private final AddonManager addons;
     private final VoicePlayerManager<?> players;
     private final Map<UUID, ServerActivation> activationById = Maps.newConcurrentMap();
 
     public VoiceServerActivationManager(@NotNull PlasmoVoice voice,
-                                        @NotNull ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer<?>> tcpConnections,
+                                        @NotNull ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer> tcpConnections,
                                         @NotNull VoicePlayerManager<?> players) {
         this.voice = voice;
         this.tcpConnections = tcpConnections;
@@ -120,7 +120,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
     @EventSubscribe
     public void onPermissionUpdate(@NotNull PlayerPermissionUpdateEvent event) {
-        VoicePlayer<?> player = event.getPlayer();
+        VoicePlayer player = event.getPlayer();
         String permission = event.getPermission();
 
         if (activationById.values()

@@ -11,7 +11,7 @@ public interface ServerPlayersSourceLine extends ServerSourceLine {
      * @param player the player
      * @param playerMap the player map
      */
-    void setPlayerMap(@NotNull VoicePlayer<?> player, @NotNull ServerPlayerMap playerMap);
+    void setPlayerMap(@NotNull VoicePlayer player, @NotNull ServerPlayerMap playerMap);
 
-    @NotNull ServerPlayerMap getPlayerMap(@NotNull VoicePlayer<?> player);
+    @NotNull ServerPlayerMap getPlayerMap(@NotNull VoicePlayer player);
 }

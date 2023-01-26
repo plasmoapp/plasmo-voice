@@ -12,6 +12,8 @@ public interface ServerConfig {
 
     @NotNull String serverId();
 
+    @NotNull String defaultLanguage();
+
     @NotNull Host host();
 
     @NotNull Voice voice();

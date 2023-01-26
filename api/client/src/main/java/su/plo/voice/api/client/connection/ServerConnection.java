@@ -8,10 +8,13 @@ import su.plo.voice.proto.packets.Packet;
 import java.net.SocketAddress;
 import java.security.KeyPair;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
 public interface ServerConnection {
+
+    Map<String, String> getLanguage();
 
     @NotNull SocketAddress getRemoteAddress();
 

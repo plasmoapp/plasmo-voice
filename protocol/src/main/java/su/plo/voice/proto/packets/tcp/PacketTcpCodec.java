@@ -23,6 +23,8 @@ public class PacketTcpCodec {
         PACKETS.register(++lastPacketId, PlayerInfoRequestPacket.class);
         PACKETS.register(++lastPacketId, ConfigPacket.class);
         PACKETS.register(++lastPacketId, ConfigPlayerInfoPacket.class);
+        PACKETS.register(++lastPacketId, LanguageRequestPacket.class);
+        PACKETS.register(++lastPacketId, LanguagePacket.class);
 
         PACKETS.register(++lastPacketId, PlayerListPacket.class);
         PACKETS.register(++lastPacketId, PlayerInfoUpdatePacket.class);

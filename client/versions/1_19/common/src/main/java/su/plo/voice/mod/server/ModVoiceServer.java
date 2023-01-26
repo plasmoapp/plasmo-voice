@@ -20,7 +20,7 @@ public abstract class ModVoiceServer<T extends ModServerChannelHandler, S extend
 
     protected final String modId = "plasmovoice";
 
-    protected final ModServerLib minecraftServerLib = new ModServerLib();
+    protected final ModServerLib minecraftServerLib = new ModServerLib(this::getLanguages);
 
     protected MinecraftServer server;
     protected T handler;

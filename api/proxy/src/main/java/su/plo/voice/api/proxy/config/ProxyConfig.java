@@ -9,6 +9,8 @@ public interface ProxyConfig {
 
     byte[] aesEncryptionKey();
 
+    @NotNull String defaultLanguage();
+
     @NotNull Host host();
 
     interface Host {

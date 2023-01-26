@@ -21,7 +21,7 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
                 line.getTranslation(),
                 line.getIcon(),
                 line.getWeight(),
-                line.hasPlayers() ? Sets.newConcurrentHashSet(line.getPlayers()) : Sets.newConcurrentHashSet()
+                line.hasPlayers() ? Sets.newConcurrentHashSet(line.getPlayers()) : null
         );
 
         this.volumeEntry = volumeEntry;
@@ -43,6 +43,10 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
 
     @Override
     public void addPlayer(@NotNull MinecraftGameProfile playerId) {
+        if (players == null) {
+            players = Sets.newConcurrentHashSet();
+        }
+
         players.add(playerId);
     }
 

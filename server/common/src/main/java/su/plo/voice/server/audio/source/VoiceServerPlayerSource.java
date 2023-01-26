@@ -7,6 +7,7 @@ import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerPlayerSource;
+import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 
@@ -39,10 +40,10 @@ public final class VoiceServerPlayerSource
         return player.getInstance().getServerPosition(playerPosition);
     }
 
-    private boolean filterVanish(@NotNull VoiceServerPlayer player) {
+    private boolean filterVanish(@NotNull VoicePlayer player) {
         return
                 !player.equals(this.player) &&
-                player.getInstance().canSee(this.player.getInstance());
+                        ((VoiceServerPlayer) player).getInstance().canSee(this.player.getInstance());
     }
 
     @Override

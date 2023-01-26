@@ -3,18 +3,19 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.mute.VoiceMuteManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -25,15 +26,13 @@ public final class VoiceMuteListCommand implements MinecraftCommand {
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
-        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
-
         VoiceMuteManager muteManager = (VoiceMuteManager) voiceServer.getMuteManager();
 
         Collection<ServerMuteInfo> mutedPlayers = muteManager.getMutedPlayers();
 
-        source.sendMessage(language.commands().muteList().header());
+        source.sendMessage(MinecraftTextComponent.translatable("pv.command.mute_list.header"));
         if (mutedPlayers.isEmpty()) {
-            source.sendMessage(language.commands().muteList().empty());
+            source.sendMessage(MinecraftTextComponent.translatable("pv.command.mute_list.empty"));
             return;
         }
 
@@ -45,31 +44,33 @@ public final class VoiceMuteListCommand implements MinecraftCommand {
             }
             if (!player.isPresent()) return;
 
+            Map<String, String> language = voiceServer.getLanguages().getServerLanguage(source);
+
             Date date = new Date(muteInfo.getMutedToTime());
             SimpleDateFormat expirationFormatDate = new SimpleDateFormat(
-                    language.commands().muteList().expirationDate()
+                    language.getOrDefault("pv.command.mute_list.expiration_date", "yyyy.MM.dd")
             );
             SimpleDateFormat expirationFormatTime = new SimpleDateFormat(
-                    language.commands().muteList().expirationTime()
+                    language.getOrDefault("pv.command.mute_list.expiration_time", "HH:mm:ss")
             );
 
-            String expires = muteInfo.getMutedToTime() > 0
-                    ? String.format(language.commands().muteList().expireAt(), expirationFormatDate.format(date), expirationFormatTime.format(date))
-                    : language.commands().muteList().neverExpires();
+            MinecraftTextComponent expires = muteInfo.getMutedToTime() > 0
+                    ? MinecraftTextComponent.translatable("pv.command.mute_list.expire_at", expirationFormatDate.format(date), expirationFormatTime.format(date))
+                    : MinecraftTextComponent.translatable("pv.command.mute_list.never_expires");
 
-            String reason = muteManager.formatMuteReason(language, muteInfo.getReason());
+            MinecraftTextComponent reason = muteManager.formatMuteReason(muteInfo.getReason());
 
             if (mutedBy.isPresent()) {
-                source.sendMessage(String.format(
-                        language.commands().muteList().entryMutedBy(),
+                source.sendMessage(MinecraftTextComponent.translatable(
+                        "pv.command.mute_list.entry_muted_by",
                         player.get().getName(),
                         mutedBy.get().getName(),
                         expires,
                         reason
                 ));
             } else {
-                source.sendMessage(String.format(
-                        language.commands().muteList().entry(),
+                source.sendMessage(MinecraftTextComponent.translatable(
+                        "pv.command.mute_list.entry",
                         player.get().getName(),
                         expires,
                         reason

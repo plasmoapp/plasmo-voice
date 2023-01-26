@@ -2,6 +2,7 @@ package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
@@ -10,7 +11,7 @@ import java.util.Collection;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-public interface AudioSource<S extends SourceInfo, P extends VoicePlayer<?>> extends su.plo.voice.api.audio.source.AudioSource<S> {
+public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> {
 
     @NotNull AddonContainer getAddon();
 
@@ -36,11 +37,11 @@ public interface AudioSource<S extends SourceInfo, P extends VoicePlayer<?>> ext
 
     boolean isIconVisible();
 
-    void addFilter(Predicate<P> filter);
+    void addFilter(Predicate<VoicePlayer> filter);
 
-    void removeFilter(Predicate<P> filter);
+    void removeFilter(Predicate<VoicePlayer> filter);
 
-    @NotNull Collection<Predicate<P>> getFilters();
+    @NotNull Collection<Predicate<VoicePlayer>> getFilters();
 
     void clearFilters();
 }

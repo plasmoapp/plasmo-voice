@@ -43,7 +43,7 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
                               @DataDirectory Path dataDirectory) {
         this.proxyServer = proxyServer;
         this.dataDirectory = dataDirectory;
-        this.minecraftProxy = new VelocityProxyLib(proxyServer, eventBus);
+        this.minecraftProxy = new VelocityProxyLib(proxyServer, eventBus, this::getLanguages);
     }
 
     @Subscribe

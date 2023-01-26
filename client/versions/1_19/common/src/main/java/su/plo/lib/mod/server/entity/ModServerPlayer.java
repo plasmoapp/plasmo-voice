@@ -11,8 +11,8 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.chat.ServerTextConverter;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.lib.api.server.permission.PermissionTristate;
@@ -32,7 +32,7 @@ public final class ModServerPlayer
         implements MinecraftServerPlayerEntity {
 
     private final MinecraftServerLib minecraftServer;
-    private final MinecraftTextConverter<Component> textConverter;
+    private final ServerTextConverter<Component> textConverter;
     private final PermissionSupplier permissions;
     private final ResourceCache resources;
     private final Set<String> registeredChannels = Sets.newCopyOnWriteArraySet();
@@ -43,7 +43,7 @@ public final class ModServerPlayer
     private MinecraftServerEntity spectatorTarget;
 
     public ModServerPlayer(@NotNull MinecraftServerLib minecraftServer,
-                           @NotNull MinecraftTextConverter<Component> textConverter,
+                           @NotNull ServerTextConverter<Component> textConverter,
                            @NotNull PermissionSupplier permissions,
                            @NotNull ResourceCache resources,
                            @NotNull ServerPlayer player) {
@@ -102,12 +102,12 @@ public final class ModServerPlayer
 
     @Override
     public void kick(@NotNull MinecraftTextComponent reason) {
-        instance.connection.disconnect(textConverter.convert(reason));
+        instance.connection.disconnect(textConverter.convert(this, reason));
     }
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
-        instance.sendSystemMessage(textConverter.convert(text));
+        instance.sendSystemMessage(textConverter.convert(this, text));
     }
 
     @Override
@@ -125,7 +125,7 @@ public final class ModServerPlayer
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
         instance.connection.send(new ClientboundSetActionBarTextPacket(
-                textConverter.convert(text)
+                textConverter.convert(this, text)
         ));
     }
 

@@ -99,6 +99,7 @@ public final class OverlayTabWidget extends TabWidget {
                     20
             );
         } else {
+            System.out.println(configEntry.value());
             widget = new DropDownWidget(
                     minecraft,
                     parent,

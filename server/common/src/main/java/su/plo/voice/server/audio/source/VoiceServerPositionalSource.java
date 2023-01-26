@@ -9,7 +9,6 @@ import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerPositionalSource;
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
-import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.packets.Packet;
@@ -19,7 +18,7 @@ import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import java.util.UUID;
 
 public abstract class VoiceServerPositionalSource<S extends SourceInfo>
-        extends BaseServerAudioSource<S, VoiceServerPlayer>
+        extends BaseServerAudioSource<S>
         implements ServerPositionalSource<S> {
 
     private final PlasmoVoiceServer voiceServer;

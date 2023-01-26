@@ -16,7 +16,7 @@ public final class PaperDefaultCommandSource implements MinecraftCommandSource {
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
-        source.sendMessage(textConverter.convert(text));
+        source.sendMessage(textConverter.convert(this, text));
     }
 
     @Override
@@ -31,7 +31,7 @@ public final class PaperDefaultCommandSource implements MinecraftCommandSource {
 
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
-        source.sendMessage(textConverter.convert(text));
+        source.sendMessage(textConverter.convert(this, text));
     }
 
     @Override

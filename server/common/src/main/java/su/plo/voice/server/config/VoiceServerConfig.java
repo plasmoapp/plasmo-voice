@@ -28,6 +28,9 @@ public final class VoiceServerConfig implements ServerConfig {
     private String serverId = UUID.randomUUID().toString();
 
     @ConfigField
+    private String defaultLanguage = "en_us";
+
+    @ConfigField
     private Host host = new Host();
 
     @ConfigField

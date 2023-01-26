@@ -4,9 +4,8 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.client.MinecraftClientLib;
 import su.plo.lib.api.client.MinecraftOptions;
 import su.plo.lib.api.client.connection.MinecraftServerConnection;
@@ -20,6 +19,7 @@ import su.plo.lib.api.client.render.MinecraftWindow;
 import su.plo.lib.api.client.render.particle.MinecraftParticles;
 import su.plo.lib.api.client.sound.MinecraftSoundManager;
 import su.plo.lib.api.client.world.MinecraftClientWorld;
+import su.plo.lib.mod.client.chat.ClientComponentTextConverter;
 import su.plo.lib.mod.client.connection.ModServerConnection;
 import su.plo.lib.mod.client.gui.ModFontWrapper;
 import su.plo.lib.mod.client.gui.ModScreenWrapper;
@@ -32,7 +32,7 @@ import su.plo.lib.mod.client.sound.ModSoundManager;
 import su.plo.lib.mod.client.texture.ResourceCache;
 import su.plo.lib.mod.client.world.ModClientWorld;
 import su.plo.lib.mod.entity.ModClientPlayer;
-import su.plo.voice.mod.chat.ComponentTextConverter;
+import su.plo.voice.client.chat.ClientLanguageSupplier;
 
 import java.util.Optional;
 
@@ -41,9 +41,9 @@ public final class ModClientLib implements MinecraftClientLib {
     private final Minecraft minecraft = Minecraft.getInstance();
 
     @Getter
-    private final MinecraftTextConverter<Component> textConverter = new ComponentTextConverter();
+    private final ClientComponentTextConverter textConverter;
     @Getter
-    private final MinecraftFont font = new ModFontWrapper(textConverter);
+    private final MinecraftFont font;
     @Getter
     private final MinecraftLanguage language = new ModLanguageWrapper();
     @Getter
@@ -65,6 +65,11 @@ public final class ModClientLib implements MinecraftClientLib {
     private @Nullable MinecraftClientPlayer clientPlayer;
     private @Nullable ModClientWorld world;
     private @Nullable ModServerConnection connection;
+
+    public ModClientLib(@NotNull ClientLanguageSupplier languageSupplier) {
+        this.textConverter = new ClientComponentTextConverter(this, languageSupplier);
+        this.font = new ModFontWrapper(textConverter);
+    }
 
     @Override
     public void onServerDisconnect() {

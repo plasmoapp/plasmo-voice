@@ -17,6 +17,7 @@ import su.plo.lib.velocity.player.VelocityProxyPlayer;
 import su.plo.lib.velocity.server.VelocityProxyServerInfo;
 import su.plo.voice.api.event.EventBus;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.event.player.PlayerJoinEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 
@@ -24,6 +25,7 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public final class VelocityProxyLib implements MinecraftProxyLib {
@@ -41,10 +43,11 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
     private final PermissionsManager permissionsManager = new PermissionsManager();
 
     public VelocityProxyLib(@NotNull ProxyServer proxyServer,
-                            @NotNull EventBus eventBus) {
+                            @NotNull EventBus eventBus,
+                            @NotNull Supplier<ServerLanguages> languagesSupplier) {
         this.proxyServer = proxyServer;
         this.eventBus = eventBus;
-        this.textConverter = new ComponentTextConverter();
+        this.textConverter = new ComponentTextConverter(languagesSupplier);
         this.commandManager = new VelocityCommandManager(this, textConverter);
 
         loadServers();

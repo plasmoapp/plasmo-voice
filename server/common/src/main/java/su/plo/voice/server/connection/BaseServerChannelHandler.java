@@ -9,7 +9,6 @@ import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.player.BaseVoicePlayer;
 
 import java.util.List;
@@ -79,9 +78,8 @@ public abstract class BaseServerChannelHandler {
     }
 
     private void kickModRequired(VoiceServerPlayer player) {
-        ServerLanguage language = voiceServer.getLanguages().getLanguage(player.getInstance().getLanguage());
-        player.getInstance().kick(MinecraftTextComponent.literal(
-                language.modMissingKickMessage()
+        player.getInstance().kick(MinecraftTextComponent.translatable(
+                "pv.error.mod_missing_kick_message"
         ));
     }
 }

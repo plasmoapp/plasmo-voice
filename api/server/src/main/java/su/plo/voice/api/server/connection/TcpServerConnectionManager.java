@@ -10,6 +10,7 @@ public interface TcpServerConnectionManager extends ConnectionManager<ClientPack
 
     /**
      * Sends {@link su.plo.voice.proto.packets.tcp.clientbound.ConnectionPacket} to the player
+     *
      * @param player the player
      */
     void connect(@NotNull VoiceServerPlayer player);

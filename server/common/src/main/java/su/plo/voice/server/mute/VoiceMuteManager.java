@@ -8,7 +8,6 @@ import su.plo.voice.api.server.mute.ServerMuteInfo;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.player.VoiceServerPlayerManager;
 
 import javax.annotation.Nullable;
@@ -48,8 +47,6 @@ public final class VoiceMuteManager implements MuteManager {
         VoiceServerPlayer player = playerManager.getPlayerById(playerId)
                 .orElseThrow(() -> new IllegalArgumentException("Player not found"));
 
-        ServerLanguage language = voiceServer.getLanguages().getLanguage(player.getInstance());
-
         if (duration > 0 && durationUnit == null) {
             throw new IllegalArgumentException("durationUnit cannot be null if duration > 0");
         }
@@ -59,9 +56,9 @@ public final class VoiceMuteManager implements MuteManager {
             throw new IllegalArgumentException("TIMESTAMP duration should be in the future");
         }
 
-        String durationMessage = durationUnit == null
-                ? ""
-                : language.mutes().durations().format(duration, durationUnit);
+        MinecraftTextComponent durationMessage = durationUnit == null
+                ? MinecraftTextComponent.empty()
+                : durationUnit.translate(duration);
         if (duration > 0) {
             duration = durationUnit.multiply(duration);
 
@@ -76,15 +73,15 @@ public final class VoiceMuteManager implements MuteManager {
 
         voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
         if (duration > 0) {
-            player.getInstance().sendMessage(String.format(
-                    language.mutes().temporallyMuted(),
+            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
+                    "pv.mutes.temporarily_muted",
                     durationMessage,
-                    formatMuteReason(language, reason)
+                    formatMuteReason(reason)
             ));
         } else {
             player.getInstance().sendMessage(MinecraftTextComponent.translatable(
-                    language.mutes().permanentlyMuted(),
-                    formatMuteReason(language, reason)
+                    "pv.mutes.permanently_muted",
+                    formatMuteReason(reason)
             ));
         }
 
@@ -99,10 +96,8 @@ public final class VoiceMuteManager implements MuteManager {
                 .map(muteInfo -> {
                     playerManager.getPlayerById(playerId)
                             .ifPresent(player -> {
-                                ServerLanguage language = voiceServer.getLanguages().getLanguage(player.getInstance());
-
                                 voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
-                                player.getInstance().sendMessage(language.mutes().unmuted());
+                                player.getInstance().sendMessage(MinecraftTextComponent.translatable("pv.mutes.unmuted"));
                             });
 
                     // todo: voice unmute event
@@ -121,10 +116,10 @@ public final class VoiceMuteManager implements MuteManager {
         return storage.getMutedPlayers();
     }
 
-    public String formatMuteReason(@NotNull ServerLanguage language, @Nullable String reason) {
+    public MinecraftTextComponent formatMuteReason(@Nullable String reason) {
         return reason == null
-                ? language.mutes().emptyReason()
-                : reason;
+                ? MinecraftTextComponent.translatable("pv.mutes.empty_reason")
+                : MinecraftTextComponent.literal(reason);
     }
 
     private void tick() {

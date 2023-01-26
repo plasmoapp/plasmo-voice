@@ -23,11 +23,11 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @ToString(doNotUseGetters = true, exclude = "publicKey")
-public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implements VoicePlayer<P> {
+public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implements VoicePlayer {
 
     private final PlasmoVoice voice;
     @Getter
-    protected final P instance;
+    protected final @NotNull P instance;
 
     @Setter
     protected boolean voiceDisabled;

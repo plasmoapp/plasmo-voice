@@ -80,7 +80,7 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
 
     @Override
     public void kick(@NotNull MinecraftTextComponent reason) {
-        instance.disconnect(textConverter.convert(reason));
+        instance.disconnect(textConverter.convert(this, reason));
     }
 
     @Override
@@ -95,7 +95,7 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
-        instance.sendMessage(textConverter.convert(text));
+        instance.sendMessage(textConverter.convert(this, text));
     }
 
     @Override
@@ -110,7 +110,7 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
 
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
-        instance.sendActionBar(textConverter.convert(text));
+        instance.sendActionBar(textConverter.convert(this, text));
     }
 
     @Override

@@ -3,8 +3,8 @@ package su.plo.voice.proxy.connection;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
-import su.plo.voice.api.proxy.audio.source.ProxyAudioSource;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
+import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
@@ -44,10 +44,14 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
 
     @Override
     public void handle(@NotNull SourceInfoRequestPacket packet) {
-        Optional<ProxyAudioSource<?>> source = voiceProxy.getSourceManager().getSourceById(packet.getSourceId());
+        Optional<ServerAudioSource<?>> source = voiceProxy.getSourceManager().getSourceById(packet.getSourceId());
         if (!source.isPresent()) return;
 
         player.sendPacket(new SourceInfoPacket(source.get().getInfo()));
         throw new CancelForwardingException();
+    }
+
+    @Override
+    public void handle(@NotNull LanguageRequestPacket packet) {
     }
 }

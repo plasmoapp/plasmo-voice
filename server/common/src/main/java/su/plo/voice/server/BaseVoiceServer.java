@@ -35,7 +35,6 @@ import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.command.*;
-import su.plo.voice.server.config.ServerLanguage;
 import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.server.config.VoiceServerLanguages;
 import su.plo.voice.server.connection.VoiceTcpConnectionManager;
@@ -198,12 +197,10 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceServerLanguages();
+            this.languages = new VoiceServerLanguages(config.defaultLanguage());
             languages.register(
                     this::getResource,
-                    new File(getConfigFolder(), "languages"),
-                    ServerLanguage.class,
-                    "en_us"
+                    new File(getConfigFolder(), "languages")
             );
 
             // load forwarding secret

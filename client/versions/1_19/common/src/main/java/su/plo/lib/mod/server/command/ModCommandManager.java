@@ -5,8 +5,8 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.chat.ServerTextConverter;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 
@@ -14,7 +14,7 @@ import su.plo.lib.api.server.command.MinecraftCommandManager;
 public final class ModCommandManager extends MinecraftCommandManager<MinecraftCommand> {
 
     private final MinecraftServerLib minecraftServer;
-    private final MinecraftTextConverter<Component> textConverter;
+    private final ServerTextConverter<Component> textConverter;
 
     public synchronized void registerCommands(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
         commandByName.forEach((name, command) -> {

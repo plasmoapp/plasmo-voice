@@ -121,13 +121,13 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
-                                                                            @NotNull ServerSourceLine line,
-                                                                            @Nullable String codec,
-                                                                            boolean stereo) {
+                                                          @NotNull ServerSourceLine line,
+                                                          @Nullable String codec,
+                                                          boolean stereo) {
         Optional<AddonContainer> addon = voiceServer.getAddonManager().getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
 
-        ServerDirectSource source = new VoiceServerAudioDirectSource(
+        ServerDirectSource source = new VoiceServerDirectSource(
                 voiceServer,
                 voiceServer.getUdpConnectionManager(),
                 addon.get(),
@@ -142,7 +142,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public void remove(@NotNull UUID sourceId) {
-        AudioSource<?, VoiceServerPlayer> source = sourceById.remove(sourceId);
+        ServerAudioSource<?> source = sourceById.remove(sourceId);
         if (source instanceof ServerPlayerSource) {
             sourceByPlayerId.remove(sourceId);
         } else if (source instanceof ServerEntitySource) {
@@ -172,7 +172,7 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @EventSubscribe
     public void onPlayerQuit(PlayerQuitEvent event) {
-        AudioSource source = sourceByPlayerId.remove(event.getPlayerId());
+        ServerAudioSource<?> source = sourceByPlayerId.remove(event.getPlayerId());
         if (source == null) return;
 
         sourceById.remove(source.getId());

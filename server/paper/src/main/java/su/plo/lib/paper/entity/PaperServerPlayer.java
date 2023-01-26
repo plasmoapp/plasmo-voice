@@ -66,7 +66,7 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
-        instance.sendMessage(textConverter.convert(text));
+        instance.sendMessage(textConverter.convert(this, text));
     }
 
     @Override
@@ -81,7 +81,7 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
 
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
-        instance.sendActionBar(textConverter.convert(text));
+        instance.sendActionBar(textConverter.convert(this, text));
     }
 
     @Override

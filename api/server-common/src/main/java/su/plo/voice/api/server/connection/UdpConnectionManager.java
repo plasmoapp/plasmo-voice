@@ -9,7 +9,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface UdpConnectionManager<P extends VoicePlayer<?>, C extends UdpConnection<P>>
+public interface UdpConnectionManager<P extends VoicePlayer, C extends UdpConnection>
         extends ConnectionManager<ClientPacketUdpHandler, P> {
 
     Optional<C> getConnectionByPlayerId(@NotNull UUID playerId);

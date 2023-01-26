@@ -30,7 +30,7 @@ public class VoiceServerSourceLine extends VoiceSourceLine implements ServerSour
     }
 
     @Override
-    public @NotNull VoiceSourceLine getPlayerSourceLine(@NotNull VoicePlayer<?> player) {
+    public @NotNull VoiceSourceLine getPlayerSourceLine(@NotNull VoicePlayer player) {
         return this;
     }
 }

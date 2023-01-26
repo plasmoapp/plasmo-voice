@@ -19,7 +19,7 @@ import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 @RequiredArgsConstructor
-public abstract class BaseVoicePlayerManager<P extends VoicePlayer<?>> implements VoicePlayerManager<P> {
+public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements VoicePlayerManager<P> {
 
     protected final Map<UUID, P> playerById = Maps.newConcurrentMap();
     protected final Set<String> synchronizedPermissions = new CopyOnWriteArraySet<>();
@@ -57,7 +57,7 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer<?>> implement
         String permission = event.getPermission();
 
         if (synchronizedPermissions.contains(permission)) return;
-        VoicePlayer<?> player = event.getPlayer();
+        VoicePlayer player = event.getPlayer();
 
         Map<String, Boolean> permissions = Maps.newHashMap();
         permissions.put(permission, player.getInstance().hasPermission(permission));

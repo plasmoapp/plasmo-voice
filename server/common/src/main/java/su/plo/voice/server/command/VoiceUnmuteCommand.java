@@ -3,13 +3,13 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.ServerLanguage;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,10 +24,8 @@ public final class VoiceUnmuteCommand implements MinecraftCommand {
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
-        ServerLanguage language = voiceServer.getLanguages().getLanguage(source);
-
         if (arguments.length == 0) {
-            source.sendMessage(language.commands().unmute().usage());
+            source.sendMessage(MinecraftTextComponent.translatable("pv.command.unmute.usage"));
             return;
         }
 
@@ -39,22 +37,22 @@ public final class VoiceUnmuteCommand implements MinecraftCommand {
         }
 
         if (!player.isPresent()) {
-            source.sendMessage(language.playerNotFound());
+            source.sendMessage(MinecraftTextComponent.translatable("pv.error.player_not_found"));
             return;
         }
 
         MuteManager muteManager = voiceServer.getMuteManager();
 
         if (!muteManager.unmute(player.get().getId(), false).isPresent()) {
-            source.sendMessage(String.format(
-                    language.commands().unmute().notMuted(),
+            source.sendMessage(MinecraftTextComponent.translatable(
+                    "pv.command.unmute.not_muted",
                     player.get().getName()
             ));
             return;
         }
 
-        source.sendMessage(String.format(
-                language.commands().unmute().unmuted(),
+        source.sendMessage(MinecraftTextComponent.translatable(
+                "pv.command.unmute.unmuted",
                 player.get().getName()
         ));
     }

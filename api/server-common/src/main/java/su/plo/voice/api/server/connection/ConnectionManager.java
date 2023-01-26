@@ -9,7 +9,7 @@ import javax.annotation.Nullable;
 import java.util.function.Predicate;
 
 // todo: doc
-public interface ConnectionManager<T extends PacketHandler, P extends VoicePlayer<?>> {
+public interface ConnectionManager<T extends PacketHandler, P extends VoicePlayer> {
 
     /**
      * Broadcasts packet to all players with voice chat installed

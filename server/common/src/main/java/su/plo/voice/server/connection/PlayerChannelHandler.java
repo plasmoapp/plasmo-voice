@@ -5,16 +5,14 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
-import su.plo.voice.api.server.audio.capture.ServerActivationManager;
-import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
-import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.api.server.event.connection.TcpPacketReceivedEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
+import su.plo.voice.proto.packets.tcp.clientbound.LanguagePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
@@ -30,18 +28,12 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     private final PlasmoVoiceServer voiceServer;
     private final TcpServerConnectionManager tcpConnections;
-    private final ServerActivationManager activations;
-    private final ServerSourceLineManager lines;
-    private final ServerSourceManager sources;
     private final VoiceServerPlayer player;
 
     public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
                                 @NotNull VoiceServerPlayer player) {
         this.voiceServer = voiceServer;
         this.tcpConnections = voiceServer.getTcpConnectionManager();
-        this.activations = voiceServer.getActivationManager();
-        this.lines = voiceServer.getSourceLineManager();
-        this.sources = voiceServer.getSourceManager();
         this.player = player;
     }
 
@@ -122,5 +114,13 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         if (!source.isPresent()) return;
 
         player.sendPacket(new SourceInfoPacket(source.get().getInfo()));
+    }
+
+    @Override
+    public void handle(@NotNull LanguageRequestPacket packet) {
+        player.sendPacket(new LanguagePacket(
+                packet.getLanguage(),
+                voiceServer.getLanguages().getClientLanguage(packet.getLanguage())
+        ));
     }
 }

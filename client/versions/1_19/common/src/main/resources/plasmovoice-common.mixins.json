@@ -10,6 +10,7 @@
         "MixinEntityRenderer",
         "MixinGameRenderer",
         "MixinKeyboardHandler",
+        "MixinLanguageManager",
         "MixinMouseHandler"
     ],
     "injectors": {

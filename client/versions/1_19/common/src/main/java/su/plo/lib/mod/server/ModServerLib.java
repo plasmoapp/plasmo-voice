@@ -3,29 +3,28 @@ package su.plo.lib.mod.server;
 import com.google.common.collect.Maps;
 import com.mojang.authlib.GameProfile;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
+import su.plo.lib.mod.chat.ComponentTextConverter;
 import su.plo.lib.mod.client.texture.ResourceCache;
+import su.plo.lib.mod.server.chat.ServerComponentTextConverter;
 import su.plo.lib.mod.server.command.ModCommandManager;
 import su.plo.lib.mod.server.entity.ModServerEntity;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
 import su.plo.lib.mod.server.world.ModServerWorld;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.event.player.PlayerJoinEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
-import su.plo.voice.mod.chat.ComponentTextConverter;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
@@ -33,10 +32,10 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-@RequiredArgsConstructor
 public final class ModServerLib implements MinecraftServerLib {
 
     public static ModServerLib INSTANCE;
@@ -49,13 +48,18 @@ public final class ModServerLib implements MinecraftServerLib {
     @Setter
     private PermissionSupplier permissions;
 
-    private final MinecraftTextConverter<Component> textConverter = new ComponentTextConverter();
+    private final ServerComponentTextConverter textConverter;
     private final ResourceCache resources = new ResourceCache();
 
     @Getter
-    private final ModCommandManager commandManager = new ModCommandManager(this, textConverter);
+    private final ModCommandManager commandManager;
     @Getter
     private final PermissionsManager permissionsManager = new PermissionsManager();
+
+    public ModServerLib(@NotNull Supplier<ServerLanguages> languagesSupplier) {
+        this.textConverter = new ServerComponentTextConverter(new ComponentTextConverter(), languagesSupplier);
+        this.commandManager = new ModCommandManager(this, textConverter);
+    }
 
     @Override
     public void onInitialize() {

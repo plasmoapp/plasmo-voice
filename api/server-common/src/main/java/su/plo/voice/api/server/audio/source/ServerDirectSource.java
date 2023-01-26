@@ -17,15 +17,15 @@ import java.util.function.Supplier;
 /**
  * Note: by default, it will send packets to all players with voice chat.
  * If you want to send packets to a specific player,
- * use {@link AudioDirectSource#setPlayers} to set the players supplier
- * and (or) {@link AudioDirectSource#addFilter(Predicate)} and {@link AudioDirectSource#removeFilter(Predicate)} methods to
+ * use {@link ServerDirectSource#setPlayers} to set the players supplier
+ * and (or) {@link ServerDirectSource#addFilter(Predicate)} and {@link ServerDirectSource#removeFilter(Predicate)} methods to
  * filter players.
  */
-public interface AudioDirectSource<P extends VoicePlayer<?>> extends AudioSource<DirectSourceInfo, P> {
+public interface ServerDirectSource extends ServerAudioSource<DirectSourceInfo> {
 
-    Optional<P> getSender();
+    Optional<VoicePlayer> getSender();
 
-    void setSender(@NotNull P player);
+    void setSender(@NotNull VoicePlayer player);
 
     Optional<Pos3d> getRelativePosition();
 
@@ -39,7 +39,7 @@ public interface AudioDirectSource<P extends VoicePlayer<?>> extends AudioSource
 
     void setCameraRelative(boolean cameraRelative);
 
-    void setPlayers(@Nullable Supplier<Collection<P>> playersSupplier);
+    void setPlayers(@Nullable Supplier<Collection<VoicePlayer>> playersSupplier);
 
     boolean sendAudioPacket(@NotNull SourceAudioPacket packet, @Nullable UUID activationId);
 

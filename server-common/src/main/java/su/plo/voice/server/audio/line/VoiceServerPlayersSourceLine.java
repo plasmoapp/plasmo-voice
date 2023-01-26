@@ -36,13 +36,14 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
     }
 
     @Override
-    public @NotNull VoiceSourceLine getPlayerSourceLine(@NotNull VoicePlayer<?> player) {
+    public @NotNull VoiceSourceLine getPlayerSourceLine(@NotNull VoicePlayer player) {
         return new VoiceSourceLine(
                 name,
                 translation,
                 icon,
                 weight,
-                playerMaps.get(player.getInstance().getUUID()).getPlayers()
+                getPlayerMap(player)
+                        .getPlayers()
                         .stream()
                         .map((linePlayer) -> linePlayer.getInstance().getGameProfile())
                         .collect(Collectors.toSet())
@@ -50,12 +51,12 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
     }
 
     @Override
-    public void setPlayerMap(@NotNull VoicePlayer<?> player, @NotNull ServerPlayerMap playerMap) {
+    public void setPlayerMap(@NotNull VoicePlayer player, @NotNull ServerPlayerMap playerMap) {
         playerMaps.put(player.getInstance().getUUID(), playerMap);
     }
 
     @Override
-    public @NotNull ServerPlayerMap getPlayerMap(@NotNull VoicePlayer<?> player) {
+    public @NotNull ServerPlayerMap getPlayerMap(@NotNull VoicePlayer player) {
         return playerMaps.computeIfAbsent(
                 player.getInstance().getUUID(),
                 (playerId) -> new VoicePlayerMap(player)
@@ -70,11 +71,11 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
     @RequiredArgsConstructor
     private class VoicePlayerMap implements ServerPlayerMap {
 
-        private final VoicePlayer<?> player;
-        private final Set<VoicePlayer<?>> players = Sets.newCopyOnWriteArraySet();
+        private final VoicePlayer player;
+        private final Set<VoicePlayer> players = Sets.newCopyOnWriteArraySet();
 
         @Override
-        public void addPlayer(@NotNull VoicePlayer<?> player) {
+        public void addPlayer(@NotNull VoicePlayer player) {
             players.add(player);
             player.sendPacket(new SourceLinePlayerAddPacket(id, player.getInstance().getGameProfile()));
         }
@@ -99,7 +100,7 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
         }
 
         @Override
-        public Collection<VoicePlayer<?>> getPlayers() {
+        public Collection<VoicePlayer> getPlayers() {
             return players;
         }
     }

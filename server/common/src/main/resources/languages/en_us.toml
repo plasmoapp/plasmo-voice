@@ -1,35 +1,36 @@
-no_permissions = "I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
-player_not_found = "Player not found"
+[server]
+[server.pv.error]
+no_permissions = "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
 player_only_command = "Only player can execute this command"
+player_not_found = "Player not found"
 mod_missing_kick_message = "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client"
 
-[mutes]
+[server.pv.mutes]
 empty_reason = "not specified"
-temporally_muted = "You've been muted %1$s. Reason: %2$s"
+temporarily_muted = "You've been muted %1$s. Reason: %2$s"
 permanently_muted = "You've been permanently muted. Reason: %s"
 unmuted = "You've been unmuted"
 
-[mutes.durations]
+[server.pv.mutes.durations]
 seconds = "for %s sec"
 minutes = "for %s min"
 hours = "for %s h"
 days = "for %s d"
 weeks = "for %s w"
 
-[commands]
-
-[commands.mute]
+[server.pv.command]
+[server.pv.command.mute]
 usage = "Usage: /vmute <player> [duration] [reason]"
 already_muted = "%s already muted"
-temporally_muted = "Muted %1$s %2$s. Reason: %3$s"
+temporarily_muted = "Muted %1$s %2$s. Reason: %3$s"
 permanently_muted = "%1$s is permanently muted. Reason: %2$s"
 
-[commands.unmute]
+[server.pv.command.unmute]
 usage = "Usage: /vunmute <player>"
 not_muted = "%s not muted"
 unmuted = "Unmuted %s"
 
-[commands.mute_list]
+[server.pv.command.mute_list]
 header = "Muted players:"
 entry = "%1$s, expires: %2$s. Reason: %3$s"
 entry_muted_by = "%1$s muted by %2$s, expires: %3$s. Reason: %4$s"
@@ -39,12 +40,15 @@ never_expires = "never"
 expiration_date = "yyyy.MM.dd"
 expiration_time = "HH:mm:ss"
 
-[commands.list]
+[server.pv.command.list]
 message = "Clients (%1$s/%2$s): %3$s"
 empty = "no players with Plasmo Voice installed"
 
-[commands.reconnect]
+[server.pv.command.reconnect]
 message = "Reconnect packet sent"
 
-[commands.reload]
+[server.pv.command.reload]
 message = "Config reloaded"
+
+[client.pv.activation]
+proximity = "Proximity"

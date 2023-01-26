@@ -1,4 +1,4 @@
-package su.plo.voice.mod.chat;
+package su.plo.lib.mod.chat;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;

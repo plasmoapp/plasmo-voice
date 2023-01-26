@@ -7,13 +7,19 @@ import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextConverter;
 import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.api.chat.MinecraftTranslatableText;
+import su.plo.lib.api.server.chat.ServerTextConverter;
+import su.plo.voice.api.server.config.ServerLanguages;
 
 import java.util.List;
+import java.util.function.Supplier;
 
-public final class ComponentTextConverter implements MinecraftTextConverter<Component> {
+public final class ComponentTextConverter extends ServerTextConverter<Component> {
+
+    public ComponentTextConverter(@NotNull Supplier<ServerLanguages> languagesSupplier) {
+        super(languagesSupplier);
+    }
 
     @Override
     public Component convert(@NotNull MinecraftTextComponent text) {

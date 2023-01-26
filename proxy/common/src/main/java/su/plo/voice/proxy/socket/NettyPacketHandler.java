@@ -92,7 +92,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 connection.handlePacket(nettyPacket.getPacketUdp().getPacket());
             } catch (CancelForwardingException ignored) {
                 return true;
-            }catch (IOException e) {
+            } catch (IOException e) {
                 LogManager.getLogger().warn("Failed to decode packet", e); // todo: optional bad packet logging?
             }
         } else {

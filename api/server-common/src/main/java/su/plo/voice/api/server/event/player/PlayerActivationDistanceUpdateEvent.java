@@ -14,7 +14,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class PlayerActivationDistanceUpdateEvent implements Event {
 
     @Getter
-    private final VoicePlayer<?> player;
+    private final VoicePlayer player;
     @Getter
     private final ServerActivation activation;
     /**
@@ -25,7 +25,7 @@ public final class PlayerActivationDistanceUpdateEvent implements Event {
     @Getter
     private final int distance;
 
-    public PlayerActivationDistanceUpdateEvent(@NotNull VoicePlayer<?> player,
+    public PlayerActivationDistanceUpdateEvent(@NotNull VoicePlayer player,
                                                @NotNull ServerActivation activation,
                                                int distance) {
         this.player = checkNotNull(player, "player");

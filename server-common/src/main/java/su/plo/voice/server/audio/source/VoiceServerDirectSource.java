@@ -5,7 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
-import su.plo.voice.api.server.audio.source.AudioDirectSource;
+import su.plo.voice.api.server.audio.source.ServerDirectSource;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
@@ -22,26 +22,26 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Supplier;
 
-public abstract class BaseAudioDirectSource<P extends VoicePlayer<?>>
-        extends BaseServerAudioSource<DirectSourceInfo, P>
-        implements AudioDirectSource<P> {
+public final class VoiceServerDirectSource
+        extends BaseServerAudioSource<DirectSourceInfo>
+        implements ServerDirectSource {
 
     private final PlasmoVoice voice;
-    private final UdpConnectionManager<P, ? extends UdpConnection<?>> udpConnections;
+    private final UdpConnectionManager<? extends VoicePlayer, ? extends UdpConnection> udpConnections;
 
-    private P sender;
+    private VoicePlayer sender;
     private Pos3d relativePosition;
     private Pos3d lookAngle;
     private boolean cameraRelative = true;
 
-    private Supplier<Collection<P>> playersSupplier;
+    private Supplier<Collection<VoicePlayer>> playersSupplier;
 
-    protected BaseAudioDirectSource(@NotNull PlasmoVoice voice,
-                                    @NotNull UdpConnectionManager<P, ? extends UdpConnection<?>> udpConnections,
-                                    @NotNull AddonContainer addon,
-                                    @NotNull ServerSourceLine line,
-                                    @Nullable String codec,
-                                    boolean stereo) {
+    public VoiceServerDirectSource(@NotNull PlasmoVoice voice,
+                                      @NotNull UdpConnectionManager<? extends VoicePlayer, ? extends UdpConnection> udpConnections,
+                                      @NotNull AddonContainer addon,
+                                      @NotNull ServerSourceLine line,
+                                      @Nullable String codec,
+                                      boolean stereo) {
         super(addon, UUID.randomUUID(), line, codec, stereo);
 
         this.voice = voice;
@@ -49,12 +49,12 @@ public abstract class BaseAudioDirectSource<P extends VoicePlayer<?>>
     }
 
     @Override
-    public Optional<P> getSender() {
+    public Optional<VoicePlayer> getSender() {
         return Optional.ofNullable(sender);
     }
 
     @Override
-    public void setSender(@NotNull P player) {
+    public void setSender(@NotNull VoicePlayer player) {
         this.sender = player;
         updateSourceInfo();
     }
@@ -93,7 +93,7 @@ public abstract class BaseAudioDirectSource<P extends VoicePlayer<?>>
     }
 
     @Override
-    public void setPlayers(@Nullable Supplier<Collection<P>> playersSupplier) {
+    public void setPlayers(@Nullable Supplier<Collection<VoicePlayer>> playersSupplier) {
         this.playersSupplier = playersSupplier;
     }
 
@@ -126,14 +126,14 @@ public abstract class BaseAudioDirectSource<P extends VoicePlayer<?>>
             sendPacket(new SourceInfoPacket(getInfo()));
 
         if (playersSupplier != null) {
-            for (P player : playersSupplier.get()) {
+            for (VoicePlayer player : playersSupplier.get()) {
                 if (testPlayer(player)) continue;
 
                 udpConnections.getConnectionByPlayerId(player.getInstance().getUUID())
                         .ifPresent(connection -> connection.sendPacket(packet));
             }
         } else {
-            for (UdpConnection<P> connection : udpConnections.getConnections()) {
+            for (UdpConnection connection : udpConnections.getConnections()) {
                 if (!testPlayer(connection.getPlayer())) continue;
                 connection.sendPacket(packet);
             }
@@ -148,12 +148,12 @@ public abstract class BaseAudioDirectSource<P extends VoicePlayer<?>>
         if (!voice.getEventBus().call(event)) return false;
 
         if (playersSupplier != null) {
-            for (P player : playersSupplier.get()) {
+            for (VoicePlayer player : playersSupplier.get()) {
                 if (testPlayer(player)) continue;
                 player.sendPacket(packet);
             }
         } else {
-            for (UdpConnection<P> connection : udpConnections.getConnections()) {
+            for (UdpConnection connection : udpConnections.getConnections()) {
                 if (!testPlayer(connection.getPlayer())) continue;
                 connection.getPlayer().sendPacket(packet);
             }

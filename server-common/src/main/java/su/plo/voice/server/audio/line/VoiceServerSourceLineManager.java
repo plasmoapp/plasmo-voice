@@ -21,12 +21,12 @@ import java.util.UUID;
 
 public final class VoiceServerSourceLineManager implements ServerSourceLineManager {
 
-    private final ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer<?>> tcpConnections;
+    private final ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer> tcpConnections;
     private final AddonManager addons;
 
     private final Map<UUID, ServerSourceLine> lineById = Maps.newConcurrentMap();
 
-    public VoiceServerSourceLineManager(@NotNull ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer<?>> tcpConnections,
+    public VoiceServerSourceLineManager(@NotNull ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer> tcpConnections,
                                         @NotNull AddonManager addons) {
         this.tcpConnections = tcpConnections;
         this.addons = addons;

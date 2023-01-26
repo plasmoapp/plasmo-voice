@@ -9,4 +9,6 @@ public interface MinecraftOptions {
     float getBackgroundOpacity(float m);
 
     int getBackgroundColor(int m);
+
+    String getLanguageCode();
 }
