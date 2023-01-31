@@ -28,7 +28,7 @@ public final class VoiceReconnectCommand implements MinecraftCommand {
 
         source.sendMessage(MinecraftTextComponent.translatable("pv.command.reconnect.message"));
         voiceServer.getUdpConnectionManager().removeConnection(voicePlayer);
-        voiceServer.getTcpConnectionManager().connect(voicePlayer);
+        voiceServer.getTcpConnectionManager().requestPlayerInfo(voicePlayer);
     }
 
     @Override

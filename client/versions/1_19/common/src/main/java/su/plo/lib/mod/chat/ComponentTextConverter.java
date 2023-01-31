@@ -1,13 +1,13 @@
 package su.plo.lib.mod.chat;
 
 import net.minecraft.ChatFormatting;
+import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.HoverEvent;
 import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextConverter;
-import su.plo.lib.api.chat.MinecraftTextStyle;
-import su.plo.lib.api.chat.MinecraftTranslatableText;
+import org.jetbrains.annotations.Nullable;
+import su.plo.lib.api.chat.*;
 
 public final class ComponentTextConverter implements MinecraftTextConverter<Component> {
 
@@ -21,10 +21,16 @@ public final class ComponentTextConverter implements MinecraftTextConverter<Comp
             component = Component.literal(text.toString());
 
         // apply styles
-        component.withStyle(getStyles(text));
+        component = component.withStyle(getStyles(text));
+
+        // apply click event
+        component = applyClickEvent(component, text.clickEvent());
+
+        // apply hover event
+        component = applyHoverEvent(component, text.hoverEvent());
 
         // add siblings
-        for (MinecraftTextComponent sibling : text.getSiblings()) {
+        for (MinecraftTextComponent sibling : text.siblings()) {
             component.append(convert(sibling));
         }
 
@@ -47,8 +53,33 @@ public final class ComponentTextConverter implements MinecraftTextConverter<Comp
         return Component.translatable(text.getKey(), args);
     }
 
+    private MutableComponent applyClickEvent(@NotNull MutableComponent component,
+                                             @Nullable MinecraftTextClickEvent clickEvent) {
+        if (clickEvent == null) return component;
+
+        return component.withStyle(component.getStyle().withClickEvent(new ClickEvent(
+                ClickEvent.Action.valueOf(clickEvent.action().name()),
+                clickEvent.value()
+        )));
+    }
+
+    private MutableComponent applyHoverEvent(@NotNull MutableComponent component,
+                                             @Nullable MinecraftTextHoverEvent hoverEvent) {
+        if (hoverEvent == null) return component;
+
+        // todo: waytoodank
+        if (hoverEvent.action() == MinecraftTextHoverEvent.Action.SHOW_TEXT) {
+            return component.withStyle(component.getStyle().withHoverEvent(new HoverEvent(
+                    HoverEvent.Action.SHOW_TEXT,
+                    convert((MinecraftTextComponent) hoverEvent.value())
+            )));
+        }
+
+        return component;
+    }
+
     private ChatFormatting[] getStyles(@NotNull MinecraftTextComponent text) {
-        return text.getStyles()
+        return text.styles()
                 .stream()
                 .map(this::convertStyle)
                 .toArray(ChatFormatting[]::new);

@@ -45,6 +45,7 @@ import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.server.player.VoiceServerPlayerManager;
 import su.plo.voice.server.socket.NettyUdpServer;
+import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -94,6 +95,18 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     @Override
     protected void onInitialize() {
+        // check for updates
+        try {
+            ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), getLoader())
+                    .ifPresent(version -> logger.warn(
+                            "New version available {}: {}",
+                            version.version(),
+                            version.downloadLink())
+                    );
+        } catch (IOException e) {
+            logger.error("Failed to check for updates", e);
+        }
+
         super.onInitialize();
 
         eventBus.call(new VoiceServerInitializeEvent(this));
@@ -263,7 +276,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             this.udpServer = server;
 
             if (connectedPlayers != null) {
-                connectedPlayers.forEach(tcpConnectionManager::connect);
+                connectedPlayers.forEach(tcpConnectionManager::requestPlayerInfo);
             }
         } catch (Exception e) {
             getLogger().error("Failed to start the udp server", e);

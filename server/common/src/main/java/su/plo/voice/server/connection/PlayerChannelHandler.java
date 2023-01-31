@@ -2,7 +2,6 @@ package su.plo.voice.server.connection;
 
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
@@ -13,11 +12,11 @@ import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.clientbound.LanguagePacket;
-import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
 import su.plo.voice.server.player.BaseVoicePlayer;
-import su.plo.voice.util.VersionUtil;
+import su.plo.voice.server.util.version.ServerVersionUtil;
+import su.plo.voice.util.version.SemanticVersion;
 
 import java.security.KeyFactory;
 import java.security.spec.EncodedKeySpec;
@@ -49,20 +48,13 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerInfoPacket packet) {
-        int[] serverVersion = VersionUtil.parseVersion(voiceServer.getVersion());
-        int[] clientVersion = VersionUtil.parseVersion(packet.getVersion());
+        SemanticVersion serverVersion = SemanticVersion.parse(voiceServer.getVersion());
+        SemanticVersion clientVersion = SemanticVersion.parse(packet.getVersion());
 
-        if (clientVersion[0] > serverVersion[0]) {
-            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
-                    "message.plasmovoice.version_not_supported",
-                    String.format("%d.X.X", serverVersion[0])
-            ));
-            return;
-        } else if (clientVersion[0] < serverVersion[0]) {
-            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
-                    "message.plasmovoice.min_version",
-                    String.format("%d.X.X", serverVersion[0])
-            ));
+        if ((!serverVersion.isRelease() && !serverVersion.string().equals(clientVersion.string())) || // alpha check
+                clientVersion.major() != serverVersion.major()
+        ) {
+            ServerVersionUtil.suggestSupportedVersion(player, serverVersion, packet.getMinecraftVersion());
             return;
         }
 
@@ -77,10 +69,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
             return;
         }
 
-        tcpConnections.sendConfigInfo(player);
-        tcpConnections.sendPlayerList(player);
-
-        tcpConnections.broadcast(new PlayerInfoUpdatePacket(player.getInfo()));
+        tcpConnections.connect(player);
     }
 
     @Override

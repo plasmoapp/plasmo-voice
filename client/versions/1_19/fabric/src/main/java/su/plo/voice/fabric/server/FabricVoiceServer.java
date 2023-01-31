@@ -20,6 +20,7 @@ import su.plo.voice.fabric.server.connection.FabricServerChannelHandler;
 import su.plo.voice.fabric.server.connection.FabricServerServiceChannelHandler;
 import su.plo.voice.mod.server.ModVoiceServer;
 import su.plo.voice.server.player.PermissionSupplier;
+import su.plo.voice.util.version.ModrinthLoader;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,6 +52,11 @@ public final class FabricVoiceServer
 
         this.serviceHandler = createServiceChannelHandler();
         ServerPlayNetworking.registerGlobalReceiver(SERVICE_CHANNEL, handler);
+    }
+
+    @Override
+    protected ModrinthLoader getLoader() {
+        return ModrinthLoader.FABRIC;
     }
 
     @Override

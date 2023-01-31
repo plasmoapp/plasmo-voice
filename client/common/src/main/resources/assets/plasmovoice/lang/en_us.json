@@ -14,7 +14,7 @@
     "key.plasmovoice.occlusion.toggle": "Toggle Sound Occlusion",
 
 
-    "gui.plasmovoice.title": "%s %s Settings",
+    "gui.plasmovoice.title": "%1$s %2$s Settings",
 
     "gui.plasmovoice.toggle.microphone": "Toggle Microphone",
     "gui.plasmovoice.toggle.voice": "Toggle Voice Chat",
@@ -206,5 +206,9 @@
     "message.plasmovoice.no_activation_permission": "You have no permission: %s",
 
     "message.plasmovoice.occlusion_changed": "Sound Occlusion: %s",
-    "message.plasmovoice.distance_changed": "%s Voice Distance: %d"
+    "message.plasmovoice.distance_changed": "%s Voice Distance: %d",
+
+    "message.plasmovoice.update_available": "New version %1$s of Plasmo Voice is available: %2$s",
+    "message.plasmovoice.update_available.click": "Download",
+    "message.plasmovoice.update_available.hover": "%s"
 }

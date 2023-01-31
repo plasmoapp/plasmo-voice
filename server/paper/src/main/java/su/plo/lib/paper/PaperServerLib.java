@@ -169,6 +169,11 @@ public final class PaperServerLib implements MinecraftServerLib {
         return Bukkit.getServer().getPort();
     }
 
+    @Override
+    public @NotNull String getVersion() {
+        return Bukkit.getMinecraftVersion();
+    }
+
     @EventSubscribe
     public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
         getPlayerByInstance(event.getPlayer());

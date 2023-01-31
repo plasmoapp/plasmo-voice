@@ -15,6 +15,7 @@ import su.plo.voice.paper.connection.PaperServerChannelHandler;
 import su.plo.voice.paper.connection.PaperServerServiceChannelHandler;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.player.PermissionSupplier;
+import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
 
@@ -55,7 +56,7 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
         minecraftServerLib.getPlayers().forEach((player) -> playerManager.getPlayerById(player.getUUID())
                 .ifPresent((voicePlayer) -> {
                     if (player.getRegisteredChannels().contains(CHANNEL_STRING)) {
-                        tcpConnectionManager.connect(voicePlayer);
+                        tcpConnectionManager.requestPlayerInfo(voicePlayer);
                     }
                 }));
     }
@@ -84,6 +85,11 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
     @Override
     protected File addonsFolder() {
         return new File(modsFolder(), "PlasmoVoice/addons");
+    }
+
+    @Override
+    protected ModrinthLoader getLoader() {
+        return ModrinthLoader.PAPER;
     }
 
     @Override

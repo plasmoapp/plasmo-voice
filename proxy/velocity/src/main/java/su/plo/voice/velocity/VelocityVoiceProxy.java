@@ -18,6 +18,7 @@ import su.plo.voice.api.proxy.event.command.CommandsRegisterEvent;
 import su.plo.voice.api.server.event.player.PlayerJoinEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.proxy.BaseVoiceProxy;
+import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.velocity.connection.VelocityProxyChannelHandler;
 
 import java.io.File;
@@ -95,5 +96,10 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     @Override
     protected File modsFolder() {
         return new File("plugins");
+    }
+
+    @Override
+    protected ModrinthLoader getLoader() {
+        return ModrinthLoader.VELOCITY;
     }
 }

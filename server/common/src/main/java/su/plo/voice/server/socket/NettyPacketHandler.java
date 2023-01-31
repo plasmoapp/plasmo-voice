@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
-import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoRequestPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.socket.NettyPacketUdp;
 
@@ -59,7 +59,11 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
         voiceServer.getUdpConnectionManager().addConnection(connection);
 
-        player.get().sendPacket(new PlayerInfoRequestPacket());
+        voiceServer.getTcpConnectionManager().sendConfigInfo(player.get());
+        voiceServer.getTcpConnectionManager().sendPlayerList(player.get());
+
+        voiceServer.getTcpConnectionManager().broadcast(new PlayerInfoUpdatePacket(player.get().getInfo()));
+
         System.out.println("Received connection from " + nettyPacket.getDatagramPacket().sender());
     }
 }

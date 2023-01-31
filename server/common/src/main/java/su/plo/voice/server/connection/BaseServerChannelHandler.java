@@ -10,6 +10,8 @@ import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.player.BaseVoicePlayer;
+import su.plo.voice.server.util.version.ServerVersionUtil;
+import su.plo.voice.util.version.SemanticVersion;
 
 import java.util.List;
 import java.util.Map;
@@ -37,13 +39,24 @@ public abstract class BaseServerChannelHandler {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
         if (channels.contains(BaseVoiceServer.CHANNEL_STRING)) {
-            voiceServer.getTcpConnectionManager().connect(player);
+            voiceServer.getTcpConnectionManager().requestPlayerInfo(player);
             cancelPlayerCheckFuture(player.getInstance().getUUID());
 
             ((BaseVoicePlayer<?>) player).setModLoader(
                     channels.contains("fml:handshake")
                             ? PlayerModLoader.FORGE
                             : PlayerModLoader.FABRIC
+            );
+        } else if (channels.contains("plasmo:voice")) {
+            ((BaseVoicePlayer<?>) player).setModLoader(
+                    channels.contains("fml:handshake")
+                            ? PlayerModLoader.FORGE
+                            : PlayerModLoader.FABRIC
+            );
+
+            ServerVersionUtil.suggestSupportedVersion(player,
+                    SemanticVersion.parse(voiceServer.getVersion()),
+                    voiceServer.getMinecraftServer().getVersion()
             );
         } else if (voiceServer.getConfig().voice().clientModRequired()) {
             kickModRequired(player);

@@ -16,6 +16,7 @@ import su.plo.voice.client.audio.codec.opus.OpusCodecSupplier;
 import su.plo.voice.encryption.VoiceEncryptionManager;
 import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;
+import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
 import java.io.InputStream;
@@ -87,4 +88,6 @@ public abstract class BaseVoice implements PlasmoVoice {
     }
 
     protected abstract AddonScope getScope();
+
+    protected abstract ModrinthLoader getLoader();
 }

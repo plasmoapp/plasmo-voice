@@ -12,6 +12,7 @@ import net.minecraftforge.network.event.EventNetworkChannel;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.forge.client.connection.ForgeClientChannelHandler;
 import su.plo.voice.mod.client.ModVoiceClient;
+import su.plo.voice.util.version.ModrinthLoader;
 
 public final class ForgeVoiceClient extends ModVoiceClient<ForgeClientChannelHandler> {
 
@@ -53,6 +54,11 @@ public final class ForgeVoiceClient extends ModVoiceClient<ForgeClientChannelHan
     @Override
     public @NotNull String getVersion() {
         return ModList.get().getModFileById("plasmovoice").versionString();
+    }
+
+    @Override
+    protected ModrinthLoader getLoader() {
+        return ModrinthLoader.FORGE;
     }
 
     @Override

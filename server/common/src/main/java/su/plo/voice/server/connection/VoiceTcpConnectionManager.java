@@ -71,6 +71,11 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
     }
 
     @Override
+    public void requestPlayerInfo(@NotNull VoiceServerPlayer player) {
+        player.sendPacket(new PlayerInfoRequestPacket());
+    }
+
+    @Override
     public void sendConfigInfo(@NotNull VoiceServerPlayer receiver) {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 

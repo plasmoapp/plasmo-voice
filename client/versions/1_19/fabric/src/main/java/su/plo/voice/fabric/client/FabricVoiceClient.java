@@ -14,6 +14,7 @@ import net.fabricmc.loader.api.ModContainer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.fabric.client.connection.FabricClientChannelHandler;
 import su.plo.voice.mod.client.ModVoiceClient;
+import su.plo.voice.util.version.ModrinthLoader;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -47,5 +48,10 @@ public final class FabricVoiceClient extends ModVoiceClient<FabricClientChannelH
     @Override
     protected FabricClientChannelHandler createChannelHandler() {
         return new FabricClientChannelHandler(this, minecraftLib);
+    }
+
+    @Override
+    protected ModrinthLoader getLoader() {
+        return ModrinthLoader.FABRIC;
     }
 }

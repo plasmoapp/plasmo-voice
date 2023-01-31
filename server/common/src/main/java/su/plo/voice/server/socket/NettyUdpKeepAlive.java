@@ -45,7 +45,7 @@ public final class NettyUdpKeepAlive {
             if (now - connection.getKeepAlive() > config.voice().keepAliveTimeoutMs()) {
                 logger.info("{} timed out. Reconnect packet sent", connection);
                 udpConnections.removeConnection(connection);
-                tcpConnections.connect(connection.getPlayer());
+                tcpConnections.requestPlayerInfo(connection.getPlayer());
             } else if (now - connection.getSentKeepAlive() >= 1_000L) {
                 connection.setSentKeepAlive(now);
                 connection.sendPacket(packet);

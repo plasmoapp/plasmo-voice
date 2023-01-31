@@ -186,6 +186,6 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
             text.append(MinecraftTextComponent.literal(" + "));
         }
 
-        text.getSiblings().remove(text.getSiblings().size() - 1);
+        text.siblings().remove(text.siblings().size() - 1);
     }
 }

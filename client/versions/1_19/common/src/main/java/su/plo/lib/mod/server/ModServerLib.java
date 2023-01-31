@@ -64,6 +64,7 @@ public final class ModServerLib implements MinecraftServerLib {
     @Override
     public void onInitialize() {
         INSTANCE = this;
+        System.out.println("server version: " + this.getVersion());
     }
 
     @Override
@@ -182,6 +183,11 @@ public final class ModServerLib implements MinecraftServerLib {
     @Override
     public int getPort() {
         return server.getPort();
+    }
+
+    @Override
+    public @NotNull String getVersion() {
+        return server.getServerVersion();
     }
 
     @EventSubscribe

@@ -25,6 +25,7 @@ import su.plo.voice.forge.server.connection.ForgeServerChannelHandler;
 import su.plo.voice.forge.server.connection.ForgeServerServiceChannelHandler;
 import su.plo.voice.mod.server.ModVoiceServer;
 import su.plo.voice.server.player.PermissionSupplier;
+import su.plo.voice.util.version.ModrinthLoader;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -146,5 +147,10 @@ public final class ForgeVoiceServer
     @SubscribeEvent
     public void onCommandRegister(RegisterCommandsEvent event) {
         onCommandRegister(event.getDispatcher());
+    }
+
+    @Override
+    protected ModrinthLoader getLoader() {
+        return ModrinthLoader.FORGE;
     }
 }

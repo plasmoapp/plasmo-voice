@@ -3,7 +3,12 @@
 no_permissions = "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
 player_only_command = "Only player can execute this command"
 player_not_found = "Player not found"
-mod_missing_kick_message = "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://www.curseforge.com/minecraft/mc-mods/plasmo-voice-client"
+
+mod_missing_kick_message = "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://modrinth.com/plugin/plasmo-voice"
+
+version_not_supported = "Sorry, your Plasmo Voice version is not supported on this server. %s"
+version_not_supported_click = "Download supported version"
+version_not_supported_hover = "%s"
 
 [server.pv.mutes]
 empty_reason = "not specified"

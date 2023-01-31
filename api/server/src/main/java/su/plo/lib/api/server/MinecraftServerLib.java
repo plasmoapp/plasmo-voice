@@ -46,4 +46,6 @@ public interface MinecraftServerLib {
     @NotNull PermissionsManager getPermissionsManager();
 
     int getPort();
+
+    @NotNull String getVersion();
 }

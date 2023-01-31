@@ -56,4 +56,6 @@ public interface MinecraftClientLib {
     @NotNull MinecraftPlayerSkins getPlayerSkins();
 
     @NotNull MinecraftOptions getOptions();
+
+    @NotNull String getVersion();
 }

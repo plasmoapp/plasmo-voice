@@ -2,6 +2,7 @@ package su.plo.lib.mod.client;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.Getter;
+import net.minecraft.SharedConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.NotNull;
@@ -132,6 +133,11 @@ public final class ModClientLib implements MinecraftClientLib {
         } else {
             minecraft.execute(() -> setScreenSync(screen));
         }
+    }
+
+    @Override
+    public @NotNull String getVersion() {
+        return SharedConstants.getCurrentVersion().getName();
     }
 
     private void setScreenSync(@Nullable GuiScreen screen) {

@@ -16,6 +16,13 @@ public interface TcpServerConnectionManager extends ConnectionManager<ClientPack
     void connect(@NotNull VoiceServerPlayer player);
 
     /**
+     * Sends {@link su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoRequestPacket} to the player
+     *
+     * @param player the player
+     */
+    void requestPlayerInfo(@NotNull VoiceServerPlayer player);
+
+    /**
      * Sends {@link su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket} to the player
      *
      * @param receiver the player

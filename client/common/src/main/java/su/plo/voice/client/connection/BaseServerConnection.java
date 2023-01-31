@@ -279,6 +279,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
     @Override
     public void handle(@NotNull PlayerInfoRequestPacket packet) {
         sendPacket(new PlayerInfoPacket(
+                minecraft.getVersion(),
                 voiceClient.getVersion(),
                 keyPair.getPublic().getEncoded(),
                 voiceClient.getConfig().getVoice().getDisabled().value(),
