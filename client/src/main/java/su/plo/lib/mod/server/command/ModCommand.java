@@ -13,7 +13,6 @@ import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
-import gg.essential.universal.wrappers.message.UTextComponent;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -34,7 +33,7 @@ import java.util.function.Predicate;
 public final class ModCommand implements Command<CommandSourceStack>, Predicate<CommandSourceStack>, SuggestionProvider<CommandSourceStack> {
 
     private final MinecraftServerLib minecraftServer;
-    private final ServerTextConverter<UTextComponent> textConverter;
+    private final ServerTextConverter<Component> textConverter;
     private final MinecraftCommand command;
 
     public LiteralCommandNode<CommandSourceStack> register(CommandDispatcher<CommandSourceStack> dispatcher, String label) {

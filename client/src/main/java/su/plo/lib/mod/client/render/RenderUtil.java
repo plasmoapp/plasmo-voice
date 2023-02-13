@@ -250,7 +250,7 @@ public class RenderUtil {
     }
 
     public static int drawCenteredString(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color) {
-        UTextComponent component = getTextConverter().convert(text);
+        UTextComponent component = getTextConverter().convertToUniversal(text);
         return drawCenteredString(stack, component.getFormattedText(), x, y, color);
     }
 
@@ -295,7 +295,7 @@ public class RenderUtil {
     public static int drawString(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color, boolean dropShadow) {
         color = adjustColor(color);
 
-        UTextComponent component = getTextConverter().convert(text);
+        UTextComponent component = getTextConverter().convertToUniversal(text);
         String formattedText = component.getFormattedText();
 
         UGraphics.drawString(stack, formattedText, (float) x, (float) y, color, dropShadow);
@@ -308,7 +308,7 @@ public class RenderUtil {
                                       boolean dropShadow) {
         color = adjustColor(color);
 
-        UTextComponent component = getTextConverter().convert(text);
+        UTextComponent component = getTextConverter().convertToUniversal(text);
         String formattedText = component.getFormattedText();
 
         //#if MC<11602
@@ -336,7 +336,7 @@ public class RenderUtil {
     public static int drawStringMultiLine(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color, int width) {
         color = adjustColor(color);
 
-        String string = getTextConverter().convert(text).getFormattedText();
+        String string = getTextConverter().convertToUniversal(text).getFormattedText();
 
         List<String> lines = UGraphics.listFormattedStringToWidth(string, width);
         int lineHeight = UGraphics.getFontHeight();
@@ -368,12 +368,12 @@ public class RenderUtil {
     }
 
     public static int getTextWidth(MinecraftTextComponent text) {
-        UTextComponent component = getTextConverter().convert(text);
+        UTextComponent component = getTextConverter().convertToUniversal(text);
         return UGraphics.getStringWidth(component.getFormattedText());
     }
 
     public static String getOrderedString(MinecraftTextComponent text, int width) {
-        String textString = getTextConverter().convert(text).getFormattedText();
+        String textString = getTextConverter().convertToUniversal(text).getFormattedText();
         int textWidth = UGraphics.getStringWidth(textString);
 
         if (textWidth <= width) {

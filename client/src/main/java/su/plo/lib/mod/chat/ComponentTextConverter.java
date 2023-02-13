@@ -1,27 +1,27 @@
 package su.plo.lib.mod.chat;
 
-import gg.essential.universal.wrappers.message.UTextComponent;
 import lombok.NonNull;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.ClickEvent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.HoverEvent;
+import net.minecraft.network.chat.MutableComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.*;
 
 import java.util.List;
 
-public final class ComponentTextConverter implements MinecraftTextConverter<UTextComponent> {
+public final class ComponentTextConverter implements MinecraftTextConverter<Component> {
 
     @Override
-    public UTextComponent convert(@NotNull MinecraftTextComponent text) {
-        UTextComponent component;
+    public Component convert(@NotNull MinecraftTextComponent text) {
+        MutableComponent component;
 
         if (text instanceof MinecraftTranslatableText)
             component = convertTranslatable((MinecraftTranslatableText) text);
         else
-            component = new UTextComponent(Component.literal(text.toString()));
+            component = Component.literal(text.toString());
 
         // apply styles
         component = applyStyles(component, text.styles());
@@ -29,18 +29,18 @@ public final class ComponentTextConverter implements MinecraftTextConverter<UTex
         // apply click event
         component = applyClickEvent(component, text.clickEvent());
 
-        // apply hover event
+        // apply hover eventzz
         component = applyHoverEvent(component, text.hoverEvent());
 
         // add siblings
         for (MinecraftTextComponent sibling : text.siblings()) {
-            component = new UTextComponent(component.appendSibling(convert(sibling)));
+            component.append(convert(sibling));
         }
 
-        return new UTextComponent(component);
+        return component;
     }
 
-    private UTextComponent convertTranslatable(@NotNull MinecraftTranslatableText text) {
+    private MutableComponent convertTranslatable(@NotNull MinecraftTranslatableText text) {
         Object[] args = new Object[text.getArgs().length];
 
         for (int i = 0; i < args.length; i++) {
@@ -53,40 +53,42 @@ public final class ComponentTextConverter implements MinecraftTextConverter<UTex
             }
         }
 
-        return new UTextComponent(Component.translatable(text.getKey(), args));
+        return Component.translatable(text.getKey(), args);
     }
 
-    private UTextComponent applyClickEvent(@NotNull UTextComponent component,
-                                           @Nullable MinecraftTextClickEvent clickEvent) {
+    private MutableComponent applyClickEvent(@NotNull MutableComponent component,
+                                             @Nullable MinecraftTextClickEvent clickEvent) {
         if (clickEvent == null) return component;
 
-        return component.setClick(
+        component.setStyle(component.getStyle().withClickEvent(new ClickEvent(
                 ClickEvent.Action.valueOf(clickEvent.action().name()),
                 clickEvent.value()
-        );
+        )));
+
+        return component;
     }
 
-    private UTextComponent applyHoverEvent(@NotNull UTextComponent component,
-                                           @Nullable MinecraftTextHoverEvent hoverEvent) {
+    private MutableComponent applyHoverEvent(@NotNull MutableComponent component,
+                                             @Nullable MinecraftTextHoverEvent hoverEvent) {
         if (hoverEvent == null) return component;
 
         // todo: waytoodank
         if (hoverEvent.action() == MinecraftTextHoverEvent.Action.SHOW_TEXT) {
-            return component.setHover(
+            component.setStyle(component.getStyle().withHoverEvent(new HoverEvent(
                     HoverEvent.Action.SHOW_TEXT,
-                    convert((MinecraftTextComponent) hoverEvent.value()).getComponent()
-            );
+                    convert((MinecraftTextComponent) hoverEvent.value())
+            )));
         }
 
         return component;
     }
 
-    private UTextComponent applyStyles(@NonNull UTextComponent component,
-                                       @NotNull List<MinecraftTextStyle> styles) {
+    private MutableComponent applyStyles(@NonNull MutableComponent component,
+                                         @NotNull List<MinecraftTextStyle> styles) {
         if (styles.isEmpty()) return component;
 
         // todo: legacy support
-        component.getComponent().setStyle(component.getStyle().applyFormats(
+        component.setStyle(component.getStyle().applyFormats(
                 styles.stream()
                         .map(this::convertStyle)
                         .toArray(ChatFormatting[]::new)

@@ -1,6 +1,5 @@
 package su.plo.lib.mod.server.command;
 
-import gg.essential.universal.wrappers.message.UTextComponent;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
@@ -14,7 +13,7 @@ import su.plo.lib.api.server.permission.PermissionTristate;
 public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     private final CommandSourceStack source;
-    private final ServerTextConverter<UTextComponent> textConverter;
+    private final ServerTextConverter<Component> textConverter;
 
     @Override
     public void sendMessage(@NotNull String text) {

@@ -55,7 +55,7 @@ dependencies {
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
-        "include"(modImplementation("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")!!)
+        "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
     }
 
     modApi("gg.essential:universalcraft-$platform:254") {

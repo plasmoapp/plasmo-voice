@@ -33,7 +33,7 @@ public final class ModServerPlayer
         implements MinecraftServerPlayerEntity {
 
     private final MinecraftServerLib minecraftServer;
-    private final ServerTextConverter<UTextComponent> textConverter;
+    private final ServerTextConverter<Component> textConverter;
     private final PermissionSupplier permissions;
     private final ResourceCache resources;
     private final Set<String> registeredChannels = Sets.newCopyOnWriteArraySet();
@@ -44,7 +44,7 @@ public final class ModServerPlayer
     private MinecraftServerEntity spectatorTarget;
 
     public ModServerPlayer(@NotNull MinecraftServerLib minecraftServer,
-                           @NotNull ServerTextConverter<UTextComponent> textConverter,
+                           @NotNull ServerTextConverter<Component> textConverter,
                            @NotNull PermissionSupplier permissions,
                            @NotNull ResourceCache resources,
                            @NotNull ServerPlayer player) {

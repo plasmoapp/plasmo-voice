@@ -15,6 +15,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -212,10 +213,8 @@ public final class ScreenWrapper
         // todo: legacy?
         renderComponentTooltip(
                 stack.toMC(),
-                RenderUtil.getTextConverter()
-                        .convert(tooltip).stream()
-                        .map(UTextComponent::getComponent)
-                        .collect(Collectors.toList()),
+                new ArrayList<>(RenderUtil.getTextConverter()
+                        .convert(tooltip)),
                 mouseX,
                 mouseY
         );

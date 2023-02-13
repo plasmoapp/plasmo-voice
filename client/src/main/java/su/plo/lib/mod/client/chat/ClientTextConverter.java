@@ -3,6 +3,7 @@ package su.plo.lib.mod.client.chat;
 import gg.essential.universal.wrappers.message.UTextComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextConverter;
@@ -12,14 +13,14 @@ import su.plo.lib.mod.chat.ComponentTextConverter;
 import su.plo.lib.mod.client.language.LanguageUtil;
 
 @RequiredArgsConstructor
-public final class ClientTextConverter extends TranslatableTextConverter<UTextComponent> {
+public final class ClientTextConverter extends TranslatableTextConverter<Component> {
 
-    private final MinecraftTextConverter<UTextComponent> textConverter = new ComponentTextConverter();
+    private final MinecraftTextConverter<Component> textConverter = new ComponentTextConverter();
     @Setter
     private ClientLanguageSupplier languageSupplier;
 
     @Override
-    public UTextComponent convert(@NotNull MinecraftTextComponent text) {
+    public Component convert(@NotNull MinecraftTextComponent text) {
         if (!(text instanceof MinecraftTranslatableText) || languageSupplier == null)
             return textConverter.convert(text);
 
@@ -36,5 +37,9 @@ public final class ClientTextConverter extends TranslatableTextConverter<UTextCo
                     return textConverter.convert(translate(language, translatable));
                 })
                 .orElseGet(() -> textConverter.convert(text));
+    }
+
+    public UTextComponent convertToUniversal(@NotNull MinecraftTextComponent text) {
+        return new UTextComponent(convert(text));
     }
 }
