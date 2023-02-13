@@ -1,0 +1,13 @@
+{
+    "required": true,
+    "minVersion": "0.7",
+    "package": "su.plo.voice.client.mixin",
+    "mixins": [
+        "MixinServerGamePacketListenerImpl"
+    ],
+    "client": [
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

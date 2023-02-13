@@ -1,0 +1,17 @@
+{
+    "required": true,
+    "minVersion": "0.7",
+    "package": "su.plo.voice.client.mixin",
+    "mixins": [
+        "MixinServerPlayer"
+    ],
+    "client": [
+        "MixinEntityRenderer",
+        "MixinKeyboardHandler",
+        "MixinLanguageManager",
+        "MixinMouseHandler"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

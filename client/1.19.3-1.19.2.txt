@@ -1,0 +1,3 @@
+com.mojang.math.Quaternion org.joml.Quaternionf
+com.mojang.math.Vector3f org.joml.Vector3f
+com.mojang.math.Vector3f transform() org.joml.Vector3f rotate()

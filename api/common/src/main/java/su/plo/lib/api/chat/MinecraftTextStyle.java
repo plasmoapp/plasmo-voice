@@ -3,6 +3,8 @@ package su.plo.lib.api.chat;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.regex.Pattern;
+
 public enum MinecraftTextStyle {
 
     BLACK(Type.COLOR, '0'),
@@ -29,6 +31,11 @@ public enum MinecraftTextStyle {
     RESET(Type.RESET, 'r');
 
     private static final char COLOR_CHAR = '§';
+    private static final Pattern COLOR_CODE_PATTERN = Pattern.compile("§[0-9a-f]", Pattern.CASE_INSENSITIVE);
+
+    public static String stripColorCodes(String input) {
+        return COLOR_CODE_PATTERN.matcher(input).replaceAll("");
+    }
 
     @Getter
     private final Type type;

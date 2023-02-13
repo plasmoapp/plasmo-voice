@@ -3,28 +3,21 @@ import org.gradle.kotlin.dsl.support.listFilesOrdered
 pluginManagement {
     repositories {
         gradlePluginPortal()
-        mavenCentral()
         mavenLocal()
+        mavenCentral()
+        google()
 
-        maven {
-            name = "JitPack"
-            url = uri("https://jitpack.io/")
-        }
+        maven("https://jitpack.io/")
+        maven("https://maven.fabricmc.net")
+        maven("https://maven.architectury.dev/")
+        maven("https://maven.minecraftforge.net")
+        maven("https://repo.essential.gg/repository/maven-public")
+    }
 
-        maven {
-            name = "Fabric"
-            url = uri("https://maven.fabricmc.net/")
-        }
-
-        maven {
-            name = "Forge"
-            url = uri("https://files.minecraftforge.net/maven/")
-        }
-
-        maven {
-            name = "Architectury"
-            url = uri("https://maven.architectury.dev/")
-        }
+    plugins {
+        val egtVersion = "0.1.18"
+        id("gg.essential.defaults") version egtVersion
+        id("gg.essential.multi-version.root") version egtVersion
     }
 }
 
@@ -45,16 +38,20 @@ file("api").listFilesOrdered {
 // Common
 include("common")
 
-// Client
-include("client:common")
-// Versions
-file("client/versions").listFilesOrdered {
-    return@listFilesOrdered it.isDirectory && it.name != "build"
+include("client")
+project(":client").apply {
+    projectDir = file("client/")
+    buildFileName = "root.gradle.kts"
+}
+
+file("client").listFilesOrdered {
+    return@listFilesOrdered it.isDirectory && it.name.contains("-")
 }.forEach {
-    include("client:versions:${it.name}")
-    include("client:versions:${it.name}:common")
-    include("client:versions:${it.name}:fabric")
-    include("client:versions:${it.name}:forge")
+    include("client:${it.name}")
+    project(":client:${it.name}").apply {
+        projectDir = file("client/${it.name}")
+        buildFileName = "../build.gradle.kts"
+    }
 }
 
 // Server Common (Module for common code between server and proxy implementations)

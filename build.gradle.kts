@@ -10,14 +10,17 @@ plugins {
     idea
     alias(libs.plugins.shadow)
     alias(libs.plugins.idea.ext)
+
+    kotlin("jvm") version "1.6.10"
 }
 
 subprojects {
+    if (project.buildFile.name.equals("root.gradle.kts")) return@subprojects
+
     apply(plugin = "java")
     apply(plugin = "idea")
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
-    apply(plugin = "org.jetbrains.gradle.plugin.idea-ext")
 
     group = mavenGroup
 
@@ -104,6 +107,14 @@ allprojects {
         maven {
             name = "papermc"
             url = uri("https://repo.papermc.io/repository/maven-public/")
+        }
+    }
+}
+
+tasks {
+    build {
+        doLast {
+            jar.get().archiveFile.get().asFile.delete()
         }
     }
 }

@@ -20,7 +20,6 @@ public final class VoiceServerActivation extends VoiceActivation implements Serv
     private final AddonContainer addon;
 
     @Getter
-    @Setter
     private final Set<String> permissions;
 
     public VoiceServerActivation(@NotNull AddonContainer addon,

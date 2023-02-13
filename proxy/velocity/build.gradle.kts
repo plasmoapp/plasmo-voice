@@ -7,6 +7,10 @@ val mavenGroup: String by rootProject
 val velocityVersion: String by project
 val buildVersion: String by rootProject
 
+plugins {
+    id("org.jetbrains.gradle.plugin.idea-ext")
+}
+
 group = "$mavenGroup.velocity"
 
 dependencies {
