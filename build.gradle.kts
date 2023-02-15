@@ -12,6 +12,7 @@ plugins {
     alias(libs.plugins.idea.ext)
 
     kotlin("jvm") version "1.6.10"
+    id("gg.essential.multi-version.root") apply false
 }
 
 subprojects {
