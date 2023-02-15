@@ -104,11 +104,9 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
-        maven { url = uri("https://oss.sonatype.org/content/repositories/snapshots") }
-        maven {
-            name = "papermc"
-            url = uri("https://repo.papermc.io/repository/maven-public/")
-        }
+        maven("https://repo.plo.su")
+        maven("https://oss.sonatype.org/content/repositories/snapshots")
+        maven("https://repo.papermc.io/repository/maven-public/")
     }
 }
 
