@@ -35,8 +35,8 @@ jobs:
         split-releases: true
         files-primary: build/libs/*-@(forge|fabric)-*.jar
         
-        # modrinth-id: AANobbMI
-        # modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+        modrinth-id: 1bZhdhsH
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
         # curseforge-id: 394468
         # curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
@@ -44,7 +44,6 @@ jobs:
     - name: Publish to GitHub
       uses: Apehum/mc-publish@v1.1
       with:
-        name: 'Plasmo Voice'
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: false
         github-prerelease: true
