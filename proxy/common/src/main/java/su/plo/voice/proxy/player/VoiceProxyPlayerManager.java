@@ -40,7 +40,7 @@ public final class VoiceProxyPlayerManager
         return minecraftProxy.getPlayerById(playerId)
                 .map((player) -> playerById.computeIfAbsent(
                         player.getUUID(),
-                        (pId) -> new VoiceProxyPlayer(voiceProxy, player)
+                        (pId) -> new VoiceProxyPlayerConnection(voiceProxy, player)
                 ));
     }
 

@@ -32,8 +32,6 @@ public final class VoiceServerPlayerEntity
         if (!voiceServer.getEventBus().call(event)) return;
 
         instance.sendPacket(BaseVoiceServer.CHANNEL_STRING, encoded);
-
-//        LogManager.getLogger().info("Channel packet {} sent to {}", packet, this);
     }
 
     @Override

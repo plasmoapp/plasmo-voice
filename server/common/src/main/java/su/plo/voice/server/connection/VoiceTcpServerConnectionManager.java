@@ -22,13 +22,13 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class VoiceTcpConnectionManager implements TcpServerConnectionManager {
+public final class VoiceTcpServerConnectionManager implements TcpServerConnectionManager {
 
     private final BaseVoiceServer voiceServer;
 
     private final Object playerStateLock = new Object();
 
-    public VoiceTcpConnectionManager(@NotNull BaseVoiceServer voiceServer) {
+    public VoiceTcpServerConnectionManager(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
     }
 
@@ -68,11 +68,15 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                 ip,
                 port
         ));
+
+        voiceServer.getLogger().debug("Sent connection packet to {}", player);
     }
 
     @Override
     public void requestPlayerInfo(@NotNull VoiceServerPlayer player) {
         player.sendPacket(new PlayerInfoRequestPacket());
+
+        voiceServer.getLogger().debug("Sent player info request packet to {}", player);
     }
 
     @Override
@@ -106,7 +110,7 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
             return;
         }
 
-        receiver.sendPacket(new ConfigPacket(
+        ConfigPacket packet = new ConfigPacket(
                 UUID.fromString(config.serverId()),
                 new CaptureInfo(
                         voiceConfig.sampleRate(),
@@ -126,7 +130,10 @@ public final class VoiceTcpConnectionManager implements TcpServerConnectionManag
                         .map(activation -> (VoiceActivation) activation) // waytoodank
                         .collect(Collectors.toSet()),
                 getPlayerPermissions(receiver)
-        ));
+        );
+        receiver.sendPacket(packet);
+
+        voiceServer.getLogger().debug("Sent {} to {}", packet, receiver);
     }
 
     @Override

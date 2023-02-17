@@ -17,6 +17,7 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.socket.UdpServer;
+import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
@@ -26,14 +27,11 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class NettyUdpServer implements UdpServer {
 
-    private final Logger logger = LogManager.getLogger();
-
     private final EventLoopGroup loopGroup = new NioEventLoopGroup();
     private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
-    private final PlasmoVoiceServer voiceServer;
-    private final VoiceServerConfig config;
+    private final BaseVoiceServer voiceServer;
 
     private NettyUdpKeepAlive keepAlive;
 
@@ -41,11 +39,7 @@ public final class NettyUdpServer implements UdpServer {
 
     @Override
     public void start(String ip, int port) {
-        this.keepAlive = new NettyUdpKeepAlive(
-                voiceServer.getTcpConnectionManager(),
-                voiceServer.getUdpConnectionManager(),
-                config
-        );
+        this.keepAlive = new NettyUdpKeepAlive(voiceServer);
 
         Bootstrap bootstrap = new Bootstrap();
         bootstrap.group(loopGroup)
@@ -63,7 +57,6 @@ public final class NettyUdpServer implements UdpServer {
             }
         });
 
-        logger.info("UDP server is starting on {}:{}", ip, port);
         try {
             ChannelFuture channelFuture = bootstrap.bind(port).sync();
             channelGroup.add(channelFuture.channel());
@@ -75,8 +68,8 @@ public final class NettyUdpServer implements UdpServer {
             stop();
             throw e;
         }
-        logger.info("UDP server is started on {}", socketAddress);
 
+        voiceServer.getLogger().info("UDP server is started on {}", socketAddress);
         voiceServer.getEventBus().call(new UdpServerStartedEvent(this));
     }
 
@@ -86,8 +79,8 @@ public final class NettyUdpServer implements UdpServer {
         if (keepAlive != null) keepAlive.close();
         channelGroup.close();
         loopGroup.shutdownGracefully();
-        logger.info("UDP server is stopped");
 
+        voiceServer.getLogger().info("UDP server is stopped");
         voiceServer.getEventBus().call(new UdpServerStoppedEvent(this));
     }
 

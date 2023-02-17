@@ -12,12 +12,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This event is fired once the player is successfully connected to the UDP server,
  * but not added to {@link UdpServerConnectionManager} yet
  */
-public final class UdpConnectEvent extends EventCancellableBase {
+public final class UdpClientConnectEvent extends EventCancellableBase {
 
     @Getter
     private final UdpServerConnection connection;
 
-    public UdpConnectEvent(@NotNull UdpServerConnection connection) {
+    public UdpClientConnectEvent(@NotNull UdpServerConnection connection) {
         this.connection = checkNotNull(connection, "connection cannot be null");
     }
 }

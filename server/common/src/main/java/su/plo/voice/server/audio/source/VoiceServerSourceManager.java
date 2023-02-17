@@ -155,14 +155,6 @@ public class VoiceServerSourceManager implements ServerSourceManager {
         remove(source.getId());
     }
 
-//    @Override
-//    public @NotNull UUID registerCustomSource(@NotNull ServerAudioSource source) {
-//        UUID sourceId = UUID.randomUUID();
-//        sourceById.put(sourceId, source);
-//
-//        return sourceId;
-//    }
-
     @EventSubscribe
     public void onVoiceShutdown(VoiceServerShutdownEvent event) {
         sourceById.clear();

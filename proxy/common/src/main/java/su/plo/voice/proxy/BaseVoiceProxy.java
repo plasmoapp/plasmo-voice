@@ -13,6 +13,7 @@ import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.event.VoiceProxyInitializeEvent;
 import su.plo.voice.api.proxy.event.VoiceProxyShutdownEvent;
 import su.plo.voice.api.proxy.event.config.VoiceProxyConfigLoadedEvent;
+import su.plo.voice.api.proxy.event.socket.UdpProxyServerCreateEvent;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
@@ -45,7 +46,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     @Getter
-    private final UdpProxyConnectionManager udpConnectionManager = new VoiceUdpProxyConnectionManager();
+    private final UdpProxyConnectionManager udpConnectionManager = new VoiceUdpProxyConnectionManager(this);
     @Getter
     private final RemoteServerManager remoteServerManager = new VoiceRemoteServerManager();
 
@@ -120,9 +121,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
             // load forwarding secret
             UUID forwardingSecret;
-            // todo: use env
             File forwardingSecretFile = new File(getConfigFolder(), "forwarding-secret");
-            if (forwardingSecretFile.exists()) {
+            if (System.getenv("PLASMO_VOICE_FORWARDING_SECRET") != null) {
+                forwardingSecret = UUID.fromString(System.getenv("PLASMO_VOICE_FORWARDING_SECRET"));
+            } else if (forwardingSecretFile.exists()) {
                 forwardingSecret = UUID.fromString(new String(Files.readAllBytes(forwardingSecretFile.toPath())));
             } else {
                 forwardingSecret = UUID.randomUUID();
@@ -173,10 +175,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     private void startUdpServer() {
         UdpProxyServer server = new NettyUdpProxyServer(this);
 
-//        UdpServerCreateEvent createUdpServerEvent = new UdpServerCreateEvent(server);
-//        eventBus.call(createUdpServerEvent);
-//
-//        server = createUdpServerEvent.getServer();
+        UdpProxyServerCreateEvent createUdpServerEvent = new UdpProxyServerCreateEvent(server);
+        eventBus.call(createUdpServerEvent);
+
+        server = createUdpServerEvent.getServer();
 
         try {
             int port = config.host().port();

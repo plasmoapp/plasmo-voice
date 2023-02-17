@@ -55,16 +55,10 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
         LogManager.getLogger().debug("UDP packet {} sent to {}", packet, remoteAddress);
 
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
-
-//        UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
-//        voiceServer.getEventBus().call(event);
     }
 
     @Override
     public void handlePacket(Packet<ServerPacketUdpHandler> packet) {
-//        UdpPacketReceivedEvent event = new UdpPacketReceivedEvent(this, packet);
-//        if (!voiceServer.getEventBus().call(event)) return;
-
         packet.handle(this);
     }
 

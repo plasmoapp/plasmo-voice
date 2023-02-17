@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -25,7 +26,6 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
     private final BaseVoiceProxy voiceProxy;
 
     private final EventLoopGroup loopGroup = new NioEventLoopGroup();
-//    private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
     private NioDatagramChannel channel;
@@ -67,14 +67,11 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
 
     @Override
     public void stop() {
-//        voiceServer.getUdpConnectionManager().clearConnections();
-//        if (keepAlive != null) keepAlive.close();
-//        channelGroup.close();
         channel.close();
         loopGroup.shutdownGracefully();
         logger.info("UDP proxy server is stopped");
 
-//        voiceServer.getEventBus().call(new UdpServerStoppedEvent(this));
+        voiceProxy.getEventBus().call(new UdpProxyServerStoppedEvent(this));
     }
 
     @Override

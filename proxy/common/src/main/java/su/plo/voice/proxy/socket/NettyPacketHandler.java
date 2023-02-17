@@ -14,6 +14,7 @@ import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
+import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.proxy.connection.CancelForwardingException;
 import su.plo.voice.socket.NettyPacketUdp;
 
@@ -26,7 +27,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyPacketUdp> {
 
-    private final PlasmoVoiceProxy voiceProxy;
+    private final BaseVoiceProxy voiceProxy;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket) throws Exception {
@@ -34,14 +35,10 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         UUID secret = packet.getSecret();
 
-//        System.out.println(secret + " " + nettyPacket.getDatagramPacket().sender());
-
         if (voiceProxy.getUdpConnectionManager().getConnectionByAnySecret(secret)
                 .map(connection -> sendPacket(ctx, nettyPacket, connection))
                 .orElse(false)
         ) return;
-
-        System.out.println("Initialize connection " + secret);
 
         Optional<UUID> playerId = voiceProxy.getUdpConnectionManager().getPlayerIdBySecret(secret);
         if (!playerId.isPresent()) return;
@@ -93,7 +90,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
             } catch (CancelForwardingException ignored) {
                 return true;
             } catch (IOException e) {
-                LogManager.getLogger().warn("Failed to decode packet", e); // todo: optional bad packet logging?
+                voiceProxy.getLogger().debug("Failed to decode packet", e);
             }
         } else {
             receiver = connection.getRemoteAddress();
@@ -101,7 +98,6 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         }
 
         // rewrite to backend server
-//        System.out.println("rewrite to " + connection.getRemoteServer().getAddress() + " " + receiverSecret);
         ctx.channel().writeAndFlush(new DatagramPacket(
                 Unpooled.wrappedBuffer(PacketUdpCodec.replaceSecret(
                         nettyPacket.getPacketData(),
@@ -109,7 +105,6 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 )),
                 receiver
         ));
-
         return true;
     }
 }

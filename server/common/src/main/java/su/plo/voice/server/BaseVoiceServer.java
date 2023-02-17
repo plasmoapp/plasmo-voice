@@ -37,8 +37,8 @@ import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.command.*;
 import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.server.config.VoiceServerLanguages;
-import su.plo.voice.server.connection.VoiceTcpConnectionManager;
-import su.plo.voice.server.connection.VoiceUdpConnectionManager;
+import su.plo.voice.server.connection.VoiceTcpServerConnectionManager;
+import su.plo.voice.server.connection.VoiceUdpServerConnectionManager;
 import su.plo.voice.server.mute.VoiceMuteManager;
 import su.plo.voice.server.mute.storage.MuteStorageFactory;
 import su.plo.voice.server.player.LuckPermsListener;
@@ -62,11 +62,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
-    protected final Logger logger = LogManager.getLogger();
+    protected final Logger logger = LogManager.getLogger("PlasmoVoiceServer");
     @Getter
-    protected final TcpServerConnectionManager tcpConnectionManager = new VoiceTcpConnectionManager(this);
+    protected final TcpServerConnectionManager tcpConnectionManager = new VoiceTcpServerConnectionManager(this);
     @Getter
-    protected final UdpServerConnectionManager udpConnectionManager = new VoiceUdpConnectionManager(this);
+    protected final UdpServerConnectionManager udpConnectionManager = new VoiceUdpServerConnectionManager(this);
     @Getter
     protected final ServerSourceManager sourceManager = new VoiceServerSourceManager(this);
 
@@ -258,7 +258,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             this.udpServer = null;
         }
 
-        UdpServer server = new NettyUdpServer(this, config);
+        UdpServer server = new NettyUdpServer(this);
 
         UdpServerCreateEvent createUdpServerEvent = new UdpServerCreateEvent(server);
         eventBus.call(createUdpServerEvent);
@@ -310,7 +310,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     @Override
-    protected Logger getLogger() {
+    public Logger getLogger() {
         return logger;
     }
 

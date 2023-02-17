@@ -79,7 +79,7 @@ public abstract class BaseVoice implements PlasmoVoice {
         return getClass().getClassLoader().getResourceAsStream(name);
     }
 
-    protected abstract Logger getLogger();
+    public abstract Logger getLogger();
 
     protected abstract File modsFolder();
 

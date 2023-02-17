@@ -29,7 +29,7 @@ public final class ComponentTextConverter implements MinecraftTextConverter<Comp
         // apply click event
         component = applyClickEvent(component, text.clickEvent());
 
-        // apply hover eventzz
+        // apply hover event
         component = applyHoverEvent(component, text.hoverEvent());
 
         // add siblings

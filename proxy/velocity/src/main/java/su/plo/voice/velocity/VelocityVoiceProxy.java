@@ -31,7 +31,7 @@ import java.nio.file.Path;
 )
 public final class VelocityVoiceProxy extends BaseVoiceProxy {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger("PlasmoVoiceProxy");
 
     private final ProxyServer proxyServer;
     private final Path dataDirectory;
@@ -89,7 +89,7 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     }
 
     @Override
-    protected Logger getLogger() {
+    public Logger getLogger() {
         return LOGGER;
     }
 

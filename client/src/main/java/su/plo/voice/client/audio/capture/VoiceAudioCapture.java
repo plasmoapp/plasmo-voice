@@ -107,6 +107,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 devices.replace(null, device);
             } catch (Exception e) {
                 LOGGER.error("Failed to open input device", e);
+                return;
             }
         }
 

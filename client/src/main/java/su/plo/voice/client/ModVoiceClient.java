@@ -59,7 +59,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     private final String modId = "plasmovoice";
 
     private final KeyMapping menuKey = new KeyMapping(
-            "PV settings",
+            "key.plasmovoice.settings",
             InputConstants.Type.KEYSYM,
             UKeyboard.KEY_V,
             "Plasmo Voice"
@@ -84,8 +84,6 @@ public final class ModVoiceClient extends BaseVoiceClient
         this.hudRenderer = new ModHudRenderer(this);
         this.levelRenderer = new ModLevelRenderer(this);
         this.entityRenderer = new ModEntityRenderer(this);
-
-
 
         INSTANCE = this;
         RenderUtil.getTextConverter().setLanguageSupplier(createLanguageSupplier());

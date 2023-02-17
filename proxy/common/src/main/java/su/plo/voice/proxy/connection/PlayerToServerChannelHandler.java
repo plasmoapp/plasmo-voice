@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
+import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
+import su.plo.voice.server.player.BaseVoicePlayer;
 
 import java.util.Optional;
 
@@ -32,7 +34,13 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
 
     @Override
     public void handle(@NotNull PlayerActivationDistancesPacket packet) {
+        BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
+        packet.getDistanceByActivationId().forEach((activationId, distance) -> {
+            Optional<ServerActivation> activation = voiceProxy.getActivationManager().getActivationById(activationId);
+            if (!activation.isPresent()) return;
 
+            voicePlayer.setActivationDistance(activation.get(), distance);
+        });
     }
 
     @Override

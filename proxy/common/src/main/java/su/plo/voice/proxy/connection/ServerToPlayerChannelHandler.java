@@ -14,6 +14,7 @@ import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
+import su.plo.voice.proxy.player.VoiceProxyPlayerConnection;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -175,7 +176,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
         if (!isPlayerOnVoiceServer()) return;
 
         voiceProxy.getPlayerManager().getPlayerById(packet.getPlayerInfo().getPlayerId())
-                .ifPresent((player) -> player.update(packet.getPlayerInfo()));
+                .ifPresent((player) -> ((VoiceProxyPlayerConnection) player).update(packet.getPlayerInfo()));
 //        voiceProxy.getPlayerManager().getPlayerById(packet.getPlayerInfo().getPlayerId()).ifPresent((player) -> {
 //            if (player.update(packet.getPlayerInfo())) {
 //                voiceProxy.getPlayerManager().broadcast(

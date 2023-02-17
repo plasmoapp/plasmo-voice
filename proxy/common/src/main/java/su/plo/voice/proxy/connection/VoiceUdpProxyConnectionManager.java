@@ -8,11 +8,15 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
+import su.plo.voice.api.proxy.event.connection.UdpClientConnectEvent;
+import su.plo.voice.api.proxy.event.connection.UdpClientConnectedEvent;
+import su.plo.voice.api.proxy.event.connection.UdpClientDisconnectEvent;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.clientbound.ClientPacketUdpHandler;
+import su.plo.voice.proxy.BaseVoiceProxy;
 
 import java.util.Collection;
 import java.util.Map;
@@ -23,7 +27,7 @@ import java.util.function.Predicate;
 @AllArgsConstructor
 public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionManager {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private final BaseVoiceProxy voiceProxy;
 
     private final Map<UUID, UUID> remoteSecretByPlayerId = Maps.newConcurrentMap();
     private final Map<UUID, UUID> secretByPlayerId = Maps.newConcurrentMap();
@@ -87,9 +91,8 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
 
     @Override
     public void addConnection(UdpProxyConnection connection) {
-//        UdpConnectEvent connectEvent = new UdpConnectEvent(connection);
-//        server.getEventBus().call(connectEvent);
-//        if (connectEvent.isCancelled()) return;
+        UdpClientConnectEvent connectEvent = new UdpClientConnectEvent(connection);
+        if (!voiceProxy.getEventBus().call(connectEvent)) return;
 
         UdpProxyConnection bySecret = connectionBySecret.put(connection.getSecret(), connection);
         UdpProxyConnection byRemoteSecret = connectionByRemoteSecret.put(connection.getRemoteSecret(), connection);
@@ -99,7 +102,8 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         if (byRemoteSecret != null) byRemoteSecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
-//        server.getEventBus().call(new UdpConnectedEvent(connection));
+        voiceProxy.getLogger().debug("{} ({}) connected", connection.getPlayer(), connection.getRemoteAddress());
+        voiceProxy.getEventBus().call(new UdpClientConnectedEvent(connection));
     }
 
     @Override
@@ -163,8 +167,8 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         playerIdBySecret.remove(connection.getRemoteSecret());
         playerIdByRemoteSecret.remove(connection.getSecret());
 
-        LOGGER.info("{} disconnected", connection.getPlayer());
-//        server.getEventBus().call(new UdpDisconnectEvent(connection));
+        voiceProxy.getLogger().info("{} disconnected", connection.getPlayer());
+        voiceProxy.getEventBus().call(new UdpClientDisconnectEvent(connection));
     }
 
     @Override

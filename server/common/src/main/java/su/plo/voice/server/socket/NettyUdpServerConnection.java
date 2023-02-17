@@ -7,9 +7,7 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
@@ -22,18 +20,18 @@ import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
+import su.plo.voice.server.BaseVoiceServer;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
 
 @ToString(of = {"channel", "secret", "player", "keepAlive", "sentKeepAlive"})
-public final class NettyUdpConnection implements UdpServerConnection, ServerPacketUdpHandler {
+public final class NettyUdpServerConnection implements UdpServerConnection, ServerPacketUdpHandler {
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
     private final NioDatagramChannel channel;
 
     @Getter
-    @Setter
     private InetSocketAddress remoteAddress;
     @Getter
     private final UUID secret;
@@ -48,14 +46,23 @@ public final class NettyUdpConnection implements UdpServerConnection, ServerPack
     @Getter
     private boolean connected = true;
 
-    public NettyUdpConnection(@NotNull PlasmoVoiceServer voiceServer,
-                              @NotNull NioDatagramChannel channel,
-                              @NotNull UUID secret,
-                              @NotNull VoiceServerPlayer player) {
+    public NettyUdpServerConnection(@NotNull BaseVoiceServer voiceServer,
+                                    @NotNull NioDatagramChannel channel,
+                                    @NotNull UUID secret,
+                                    @NotNull VoiceServerPlayer player) {
         this.voiceServer = voiceServer;
         this.channel = channel;
         this.secret = secret;
         this.player = player;
+    }
+
+    @Override
+    public void setRemoteAddress(@NotNull InetSocketAddress remoteAddress) {
+        voiceServer.getLogger().debug("Set remote address for {} from {} to {}",
+                player,
+                this.remoteAddress, remoteAddress
+        );
+        this.remoteAddress = remoteAddress;
     }
 
     @Override
@@ -64,9 +71,6 @@ public final class NettyUdpConnection implements UdpServerConnection, ServerPack
         if (encoded == null) return;
 
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
-
-        LogManager.getLogger().debug("UDP packet {} sent to {}", packet, remoteAddress);
-
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
 
         UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);

@@ -53,13 +53,13 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implement
 
     @Override
     public boolean isVoiceDisabled() {
-        if (!hasVoiceChat()) throw new IllegalStateException("Player is not connected to UDP server");
+        checkVoiceChat();
         return voiceDisabled;
     }
 
     @Override
     public boolean isMicrophoneMuted() {
-        if (!hasVoiceChat()) throw new IllegalStateException("Player is not connected to UDP server");
+        checkVoiceChat();
         return microphoneMuted;
     }
 

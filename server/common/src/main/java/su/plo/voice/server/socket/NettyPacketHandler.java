@@ -4,11 +4,10 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.udp.PacketUdp;
+import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.socket.NettyPacketUdp;
 
 import java.io.IOException;
@@ -18,7 +17,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyPacketUdp> {
 
-    private final PlasmoVoiceServer voiceServer;
+    private final BaseVoiceServer voiceServer;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket) throws Exception {
@@ -33,10 +32,9 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                     }
 
                     try {
-                        System.out.println("Received packet from " + nettyPacket.getDatagramPacket().sender());
                         connection.handlePacket(packet.getPacket());
                     } catch (IOException e) {
-                        LogManager.getLogger().warn("Failed to decode packet", e); // todo: optional bad packet logging?
+                        voiceServer.getLogger().debug("Failed to decode packet", e);
                     }
 
                     return true;
@@ -50,7 +48,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         Optional<VoiceServerPlayer> player = voiceServer.getPlayerManager().getPlayerById(playerId.get());
         if (!player.isPresent()) return;
 
-        NettyUdpConnection connection = new NettyUdpConnection(
+        NettyUdpServerConnection connection = new NettyUdpServerConnection(
                 voiceServer,
                 (NioDatagramChannel) ctx.channel(),
                 secret,
@@ -63,7 +61,5 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         voiceServer.getTcpConnectionManager().sendPlayerList(player.get());
 
         voiceServer.getTcpConnectionManager().broadcast(new PlayerInfoUpdatePacket(player.get().getInfo()));
-
-        System.out.println("Received connection from " + nettyPacket.getDatagramPacket().sender());
     }
 }
