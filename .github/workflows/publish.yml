@@ -1,0 +1,50 @@
+name: Publish
+
+on:
+  push:
+    branches:
+      - v2.0.x
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up JDK 17
+      uses: actions/setup-java@v3
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        server-id: github # Value of the distributionManagement/repository/id field of the pom.xml
+        settings-path: ${{ github.workspace }} # location for the settings.xml file
+
+    - name: Build with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: build
+
+    - name: Publish Client to Modrinth/CurseForge
+      uses: Apehum/mc-publish@v1.1
+      with:
+        name: 'Plasmo Voice'
+        split-releases: true
+        files-primary: build/libs/*-@(forge|fabric)-*.jar
+        
+        # modrinth-id: AANobbMI
+        # modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+        # curseforge-id: 394468
+        # curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        
+    - name: Publish to GitHub
+      uses: Apehum/mc-publish@v1.1
+      with:
+        name: 'Plasmo Voice'
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-generate-changelog: false
+        github-prerelease: true
