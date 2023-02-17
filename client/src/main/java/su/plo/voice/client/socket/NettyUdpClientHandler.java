@@ -26,6 +26,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<NettyPacketUdp> implements ClientPacketUdpHandler {
 
+    private static final long MAX_KEEP_ALIVE_TIMEOUT = 30_000L;
+    private static final long MAX_SOFT_KEEP_ALIVE_TIMEOUT = 7_000L;
+
     private final Logger logger = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
@@ -114,12 +117,11 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         if (!client.isConnected())
             client.sendPacket(new PingPacket());
 
-        // todo: config for max timeout keepalive?
         long diff = System.currentTimeMillis() - keepAlive;
-        if (diff > 30_000L) {
+        if (diff > MAX_KEEP_ALIVE_TIMEOUT) {
             logger.warn("UDP timed out. Disconnecting...");
             client.close(UdpClientClosedEvent.Reason.TIMED_OUT);
-        } else if (diff > 7_000L) {
+        } else if (diff > MAX_SOFT_KEEP_ALIVE_TIMEOUT) {
             client.setTimedOut(true);
         }
     }
