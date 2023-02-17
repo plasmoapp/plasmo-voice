@@ -37,6 +37,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Getter
     private final VoiceSettingsNavigation navigation;
     private final VoiceSettingsAboutFeature aboutFeature;
+    @Getter
     private final MicrophoneTestController testController;
 
     @Getter

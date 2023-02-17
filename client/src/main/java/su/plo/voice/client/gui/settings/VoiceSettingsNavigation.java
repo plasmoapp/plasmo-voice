@@ -324,6 +324,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     }
 
     public void openTab(int index) {
+        parent.getTestController().stop();
+
         getActiveTab().ifPresent((widget) -> {
             widget.removed();
             parent.removeWidget(widget);
@@ -348,10 +350,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 20,
                 name,
                 iconLocation,
-                (btn) -> {
-                    openTab(elementIndex);
-                    // todo: disable mic test
-                },
+                (btn) -> openTab(elementIndex),
                 Button.NO_TOOLTIP,
                 true
         );
