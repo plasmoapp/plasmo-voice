@@ -34,7 +34,7 @@ subprojects {
             }
             outputStream.toString().trim()
         }
-        version = "$buildVersion+$gitCommitHash"
+        version = "${buildVersion.split("+")[0]}+$gitCommitHash"
     } else {
         version = buildVersion
     }
