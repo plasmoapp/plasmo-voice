@@ -55,7 +55,7 @@ public final class VoiceProxyPlayerManager
 
         return playerById.computeIfAbsent(
                 serverPlayer.getUUID(),
-                (playerId) -> new VoiceProxyPlayer(voiceProxy, serverPlayer)
+                (playerId) -> new VoiceProxyPlayerConnection(voiceProxy, serverPlayer)
         );
     }
 
