@@ -108,12 +108,16 @@ public final class ModVoiceServer
     @Override
     public void onInitialize() {
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
-            this.handler = new ModServerChannelHandler(this);
-            S2CPlayChannelEvents.REGISTER.register(handler);
-            ServerPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
+            if (handler == null) {
+                this.handler = new ModServerChannelHandler(this);
+                S2CPlayChannelEvents.REGISTER.register(handler);
+                ServerPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
+            }
 
-            this.serviceHandler = new ModServerServiceChannelHandler(this);
-            ServerPlayNetworking.registerGlobalReceiver(SERVICE_CHANNEL, serviceHandler);
+            if (serviceHandler == null) {
+                this.serviceHandler = new ModServerServiceChannelHandler(this);
+                ServerPlayNetworking.registerGlobalReceiver(SERVICE_CHANNEL, serviceHandler);
+            }
 
             this.onInitialize(server);
             eventBus.register(this, handler);
@@ -221,11 +225,15 @@ public final class ModVoiceServer
     //$$ }
     //$$ @SubscribeEvent
     //$$ public void onServerStart(ServerStartedEvent event) {
-    //$$     this.handler = new ModServerChannelHandler(this);
-    //$$     channel.addListener(handler::receive);
+    //$$     if (handler == null) {
+    //$$         this.handler = new ModServerChannelHandler(this);
+    //$$         channel.addListener(handler::receive);
+    //$$     }
     //$$
-    //$$     this.serviceHandler = new ModServerServiceChannelHandler(this);
-    //$$     serviceChannel.addListener(serviceHandler::receive);
+    //$$     if (serviceHandler == null) {
+    //$$         this.serviceHandler = new ModServerServiceChannelHandler(this);
+    //$$         serviceChannel.addListener(serviceHandler::receive);
+    //$$     }
     //$$
     //$$     onInitialize(event.getServer());
     //$$ }
