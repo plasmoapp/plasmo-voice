@@ -2,15 +2,13 @@ package su.plo.voice.proxy.connection;
 
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.event.connection.UdpClientConnectEvent;
 import su.plo.voice.api.proxy.event.connection.UdpClientConnectedEvent;
-import su.plo.voice.api.proxy.event.connection.UdpClientDisconnectEvent;
+import su.plo.voice.api.proxy.event.connection.UdpClientDisconnectedEvent;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
@@ -168,7 +166,7 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         playerIdByRemoteSecret.remove(connection.getSecret());
 
         voiceProxy.getLogger().info("{} disconnected", connection.getPlayer());
-        voiceProxy.getEventBus().call(new UdpClientDisconnectEvent(connection));
+        voiceProxy.getEventBus().call(new UdpClientDisconnectedEvent(connection));
     }
 
     @Override

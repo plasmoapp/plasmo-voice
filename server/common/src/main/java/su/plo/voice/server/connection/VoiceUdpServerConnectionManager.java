@@ -8,7 +8,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.UdpClientConnectEvent;
 import su.plo.voice.api.server.event.connection.UdpClientConnectedEvent;
-import su.plo.voice.api.server.event.connection.UdpClientDisconnectEvent;
+import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
@@ -121,7 +121,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
         playerIdBySecret.remove(connection.getSecret());
 
         voiceServer.getLogger().info("{} disconnected", connection.getPlayer());
-        voiceServer.getEventBus().call(new UdpClientDisconnectEvent(connection));
+        voiceServer.getEventBus().call(new UdpClientDisconnectedEvent(connection));
     }
 
     @Override

@@ -12,12 +12,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * This event is fired once the player is disconnected from the UDP server
  * and removed from {@link UdpServerConnectionManager}
  */
-public final class UdpClientDisconnectEvent implements Event {
+public final class UdpClientDisconnectedEvent implements Event {
 
     @Getter
     private final UdpServerConnection connection;
 
-    public UdpClientDisconnectEvent(@NotNull UdpServerConnection connection) {
+    public UdpClientDisconnectedEvent(@NotNull UdpServerConnection connection) {
         this.connection = checkNotNull(connection, "connection cannot be null");
     }
 }
