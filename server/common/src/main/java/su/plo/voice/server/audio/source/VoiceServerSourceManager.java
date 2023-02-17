@@ -40,8 +40,6 @@ public class VoiceServerSourceManager implements ServerSourceManager {
 
     @Override
     public void clear() {
-        // todo: create & send source removed packet
-
         sourceByEntityId.clear();
         sourceByPlayerId.clear();
         sourceById.clear();
@@ -153,13 +151,6 @@ public class VoiceServerSourceManager implements ServerSourceManager {
     @Override
     public void remove(@NotNull ServerAudioSource<?> source) {
         remove(source.getId());
-    }
-
-    @EventSubscribe
-    public void onVoiceShutdown(VoiceServerShutdownEvent event) {
-        sourceById.clear();
-        sourceByEntityId.clear();
-        sourceByPlayerId.clear();
     }
 
     @EventSubscribe
