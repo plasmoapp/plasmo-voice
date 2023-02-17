@@ -34,6 +34,7 @@ jobs:
         name: 'Plasmo Voice'
         split-releases: true
         files-primary: build/libs/*-@(forge|fabric)-*.jar
+        version-resolver: 'exact'
 
         modrinth-unfeature-mode: 'none'
         modrinth-id: 1bZhdhsH
