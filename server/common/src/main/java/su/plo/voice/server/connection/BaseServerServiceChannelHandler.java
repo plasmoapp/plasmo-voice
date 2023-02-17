@@ -4,8 +4,6 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.PacketUtil;
@@ -55,7 +53,7 @@ public abstract class BaseServerServiceChannelHandler {
                     output.toByteArray()
             );
 
-            voiceServer.getLogger().debug("Received AES key from proxy server");
+            voiceServer.getDebugLogger().log("Received AES key from proxy server");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (InvalidKeyException e) {

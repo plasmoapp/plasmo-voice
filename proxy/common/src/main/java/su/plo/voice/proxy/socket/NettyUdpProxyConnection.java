@@ -52,8 +52,6 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
 
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
 
-        LogManager.getLogger().debug("UDP packet {} sent to {}", packet, remoteAddress);
-
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
     }
 

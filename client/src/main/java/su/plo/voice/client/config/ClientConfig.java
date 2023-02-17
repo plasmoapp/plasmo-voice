@@ -33,6 +33,9 @@ public final class ClientConfig {
     private static final TomlConfiguration toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     @ConfigField
+    private BooleanConfigEntry debug = new BooleanConfigEntry(false);
+
+    @ConfigField
     private Voice voice = new Voice();
 
     @ConfigField

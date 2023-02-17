@@ -34,6 +34,9 @@ public final class VoiceProxyConfig implements ProxyConfig {
     private String defaultLanguage = "en_us";
 
     @ConfigField
+    private boolean debug = false;
+
+    @ConfigField
     private VoiceHost host = new VoiceHost();
 
     @ConfigField

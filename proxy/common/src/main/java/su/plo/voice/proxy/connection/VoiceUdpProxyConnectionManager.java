@@ -100,7 +100,7 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         if (byRemoteSecret != null) byRemoteSecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
-        voiceProxy.getLogger().debug("{} ({}) connected", connection.getPlayer(), connection.getRemoteAddress());
+        voiceProxy.getDebugLogger().log("{} ({}) connected", connection.getPlayer(), connection.getRemoteAddress());
         voiceProxy.getEventBus().call(new UdpClientConnectedEvent(connection));
     }
 

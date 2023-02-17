@@ -58,8 +58,8 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
 
     @Override
     public void setRemoteAddress(@NotNull InetSocketAddress remoteAddress) {
-        voiceServer.getLogger().debug("Set remote address for {} from {} to {}",
-                player,
+        voiceServer.getDebugLogger().log("Set remote address for {} from {} to {}",
+                player.getInstance().getName(),
                 this.remoteAddress, remoteAddress
         );
         this.remoteAddress = remoteAddress;

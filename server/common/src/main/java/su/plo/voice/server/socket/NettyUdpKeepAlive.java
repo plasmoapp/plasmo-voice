@@ -31,7 +31,7 @@ public final class NettyUdpKeepAlive {
 
         for (UdpServerConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
             if (now - connection.getKeepAlive() > voiceServer.getConfig().voice().keepAliveTimeoutMs()) {
-                voiceServer.getLogger().debug("UDP connection timed out: {}", connection);
+                voiceServer.getDebugLogger().log("UDP connection timed out: {}", connection);
                 voiceServer.getUdpConnectionManager().removeConnection(connection);
                 voiceServer.getTcpConnectionManager().requestPlayerInfo(connection.getPlayer());
             } else if (now - connection.getSentKeepAlive() >= 1_000L) {

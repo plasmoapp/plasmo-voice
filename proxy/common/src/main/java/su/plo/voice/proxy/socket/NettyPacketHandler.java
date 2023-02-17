@@ -90,7 +90,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
             } catch (CancelForwardingException ignored) {
                 return true;
             } catch (IOException e) {
-                voiceProxy.getLogger().debug("Failed to decode packet", e);
+                voiceProxy.getDebugLogger().log("Failed to decode packet", e);
             }
         } else {
             receiver = connection.getRemoteAddress();

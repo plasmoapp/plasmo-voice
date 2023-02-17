@@ -3,8 +3,13 @@ package su.plo.voice.server;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.config.Configurator;
+import org.apache.logging.log4j.core.config.LoggerConfig;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.lib.api.server.command.MinecraftCommand;
@@ -13,6 +18,7 @@ import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
@@ -62,7 +68,10 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
+    @Getter
     protected final Logger logger = LogManager.getLogger("PlasmoVoiceServer");
+    @Getter
+    protected final DebugLogger debugLogger = new DebugLogger(logger);
     @Getter
     protected final TcpServerConnectionManager tcpConnectionManager = new VoiceTcpServerConnectionManager(this);
     @Getter
@@ -241,6 +250,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             throw new IllegalStateException("Failed to load config", e);
         }
 
+        debugLogger.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
         eventBus.call(new VoiceServerConfigLoadedEvent(this));
 
         // register proximity activation
@@ -309,11 +319,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         commandManager.register("vmute", new VoiceMuteCommand(this, getMinecraftServer()));
         commandManager.register("vunmute", new VoiceUnmuteCommand(this, getMinecraftServer()));
         commandManager.register("vmutelist", new VoiceMuteListCommand(this, getMinecraftServer()));
-    }
-
-    @Override
-    public Logger getLogger() {
-        return logger;
     }
 
     @Override

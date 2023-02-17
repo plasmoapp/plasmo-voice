@@ -69,14 +69,14 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
                 port
         ));
 
-        voiceServer.getLogger().debug("Sent connection packet to {}", player);
+        voiceServer.getDebugLogger().log("Sent connection packet to {}", player.getInstance().getName());
     }
 
     @Override
     public void requestPlayerInfo(@NotNull VoiceServerPlayer player) {
         player.sendPacket(new PlayerInfoRequestPacket());
 
-        voiceServer.getLogger().debug("Sent player info request packet to {}", player);
+        voiceServer.getDebugLogger().log("Sent player info request packet to {}", player.getInstance().getName());
     }
 
     @Override
@@ -133,7 +133,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
         );
         receiver.sendPacket(packet);
 
-        voiceServer.getLogger().debug("Sent {} to {}", packet, receiver);
+        voiceServer.getDebugLogger().log("Sent {} to {}", packet, receiver.getInstance().getName());
     }
 
     @Override

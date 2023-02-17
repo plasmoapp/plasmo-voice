@@ -3,10 +3,13 @@ package su.plo.voice.proxy;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.audio.source.ProxySourceManager;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
@@ -45,6 +48,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
+    @Getter
+    protected final Logger logger = LogManager.getLogger("PlasmoVoiceProxy");
+    @Getter
+    protected final DebugLogger debugLogger = new DebugLogger(logger);
     @Getter
     private final UdpProxyConnectionManager udpConnectionManager = new VoiceUdpProxyConnectionManager(this);
     @Getter
@@ -147,6 +154,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             throw new IllegalStateException("Failed to load config", e);
         }
 
+        debugLogger.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
         eventBus.call(new VoiceProxyConfigLoadedEvent(this));
 
         if (restartUdpServer) startUdpServer();

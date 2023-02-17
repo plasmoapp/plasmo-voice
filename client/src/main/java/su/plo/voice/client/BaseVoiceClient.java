@@ -5,8 +5,10 @@ import gg.essential.universal.UChat;
 import gg.essential.universal.UScreen;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.config.Configurator;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
@@ -133,7 +135,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     // todo: why is this here?
     public void openSettings() {
         Optional<ScreenWrapper> wrappedScreen = ScreenWrapper.getCurrentWrappedScreen();
-        System.out.println(wrappedScreen);
         if (wrappedScreen.map(screen -> screen.getScreen() instanceof VoiceSettingsScreen)
                 .orElse(false)
         ) {
@@ -176,19 +177,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         loadAddons();
         super.onInitialize();
 
-        try {
-            File configFile = new File(getConfigFolder(), "client.toml");
-
-            this.config = toml.load(ClientConfig.class, configFile, false);
-            toml.save(ClientConfig.class, config, configFile);
-
-            config.setConfigFile(configFile);
-            config.setAsyncExecutor(backgroundExecutor);
-
-            eventBus.register(this, config.getKeyBindings());
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load the config", e);
-        }
+        loadConfig();
 
         this.distanceVisualizer = new VoiceDistanceVisualizer(this, config);
 
@@ -265,5 +254,27 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     protected ClientLanguageSupplier createLanguageSupplier() {
         return () -> getServerConnection().map(ServerConnection::getLanguage);
+    }
+
+    private void loadConfig() {
+        try {
+            File configFile = new File(getConfigFolder(), "client.toml");
+
+            this.config = toml.load(ClientConfig.class, configFile, false);
+            toml.save(ClientConfig.class, config, configFile);
+
+            config.setConfigFile(configFile);
+            config.setAsyncExecutor(backgroundExecutor);
+
+            eventBus.register(this, config.getKeyBindings());
+        } catch (IOException e) {
+            throw new IllegalStateException("Failed to load the config", e);
+        }
+
+        if (config.getDebug().value() || System.getProperty("plasmovoice.debug") != null) {
+            Configurator.setLevel(logger.getName(), Level.DEBUG);
+        } else {
+            Configurator.setLevel(logger.getName(), Level.INFO);
+        }
     }
 }

@@ -66,7 +66,6 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         voiceClient.getEventBus().call(event);
         if (event.isCancelled()) return;
 
-        logger.info("UDP packet received {}", packet);
         packet.handle(this);
     }
 
@@ -89,7 +88,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         voiceClient.getSourceManager().getSourceById(packet.getSourceId())
                 .ifPresent(source -> {
                     if (source.getInfo().getState() != packet.getSourceState()) {
-                        LogManager.getLogger().warn("Drop audio packet with bad source state");
+                        logger.warn("Drop audio packet with bad source state");
                         voiceClient.getSourceManager().sendSourceInfoRequest(packet.getSourceId());
                         return;
                     }

@@ -31,6 +31,9 @@ public final class VoiceServerConfig implements ServerConfig {
     private String defaultLanguage = "en_us";
 
     @ConfigField
+    private boolean debug = false;
+
+    @ConfigField
     private Host host = new Host();
 
     @ConfigField
