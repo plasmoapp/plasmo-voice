@@ -2,7 +2,9 @@ package su.plo.voice.client;
 
 import com.google.common.collect.Maps;
 import gg.essential.universal.UChat;
+import gg.essential.universal.UMinecraft;
 import gg.essential.universal.UScreen;
+import gg.essential.universal.wrappers.UPlayer;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.Level;
@@ -17,6 +19,7 @@ import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextHoverEvent;
 import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.MinecraftUtil;
+import su.plo.lib.mod.client.chat.ClientChatUtil;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.BaseVoice;
@@ -113,7 +116,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         try {
             ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), getLoader())
                     .ifPresent(version -> {
-                        UChat.chat(RenderUtil.getTextConverter().convert(
+                        ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
                                 MinecraftTextComponent.translatable(
                                         "message.plasmovoice.update_available",
                                         version.version(),
