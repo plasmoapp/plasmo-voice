@@ -34,7 +34,8 @@ jobs:
         name: 'Plasmo Voice'
         split-releases: true
         files-primary: build/libs/*-@(forge|fabric)-*.jar
-        
+
+        modrinth-unfeature-mode: 'none'
         modrinth-id: 1bZhdhsH
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
