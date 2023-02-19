@@ -27,6 +27,7 @@
         "plasmovoice.mixins.json"
     ],
     "depends": {
+        "fabric": "*",
         "fabricloader": "*"
     },
     "suggests": {
