@@ -9,6 +9,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureProcessedEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
@@ -16,6 +17,9 @@ import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
+
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 @RequiredArgsConstructor
 public final class MicrophoneTestController {
@@ -68,13 +72,26 @@ public final class MicrophoneTestController {
 
     @EventSubscribe
     public void onAudioCapture(@NotNull AudioCaptureEvent event) {
-        short[] samples = new short[event.getSamples().length];
-        System.arraycopy(event.getSamples(), 0, samples, 0, event.getSamples().length);
-        samples = event.getDevice().processFilters(
-                samples,
-                (filter) -> isStereo() &&
-                        ((filter instanceof StereoToMonoFilter) || (filter instanceof NoiseSuppressionFilter))
-        );
+        if (source != null) {
+            event.setSendEnd(true);
+        }
+    }
+
+    @EventSubscribe
+    public void onAudioCaptureProcessed(@NotNull AudioCaptureProcessedEvent event) {
+        short[] samples;
+        if (event.getSamplesProcessed() != null) {
+            samples = event.getSamplesProcessed();
+        } else {
+            samples = new short[event.getSamples().length];
+            System.arraycopy(event.getSamples(), 0, samples, 0, event.getSamples().length);
+
+            samples = event.getDevice().processFilters(
+                    samples,
+                    (filter) -> isStereo() &&
+                            ((filter instanceof StereoToMonoFilter) || (filter instanceof NoiseSuppressionFilter))
+            );
+        }
 
         this.microphoneDB = AudioUtil.calculateHighestAudioLevel(samples);
         if (microphoneDB > highestDB) {
@@ -93,7 +110,6 @@ public final class MicrophoneTestController {
         }
 
         if (source != null) {
-            event.setSendEnd(true);
             source.write(samples);
         }
     }

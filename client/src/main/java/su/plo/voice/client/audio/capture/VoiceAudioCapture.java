@@ -19,10 +19,7 @@ import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
-import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
-import su.plo.voice.api.client.event.audio.capture.AudioCaptureInitializeEvent;
-import su.plo.voice.api.client.event.audio.capture.AudioCaptureStartEvent;
-import su.plo.voice.api.client.event.audio.capture.AudioCaptureStopEvent;
+import su.plo.voice.api.client.event.audio.capture.*;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
@@ -213,8 +210,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 }
 
                 AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, device.get(), samples);
-                voiceClient.getEventBus().call(captureEvent);
-                if (captureEvent.isCancelled()) continue;
+                if (!voiceClient.getEventBus().call(captureEvent)) continue;
 
                 ClientActivation parentActivation = activations.getParentActivation().get();
 
@@ -234,6 +230,13 @@ public final class VoiceAudioCapture implements AudioCapture {
                             sendVoiceEndPacket(activation);
                         }
                     });
+
+                    voiceClient.getEventBus().call(new AudioCaptureProcessedEvent(
+                            this,
+                            device.get(),
+                            samples,
+                            null
+                    ));
                     continue;
                 }
 
@@ -274,6 +277,13 @@ public final class VoiceAudioCapture implements AudioCapture {
                         processActivation(device.get(), parentActivation, ClientActivation.Result.END, null, encoded);
                     }
                 }
+
+                voiceClient.getEventBus().call(new AudioCaptureProcessedEvent(
+                        this,
+                        device.get(),
+                        samples,
+                        encoded.monoProcessed
+                ));
             } catch (InterruptedException ignored) {
                 break;
             }
@@ -313,12 +323,14 @@ public final class VoiceAudioCapture implements AudioCapture {
                         (filter) -> (filter instanceof StereoToMonoFilter) ||
                                 (filter instanceof NoiseSuppressionFilter)
                 );
+                encoded.stereoProcessed = processedSamples;
                 encoded.stereo = encode(stereoEncoder, processedSamples);
             } else if (!isStereo && encoded.mono == null) {
                 short[] processedSamples = new short[samples.length];
                 System.arraycopy(samples, 0, processedSamples, 0, samples.length);
 
                 processedSamples = device.processFilters(processedSamples);
+                encoded.monoProcessed = processedSamples;
                 encoded.mono = encode(monoEncoder, processedSamples);
             }
         }
@@ -402,6 +414,8 @@ public final class VoiceAudioCapture implements AudioCapture {
     static class EncodedCapture {
 
         private byte[] mono;
+        private short[] monoProcessed;
         private byte[] stereo;
+        private short[] stereoProcessed;
     }
 }
