@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
+import gg.essential.universal.UScreen;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -206,7 +207,7 @@ public final class ConfigKeyBindings implements KeyBindings, SerializableConfigE
         }
 
         keyBindings.values().forEach(entry -> {
-            if (entry.value().isAnyContext() || !ScreenWrapper.getCurrentWrappedScreen().isPresent()) {
+            if (entry.value().isAnyContext() || UScreen.getCurrentScreen() == null) {
                 entry.value().updateState(event.getAction());
             }
         });
