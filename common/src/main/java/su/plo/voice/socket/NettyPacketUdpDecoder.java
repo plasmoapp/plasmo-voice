@@ -21,7 +21,10 @@ public final class NettyPacketUdpDecoder extends MessageToMessageDecoder<Datagra
         if (!packetUdp.isPresent()) return;
         PacketUdp decoded = packetUdp.get();
 
-        if (System.currentTimeMillis() - decoded.getTimestamp() > PacketUdp.TTL) return;
+//        if (System.currentTimeMillis() - decoded.getTimestamp() > PacketUdp.TTL) {
+//            System.out.println(System.currentTimeMillis() - decoded.getTimestamp());
+//            return;
+//        }
 
         out.add(new NettyPacketUdp(packet, bytes, decoded));
     }
