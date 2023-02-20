@@ -1,6 +1,7 @@
 package su.plo.voice.util.version;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -11,6 +12,7 @@ import java.util.regex.Pattern;
 @Data
 @Accessors(fluent = true)
 @RequiredArgsConstructor
+@EqualsAndHashCode(exclude = "string")
 public final class SemanticVersion {
 
     // forge-1.19.3-2.0.0+ALPHA => 2.0.0 alpha
