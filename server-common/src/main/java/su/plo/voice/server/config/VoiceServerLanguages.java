@@ -1,5 +1,6 @@
 package su.plo.voice.server.config;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -94,6 +95,7 @@ public final class VoiceServerLanguages implements ServerLanguages {
 
     private Map<String, String> getLanguage(@Nullable String languageName, @NotNull String scope) {
         VoiceServerLanguage language = languages.get(languageName == null ? defaultLanguageName : languageName.toLowerCase());
+        if (languageName == null && language == null) return ImmutableMap.of();
         if (language == null) return getLanguage(null, scope);
 
         return scope.equals("server") ? language.getServerLanguage() : language.getClientLanguage();
