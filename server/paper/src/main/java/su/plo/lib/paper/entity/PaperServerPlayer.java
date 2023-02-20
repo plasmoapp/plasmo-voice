@@ -16,6 +16,7 @@ import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Optional;
 
 public final class PaperServerPlayer extends PaperServerEntity<Player> implements MinecraftServerPlayerEntity {
@@ -123,7 +124,8 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
     public Optional<MinecraftServerEntity> getSpectatorTarget() {
         if (instance.getSpectatorTarget() == null) {
             this.spectatorTarget = null;
-        } else if (!instance.getSpectatorTarget().equals(spectatorTarget.getInstance())) {
+        } else if (spectatorTarget == null ||
+                !Objects.equals(instance.getSpectatorTarget(), spectatorTarget.getInstance())) {
             this.spectatorTarget = minecraftServer.getEntity(instance.getSpectatorTarget());
         }
 
