@@ -143,6 +143,9 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
         return searchResult != null ? searchResult : searchResult1;
     }
 
+    public boolean shouldCloseOnEsc() {
+        return true;
+    }
 
     // lifecycle
     public void tick() {

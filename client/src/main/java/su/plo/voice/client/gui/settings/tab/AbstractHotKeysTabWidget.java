@@ -35,8 +35,12 @@ public abstract class AbstractHotKeysTabWidget extends TabWidget {
 
     }
 
-    public void setFocusedHotKey(@Nullable HotKeyWidget focusedBinding) {
-        this.focusedHotKey = focusedBinding;
+    public void setFocusedHotKey(@Nullable HotKeyWidget focusedHotKey) {
+        if (this.focusedHotKey != null && focusedHotKey == null) {
+            parent.setPreventEscClose(true);
+        }
+
+        this.focusedHotKey = focusedHotKey;
         hotKeys.resetStates();
     }
 

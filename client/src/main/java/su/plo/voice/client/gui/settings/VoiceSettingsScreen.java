@@ -1,15 +1,11 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.vertex.Tesselator;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import lombok.Setter;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextStyle;
@@ -26,7 +22,6 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.tab.*;
 
 import java.util.List;
-import java.util.Objects;
 
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
@@ -44,6 +39,9 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     private int titleWidth;
     @Setter
     private List<MinecraftTextComponent> tooltip;
+
+    @Setter
+    private boolean preventEscClose;
 
     public VoiceSettingsScreen(@NotNull BaseVoiceClient voiceClient,
                                @NotNull ClientConfig config) {
@@ -137,6 +135,16 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Override
     public @NotNull MinecraftTextComponent getTitle() {
         return title;
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        if (preventEscClose) {
+            this.preventEscClose = false;
+            return false;
+        }
+
+        return true;
     }
 
     // GuiWidget impl

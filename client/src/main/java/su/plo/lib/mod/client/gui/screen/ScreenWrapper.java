@@ -183,6 +183,8 @@ public final class ScreenWrapper
     // WAYTOODANK because I can't return true in onKeyPressed
     @EventSubscribe
     public void onWindowKeyPressed(@NotNull KeyPressedEvent event) {
+        if (!event.getAction().equals(KeyBinding.Action.UP)) return;
+
         if (shouldCloseOnEsc() &&
                 event.getKey().equals(KeyBinding.Type.KEYSYM.getOrCreate(UKeyboard.KEY_ESCAPE))
         ) {
