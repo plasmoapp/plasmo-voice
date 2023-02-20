@@ -100,7 +100,11 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         if (byRemoteSecret != null) byRemoteSecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
-        voiceProxy.getDebugLogger().log("{} ({}) connected", connection.getPlayer(), connection.getRemoteAddress());
+        voiceProxy.getDebugLogger().log(
+                "{} ({}) connected",
+                connection.getPlayer().getInstance().getName(),
+                connection.getRemoteAddress()
+        );
         voiceProxy.getEventBus().call(new UdpClientConnectedEvent(connection));
     }
 
@@ -165,7 +169,7 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         playerIdBySecret.remove(connection.getRemoteSecret());
         playerIdByRemoteSecret.remove(connection.getSecret());
 
-        voiceProxy.getLogger().info("{} disconnected", connection.getPlayer());
+        voiceProxy.getLogger().info("{} disconnected", connection.getPlayer().getInstance().getName());
         voiceProxy.getEventBus().call(new UdpClientDisconnectedEvent(connection));
     }
 
@@ -185,5 +189,11 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
     @EventSubscribe
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
         getConnectionByPlayerId(event.getPlayerId()).ifPresent(this::removeConnection);
+
+        UUID remoteSecret = remoteSecretByPlayerId.remove(event.getPlayerId());
+        UUID playerId = secretByPlayerId.remove(event.getPlayerId());
+
+        if (remoteSecret != null) playerIdByRemoteSecret.remove(remoteSecret);
+        if (playerId != null) playerIdBySecret.remove(playerId);
     }
 }

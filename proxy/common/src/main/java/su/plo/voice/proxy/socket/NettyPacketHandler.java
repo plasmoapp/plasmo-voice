@@ -40,11 +40,20 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 .orElse(false)
         ) return;
 
+        voiceProxy.getDebugLogger().log("Connection with secret {}", secret);
+
         Optional<UUID> playerId = voiceProxy.getUdpConnectionManager().getPlayerIdBySecret(secret);
-        if (!playerId.isPresent()) return;
+        if (!playerId.isPresent()) {
+            voiceProxy.getDebugLogger().log("Player not found by secret {}", secret);
+            return;
+        }
 
         Optional<UUID> remoteSecret = voiceProxy.getUdpConnectionManager().getRemoteSecretByPlayerId(playerId.get());
-        if (!remoteSecret.isPresent()) return;
+        if (!remoteSecret.isPresent()) {
+            voiceProxy.getDebugLogger().log("Remote secret not found by player id {}", playerId.get());
+            return;
+        }
+        voiceProxy.getDebugLogger().log("{} remote secret: {}", playerId, remoteSecret);
 
         Optional<VoiceProxyPlayer> player = voiceProxy.getPlayerManager().getPlayerById(playerId.get());
         if (!player.isPresent()) return;
@@ -55,6 +64,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         Optional<RemoteServer> remoteServer = voiceProxy.getRemoteServerManager()
                 .getServer(playerServer.get().getServerInfo().getName());
         if (!remoteServer.isPresent()) return;
+        voiceProxy.getDebugLogger().log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
 
         NettyUdpProxyConnection connection = new NettyUdpProxyConnection(
                 voiceProxy,
@@ -64,6 +74,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         );
         connection.setRemoteSecret(remoteSecret.get());
         connection.setRemoteServer(remoteServer.get());
+        connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
         voiceProxy.getUdpConnectionManager().addConnection(connection);
 
         sendPacket(ctx, nettyPacket, connection);

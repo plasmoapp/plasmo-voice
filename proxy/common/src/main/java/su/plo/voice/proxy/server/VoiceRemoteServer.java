@@ -2,11 +2,13 @@ package su.plo.voice.proxy.server;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.server.RemoteServer;
 
 import java.net.InetSocketAddress;
 
+@ToString
 public final class VoiceRemoteServer implements RemoteServer {
 
     private final String name;

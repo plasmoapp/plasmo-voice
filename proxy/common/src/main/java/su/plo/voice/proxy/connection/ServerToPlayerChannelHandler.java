@@ -85,6 +85,12 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
                 packet.getSecret()
         );
 
+        voiceProxy.getDebugLogger().log(
+                "{} secret: {}; remote secret: {}",
+                player.getInstance().getName(),
+                secret, packet.getSecret()
+        );
+
         voiceProxy.getUdpConnectionManager()
                 .getConnectionByPlayerId(player.getInstance().getUUID())
                 .ifPresent((connection) -> connection.setRemoteServer(remoteServer));

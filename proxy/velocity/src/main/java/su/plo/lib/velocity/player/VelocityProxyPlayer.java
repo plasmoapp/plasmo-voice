@@ -5,6 +5,7 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import com.velocitypowered.api.util.GameProfile;
 import lombok.Getter;
+import lombok.ToString;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
@@ -20,11 +21,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@ToString(onlyExplicitlyIncluded = true)
 public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
 
     private final MinecraftProxyLib minecraftProxy;
     private final ComponentTextConverter textConverter;
     @Getter
+    @ToString.Include
     private final Player instance;
     @Getter
     private final VelocityTabList tabList;
