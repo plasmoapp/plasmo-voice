@@ -153,9 +153,12 @@ public final class ScreenWrapper
 
     @Override
     public void onKeyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
-        if (keyCode == 0) return;
+        if (keyCode == 0) {
+            screen.charTyped(typedChar, modifiers);
+            return;
+        }
 
-        if (screen.keyPressed(keyCode, typedChar, modifiers)) {
+        if (screen.keyPressed(keyCode, modifiers)) {
             return;
         }
 
@@ -200,7 +203,7 @@ public final class ScreenWrapper
     }
 
     public boolean shouldCloseOnEsc() {
-        return true;
+        return screen.shouldCloseOnEsc();
     }
 
     public void onClose() {

@@ -24,7 +24,7 @@ public abstract class AbstractButton extends GuiAbstractWidget {
 
     // GuiWidgetListener impl
     @Override
-    public boolean keyPressed(int keyCode, char typedChar, UKeyboard.@Nullable Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, UKeyboard.@Nullable Modifiers modifiers) {
         if (!active || !visible) return false;
 
         // GLFW_KEY_ENTER && GLFW_KEY_SPACE && GLFW_KEY_KP_ENTER

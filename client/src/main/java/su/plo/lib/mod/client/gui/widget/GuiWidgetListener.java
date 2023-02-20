@@ -24,7 +24,11 @@ public interface GuiWidgetListener {
         return false;
     }
 
-    default boolean keyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    default boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
+        return false;
+    }
+
+    default boolean charTyped(char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
         return false;
     }
 

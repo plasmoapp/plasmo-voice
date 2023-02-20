@@ -44,13 +44,13 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, char typedChar, UKeyboard.@Nullable Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, UKeyboard.@Nullable Modifiers modifiers) {
         if (keyCode == UKeyboard.KEY_ESCAPE) {
             ScreenWrapper.openScreen(parent);
             return true;
         }
 
-        return super.keyPressed(keyCode, typedChar, modifiers);
+        return super.keyPressed(keyCode, modifiers);
     }
 
     protected abstract Button createPositionButton(int x, int y, E iconPosition);

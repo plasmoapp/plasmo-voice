@@ -63,7 +63,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
         boolean rightPressed = keyCode == 263; // GLFW_KEY_RIGHT
         if (rightPressed || keyCode == 262) { // GLFW_KEY_LEFT
             float delta = rightPressed ? -1.0F : 1.0F;

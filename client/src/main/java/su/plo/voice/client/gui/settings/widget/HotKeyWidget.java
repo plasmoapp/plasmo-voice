@@ -100,7 +100,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
         if (isActive()) {
             if (keyCode == 256) { // GLFW_KEY_ESCAPE
                 if (pressedKeys.size() > 0) {
@@ -121,7 +121,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
             return true;
         }
 
-        return super.keyPressed(keyCode, typedChar, modifiers);
+        return super.keyPressed(keyCode, modifiers);
     }
 
     @Override

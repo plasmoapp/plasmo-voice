@@ -54,7 +54,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
     // GuiWidgetEventListener impl
     @Override
-    public boolean keyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
         if (keyCode == 256 // GLFW_KEY_ESCAPE
                 || keyCode == 258) { // GLFW_KEY_TAB
             Optional<TabWidget> tab = getActiveTab();
@@ -62,7 +62,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
             if (!(tab.get() instanceof AbstractHotKeysTabWidget)) return false;
 
-            return tab.get().keyPressed(keyCode, typedChar, modifiers);
+            return tab.get().keyPressed(keyCode, modifiers);
         }
 
         return false;

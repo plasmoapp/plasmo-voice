@@ -74,8 +74,13 @@ public interface GuiScreenListener extends GuiWidgetListener {
     }
 
     @Override
-    default boolean keyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
-        return getFocused() != null && getFocused().keyPressed(keyCode, typedChar, modifiers);
+    default boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
+        return getFocused() != null && getFocused().keyPressed(keyCode, modifiers);
+    }
+
+    @Override
+    default boolean charTyped(char typedChar, UKeyboard.@Nullable Modifiers modifiers) {
+        return getFocused() != null && getFocused().charTyped(typedChar, modifiers);
     }
 
     @Override
