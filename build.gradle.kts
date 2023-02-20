@@ -8,6 +8,7 @@ val buildVersion: String by rootProject
 plugins {
     java
     idea
+    alias(libs.plugins.shadow)
     alias(libs.plugins.idea.ext)
 
     kotlin("jvm") version "1.6.10"

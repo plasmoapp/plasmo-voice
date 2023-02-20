@@ -1,23 +1,38 @@
 val mavenGroup: String by rootProject
 group = "$mavenGroup.api"
 
-plugins {
-    id("su.plo.voice.maven-publish")
-}
+val javadocProjects = listOf(
+    project(":api:proxy"),
+    project(":api:common"),
+    project(":api:server-common"),
+    project(":protocol")
+)
 
 dependencies {
-    shadow(implementation(project(":api:common"))!!)
-    shadow(implementation(project(":api:server-common"))!!)
-    shadow(implementation(project(":protocol"))!!)
+    implementation(project(":api:common"))
+    shadow(project(":api:common"))
+
+    implementation(project(":api:server-common"))
+    shadow(project(":api:server-common"))
+
+    implementation(project(":protocol"))
+    shadow(project(":protocol"))
 }
 
 tasks {
-    val javadocProjects = listOf(
-        project(":api:proxy"),
-        project(":api:common"),
-        project(":api:server-common"),
-        project(":protocol")
-    )
+    shadowJar {
+        archiveBaseName.set(project.name)
+        archiveAppendix.set("")
+        archiveClassifier.set("")
+    }
+
+    build {
+        dependsOn.add(shadowJar)
+    }
+
+    jar {
+        dependsOn.add(shadowJar)
+    }
 
     javadoc {
         source(javadocProjects.map {
@@ -33,5 +48,24 @@ tasks {
         from(javadocProjects.map {
             it.sourceSets.main.get().allSource
         })
+    }
+}
+
+configure<PublishingExtension> {
+    publications.create<MavenPublication>(project.name) {
+        artifact(tasks.getByName("shadowJar")) {
+            artifactId = project.name
+            classifier = ""
+        }
+
+        artifact(tasks.sourcesJar) {
+            artifactId = project.name
+            classifier = "sources"
+        }
+
+        artifact(tasks.javadocJar) {
+            artifactId = project.name
+            classifier = "javadoc"
+        }
     }
 }
