@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 @Data
 @Accessors(fluent = true)
 @RequiredArgsConstructor
-@EqualsAndHashCode(exclude = "string")
 public final class SemanticVersion {
 
     // forge-1.19.3-2.0.0+ALPHA => 2.0.0 alpha
@@ -79,6 +78,20 @@ public final class SemanticVersion {
     @Override
     public String toString() {
         return prettyString();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) return true;
+        if (!(o instanceof SemanticVersion)) return false;
+
+        SemanticVersion version = (SemanticVersion) o;
+        return this.toString().equals(version.toString());
+    }
+
+    @Override
+    public int hashCode() {
+        return toString().hashCode();
     }
 
     public enum Branch {
