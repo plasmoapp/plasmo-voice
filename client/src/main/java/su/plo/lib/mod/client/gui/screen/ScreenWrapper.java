@@ -153,6 +153,8 @@ public final class ScreenWrapper
 
     @Override
     public void onKeyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+        if (keyCode == 0) return;
+
         if (screen.keyPressed(keyCode, typedChar, modifiers)) {
             return;
         }
