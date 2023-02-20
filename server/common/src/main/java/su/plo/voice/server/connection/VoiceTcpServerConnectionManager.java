@@ -51,7 +51,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
         ServerConfig.Host.Public hostPublic = host.hostPublic();
 
         String ip = host.ip();
-        if (ip.isEmpty() && hostPublic != null) ip = hostPublic.ip();
+        if (hostPublic != null) ip = hostPublic.ip();
 
         int port = hostPublic != null ? hostPublic.port() : host.port();
         if (port == 0) {
