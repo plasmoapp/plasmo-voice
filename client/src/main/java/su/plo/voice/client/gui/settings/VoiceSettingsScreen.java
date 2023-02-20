@@ -194,11 +194,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         String version = versionSplit[0];
         MinecraftTextStyle versionColor = MinecraftTextStyle.WHITE;
         if (versionSplit.length > 1) {
-            if (Objects.equals(versionSplit[1], "ALPHA")) {
-                versionColor = MinecraftTextStyle.YELLOW;
-            } else {
-                versionColor = MinecraftTextStyle.RED;
-            }
+            versionColor = MinecraftTextStyle.YELLOW;
         }
 
         MinecraftTextComponent title = MinecraftTextComponent.translatable(
@@ -218,10 +214,6 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         String[] versionSplit = voiceClient.getVersion().split("\\+");
         if (versionSplit.length < 2) return null;
 
-        if (Objects.equals(versionSplit[1].toLowerCase(), "alpha")) {
-            return ImmutableList.of(MinecraftTextComponent.literal("Plasmo Voice Alpha"));
-        } else {
-            return ImmutableList.of(MinecraftTextComponent.literal("Plasmo Voice Dev"));
-        }
+        return ImmutableList.of(MinecraftTextComponent.literal("build+" + versionSplit[1]));
     }
 }
