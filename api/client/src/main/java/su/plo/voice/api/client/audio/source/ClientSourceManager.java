@@ -19,7 +19,11 @@ public interface ClientSourceManager extends AudioSourceManager<ClientAudioSourc
 
     void update(@NotNull SourceInfo sourceInfo);
 
-    void sendSourceInfoRequest(@NotNull UUID sourceId);
+    void sendSourceInfoRequest(@NotNull UUID sourceId, boolean requestIfExist);
+
+    default void sendSourceInfoRequest(@NotNull UUID sourceId) {
+        sendSourceInfoRequest(sourceId, false);
+    }
 
     void updateSelfSourceInfo(@NotNull SelfSourceInfo selfSourceInfo);
 

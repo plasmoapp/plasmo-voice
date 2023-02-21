@@ -159,11 +159,11 @@ public final class VoiceClientSourceManager implements ClientSourceManager {
     }
 
     @Override
-    public synchronized void sendSourceInfoRequest(@NotNull UUID sourceId) {
+    public synchronized void sendSourceInfoRequest(@NotNull UUID sourceId, boolean requestIfExist) {
+        if (!requestIfExist && sourceById.containsKey(sourceId)) return;
+
         ServerConnection connection = voiceClient.getServerConnection()
                 .orElseThrow(() -> new IllegalStateException("Not connected"));
-
-        if (sourceById.containsKey(sourceId)) return;
 
         sourceRequestById.put(sourceId, System.currentTimeMillis());
         connection.sendPacket(new SourceInfoRequestPacket(sourceId));
