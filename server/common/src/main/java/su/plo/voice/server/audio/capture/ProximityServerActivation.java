@@ -25,6 +25,9 @@ public final class ProximityServerActivation extends BaseProximityServerActivati
     }
 
     public void register(@NotNull VoiceServerConfig config) {
+        voiceServer.getActivationManager().unregister(VoiceActivation.PROXIMITY_ID);
+        voiceServer.getSourceLineManager().unregister(VoiceActivation.PROXIMITY_ID);
+
         ServerActivation.Builder builder = voiceServer.getActivationManager().createBuilder(
                 voiceServer,
                 VoiceActivation.PROXIMITY_NAME,
