@@ -1,0 +1,210 @@
+{
+    "key.plasmovoice.settings": "Настройки голосового чата",
+
+    "key.plasmovoice.general": "Основные",
+    "key.plasmovoice.general.mute_microphone": "Выключить микрофон",
+    "key.plasmovoice.general.disable_voice": "Выключить голосовой чат",
+    "key.plasmovoice.general.action": "Кнопка действия",
+
+    "key.plasmovoice.distance": "Дистанция голоса %s",
+    "key.plasmovoice.distance.increase": "Увеличить дистанцию",
+    "key.plasmovoice.distance.decrease": "Уменьшить дистанцию",
+
+    "key.plasmovoice.occlusion": "Затухание звука через блоки",
+    "key.plasmovoice.occlusion.toggle": "Вкл/выкл затухание звука",
+
+
+    "gui.plasmovoice.title": "Настройки %1$s %2$s",
+
+    "gui.plasmovoice.toggle.microphone": "Вкл/выкл микрофон",
+    "gui.plasmovoice.toggle.voice": "Вкл/выкл голосовой чат",
+    "gui.plasmovoice.toggle.currently": "Сейчас: %s",
+    "gui.plasmovoice.toggle.enabled": "ВКЛ",
+    "gui.plasmovoice.toggle.disabled": "ВЫКЛ",
+
+
+    "gui.plasmovoice.devices": "Устройства",
+
+    "gui.plasmovoice.devices.microphone": "Микрофон",
+    "gui.plasmovoice.devices.activation_threshold": "Порог активации",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_1": "Работает только при активации голосом",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_2": "",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_3": "Поставьте слайдер в позицию где звук",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_4": "переходит через порог активации только",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_5": "когда вы говорите",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_6": "",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_7": "Нажмите на иконку, чтобы включить тестирование",
+    "gui.plasmovoice.devices.activation_threshold.tooltip_8": "микрофона и услышать ваш голос",
+    "gui.plasmovoice.devices.not_available": "Не доступен",
+    "gui.plasmovoice.devices.default": "System Default",
+    "gui.plasmovoice.devices.microphone_volume": "Громкость микрофона",
+    "gui.plasmovoice.devices.noise_suppression": "Шумоподавление",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_1": "Шумоподавление RNNoise",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_2": "",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_3": "Использует нейронные сети. Хорошо работает",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_4": "но может нагружать процессор",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_5": "",
+    "gui.plasmovoice.devices.noise_suppression.tooltip_6": "Применяется к вашему микрофону.",
+    "gui.plasmovoice.devices.stereo_capture": "Стерео захват",
+    "gui.plasmovoice.devices.stereo_capture.tooltip_1": "Захватывает звук в стерео, зачем конвертирует в моно",
+    "gui.plasmovoice.devices.stereo_capture.tooltip_2": "Может улучшить качество, но делает звук тише.",
+
+    "gui.plasmovoice.devices.output": "Устройство вывода",
+
+    "gui.plasmovoice.devices.output_device": "Устройство вывода",
+    "gui.plasmovoice.devices.volume": "Громкость голосового чата",
+    "gui.plasmovoice.devices.volume.tooltip_1": "Громкость больше 100% может вызвать",
+    "gui.plasmovoice.devices.volume.tooltip_2": "перегрузки",
+    "gui.plasmovoice.devices.compressor": "Компрессор и лимитер",
+    "gui.plasmovoice.devices.compressor.tooltip_1": "Делает громкие звуки тише,",
+    "gui.plasmovoice.devices.compressor.tooltip_2": "спасает ваши уши от громких звуков",
+    "gui.plasmovoice.devices.compressor.tooltip_3": "",
+    "gui.plasmovoice.devices.compressor.tooltip_4": "Применяется к игрокам, которых слышите вы",
+    "gui.plasmovoice.devices.occlusion": "Заглушение через блоки",
+    "gui.plasmovoice.devices.occlusion.tooltip_1": "Отправляет луч от игрока к каждому источнику,",
+    "gui.plasmovoice.devices.occlusion.tooltip_2": "звука, и заглушает его, если луч проходит через блоки",
+    "gui.plasmovoice.devices.occlusion.tooltip_3": "",
+    "gui.plasmovoice.devices.occlusion.tooltip_4": "Полезно, если вы не хотите слышать людей через",
+    "gui.plasmovoice.devices.occlusion.tooltip_5": "стены. Но иногда работает криво, поэтому лучше не",
+    "gui.plasmovoice.devices.occlusion.tooltip_6": "включать, если вам это не нужно",
+    "gui.plasmovoice.devices.directional_sources": "Направленные источники",
+    "gui.plasmovoice.devices.directional_sources.tooltip_1": "Делает звук тише, если источник",
+    "gui.plasmovoice.devices.directional_sources.tooltip_2": "не направлен на вас, и находится",
+    "gui.plasmovoice.devices.directional_sources.tooltip_3": "вне указанного угла",
+    "gui.plasmovoice.devices.directional_sources.tooltip_4": "",
+    "gui.plasmovoice.devices.directional_sources.tooltip_5": "Применяется к игрокам которых слышите вы",
+    "gui.plasmovoice.devices.hrtf": "HRTF",
+    "gui.plasmovoice.devices.hrtf.tooltip_1": "Улучшает позиционирование аудио,",
+    "gui.plasmovoice.devices.hrtf.tooltip_2": "Проще понять, где в 3D пространстве",
+    "gui.plasmovoice.devices.hrtf.tooltip_3": "находится источник звука",
+    "gui.plasmovoice.devices.hrtf.tooltip_4": "",
+    "gui.plasmovoice.devices.hrtf.tooltip_5": "Может сделать качество звука хуже",
+    "gui.plasmovoice.devices.hrtf.tooltip_6": "",
+    "gui.plasmovoice.devices.hrtf.tooltip_7": "Применяется к игрокам которых слышите вы",
+
+
+    "gui.plasmovoice.activation": "Активации",
+
+    "gui.plasmovoice.activation.type": "Тип активации",
+    "gui.plasmovoice.activation.type_ptt": "Push-To-Talk",
+    "gui.plasmovoice.activation.type_voice": "Голос",
+    "gui.plasmovoice.activation.type_inherit": "Наследование",
+    "gui.plasmovoice.activation.ptt_button": "Кнопка Push-To-Talk",
+    "gui.plasmovoice.activation.toggle_button": "Toggle Button",
+    "gui.plasmovoice.activation.distance": "Дистанция %s",
+
+
+    "gui.plasmovoice.advanced": "Продвинутые",
+
+    "gui.plasmovoice.advanced.visual": "Визуальные и интерфейс",
+    "gui.plasmovoice.advanced.visualize_voice_distance": "Визуализировать дистанцию",
+    "gui.plasmovoice.advanced.visualize_voice_distance_on_join": "Визуализировать при входе",
+
+    "gui.plasmovoice.advanced.compressor": "Компрессор и лимитер",
+    "gui.plasmovoice.advanced.compressor_threshold": "Порог компрессора",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_1": "Делает звук тише, если звук",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_2": "переходит через порог",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_3": "",
+    "gui.plasmovoice.advanced.compressor_threshold.tooltip_4": "Рекомендованное значение: от -16 dB до -6 dB",
+    "gui.plasmovoice.advanced.limiter_threshold": "Порог лимитера",
+    "gui.plasmovoice.advanced.limiter_threshold.tooltip_1": "Звук не может быть громче порога лимитера",
+    "gui.plasmovoice.advanced.limiter_threshold.tooltip_2": "",
+    "gui.plasmovoice.advanced.limiter_threshold.tooltip_3": "Рекомендованное значение: -6 dB",
+
+    "gui.plasmovoice.advanced.audio_engine": "Звуковой движок",
+    "gui.plasmovoice.advanced.directional_sources_angle": "Угол напр. источников",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_1": "Угол, в котором вы слышите источник с",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_2": "громкостью 100%, если включены направленные",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_3": "источники. 360 градусов это как если направленные",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip_4": "источники не включены",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono": "Моно стерео источники",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_1": "Аддоны могут использовать стерео для улучшения качества звука.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_2": "Качество намного лучше, но нет позиционирования.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_3": "Звук будет только затухать с дистанцией",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_4": "",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_5": "Когда эта опция включена, стерео источники будете конвертированы в",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_6": "обычные моно источники. Качество хуже, но у них будет",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "позиционирование.",
+
+
+    "gui.plasmovoice.hotkeys": "Клавиши",
+
+
+    "gui.plasmovoice.volume": "Громкость",
+
+    "gui.plasmovoice.volume.sources": "Громкость источников",
+    "gui.plasmovoice.volume.players": "Громкость игроков",
+    "gui.plasmovoice.volume.players_search": "Поиск...",
+
+
+    "gui.plasmovoice.about.made_by": "Авторы %s",
+    "gui.plasmovoice.about.huix": "Концепт и Дизайн",
+    "gui.plasmovoice.about.programming": "Код",
+    "gui.plasmovoice.about.artist": "Художник",
+    "gui.plasmovoice.about.contributor": "Contributor",
+    "gui.plasmovoice.about.translator": "%s перевод",
+
+    "gui.plasmovoice.about.links": "Страницы %s",
+    "gui.plasmovoice.about.copyright": "Пожалуйста, используйте только оригинальные источники для скачивания, и не распространяйте мод без нашего разрешения",
+
+
+    "gui.plasmovoice.overlay": "Оверлей",
+
+    "gui.plasmovoice.overlay.activation_icon": "Иконка активации",
+    "gui.plasmovoice.overlay.activation_icon_show": "Показывать иконки",
+    "gui.plasmovoice.overlay.activation_icon_position": "Позиция иконок",
+    "gui.plasmovoice.overlay.activation_icon_position.choose": "Выберите расположение иконки",
+    "gui.plasmovoice.overlay.hud_position.top_left": "Слева сверху",
+    "gui.plasmovoice.overlay.hud_position.top_center": "По центру сверху",
+    "gui.plasmovoice.overlay.hud_position.top_right": "Справа сверху",
+    "gui.plasmovoice.overlay.hud_position.bottom_left": "Слева снизу",
+    "gui.plasmovoice.overlay.hud_position.bottom_center": "По центру снизу",
+    "gui.plasmovoice.overlay.hud_position.bottom_right": "Справа снизу",
+
+    "gui.plasmovoice.overlay.source_icons": "Иконки энтити",
+    "gui.plasmovoice.overlay.show_source_icons": "Отображать иконки",
+    "gui.plasmovoice.overlay.show_source_icons.hud": "Только GUI",
+    "gui.plasmovoice.overlay.show_source_icons.always": "Всегда",
+    "gui.plasmovoice.overlay.show_source_icons.hidden": "Скрыто",
+    "gui.plasmovoice.overlay.show_static_source_icons": "Иконки статических источников",
+
+    "gui.plasmovoice.overlay.enable": "Включить оверлей",
+    "gui.plasmovoice.overlay.position": "Расположение оверлея",
+    "gui.plasmovoice.overlay.position.choose": "Выберите расположение оверлея",
+    "gui.plasmovoice.overlay.style": "Стиль оверлей",
+    "gui.plasmovoice.overlay.style.name_skin": "Ник и скин",
+    "gui.plasmovoice.overlay.style.skin": "Только скин",
+    "gui.plasmovoice.overlay.style.name": "Только ник",
+
+    "gui.plasmovoice.overlay.sources": "Оверлей источников",
+    "gui.plasmovoice.overlay.sources.when_talking": "Когда говорят",
+    "gui.plasmovoice.overlay.sources.always": "Всегда",
+    "gui.plasmovoice.overlay.sources.never": "Никогда",
+
+
+    "gui.plasmovoice.addons": "Аддоны",
+
+
+    "gui.plasmovoice.not_available": "Plasmo Voice не установлен на этом сервере",
+    "gui.plasmovoice.connecting": "Подключение к UDP серверу...",
+    "gui.plasmovoice.cannot_connect_to_udp_1": "Не удалось подключиться к UDP серверу,",
+    "gui.plasmovoice.cannot_connect_to_udp_2": "скорее всего закрыт порт. Прочитайте вики:",
+    "gui.plasmovoice.cannot_connect_to_udp_3": "%s",
+
+
+    "pv.activation.parent": "Папа",
+
+
+    "message.plasmovoice.close": "Закрыть",
+    "message.plasmovoice.on": "Вкл",
+    "message.plasmovoice.off": "Выкл",
+
+    "message.plasmovoice.no_activation_permission": "You have no permission: %s",
+
+    "message.plasmovoice.occlusion_changed": "Заглушение звука через блоки: %s",
+    "message.plasmovoice.distance_changed": "Дистанция %s: %d",
+
+    "message.plasmovoice.update_available": "Доступна новая версия Plasmo Voice %1$s: %2$s",
+    "message.plasmovoice.update_available.click": "Скачать",
+    "message.plasmovoice.update_available.hover": "%s"
+}

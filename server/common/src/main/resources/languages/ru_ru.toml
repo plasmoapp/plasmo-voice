@@ -1,0 +1,59 @@
+[server]
+[server.pv.error]
+no_permissions = "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
+player_only_command = "Только игрок может использовать эту команду"
+player_not_found = "Игрок не найден"
+
+mod_missing_kick_message = "Вам нужно установить Plasmo Voice, чтобы играть на этом сервере.\nСкачать: https://modrinth.com/plugin/plasmo-voice"
+
+version_not_supported = "Ваша версия Plasmo Voice не поддерживается на этом сервере. %s"
+version_not_supported_click = "Скачать нужную версию"
+version_not_supported_hover = "%s"
+
+[server.pv.mutes]
+empty_reason = "не указана"
+temporarily_muted = "Вы были замучены %1$s. Причина: %2$s"
+permanently_muted = "Вы были замучены навсегда. Причина: %s"
+unmuted = "Вы были размучены"
+
+[server.pv.mutes.durations]
+seconds = "на %s сек."
+minutes = "на %s мин."
+hours = "на %s час."
+days = "на %s дн."
+weeks = "на %s нед."
+
+[server.pv.command]
+[server.pv.command.mute]
+usage = "Использование: /vmute <игрок> [длительность] [причина]"
+already_muted = "%s уже замучен"
+temporarily_muted = "%1$s замучен %2$s. Причина: %3$s"
+permanently_muted = "%1$s замучен навсегда. Причина: %2$s"
+
+[server.pv.command.unmute]
+usage = "Использование: /vunmute <игрок>"
+not_muted = "%s не замучен"
+unmuted = "%s размучен"
+
+[server.pv.command.mute_list]
+header = "Игроки в муте:"
+entry = "%1$s, до: %2$s. Причина: %3$s"
+entry_muted_by = "%1$s замучен игроком %2$s, до: %3$s. Причина: %4$s"
+empty = "Нет игроков в муте"
+expire_at = "%1$s в %2$s"
+never_expires = "никогда"
+expiration_date = "yyyy.MM.dd"
+expiration_time = "HH:mm:ss"
+
+[server.pv.command.list]
+message = "Клиенты (%1$s/%2$s): %3$s"
+empty = "нет игроков с установленным Plasmo Voice"
+
+[server.pv.command.reconnect]
+message = "Пакет подключения отправлен"
+
+[server.pv.command.reload]
+message = "Конфиг перезагружен"
+
+[client.pv.activation]
+proximity = "Proximity"
