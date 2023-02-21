@@ -90,7 +90,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
     }
 
     @Override
-    public void initialize(T sourceInfo) throws DeviceException {
+    public synchronized void initialize(T sourceInfo) throws DeviceException {
         ServerInfo serverInfo = voiceClient.getServerInfo()
                 .orElseThrow(() -> new IllegalStateException("Not connected"));
 
@@ -248,7 +248,7 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         reset();
     }
 
-    private void processAudioPacket(@NotNull SourceAudioPacket packet) {
+    private synchronized void processAudioPacket(@NotNull SourceAudioPacket packet) {
         if (sourceInfo == null || packet.getSourceState() != sourceInfo.getState()) {
             LOGGER.info("Drop packet with bad source state");
             return;
@@ -367,12 +367,12 @@ public abstract class BaseClientAudioSource<T extends SourceInfo> implements Cli
         resetted.set(false);
     }
 
-    private void processAudioEndPacket(@NotNull SourceAudioEndPacket packet) {
+    private synchronized void processAudioEndPacket(@NotNull SourceAudioEndPacket packet) {
         if (!activated.get()) return;
         lastSequenceNumbers.put(sourceInfo.getLineId(), packet.getSequenceNumber());
     }
 
-    private void reset() {
+    private synchronized void reset() {
         if (!resetted.compareAndSet(false, true)) return;
         if (decoder != null) decoder.reset();
         activated.set(false);
