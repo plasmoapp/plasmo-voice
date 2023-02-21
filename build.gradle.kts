@@ -1,3 +1,5 @@
+import gg.essential.gradle.util.setJvmDefault
+import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import java.io.ByteArrayOutputStream
 
 // Version
@@ -22,6 +24,7 @@ subprojects {
     apply(plugin = "idea")
     apply(plugin = "maven-publish")
     apply(plugin = "com.github.johnrengelman.shadow")
+    apply(plugin = "kotlin")
 
     group = mavenGroup
 
@@ -70,6 +73,11 @@ subprojects {
             withSourcesJar()
 
             toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
+
+            val os: OperatingSystem = DefaultNativePlatform.getCurrentOperatingSystem()
+            if (os.isMacOsX) {
+                toolchain.vendor.set(JvmVendorSpec.AZUL)
+            }
         }
 
         compileJava {
@@ -83,6 +91,12 @@ subprojects {
         processResources {
             filteringCharset = Charsets.UTF_8.name()
         }
+
+        compileKotlin {
+            setJvmDefault("all")
+        }
+
+//        compileKotlin.setJvmDefault("all")
 
 //        jar {
 //            archiveClassifier.set("dev")
