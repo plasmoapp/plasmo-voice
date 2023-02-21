@@ -1,5 +1,6 @@
 package su.plo.voice.server.config;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.Getter;
@@ -12,6 +13,7 @@ import su.plo.voice.api.server.config.ResourceLoader;
 import su.plo.voice.api.server.config.ServerLanguages;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -30,7 +32,7 @@ public final class VoiceServerLanguages implements ServerLanguages {
 
             // load from languages/list
             try (InputStream is = resourceLoader.load("languages/list");
-                 BufferedReader br = new BufferedReader(new InputStreamReader(is))
+                 BufferedReader br = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
             ) {
                 for (String languageName : br.lines().collect(Collectors.toList())) {
                     if (languageName.isEmpty()) continue;
@@ -72,12 +74,11 @@ public final class VoiceServerLanguages implements ServerLanguages {
                 saveLanguage(languageFile, entry.getValue());
             }
 
+            // merge all languages with default language
             for (Map.Entry<String, VoiceServerLanguage> entry : languages.entrySet()) {
                 VoiceServerLanguage language = this.languages.computeIfAbsent(entry.getKey(), (key) -> entry.getValue());
                 language.merge(entry.getValue());
             }
-
-            // merge all languages with default language
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load languages", e);
         }
@@ -105,7 +106,7 @@ public final class VoiceServerLanguages implements ServerLanguages {
                                              @NotNull File languageFile,
                                              @NotNull String languageName) throws IOException {
         try (InputStream is = resourceLoader.load("languages/" + languageName + ".toml")) {
-            Toml defaults = new Toml().read(is);
+            Toml defaults = new Toml().read(new InputStreamReader(is, Charsets.UTF_8));
             return loadLanguage(languageFile, defaults);
         } catch (IOException e) {
             throw e;
