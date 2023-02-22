@@ -127,8 +127,7 @@ public final class VoiceServerDirectSource
 
         if (playersSupplier != null) {
             for (VoicePlayer player : playersSupplier.get()) {
-                if (testPlayer(player)) continue;
-
+                if (!testPlayer(player)) continue;
                 udpConnections.getConnectionByPlayerId(player.getInstance().getUUID())
                         .ifPresent(connection -> connection.sendPacket(packet));
             }
@@ -149,7 +148,7 @@ public final class VoiceServerDirectSource
 
         if (playersSupplier != null) {
             for (VoicePlayer player : playersSupplier.get()) {
-                if (testPlayer(player)) continue;
+                if (!testPlayer(player)) continue;
                 player.sendPacket(packet);
             }
         } else {
