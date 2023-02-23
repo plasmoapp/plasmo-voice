@@ -85,14 +85,10 @@ public final class OverlayRenderer {
                              boolean activated) {
         if (UMinecraft.getWorld() == null) return;
 
-        ServerConnection connection = voiceClient.getServerConnection()
-                .orElseThrow(() -> new IllegalStateException("Not connected"));
-
         // todo: entity renderer?
-        String sourceName = getSourceSenderName(sourceInfo, sourceLine);
-        MinecraftTextComponent text = MinecraftTextComponent.translatable(sourceName);
+        MinecraftTextComponent sourceName = getSourceSenderName(sourceInfo, sourceLine);
 
-        int textWidth = RenderUtil.getTextWidth(text) + 8;
+        int textWidth = RenderUtil.getTextWidth(sourceName) + 8;
         int x = calcPositionX(position.getX());
         int y = calcPositionY(position.getY());
 
@@ -110,7 +106,7 @@ public final class OverlayRenderer {
         int backgroundColor = (int) (0.25F * 255.0F) << 24;
 
         // render helm
-        UGraphics.bindTexture(0, loadSkin(connection, sourceInfo, sourceName));
+        UGraphics.bindTexture(0, loadSkin(sourceInfo));
         UGraphics.color4f(1F, 1F, 1F, 1F);
 
         RenderUtil.blit(stack, x, y, 16, 16, 8F, 8F, 8, 8, 64, 64);
@@ -124,7 +120,7 @@ public final class OverlayRenderer {
             x += 16 + 1;
         }
         RenderUtil.fill(stack, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor);
-        RenderUtil.drawString(stack, text, x + 4, y + 4, 0xFFFFFF, false);
+        RenderUtil.drawString(stack, sourceName, x + 4, y + 4, 0xFFFFFF, false);
 
         if (activated) {
             if (position.isRight()) {
@@ -141,20 +137,21 @@ public final class OverlayRenderer {
         }
     }
 
-    private String getSourceSenderName(@NotNull SourceInfo sourceInfo,
+    private MinecraftTextComponent getSourceSenderName(@NotNull SourceInfo sourceInfo,
                                        @NotNull ClientSourceLine sourceLine) {
         if (sourceInfo instanceof DirectSourceInfo) {
             DirectSourceInfo directSourceInfo = (DirectSourceInfo) sourceInfo;
 
             if (directSourceInfo.getSender() != null) {
-                return directSourceInfo.getSender().getName();
+                return MinecraftTextComponent.literal(directSourceInfo.getSender().getName());
             }
         }
 
         PlayerInfo playerInfo = UMinecraft.getNetHandler().getPlayerInfo(sourceInfo.getId());
-        if (playerInfo == null) return sourceLine.getTranslation();
+        if (playerInfo != null)
+            return MinecraftTextComponent.literal(playerInfo.getProfile().getName());
 
-        return playerInfo.getProfile().getName();
+        return MinecraftTextComponent.translatable(sourceLine.getTranslation());
     }
 
     private UUID getSourceSenderId(@NotNull SourceInfo sourceInfo) {
@@ -170,7 +167,7 @@ public final class OverlayRenderer {
         return sourceId;
     }
 
-    private ResourceLocation loadSkin(@NotNull ServerConnection connection, @NotNull SourceInfo sourceInfo, @NotNull String sourceName) {
+    private ResourceLocation loadSkin(@NotNull SourceInfo sourceInfo) {
         UUID sourceId = getSourceSenderId(sourceInfo);
 
         return Optional.ofNullable(UMinecraft.getNetHandler().getPlayerInfo(sourceId))
