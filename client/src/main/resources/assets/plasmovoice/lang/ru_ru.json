@@ -166,7 +166,7 @@
     "gui.plasmovoice.overlay.show_source_icons.hud": "Только GUI",
     "gui.plasmovoice.overlay.show_source_icons.always": "Всегда",
     "gui.plasmovoice.overlay.show_source_icons.hidden": "Скрыто",
-    "gui.plasmovoice.overlay.show_static_source_icons": "Иконки статических источников",
+    "gui.plasmovoice.overlay.show_static_source_icons": "Статические источники",
 
     "gui.plasmovoice.overlay.enable": "Включить оверлей",
     "gui.plasmovoice.overlay.position": "Расположение оверлея",
