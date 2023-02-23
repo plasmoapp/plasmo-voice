@@ -1,7 +1,7 @@
 package su.plo.voice.api.server.event.player;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
 import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -24,12 +24,19 @@ public final class PlayerActivationDistanceUpdateEvent implements Event {
      */
     @Getter
     private final int distance;
+    /**
+     * Old activation distance
+     */
+    @Getter
+    private final int oldDistance;
 
-    public PlayerActivationDistanceUpdateEvent(@NotNull VoicePlayer player,
-                                               @NotNull ServerActivation activation,
-                                               int distance) {
+    public PlayerActivationDistanceUpdateEvent(@NonNull VoicePlayer player,
+                                               @NonNull ServerActivation activation,
+                                               int distance,
+                                               int oldDistance) {
         this.player = checkNotNull(player, "player");
         this.activation = checkNotNull(activation, "activation");
         this.distance = distance;
+        this.oldDistance = oldDistance;
     }
 }

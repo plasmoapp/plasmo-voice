@@ -79,13 +79,23 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implement
     }
 
     public void setActivationDistance(@NotNull ServerActivation activation, int distance) {
-        distanceByActivationId.put(activation.getId(), distance);
-        voice.getEventBus().call(new PlayerActivationDistanceUpdateEvent(this, activation, distance));
+        Integer oldDistance = distanceByActivationId.put(activation.getId(), distance);
+        voice.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
+                this,
+                activation,
+                distance,
+                oldDistance == null ? -1 : oldDistance
+        ));
     }
 
     public void removeActivationDistance(@NotNull ServerActivation activation) {
-        distanceByActivationId.remove(activation.getId());
-        voice.getEventBus().call(new PlayerActivationDistanceUpdateEvent(this, activation, -1));
+        Integer oldDistance = distanceByActivationId.remove(activation.getId());
+        voice.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
+                this,
+                activation,
+                -1,
+                oldDistance == null ? -1 : oldDistance
+        ));
     }
 
     protected void checkVoiceChat() {

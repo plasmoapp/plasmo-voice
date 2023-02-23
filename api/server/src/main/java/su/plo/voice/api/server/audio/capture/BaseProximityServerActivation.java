@@ -11,6 +11,7 @@ import su.plo.voice.api.server.audio.source.ServerPlayerSource;
 import su.plo.voice.api.server.event.audio.capture.ServerActivationRegisterEvent;
 import su.plo.voice.api.server.event.audio.capture.ServerActivationUnregisterEvent;
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
+import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
@@ -88,6 +89,14 @@ public abstract class BaseProximityServerActivation {
         } else if (event.getPacket() instanceof SourceAudioEndPacket) {
             source.getPlayer().sendPacket(event.getPacket());
         }
+    }
+
+    @EventSubscribe
+    public void onActivationDistanceChange(@NotNull PlayerActivationDistanceUpdateEvent event) {
+        if (!event.getActivation().getId().equals(VoiceActivation.PROXIMITY_ID)) return;
+        if (event.getOldDistance() == -1) return;
+
+        event.getPlayer().visualizeDistance(event.getDistance());
     }
 
     protected void sendAudioEndPacket(@NotNull ServerPlayerSource source,
