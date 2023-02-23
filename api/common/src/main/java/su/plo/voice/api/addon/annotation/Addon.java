@@ -48,11 +48,10 @@ public @interface Addon {
      */
     String[] authors();
 
-    // todo: addon dependencies
-//    /**
-//     * Returns the addon dependencies
-//     *
-//     * @return the addon dependencies
-//     */
-//    Dependency[] dependencies() default {};
+    /**
+     * Returns the addon dependencies
+     *
+     * @return the addon dependencies
+     */
+    Dependency[] dependencies() default {};
 }

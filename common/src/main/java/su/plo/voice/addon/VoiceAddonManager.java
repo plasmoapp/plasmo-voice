@@ -3,11 +3,14 @@ package su.plo.voice.addon;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import com.google.common.graph.GraphBuilder;
+import com.google.common.graph.MutableGraph;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.addon.AddonDependency;
 import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.addon.annotation.processor.JsonAddon;
@@ -23,10 +26,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.stream.Collectors;
@@ -43,9 +43,16 @@ public final class VoiceAddonManager implements AddonManager {
     private final Map<Object, AddonContainer> addonByInstance = Maps.newHashMap();
     private final Map<String, AddonContainer> addons = Maps.newHashMap();
 
+    private final MutableGraph<AddonContainer> dependencyGraph = GraphBuilder.directed().build();
+
     public VoiceAddonManager(BaseVoice voice, AddonScope scope) {
         this.voice = voice;
         this.scope = scope;
+    }
+
+    @Override
+    public void load(@NotNull Object addonObject) {
+
     }
 
     @Override
@@ -113,15 +120,16 @@ public final class VoiceAddonManager implements AddonManager {
 
         if (addons.isEmpty()) return;
 
-        for (VoiceAddon addon : addons) {
-            // todo: addon dependencies
-//            for (AddonDependency dependency : addon.getDependencies()) {
-//                if (dependency.isOptional()) continue;
-//                if (!this.addons.containsKey(dependency.getId())) {
-//                    LOGGER.error("Addon {} is missing dependency {}", addon.getId(), dependency.getId());
-//                    continue load;
-//                }
-//            }
+        l:
+        for (AddonContainer addon : AddonSorter.Companion.sort(addons)) {
+            for (AddonDependency dependency : addon.getDependencies()) {
+                if (dependency.isOptional()) continue;
+
+                if (!this.addons.containsKey(dependency.getId())) {
+                    LOGGER.error("Addon \"{}\" is missing dependency \"{}\"", addon.getId(), dependency.getId());
+                    continue l;
+                }
+            }
 
             try {
                 loadAddon(addon);
@@ -162,6 +170,9 @@ public final class VoiceAddonManager implements AddonManager {
                 jsonAddon.getScope(),
                 jsonAddon.getVersion(),
                 jsonAddon.getAuthors(),
+                jsonAddon.getDependencies() == null
+                        ? Collections.emptyList()
+                        : jsonAddon.getDependencies(),
                 addonPath,
                 mainClass
         );

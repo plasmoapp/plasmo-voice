@@ -1,20 +1,24 @@
 package su.plo.voice.api.addon.annotation.processor;
 
+import com.google.common.collect.Lists;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import lombok.Data;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.addon.AddonDependency;
 import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.addon.annotation.Addon;
 
 import java.io.Reader;
 import java.lang.reflect.Type;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 @Data
 public final class JsonAddon {
@@ -26,28 +30,39 @@ public final class JsonAddon {
     private final String name;
     private final AddonScope scope;
     private final String version;
-    private final String[] authors;
+    private final List<String> authors;
+    private final List<AddonDependency> dependencies;
     private final String mainClass;
 
-    private JsonAddon(String id, String name, AddonScope scope, String version, String[] authors, String mainClass) {
-        this.id = checkNotNull(id, "id cannot be null");
-        this.name = checkNotNull(name, "name cannot be null");
-        this.scope = checkNotNull(scope, "scope cannot be null");
-        this.version = checkNotNull(version, "version cannot be null");
-        this.authors = checkNotNull(authors, "authors cannot be null");
+    private JsonAddon(@NonNull String id,
+                      @NonNull String name,
+                      @NonNull AddonScope scope,
+                      @NonNull String version,
+                      @NonNull List<String> authors,
+                      @NonNull List<AddonDependency> dependencies,
+                      @NonNull String mainClass) {
+        this.id = id;
+        this.name = name;
+        this.scope = scope;
+        this.version = version;
+        this.authors = authors;
+        this.dependencies = dependencies;
         checkArgument(!id.isEmpty(), "id cannot be empty");
         checkArgument(AddonContainer.ID_PATTERN.matcher(id).matches(), "id is not valid");
-        this.mainClass = checkNotNull(mainClass, "mainClass cannot be null");
+        this.mainClass = mainClass;
     }
 
-    static JsonAddon from(Addon addon, String qualifiedName) {
+    static JsonAddon from(Addon addon, String mainClass) {
         return new JsonAddon(
                 addon.id(),
                 addon.name(),
                 addon.scope(),
                 addon.version(),
-                addon.authors(),
-                qualifiedName
+                Lists.newArrayList(addon.authors()),
+                Arrays.stream(addon.dependencies())
+                        .map(dependency -> new AddonDependency(dependency.id(), dependency.optional()))
+                        .collect(Collectors.toList()),
+                mainClass
         );
     }
 

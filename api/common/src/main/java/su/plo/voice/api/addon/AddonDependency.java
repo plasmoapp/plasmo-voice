@@ -1,12 +1,12 @@
 package su.plo.voice.api.addon;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 
 import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Represents a dependency on another addon
@@ -24,8 +24,8 @@ public final class AddonDependency {
      * @param id       the addon id
      * @param optional whether this dependency is optional
      */
-    public AddonDependency(String id, boolean optional) {
-        this.id = checkNotNull(id, "id cannot be null");
+    public AddonDependency(@NonNull String id, boolean optional) {
+        this.id = id;
         checkArgument(!id.isEmpty(), "id cannot be empty");
         this.optional = optional;
     }

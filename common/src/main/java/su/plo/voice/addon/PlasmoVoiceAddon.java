@@ -1,13 +1,17 @@
 package su.plo.voice.addon;
 
+import com.google.common.collect.Lists;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.addon.AddonDependency;
 import su.plo.voice.api.addon.AddonScope;
 
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -37,8 +41,13 @@ public final class PlasmoVoiceAddon implements AddonContainer {
     }
 
     @Override
-    public String[] getAuthors() {
-        return new String[]{"Apehum"};
+    public Collection<String> getAuthors() {
+        return Lists.newArrayList("Apehum");
+    }
+
+    @Override
+    public Collection<AddonDependency> getDependencies() {
+        return Collections.emptyList();
     }
 
     @Override

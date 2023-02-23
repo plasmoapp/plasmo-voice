@@ -1,14 +1,15 @@
 package su.plo.voice.addon;
 
 import lombok.Getter;
+import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.addon.AddonDependency;
 import su.plo.voice.api.addon.AddonScope;
 
 import java.nio.file.Path;
+import java.util.List;
 import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class VoiceAddon implements AddonContainer {
 
@@ -21,7 +22,9 @@ public final class VoiceAddon implements AddonContainer {
     @Getter
     private final String version;
     @Getter
-    private final String[] authors;
+    private final List<String> authors;
+    @Getter
+    private final List<AddonDependency> dependencies;
     @Getter
     private final Path path;
     @Getter
@@ -29,20 +32,22 @@ public final class VoiceAddon implements AddonContainer {
 
     private @Nullable Object object;
 
-    public VoiceAddon(String id,
-                      String name,
-                      AddonScope scope,
-                      String version,
-                      String[] authors,
-                      Path path,
-                      Class<?> mainClass) {
-        this.id = checkNotNull(id, "id cannot be null");
-        this.name = checkNotNull(name, "name cannot be null");
-        this.scope = checkNotNull(scope, "scope cannot be null");
-        this.version = checkNotNull(version, "version cannot be null");
-        this.authors = checkNotNull(authors, "authors cannot be null");
-        this.path = checkNotNull(path, "path cannot be null");
-        this.mainClass = checkNotNull(mainClass, "mainClass cannot be null");
+    public VoiceAddon(@NonNull String id,
+                      @NonNull String name,
+                      @NonNull AddonScope scope,
+                      @NonNull String version,
+                      @NonNull List<String> authors,
+                      @NonNull List<AddonDependency> dependencies,
+                      @NonNull Path path,
+                      @NonNull Class<?> mainClass) {
+        this.id = id;
+        this.name = name;
+        this.scope = scope;
+        this.version = version;
+        this.authors = authors;
+        this.dependencies = dependencies;
+        this.path = path;
+        this.mainClass = mainClass;
     }
 
     @Override
