@@ -1,7 +1,6 @@
+import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
-import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
-import gg.essential.gradle.util.prebundle
 
 val mavenGroup: String by rootProject
 
@@ -44,7 +43,7 @@ repositories {
 
 dependencies {
     compileOnly(rootProject.libs.netty)
-    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
+//    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
@@ -98,6 +97,10 @@ dependencies {
 tasks {
     jar {
         mergePlatformSpecifics()
+
+        if (platform.mcVersion >= 11400) {
+            excludeKotlinDefaultImpls()
+        }
     }
 
     shadowJar {

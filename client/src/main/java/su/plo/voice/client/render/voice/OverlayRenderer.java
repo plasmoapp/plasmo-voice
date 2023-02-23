@@ -61,10 +61,10 @@ public final class OverlayRenderer {
             }
 
             for (ClientAudioSource<?> source : voiceClient.getSourceManager().getSourcesByLineId(sourceLine.getId())) {
-                boolean isActivated = source.isActivated();
+                boolean canHear = source.canHear();
 
-                if (isActivated || (sourceLine.hasPlayers() && sourceState == OverlaySourceState.ALWAYS)) {
-                    toRender.put(source.getInfo(), isActivated);
+                if (canHear || (sourceLine.hasPlayers() && sourceState == OverlaySourceState.ALWAYS)) {
+                    toRender.put(source.getInfo(), canHear);
                 }
             }
 

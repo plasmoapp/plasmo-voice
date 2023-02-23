@@ -100,7 +100,7 @@ public final class VoiceClientSourceManager implements ClientSourceManager {
         try {
             if (sourceById.containsKey(sourceInfo.getId())) {
                 ClientAudioSource<?> source = sourceById.get(sourceInfo.getId());
-                if (source.isClosed() || source.getInfo() == null) {
+                if (source.isClosed()) {
                     sourceRequestById.remove(sourceInfo.getId());
                     return;
                 }
@@ -111,13 +111,13 @@ public final class VoiceClientSourceManager implements ClientSourceManager {
                 }
 
                 if (source.getInfo() instanceof StaticSourceInfo && sourceInfo instanceof StaticSourceInfo) {
-                    ((ClientAudioSource<StaticSourceInfo>) source).initialize((StaticSourceInfo) sourceInfo);
+                    ((ClientAudioSource<StaticSourceInfo>) source).update((StaticSourceInfo) sourceInfo);
                 } else if (source.getInfo() instanceof PlayerSourceInfo && sourceInfo instanceof PlayerSourceInfo) {
-                    ((ClientAudioSource<PlayerSourceInfo>) source).initialize((PlayerSourceInfo) sourceInfo);
+                    ((ClientAudioSource<PlayerSourceInfo>) source).update((PlayerSourceInfo) sourceInfo);
                 } else if (source.getInfo() instanceof EntitySourceInfo && sourceInfo instanceof EntitySourceInfo) {
-                    ((ClientAudioSource<EntitySourceInfo>) source).initialize((EntitySourceInfo) sourceInfo);
+                    ((ClientAudioSource<EntitySourceInfo>) source).update((EntitySourceInfo) sourceInfo);
                 } else if (source.getInfo() instanceof DirectSourceInfo && sourceInfo instanceof DirectSourceInfo) {
-                    ((ClientAudioSource<DirectSourceInfo>) source).initialize((DirectSourceInfo) sourceInfo);
+                    ((ClientAudioSource<DirectSourceInfo>) source).update((DirectSourceInfo) sourceInfo);
                 } else {
                     throw new IllegalArgumentException("Invalid source type");
                 }
@@ -125,26 +125,22 @@ public final class VoiceClientSourceManager implements ClientSourceManager {
             }
 
             if (sourceInfo instanceof PlayerSourceInfo) {
-                ClientAudioSource<PlayerSourceInfo> source = createPlayerSource();
-                source.initialize((PlayerSourceInfo) sourceInfo);
+                ClientAudioSource<PlayerSourceInfo> source = createPlayerSource((PlayerSourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
                 sourcesByLineId.put(sourceInfo.getLineId(), source);
             } else if (sourceInfo instanceof EntitySourceInfo) {
-                ClientAudioSource<EntitySourceInfo> source = createEntitySource();
-                source.initialize((EntitySourceInfo) sourceInfo);
+                ClientAudioSource<EntitySourceInfo> source = createEntitySource((EntitySourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
                 sourcesByLineId.put(sourceInfo.getLineId(), source);
             } else if (sourceInfo instanceof StaticSourceInfo) {
-                ClientAudioSource<StaticSourceInfo> source = createStaticSource();
-                source.initialize((StaticSourceInfo) sourceInfo);
+                ClientAudioSource<StaticSourceInfo> source = createStaticSource((StaticSourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
                 sourcesByLineId.put(sourceInfo.getLineId(), source);
             } else if (sourceInfo instanceof DirectSourceInfo) {
-                ClientAudioSource<DirectSourceInfo> source = createDirectSource();
-                source.initialize((DirectSourceInfo) sourceInfo);
+                ClientAudioSource<DirectSourceInfo> source = createDirectSource((DirectSourceInfo) sourceInfo);
 
                 sourceById.put(sourceInfo.getId(), source);
                 sourcesByLineId.put(sourceInfo.getLineId(), source);
@@ -207,26 +203,26 @@ public final class VoiceClientSourceManager implements ClientSourceManager {
                 .forEach(selfSourceInfoById::remove);
     }
 
-    private ClientAudioSource<PlayerSourceInfo> createPlayerSource() {
-        ClientAudioSource<PlayerSourceInfo> source = new ClientPlayerSource(voiceClient, config);
+    private ClientAudioSource<PlayerSourceInfo> createPlayerSource(@NotNull PlayerSourceInfo sourceInfo) {
+        ClientAudioSource<PlayerSourceInfo> source = new ClientPlayerSource(voiceClient, config, sourceInfo);
         voiceClient.getEventBus().register(voiceClient, source);
         return source;
     }
 
-    private ClientAudioSource<EntitySourceInfo> createEntitySource() {
-        ClientAudioSource<EntitySourceInfo> source = new ClientEntitySource(voiceClient, config);
+    private ClientAudioSource<EntitySourceInfo> createEntitySource(@NotNull EntitySourceInfo sourceInfo) {
+        ClientAudioSource<EntitySourceInfo> source = new ClientEntitySource(voiceClient, config, sourceInfo);
         voiceClient.getEventBus().register(voiceClient, source);
         return source;
     }
 
-    private ClientAudioSource<DirectSourceInfo> createDirectSource() {
-        ClientAudioSource<DirectSourceInfo> source = new ClientDirectSource(voiceClient, config);
+    private ClientAudioSource<DirectSourceInfo> createDirectSource(@NotNull DirectSourceInfo sourceInfo) {
+        ClientAudioSource<DirectSourceInfo> source = new ClientDirectSource(voiceClient, config, sourceInfo);
         voiceClient.getEventBus().register(voiceClient, source);
         return source;
     }
 
-    private ClientAudioSource<StaticSourceInfo> createStaticSource() {
-        ClientAudioSource<StaticSourceInfo> source = new ClientStaticSource(voiceClient, config);
+    private ClientAudioSource<StaticSourceInfo> createStaticSource(@NotNull StaticSourceInfo sourceInfo) {
+        ClientAudioSource<StaticSourceInfo> source = new ClientStaticSource(voiceClient, config, sourceInfo);
         voiceClient.getEventBus().register(voiceClient, source);
         return source;
     }

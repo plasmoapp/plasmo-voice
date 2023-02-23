@@ -133,6 +133,7 @@ public final class VoiceAddonManager implements AddonManager {
                 );
             } catch (Exception e) {
                 LOGGER.error("Failed to load the addon {}: {}", addon.getId(), e.getMessage());
+                e.printStackTrace();
                 continue;
             }
 

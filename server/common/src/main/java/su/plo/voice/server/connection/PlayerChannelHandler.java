@@ -51,7 +51,8 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         SemanticVersion serverVersion = SemanticVersion.parse(voiceServer.getVersion());
         SemanticVersion clientVersion = SemanticVersion.parse(packet.getVersion());
 
-        if ((!serverVersion.isRelease() && !serverVersion.string().equals(clientVersion.string())) || // alpha check
+        if (
+                //(!serverVersion.isRelease() && !serverVersion.string().equals(clientVersion.string())) || // alpha check
                 clientVersion.major() != serverVersion.major()
         ) {
             ServerVersionUtil.suggestSupportedVersion(player, serverVersion, packet.getMinecraftVersion());
