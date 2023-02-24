@@ -1,11 +1,10 @@
 dependencies {
-    compileOnly(project(":api:common"))
-
-    implementation(project(":protocol"))
+    api(project(":api:common"))
 
     compileOnly(rootProject.libs.netty)
-    implementation(rootProject.libs.config)
-    implementation(rootProject.libs.opus)
+
+    api(rootProject.libs.config)
+    api(rootProject.libs.opus)
 
     testImplementation(project(":api:common"))
 }

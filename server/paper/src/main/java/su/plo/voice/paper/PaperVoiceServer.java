@@ -28,6 +28,8 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
     private PaperServerServiceChannelHandler serviceChannel;
 
     public PaperVoiceServer(@NotNull JavaPlugin loader) {
+        super(ModrinthLoader.PAPER);
+
         this.loader = loader;
         this.minecraftServerLib = new PaperServerLib(loader, this::getLanguages);
     }
@@ -85,11 +87,6 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
     @Override
     protected File addonsFolder() {
         return new File(modsFolder(), "PlasmoVoice/addons");
-    }
-
-    @Override
-    protected ModrinthLoader getLoader() {
-        return ModrinthLoader.PAPER;
     }
 
     @Override

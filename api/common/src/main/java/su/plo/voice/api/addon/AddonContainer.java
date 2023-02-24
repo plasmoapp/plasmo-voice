@@ -2,7 +2,6 @@ package su.plo.voice.api.addon;
 
 import su.plo.voice.api.addon.annotation.Addon;
 
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.regex.Pattern;
@@ -68,13 +67,6 @@ public interface AddonContainer {
      * @return the addon's main class
      */
     Class<?> getMainClass();
-
-    /**
-     * Returns the addon's path
-     *
-     * @return the addon's path
-     */
-    Path getPath();
 
     /**
      * Returns the addon instance

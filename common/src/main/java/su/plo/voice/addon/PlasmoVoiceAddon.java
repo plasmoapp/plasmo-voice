@@ -9,7 +9,6 @@ import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.AddonDependency;
 import su.plo.voice.api.addon.AddonScope;
 
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
@@ -53,11 +52,6 @@ public final class PlasmoVoiceAddon implements AddonContainer {
     @Override
     public Class<?> getMainClass() {
         return BaseVoice.class;
-    }
-
-    @Override
-    public Path getPath() {
-        return null;
     }
 
     @Override

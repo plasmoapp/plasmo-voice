@@ -26,8 +26,6 @@ public final class VoiceAddon implements AddonContainer {
     @Getter
     private final List<AddonDependency> dependencies;
     @Getter
-    private final Path path;
-    @Getter
     private final Class<?> mainClass;
 
     private @Nullable Object object;
@@ -38,7 +36,6 @@ public final class VoiceAddon implements AddonContainer {
                       @NonNull String version,
                       @NonNull List<String> authors,
                       @NonNull List<AddonDependency> dependencies,
-                      @NonNull Path path,
                       @NonNull Class<?> mainClass) {
         this.id = id;
         this.name = name;
@@ -46,7 +43,6 @@ public final class VoiceAddon implements AddonContainer {
         this.version = version;
         this.authors = authors;
         this.dependencies = dependencies;
-        this.path = path;
         this.mainClass = mainClass;
     }
 

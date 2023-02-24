@@ -11,6 +11,17 @@ import java.util.Optional;
 public interface AddonManager {
 
     /**
+     * Gets the addon manager instance
+     * <br/>
+     * Use this method to get the addon manager instance for loading addons from Spigot/Forge/Fabric
+     *
+     * @return the addon manager instance
+     */
+    static AddonManager getInstance() {
+        return AddonManagerProvider.Companion.getAddonManager();
+    }
+
+    /**
      * Loads an addon
      *
      * @param addonObject object annotated with {@link Addon}

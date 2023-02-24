@@ -1,7 +1,9 @@
 package su.plo.voice;
 
 import com.google.common.collect.ImmutableList;
+import com.google.inject.Module;
 import lombok.Getter;
+import lombok.NonNull;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
@@ -25,16 +27,28 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class BaseVoice implements PlasmoVoice {
 
+    protected final AddonScope scope;
+    protected final ModrinthLoader loader;
+    @Getter
+    protected final Logger logger;
+
     protected final EventBus eventBus = new VoiceEventBus(this);
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
     protected final CodecManager codecs = new VoiceCodecManager();
 
-    protected final VoiceAddonManager addons = new VoiceAddonManager(this, getScope());
+    protected final VoiceAddonManager addons;
 
     @Getter
     protected ScheduledExecutorService backgroundExecutor;
 
-    protected BaseVoice() {
+    protected BaseVoice(@NonNull AddonScope scope,
+                        @NotNull ModrinthLoader loader,
+                        @NotNull Logger logger) {
+        this.scope = scope;
+        this.loader = loader;
+        this.logger = logger;
+        this.addons = new VoiceAddonManager(this, scope);
+
         encryption.register(new AesEncryptionSupplier());
 
         codecs.register(new OpusCodecSupplier());
@@ -52,7 +66,7 @@ public abstract class BaseVoice implements PlasmoVoice {
 
     protected void loadAddons() {
         addonsFolder().mkdirs();
-        addons.load(ImmutableList.of(modsFolder(), addonsFolder()));
+        addons.load(ImmutableList.of(addonsFolder()));
     }
 
     @Override
@@ -79,15 +93,11 @@ public abstract class BaseVoice implements PlasmoVoice {
         return getClass().getClassLoader().getResourceAsStream(name);
     }
 
-    public abstract Logger getLogger();
+    public abstract Module createInjectModule();
 
     protected abstract File modsFolder();
 
     protected File addonsFolder() {
         return new File(modsFolder(), "plasmovoice");
     }
-
-    protected abstract AddonScope getScope();
-
-    protected abstract ModrinthLoader getLoader();
 }

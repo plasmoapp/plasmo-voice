@@ -2,9 +2,11 @@ package su.plo.voice.proxy;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
 import lombok.Getter;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
@@ -32,6 +34,7 @@ import su.plo.voice.proxy.util.AddressUtil;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.config.VoiceServerLanguages;
+import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -48,8 +51,6 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
-    @Getter
-    protected final Logger logger = LogManager.getLogger("PlasmoVoiceProxy");
     @Getter
     protected final DebugLogger debugLogger = new DebugLogger(logger);
     @Getter
@@ -70,6 +71,14 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     protected VoiceServerLanguages languages;
     @Getter
     protected final ProxySourceManager sourceManager = new VoiceProxySourceManager(this);
+
+    protected BaseVoiceProxy(@NotNull ModrinthLoader loader) {
+        super(
+                AddonScope.PROXY,
+                loader,
+                LogManager.getLogger("PlasmoVoiceProxy")
+        );
+    }
 
     @Override
     protected void onInitialize() {
@@ -208,8 +217,13 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     }
 
     @Override
-    protected AddonScope getScope() {
-        return AddonScope.PROXY;
+    public Module createInjectModule() {
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(PlasmoVoiceProxy.class).toInstance(BaseVoiceProxy.this);
+            }
+        };
     }
 
     @Override

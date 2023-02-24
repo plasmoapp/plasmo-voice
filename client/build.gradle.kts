@@ -84,14 +84,15 @@ dependencies {
 
     includedProjects.forEach {
         implementation(project(it))
-        common(project(it))
+        common(project(it)) {
+            isTransitive = false
+        }
     }
 
-    implementation(rootProject.libs.config)
-    implementation(rootProject.libs.rnnoise)
-
+    common(rootProject.libs.opus)
     common(rootProject.libs.config)
     common(rootProject.libs.rnnoise)
+    common(rootProject.libs.guice)
 }
 
 tasks {
@@ -113,6 +114,10 @@ tasks {
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
+            exclude(dependency("org.jetbrains:annotations"))
+            exclude(dependency("com.google.guava:guava"))
+
+            exclude("META-INF/**")
         }
     }
 

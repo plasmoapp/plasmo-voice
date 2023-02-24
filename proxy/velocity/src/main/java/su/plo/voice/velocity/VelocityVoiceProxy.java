@@ -40,6 +40,8 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     @Inject
     public VelocityVoiceProxy(@NotNull ProxyServer proxyServer,
                               @DataDirectory Path dataDirectory) {
+        super(ModrinthLoader.VELOCITY);
+
         this.proxyServer = proxyServer;
         this.dataDirectory = dataDirectory;
         this.minecraftProxy = new VelocityProxyLib(proxyServer, eventBus, this::getLanguages);
@@ -89,10 +91,5 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     @Override
     protected File modsFolder() {
         return new File("plugins");
-    }
-
-    @Override
-    protected ModrinthLoader getLoader() {
-        return ModrinthLoader.VELOCITY;
     }
 }

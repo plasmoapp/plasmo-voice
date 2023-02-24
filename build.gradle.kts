@@ -46,12 +46,16 @@ subprojects {
     }
 
     dependencies {
-        compileOnly(rootProject.libs.annotations)
+        implementation(kotlin("stdlib-jdk8"))
+
         compileOnly(rootProject.libs.guava)
         compileOnly(rootProject.libs.gson)
-        compileOnly(rootProject.libs.log4j)
+        compileOnly(rootProject.libs.guice)
 
-        compileOnly(rootProject.libs.lombok)
+        api(rootProject.libs.log4j)
+        api(rootProject.libs.annotations)
+        api(rootProject.libs.lombok)
+
         annotationProcessor(rootProject.libs.lombok)
 
         testCompileOnly(rootProject.libs.junit.api)
@@ -72,9 +76,6 @@ subprojects {
 
     tasks {
         java {
-            withJavadocJar()
-            withSourcesJar()
-
             toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
 
             val os: OperatingSystem = DefaultNativePlatform.getCurrentOperatingSystem()

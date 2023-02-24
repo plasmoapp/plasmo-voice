@@ -1,15 +1,12 @@
 package su.plo.voice.client;
 
 import com.google.common.collect.Maps;
-import gg.essential.universal.UChat;
-import gg.essential.universal.UMinecraft;
-import gg.essential.universal.UScreen;
-import gg.essential.universal.wrappers.UPlayer;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
@@ -20,6 +17,7 @@ import su.plo.lib.api.chat.MinecraftTextHoverEvent;
 import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.chat.ClientChatUtil;
+import su.plo.lib.mod.client.chat.ClientLanguageSupplier;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.BaseVoice;
@@ -46,12 +44,10 @@ import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
-import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
 import su.plo.voice.client.audio.source.VoiceClientSourceManager;
-import su.plo.lib.mod.client.chat.ClientLanguageSupplier;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
@@ -63,6 +59,7 @@ import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
 import su.plo.voice.client.render.voice.SourceIconRenderer;
 import su.plo.voice.client.render.voice.VoiceDistanceVisualizer;
+import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
@@ -75,8 +72,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     public static final String CHANNEL_STRING = "plasmo:voice/v2";
 
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
-
-    protected final Logger logger = LogManager.getLogger("PlasmoVoiceClient");
 
     @Getter
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
@@ -106,15 +101,24 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     protected VoiceSettingsScreen settingsScreen;
 
-    protected BaseVoiceClient() {
-        // JavaX input
-        getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
+    protected BaseVoiceClient(@NotNull ModrinthLoader loader) {
+        super(
+                AddonScope.CLIENT,
+                loader,
+                LogManager.getLogger("PlasmoVoiceClient")
+        );
     }
+
+
+//    protected BaseVoiceClient() {
+//        // JavaX input
+//        getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
+//    }
 
     @EventSubscribe
     public void onUdpConnected(@NotNull UdpClientConnectedEvent event) {
         try {
-            ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), getLoader())
+            ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
                     .ifPresent(version -> {
                         ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
                                 MinecraftTextComponent.translatable(
@@ -225,13 +229,13 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     @Override
-    public Logger getLogger() {
-        return logger;
-    }
-
-    @Override
-    protected AddonScope getScope() {
-        return AddonScope.CLIENT;
+    public Module createInjectModule() {
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(PlasmoVoiceClient.class).toInstance(BaseVoiceClient.this);
+            }
+        };
     }
 
     @Override

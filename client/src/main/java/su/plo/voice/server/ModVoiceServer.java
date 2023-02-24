@@ -63,11 +63,17 @@ public final class ModVoiceServer
     //$$ private final EventNetworkChannel channel;
     //$$ private final EventNetworkChannel serviceChannel;
     //$$
-    //$$ public ModVoiceServer(@NotNull EventNetworkChannel channel, @NotNull EventNetworkChannel serviceChannel) {
+    //$$ public ModVoiceServer(@NotNull ModrinthLoader loader, @NotNull EventNetworkChannel channel, @NotNull EventNetworkChannel serviceChannel) {
+    //$$     super(loader);
     //$$     this.channel = channel;
     //$$     this.serviceChannel = serviceChannel;
     //$$ }
+    //#else
+    public ModVoiceServer(@NotNull ModrinthLoader loader) {
+        super(loader);
+    }
     //#endif
+
 
     private void onInitialize(MinecraftServer server) {
         this.server = server;
@@ -145,11 +151,6 @@ public final class ModVoiceServer
     }
 
     @Override
-    protected ModrinthLoader getLoader() {
-        return ModrinthLoader.FABRIC;
-    }
-
-    @Override
     protected PermissionSupplier createPermissionSupplier() {
         return new PermissionSupplier() {
             @Override
@@ -184,11 +185,6 @@ public final class ModVoiceServer
     //$$ @Override
     //$$ public @NotNull String getVersion() {
     //$$     return ModList.get().getModFileById("plasmovoice").versionString();
-    //$$ }
-    //$$
-    //$$ @Override
-    //$$ protected ModrinthLoader getLoader() {
-    //$$     return ModrinthLoader.FORGE;
     //$$ }
     //$$
     //$$ @Override

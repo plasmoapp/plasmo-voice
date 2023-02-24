@@ -2,17 +2,16 @@ package su.plo.voice.addon;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.google.common.graph.GraphBuilder;
-import com.google.common.graph.MutableGraph;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
-import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.addon.AddonDependency;
-import su.plo.voice.api.addon.AddonManager;
-import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.addon.*;
+import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.addon.annotation.processor.JsonAddon;
 
 import java.io.BufferedInputStream;
@@ -43,16 +42,48 @@ public final class VoiceAddonManager implements AddonManager {
     private final Map<Object, AddonContainer> addonByInstance = Maps.newHashMap();
     private final Map<String, AddonContainer> addons = Maps.newHashMap();
 
-    private final MutableGraph<AddonContainer> dependencyGraph = GraphBuilder.directed().build();
-
-    public VoiceAddonManager(BaseVoice voice, AddonScope scope) {
+    public VoiceAddonManager(@NotNull BaseVoice voice,
+                             @NotNull AddonScope scope) {
         this.voice = voice;
         this.scope = scope;
+
+        AddonManagerProvider.Companion.setAddonManager(this);
     }
 
     @Override
     public void load(@NotNull Object addonObject) {
+        Class<?> addonClass = addonObject.getClass();
+        if (!addonClass.isAnnotationPresent(Addon.class)) {
+            throw new IllegalArgumentException("Addon object must be annotated with @Addon");
+        }
 
+        Addon addon = addonClass.getAnnotation(Addon.class);
+
+        VoiceAddon addonContainer = new VoiceAddon(
+                addon.id(),
+                Strings.emptyToNull(addon.name()) == null
+                        ? addon.id()
+                        : addon.name(),
+                addon.scope(),
+                addon.version(),
+                Lists.newArrayList(addon.authors()),
+                Arrays.stream(addon.dependencies())
+                        .map(dependency -> new AddonDependency(dependency.id(), dependency.optional()))
+                        .collect(Collectors.toList()),
+                addonClass
+        );
+
+        for (AddonDependency dependency : addonContainer.getDependencies()) {
+            if (dependency.isOptional()) continue;
+
+            if (!this.addons.containsKey(dependency.getId())) {
+                LOGGER.error("Addon \"{}\" is missing dependency \"{}\"", addonContainer.getId(), dependency.getId());
+                return;
+            }
+        }
+        addonContainer.setInstance(addonObject);
+
+        loadAddon(addonContainer);
     }
 
     @Override
@@ -132,24 +163,14 @@ public final class VoiceAddonManager implements AddonManager {
             }
 
             try {
-                loadAddon(addon);
-                LOGGER.info(
-                        "Addon {} v{} by {} loaded",
-                        addon.getId(),
-                        addon.getVersion(),
-                        String.join(", ", addon.getAuthors())
-                );
+                initializeAddon(addon);
             } catch (Exception e) {
                 LOGGER.error("Failed to load the addon {}: {}", addon.getId(), e.getMessage());
                 e.printStackTrace();
                 continue;
             }
 
-            Object addonInstance = addon.getInstance().get();
-            this.addons.put(addon.getId(), addon);
-            this.addonByInstance.put(addonInstance, addon);
-
-            voice.getEventBus().register(addonInstance, addonInstance);
+            loadAddon(addon);
         }
     }
 
@@ -173,7 +194,6 @@ public final class VoiceAddonManager implements AddonManager {
                 jsonAddon.getDependencies() == null
                         ? Collections.emptyList()
                         : jsonAddon.getDependencies(),
-                addonPath,
                 mainClass
         );
     }
@@ -198,8 +218,28 @@ public final class VoiceAddonManager implements AddonManager {
         return ImmutableList.of();
     }
 
-    private void loadAddon(@NotNull AddonContainer addon) throws Exception {
+    private void initializeAddon(@NotNull AddonContainer addon) throws Exception {
         Object instance = addon.getMainClass().getDeclaredConstructor().newInstance();
         ((VoiceAddon) addon).setInstance(instance);
+    }
+
+    private void loadAddon(@NotNull AddonContainer addon) {
+        Object addonInstance = addon.getInstance().get();
+
+        // inject guice module
+        Injector injector = Guice.createInjector(voice.createInjectModule());
+        injector.injectMembers(addonInstance);
+
+        this.addons.put(addon.getId(), addon);
+        this.addonByInstance.put(addonInstance, addon);
+
+        voice.getEventBus().register(addonInstance, addonInstance);
+
+        LOGGER.info(
+                "Addon {} v{} by {} loaded",
+                addon.getId(),
+                addon.getVersion(),
+                String.join(", ", addon.getAuthors())
+        );
     }
 }

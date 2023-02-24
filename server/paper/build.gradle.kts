@@ -7,15 +7,27 @@ group = "$mavenGroup.paper"
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:${paperVersion}")
 
-    implementation(project(":api:common"))
-    implementation(project(":api:server"))
-    implementation(project(":api:server-common"))
-
     implementation(project(":server:common"))
-    implementation(project(":server-common"))
-    implementation(project(":common"))
 
-    implementation(project(":protocol"))
+    // shadow projects
+    listOf(
+        project(":api:common"),
+        project(":api:server"),
+        project(":api:server-common"),
+        project(":server:common"),
+        project(":server-common"),
+        project(":common"),
+        project(":protocol")
+    ).forEach {
+        shadow(it) {
+            isTransitive = false
+        }
+    }
+    // shadow external deps
+    shadow(rootProject.libs.guice)
+    shadow(rootProject.libs.opus)
+    shadow(rootProject.libs.config)
+    shadow(kotlin("stdlib-jdk8"))
 }
 
 tasks {
@@ -30,6 +42,8 @@ tasks {
     }
 
     shadowJar {
+        configurations = listOf(project.configurations.shadow.get())
+
         archiveBaseName.set("PlasmoVoice-Paper")
         archiveAppendix.set("")
         archiveClassifier.set("")
@@ -37,9 +51,12 @@ tasks {
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
+            exclude(dependency("org.jetbrains:annotations"))
+            exclude(dependency("com.google.guava:guava"))
 
             exclude("su/plo/opus/*")
             exclude("natives/opus/**/*")
+            exclude("META-INF/**")
         }
     }
 

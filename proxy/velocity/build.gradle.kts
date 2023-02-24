@@ -17,17 +17,27 @@ dependencies {
     compileOnly("com.velocitypowered:velocity-api:$velocityVersion")
     annotationProcessor("com.velocitypowered:velocity-api:$velocityVersion")
 
-    implementation(project(":api:common"))
-    implementation(project(":api:server-common"))
-    implementation(project(":api:proxy"))
-    
-    implementation(project(":proxy:common"))
-    implementation(project(":server-common"))
-    implementation(project(":common"))
-
-    implementation(project(":protocol"))
-
+    api(project(":proxy:common"))
     compileOnly(rootProject.libs.netty)
+
+    // shadow projects
+    listOf(
+        project(":api:common"),
+        project(":api:proxy"),
+        project(":api:server-common"),
+        project(":proxy:common"),
+        project(":server-common"),
+        project(":common"),
+        project(":protocol")
+    ).forEach {
+        shadow(it) {
+            isTransitive = false
+        }
+    }
+    // shadow external deps
+    shadow(rootProject.libs.opus)
+    shadow(rootProject.libs.config)
+    shadow(kotlin("stdlib-jdk8"))
 }
 
 val templateSource = file("src/main/templates")
@@ -69,6 +79,8 @@ rootProject.idea {
 
 tasks {
     shadowJar {
+        configurations = listOf(project.configurations.shadow.get())
+
         archiveBaseName.set("PlasmoVoice-Velocity")
         archiveAppendix.set("")
         archiveClassifier.set("")
@@ -76,9 +88,12 @@ tasks {
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
+            exclude(dependency("org.jetbrains:annotations"))
+            exclude(dependency("com.google.guava:guava"))
 
             exclude("su/plo/opus/*")
             exclude("natives/opus/**/*")
+            exclude("META-INF/**")
         }
     }
 

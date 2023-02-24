@@ -22,3 +22,9 @@ description="A proximity voice chat mod with audio positioning and lots of featu
     versionRange="[1.19.2,)"
     ordering="NONE"
     side="BOTH"
+[[dependencies.plasmovoice]]
+    modId="kotlinforforge"
+    mandatory=true
+    versionRange="[3,)"
+    ordering="NONE"
+    side="BOTH"

@@ -2,14 +2,11 @@ package su.plo.voice.server;
 
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import com.google.inject.AbstractModule;
+import com.google.inject.Module;
 import lombok.Getter;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.config.Configurator;
-import org.apache.logging.log4j.core.config.LoggerConfig;
+import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.lib.api.server.command.MinecraftCommand;
@@ -51,6 +48,7 @@ import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.server.player.VoiceServerPlayerManager;
 import su.plo.voice.server.socket.NettyUdpServer;
+import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
@@ -68,8 +66,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
-    @Getter
-    protected final Logger logger = LogManager.getLogger("PlasmoVoiceServer");
     @Getter
     protected final DebugLogger debugLogger = new DebugLogger(logger);
     @Getter
@@ -102,11 +98,19 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Getter
     protected VoiceServerLanguages languages;
 
+    protected BaseVoiceServer(@NotNull ModrinthLoader loader) {
+        super(
+                AddonScope.SERVER,
+                loader,
+                LogManager.getLogger("PlasmoVoiceServer")
+        );
+    }
+
     @Override
     protected void onInitialize() {
         // check for updates
         try {
-            ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), getLoader())
+            ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), loader)
                     .ifPresent(version -> logger.warn(
                             "New version available {}: {}",
                             version.version(),
@@ -322,13 +326,18 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     @Override
-    protected AddonScope getScope() {
-        return AddonScope.SERVER;
+    public Optional<UdpServer> getUdpServer() {
+        return Optional.ofNullable(udpServer);
     }
 
     @Override
-    public Optional<UdpServer> getUdpServer() {
-        return Optional.ofNullable(udpServer);
+    public Module createInjectModule() {
+        return new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(PlasmoVoiceServer.class).toInstance(BaseVoiceServer.this);
+            }
+        };
     }
 
     protected abstract PermissionSupplier createPermissionSupplier();

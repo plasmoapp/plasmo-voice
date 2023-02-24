@@ -1,6 +1,7 @@
 package su.plo.voice;
 
 import su.plo.voice.server.ModVoiceServer;
+import su.plo.voice.util.version.ModrinthLoader;
 
 // todo legacy forge?
 //#if FABRIC
@@ -57,7 +58,7 @@ public final class ModVoice
     //$$             NetworkRegistry.ACCEPTVANILLA::equals
     //$$     );
     //$$
-    //$$     ModVoiceServer voiceServer = new ModVoiceServer(channel, serviceChannel);
+    //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE, channel, serviceChannel);
     //$$     MinecraftForge.EVENT_BUS.register(voiceServer);
     //$$ }
     //#endif
@@ -65,7 +66,7 @@ public final class ModVoice
     //#if FABRIC
     @Override
     public void onInitialize() {
-        ModVoiceServer voiceServer = new ModVoiceServer();
+        ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FABRIC);
         voiceServer.onInitialize();
     }
     //#endif

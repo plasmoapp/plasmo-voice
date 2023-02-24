@@ -75,6 +75,12 @@ public final class ModVoiceClient extends BaseVoiceClient
     private final ModClientChannelHandler handler = new ModClientChannelHandler(this);
 
     public ModVoiceClient() {
+        //#if FORGE
+        //$$ super(ModrinthLoader.FORGE);
+        //#else
+        super(ModrinthLoader.FABRIC);
+        //#endif
+
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
 
         // OpenAL input
@@ -140,11 +146,6 @@ public final class ModVoiceClient extends BaseVoiceClient
         checkNotNull(modContainer, "modContainer cannot be null");
         return modContainer.getMetadata().getVersion().getFriendlyString();
     }
-
-    @Override
-    protected ModrinthLoader getLoader() {
-        return ModrinthLoader.FABRIC;
-    }
     //#else
     //$$ public void onInitialize(EventNetworkChannel channel) {
     //$$     channel.addListener(handler::receive);
@@ -178,11 +179,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ @Override
     //$$ public @NotNull String getVersion() {
     //$$     return ModList.get().getModFileById("plasmovoice").versionString();
-    //$$ }
-    //$$
-    //$$ @Override
-    //$$ protected ModrinthLoader getLoader() {
-    //$$     return ModrinthLoader.FORGE;
     //$$ }
     //#endif
 }
