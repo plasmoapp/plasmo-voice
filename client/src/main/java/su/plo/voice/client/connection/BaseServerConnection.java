@@ -159,7 +159,12 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         if (event.isCancelled()) return;
 
 //        LogManager.getLogger().info("Channel packet received {}", packet);
-        packet.handle(this);
+        try {
+            packet.handle(this);
+        } catch (Exception e) {
+            LOGGER.error("Failed to handle packet: {}", e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     @Override
