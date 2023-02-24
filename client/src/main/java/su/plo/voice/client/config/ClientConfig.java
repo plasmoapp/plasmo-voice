@@ -287,7 +287,7 @@ public final class ClientConfig {
         public static class SourceLineVolumes implements SerializableConfigEntry {
 
             private Map<String, DoubleConfigEntry> volumeByLineName = Maps.newHashMap();
-            private Map<String, ConfigEntry<Boolean>> muteByLineName = Maps.newHashMap();
+            private Map<String, BooleanConfigEntry> muteByLineName = Maps.newHashMap();
 
             public SourceLineVolumes() {
             }
@@ -307,10 +307,10 @@ public final class ClientConfig {
                 getMute(lineName).set(muted);
             }
 
-            public synchronized ConfigEntry<Boolean> getMute(@NotNull String lineName) {
+            public synchronized BooleanConfigEntry getMute(@NotNull String lineName) {
                 return muteByLineName.computeIfAbsent(
                         lineName,
-                        (c) -> new ConfigEntry<>(false)
+                        (c) -> new BooleanConfigEntry(false)
                 );
             }
 

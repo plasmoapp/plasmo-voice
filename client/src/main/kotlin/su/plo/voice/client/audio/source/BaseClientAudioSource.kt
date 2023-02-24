@@ -6,6 +6,7 @@ import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
 import su.plo.voice.api.audio.codec.AudioDecoder
 import su.plo.voice.api.audio.codec.CodecException
@@ -46,33 +47,36 @@ abstract class BaseClientAudioSource<T> constructor(
     protected var sourceInfo: T
 ) : ClientAudioSource<T> where T : SourceInfo {
 
-    protected val executor = Executors.newSingleThreadScheduledExecutor()
+    private val executor = Executors.newSingleThreadScheduledExecutor()
 
-    protected val playerPosition = FloatArray(3)
-    protected val position = FloatArray(3)
-    protected val lookAngle = FloatArray(3)
+    private val playerPosition = FloatArray(3)
+    private val position = FloatArray(3)
+    private val lookAngle = FloatArray(3)
 
 
     override var sourceGroup: SourceGroup = createSourceGroup(sourceInfo)
 
-    protected var lineVolume: DoubleConfigEntry
-    protected var sourceVolume: DoubleConfigEntry
+    private var lineVolume: DoubleConfigEntry
+    private var lineMute: BooleanConfigEntry
+    open var sourceVolume: DoubleConfigEntry = config.voice
+        .volumes
+        .getVolume("source_${sourceInfo.id}")
 
-    protected var encryption: Encryption? = null
-    protected var decoder: AudioDecoder? = null
+    private var encryption: Encryption? = null
+    private var decoder: AudioDecoder? = null
 
-    protected var endRequest: ScheduledFuture<*>? = null
+    private var endRequest: ScheduledFuture<*>? = null
 
     override var closeTimeoutMs: Long = 500
 
-    protected var lastSequenceNumbers: MutableMap<UUID, Long> = HashMap()
-    protected var lastActivation = 0L
-    protected var lastOcclusion = -1.0
+    private var lastSequenceNumbers: MutableMap<UUID, Long> = HashMap()
+    private var lastActivation = 0L
+    private var lastOcclusion = -1.0
 
-    protected val closed = AtomicBoolean(false)
-    protected val resetted = AtomicBoolean(false)
-    protected val activated = AtomicBoolean(false)
-    protected val canHear = AtomicBoolean(false)
+    private val closed = AtomicBoolean(false)
+    private val resetted = AtomicBoolean(false)
+    private val activated = AtomicBoolean(false)
+    private val canHear = AtomicBoolean(false)
 
     init {
         val serverInfo = voiceClient.serverInfo
@@ -91,8 +95,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
         // initialize volumes
         lineVolume = getLineVolume(sourceInfo)
-        sourceVolume = getSourceVolume(sourceInfo)
-
+        lineMute = getLineMute(sourceInfo)
         LOGGER.info("Source {} initialized", sourceInfo)
     }
 
@@ -137,6 +140,7 @@ abstract class BaseClientAudioSource<T> constructor(
         // initialize volumes
         if (sourceInfo.lineId != this.sourceInfo.lineId) {
             lineVolume = getLineVolume(sourceInfo)
+            lineMute = getLineMute(sourceInfo)
             LOGGER.info("Update source line for {}", sourceInfo)
         }
 
@@ -146,12 +150,12 @@ abstract class BaseClientAudioSource<T> constructor(
     }
 
     override fun process(packet: SourceAudioPacket) {
-        if (isClosed()) return
+        if (isClosed() || lineMute.value()) return
         executor.execute { processAudioPacket(packet) }
     }
 
     override fun process(packet: SourceAudioEndPacket) {
-        if (isClosed()) return
+        if (isClosed() || lineMute.value()) return
 
         executor.execute { processAudioEndPacket(packet) }
         endRequest?.cancel(false)
@@ -448,12 +452,14 @@ abstract class BaseClientAudioSource<T> constructor(
             .getVolume(sourceLine.name)
     }
 
-    private fun getSourceVolume(sourceInfo: T): DoubleConfigEntry {
+    private fun getLineMute(sourceInfo: T): BooleanConfigEntry {
+        val sourceLine = voiceClient.sourceLineManager.getLineById(sourceInfo.lineId)
+            .orElseThrow { IllegalStateException("Source line not found") }
+
         return config.voice
             .volumes
-            .getVolume("source_" + sourceInfo.id.toString())
+            .getMute(sourceLine.name)
     }
-
     private fun isStereo(sourceInfo: SourceInfo): Boolean {
         return sourceInfo.isStereo && !config.advanced.stereoSourcesToMono.value()
     }
