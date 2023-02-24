@@ -144,7 +144,9 @@ public final class AlOutputDevice
             synchronized (this) {
                 EXTThreadLocalContext.alcSetThreadContext(0L);
 
-                ALC11.alcDestroyContext(contextPointer);
+                if (contextPointer != 0L) {
+                    ALC11.alcDestroyContext(contextPointer);
+                }
                 if (devicePointer != 0L) {
                     ALC11.alcCloseDevice(devicePointer);
                 }
