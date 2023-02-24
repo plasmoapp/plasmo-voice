@@ -44,10 +44,12 @@ public final class VoiceServerLanguages implements ServerLanguages {
                 }
             }
 
-            VoiceServerLanguage defaultLanguage = languages.get(defaultLanguageName);
-            if (defaultLanguage == null && languages.size() > 0) {
-                defaultLanguage = languages.get(languages.keySet().iterator().next());
-            }
+            if (languages.size() == 0) return;
+
+            final VoiceServerLanguage defaultLanguage = languages.getOrDefault(
+                    defaultLanguageName,
+                    languages.get(languages.keySet().iterator().next())
+            );
 
             // load from languagesFolder if not found in list and use default language as defaults
             languagesFolder.mkdirs();
@@ -74,11 +76,16 @@ public final class VoiceServerLanguages implements ServerLanguages {
                 saveLanguage(languageFile, entry.getValue());
             }
 
-            // merge all languages with default language
+            // merge languages
             for (Map.Entry<String, VoiceServerLanguage> entry : languages.entrySet()) {
                 VoiceServerLanguage language = this.languages.computeIfAbsent(entry.getKey(), (key) -> entry.getValue());
                 language.merge(entry.getValue());
             }
+
+            this.languages.forEach((languageName, language) -> {
+                if (languages.containsKey(languageName)) return;
+                language.merge(defaultLanguage);
+            });
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load languages", e);
         }
