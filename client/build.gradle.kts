@@ -117,7 +117,7 @@ tasks {
             exclude(dependency("org.jetbrains:annotations"))
             exclude(dependency("com.google.guava:guava"))
 
-            exclude("META-INF/**")
+            exclude("README.md")
         }
     }
 
