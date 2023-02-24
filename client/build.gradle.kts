@@ -92,7 +92,12 @@ dependencies {
     common(rootProject.libs.opus)
     common(rootProject.libs.config)
     common(rootProject.libs.rnnoise)
-    common(rootProject.libs.guice)
+
+    if (platform.isForge) {
+        common(rootProject.libs.guice)
+    } else {
+        "include"(rootProject.libs.guice)
+    }
 }
 
 tasks {
@@ -115,7 +120,11 @@ tasks {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
             exclude(dependency("org.jetbrains:annotations"))
-            exclude(dependency("com.google.guava:guava"))
+            exclude(dependency("com.google.guava:.*"))
+            exclude(dependency("com.google.code.findbugs:.*"))
+            exclude(dependency("com.google.errorprone:.*"))
+            exclude(dependency("com.google.j2objc:.*"))
+            exclude(dependency("org.checkerframework:.*"))
 
             exclude("README.md")
         }
