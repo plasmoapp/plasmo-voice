@@ -229,7 +229,7 @@ public final class SourceIconRenderer {
         UGraphics.depthMask(true);
 
         // LIGHT
-        RenderUtil.turnOffLightLayer();
+//        RenderUtil.turnOffLightLayer();
 
         UGraphics.enableDepth();
         UGraphics.depthFunc(515);
@@ -370,7 +370,7 @@ public final class SourceIconRenderer {
         UGraphics.depthMask(true);
 
         // LIGHT
-        RenderUtil.turnOffLightLayer();
+//        RenderUtil.turnOffLightLayer();
 
         UGraphics.enableDepth();
         UGraphics.depthFunc(515);
