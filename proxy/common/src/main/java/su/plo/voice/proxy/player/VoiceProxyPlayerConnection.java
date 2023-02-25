@@ -36,7 +36,7 @@ public final class VoiceProxyPlayerConnection
                 .isPresent();
     }
 
-    public @NotNull VoicePlayerInfo getInfo() {
+    public @NotNull VoicePlayerInfo createPlayerInfo() {
         checkVoiceChat();
 
         return new VoicePlayerInfo(

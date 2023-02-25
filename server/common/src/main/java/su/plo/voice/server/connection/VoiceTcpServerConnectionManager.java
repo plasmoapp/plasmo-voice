@@ -143,7 +143,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
                     voiceServer.getUdpConnectionManager().getConnections()
                             .stream()
                             .filter(connection -> receiver.getInstance().canSee(connection.getPlayer().getInstance()))
-                            .map(connection -> connection.getPlayer().getInfo())
+                            .map(connection -> connection.getPlayer().createPlayerInfo())
                             .collect(Collectors.toList())
             ));
         }
@@ -153,7 +153,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
     public void broadcastPlayerInfoUpdate(@NotNull VoiceServerPlayer player) {
         synchronized (playerStateLock) {
             broadcast(new PlayerInfoUpdatePacket(
-                    player.getInfo()
+                    player.createPlayerInfo()
             ), (player1) -> player1.getInstance().canSee(player.getInstance()));
         }
     }

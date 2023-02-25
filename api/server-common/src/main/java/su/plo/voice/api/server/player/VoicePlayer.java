@@ -15,19 +15,34 @@ import java.util.UUID;
 public interface VoicePlayer {
 
     /**
-     * Sends a packet to the player via minecraft channel
+     * Sends a packet to the player via plasmo voice minecraft channel
      */
     void sendPacket(Packet<?> packet);
 
+    /**
+     * @return true if player has a voice chat
+     */
     boolean hasVoiceChat();
 
+    /**
+     * @return detected player's mod loader
+     */
     Optional<PlayerModLoader> getModLoader();
 
-    VoicePlayerInfo getInfo();
-
+    /**
+     * @return true if player has disabled the voice chat
+     */
     boolean isVoiceDisabled();
 
+    /**
+     * @return true if player has muted the microphone in voice chat
+     * */
     boolean isMicrophoneMuted();
+
+    /**
+     * @return a new instance of {@link VoicePlayerInfo}
+     */
+    VoicePlayerInfo createPlayerInfo();
 
     /**
      * Gets the activation's distance by its id
@@ -37,13 +52,32 @@ public interface VoicePlayer {
      */
     int getActivationDistanceById(@NotNull UUID activationId);
 
+    /**
+     * Visualizes sphere distance if client has enabled this feature
+     *
+     * @param radius sphere radius
+     * @param hexColor int hex color (e.g. 0x00a000)
+     */
     void visualizeDistance(int radius, int hexColor);
 
+    /**
+     * Visualizes sphere distance with color 0x00a000 if client has enabled this feature
+     *
+     * @param radius sphere radius
+     */
     default void visualizeDistance(int radius) {
         visualizeDistance(radius, 0x00a000);
     }
 
+    /**
+     * Gets the player's public key
+     * <br/>
+     * This key used for transfer AES key securely
+     */
     Optional<PublicKey> getPublicKey();
 
+    /**
+     * @return wrapped Minecraft's player object
+     */
     @NotNull MinecraftServerPlayer getInstance();
 }

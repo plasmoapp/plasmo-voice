@@ -42,7 +42,7 @@ public final class VoiceServerPlayerEntity
     }
 
     @Override
-    public VoicePlayerInfo getInfo() {
+    public VoicePlayerInfo createPlayerInfo() {
         if (!hasVoiceChat()) throw new IllegalStateException("Player is not connected to UDP server");
 
         return new VoicePlayerInfo(

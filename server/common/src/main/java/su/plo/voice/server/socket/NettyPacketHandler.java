@@ -60,6 +60,6 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         voiceServer.getTcpConnectionManager().sendConfigInfo(player.get());
         voiceServer.getTcpConnectionManager().sendPlayerList(player.get());
 
-        voiceServer.getTcpConnectionManager().broadcast(new PlayerInfoUpdatePacket(player.get().getInfo()));
+        voiceServer.getTcpConnectionManager().broadcast(new PlayerInfoUpdatePacket(player.get().createPlayerInfo()));
     }
 }

@@ -57,7 +57,7 @@ public final class VoiceServerPlayerSource
                 stereo,
                 iconVisible,
                 angle,
-                player.getInfo()
+                player.createPlayerInfo()
         );
     }
 }
