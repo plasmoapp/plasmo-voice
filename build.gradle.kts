@@ -47,6 +47,8 @@ subprojects {
 
     dependencies {
         implementation(kotlin("stdlib-jdk8"))
+        implementation(rootProject.libs.kotlinx.coroutines)
+        implementation(rootProject.libs.kotlinx.json)
 
         compileOnly(rootProject.libs.guava)
         compileOnly(rootProject.libs.gson)

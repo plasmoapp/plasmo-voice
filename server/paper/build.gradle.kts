@@ -28,6 +28,8 @@ dependencies {
     shadow(rootProject.libs.opus)
     shadow(rootProject.libs.config)
     shadow(kotlin("stdlib-jdk8"))
+    shadow(rootProject.libs.kotlinx.coroutines)
+    shadow(rootProject.libs.kotlinx.json)
 }
 
 tasks {

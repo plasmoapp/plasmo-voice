@@ -15,6 +15,8 @@ rnnoise      = { module = "su.plo.rnnoise:rnnoise", version = "2.0.0" }
 netty        = { module = "io.netty:netty-all", version = "4.1.77.Final"}
 config       = { module = "su.plo.config:config", version = "1.0.0" }
 luckperms    = { module = "net.luckperms:api", version = "5.4" }
+kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.3.2"}
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.1"}
 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
