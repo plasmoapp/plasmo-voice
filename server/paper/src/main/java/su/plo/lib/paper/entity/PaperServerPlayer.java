@@ -40,6 +40,11 @@ public final class PaperServerPlayer extends PaperServerEntity<Player> implement
     }
 
     @Override
+    public boolean isOnline() {
+        return instance.isOnline();
+    }
+
+    @Override
     public @NotNull MinecraftGameProfile getGameProfile() {
         return minecraftServer.getGameProfile(instance.getUniqueId())
                 .orElseThrow(() -> new IllegalStateException("Game profile not found"));

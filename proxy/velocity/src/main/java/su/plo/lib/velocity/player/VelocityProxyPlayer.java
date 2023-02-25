@@ -44,6 +44,11 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
     }
 
     @Override
+    public boolean isOnline() {
+        return instance.isActive();
+    }
+
+    @Override
     public @NotNull MinecraftGameProfile getGameProfile() {
         GameProfile gameProfile = instance.getGameProfile();
 

@@ -88,6 +88,11 @@ public final class ModServerPlayer
     }
 
     @Override
+    public boolean isOnline() {
+        return !instance.hasDisconnected();
+    }
+
+    @Override
     public @NotNull MinecraftGameProfile getGameProfile() {
         return minecraftServer.getGameProfile(instance.getUUID())
                 .orElseThrow(() -> new IllegalStateException("Game profile not found"));

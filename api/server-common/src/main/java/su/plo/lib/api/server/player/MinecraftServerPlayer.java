@@ -9,6 +9,8 @@ import java.util.UUID;
 
 public interface MinecraftServerPlayer extends MinecraftCommandSource {
 
+    boolean isOnline();
+
     @NotNull MinecraftGameProfile getGameProfile();
 
     @NotNull UUID getUUID();
