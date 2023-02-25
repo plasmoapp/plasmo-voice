@@ -5,9 +5,7 @@ import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 @Accessors(fluent = true)
 public abstract class MinecraftTextComponent {
@@ -35,8 +33,13 @@ public abstract class MinecraftTextComponent {
     }
 
 
-    public MinecraftTextComponent append(@NotNull MinecraftTextComponent text) {
-        siblings.add(text);
+    public MinecraftTextComponent append(@NotNull MinecraftTextComponent... components) {
+        Collections.addAll(siblings, components);
+        return this;
+    }
+
+    public MinecraftTextComponent append(@NotNull Collection<MinecraftTextComponent> components) {
+        siblings.addAll(components);
         return this;
     }
 
@@ -58,5 +61,12 @@ public abstract class MinecraftTextComponent {
     public MinecraftTextComponent hoverEvent(@Nullable MinecraftTextHoverEvent hoverEvent) {
         this.hoverEvent = hoverEvent;
         return this;
+    }
+
+    public MinecraftTextComponent mergeWith(@NotNull MinecraftTextComponent component) {
+        return withStyle(component.styles().toArray(new MinecraftTextStyle[0]))
+                .append(component.siblings())
+                .clickEvent(component.clickEvent())
+                .hoverEvent(component.hoverEvent());
     }
 }

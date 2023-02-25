@@ -26,7 +26,12 @@ public final class ClientTextConverter extends TranslatableTextConverter<Compone
 
         return languageSupplier.get()
                 .map((language) -> {
-                    MinecraftTranslatableText translatable = translateArguments(language, (MinecraftTranslatableText) text);
+                    MinecraftTextComponent translatedText = translateInner(language, text);
+
+                    if (!(translatedText instanceof MinecraftTranslatableText))
+                        return textConverter.convert(translatedText);
+
+                    MinecraftTranslatableText translatable = (MinecraftTranslatableText) translatedText;
 
                     if (!language.containsKey(translatable.getKey()))
                         return textConverter.convert(translatable);
