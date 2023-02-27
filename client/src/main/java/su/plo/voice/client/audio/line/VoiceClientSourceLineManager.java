@@ -70,6 +70,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
         for (index = 0; index < lines.size(); index++) {
             ClientSourceLine act = lines.get(index);
             if (line.getWeight() >= act.getWeight()) break;
+            // todo: compare by translated text if weight is equals
         }
 
         lines.add(index, line);

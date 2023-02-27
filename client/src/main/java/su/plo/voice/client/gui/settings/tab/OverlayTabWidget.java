@@ -6,6 +6,7 @@ import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
@@ -90,17 +91,25 @@ public final class OverlayTabWidget extends TabWidget {
     private void createOverlaySource(@NotNull ClientSourceLine sourceLine) {
         EnumConfigEntry<OverlaySourceState> configEntry = config.getOverlay().getSourceStates().getState(sourceLine);
 
-        GuiAbstractWidget widget;
         if (!sourceLine.hasPlayers()) {
-            widget = new OverlaySourceStateButton(
+            OverlaySourceStateButton widget = new OverlaySourceStateButton(
                     configEntry,
                     0,
                     0,
                     ELEMENT_WIDTH,
                     20
             );
+
+            addEntry(new OverlaySourceEntry<>(
+                    MinecraftTextComponent.translatable(sourceLine.getTranslation()),
+                    widget,
+                    configEntry,
+                    ImmutableList.of(),
+                    new ResourceLocation(sourceLine.getIcon()),
+                    null
+            ));
         } else {
-            widget = new DropDownWidget(
+            DropDownWidget widget = new DropDownWidget(
                     parent,
                     0,
                     0,
@@ -123,15 +132,16 @@ public final class OverlayTabWidget extends TabWidget {
                         }
                     }
             );
-        }
 
-        addEntry(new OverlaySourceEntry<>(
-                MinecraftTextComponent.translatable(sourceLine.getTranslation()),
-                widget,
-                configEntry,
-                ImmutableList.of(),
-                new ResourceLocation(sourceLine.getIcon())
-        ));
+            addEntry(new OverlaySourceEntry<>(
+                    MinecraftTextComponent.translatable(sourceLine.getTranslation()),
+                    widget,
+                    configEntry,
+                    ImmutableList.of(),
+                    new ResourceLocation(sourceLine.getIcon()),
+                    (button, element) -> element.setText(OVERLAY_DISPLAYS.get(0))
+            ));
+        }
     }
 
     private OptionEntry<DropDownWidget> createShowIcons() {
@@ -235,8 +245,9 @@ public final class OverlayTabWidget extends TabWidget {
                                   @NotNull W widget,
                                   @NotNull ConfigEntry<?> entry,
                                   @NotNull List<MinecraftTextComponent> tooltip,
-                                  @NotNull ResourceLocation iconLocation) {
-            super(text, widget, entry, tooltip, null);
+                                  @NotNull ResourceLocation iconLocation,
+                                  @Nullable OptionResetAction<W> resetAction) {
+            super(text, widget, entry, tooltip, resetAction);
 
             this.iconLocation = iconLocation;
         }

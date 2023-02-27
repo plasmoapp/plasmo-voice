@@ -6,7 +6,7 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import java.util.Collection;
 import java.util.UUID;
 
-public interface ServerPlayerMap {
+public interface ServerPlayersSet {
 
     void addPlayer(@NotNull VoicePlayer player);
 

@@ -98,7 +98,7 @@ public final class VoiceServerDirectSource
     }
 
     @Override
-    public @NotNull DirectSourceInfo getInfo() {
+    public @NotNull DirectSourceInfo getSourceInfo() {
         return new DirectSourceInfo(
                 addon.getId(),
                 id,
@@ -123,7 +123,7 @@ public final class VoiceServerDirectSource
         packet.setSourceState((byte) state.get());
 
         if (dirty.compareAndSet(true, false))
-            sendPacket(new SourceInfoPacket(getInfo()));
+            sendPacket(new SourceInfoPacket(getSourceInfo()));
 
         if (playersSupplier != null) {
             for (VoicePlayer player : playersSupplier.get()) {
@@ -162,6 +162,6 @@ public final class VoiceServerDirectSource
     }
 
     protected void updateSourceInfo() {
-        sendPacket(new SourceInfoPacket(getInfo()));
+        sendPacket(new SourceInfoPacket(getSourceInfo()));
     }
 }

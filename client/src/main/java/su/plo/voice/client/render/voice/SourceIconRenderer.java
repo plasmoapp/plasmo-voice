@@ -6,6 +6,7 @@ import gg.essential.universal.UMatrixStack;
 import gg.essential.universal.UMinecraft;
 import lombok.NonNull;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -25,14 +26,12 @@ import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.event.render.PlayerRenderEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.ModCamera;
+import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 
-//#if MC>=11700
-import net.minecraft.client.renderer.GameRenderer;
-//#endif
-
+import java.util.Collection;
 import java.util.Optional;
 
 public final class SourceIconRenderer {
@@ -56,16 +55,16 @@ public final class SourceIconRenderer {
         ) return;
 
         for (ClientAudioSource<?> source : voiceClient.getSourceManager().getSources()) {
-            if (!(source.getInfo() instanceof StaticSourceInfo)
-                    || !source.getInfo().isIconVisible()
+            if (!(source.getSourceInfo() instanceof StaticSourceInfo)
+                    || !source.getSourceInfo().isIconVisible()
                     || !source.isActivated()
             ) continue;
 
             Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
-                    .getLineById(source.getInfo().getLineId());
+                    .getLineById(source.getSourceInfo().getLineId());
             if (!sourceLine.isPresent()) return;
 
-            Pos3d sourcePosition = ((StaticSourceInfo) source.getInfo()).getPosition();
+            Pos3d sourcePosition = ((StaticSourceInfo) source.getSourceInfo()).getPosition();
 
             renderStatic(
                     event.getStack(),
@@ -106,8 +105,8 @@ public final class SourceIconRenderer {
         } else if (playerInfo.get().isVoiceDisabled()) { // client disabled voicechat
             iconLocation = "plasmovoice:textures/icons/headset_disabled.png";
         } else {
-            Optional<ClientAudioSource<?>> source = voiceClient.getSourceManager()
-                    .getSourceById(player.getUUID(), false);
+            Collection<ClientAudioSource<PlayerSourceInfo>> sources = voiceClient.getSourceManager()
+                    .getPlayerSources(player.getUUID());
 
             hasPercent = volumeAction.isShown(player);
             if (hasPercent) {
@@ -120,17 +119,27 @@ public final class SourceIconRenderer {
                 );
             }
 
-            if (!source.isPresent() ||
-                    !source.get().isActivated() ||
-                    !source.get().getInfo().isIconVisible()
-            ) return;
+            if (sources.isEmpty()) return;
 
-            Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
-                    .getLineById(source.get().getInfo().getLineId());
-            if (!sourceLine.isPresent()) return;
+            ClientSourceLine highestSourceLine = null;
+            for (ClientAudioSource<PlayerSourceInfo> source : sources) {
+                if (!source.isActivated() || !source.getSourceInfo().isIconVisible()) continue;
+
+                Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
+                        .getLineById(source.getSourceInfo().getLineId());
+                if (!sourceLine.isPresent()) continue;
+
+                if (highestSourceLine == null ||
+                        highestSourceLine.getWeight() < sourceLine.get().getWeight()
+                ) {
+                    highestSourceLine = sourceLine.get();
+                }
+            }
+
+            if (highestSourceLine == null) return;
 
             // speaking
-            iconLocation = sourceLine.get().getIcon();
+            iconLocation = highestSourceLine.getIcon();
         }
 
         renderEntity(
@@ -161,11 +170,11 @@ public final class SourceIconRenderer {
 
         if (!source.isPresent() ||
                 !source.get().isActivated() ||
-                !source.get().getInfo().isIconVisible()
+                !source.get().getSourceInfo().isIconVisible()
         ) return;
 
         Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
-                .getLineById(source.get().getInfo().getLineId());
+                .getLineById(source.get().getSourceInfo().getLineId());
         if (!sourceLine.isPresent()) return;
 
         // speaking

@@ -58,7 +58,7 @@ public final class SelfActivationInfo {
         UUID lastActivationId = lastPlayerActivationIds.get(player.getInstance().getUUID());
         if (lastActivationId == null) return;
 
-        if (sourceInfo == null) sourceInfo = source.getInfo();
+        if (sourceInfo == null) sourceInfo = source.getSourceInfo();
 
         player.sendPacket(new SelfSourceInfoPacket(new SelfSourceInfo(
                 sourceInfo,

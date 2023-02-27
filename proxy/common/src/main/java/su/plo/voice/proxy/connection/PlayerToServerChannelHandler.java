@@ -55,7 +55,7 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
         Optional<ServerAudioSource<?>> source = voiceProxy.getSourceManager().getSourceById(packet.getSourceId());
         if (!source.isPresent()) return;
 
-        player.sendPacket(new SourceInfoPacket(source.get().getInfo()));
+        player.sendPacket(new SourceInfoPacket(source.get().getSourceInfo()));
         throw new CancelForwardingException();
     }
 

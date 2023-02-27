@@ -5,27 +5,28 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.server.audio.line.ServerPlayerMap;
+import su.plo.voice.api.server.audio.line.ServerPlayersSet;
 import su.plo.voice.api.server.audio.line.ServerPlayersSourceLine;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
+import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerAddPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerRemovePacket;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayersListPacket;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @ToString(callSuper = true)
-public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine implements ServerPlayersSourceLine {
+public final class VoiceServerPlayersSourceLine
+        extends VoiceServerSourceLine
+        implements ServerPlayersSourceLine {
 
-    private final Map<UUID, ServerPlayerMap> playerMaps = Maps.newConcurrentMap();
+    private final Map<UUID, ServerPlayersSet> playersSets = Maps.newConcurrentMap();
 
     public VoiceServerPlayersSourceLine(@NotNull AddonContainer addon,
                                         @NotNull String name,
@@ -42,7 +43,7 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
                 translation,
                 icon,
                 weight,
-                getPlayerMap(player)
+                getPlayersSet(player)
                         .getPlayers()
                         .stream()
                         .map((linePlayer) -> linePlayer.getInstance().getGameProfile())
@@ -51,25 +52,85 @@ public final class VoiceServerPlayersSourceLine extends VoiceServerSourceLine im
     }
 
     @Override
-    public void setPlayerMap(@NotNull VoicePlayer player, @NotNull ServerPlayerMap playerMap) {
-        playerMaps.put(player.getInstance().getUUID(), playerMap);
+    public void setPlayersSet(@NotNull VoicePlayer player, @Nullable ServerPlayersSet playersSet) {
+        if (playersSet == null) {
+            playersSets.remove(player.getInstance().getUUID());
+            player.sendPacket(new SourceLinePlayersListPacket(id, Collections.emptyList()));
+            return;
+        }
+
+        playersSets.put(player.getInstance().getUUID(), playersSet);
     }
 
     @Override
-    public @NotNull ServerPlayerMap getPlayerMap(@NotNull VoicePlayer player) {
-        return playerMaps.computeIfAbsent(
+    public @NotNull ServerPlayersSet getPlayersSet(@NotNull VoicePlayer player) {
+        return playersSets.computeIfAbsent(
                 player.getInstance().getUUID(),
-                (playerId) -> new VoicePlayerMap(player)
+                (playerId) -> new VoicePlayersSet(player)
         );
+    }
+
+    @Override
+    public @NotNull ServerPlayersSet createBroadcastSet() {
+        return new VoiceBroadcastPlayersSet();
     }
 
     @EventSubscribe
     public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        playerMaps.remove(event.getPlayerId());
+        playersSets.remove(event.getPlayerId());
+    }
+
+    private class VoiceBroadcastPlayersSet implements ServerPlayersSet {
+
+        private final Set<VoicePlayer> players = Sets.newCopyOnWriteArraySet();
+
+        @Override
+        public void addPlayer(@NotNull VoicePlayer player) {
+            if (players.contains(player)) return;
+            broadcast(new SourceLinePlayerAddPacket(id, player.getInstance().getGameProfile()));
+            players.add(player);
+
+            player.sendPacket(new SourceLinePlayersListPacket(
+                    id,
+                    players.stream()
+                            .map(linePlayer -> linePlayer.getInstance().getGameProfile())
+                            .collect(Collectors.toList())
+                    ));
+        }
+
+        @Override
+        public boolean removePlayer(@NotNull UUID playerId) {
+            return players.stream()
+                    .filter((player) -> player.getInstance().getUUID().equals(playerId))
+                    .findFirst()
+                    .map((player) -> {
+                        broadcast(new SourceLinePlayerRemovePacket(id, playerId));
+                        players.remove(player);
+                        return true;
+                    })
+                    .orElse(false);
+        }
+
+        @Override
+        public void clearPlayers() {
+            players.forEach(player -> {
+                player.sendPacket(new SourceLinePlayersListPacket(id, Collections.emptyList()));
+            });
+            players.clear();
+        }
+
+        @Override
+        public Collection<VoicePlayer> getPlayers() {
+            return players;
+        }
+
+        private void broadcast(@NotNull Packet<?> packet) {
+            players.forEach(player -> player.sendPacket(packet));
+        }
     }
 
     @RequiredArgsConstructor
-    private class VoicePlayerMap implements ServerPlayerMap {
+    private class VoicePlayersSet implements ServerPlayersSet {
 
         private final VoicePlayer player;
         private final Set<VoicePlayer> players = Sets.newCopyOnWriteArraySet();

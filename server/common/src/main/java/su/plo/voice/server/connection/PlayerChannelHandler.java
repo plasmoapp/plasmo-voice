@@ -52,7 +52,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         SemanticVersion clientVersion = SemanticVersion.parse(packet.getVersion());
 
         if (
-                //(!serverVersion.isRelease() && !serverVersion.string().equals(clientVersion.string())) || // alpha check
+                (System.getProperty("plasmovoice.alpha.disableversioncheck") == null && !serverVersion.isRelease() && !serverVersion.string().equals(clientVersion.string())) || // alpha check
                 clientVersion.major() != serverVersion.major()
         ) {
             ServerVersionUtil.suggestSupportedVersion(player, serverVersion, packet.getMinecraftVersion());
@@ -103,7 +103,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         Optional<ServerAudioSource<?>> source = voiceServer.getSourceManager().getSourceById(packet.getSourceId());
         if (!source.isPresent()) return;
 
-        player.sendPacket(new SourceInfoPacket(source.get().getInfo()));
+        player.sendPacket(new SourceInfoPacket(source.get().getSourceInfo()));
     }
 
     @Override

@@ -27,6 +27,7 @@ if (platform.isForge) {
 loom.runs {
     getByName("client") {
         programArgs("--username", "GNOME__")
+        property("plasmovoice.alpha.disableversioncheck", "true")
         property("universalcraft.shader.legacy.debug", "true")
     }
 }

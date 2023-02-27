@@ -6,7 +6,7 @@ import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import java.util.Collection;
 import java.util.UUID;
 
-public interface ClientPlayerMap {
+public interface ClientPlayersSet {
 
     void addPlayer(@NotNull MinecraftGameProfile player);
 

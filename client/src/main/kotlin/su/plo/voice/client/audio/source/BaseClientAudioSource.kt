@@ -44,7 +44,7 @@ import kotlin.math.sqrt
 abstract class BaseClientAudioSource<T> constructor(
     protected val voiceClient: PlasmoVoiceClient,
     protected val config: ClientConfig,
-    protected var sourceInfo: T
+    final override var sourceInfo: T
 ) : ClientAudioSource<T> where T : SourceInfo {
 
     private val executor = Executors.newSingleThreadScheduledExecutor()
@@ -176,6 +176,7 @@ abstract class BaseClientAudioSource<T> constructor(
         sourceGroup.clear()
 
         voiceClient.eventBus.call(AudioSourceClosedEvent(this))
+        LOGGER.info("Source {} closed", sourceInfo)
     }
 
     override fun isActivated(): Boolean {
@@ -193,10 +194,6 @@ abstract class BaseClientAudioSource<T> constructor(
 
     override fun isClosed(): Boolean {
         return closed.get()
-    }
-
-    override fun getInfo(): T {
-        return sourceInfo
     }
 
     override fun canHear(): Boolean {

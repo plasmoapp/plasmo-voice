@@ -8,7 +8,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import java.util.*
 
-interface ClientAudioSource<S : SourceInfo?> : AudioSource<S> {
+interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
 
     var closeTimeoutMs: Long
     var sourceGroup: SourceGroup
