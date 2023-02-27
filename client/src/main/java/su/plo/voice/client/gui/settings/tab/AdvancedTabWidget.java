@@ -55,6 +55,7 @@ public final class AdvancedTabWidget extends TabWidget {
                 ""
         ));
         addEntry(createStereoToMonoSources());
+        addEntry(createPanning());
 
         addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.compressor")));
         addEntry(createIntSliderWidget(
@@ -91,6 +92,29 @@ public final class AdvancedTabWidget extends TabWidget {
                 toggleButton,
                 config.getAdvanced().getStereoSourcesToMono(),
                 GuiUtil.multiLineTooltip("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
+                (button, element) -> onUpdate.run()
+        );
+    }
+
+    private OptionEntry<ToggleButton> createPanning() {
+        Runnable onUpdate = () -> {
+            devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT)
+                    .forEach(OutputDevice::closeSources);
+        };
+
+        ToggleButton toggleButton = new ToggleButton(
+                config.getAdvanced().getPanning(),
+                0,
+                0,
+                ELEMENT_WIDTH,
+                20,
+                (toggled) -> onUpdate.run()
+        );
+
+        return new OptionEntry<>(
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.panning"),
+                toggleButton,
+                config.getAdvanced().getPanning(),
                 (button, element) -> onUpdate.run()
         );
     }

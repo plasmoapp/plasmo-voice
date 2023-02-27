@@ -120,31 +120,6 @@ class OverlayRenderer(
                 }
             }
 
-//            for (selfSource in voiceClient.sourceManager.selfSourceInfos) {
-//                val selfSourceInfo = selfSource.selfSourceInfo
-//                if (selfSourceInfo.sourceInfo.lineId != sourceLine.id) continue
-//
-////                val activated = voiceClient.activationManager
-////                    .getActivationById(selfSourceInfo.activationId)
-////                    .orElse(null)?.isActivated
-////                    ?: false
-//
-//                toRenderBySourceId[selfSourceInfo.playerId]?.apply {
-//                    activated = voiceClient.activationManager
-//                        .getActivationById(selfSourceInfo.activationId)
-//                        .orElse(null)?.isActivated
-//                        ?: false
-//                }
-//                // todo: WHEN_TALKING?
-////                ?: run {
-////                val sourceInfo = selfSourceInfo.sourceInfo
-////                if (sourceState == OverlaySourceState.WHEN_TALKING && sourceInfo is DirectSourceInfo) {
-////                    val player = sourceLine.players.find { it.id == sourceInfo.sender?.id } ?: return@run
-////                    renderPlayer(player, true)
-////                }
-////            }
-//            }
-
             for ((_, sourceInfo) in toRender) {
                 renderEntry(event.stack, sourceLine, position, renderedIndex++, sourceInfo)
             }

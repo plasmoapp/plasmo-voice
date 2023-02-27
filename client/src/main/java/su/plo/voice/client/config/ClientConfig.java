@@ -382,6 +382,9 @@ public final class ClientConfig {
 
         @ConfigField
         private BooleanConfigEntry stereoSourcesToMono = new BooleanConfigEntry(false);
+
+        @ConfigField
+        private BooleanConfigEntry panning = new BooleanConfigEntry(true);
     }
 
     @Config

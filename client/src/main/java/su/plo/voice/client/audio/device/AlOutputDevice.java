@@ -162,12 +162,6 @@ public final class AlOutputDevice
     }
 
     @Override
-    public void reload() throws DeviceException {
-        close();
-        open(format, params);
-    }
-
-    @Override
     public boolean isOpen() {
         return devicePointer != 0L;
     }

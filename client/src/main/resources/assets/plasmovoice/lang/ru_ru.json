@@ -125,6 +125,7 @@
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_5": "Когда эта опция включена, стерео источники будете конвертированы в",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_6": "обычные моно источники. Качество хуже, но у них будет",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "позиционирование.",
+    "gui.plasmovoice.advanced.panning": "Стерео позиционирование",
 
 
     "gui.plasmovoice.hotkeys": "Клавиши",

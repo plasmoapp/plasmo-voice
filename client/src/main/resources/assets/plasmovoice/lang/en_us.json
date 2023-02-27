@@ -129,6 +129,7 @@
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_5": "When this option is enabled, stereo sources are converted to the",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_6": "usual mono sources. Quality is worse, but they will now have",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip_7": "panning.",
+    "gui.plasmovoice.advanced.panning": "Stereo positioning",
 
 
     "gui.plasmovoice.hotkeys": "Hotkeys",

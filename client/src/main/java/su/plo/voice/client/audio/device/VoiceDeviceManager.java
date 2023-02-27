@@ -181,10 +181,7 @@ public final class VoiceDeviceManager implements DeviceManager {
         AudioDevice device = deviceFactory.get().openDevice(
                 format,
                 config.getVoice().getOutputDevice().value(),
-                Params.builder()
-                        .set("hrtf", config.getVoice().getHrtf().value())
-                        .set("listenerCameraRelative", config.getVoice().getListenerCameraRelative().value())
-                        .build()
+                getDefaultOutputParams()
         );
 
         device.addFilter(new CompressorFilter(
@@ -199,6 +196,14 @@ public final class VoiceDeviceManager implements DeviceManager {
         ));
 
         return (OutputDevice<AlSource>) device;
+    }
+
+    @Override
+    public @NotNull Params getDefaultOutputParams() {
+        return Params.builder()
+                .set("hrtf", config.getVoice().getHrtf().value())
+                .set("listenerCameraRelative", config.getVoice().getListenerCameraRelative().value())
+                .build();
     }
 
     private InputDevice openAlInputDevice(@NotNull AudioFormat format) throws Exception {

@@ -6,6 +6,7 @@ import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
+import org.lwjgl.openal.AL10
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
 import su.plo.voice.api.audio.codec.AudioDecoder
@@ -275,7 +276,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
 
         // update source volume & distance
-        if (isStereo(sourceInfo) && distance > 0) {
+        if (isStereoOrPanningDisabled(sourceInfo) && distance > 0) {
             updateSource(volume.toFloat() * distanceGain, packet.distance.toInt())
         } else {
             updateSource(volume.toFloat(), packet.distance.toInt())
@@ -384,8 +385,12 @@ abstract class BaseClientAudioSource<T> constructor(
             if (device is AlListenerDevice) {
                 (device as AlListenerDevice).listener.update()
             }
+
             device.runInContext {
                 source.volume = volume
+
+                if (isPanningDisabled()) return@runInContext
+
                 source.setFloatArray(0x1004, position) // AL_POSITION
                 source.setFloat(0x1020, 0f) // AL_REFERENCE_DISTANCE
                 if (maxDistance > 0) {
@@ -417,13 +422,21 @@ abstract class BaseClientAudioSource<T> constructor(
             it.create(isStereo(sourceInfo), Params.EMPTY)
 
             for (source in it.sources) {
-                if (source is AlSource) {
-                    val device = source.device as AlAudioDevice
-                    device.runInContext {
-                        source.setFloat(0x100E, 4f) // AL_MAX_GAIN
+                if (source !is AlSource) continue
+
+                val device = source.device as AlAudioDevice
+                device.runInContext {
+                    source.setFloat(0x100E, 4f) // AL_MAX_GAIN
+                    if (!isPanningDisabled())
                         source.setInt(0xD000, 0xD003) // AL_DISTANCE_MODEL // AL_LINEAR_DISTANCE
-                        source.play()
+                    else {
+                        source.setInt(AL10.AL_DISTANCE_MODEL, AL10.AL_NONE);
+                        source.setInt(
+                            0x202,  // AL_SOURCE_RELATIVE
+                            1
+                        )
                     }
+                    source.play()
                 }
             }
         }
@@ -457,6 +470,13 @@ abstract class BaseClientAudioSource<T> constructor(
             .volumes
             .getMute(sourceLine.name)
     }
+
+    private fun isPanningDisabled(): Boolean =
+        !config.advanced.panning.value()
+
+    private fun isStereoOrPanningDisabled(sourceInfo: SourceInfo): Boolean =
+        isPanningDisabled() || isStereo(sourceInfo)
+
     private fun isStereo(sourceInfo: SourceInfo): Boolean {
         return sourceInfo.isStereo && !config.advanced.stereoSourcesToMono.value()
     }
