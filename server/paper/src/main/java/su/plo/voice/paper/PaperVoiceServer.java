@@ -1,5 +1,6 @@
 package su.plo.voice.paper;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,6 +14,7 @@ import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.paper.PaperServerLib;
 import su.plo.voice.paper.connection.PaperServerChannelHandler;
 import su.plo.voice.paper.connection.PaperServerServiceChannelHandler;
+import su.plo.voice.paper.integration.VoicePlaceholder;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
@@ -61,6 +63,11 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
                         tcpConnectionManager.requestPlayerInfo(voicePlayer);
                     }
                 }));
+
+        // Initialize integrations
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new VoicePlaceholder(this).register();
+        }
     }
 
     public void onShutdown() {

@@ -1,11 +1,17 @@
 val mavenGroup: String by rootProject
 
 val paperVersion: String by project
+val placeholderApiVersion: String by project
 
 group = "$mavenGroup.paper"
 
+repositories {
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
+}
+
 dependencies {
     compileOnly("com.destroystokyo.paper:paper-api:${paperVersion}")
+    compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
 
     implementation(project(":server:common"))
 

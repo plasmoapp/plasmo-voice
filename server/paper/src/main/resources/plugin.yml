@@ -6,5 +6,6 @@ authors: [ Apehum ]
 softdepend:
   - PlaceholderAPI
   - LuckPerms
+  - PlaceholderAPI
 #depend:
 #  - kotlin-stdlib
