@@ -121,14 +121,7 @@ abstract class BaseClientAudioSource<T> constructor(
         if (sourceInfo.isStereo != this.sourceInfo.isStereo) {
             decoder?.close()
             if (Strings.emptyToNull(sourceInfo.codec) != null) {
-                decoder = voiceClient.codecManager.createDecoder(
-                    sourceInfo.codec,
-                    voiceInfo.capture.sampleRate,
-                    sourceInfo.isStereo,
-                    serverInfo.voiceInfo.bufferSize,
-                    serverInfo.voiceInfo.capture.mtuSize,
-                    Params.EMPTY
-                )
+                decoder = createDecoder(voiceInfo)
             }
             LOGGER.info("Update decoder for {}", sourceInfo)
         }
@@ -471,7 +464,7 @@ abstract class BaseClientAudioSource<T> constructor(
             .getMute(sourceLine.name)
     }
 
-    private fun isPanningDisabled(): Boolean =
+    protected open fun isPanningDisabled(): Boolean =
         !config.advanced.panning.value()
 
     private fun isStereoOrPanningDisabled(sourceInfo: SourceInfo): Boolean =

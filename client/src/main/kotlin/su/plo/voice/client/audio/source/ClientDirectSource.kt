@@ -55,6 +55,10 @@ class ClientDirectSource(
         return false // todo: relative position occlusion
     }
 
+    override fun isPanningDisabled(): Boolean {
+        return sourceInfo.isCameraRelative || super.isPanningDisabled()
+    }
+
     private fun getAbsoluteSourcePosition(position: FloatArray): FloatArray {
         return sourceInfo.relativePosition?.let {
             val player: LocalPlayer = Minecraft.getInstance().player ?: return position
