@@ -27,12 +27,7 @@ public final class VoiceProxyPlayerManager
     private final PlasmoVoiceProxy voiceProxy;
     private final MinecraftProxyLib minecraftProxy;
 
-    /**
-     * Gets the {@link VoiceProxyPlayer} by uuid
-     *
-     * @param playerId player's unique id
-     * @return {@link VoiceProxyPlayer}
-     */
+    @Override
     public Optional<VoiceProxyPlayer> getPlayerById(@NotNull UUID playerId) {
         VoiceProxyPlayer voicePlayer = playerById.get(playerId);
         if (voicePlayer != null) return Optional.of(voicePlayer);
@@ -40,16 +35,33 @@ public final class VoiceProxyPlayerManager
         return minecraftProxy.getPlayerById(playerId)
                 .map((player) -> playerById.computeIfAbsent(
                         player.getUUID(),
-                        (pId) -> new VoiceProxyPlayerConnection(voiceProxy, player)
+                        (pId) -> {
+                            VoiceProxyPlayer newPlayer = new VoiceProxyPlayerConnection(voiceProxy, player);
+
+                            playerByName.put(newPlayer.getInstance().getName(), newPlayer);
+                            return newPlayer;
+                        }
                 ));
     }
 
-    /**
-     * Gets the {@link VoiceProxyPlayer} by server player
-     *
-     * @param instance player's server object
-     * @return {@link VoiceProxyPlayer}
-     */
+    @Override
+    public Optional<VoiceProxyPlayer> getPlayerByName(@NotNull String playerName) {
+        VoiceProxyPlayer voicePlayer = playerByName.get(playerName);
+        if (voicePlayer != null) return Optional.of(voicePlayer);
+
+        return minecraftProxy.getPlayerByName(playerName)
+                .map((player) -> playerByName.computeIfAbsent(
+                        player.getName(),
+                        (pId) -> {
+                            VoiceProxyPlayer newPlayer = new VoiceProxyPlayerConnection(voiceProxy, player);
+
+                            playerById.put(newPlayer.getInstance().getUUID(), newPlayer);
+                            return newPlayer;
+                        }
+                ));
+    }
+
+    @Override
     public @NotNull VoiceProxyPlayer wrap(@NotNull Object instance) {
         MinecraftProxyPlayer serverPlayer = minecraftProxy.getPlayerByInstance(instance);
 
@@ -59,9 +71,7 @@ public final class VoiceProxyPlayerManager
         );
     }
 
-    /**
-     * Broadcasts packet to all players with voice chat installed
-     */
+    @Override
     public void broadcast(@NotNull Packet<ClientPacketTcpHandler> packet, @Nullable Predicate<VoiceProxyPlayer> filter) {
         for (VoiceProxyPlayer player : getPlayers()) {
             if ((filter == null || filter.test(player)) && player.hasVoiceChat())

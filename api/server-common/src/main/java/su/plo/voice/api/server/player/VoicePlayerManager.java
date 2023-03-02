@@ -21,6 +21,11 @@ public interface VoicePlayerManager<P extends VoicePlayer> {
     Optional<P> getPlayerById(@NotNull UUID playerId);
 
     /**
+     * Gets the {@link P} by name
+     */
+    Optional<P> getPlayerByName(@NotNull String playerName);
+
+    /**
      * Gets the {@link P} by server player
      *
      * @param instance player's server object

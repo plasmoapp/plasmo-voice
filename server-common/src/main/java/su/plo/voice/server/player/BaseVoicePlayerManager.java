@@ -22,6 +22,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements VoicePlayerManager<P> {
 
     protected final Map<UUID, P> playerById = Maps.newConcurrentMap();
+    protected final Map<String, P> playerByName = Maps.newConcurrentMap();
     protected final Set<String> synchronizedPermissions = new CopyOnWriteArraySet<>();
 
     @Override
@@ -49,6 +50,7 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
 
     public void clear() {
         playerById.clear();
+        playerByName.clear();
         synchronizedPermissions.clear();
     }
 
@@ -72,6 +74,9 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        playerById.remove(event.getPlayerId());
+        P player = playerById.remove(event.getPlayerId());
+        if (player == null) return;
+
+        playerByName.remove(player.getInstance().getName());
     }
 }

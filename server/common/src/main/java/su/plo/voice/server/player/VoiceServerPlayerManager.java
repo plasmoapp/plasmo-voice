@@ -24,7 +24,27 @@ public final class VoiceServerPlayerManager extends BaseVoicePlayerManager<Voice
         return minecraftServer.getPlayerById(playerId)
                 .map((player) -> playerById.computeIfAbsent(
                         player.getUUID(),
-                        (pId) -> new VoiceServerPlayerEntity(voiceServer, player)
+                        (pId) -> {
+                            VoiceServerPlayer newPlayer = new VoiceServerPlayerEntity(voiceServer, player);
+                            playerByName.put(newPlayer.getInstance().getName(), newPlayer);
+                            return newPlayer;
+                        }
+                ));
+    }
+
+    @Override
+    public Optional<VoiceServerPlayer> getPlayerByName(@NotNull String playerName) {
+        VoiceServerPlayer voicePlayer = playerByName.get(playerName);
+        if (voicePlayer != null) return Optional.of(voicePlayer);
+
+        return minecraftServer.getPlayerByName(playerName)
+                .map((player) -> playerByName.computeIfAbsent(
+                        player.getName(),
+                        (pId) -> {
+                            VoiceServerPlayer newPlayer = new VoiceServerPlayerEntity(voiceServer, player);
+                            playerById.put(newPlayer.getInstance().getUUID(), newPlayer);
+                            return newPlayer;
+                        }
                 ));
     }
 
