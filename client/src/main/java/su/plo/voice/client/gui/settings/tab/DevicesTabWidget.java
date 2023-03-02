@@ -231,10 +231,12 @@ public final class DevicesTabWidget extends TabWidget {
         Consumer<Boolean> onUpdate = (toggled) -> {
             devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT).forEach(device -> {
                 if (device instanceof HrtfAudioDevice) {
-                    HrtfAudioDevice hrtfAudioDevice = (HrtfAudioDevice) device;
-
-                    if (toggled) hrtfAudioDevice.enableHrtf();
-                    else hrtfAudioDevice.disableHrtf();
+                    try {
+                        device.reload();
+                    } catch (DeviceException e) {
+                        LogManager.getLogger().warn("Failed to reload device: {}", e.getMessage());
+                        e.printStackTrace();
+                    }
                 }
             });
         };
