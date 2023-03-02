@@ -103,6 +103,14 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         Optional<ServerAudioSource<?>> source = voiceServer.getSourceManager().getSourceById(packet.getSourceId());
         if (!source.isPresent()) return;
 
+        if (source.get().notMatchFilters(player)) {
+            LogManager.getLogger().warn(
+                    "{} tried to request a source {} to which he doesn't have access",
+                    player.getInstance().getName(), source.get().getSourceInfo()
+            );
+            return;
+        }
+
         player.sendPacket(new SourceInfoPacket(source.get().getSourceInfo()));
     }
 

@@ -1,6 +1,7 @@
 package su.plo.voice.proxy.connection;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
@@ -54,6 +55,14 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
     public void handle(@NotNull SourceInfoRequestPacket packet) {
         Optional<ServerAudioSource<?>> source = voiceProxy.getSourceManager().getSourceById(packet.getSourceId());
         if (!source.isPresent()) return;
+
+        if (source.get().notMatchFilters(player)) {
+            LogManager.getLogger().warn(
+                    "{} tried to request a source {} to which he doesn't have access",
+                    player.getInstance().getName(), source.get().getSourceInfo()
+            );
+            return;
+        }
 
         player.sendPacket(new SourceInfoPacket(source.get().getSourceInfo()));
         throw new CancelForwardingException();
