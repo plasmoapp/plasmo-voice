@@ -38,6 +38,8 @@ public final class JsonMuteStorage implements MuteStorage {
 
         BufferedReader bufferedReader = new BufferedReader(new FileReader(file));
         Map<UUID, ServerMuteInfo> data = GSON.fromJson(bufferedReader, MUTE_MAP_TYPE);
+        if (data == null) return;
+
         data.forEach((playerId, muteInfo) -> {
             if (VoiceMuteManager.isMuteValid(muteInfo)) muteByPlayerId.put(playerId, muteInfo);
         });
