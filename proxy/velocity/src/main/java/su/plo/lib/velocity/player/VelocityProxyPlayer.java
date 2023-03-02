@@ -16,6 +16,7 @@ import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.velocity.chat.ComponentTextConverter;
 import su.plo.lib.velocity.connection.VelocityProxyServerConnection;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
+import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +27,8 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
 
     private final MinecraftProxyLib minecraftProxy;
     private final ComponentTextConverter textConverter;
+    private final PermissionSupplier permissions;
+
     @Getter
     @ToString.Include
     private final Player instance;
@@ -36,9 +39,11 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
 
     public VelocityProxyPlayer(@NotNull MinecraftProxyLib minecraftProxy,
                                @NotNull ComponentTextConverter textConverter,
+                               @NotNull PermissionSupplier permissions,
                                @NotNull Player instance) {
         this.minecraftProxy = minecraftProxy;
         this.textConverter = textConverter;
+        this.permissions = permissions;
         this.instance = instance;
         this.tabList = new VelocityTabList(instance);
     }
@@ -128,18 +133,11 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return instance.hasPermission(permission);
+        return permissions.hasPermission(instance, permission);
     }
 
     @Override
     public @NotNull PermissionTristate getPermission(@NotNull String permission) {
-        switch (instance.getPermissionValue(permission)) {
-            case TRUE:
-                return PermissionTristate.TRUE;
-            case FALSE:
-                return PermissionTristate.FALSE;
-            default:
-                return PermissionTristate.UNDEFINED;
-        }
+        return permissions.getPermission(instance, permission);
     }
 }

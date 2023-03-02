@@ -34,6 +34,7 @@ import su.plo.voice.proxy.util.AddressUtil;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.config.VoiceServerLanguages;
+import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
@@ -230,4 +231,6 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     protected File addonsFolder() {
         return new File(getConfigFolder(), "addons");
     }
+
+    protected abstract PermissionSupplier createPermissionSupplier();
 }

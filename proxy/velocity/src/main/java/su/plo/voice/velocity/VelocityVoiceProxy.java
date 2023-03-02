@@ -13,11 +13,14 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.server.permission.PermissionDefault;
+import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.velocity.VelocityProxyLib;
 import su.plo.voice.api.proxy.event.command.CommandsRegisterEvent;
 import su.plo.voice.api.server.event.player.PlayerJoinEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.proxy.BaseVoiceProxy;
+import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.velocity.connection.VelocityProxyChannelHandler;
 
@@ -49,6 +52,8 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
 
     @Subscribe
     public void onProxyInitialization(@NotNull ProxyInitializeEvent event) {
+        minecraftServer.setPermissions(createPermissionSupplier());
+
         // load addons before commands registration
         loadAddons();
 
@@ -91,5 +96,34 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     @Override
     protected File modsFolder() {
         return new File("plugins");
+    }
+
+    @Override
+    protected PermissionSupplier createPermissionSupplier() {
+        return new PermissionSupplier() {
+            @Override
+            public boolean hasPermission(@NotNull Object player, @NotNull String permission) {
+                if (!(player instanceof Player))
+                    throw new IllegalArgumentException("player is not " + Player.class);
+                Player serverPlayer = (Player) player;
+
+                PermissionDefault permissionDefault = minecraftServer.getPermissionsManager().getPermissionDefault(permission);
+
+                return getPermission(serverPlayer, permission)
+                        .booleanValue(permissionDefault.getValue(false));
+            }
+
+            @Override
+            public @NotNull PermissionTristate getPermission(@NotNull Object player, @NotNull String permission) {
+                if (!(player instanceof Player))
+                    throw new IllegalArgumentException("player is not " + Player.class);
+                Player serverPlayer = (Player) player;
+
+                if (serverPlayer.getPermissionValue(permission) == Tristate.UNDEFINED)
+                    return PermissionTristate.UNDEFINED;
+
+                return serverPlayer.hasPermission(permission) ? PermissionTristate.TRUE : PermissionTristate.FALSE;
+            }
+        };
     }
 }
