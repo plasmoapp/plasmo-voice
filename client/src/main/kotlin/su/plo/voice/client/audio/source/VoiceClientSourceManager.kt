@@ -37,12 +37,12 @@ class VoiceClientSourceManager(
     private val sourceRequestById: MutableMap<UUID, Long> = Maps.newConcurrentMap()
     private val selfSourceInfoById: MutableMap<UUID, VoiceClientSelfSourceInfo> = Maps.newConcurrentMap()
 
-    init {
-        voiceClient.backgroundExecutor.scheduleAtFixedRate(
-            { tickSelfSourceInfo() },
-            0L, 5L, TimeUnit.SECONDS
-        )
-    }
+//    init {
+//        voiceClient.backgroundExecutor.scheduleAtFixedRate(
+//            { tickSelfSourceInfo() },
+//            0L, 5L, TimeUnit.SECONDS
+//        )
+//    }
 
     override fun createLoopbackSource(relative: Boolean) =
         ClientLoopbackSource(voiceClient, config, relative)
@@ -82,10 +82,11 @@ class VoiceClientSourceManager(
 
     @Synchronized
     override fun clear() {
-        sourceById.values.forEach(Consumer { obj: ClientAudioSource<*> -> obj.close() })
+        sourceById.values.forEach { it.close() }
         sourcesByLineId.clear()
         sourcesByPlayerId.clear()
         sourceRequestById.clear()
+        selfSourceInfoById.clear()
     }
 
     // todo: refactor somehow pepega
@@ -194,14 +195,14 @@ class VoiceClientSourceManager(
         }
     }
 
-    private fun tickSelfSourceInfo() {
-        selfSourceInfoById.values
-            .filter {
-                System.currentTimeMillis() - it.lastUpdate > TIMEOUT_MS
-            }
-            .map { it.selfSourceInfo.sourceInfo.id }
-            .forEach { selfSourceInfoById.remove(it) }
-    }
+//    private fun tickSelfSourceInfo() {
+//        selfSourceInfoById.values
+//            .filter {
+//                System.currentTimeMillis() - it.lastUpdate > TIMEOUT_MS
+//            }
+//            .map { it.selfSourceInfo.sourceInfo.id }
+//            .forEach { selfSourceInfoById.remove(it) }
+//    }
 
     private fun createPlayerSource(sourceInfo: PlayerSourceInfo): ClientAudioSource<PlayerSourceInfo> {
         return ClientPlayerSource(
