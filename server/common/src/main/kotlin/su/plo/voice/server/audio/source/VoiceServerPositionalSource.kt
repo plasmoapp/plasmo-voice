@@ -46,7 +46,7 @@ abstract class VoiceServerPositionalSource<S : SourceInfo>(
         val distanceSquared = (listenersDistance * listenersDistance).toDouble()
 
         for (connection in voiceServer.udpConnectionManager.connections) {
-            if (!testPlayer(connection.player)) continue
+            if (notMatchFilters(connection.player)) continue
 
             connection.player.instance.getServerPosition(playerPosition)
             if (sourcePosition.world == playerPosition.world &&
@@ -69,7 +69,7 @@ abstract class VoiceServerPositionalSource<S : SourceInfo>(
         val distanceSquared = (listenersDistance * listenersDistance).toDouble()
 
         for (connection in voiceServer.udpConnectionManager.connections) {
-            if (!testPlayer(connection.player)) continue
+            if (notMatchFilters(connection.player)) continue
 
             connection.player.instance.getServerPosition(playerPosition)
             if (sourcePosition.world == playerPosition.world &&

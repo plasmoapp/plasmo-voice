@@ -110,7 +110,8 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
         dirty.set(true);
     }
 
-    protected boolean testPlayer(@NotNull VoicePlayer player) {
+    @Override
+    public boolean matchFilters(@NotNull VoicePlayer player) {
         for (Predicate<VoicePlayer> filter : filters) {
             if (!filter.test(player)) return false;
         }

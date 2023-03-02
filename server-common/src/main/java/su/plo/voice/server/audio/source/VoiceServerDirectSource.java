@@ -127,13 +127,13 @@ public final class VoiceServerDirectSource
 
         if (playersSupplier != null) {
             for (VoicePlayer player : playersSupplier.get()) {
-                if (!testPlayer(player)) continue;
+                if (super.notMatchFilters(player)) continue;
                 udpConnections.getConnectionByPlayerId(player.getInstance().getUUID())
                         .ifPresent(connection -> connection.sendPacket(packet));
             }
         } else {
             for (UdpConnection connection : udpConnections.getConnections()) {
-                if (!testPlayer(connection.getPlayer())) continue;
+                if (super.notMatchFilters(connection.getPlayer())) continue;
                 connection.sendPacket(packet);
             }
         }
@@ -148,12 +148,12 @@ public final class VoiceServerDirectSource
 
         if (playersSupplier != null) {
             for (VoicePlayer player : playersSupplier.get()) {
-                if (!testPlayer(player)) continue;
+                if (super.notMatchFilters(player)) continue;
                 player.sendPacket(packet);
             }
         } else {
             for (UdpConnection connection : udpConnections.getConnections()) {
-                if (!testPlayer(connection.getPlayer())) continue;
+                if (super.notMatchFilters(connection.getPlayer())) continue;
                 connection.getPlayer().sendPacket(packet);
             }
         }
@@ -161,7 +161,16 @@ public final class VoiceServerDirectSource
         return true;
     }
 
-    protected void updateSourceInfo() {
+    @Override
+    public boolean matchFilters(@NotNull VoicePlayer player) {
+        if (playersSupplier != null) {
+            if (!playersSupplier.get().contains(player)) return false;
+        }
+
+        return super.matchFilters(player);
+    }
+
+    private void updateSourceInfo() {
         sendPacket(new SourceInfoPacket(getSourceInfo()));
     }
 }

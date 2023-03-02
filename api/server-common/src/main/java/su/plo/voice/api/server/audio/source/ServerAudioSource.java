@@ -44,4 +44,28 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
     @NotNull Collection<Predicate<VoicePlayer>> getFilters();
 
     void clearFilters();
+
+    /**
+     * @param player player to check
+     *
+     * @return true if player matching all filters
+     *
+     * @see ServerAudioSource#addFilter(Predicate)
+     * @see ServerAudioSource#removeFilter(Predicate)
+     * @see ServerAudioSource#getFilters()
+     */
+    boolean matchFilters(@NotNull VoicePlayer player);
+
+    /**
+     * @param player player to check
+     *
+     * @return true if player not matching any filter
+     *
+     * @see ServerAudioSource#addFilter(Predicate)
+     * @see ServerAudioSource#removeFilter(Predicate)
+     * @see ServerAudioSource#getFilters()
+     */
+    default boolean notMatchFilters(@NotNull VoicePlayer player) {
+        return !matchFilters(player);
+    }
 }
