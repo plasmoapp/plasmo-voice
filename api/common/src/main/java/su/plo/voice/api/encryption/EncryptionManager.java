@@ -6,6 +6,7 @@ import java.util.Collection;
 
 // todo: doc
 public interface EncryptionManager {
+
     @NotNull Encryption create(@NotNull String name, byte[] data);
 
     void register(@NotNull EncryptionSupplier supplier);

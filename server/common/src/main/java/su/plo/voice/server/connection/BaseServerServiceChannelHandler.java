@@ -43,7 +43,7 @@ public abstract class BaseServerServiceChannelHandler {
                 return;
             }
 
-            voiceServer.getConfig().voice().aesEncryptionKey(aesEncryptionKey);
+            voiceServer.updateAesEncryptionKey(aesEncryptionKey);
 
             ByteArrayDataOutput output = ByteStreams.newDataOutput();
             PacketUtil.writeBytes(output, signature);

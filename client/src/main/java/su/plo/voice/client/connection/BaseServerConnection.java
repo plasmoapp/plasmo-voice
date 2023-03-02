@@ -226,6 +226,7 @@ public abstract class BaseServerConnection implements ServerConnection, ClientPa
         }
 
         ServerInfo serverInfo = new VoiceServerInfo(
+                voiceClient,
                 packet.getServerId(),
                 client.get().getSecret(),
                 remoteAddress.get(),

@@ -6,6 +6,7 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
 import com.velocitypowered.api.proxy.server.ServerInfo;
 import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
 import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
@@ -20,6 +21,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.event.player.PlayerJoinEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
 import java.util.Map;
@@ -41,6 +43,9 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
     private final VelocityCommandManager commandManager;
     @Getter
     private final PermissionsManager permissionsManager = new PermissionsManager();
+
+    @Setter
+    private PermissionSupplier permissions;
 
     public VelocityProxyLib(@NotNull ProxyServer proxyServer,
                             @NotNull EventBus eventBus,
@@ -77,7 +82,7 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
 
         return playerById.computeIfAbsent(
                 proxyPlayer.getUniqueId(),
-                (playerId) -> new VelocityProxyPlayer(this, textConverter, proxyPlayer)
+                (playerId) -> new VelocityProxyPlayer(this, textConverter, permissions, proxyPlayer)
         );
     }
 

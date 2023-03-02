@@ -15,6 +15,8 @@ import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.audio.codec.AudioEncoder;
+import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
@@ -33,6 +35,7 @@ import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
+import su.plo.voice.api.util.Params;
 import su.plo.voice.server.audio.capture.ProximityServerActivation;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
@@ -97,6 +100,9 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected VoiceServerConfig config;
     @Getter
     protected VoiceServerLanguages languages;
+
+    @Getter
+    private Encryption defaultEncryption;
 
     protected BaseVoiceServer(@NotNull ModrinthLoader loader) {
         super(
@@ -240,16 +246,19 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             }
 
             // load AES key
+            byte[] aesKey;
             if (oldConfig != null && oldConfig.voice().aesEncryptionKey() != null) {
-                config.voice().aesEncryptionKey(oldConfig.voice().aesEncryptionKey());
+                aesKey = oldConfig.voice().aesEncryptionKey();
             } else {
                 UUID aesEncryptionKey = UUID.randomUUID();
                 ByteArrayDataOutput out = ByteStreams.newDataOutput();
                 out.writeLong(aesEncryptionKey.getMostSignificantBits());
                 out.writeLong(aesEncryptionKey.getLeastSignificantBits());
 
-                config.voice().aesEncryptionKey(out.toByteArray());
+                aesKey = out.toByteArray();
             }
+
+            updateAesEncryptionKey(aesKey);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }
@@ -261,6 +270,12 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         proximityActivation.register(config);
 
         if (restartUdpServer) startUdpServer();
+    }
+
+    public void updateAesEncryptionKey(byte[] aesKey) {
+        config.voice().aesEncryptionKey(aesKey);
+        // initialize default encoder
+        this.defaultEncryption = encryption.create("AES/CBC/PKCS5Padding", aesKey);
     }
 
     private void startUdpServer() {
@@ -338,6 +353,41 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 bind(PlasmoVoiceServer.class).toInstance(BaseVoiceServer.this);
             }
         };
+    }
+
+    @Override
+    public @NotNull AudioEncoder createOpusEncoder(boolean stereo) {
+        if (config == null) throw new IllegalStateException("server is not initialized yet");
+
+        int sampleRate = config.voice().sampleRate();
+        Params params = Params.builder()
+                .set("mode", config.voice().opus().mode())
+                .set("bitrate", String.valueOf(config.voice().opus().bitrate()))
+                .build();
+
+        return codecs.createEncoder(
+                "opus",
+                sampleRate,
+                stereo,
+                (sampleRate / 1_000) * 20,
+                config.voice().mtuSize(),
+                params
+        );
+    }
+
+    @Override
+    public @NotNull AudioEncoder createOpusDecoder(boolean stereo) {
+        if (config == null) throw new IllegalStateException("server is not initialized yet");
+
+        int sampleRate = config.voice().sampleRate();
+        return codecs.createDecoder(
+                "opus",
+                sampleRate,
+                stereo,
+                (sampleRate / 1_000) * 20,
+                config.voice().mtuSize(),
+                Params.EMPTY
+        );
     }
 
     protected abstract PermissionSupplier createPermissionSupplier();

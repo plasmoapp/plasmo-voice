@@ -53,6 +53,11 @@ public class Params {
         private Builder() {
         }
 
+        public Builder putAll(Map<String, ?> params) {
+            params.forEach(this::set);
+            return this;
+        }
+
         public Builder set(String key, Object param) {
             params.set(key, param);
             return this;

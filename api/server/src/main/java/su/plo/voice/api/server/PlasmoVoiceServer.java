@@ -85,9 +85,25 @@ public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
     ServerConfig getConfig();
 
     /**
-     * Get the {@link ServerLanguages}
+     * Gets a default encryption
+     * <br/>
+     * AES/CBC/PKCS5Padding used by default
      *
-     * @return {@link ServerLanguages}
+     * @return {@link Encryption} instance
      */
-    @NotNull ServerLanguages getLanguages();
+    @NotNull Encryption getDefaultEncryption();
+
+    /**
+     * Creates a new opus encoder
+     * <br/>
+     * params will be created from {@link ServerConfig}
+     */
+    @NotNull AudioEncoder createOpusEncoder(boolean stereo);
+
+    /**
+     * Creates a new opus decoder
+     * <br/>
+     * params will be created from {@link ServerConfig}
+     */
+    @NotNull AudioEncoder createOpusDecoder(boolean stereo);
 }

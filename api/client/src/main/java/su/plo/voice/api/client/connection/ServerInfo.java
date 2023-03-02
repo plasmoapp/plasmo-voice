@@ -1,6 +1,7 @@
 package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
@@ -56,6 +57,20 @@ public interface ServerInfo {
      * @return {@link Encryption}
      */
     Optional<Encryption> getEncryption();
+
+    /**
+     * Creates a new opus encoder
+     * <br/>
+     * params will be created from {@link VoiceInfo}
+     */
+    @NotNull AudioEncoder createOpusEncoder(boolean stereo);
+
+    /**
+     * Creates a new opus decoder
+     * <br/>
+     * params will be created from {@link VoiceInfo}
+     */
+    @NotNull AudioEncoder createOpusDecoder(boolean stereo);
 
     /**
      * Represents a voice info of the connected server
