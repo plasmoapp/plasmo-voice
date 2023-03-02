@@ -82,7 +82,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     @Override
     protected void onInitialize() {
-        this.playerManager = new VoiceProxyPlayerManager(this, getMinecraftProxy());
+        this.playerManager = new VoiceProxyPlayerManager(this, getMinecraftServer());
 
         super.onInitialize();
 
@@ -95,7 +95,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         eventBus.register(this, sourceManager);
         eventBus.register(this, udpConnectionManager);
         eventBus.register(this, playerManager);
-        eventBus.register(this, getMinecraftProxy());
+        eventBus.register(this, getMinecraftServer());
 
         loadConfig();
     }
@@ -176,7 +176,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             String name = entry.getKey();
             String address = entry.getValue();
 
-            if (!getMinecraftProxy().getServerByName(name).isPresent()) {
+            if (!getMinecraftServer().getServerByName(name).isPresent()) {
                 getLogger().warn("Server {} not found", name);
                 continue;
             }
@@ -200,7 +200,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         try {
             int port = config.host().port();
             if (port == 0) {
-                port = getMinecraftProxy().getPort();
+                port = getMinecraftServer().getPort();
                 if (port <= 0) port = 0;
             }
 

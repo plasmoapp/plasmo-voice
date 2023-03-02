@@ -6,12 +6,12 @@ import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
+import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
+import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.velocity.VelocityProxyLib;
 import su.plo.voice.api.proxy.event.command.CommandsRegisterEvent;
@@ -35,7 +35,7 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     private final Path dataDirectory;
 
     @Getter
-    private final VelocityProxyLib minecraftProxy;
+    private final VelocityProxyLib minecraftServer;
 
     @Inject
     public VelocityVoiceProxy(@NotNull ProxyServer proxyServer,
@@ -44,7 +44,7 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
 
         this.proxyServer = proxyServer;
         this.dataDirectory = dataDirectory;
-        this.minecraftProxy = new VelocityProxyLib(proxyServer, eventBus, this::getLanguages);
+        this.minecraftServer = new VelocityProxyLib(proxyServer, eventBus, this::getLanguages);
     }
 
     @Subscribe
@@ -53,9 +53,9 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
         loadAddons();
 
         // register commands
-        eventBus.call(new CommandsRegisterEvent(this, minecraftProxy.getCommandManager()));
-        minecraftProxy.getCommandManager().registerCommands(proxyServer);
-        proxyServer.getEventManager().register(this, minecraftProxy.getCommandManager());
+        eventBus.call(new CommandsRegisterEvent(this, minecraftServer.getCommandManager()));
+        minecraftServer.getCommandManager().registerCommands(proxyServer);
+        proxyServer.getEventManager().register(this, minecraftServer.getCommandManager());
 
         super.onInitialize();
 

@@ -2,16 +2,13 @@ package su.plo.voice.api.proxy;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
-import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.proxy.audio.source.ProxySourceManager;
 import su.plo.voice.api.proxy.config.ProxyConfig;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
-import su.plo.voice.api.server.audio.capture.ServerActivationManager;
-import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
-import su.plo.voice.api.server.config.ServerLanguages;
+import su.plo.voice.api.server.PlasmoCommonVoiceServer;
 import su.plo.voice.api.server.player.VoicePlayerManager;
 
 import java.util.Optional;
@@ -19,14 +16,14 @@ import java.util.Optional;
 /**
  * The Plasmo Server Proxy API
  */
-public interface PlasmoVoiceProxy extends PlasmoVoice {
+public interface PlasmoVoiceProxy extends PlasmoCommonVoiceServer {
 
     /**
      * Gets the {@link MinecraftProxyLib}
      *
      * @return {@link MinecraftProxyLib}
      */
-    @NotNull MinecraftProxyLib getMinecraftProxy();
+    @NotNull MinecraftProxyLib getMinecraftServer();
 
     /**
      * Gets the {@link UdpProxyConnectionManager}
@@ -63,32 +60,11 @@ public interface PlasmoVoiceProxy extends PlasmoVoice {
     Optional<UdpProxyServer> getUdpProxyServer();
 
     /**
-     * Gets the {@link ServerSourceLineManager}
-     *
-     * @return {@link ServerSourceLineManager}
-     */
-    @NotNull ServerSourceLineManager getSourceLineManager();
-
-    /**
-     * Gets the {@link ServerActivationManager}
-     *
-     * @return {@link ServerActivationManager}
-     */
-    @NotNull ServerActivationManager getActivationManager();
-
-    /**
      * Gets the {@link ProxySourceManager}
      *
      * @return {@link ProxySourceManager}
      */
     @NotNull ProxySourceManager getSourceManager();
-
-    /**
-     * Get the {@link ServerLanguages}
-     *
-     * @return {@link ServerLanguages}
-     */
-    @NotNull ServerLanguages getLanguages();
 
     /**
      * Gets the {@link ProxyConfig}

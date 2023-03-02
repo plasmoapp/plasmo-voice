@@ -1,8 +1,10 @@
 package su.plo.lib.api.proxy;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.proxy.command.MinecraftProxyCommand;
 import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
 import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
+import su.plo.lib.api.server.MinecraftCommonServerLib;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.api.event.EventBus;
@@ -11,7 +13,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface MinecraftProxyLib {
+public interface MinecraftProxyLib extends MinecraftCommonServerLib {
 
     @NotNull EventBus getEventBus();
 
@@ -31,7 +33,7 @@ public interface MinecraftProxyLib {
 
     int getPort();
 
-    @NotNull MinecraftCommandManager getCommandManager();
+    @NotNull MinecraftCommandManager<MinecraftProxyCommand> getCommandManager();
 
     @NotNull PermissionsManager getPermissionsManager();
 }

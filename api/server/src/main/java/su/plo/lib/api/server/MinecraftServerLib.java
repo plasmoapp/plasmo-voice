@@ -13,7 +13,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
-public interface MinecraftServerLib {
+public interface MinecraftServerLib extends MinecraftCommonServerLib {
 
     default void onInitialize() {
     }

@@ -2,12 +2,10 @@ package su.plo.voice.api.server;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.MinecraftServerLib;
-import su.plo.voice.api.PlasmoVoice;
-import su.plo.voice.api.server.audio.capture.ServerActivationManager;
-import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
+import su.plo.voice.api.audio.codec.AudioEncoder;
+import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.config.ServerConfig;
-import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.mute.MuteManager;
@@ -20,7 +18,7 @@ import java.util.Optional;
 /**
  * The Plasmo Client Server API
  */
-public interface PlasmoVoiceServer extends PlasmoVoice {
+public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
 
     /**
      * Gets the {@link MinecraftServerLib}
@@ -53,20 +51,6 @@ public interface PlasmoVoiceServer extends PlasmoVoice {
      * @return {@link ServerSourceManager}
      */
     @NotNull ServerSourceManager getSourceManager();
-
-    /**
-     * Gets the {@link ServerActivationManager}
-     *
-     * @return {@link ServerActivationManager}
-     */
-    @NotNull ServerActivationManager getActivationManager();
-
-    /**
-     * Gets the {@link ServerSourceLineManager}
-     *
-     * @return {@link ServerSourceLineManager}
-     */
-    @NotNull ServerSourceLineManager getSourceLineManager();
 
     /**
      * Gets the {@link TcpServerConnectionManager}
