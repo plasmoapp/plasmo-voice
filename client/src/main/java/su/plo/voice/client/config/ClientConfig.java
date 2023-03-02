@@ -72,7 +72,7 @@ public final class ClientConfig {
         else this.save();
     }
 
-    private void save() {
+    private synchronized void save() {
         try {
             toml.save(ClientConfig.class, this, configFile);
         } catch (IOException e) {

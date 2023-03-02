@@ -214,8 +214,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected void onShutdown() {
         logger.info("Shutting down");
 
-        if (config != null) config.save(false);
-
         eventBus.unregister(this);
 
         super.onShutdown();
@@ -224,6 +222,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     protected void onServerDisconnect() {
+        config.save(true);
         udpClientManager.removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
         getServerConnection().ifPresent(ServerConnection::close);
     }
@@ -264,18 +263,25 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     private void loadConfig() {
-        try {
-            File configFile = new File(getConfigFolder(), "client.toml");
+        File configFile = new File(getConfigFolder(), "client.toml");
 
+        try {
             this.config = toml.load(ClientConfig.class, configFile, false);
             toml.save(ClientConfig.class, config, configFile);
+        } catch (IOException e) {
+            logger.warn("Failed to load the config", e);
 
+            try {
+                this.config = new ClientConfig();
+                toml.save(ClientConfig.class, config, configFile);
+            } catch (IOException e1) {
+                throw new RuntimeException("Failed to save default config", e1);
+            }
+        } finally {
             config.setConfigFile(configFile);
             config.setAsyncExecutor(backgroundExecutor);
 
             eventBus.register(this, config.getKeyBindings());
-        } catch (IOException e) {
-            throw new IllegalStateException("Failed to load the config", e);
         }
 
         if (config.getDebug().value() || System.getProperty("plasmovoice.debug") != null) {
