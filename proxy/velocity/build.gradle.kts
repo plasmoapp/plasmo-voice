@@ -112,4 +112,14 @@ tasks {
         archiveClassifier.set("dev")
         dependsOn.add(shadowJar)
     }
+
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(11))
+    }
+
+    compileKotlin {
+        kotlinOptions {
+            jvmTarget = "11"
+        }
+    }
 }
