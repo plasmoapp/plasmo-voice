@@ -92,27 +92,29 @@ abstract class BaseProximityServerActivation(
 
     protected fun sendAudioEndPacket(
         source: ServerPlayerSource,
-        packet: PlayerAudioEndPacket
+        packet: PlayerAudioEndPacket,
+        distance: Short = packet.distance
     ) {
         source.sendPacket(
             SourceAudioEndPacket(source.id, packet.sequenceNumber),
-            packet.distance
+            distance
         )
     }
 
     protected fun sendAudioPacket(
         player: VoiceServerPlayer,
         source: ServerPlayerSource,
-        packet: PlayerAudioPacket
+        packet: PlayerAudioPacket,
+        distance: Short = packet.distance
     ) {
         val sourcePacket = SourceAudioPacket(
             packet.sequenceNumber, source.state.toByte(),
             packet.data,
             source.id,
-            packet.distance
+            distance
         )
 
-        if (source.sendAudioPacket(sourcePacket, packet.distance, packet.activationId)) {
+        if (source.sendAudioPacket(sourcePacket, distance, packet.activationId)) {
             selfActivationInfo.sendAudioInfo(player, source, packet.activationId, sourcePacket)
         }
     }
