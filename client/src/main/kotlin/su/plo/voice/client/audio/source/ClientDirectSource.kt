@@ -2,12 +2,16 @@ package su.plo.voice.client.audio.source
 
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
+import su.plo.config.entry.BooleanConfigEntry
+import su.plo.config.entry.DoubleConfigEntry
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AlAudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.client.config.ClientConfig
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
+import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 
 class ClientDirectSource(
     voiceClient: PlasmoVoiceClient,
@@ -15,10 +19,29 @@ class ClientDirectSource(
     sourceInfo: DirectSourceInfo
 ) : BaseClientAudioSource<DirectSourceInfo>(voiceClient, config, sourceInfo) {
 
+    override var sourceVolume: DoubleConfigEntry = createSourceVolume(sourceInfo)
+
+    private var sourceMute: BooleanConfigEntry? = createSourceMute(sourceInfo)
+
     @Throws(DeviceException::class)
     override fun update(sourceInfo: DirectSourceInfo) {
+        if (sourceInfo.sender != this.sourceInfo.sender) {
+            sourceVolume = createSourceVolume(sourceInfo)
+            sourceMute = createSourceMute(sourceInfo)
+        }
+
         super.update(sourceInfo)
         updateSourceParams()
+    }
+
+    override fun process(packet: SourceAudioPacket) {
+        if (sourceMute?.value() == true) return
+        super.process(packet)
+    }
+
+    override fun process(packet: SourceAudioEndPacket) {
+        if (sourceMute?.value() == true) return
+        super.process(packet)
     }
 
     override fun canHear(): Boolean {
@@ -58,6 +81,20 @@ class ClientDirectSource(
     override fun isPanningDisabled(): Boolean {
         return sourceInfo.isCameraRelative || super.isPanningDisabled()
     }
+
+    private fun createSourceMute(sourceInfo: DirectSourceInfo): BooleanConfigEntry? =
+        sourceInfo.sender?.let {
+            config.voice
+                .volumes
+                .getMute("source_" + it.id)
+        }
+
+    private fun createSourceVolume(sourceInfo: DirectSourceInfo) =
+        sourceInfo.sender?.let {
+            config.voice
+                .volumes
+                .getVolume("source_${it.id}")
+        } ?: super.sourceVolume
 
     private fun getAbsoluteSourcePosition(position: FloatArray): FloatArray {
         return sourceInfo.relativePosition?.let {
