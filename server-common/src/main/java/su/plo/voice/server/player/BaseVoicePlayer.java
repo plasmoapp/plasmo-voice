@@ -6,14 +6,16 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
-import su.plo.voice.api.PlasmoVoice;
+import su.plo.voice.api.server.PlasmoCommonVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
+import su.plo.voice.proto.packets.tcp.clientbound.AnimatedActionBarPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.DistanceVisualizePacket;
 
 import java.security.PublicKey;
@@ -25,7 +27,7 @@ import java.util.UUID;
 @ToString(doNotUseGetters = true, exclude = "publicKey")
 public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implements VoicePlayer {
 
-    private final PlasmoVoice voice;
+    private final PlasmoCommonVoiceServer voiceServer;
     @Getter
     protected final @NotNull P instance;
 
@@ -74,13 +76,24 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implement
     }
 
     @Override
+    public void sendAnimatedActionBar(@NotNull MinecraftTextComponent text) {
+        if (!hasVoiceChat()) {
+            instance.sendActionBar(text);
+            return;
+        }
+
+        String json = voiceServer.getMinecraftServer().getTextConverter().convertToJson(instance, text);
+        sendPacket(new AnimatedActionBarPacket(json));
+    }
+
+    @Override
     public Optional<PublicKey> getPublicKey() {
         return Optional.ofNullable(publicKey);
     }
 
     public void setActivationDistance(@NotNull ServerActivation activation, int distance) {
         Integer oldDistance = distanceByActivationId.put(activation.getId(), distance);
-        voice.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
+        voiceServer.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
                 this,
                 activation,
                 distance,
@@ -90,7 +103,7 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implement
 
     public void removeActivationDistance(@NotNull ServerActivation activation) {
         Integer oldDistance = distanceByActivationId.remove(activation.getId());
-        voice.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
+        voiceServer.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
                 this,
                 activation,
                 -1,

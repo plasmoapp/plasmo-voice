@@ -2,7 +2,6 @@ package su.plo.voice.server.player;
 
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.event.connection.TcpPacketSendEvent;
@@ -10,7 +9,6 @@ import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
-import su.plo.voice.proto.packets.tcp.clientbound.AnimatedActionBarPacket;
 import su.plo.voice.server.BaseVoiceServer;
 
 @ToString(doNotUseGetters = true, callSuper = true)
@@ -56,16 +54,5 @@ public final class VoiceServerPlayerEntity
                 isVoiceDisabled(),
                 isMicrophoneMuted()
         );
-    }
-
-    @Override
-    public void sendAnimatedActionBar(@NotNull MinecraftTextComponent text) {
-        if (!hasVoiceChat()) {
-            instance.sendActionBar(text);
-            return;
-        }
-
-        String json = voiceServer.getMinecraftServer().getTextConverter().convertToJson(instance, text);
-        sendPacket(new AnimatedActionBarPacket(json));
     }
 }
