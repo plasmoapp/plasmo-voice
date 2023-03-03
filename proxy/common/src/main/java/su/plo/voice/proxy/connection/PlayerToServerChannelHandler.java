@@ -1,6 +1,9 @@
 package su.plo.voice.proxy.connection;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
@@ -17,11 +20,13 @@ import java.util.Optional;
 // should be two channel handlers
 // server -> proxy -> player (ServerToPlayerChannelHandler)
 // player -> proxy -> server (PlayerToServerChannelHandler)
-@RequiredArgsConstructor
+@AllArgsConstructor
 public final class PlayerToServerChannelHandler implements ServerPacketTcpHandler {
 
     private final PlasmoVoiceProxy voiceProxy;
-    private final VoiceProxyPlayer player;
+    @Setter
+    @Getter
+    private VoiceProxyPlayer player;
 
     @Override
     public void handle(@NotNull PlayerInfoPacket packet) {

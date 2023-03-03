@@ -4,7 +4,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServer;
@@ -26,11 +28,13 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-@RequiredArgsConstructor
+@AllArgsConstructor
 public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandler {
 
     private final BaseVoiceProxy voiceProxy;
-    private final VoiceProxyPlayer player;
+    @Setter
+    @Getter
+    private VoiceProxyPlayer player;
 
     @Override
     public void handle(@NotNull ConnectionPacket packet) {

@@ -161,7 +161,8 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         getConnections().forEach(this::removeConnection);
     }
 
-    private void disconnect(UdpProxyConnection connection) {
+    private void disconnect(@NotNull UdpProxyConnection connection) {
+        if (!connection.isConnected()) return;
         connection.disconnect();
 
         secretByPlayerId.remove(connection.getPlayer().getInstance().getUUID());

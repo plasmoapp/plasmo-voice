@@ -103,18 +103,29 @@ public class VelocityProxyChannelHandler {
                             Player player = (Player) event.getSource();
                             VoiceProxyPlayer voicePlayer = voiceProxy.getPlayerManager().wrap(player);
 
-                            handler = playerToServerChannels.computeIfAbsent(
+                            PlayerToServerChannelHandler playerToServerHandler = playerToServerChannels.computeIfAbsent(
                                     player.getUniqueId(),
                                     (playerId) -> new PlayerToServerChannelHandler(voiceProxy, voicePlayer)
                             );
+
+                            if (!playerToServerHandler.getPlayer().equals(voicePlayer)) {
+                                playerToServerHandler.setPlayer(voicePlayer);
+                            }
+                            handler = playerToServerHandler;
                         } else if (event.getTarget() instanceof Player) {
                             Player player = (Player) event.getTarget();
                             VoiceProxyPlayer voicePlayer = voiceProxy.getPlayerManager().wrap(player);
 
-                            handler = serverToPlayerChannels.computeIfAbsent(
+                            ServerToPlayerChannelHandler serverToPlayerHandler = serverToPlayerChannels.computeIfAbsent(
                                     player.getUniqueId(),
                                     (playerId) -> new ServerToPlayerChannelHandler(voiceProxy, voicePlayer)
                             );
+
+                            if (!serverToPlayerHandler.getPlayer().equals(voicePlayer)) {
+                                serverToPlayerHandler.setPlayer(voicePlayer);
+                            }
+
+                            handler = serverToPlayerHandler;
                         } else return;
 
                         try {
