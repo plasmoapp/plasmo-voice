@@ -153,17 +153,21 @@ class OverlayRenderer(
         val backgroundColor = (0.25f * 255.0f).toInt() shl 24
 
         // render helm
-        UGraphics.bindTexture(0, loadSkin(sourceInfo))
-        UGraphics.color4f(1f, 1f, 1f, 1f)
-        RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
-        UGraphics.enableBlend()
-        RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
-        UGraphics.disableBlend()
-        if (position.isRight) {
-            x -= textWidth + 1
-        } else {
-            x += 16 + 1
+        sourceInfo.player?.let {
+            UGraphics.bindTexture(0, loadSkin(it))
+            UGraphics.color4f(1f, 1f, 1f, 1f)
+            RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
+            UGraphics.enableBlend()
+            RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
+            UGraphics.disableBlend()
+            if (position.isRight) {
+                x -= textWidth + 1
+            } else {
+                x += 16 + 1
+            }
         }
+
+        // render text
         RenderUtil.fill(stack, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
         RenderUtil.drawString(stack, sourceName, x + 4, y + 4, 0xFFFFFF, false)
         if (sourceInfo.activated) {
@@ -228,11 +232,6 @@ class OverlayRenderer(
             else -> null
         }
 
-    private fun loadSkin(sourceInfo: RenderSourceInfo): ResourceLocation {
-        return sourceInfo.player?.let {
-            loadSkin(it)
-        } ?: ModPlayerSkins.getDefaultSkin(sourceInfo.sourceId)
-
 //        return when(sourceInfo) {
 //            is DirectSourceInfo -> {
 //                sourceInfo.sender?.let {
@@ -246,7 +245,6 @@ class OverlayRenderer(
 //
 //            else -> ModPlayerSkins.getDefaultSkin(sourceInfo.id)
 //        }
-    }
 
     private fun loadSkin(gameProfile: MinecraftGameProfile): ResourceLocation {
         ModPlayerSkins.loadSkin(gameProfile)
