@@ -187,8 +187,14 @@ class OverlayRenderer(
         sourceInfo: SourceInfo,
         sourceLine: ClientSourceLine
     ): MinecraftTextComponent {
-        if (sourceInfo.name != null)
-            return MinecraftTextComponent.literal(sourceInfo.name)
+        if (sourceInfo.name != null) {
+            var sourceName = sourceInfo.name!!
+            if (sourceName.length > MAX_TEXT_WIDTH) {
+                sourceName = sourceName.substring(0, MAX_TEXT_WIDTH) + "..."
+            }
+
+            return MinecraftTextComponent.literal(sourceName)
+        }
 
         return when (sourceInfo) {
             is DirectSourceInfo -> {
@@ -281,6 +287,7 @@ class OverlayRenderer(
 
     companion object {
         private const val ENTRY_HEIGHT = 16
+        private const val MAX_TEXT_WIDTH = 40
     }
 }
 
