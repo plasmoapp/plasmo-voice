@@ -7,6 +7,7 @@ import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.Style;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.text.serializer.gson.GsonComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.*;
@@ -20,6 +21,16 @@ public final class ComponentTextConverter extends ServerTextConverter<Component>
 
     public ComponentTextConverter(@NotNull Supplier<ServerLanguages> languagesSupplier) {
         super(languagesSupplier);
+    }
+
+    @Override
+    public @NotNull String convertToJson(@NotNull Component text) {
+        return GsonComponentSerializer.gson().serialize(text);
+    }
+
+    @Override
+    public Component convertFromJson(@NotNull String json) {
+        return GsonComponentSerializer.gson().deserialize(json);
     }
 
     @Override

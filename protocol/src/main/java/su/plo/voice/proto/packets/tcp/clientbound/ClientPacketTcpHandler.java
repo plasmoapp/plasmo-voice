@@ -42,4 +42,6 @@ public interface ClientPacketTcpHandler extends PacketTcpHandler {
     void handle(@NotNull ActivationUnregisterPacket packet);
 
     void handle(@NotNull DistanceVisualizePacket packet);
+
+    void handle(@NotNull AnimatedActionBarPacket packet);
 }

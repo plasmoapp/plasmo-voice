@@ -20,6 +20,16 @@ public final class ClientTextConverter extends TranslatableTextConverter<Compone
     private ClientLanguageSupplier languageSupplier;
 
     @Override
+    public @NotNull String convertToJson(@NotNull Component text) {
+        return Component.Serializer.toJson(text);
+    }
+
+    @Override
+    public Component convertFromJson(@NotNull String json) {
+        return Component.Serializer.fromJson(json);
+    }
+
+    @Override
     public Component convert(@NotNull MinecraftTextComponent text) {
         if (!(text instanceof MinecraftTranslatableText) || languageSupplier == null)
             return textConverter.convert(text);

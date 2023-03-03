@@ -38,6 +38,7 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
     private final ProxyServer proxyServer;
     @Getter
     private final EventBus eventBus;
+    @Getter
     private final ComponentTextConverter textConverter;
     @Getter
     private final VelocityCommandManager commandManager;

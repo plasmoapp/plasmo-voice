@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.player;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
@@ -68,6 +69,15 @@ public interface VoicePlayer {
     default void visualizeDistance(int radius) {
         visualizeDistance(radius, 0x00a000);
     }
+
+    /**
+     * Sends animated actionbar (like when inserting music disc in jukebox)
+     * if player has Plasmo Voice installed,
+     * otherwise sends default actionbar
+     *
+     * @param text text to send
+     */
+    void sendAnimatedActionBar(@NotNull MinecraftTextComponent text);
 
     /**
      * Gets the player's public key

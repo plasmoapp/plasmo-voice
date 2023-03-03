@@ -20,6 +20,16 @@ public final class ServerComponentTextConverter extends ServerTextConverter<Comp
     }
 
     @Override
+    public @NotNull String convertToJson(@NotNull Component text) {
+        return textConverter.convertToJson(text);
+    }
+
+    @Override
+    public Component convertFromJson(@NotNull String json) {
+        return textConverter.convertFromJson(json);
+    }
+
+    @Override
     public Component convert(@NotNull MinecraftTextComponent text) {
         return textConverter.convert(text);
     }

@@ -49,6 +49,8 @@ public class PacketTcpCodec {
         PACKETS.register(++lastPacketId, SourceLinePlayerAddPacket.class);
         PACKETS.register(++lastPacketId, SourceLinePlayerRemovePacket.class);
         PACKETS.register(++lastPacketId, SourceLinePlayersListPacket.class);
+
+        PACKETS.register(++lastPacketId, AnimatedActionBarPacket.class);
     }
 
     public static byte[] encode(Packet<?> packet) {

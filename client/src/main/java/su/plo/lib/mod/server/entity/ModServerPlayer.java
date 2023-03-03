@@ -1,7 +1,6 @@
 package su.plo.lib.mod.server.entity;
 
 import com.google.common.collect.Sets;
-import gg.essential.universal.wrappers.message.UTextComponent;
 import io.netty.buffer.Unpooled;
 import lombok.Getter;
 import lombok.Setter;

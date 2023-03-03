@@ -247,6 +247,10 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
     public void handle(@NotNull DistanceVisualizePacket packet) {
     }
 
+    @Override
+    public void handle(@NotNull AnimatedActionBarPacket packet) {
+    }
+
     private boolean isPlayerOnVoiceServer() {
         return voiceProxy.getUdpProxyServer().isPresent() &&
                 player.getInstance().getServer()

@@ -14,6 +14,16 @@ import java.util.List;
 
 public final class ComponentTextConverter implements MinecraftTextConverter<Component> {
 
+    @Override // todo: legacy
+    public @NotNull String convertToJson(@NotNull Component text) {
+        return Component.Serializer.toJson(text);
+    }
+
+    @Override // todo: legacy
+    public Component convertFromJson(@NotNull String json) {
+        return Component.Serializer.fromJson(json);
+    }
+
     @Override
     public Component convert(@NotNull MinecraftTextComponent text) {
         MutableComponent component;

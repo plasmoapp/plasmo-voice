@@ -2,6 +2,7 @@ package su.plo.lib.paper.chat;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.chat.ComponentSerializer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.MinecraftTextClickEvent;
@@ -17,6 +18,16 @@ public class BaseComponentTextConverter extends ServerTextConverter<BaseComponen
 
     public BaseComponentTextConverter(Supplier<ServerLanguages> languages) {
         super(languages);
+    }
+
+    @Override
+    public @NotNull String convertToJson(@NotNull BaseComponent text) {
+        return ComponentSerializer.toString(text);
+    }
+
+    @Override
+    public BaseComponent convertFromJson(@NotNull String json) {
+        return ComponentSerializer.parse(json)[0];
     }
 
     @Override

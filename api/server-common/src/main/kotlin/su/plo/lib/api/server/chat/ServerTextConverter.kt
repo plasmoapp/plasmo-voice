@@ -11,6 +11,23 @@ abstract class ServerTextConverter<T> constructor(
     private val languagesSupplier: Supplier<ServerLanguages?>
 ) : TranslatableTextConverter<T>() {
 
+    fun convertToJson(source: MinecraftCommandSource, text: MinecraftTextComponent): String {
+        val languages = languagesSupplier.get() ?: return convertToJson(text)
+        val language = languages.getServerLanguage(source)
+
+        val convertedText = translateInner(language, text)
+        if (convertedText !is MinecraftTranslatableText)
+            return convertToJson(text)
+
+        if (!language.containsKey(convertedText.key))
+            return convertToJson(text)
+
+        return convertToJson(translate(
+            language,
+            convertedText
+        ))
+    }
+
     fun convert(source: MinecraftCommandSource, text: MinecraftTextComponent): T {
         val languages = languagesSupplier.get() ?: return convert(text)
         val language = languages.getServerLanguage(source)

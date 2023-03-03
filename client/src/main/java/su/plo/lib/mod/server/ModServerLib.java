@@ -48,6 +48,7 @@ public final class ModServerLib implements MinecraftServerLib {
     @Setter
     private PermissionSupplier permissions;
 
+    @Getter
     private final ServerComponentTextConverter textConverter;
     private final ResourceCache resources = new ResourceCache();
 

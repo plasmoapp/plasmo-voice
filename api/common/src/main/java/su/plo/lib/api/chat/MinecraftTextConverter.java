@@ -7,6 +7,14 @@ import java.util.stream.Collectors;
 
 public interface MinecraftTextConverter<T> {
 
+    @NotNull String convertToJson(@NotNull T text);
+
+    default @NotNull String convertToJson(@NotNull MinecraftTextComponent text) {
+        return convertToJson(convert(text));
+    }
+
+    T convertFromJson(@NotNull String json);
+
     T convert(@NotNull MinecraftTextComponent text);
 
     default List<T> convert(@NotNull List<MinecraftTextComponent> list) {
