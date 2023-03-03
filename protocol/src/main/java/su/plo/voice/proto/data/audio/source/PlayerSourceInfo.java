@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.io.IOException;
@@ -23,13 +24,14 @@ public final class PlayerSourceInfo extends SourceInfo {
     public PlayerSourceInfo(@NotNull String addonId,
                             @NotNull UUID sourceId,
                             @NotNull UUID lineId,
+                            @Nullable String sourceName,
                             byte state,
                             @NotNull String codec,
                             boolean stereo,
                             boolean iconVisible,
                             int angle,
                             VoicePlayerInfo playerInfo) {
-        super(addonId, sourceId, lineId, state, codec, stereo, iconVisible, angle);
+        super(addonId, sourceId, lineId, sourceName, state, codec, stereo, iconVisible, angle);
         this.playerInfo = playerInfo;
     }
 

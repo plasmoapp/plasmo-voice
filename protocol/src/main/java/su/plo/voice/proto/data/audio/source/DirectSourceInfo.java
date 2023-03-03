@@ -29,6 +29,7 @@ public final class DirectSourceInfo extends SourceInfo {
     public DirectSourceInfo(@NotNull String addonId,
                             @NotNull UUID sourceId,
                             @NotNull UUID lineId,
+                            @Nullable String sourceName,
                             byte state,
                             @NotNull String codec,
                             boolean stereo,
@@ -38,7 +39,7 @@ public final class DirectSourceInfo extends SourceInfo {
                             @Nullable Pos3d relativePosition,
                             @Nullable Pos3d lookAngle,
                             boolean cameraRelative) {
-        super(addonId, sourceId, lineId, state, codec, stereo, iconVisible, angle);
+        super(addonId, sourceId, lineId, sourceName, state, codec, stereo, iconVisible, angle);
 
         this.sender = sender;
         this.relativePosition = relativePosition;

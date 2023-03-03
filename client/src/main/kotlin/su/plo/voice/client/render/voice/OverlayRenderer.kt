@@ -187,6 +187,9 @@ class OverlayRenderer(
         sourceInfo: SourceInfo,
         sourceLine: ClientSourceLine
     ): MinecraftTextComponent {
+        if (sourceInfo.name != null)
+            return MinecraftTextComponent.literal(sourceInfo.name)
+
         return when (sourceInfo) {
             is DirectSourceInfo -> {
                 sourceInfo.sender?.let {

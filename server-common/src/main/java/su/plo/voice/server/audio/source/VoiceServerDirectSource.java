@@ -103,6 +103,7 @@ public final class VoiceServerDirectSource
                 addon.getId(),
                 id,
                 line.getId(),
+                name,
                 (byte) state.get(),
                 codec,
                 stereo,

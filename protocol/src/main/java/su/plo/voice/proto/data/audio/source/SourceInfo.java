@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
@@ -49,6 +50,8 @@ public abstract class SourceInfo implements PacketSerializable {
     @Getter
     protected UUID lineId;
     @Getter
+    protected @Nullable String name;
+    @Getter
     protected byte state;
     @Getter
     protected String codec;
@@ -63,6 +66,7 @@ public abstract class SourceInfo implements PacketSerializable {
     public void deserialize(ByteArrayDataInput in) throws IOException {
         this.addonId = in.readUTF();
         this.id = PacketUtil.readUUID(in);
+        this.name = PacketUtil.readNullableString(in);
         this.state = in.readByte();
         this.codec = PacketUtil.readNullableString(in);
         this.stereo = in.readBoolean();
@@ -76,6 +80,7 @@ public abstract class SourceInfo implements PacketSerializable {
         out.writeUTF(getType().name());
         out.writeUTF(checkNotNull(addonId));
         PacketUtil.writeUUID(out, checkNotNull(id));
+        PacketUtil.writeNullableString(out, name);
         out.writeByte(state);
         PacketUtil.writeNullableString(out, codec);
         out.writeBoolean(stereo);

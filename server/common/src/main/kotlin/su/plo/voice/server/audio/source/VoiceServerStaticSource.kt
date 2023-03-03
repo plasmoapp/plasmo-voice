@@ -33,7 +33,9 @@ class VoiceServerStaticSource(
         get() = StaticSourceInfo(
             addon.id,
             id,
-            line.id, state.get().toByte(),
+            line.id,
+            name,
+            state.get().toByte(),
             codec,
             stereo,
             iconVisible,

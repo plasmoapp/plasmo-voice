@@ -12,6 +12,7 @@ import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -29,6 +30,8 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
 
     @Getter
     protected @NotNull ServerSourceLine line;
+    @Getter
+    protected @Nullable String name;
     @Getter
     protected boolean iconVisible = true;
     @Setter
@@ -79,6 +82,15 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     public synchronized void setIconVisible(boolean visible) {
         if (this.iconVisible != visible) {
             this.iconVisible = visible;
+            setDirty();
+            increaseSourceState();
+        }
+    }
+
+    @Override
+    public void setName(@Nullable String name) {
+        if (!Objects.equals(this.name, name)) {
+            this.name = name;
             setDirty();
             increaseSourceState();
         }

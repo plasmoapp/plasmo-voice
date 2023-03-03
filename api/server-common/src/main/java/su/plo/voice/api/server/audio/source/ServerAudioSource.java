@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
@@ -28,6 +29,11 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
     void setIconVisible(boolean visible);
 
     void setStereo(boolean stereo);
+
+    /**
+     * Sets the source name that will be visible in overlay
+     */
+    void setName(@Nullable String name);
 
     /**
      * Marks source as dirty.

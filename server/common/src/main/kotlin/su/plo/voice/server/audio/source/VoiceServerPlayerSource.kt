@@ -29,7 +29,9 @@ class VoiceServerPlayerSource(
         get() = PlayerSourceInfo(
             addon.id,
             id,
-            line.id, state.get().toByte(),
+            line.id,
+            name,
+            state.get().toByte(),
             codec,
             stereo,
             iconVisible,
