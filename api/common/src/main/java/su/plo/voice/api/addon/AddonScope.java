@@ -4,5 +4,6 @@ public enum AddonScope {
 
     CLIENT,
     SERVER,
-    PROXY
+    PROXY,
+    ANY
 }

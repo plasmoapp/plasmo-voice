@@ -208,7 +208,7 @@ public final class VoiceAddonManager implements AddonManager {
                     try (Reader reader = new InputStreamReader(in, StandardCharsets.UTF_8)) {
                         return JsonAddon.from(reader)
                                 .stream()
-                                .filter((addon) -> addon.getScope().equals(scope))
+                                .filter((addon) -> addon.getScope() == AddonScope.ANY || addon.getScope().equals(scope))
                                 .collect(Collectors.toList());
                     }
                 }
