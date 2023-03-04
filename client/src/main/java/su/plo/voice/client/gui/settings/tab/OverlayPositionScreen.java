@@ -1,6 +1,5 @@
 package su.plo.voice.client.gui.settings.tab;
 
-import gg.essential.universal.UScreen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
@@ -13,14 +12,14 @@ import su.plo.voice.client.gui.settings.HudPositionScreen;
 
 public final class OverlayPositionScreen extends HudPositionScreen<OverlayPosition> {
 
-    private final OverlayPosition dislabledPosition;
+    private final OverlayPosition disabledPosition;
 
     public OverlayPositionScreen(@NotNull GuiScreen parent,
                                  @NotNull EnumConfigEntry<OverlayPosition> entry,
                                  @Nullable OverlayPosition disabledPosition) {
         super(parent, entry, MinecraftTextComponent.translatable("gui.plasmovoice.overlay.position.choose"));
 
-        this.dislabledPosition = disabledPosition;
+        this.disabledPosition = disabledPosition;
     }
 
     @Override
@@ -58,21 +57,21 @@ public final class OverlayPositionScreen extends HudPositionScreen<OverlayPositi
     }
 
     @Override
-    protected Button createPositionButton(int x, int y, OverlayPosition iconPosition) {
+    protected Button createPositionButton(int x, int y, OverlayPosition overlayPosition) {
         Button button = new Button(
                 x,
                 y,
                 BUTTON_WIDTH,
                 20,
-                MinecraftTextComponent.translatable(iconPosition.getTranslation()),
+                MinecraftTextComponent.translatable(overlayPosition.getTranslation()),
                 (btn) -> {
-                    entry.set(iconPosition);
+                    entry.set(overlayPosition);
                     ScreenWrapper.openScreen(null);
                 },
                 Button.NO_TOOLTIP
         );
 
-        button.setActive(iconPosition != dislabledPosition);
+        button.setActive(overlayPosition != disabledPosition);
         return button;
     }
 }
