@@ -47,15 +47,15 @@ public final class ModVoice
     //$$     this.channel = NetworkRegistry.newEventChannel(
     //$$             ModVoiceServer.CHANNEL,
     //$$             () -> NetworkRegistry.ACCEPTVANILLA,
-    //$$             NetworkRegistry.ACCEPTVANILLA::equals,
-    //$$             NetworkRegistry.ACCEPTVANILLA::equals
+    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA),
+    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
     //$$     );
     //$$
     //$$     EventNetworkChannel serviceChannel = NetworkRegistry.newEventChannel(
     //$$             ModVoiceServer.SERVICE_CHANNEL,
     //$$             () -> NetworkRegistry.ACCEPTVANILLA,
-    //$$             NetworkRegistry.ACCEPTVANILLA::equals,
-    //$$             NetworkRegistry.ACCEPTVANILLA::equals
+    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA),
+    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
     //$$     );
     //$$
     //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE, channel, serviceChannel);
