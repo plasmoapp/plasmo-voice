@@ -140,9 +140,6 @@ class OverlayRenderer(
         val textWidth = RenderUtil.getTextWidth(sourceName) + 8
         var x = calcPositionX(position.x)
         var y = calcPositionY(position.y)
-        if (position.isRight) {
-            x -= 16
-        }
         if (position.isBottom) {
             y -= (ENTRY_HEIGHT + 1) * (index + 1)
         } else {
@@ -154,17 +151,23 @@ class OverlayRenderer(
 
         // render helm
         sourceInfo.player?.let {
+            if (position.isRight) {
+                x -= 16
+            }
+
             UGraphics.bindTexture(0, loadSkin(it))
             UGraphics.color4f(1f, 1f, 1f, 1f)
             RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
             UGraphics.enableBlend()
             RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
             UGraphics.disableBlend()
-            if (position.isRight) {
-                x -= textWidth + 1
-            } else {
+            if (!position.isRight) {
                 x += 16 + 1
             }
+        }
+
+        if (position.isRight) {
+            x -= textWidth + 1
         }
 
         // render text
