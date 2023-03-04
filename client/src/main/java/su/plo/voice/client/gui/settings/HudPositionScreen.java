@@ -17,11 +17,11 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
     protected static final int BUTTON_OFFSET = 25;
     protected static final int BUTTON_WIDTH = 100;
 
-    protected final GuiScreen parent;
+    protected final VoiceSettingsScreen parent;
     protected final EnumConfigEntry<E> entry;
     protected final MinecraftTextComponent chooseText;
 
-    public HudPositionScreen(@NotNull GuiScreen parent,
+    public HudPositionScreen(@NotNull VoiceSettingsScreen parent,
                              @NotNull EnumConfigEntry<E> entry,
                              @NotNull MinecraftTextComponent chooseText) {
         this.parent = parent;
@@ -46,11 +46,17 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
     @Override
     public boolean keyPressed(int keyCode, UKeyboard.@Nullable Modifiers modifiers) {
         if (keyCode == UKeyboard.KEY_ESCAPE) {
+            parent.setPreventEscClose(true);
             ScreenWrapper.openScreen(parent);
             return true;
         }
 
         return super.keyPressed(keyCode, modifiers);
+    }
+
+    @Override
+    public boolean shouldCloseOnEsc() {
+        return false;
     }
 
     protected abstract Button createPositionButton(int x, int y, E iconPosition);

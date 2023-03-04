@@ -1,21 +1,20 @@
 package su.plo.voice.client.gui.settings.tab;
 
-import gg.essential.universal.UScreen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
-import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.voice.client.config.IconPosition;
 import su.plo.voice.client.gui.settings.HudPositionScreen;
+import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 public final class ActivationIconPositionScreen extends HudPositionScreen<IconPosition> {
 
     private final IconPosition disabledPosition;
 
-    public ActivationIconPositionScreen(@NotNull GuiScreen parent,
+    public ActivationIconPositionScreen(@NotNull VoiceSettingsScreen parent,
                                         @NotNull EnumConfigEntry<IconPosition> entry,
                                         @Nullable IconPosition disabledPosition) {
         super(parent, entry, MinecraftTextComponent.translatable("gui.plasmovoice.overlay.activation_icon_position.choose"));
