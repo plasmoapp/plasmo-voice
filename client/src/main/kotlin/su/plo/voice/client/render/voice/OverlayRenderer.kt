@@ -146,6 +146,11 @@ class OverlayRenderer(
             y += (ENTRY_HEIGHT + 1) * index
         }
 
+        UGraphics.depthFunc(515)
+
+        stack.push()
+        stack.translate(0f, 0f, 1000f)
+
 //        int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
         val backgroundColor = (0.25f * 255.0f).toInt() shl 24
 
@@ -184,6 +189,8 @@ class OverlayRenderer(
             UGraphics.color4f(1f, 1f, 1f, 1f)
             RenderUtil.blit(stack, x, y, 0, 0f, 0f, 16, 16, 16, 16)
         }
+
+        stack.pop()
     }
 
     private fun getSourceSenderName(
