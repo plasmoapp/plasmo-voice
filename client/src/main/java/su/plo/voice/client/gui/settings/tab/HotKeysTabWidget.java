@@ -42,7 +42,9 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
     }
 
     private void createActivation(ClientActivation activation) {
-        if (activation.getDistances().size() == 0) return;
+        if (activation.getDistances().size() == 0 || activation.getDistances().get(0) == -1)
+            // todo: dynamic distances support
+            return;
 
         addEntry(new CategoryEntry(MinecraftTextComponent.translatable("key.plasmovoice.distance", MinecraftTextComponent.translatable(activation.getTranslation()))));
 
