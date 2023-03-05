@@ -2,6 +2,8 @@ package su.plo.voice.api.server;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.voice.api.addon.AddonManager;
+import su.plo.voice.api.addon.ServerAddonManagerProvider;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.server.audio.source.ServerSourceManager;
@@ -19,6 +21,17 @@ import java.util.Optional;
  * The Plasmo Client Server API
  */
 public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
+
+    /**
+     * Gets the server's addon manager instance
+     *
+     * <p>Use this method to get the addon manager instance for loading server/proxy addons from Spigot/Forge/Fabric</p>
+     *
+     * @return the addon manager instance
+     */
+    static AddonManager getAddonManagerInstance() {
+        return ServerAddonManagerProvider.Companion.getAddonManager();
+    }
 
     /**
      * Gets the {@link MinecraftServerLib}

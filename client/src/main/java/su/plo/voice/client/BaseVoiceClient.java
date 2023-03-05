@@ -1,5 +1,6 @@
 package su.plo.voice.client;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
@@ -64,6 +65,7 @@ import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -255,6 +257,14 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         return addonConfigs.computeIfAbsent(
                 addon.getId(),
                 (addonId) -> new VoiceAddonConfig(addon, config.getAddons().getAddon(addon.getId()))
+        );
+    }
+
+    @Override
+    protected List<File> addonsFolders() {
+        return ImmutableList.of(
+                modsFolder(),
+                new File(modsFolder(), "plasmovoice")
         );
     }
 

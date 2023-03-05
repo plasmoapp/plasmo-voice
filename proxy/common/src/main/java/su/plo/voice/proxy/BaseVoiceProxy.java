@@ -1,5 +1,6 @@
 package su.plo.voice.proxy;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.inject.AbstractModule;
@@ -11,6 +12,7 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.addon.ServerAddonManagerProvider;
 import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.audio.source.ProxySourceManager;
@@ -41,6 +43,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -79,6 +82,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
                 loader,
                 LogManager.getLogger("PlasmoVoiceProxy")
         );
+
+        ServerAddonManagerProvider.Companion.setAddonManager(getAddonManager());
     }
 
     @Override
@@ -228,8 +233,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     }
 
     @Override
-    protected File addonsFolder() {
-        return new File(getConfigFolder(), "addons");
+    protected List<File> addonsFolders() {
+        return ImmutableList.of(
+                new File(getConfigFolder(), "addons")
+        );
     }
 
     protected abstract PermissionSupplier createPermissionSupplier();

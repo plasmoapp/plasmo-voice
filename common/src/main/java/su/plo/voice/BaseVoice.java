@@ -22,6 +22,7 @@ import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -65,8 +66,8 @@ public abstract class BaseVoice implements PlasmoVoice {
     }
 
     protected void loadAddons() {
-        addonsFolder().mkdirs();
-        addons.load(ImmutableList.of(addonsFolder()));
+        addonsFolders().forEach(File::mkdirs);
+        addons.load(addonsFolders());
     }
 
     @Override
@@ -97,7 +98,9 @@ public abstract class BaseVoice implements PlasmoVoice {
 
     protected abstract File modsFolder();
 
-    protected File addonsFolder() {
-        return new File(modsFolder(), "plasmovoice");
+    protected List<File> addonsFolders() {
+        return ImmutableList.of(
+                new File(modsFolder(), "plasmovoice")
+        );
     }
 }

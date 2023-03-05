@@ -15,6 +15,7 @@ import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.addon.ServerAddonManagerProvider;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.logging.DebugLogger;
@@ -30,6 +31,8 @@ import su.plo.voice.api.server.event.command.CommandsRegisterEvent;
 import su.plo.voice.api.server.event.config.VoiceServerConfigLoadedEvent;
 import su.plo.voice.api.server.event.mute.MuteStorageCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
+import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
+import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
@@ -110,6 +113,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 loader,
                 LogManager.getLogger("PlasmoVoiceServer")
         );
+
+        ServerAddonManagerProvider.Companion.setAddonManager(getAddonManager());
     }
 
     @Override

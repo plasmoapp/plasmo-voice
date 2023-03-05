@@ -1,6 +1,6 @@
 package su.plo.voice.api.addon
 
-class AddonManagerProvider {
+class ServerAddonManagerProvider {
 
     companion object {
 

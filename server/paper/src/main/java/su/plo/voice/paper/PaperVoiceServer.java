@@ -1,5 +1,6 @@
 package su.plo.voice.paper;
 
+import com.google.common.collect.ImmutableList;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -20,6 +21,7 @@ import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
+import java.util.List;
 
 public final class PaperVoiceServer extends BaseVoiceServer implements Listener {
 
@@ -92,8 +94,10 @@ public final class PaperVoiceServer extends BaseVoiceServer implements Listener 
     }
 
     @Override
-    protected File addonsFolder() {
-        return new File(modsFolder(), "PlasmoVoice/addons");
+    protected List<File> addonsFolders() {
+        return ImmutableList.of(
+                new File(getConfigFolder(), "addons")
+        );
     }
 
     @Override

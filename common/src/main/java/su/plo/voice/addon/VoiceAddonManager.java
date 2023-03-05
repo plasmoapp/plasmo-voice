@@ -10,7 +10,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
-import su.plo.voice.api.addon.*;
+import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.addon.AddonDependency;
+import su.plo.voice.api.addon.AddonManager;
+import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.addon.annotation.Addon;
 import su.plo.voice.api.addon.annotation.processor.JsonAddon;
 
@@ -46,8 +49,6 @@ public final class VoiceAddonManager implements AddonManager {
                              @NotNull AddonScope scope) {
         this.voice = voice;
         this.scope = scope;
-
-        AddonManagerProvider.Companion.setAddonManager(this);
     }
 
     @Override
