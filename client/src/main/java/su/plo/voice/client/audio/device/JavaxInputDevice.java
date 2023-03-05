@@ -34,7 +34,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
         checkNotNull(params, "params cannot be null");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
-        client.getEventBus().call(preOpenEvent);
+        voiceClient.getEventBus().call(preOpenEvent);
 
         if (preOpenEvent.isCancelled()) {
             throw new DeviceException("Device opening has been canceled");
@@ -53,7 +53,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
 
         LOGGER.info("Device " + name + " initialized");
 
-        client.getEventBus().call(new DeviceOpenEvent(this));
+        voiceClient.getEventBus().call(new DeviceOpenEvent(this));
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
             this.device = null;
         }
 
-        client.getEventBus().call(new DeviceClosedEvent(this));
+        voiceClient.getEventBus().call(new DeviceClosedEvent(this));
     }
 
     @Override

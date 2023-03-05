@@ -1,5 +1,6 @@
 package su.plo.voice.client.audio.device;
 
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
@@ -32,7 +33,10 @@ import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.lwjgl.openal.ALC10.ALC_FALSE;
@@ -47,14 +51,14 @@ public final class AlOutputDevice
     private final ExecutorService executor;
     @Getter
     private final Listener listener = new AlListener();
-    private final Set<AlSource> sources = new CopyOnWriteArraySet<>();
+    private final Set<AlSource> sources = Sets.newHashSet();
 
     private boolean hrtfSupported;
     private long devicePointer;
     private long contextPointer;
 
-    public AlOutputDevice(PlasmoVoiceClient client, @Nullable String name) {
-        super(client, name);
+    public AlOutputDevice(@NotNull PlasmoVoiceClient voiceClient, @Nullable String name) {
+        super(voiceClient, name);
         this.executor = Executors.newSingleThreadScheduledExecutor(r -> {
             Thread thread = new Thread(
                     null,
@@ -74,7 +78,7 @@ public final class AlOutputDevice
         checkNotNull(params, "params cannot be null");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
-        client.getEventBus().call(preOpenEvent);
+        voiceClient.getEventBus().call(preOpenEvent);
 
         if (preOpenEvent.isCancelled()) {
             throw new DeviceException("Device opening has been canceled");
@@ -130,7 +134,7 @@ public final class AlOutputDevice
                         0.0F, 1.0F, 0.0F
                 });
 
-                client.getEventBus().call(new DeviceOpenEvent(this));
+                voiceClient.getEventBus().call(new DeviceOpenEvent(this));
             }
         });
     }
@@ -139,9 +143,10 @@ public final class AlOutputDevice
     public void close() {
         if (!isOpen()) return;
 
-        closeSources();
         runInContext(() -> {
             synchronized (this) {
+                closeSources();
+                
                 EXTThreadLocalContext.alcSetThreadContext(0L);
 
                 if (contextPointer != 0L) {
@@ -156,7 +161,7 @@ public final class AlOutputDevice
 
                 LOGGER.info("Device " + name + " closed");
 
-                client.getEventBus().call(new DeviceClosedEvent(this));
+                voiceClient.getEventBus().call(new DeviceClosedEvent(this));
             }
         });
     }
@@ -182,7 +187,7 @@ public final class AlOutputDevice
     }
 
     @Override
-    public AlSource createSource(boolean stereo, @NotNull Params params) throws DeviceException {
+    public synchronized AlSource createSource(boolean stereo, @NotNull Params params) throws DeviceException {
         checkNotNull(params, "params cannot be null");
         if (!isOpen()) throw new DeviceException("Device is not open");
 
@@ -202,7 +207,7 @@ public final class AlOutputDevice
         }
 
         try {
-            AlSource source = StreamAlSource.create(this, client, stereo, numBuffers);
+            AlSource source = StreamAlSource.create(this, voiceClient, stereo, numBuffers);
             sources.add(source);
             return source;
         } catch (RuntimeException e) {
@@ -216,7 +221,12 @@ public final class AlOutputDevice
 
     @Override
     public void closeSources() {
-        sources.forEach(AlSource::close);
+        runInContext(() -> {
+            // synchronize in device context to avoid deadlock
+            synchronized (this) {
+                Sets.newHashSet(sources).forEach(AlSource::close);
+            }
+        });
     }
 
     @Override
@@ -281,7 +291,7 @@ public final class AlOutputDevice
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
-    public void onSourceClosed(@NotNull AlSourceClosedEvent event) {
+    public synchronized void onSourceClosed(@NotNull AlSourceClosedEvent event) {
         sources.remove(event.getSource());
     }
 

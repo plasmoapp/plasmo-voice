@@ -100,8 +100,7 @@ public final class StreamAlSource extends BaseAlSource {
         AlUtil.checkDeviceContext(device);
 
         AlSourceStopEvent event = new AlSourceStopEvent(this);
-        client.getEventBus().call(event);
-        if (event.isCancelled()) return;
+        if (!client.getEventBus().call(event)) return;
 
         AL11.alSourceStop(pointer);
         AlUtil.checkErrors("Source stop");
@@ -109,9 +108,10 @@ public final class StreamAlSource extends BaseAlSource {
         isStreaming.set(false);
 
         try {
-            thread.interrupt();
+//            thread.interrupt();
             thread.join();
         } catch (InterruptedException ignored) {
+            ignored.printStackTrace();
         }
 
         queue.clear();
@@ -156,20 +156,22 @@ public final class StreamAlSource extends BaseAlSource {
         if (!isStreaming.get()) return;
 
         device.runInContext(() -> {
-            stop();
+            synchronized (this) {
+                stop();
 
-            AlSourceClosedEvent event = new AlSourceClosedEvent(this);
-            client.getEventBus().call(event);
+                AlSourceClosedEvent event = new AlSourceClosedEvent(this);
+                client.getEventBus().call(event);
 
-            removeProcessedBuffers();
+                removeProcessedBuffers();
 
-            AL11.alDeleteBuffers(buffers);
-            AlUtil.checkErrors("Delete buffers");
+                AL11.alDeleteBuffers(buffers);
+                AlUtil.checkErrors("Delete buffers");
 
-            AL11.alDeleteSources(new int[]{pointer});
-            AlUtil.checkErrors("Delete source");
+                AL11.alDeleteSources(new int[]{pointer});
+                AlUtil.checkErrors("Delete source");
 
-            this.pointer = 0;
+                this.pointer = 0;
+            }
         });
     }
 

@@ -39,7 +39,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         checkNotNull(params, "params cannot be null");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
-        client.getEventBus().call(preOpenEvent);
+        voiceClient.getEventBus().call(preOpenEvent);
 
         if (preOpenEvent.isCancelled()) {
             throw new DeviceException("Device opening has been canceled");
@@ -51,7 +51,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         this.devicePointer = openDevice(name, format);
 
         LOGGER.info("Device " + name + " initialized");
-        client.getEventBus().call(new DeviceOpenEvent(this));
+        voiceClient.getEventBus().call(new DeviceOpenEvent(this));
     }
 
     @Override
@@ -65,7 +65,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
             LOGGER.info("Device " + name + " closed");
         }
 
-        client.getEventBus().call(new DeviceClosedEvent(this));
+        voiceClient.getEventBus().call(new DeviceClosedEvent(this));
     }
 
     @Override

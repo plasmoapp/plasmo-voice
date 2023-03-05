@@ -20,7 +20,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public abstract class BaseAudioDevice implements AudioDevice {
 
-    protected final PlasmoVoiceClient client;
+    protected final PlasmoVoiceClient voiceClient;
     protected final @Nullable String name;
 
     protected AudioFormat format;

@@ -97,7 +97,11 @@ abstract class BaseClientAudioSource<T> constructor(
         // initialize volumes
         lineVolume = getLineVolume(sourceInfo)
         lineMute = getLineMute(sourceInfo)
-        LOGGER.info("Source {} initialized", sourceInfo)
+        LOGGER.info(
+            "Source {} initialized in {}",
+            sourceInfo,
+            if (isStereo(sourceInfo)) "stereo" else "mono"
+        )
     }
 
     @Synchronized
@@ -114,7 +118,11 @@ abstract class BaseClientAudioSource<T> constructor(
             sourceGroup = createSourceGroup(sourceInfo)
             oldSourceGroup.clear()
 
-            LOGGER.info("Update device sources for {}", sourceInfo)
+            LOGGER.info(
+                "Update device sources for {} in {}",
+                sourceInfo,
+                if (isStereo(sourceInfo)) "stereo" else "mono"
+            )
         }
 
         // initialize decoder
@@ -274,6 +282,10 @@ abstract class BaseClientAudioSource<T> constructor(
         } else {
             updateSource(volume.toFloat(), packet.distance.toInt())
         }
+
+        // after updating the source, source can be closed by reloading the device,
+        // so we need to make sure that source is not closed rn
+        if (closed.get()) return
 
         // packet compensation
         if (lastSequenceNumber >= 0) {
