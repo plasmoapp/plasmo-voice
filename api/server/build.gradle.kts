@@ -8,6 +8,10 @@ val javadocProjects = listOf(
     project(":protocol")
 )
 
+configurations.shadow {
+    isTransitive = false
+}
+
 dependencies {
     implementation(shadow(project(":api:common"))!!)
     implementation(shadow(project(":api:server-common"))!!)
@@ -23,10 +27,10 @@ tasks {
 //        setDestinationDir(file("${buildDir}/docs/javadoc"))
 //    }
 //
-//    sourcesJar {
-//        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-//        from(javadocProjects.map {
-//            it.sourceSets.main.get().allSource
-//        })
-//    }
+    sourcesJar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        from(javadocProjects.map {
+            it.sourceSets.main.get().allSource
+        })
+    }
 }
