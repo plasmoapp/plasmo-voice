@@ -70,7 +70,6 @@ public final class NettyUdpServer implements UdpServer {
         }
 
         voiceServer.getLogger().info("UDP server is started on {}", socketAddress);
-        voiceServer.getEventBus().call(new UdpServerStartedEvent(this));
     }
 
     @Override
@@ -81,7 +80,6 @@ public final class NettyUdpServer implements UdpServer {
         loopGroup.shutdownGracefully();
 
         voiceServer.getLogger().info("UDP server is stopped");
-        voiceServer.getEventBus().call(new UdpServerStoppedEvent(this));
     }
 
     @Override

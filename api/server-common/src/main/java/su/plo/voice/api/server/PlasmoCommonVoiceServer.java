@@ -10,6 +10,11 @@ import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayerManager;
 
+/**
+ * Server common Plasmo Voice API
+ * <br/>
+ * Common interface for proxy and server
+ */
 public interface PlasmoCommonVoiceServer extends PlasmoVoice {
 
     /**

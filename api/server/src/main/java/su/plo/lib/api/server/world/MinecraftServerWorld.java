@@ -5,12 +5,18 @@ import org.jetbrains.annotations.NotNull;
 public interface MinecraftServerWorld {
 
     /**
-     * Get the world key
+     * @return world key
      */
     @NotNull String getKey();
 
     /**
-     * Gets the backed world object
+     * Gets the server's implementation instance
+     * <ul>
+     * <li>{@code org.bukkit.World} for bukkit</li>
+     * <li>{@code net.minecraft.server.level.ServerLevel} for mods (fabric/forge)</li>
+     * </ul>
+     *
+     * @return server's implementation object
      */
     <T> T getInstance();
 }

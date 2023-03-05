@@ -1,21 +1,17 @@
 package su.plo.voice.api.server.event;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.PlasmoVoiceServer;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This event is fired when the Plasmo Voice server is initializing
  */
+@RequiredArgsConstructor
 public final class VoiceServerInitializeEvent implements Event {
 
     @Getter
-    private final PlasmoVoiceServer server;
-
-    public VoiceServerInitializeEvent(@NotNull PlasmoVoiceServer server) {
-        this.server = checkNotNull(server, "server cannot be null");
-    }
+    private final @NonNull PlasmoVoiceServer server;
 }

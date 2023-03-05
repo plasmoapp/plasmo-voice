@@ -12,9 +12,18 @@ import java.util.UUID;
 public interface UdpConnectionManager<P extends VoicePlayer, C extends UdpConnection>
         extends ConnectionManager<ClientPacketUdpHandler, P> {
 
+    /**
+     * @return connection by player uuid
+     */
     Optional<C> getConnectionByPlayerId(@NotNull UUID playerId);
 
+    /**
+     * @return connection by secret
+     */
     Optional<C> getConnectionBySecret(@NotNull UUID secret);
 
+    /**
+     * @return collection of all connections
+     */
     Collection<C> getConnections();
 }

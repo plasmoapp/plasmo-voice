@@ -10,9 +10,6 @@ import java.security.PublicKey;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Represents "proxy" player to an actual server player object
- */
 public interface VoicePlayer {
 
     /**
@@ -37,7 +34,7 @@ public interface VoicePlayer {
 
     /**
      * @return true if player has muted the microphone in voice chat
-     * */
+     */
     boolean isMicrophoneMuted();
 
     /**
@@ -56,7 +53,7 @@ public interface VoicePlayer {
     /**
      * Visualizes sphere distance if client has enabled this feature
      *
-     * @param radius sphere radius
+     * @param radius   sphere radius
      * @param hexColor int hex color (e.g. 0x00a000)
      */
     void visualizeDistance(int radius, int hexColor);

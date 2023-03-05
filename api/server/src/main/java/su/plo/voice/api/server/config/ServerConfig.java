@@ -36,6 +36,16 @@ public interface ServerConfig {
 
     interface Voice {
 
+        /**
+         * Gets the aes encryption key
+         * <br/>
+         * Can be changed if server is behind the proxy,
+         * so don't store reference to this in addons
+         *
+         * @return the aes encryption key
+         */
+        byte[] aesEncryptionKey();
+
         int sampleRate();
 
         int keepAliveTimeoutMs();
@@ -43,13 +53,6 @@ public interface ServerConfig {
         int mtuSize();
 
         boolean clientModRequired();
-
-        /**
-         * Gets the aes encryption key
-         *
-         * @return the aes encryption key
-         */
-        byte[] aesEncryptionKey();
 
         @NotNull Proximity proximity();
 

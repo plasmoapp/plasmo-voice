@@ -2,6 +2,7 @@ package su.plo.voice.server.connection;
 
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.event.EventSubscribe;
@@ -10,6 +11,7 @@ import su.plo.voice.api.server.event.connection.UdpClientConnectEvent;
 import su.plo.voice.api.server.event.connection.UdpClientConnectedEvent;
 import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent;
 import su.plo.voice.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.Packet;
@@ -34,12 +36,12 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     private final Map<UUID, UdpServerConnection> connectionByPlayerId = Maps.newConcurrentMap();
 
     @Override
-    public Optional<UUID> getPlayerIdBySecret(UUID secret) {
+    public Optional<UUID> getPlayerIdBySecret(@NonNull UUID secret) {
         return Optional.ofNullable(playerIdBySecret.get(secret));
     }
 
     @Override
-    public UUID getSecretByPlayerId(UUID playerUUID) {
+    public UUID getSecretByPlayerId(@NonNull UUID playerUUID) {
         if (secretByPlayerId.containsKey(playerUUID)) {
             return secretByPlayerId.get(playerUUID);
         }
@@ -52,10 +54,9 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     }
 
     @Override
-    public void addConnection(UdpServerConnection connection) {
+    public void addConnection(@NonNull UdpServerConnection connection) {
         UdpClientConnectEvent connectEvent = new UdpClientConnectEvent(connection);
-        voiceServer.getEventBus().call(connectEvent);
-        if (connectEvent.isCancelled()) return;
+        if (!voiceServer.getEventBus().call(connectEvent)) return;
 
         UdpServerConnection bySecret = connectionBySecret.put(connection.getSecret(), connection);
         UdpServerConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getInstance().getUUID(), connection);
@@ -68,7 +69,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     }
 
     @Override
-    public boolean removeConnection(UdpServerConnection connection) {
+    public boolean removeConnection(@NonNull UdpServerConnection connection) {
         UdpServerConnection bySecret = connectionBySecret.remove(connection.getSecret());
         UdpServerConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
 
@@ -115,10 +116,16 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     }
 
     private void disconnect(UdpServerConnection connection) {
+        if (!connection.isConnected()) return;
         connection.disconnect();
 
-        secretByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
+        VoicePlayer player = connection.getPlayer();
+
+        secretByPlayerId.remove(player.getInstance().getUUID());
         playerIdBySecret.remove(connection.getSecret());
+
+        connectionByPlayerId.remove(player.getInstance().getUUID());
+        connectionBySecret.remove(connection.getSecret());
 
         voiceServer.getLogger().info("{} disconnected", connection.getPlayer());
         voiceServer.getEventBus().call(new UdpClientDisconnectedEvent(connection));

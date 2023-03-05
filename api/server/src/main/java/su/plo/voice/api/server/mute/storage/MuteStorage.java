@@ -1,12 +1,19 @@
 package su.plo.voice.api.server.mute.storage;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.server.event.mute.MuteStorageCreateEvent;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Stores voice mutes
+ * <br/>
+ * Storage implementation can be replaced in {@link MuteStorageCreateEvent},
+ * by default Json mute storage will be used
+ */
 public interface MuteStorage {
 
     /**

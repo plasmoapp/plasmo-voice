@@ -8,7 +8,7 @@ import su.plo.lib.api.server.world.ServerPos3d;
 public interface MinecraftServerEntity extends MinecraftEntity {
 
     /**
-     * @return a new instance of a player {@link ServerPos3d}
+     * @return a new instance of an entity's {@link ServerPos3d}
      */
     @NotNull ServerPos3d getServerPosition();
 
@@ -17,5 +17,8 @@ public interface MinecraftServerEntity extends MinecraftEntity {
      */
     @NotNull ServerPos3d getServerPosition(@NotNull ServerPos3d position);
 
+    /**
+     * @return entity's current world
+     */
     @NotNull MinecraftServerWorld getWorld();
 }

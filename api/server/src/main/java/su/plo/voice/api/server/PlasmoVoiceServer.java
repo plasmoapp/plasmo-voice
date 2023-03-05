@@ -101,6 +101,9 @@ public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
      * Gets a default encryption
      * <br/>
      * AES/CBC/PKCS5Padding used by default
+     * <br/>
+     * Can be changed if server is behind the proxy,
+     * so don't store reference to this in addons
      *
      * @return {@link Encryption} instance
      */

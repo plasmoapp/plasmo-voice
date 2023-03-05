@@ -196,21 +196,12 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             }
         }
 
-        if (udpServer != null) {
-            udpServer.stop();
-            this.udpServer = null;
-        }
+        stopUdpServer();
 
-        // cleanup sources
+        // cleanup
         sourceManager.clear();
-
-        // cleanup source lines
         sourceLineManager.clear();
-
-        // cleanup activations
         activationManager.clear();
-
-        // cleanup players
         playerManager.clear();
 
         this.config = null;
@@ -269,7 +260,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         }
 
         debugLogger.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
-        eventBus.call(new VoiceServerConfigLoadedEvent(this));
+        eventBus.call(new VoiceServerConfigLoadedEvent(this, config));
 
         // register proximity activation
         proximityActivation.register(config);
@@ -290,8 +281,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                     .stream()
                     .map(UdpServerConnection::getPlayer)
                     .collect(Collectors.toList());
-            this.udpServer.stop();
-            this.udpServer = null;
+            stopUdpServer();
         }
 
         UdpServer server = new NettyUdpServer(this);
@@ -310,12 +300,21 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
             server.start(config.host().ip(), port);
             this.udpServer = server;
+            eventBus.call(new UdpServerStartedEvent(server));
 
             if (connectedPlayers != null) {
                 connectedPlayers.forEach(tcpConnectionManager::requestPlayerInfo);
             }
         } catch (Exception e) {
             getLogger().error("Failed to start the udp server", e);
+        }
+    }
+
+    private void stopUdpServer() {
+        if (this.udpServer != null) {
+            this.udpServer.stop();
+            eventBus.call(new UdpServerStoppedEvent(udpServer));
+            this.udpServer = null;
         }
     }
 

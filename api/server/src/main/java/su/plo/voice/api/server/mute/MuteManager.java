@@ -47,7 +47,7 @@ public interface MuteManager {
     Optional<ServerMuteInfo> getMute(@NotNull UUID playerId);
 
     /**
-     * Collection of the muted players
+     * @return collection of the muted players
      */
     Collection<ServerMuteInfo> getMutedPlayers();
 }

@@ -1,27 +1,24 @@
 package su.plo.voice.api.server.event.command;
 
 import lombok.Getter;
-import org.jetbrains.annotations.NotNull;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
+import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Called when the server is ready to register commands.
+ * <br/>
+ * Will not be called if addon was registered by {@link AddonManager#load(Object)}
  */
+@RequiredArgsConstructor
 public final class CommandsRegisterEvent implements Event {
 
     @Getter
-    private final PlasmoVoiceServer voiceServer;
+    private final @NonNull PlasmoVoiceServer voiceServer;
     @Getter
-    private final MinecraftCommandManager<MinecraftCommand> commandManager;
-
-    public CommandsRegisterEvent(@NotNull PlasmoVoiceServer voiceServer,
-                                 @NotNull MinecraftCommandManager<MinecraftCommand> commandManager) {
-        this.voiceServer = checkNotNull(voiceServer, "voiceServer cannot be null");
-        this.commandManager = checkNotNull(commandManager, "commandManager cannot be null");
-    }
+    private final @NonNull MinecraftCommandManager<MinecraftCommand> commandManager;
 }
