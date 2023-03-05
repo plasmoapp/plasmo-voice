@@ -22,26 +22,6 @@ public final class CompressorFilter implements AudioFilter {
     private float[] envelopeBuf = new float[0];
     private float envelope;
 
-    private synchronized void analyzeEnvelope(short[] samples) {
-        this.envelopeBuf = new float[samples.length];
-
-        float attackGain = AudioUtil.gainCoefficient(sampleRate, ATTACK_TIME / 1000F);
-        float releaseGain = AudioUtil.gainCoefficient(sampleRate, RELEASE_TIME / 1000F);
-
-        float env = this.envelope;
-        for (int i = 0; i < samples.length; i++) {
-            float envIn = Math.abs(((float) samples[i]) / 0x8000);
-            if (env < envIn) {
-                env = envIn + attackGain * (env - envIn);
-            } else {
-                env = envIn + releaseGain * (env - envIn);
-            }
-
-            this.envelopeBuf[i] = Math.max(this.envelopeBuf[i], env);
-        }
-        this.envelope = envelopeBuf[samples.length - 1];
-    }
-
     @Override
     public @NotNull String getName() {
         return "compressor";
@@ -49,9 +29,12 @@ public final class CompressorFilter implements AudioFilter {
 
     @Override
     public short[] process(short[] samples) {
-        analyzeEnvelope(samples);
-        compress(samples);
-        return samples;
+        float[] floatSamples = AudioUtil.shortsToFloatsRange(samples);
+
+        analyzeEnvelope(floatSamples);
+        compress(floatSamples);
+
+        return AudioUtil.floatsRangeToShort(floatSamples);
     }
 
     @Override
@@ -59,7 +42,7 @@ public final class CompressorFilter implements AudioFilter {
         return activeEntry.value();
     }
 
-    public synchronized short[] compress(short[] samples) {
+    public synchronized void compress(float[] samples) {
         float compressorThreshold = thresholdEntry.value();
 
         for (int i = 0; i < samples.length; i++) {
@@ -70,7 +53,25 @@ public final class CompressorFilter implements AudioFilter {
 
             samples[i] *= compressorGain * OUTPUT_GAIN;
         }
+    }
 
-        return samples;
+    private synchronized void analyzeEnvelope(float[] samples) {
+        this.envelopeBuf = new float[samples.length];
+
+        float attackGain = AudioUtil.gainCoefficient(sampleRate, ATTACK_TIME / 1000F);
+        float releaseGain = AudioUtil.gainCoefficient(sampleRate, RELEASE_TIME / 1000F);
+
+        float env = this.envelope;
+        for (int i = 0; i < samples.length; i++) {
+            float envIn = Math.abs(samples[i]);
+            if (env < envIn) {
+                env = envIn + attackGain * (env - envIn);
+            } else {
+                env = envIn + releaseGain * (env - envIn);
+            }
+
+            this.envelopeBuf[i] = Math.max(this.envelopeBuf[i], env);
+        }
+        this.envelope = envelopeBuf[samples.length - 1];
     }
 }

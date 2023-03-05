@@ -71,11 +71,11 @@ public final class DevicesTabWidget extends TabWidget {
                 config.getVoice().getVolume(),
                 "%"
         ));
-        addEntry(createToggleEntry(
-                "gui.plasmovoice.devices.compressor",
-                "gui.plasmovoice.devices.compressor.tooltip",
-                config.getVoice().getCompressorLimiter()
-        ));
+//        addEntry(createToggleEntry(
+//                "gui.plasmovoice.devices.compressor",
+//                "gui.plasmovoice.devices.compressor.tooltip",
+//                config.getVoice().getCompressorLimiter()
+//        ));
         addEntry(createToggleEntry(
                 "gui.plasmovoice.devices.occlusion",
                 "gui.plasmovoice.devices.occlusion.tooltip",

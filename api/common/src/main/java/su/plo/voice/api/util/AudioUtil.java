@@ -260,6 +260,36 @@ public final class AudioUtil {
         return max;
     }
 
+    /**
+     * Converts shorts to floats in range [-1;1]
+     *
+     * @return the floats in range [-1;1]
+     */
+    public static float[] shortsToFloatsRange(short[] input) {
+        float[] floats = new float[input.length];
+
+        for(int i = 0; i < input.length; i++) {
+            floats[i] = (float) input[i] / 0x8000;
+        }
+
+        return floats;
+    }
+
+    /**
+     * Converts floats in range [-1;1] to shorts
+     *
+     * @return the shorts
+     */
+    public static short[] floatsRangeToShort(float[] input) {
+        short[] shorts = new short[input.length];
+
+        for(int i = 0; i < input.length; i++) {
+            shorts[i] = (short) (input[i] * 0x8000);
+        }
+
+        return shorts;
+    }
+
     public static float mulToDB(float mul) {
         return (mul == 0.0f) ? -Float.MAX_VALUE : (float) (20.0F * Math.log10(mul));
     }

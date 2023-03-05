@@ -57,19 +57,19 @@ public final class AdvancedTabWidget extends TabWidget {
         addEntry(createStereoToMonoSources());
         addEntry(createPanning());
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.compressor")));
-        addEntry(createIntSliderWidget(
-                "gui.plasmovoice.advanced.compressor_threshold",
-                "gui.plasmovoice.advanced.compressor_threshold.tooltip",
-                config.getAdvanced().getCompressorThreshold(),
-                "dB"
-        ));
-        addEntry(createIntSliderWidget(
-                "gui.plasmovoice.advanced.limiter_threshold",
-                "gui.plasmovoice.advanced.limiter_threshold.tooltip",
-                config.getAdvanced().getLimiterThreshold(),
-                "dB"
-        ));
+//        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.compressor")));
+//        addEntry(createIntSliderWidget(
+//                "gui.plasmovoice.advanced.compressor_threshold",
+//                "gui.plasmovoice.advanced.compressor_threshold.tooltip",
+//                config.getAdvanced().getCompressorThreshold(),
+//                "dB"
+//        ));
+//        addEntry(createIntSliderWidget(
+//                "gui.plasmovoice.advanced.limiter_threshold",
+//                "gui.plasmovoice.advanced.limiter_threshold.tooltip",
+//                config.getAdvanced().getLimiterThreshold(),
+//                "dB"
+//        ));
     }
 
     private OptionEntry<ToggleButton> createStereoToMonoSources() {

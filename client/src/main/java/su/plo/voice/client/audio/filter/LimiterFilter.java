@@ -41,26 +41,6 @@ public class LimiterFilter implements AudioFilter {
         this.thresholdEntry = thresholdEntry;
     }
 
-    private synchronized void analyzeEnvelope(short[] samples) {
-        this.envelopeBuf = new float[samples.length];
-
-        float attackGain = AudioUtil.gainCoefficient(sampleRate, 0.001F / 1000F);
-        float releaseGain = AudioUtil.gainCoefficient(sampleRate, 60F / 1000F);
-
-        float env = this.envelope;
-        for (int i = 0; i < samples.length; i++) {
-            float envIn = Math.abs(((float) samples[i]) / 0x8000);
-            if (env < envIn) {
-                env = envIn + attackGain * (env - envIn);
-            } else {
-                env = envIn + releaseGain * (env - envIn);
-            }
-
-            this.envelopeBuf[i] = Math.max(this.envelopeBuf[i], env);
-        }
-        this.envelope = envelopeBuf[samples.length - 1];
-    }
-
     @Override
     public @NotNull String getName() {
         return "limiter";
@@ -68,9 +48,12 @@ public class LimiterFilter implements AudioFilter {
 
     @Override
     public short[] process(short[] samples) {
-        analyzeEnvelope(samples);
-        limit(samples);
-        return samples;
+        float[] floatSamples = AudioUtil.shortsToFloatsRange(samples);
+
+        analyzeEnvelope(floatSamples);
+        limit(floatSamples);
+
+        return AudioUtil.floatsRangeToShort(floatSamples);
     }
 
     @Override
@@ -78,7 +61,7 @@ public class LimiterFilter implements AudioFilter {
         return activeEntry.value();
     }
 
-    public synchronized void limit(short[] samples) {
+    public synchronized void limit(float[] samples) {
         float limiterThreshold;
 
         if (thresholdEntry != null) {
@@ -98,5 +81,25 @@ public class LimiterFilter implements AudioFilter {
 
             samples[i] *= limiterGain * OUTPUT_GAIN;
         }
+    }
+
+    private synchronized void analyzeEnvelope(float[] samples) {
+        this.envelopeBuf = new float[samples.length];
+
+        float attackGain = AudioUtil.gainCoefficient(sampleRate, 0.001F / 1000F);
+        float releaseGain = AudioUtil.gainCoefficient(sampleRate, 60F / 1000F);
+
+        float env = this.envelope;
+        for (int i = 0; i < samples.length; i++) {
+            float envIn = Math.abs(samples[i]);
+            if (env < envIn) {
+                env = envIn + attackGain * (env - envIn);
+            } else {
+                env = envIn + releaseGain * (env - envIn);
+            }
+
+            this.envelopeBuf[i] = Math.max(this.envelopeBuf[i], env);
+        }
+        this.envelope = envelopeBuf[samples.length - 1];
     }
 }
