@@ -136,7 +136,6 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
 
     @EventSubscribe
     public void onConnect(@NotNull UdpClientConnectedEvent event) {
-        System.out.println("open settings on connected");
         voiceClient.openSettings();
     }
 
@@ -145,7 +144,6 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
         if (event.isTimedOut()) {
             setConnecting();
         } else {
-            System.out.println("open settings on timed out");
             voiceClient.openSettings();
         }
     }
