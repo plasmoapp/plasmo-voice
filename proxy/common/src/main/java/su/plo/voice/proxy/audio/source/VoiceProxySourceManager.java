@@ -10,6 +10,7 @@ import su.plo.voice.api.proxy.audio.source.ProxySourceManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.audio.source.ServerDirectSource;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.server.audio.source.VoiceServerDirectSource;
 
 import java.util.Collection;
@@ -43,7 +44,7 @@ public class VoiceProxySourceManager implements ProxySourceManager {
     @Override
     public @NotNull ServerDirectSource createDirectSource(@NotNull Object addonObject,
                                                           @NotNull ServerSourceLine line,
-                                                          @Nullable String codec,
+                                                          @Nullable CodecInfo decoderInfo,
                                                           boolean stereo) {
         Optional<AddonContainer> addon = voiceProxy.getAddonManager().getAddon(addonObject);
         if (!addon.isPresent()) throw new IllegalArgumentException("addonObject is not an addon");
@@ -53,7 +54,7 @@ public class VoiceProxySourceManager implements ProxySourceManager {
                 voiceProxy.getUdpConnectionManager(),
                 addon.get(),
                 line,
-                codec,
+                decoderInfo,
                 stereo
         );
         sourceById.put(source.getId(), source);

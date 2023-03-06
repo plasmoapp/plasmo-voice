@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
@@ -54,7 +55,7 @@ public abstract class SourceInfo implements PacketSerializable {
     @Getter
     protected byte state;
     @Getter
-    protected String codec;
+    protected @Nullable CodecInfo decoderInfo;
     @Getter
     protected boolean stereo;
     @Getter
@@ -68,7 +69,10 @@ public abstract class SourceInfo implements PacketSerializable {
         this.id = PacketUtil.readUUID(in);
         this.name = PacketUtil.readNullableString(in);
         this.state = in.readByte();
-        this.codec = PacketUtil.readNullableString(in);
+        if (in.readBoolean()) {
+            this.decoderInfo = new CodecInfo();
+            decoderInfo.deserialize(in);
+        }
         this.stereo = in.readBoolean();
         this.lineId = PacketUtil.readUUID(in);
         this.iconVisible = in.readBoolean();
@@ -82,7 +86,10 @@ public abstract class SourceInfo implements PacketSerializable {
         PacketUtil.writeUUID(out, checkNotNull(id));
         PacketUtil.writeNullableString(out, name);
         out.writeByte(state);
-        PacketUtil.writeNullableString(out, codec);
+        out.writeBoolean(decoderInfo != null);
+        if (decoderInfo != null) {
+            decoderInfo.serialize(out);
+        }
         out.writeBoolean(stereo);
         PacketUtil.writeUUID(out, lineId);
         out.writeBoolean(iconVisible);

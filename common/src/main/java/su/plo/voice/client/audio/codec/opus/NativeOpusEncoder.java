@@ -3,6 +3,7 @@ package su.plo.voice.client.audio.codec.opus;
 import com.sun.jna.ptr.PointerByReference;
 import su.plo.opus.Opus;
 import su.plo.voice.api.audio.codec.CodecException;
+import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
@@ -13,18 +14,21 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     private final int sampleRate;
     private final int bufferSize;
     private final int channels;
-    private final int application;
+    private final OpusMode opusMode;
     private final int mtuSize;
 
     private PointerByReference encoder;
     private ByteBuffer buffer;
 
-    public NativeOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application,
+    public NativeOpusEncoder(int sampleRate,
+                             boolean stereo,
+                             int bufferSize,
+                             OpusMode opusMode,
                              int mtuSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
-        this.application = application;
+        this.opusMode = opusMode;
         this.mtuSize = mtuSize;
     }
 
@@ -48,7 +52,7 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     @Override
     public void open() throws CodecException {
         IntBuffer error = IntBuffer.allocate(1);
-        this.encoder = Opus.INSTANCE.opus_encoder_create(sampleRate, channels, application, error);
+        this.encoder = Opus.INSTANCE.opus_encoder_create(sampleRate, channels, opusMode.getApplication(), error);
         this.buffer = ByteBuffer.allocate(mtuSize);
 
         if (error.get() != Opus.OPUS_OK && encoder == null) {

@@ -6,7 +6,7 @@ import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.audio.codec.CodecSupplier;
-import su.plo.voice.api.util.Params;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 
 import java.util.Collection;
 import java.util.Map;
@@ -18,39 +18,31 @@ public final class VoiceCodecManager implements CodecManager {
     private final Map<String, CodecSupplier<?, ?>> codecs = Maps.newHashMap();
 
     @Override
-    public synchronized @NotNull <T extends AudioEncoder> T createEncoder(@NotNull String name,
+    public synchronized @NotNull <T extends AudioEncoder> T createEncoder(@NotNull CodecInfo codecInfo,
                                                                           int sampleRate,
                                                                           boolean stereo,
                                                                           int bufferSize,
-                                                                          int mtuSize,
-                                                                          @NotNull Params params) {
-        checkNotNull(name, "name cannot be null");
-        checkNotNull(params, "params cannot be null");
-
-        CodecSupplier<?, ?> supplier = codecs.get(name);
+                                                                          int mtuSize) {
+        CodecSupplier<?, ?> supplier = codecs.get(codecInfo.getName());
         if (supplier == null) {
-            throw new IllegalArgumentException("Codec encoder with name " + name + " is not registered");
+            throw new IllegalArgumentException("Codec encoder with name " + codecInfo.getName() + " is not registered");
         }
 
-        return (T) supplier.createEncoder(sampleRate, stereo, bufferSize, mtuSize, params);
+        return (T) supplier.createEncoder(sampleRate, stereo, bufferSize, mtuSize, codecInfo);
     }
 
     @Override
-    public synchronized @NotNull <T extends AudioDecoder> T createDecoder(@NotNull String name,
+    public synchronized @NotNull <T extends AudioDecoder> T createDecoder(@NotNull CodecInfo codecInfo,
                                                                           int sampleRate,
                                                                           boolean stereo,
                                                                           int bufferSize,
-                                                                          int mtuSize,
-                                                                          @NotNull Params params) {
-        checkNotNull(name, "name cannot be null");
-        checkNotNull(params, "params cannot be null");
-
-        CodecSupplier<?, ?> supplier = codecs.get(name);
+                                                                          int mtuSize) {
+        CodecSupplier<?, ?> supplier = codecs.get(codecInfo.getName());
         if (supplier == null) {
-            throw new IllegalArgumentException("Codec encoder with name " + name + " is not registered");
+            throw new IllegalArgumentException("Codec encoder with name " + codecInfo.getName() + " is not registered");
         }
 
-        return (T) supplier.createDecoder(sampleRate, stereo, bufferSize, mtuSize, params);
+        return (T) supplier.createDecoder(sampleRate, stereo, bufferSize, mtuSize, codecInfo);
     }
 
     @Override

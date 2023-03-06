@@ -8,10 +8,10 @@ import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.encryption.Encryption;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
+import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 
@@ -59,7 +59,7 @@ public final class VoiceServerInfo implements ServerInfo {
         this.encryption = encryption;
         this.remoteAddress = remoteAddress;
         this.voiceInfo = new VoiceServerVoiceInfo(
-                config.getCodec(),
+                config.getCaptureInfo(),
                 new ArrayList<>(config.getSourceLines()),
                 new ArrayList<>(config.getActivations())
         );
@@ -73,36 +73,34 @@ public final class VoiceServerInfo implements ServerInfo {
 
     @Override
     public @NotNull AudioEncoder createOpusEncoder(boolean stereo) {
-        CodecInfo codecInfo = voiceInfo.getCapture().getCodec();
+        CodecInfo codecInfo = voiceInfo.getCaptureInfo().getEncoderInfo();
         if (codecInfo == null)
             throw new IllegalStateException("server codec info is empty");
 
-        int sampleRate = voiceInfo.getCapture().getSampleRate();
+        int sampleRate = voiceInfo.getCaptureInfo().getSampleRate();
 
         return voiceClient.getCodecManager().createEncoder(
-                "opus",
+                codecInfo,
                 sampleRate,
                 stereo,
                 (sampleRate / 1_000) * 20,
-                voiceInfo.getCapture().getMtuSize(),
-                Params.builder().putAll(codecInfo.getParams()).build()
+                voiceInfo.getCaptureInfo().getMtuSize()
         );
     }
 
     @Override
     public @NotNull AudioEncoder createOpusDecoder(boolean stereo) {
-        if (voiceInfo.getCapture().getCodec() == null)
+        if (voiceInfo.getCaptureInfo().getEncoderInfo() == null)
             throw new IllegalStateException("server codec info is empty");
 
-        int sampleRate = voiceInfo.getCapture().getSampleRate();
+        int sampleRate = voiceInfo.getCaptureInfo().getSampleRate();
 
         return voiceClient.getCodecManager().createDecoder(
-                "opus",
+                new OpusDecoderInfo(),
                 sampleRate,
                 stereo,
                 (sampleRate / 1_000) * 20,
-                voiceInfo.getCapture().getMtuSize(),
-                Params.EMPTY
+                voiceInfo.getCaptureInfo().getMtuSize()
         );
     }
 
@@ -111,14 +109,14 @@ public final class VoiceServerInfo implements ServerInfo {
     @Data
     static final class VoiceServerVoiceInfo implements ServerInfo.VoiceInfo {
 
-        private CaptureInfo capture;
+        private CaptureInfo captureInfo;
         private List<SourceLine> sourceLines;
         private List<Activation> activations;
 
         @Override
         public @NotNull AudioFormat getFormat(boolean stereo) {
             return new AudioFormat(
-                    (float) capture.getSampleRate(),
+                    (float) captureInfo.getSampleRate(),
                     16,
                     stereo ? 2 : 1,
                     true,
@@ -128,7 +126,7 @@ public final class VoiceServerInfo implements ServerInfo {
 
         @Override
         public int getBufferSize() {
-            return (capture.getSampleRate() / 1_000) * 20;
+            return (captureInfo.getSampleRate() / 1_000) * 20;
         }
     }
 

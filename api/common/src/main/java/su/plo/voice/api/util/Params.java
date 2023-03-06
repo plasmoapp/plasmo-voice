@@ -1,5 +1,7 @@
 package su.plo.voice.api.util;
 
+import com.google.common.collect.Maps;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +43,16 @@ public class Params {
 
     public Set<Map.Entry<String, Object>> entrySet() {
         return params.entrySet();
+    }
+
+    public Map<String, String> toStringMap() {
+        Map<String, String> map = Maps.newHashMap();
+        params.forEach((key, value) -> map.put(key, value.toString()));
+        return map;
+    }
+
+    public Map<String, Object> toMap() {
+        return Maps.newHashMap(params);
     }
 
     private void set(String key, Object param) {

@@ -7,6 +7,7 @@ import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.source.ServerPositionalSource
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent
+import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.Packet
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
@@ -18,9 +19,9 @@ abstract class VoiceServerPositionalSource<S : SourceInfo>(
     addon: AddonContainer,
     id: UUID,
     line: ServerSourceLine,
-    codec: String?,
+    decoderInfo: CodecInfo?,
     stereo: Boolean
-) : BaseServerAudioSource<S>(addon, id, line, codec, stereo), ServerPositionalSource<S> {
+) : BaseServerAudioSource<S>(addon, id, line, decoderInfo, stereo), ServerPositionalSource<S> {
 
     private val playerPosition = ServerPos3d()
 

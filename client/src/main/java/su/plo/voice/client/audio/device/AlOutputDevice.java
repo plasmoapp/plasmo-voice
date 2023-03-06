@@ -265,7 +265,7 @@ public final class AlOutputDevice
     }
 
     @Override
-    public void runInContext(@NotNull DeviceRunnable runnable) {
+    public void runInContext(@NotNull DeviceRunnable runnable, boolean blocking) {
         try {
             if (AlUtil.sameDeviceContext(this)) {
                 runnable.run();
@@ -278,13 +278,19 @@ public final class AlOutputDevice
                 try {
                     runnable.run();
                 } catch (Exception e) {
-                    future.completeExceptionally(e);
+                    if (!blocking) {
+                        throw new RuntimeException(e);
+                    } else {
+                        future.completeExceptionally(e);
+                    }
                 } finally {
                     future.complete(null);
                 }
             });
 
-            future.get();
+            if (blocking) {
+                future.get();
+            }
         } catch (DeviceException | ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
         }

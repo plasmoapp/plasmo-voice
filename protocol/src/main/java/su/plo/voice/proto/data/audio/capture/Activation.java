@@ -1,29 +1,25 @@
 package su.plo.voice.proto.data.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface Activation {
 
     /**
-     * Gets the activation id
-     *
      * @return the activation id
      */
     @NotNull UUID getId();
 
     /**
-     * Gets the activation name
-     *
      * @return the activation name
      */
     @NotNull String getName();
 
     /**
-     * Gets the activation's translation string
-     *
      * @return the activation's translation string
      */
     @NotNull String getTranslation();
@@ -31,35 +27,29 @@ public interface Activation {
     /**
      * Gets the activation's icon
      *
-     * Minecraft ResourceLocation or base64 in format: "base64;base64_string"
-     *
-     * @return the activation's icon
+     * @return minecraft's ResourceLocation or base64 in format: "base64;base64_string
      */
     @NotNull String getIcon();
 
     /**
-     * Gets the activation's available distances
-     *
-     * @return collection of distances
+     * @return collection of activation's distances
      */
     List<Integer> getDistances();
 
     /**
-     * Gets the activation's default distance
-     *
      * @return the default distance
      */
     int getDefaultDistance();
 
     /**
-     * Gets the min distance from a distances collection
+     * Gets the min distance from the distances collection
      *
      * @return the min distance
      */
     int getMinDistance();
 
     /**
-     * Gets the max distance from a distances collection
+     * Gets the max distance from the distances collection
      *
      * @return the max distance
      */
@@ -67,8 +57,15 @@ public interface Activation {
 
     /**
      * Checks if activation has proximity output
+     *
      * <p>
-     * todo: doc
+     *     This can be used by addons to create unique behavior
+     * </p>
+     *
+     * <p>
+     *     For example in <a href="https://github.com/plasmoapp/pv-addon-soundphysics">pv-addon-soundphysics</a>
+     *     it's used to create reverb from your capture only for activations with proximity output
+     * </p>
      *
      * @return true if activation has proximity output
      */
@@ -76,8 +73,10 @@ public interface Activation {
 
     /**
      * Checks if activation is transitive
+     *
      * <p>
-     * todo: doc
+     *     If activation is NOT transitive, then all subsequent activations will NOT be activated
+     * </p>
      *
      * @return true if activation is transitive
      */
@@ -85,14 +84,25 @@ public interface Activation {
 
     /**
      * Checks if stereo is supported
+     *
      * <p>
-     * Client will send a stereo audio if it's enabled in the client settings
+     *     Client will send a stereo audio if it's enabled in the client settings
+     * </p>
      *
      * @return true if stereo is supported
      */
     default boolean isStereoSupported() {
         return false;
     }
+
+    /**
+     * Gets encoder info
+     *
+     * <p>
+     *     If encoder info is not null, client will use this info to encode audio data
+     * </p>
+     */
+    Optional<CodecInfo> getEncoderInfo();
 
     /**
      * Gets the activation's weight

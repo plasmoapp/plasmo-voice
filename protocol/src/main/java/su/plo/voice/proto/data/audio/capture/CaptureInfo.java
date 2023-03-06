@@ -19,15 +19,15 @@ public final class CaptureInfo implements PacketSerializable {
     @Getter
     private int mtuSize;
     @Getter
-    private CodecInfo codec;
+    private CodecInfo encoderInfo;
 
     @Override
     public void deserialize(ByteArrayDataInput in) {
         this.sampleRate = in.readInt();
         this.mtuSize = in.readInt();
         if (in.readBoolean()) {
-            this.codec = new CodecInfo();
-            codec.deserialize(in);
+            this.encoderInfo = new CodecInfo();
+            encoderInfo.deserialize(in);
         }
     }
 
@@ -35,7 +35,7 @@ public final class CaptureInfo implements PacketSerializable {
     public void serialize(ByteArrayDataOutput out) {
         out.writeInt(sampleRate);
         out.writeInt(mtuSize);
-        out.writeBoolean(codec != null);
-        if (codec != null) codec.serialize(out);
+        out.writeBoolean(encoderInfo != null);
+        if (encoderInfo != null) encoderInfo.serialize(out);
     }
 }

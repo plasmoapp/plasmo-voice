@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.io.IOException;
@@ -28,13 +29,13 @@ public final class StaticSourceInfo extends SourceInfo {
                             @NotNull UUID lineId,
                             @Nullable String sourceName,
                             byte state,
-                            @NotNull String codec,
+                            @Nullable CodecInfo decoderInfo,
                             boolean stereo,
                             boolean iconVisible,
                             int angle,
                             Pos3d position,
                             Pos3d lookAngle) {
-        super(addonId, sourceId, lineId, sourceName, state, codec, stereo, iconVisible, angle);
+        super(addonId, sourceId, lineId, sourceName, state, decoderInfo, stereo, iconVisible, angle);
 
         this.position = position;
         this.lookAngle = lookAngle;

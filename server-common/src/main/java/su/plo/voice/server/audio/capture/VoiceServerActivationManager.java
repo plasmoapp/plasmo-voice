@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.AddonManager;
@@ -17,6 +18,7 @@ import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoicePlayerManager;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationUnregisterPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
@@ -179,6 +181,8 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         private boolean proximity = true;
         private boolean stereoSupported = false;
 
+        private CodecInfo encoderInfo;
+
         @Override
         public ServerActivation.@NotNull Builder addPermission(@NotNull String permission) {
             permissions.add(permission);
@@ -216,6 +220,12 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         }
 
         @Override
+        public @NotNull ServerActivation.Builder setEncoderInfo(@Nullable CodecInfo encoderInfo) {
+            this.encoderInfo = encoderInfo;
+            return this;
+        }
+
+        @Override
         public @NotNull ServerActivation build() {
             if (activationById.get(VoiceActivation.generateId(name)) != null)
                 throw new IllegalStateException("Activation with name " + name + " already exists");
@@ -231,6 +241,7 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                     proximity,
                     transitive,
                     stereoSupported,
+                    encoderInfo,
                     weight
             );
 

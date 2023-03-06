@@ -5,6 +5,7 @@ import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.source.ServerStaticSource
+import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo
 import java.util.*
 
@@ -12,10 +13,10 @@ class VoiceServerStaticSource(
     voiceServer: PlasmoVoiceServer,
     addon: AddonContainer,
     line: ServerSourceLine,
-    codec: String?,
+    decoderInfo: CodecInfo?,
     stereo: Boolean,
     defaultPosition: ServerPos3d
-) : VoiceServerPositionalSource<StaticSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, codec, stereo),
+) : VoiceServerPositionalSource<StaticSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerStaticSource {
 
     private var sourcePosition: ServerPos3d = defaultPosition
@@ -36,7 +37,7 @@ class VoiceServerStaticSource(
             line.id,
             name,
             state.get().toByte(),
-            codec,
+            decoderInfo,
             stereo,
             iconVisible,
             angle,

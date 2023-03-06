@@ -7,6 +7,7 @@ import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.source.ServerPlayerSource
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.api.server.player.VoiceServerPlayer
+import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import java.util.*
 
@@ -14,10 +15,10 @@ class VoiceServerPlayerSource(
     voiceServer: PlasmoVoiceServer,
     addon: AddonContainer,
     line: ServerSourceLine,
-    codec: String?,
+    decoderInfo: CodecInfo?,
     stereo: Boolean,
     override val player: VoiceServerPlayer
-) : VoiceServerPositionalSource<PlayerSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, codec, stereo),
+) : VoiceServerPositionalSource<PlayerSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerPlayerSource {
 
     private val playerPosition = ServerPos3d()
@@ -32,7 +33,7 @@ class VoiceServerPlayerSource(
             line.id,
             name,
             state.get().toByte(),
-            codec,
+            decoderInfo,
             stereo,
             iconVisible,
             angle,

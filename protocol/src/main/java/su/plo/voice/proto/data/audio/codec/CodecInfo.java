@@ -16,12 +16,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public final class CodecInfo implements PacketSerializable {
+public class CodecInfo implements PacketSerializable {
 
     @Getter
-    private String name;
+    protected String name;
     @Getter
-    private Map<String, String> params;
+    protected Map<String, String> params;
 
     @Override
     public void deserialize(ByteArrayDataInput in) {

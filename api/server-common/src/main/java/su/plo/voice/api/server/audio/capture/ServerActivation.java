@@ -1,10 +1,12 @@
 package su.plo.voice.api.server.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 
 import java.util.Collection;
 import java.util.List;
@@ -104,6 +106,19 @@ public interface ServerActivation extends Activation {
          * Default: false
          */
         @NotNull Builder setStereoSupported(boolean stereoSupported);
+
+        /**
+         * Sets the activation's encoder info
+         *
+         * <p>
+         *     If not null, client will use this info to encode audio data,
+         *     otherwise server's encoder will be used
+         * </p>
+         * <p>
+         *     Default: null
+         * </p>
+         */
+        @NotNull Builder setEncoderInfo(@Nullable CodecInfo encoderInfo);
 
         /**
          * Builds the activation

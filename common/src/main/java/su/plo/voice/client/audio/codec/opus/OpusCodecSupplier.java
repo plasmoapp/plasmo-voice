@@ -4,25 +4,33 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.audio.codec.CodecSupplier;
-import su.plo.voice.api.util.Params;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
+import su.plo.voice.proto.data.audio.codec.opus.OpusEncoderInfo;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import java.io.IOException;
 
 public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, BaseOpusDecoder> {
 
     private static final Logger LOGGER = LogManager.getLogger(OpusCodecSupplier.class);
 
     @Override
-    public @NotNull BaseOpusEncoder createEncoder(int sampleRate, boolean stereo, int bufferSize, int mtuSize, @NotNull Params params) {
-        checkNotNull(params, "params cannot be null");
-        int application = applicationToMode(params.get("mode", String.class));
-        int bitrate = validateBitrate(params.get("bitrate", String.class));
+    public @NotNull BaseOpusEncoder createEncoder(int sampleRate,
+                                                  boolean stereo,
+                                                  int bufferSize,
+                                                  int mtuSize,
+                                                  @NotNull CodecInfo codecInfo) {
+        OpusEncoderInfo opusEncoderInfo;
+        try {
+            opusEncoderInfo = new OpusEncoderInfo(codecInfo);
+        } catch (IOException e) {
+            throw new IllegalStateException("Bad codec info received", e);
+        }
 
         BaseOpusEncoder encoder;
         try {
             Class.forName("su.plo.opus.Opus");
 
-            encoder = new NativeOpusEncoder(sampleRate, stereo, bufferSize, application, mtuSize);
+            encoder = new NativeOpusEncoder(sampleRate, stereo, bufferSize, opusEncoderInfo.getMode(), mtuSize);
             encoder.open();
         } catch (ClassNotFoundException ignored) {
             encoder = null;
@@ -33,23 +41,25 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
 
         if (encoder == null) {
             try {
-                encoder = new JavaOpusEncoder(sampleRate, stereo, bufferSize, application, mtuSize);
+                encoder = new JavaOpusEncoder(sampleRate, stereo, bufferSize, opusEncoderInfo.getMode(), mtuSize);
                 encoder.open();
             } catch (Exception e) {
                 throw new IllegalStateException("Failed to open java opus encoder", e);
             }
         }
 
-        encoder.setBitrate(bitrate);
+        encoder.setBitrate(opusEncoderInfo.getBitrate());
         LOGGER.info("Opus encoder bitrate is {}", encoder.getBitrate());
 
         return encoder;
     }
 
     @Override
-    public @NotNull BaseOpusDecoder createDecoder(int sampleRate, boolean stereo, int bufferSize, int mtuSize, @NotNull Params params) {
-        checkNotNull(params, "params cannot be null");
-
+    public @NotNull BaseOpusDecoder createDecoder(int sampleRate,
+                                                  boolean stereo,
+                                                  int bufferSize,
+                                                  int mtuSize,
+                                                  @NotNull CodecInfo codecInfo) {
         BaseOpusDecoder decoder;
         try {
             Class.forName("su.plo.opus.Opus");

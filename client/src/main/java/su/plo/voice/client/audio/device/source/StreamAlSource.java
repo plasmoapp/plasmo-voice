@@ -107,11 +107,12 @@ public final class StreamAlSource extends BaseAlSource {
 
         isStreaming.set(false);
 
-        try {
-//            thread.interrupt();
-            thread.join();
-        } catch (InterruptedException ignored) {
-            ignored.printStackTrace();
+        // do not self lock thread
+        if (Thread.currentThread() != thread) {
+            try {
+                thread.join();
+            } catch (InterruptedException ignored) {
+            }
         }
 
         queue.clear();
@@ -156,23 +157,21 @@ public final class StreamAlSource extends BaseAlSource {
         if (!isStreaming.get()) return;
 
         device.runInContext(() -> {
-            synchronized (this) {
-                stop();
+            stop();
 
-                AlSourceClosedEvent event = new AlSourceClosedEvent(this);
-                client.getEventBus().call(event);
+            AlSourceClosedEvent event = new AlSourceClosedEvent(this);
+            client.getEventBus().call(event);
 
-                removeProcessedBuffers();
+            removeProcessedBuffers();
 
-                AL11.alDeleteBuffers(buffers);
-                AlUtil.checkErrors("Delete buffers");
+            AL11.alDeleteBuffers(buffers);
+            AlUtil.checkErrors("Delete buffers");
 
-                AL11.alDeleteSources(new int[]{pointer});
-                AlUtil.checkErrors("Delete source");
+            AL11.alDeleteSources(new int[]{pointer});
+            AlUtil.checkErrors("Delete source");
 
-                this.pointer = 0;
-            }
-        });
+            this.pointer = 0;
+        }, false);
     }
 
     private void startStreamThread() {

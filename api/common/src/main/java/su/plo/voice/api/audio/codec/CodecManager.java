@@ -1,25 +1,23 @@
 package su.plo.voice.api.audio.codec;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.util.Params;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 
 import java.util.Collection;
 
 public interface CodecManager {
 
-    @NotNull <T extends AudioEncoder> T createEncoder(@NotNull String name,
+    @NotNull <T extends AudioEncoder> T createEncoder(@NotNull CodecInfo codecInfo,
                                                       int sampleRate,
                                                       boolean stereo,
                                                       int bufferSize,
-                                                      int mtuSize,
-                                                      @NotNull Params params);
+                                                      int mtuSize);
 
-    @NotNull <T extends AudioDecoder> T createDecoder(@NotNull String name,
+    @NotNull <T extends AudioDecoder> T createDecoder(@NotNull CodecInfo codecInfo,
                                                       int sampleRate,
                                                       boolean stereo,
                                                       int bufferSize,
-                                                      int mtuSize,
-                                                      @NotNull Params params);
+                                                      int mtuSize);
 
     void register(@NotNull CodecSupplier<?, ?> supplier);
 

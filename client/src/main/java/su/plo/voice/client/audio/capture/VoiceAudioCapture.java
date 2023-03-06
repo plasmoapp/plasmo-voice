@@ -50,10 +50,8 @@ public final class VoiceAudioCapture implements AudioCapture {
     private final Set<UUID> activationStreams = Sets.newHashSet();
     private final Map<UUID, Long> activationSequenceNumbers = Maps.newHashMap();
 
-    @Setter
-    private volatile AudioEncoder monoEncoder;
-    @Setter
-    private volatile AudioEncoder stereoEncoder;
+    private AudioEncoder monoEncoder;
+    private AudioEncoder stereoEncoder;
     @Setter
     private volatile Encryption encryption;
 
@@ -68,12 +66,12 @@ public final class VoiceAudioCapture implements AudioCapture {
     }
 
     @Override
-    public Optional<AudioEncoder> getMonoEncoder() {
+    public Optional<AudioEncoder> getDefaultMonoEncoder() {
         return Optional.ofNullable(monoEncoder);
     }
 
     @Override
-    public Optional<AudioEncoder> getStereoEncoder() {
+    public Optional<AudioEncoder> getDefaultStereoEncoder() {
         return Optional.ofNullable(stereoEncoder);
     }
 
@@ -109,30 +107,15 @@ public final class VoiceAudioCapture implements AudioCapture {
         }
 
         // initialize encoder
-        CaptureInfo capture = serverInfo.getVoiceInfo().getCapture();
-        if (capture.getCodec() != null) {
-            CodecInfo codec = capture.getCodec();
+        CaptureInfo capture = serverInfo.getVoiceInfo().getCaptureInfo();
+        if (capture.getEncoderInfo() != null) {
+            CodecInfo codec = capture.getEncoderInfo();
 
             Params.Builder params = Params.builder();
             codec.getParams().forEach(params::set);
 
-            this.monoEncoder = voiceClient.getCodecManager().createEncoder(
-                    codec.getName(),
-                    capture.getSampleRate(),
-                    false,
-                    serverInfo.getVoiceInfo().getBufferSize(),
-                    capture.getMtuSize(),
-                    params.build()
-            );
-
-            this.stereoEncoder = voiceClient.getCodecManager().createEncoder(
-                    codec.getName(),
-                    capture.getSampleRate(),
-                    true,
-                    serverInfo.getVoiceInfo().getBufferSize(),
-                    capture.getMtuSize(),
-                    params.build()
-            );
+            this.monoEncoder = serverInfo.createOpusEncoder(false);
+            this.stereoEncoder = serverInfo.createOpusEncoder(true);
         }
 
         // initialize encryption
@@ -318,6 +301,8 @@ public final class VoiceAudioCapture implements AudioCapture {
                 short[] processedSamples = new short[samples.length];
                 System.arraycopy(samples, 0, processedSamples, 0, samples.length);
 
+                AudioEncoder stereoEncoder = activation.getStereoEncoder().orElse(this.stereoEncoder);
+
                 processedSamples = device.processFilters(
                         processedSamples,
                         (filter) -> (filter instanceof StereoToMonoFilter) ||
@@ -328,6 +313,8 @@ public final class VoiceAudioCapture implements AudioCapture {
             } else if (!isStereo && encoded.mono == null) {
                 short[] processedSamples = new short[samples.length];
                 System.arraycopy(samples, 0, processedSamples, 0, samples.length);
+
+                AudioEncoder monoEncoder = activation.getMonoEncoder().orElse(this.monoEncoder);
 
                 processedSamples = device.processFilters(processedSamples);
                 encoded.monoProcessed = processedSamples;

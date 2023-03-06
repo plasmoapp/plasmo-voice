@@ -2,8 +2,12 @@ package su.plo.voice.api.client.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.proto.data.audio.capture.Activation;
+
+import java.util.Optional;
 
 public interface ClientActivation extends Activation {
 
@@ -16,6 +20,10 @@ public interface ClientActivation extends Activation {
     KeyBinding getDistanceIncreaseKey();
 
     KeyBinding getDistanceDecreaseKey();
+
+    Optional<AudioEncoder> getMonoEncoder();
+
+    Optional<AudioEncoder> getStereoEncoder();
 
     /**
      * Sets the activation's disabled state
@@ -48,6 +56,8 @@ public interface ClientActivation extends Activation {
     @NotNull Result process(short[] samples, @Nullable Result result);
 
     void reset();
+
+    void closeEncoders();
 
     enum Type {
 

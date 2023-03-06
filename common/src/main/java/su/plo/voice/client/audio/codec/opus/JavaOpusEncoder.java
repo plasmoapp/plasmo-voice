@@ -4,6 +4,7 @@ import org.concentus.OpusApplication;
 import org.concentus.OpusEncoder;
 import org.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
+import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 
 public final class JavaOpusEncoder implements BaseOpusEncoder {
 
@@ -16,14 +17,17 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
     private OpusEncoder encoder;
     private byte[] buffer;
 
-    public JavaOpusEncoder(int sampleRate, boolean stereo, int bufferSize, int application,
+    public JavaOpusEncoder(int sampleRate,
+                           boolean stereo,
+                           int bufferSize,
+                           OpusMode opusMode,
                            int mtuSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
         this.bufferSize = bufferSize;
         this.mtuSize = mtuSize;
 
-        setApplication(application);
+        setApplication(opusMode);
     }
 
     @Override
@@ -73,12 +77,12 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
         return encoder != null;
     }
 
-    private void setApplication(int application) {
-        if (application == 2048) { // Opus.OPUS_APPLICATION_VOIP
+    private void setApplication(OpusMode opusMode) {
+        if (opusMode == OpusMode.VOIP) {
             this.application = OpusApplication.OPUS_APPLICATION_VOIP;
-        } else if (application == 2049) { // Opus.OPUS_APPLICATION_AUDIO
+        } else if (opusMode == OpusMode.AUDIO) {
             this.application = OpusApplication.OPUS_APPLICATION_AUDIO;
-        } else if (application == 2051) { // Opus.OPUS_APPLICATION_RESTRICTED_LOWDELAY
+        } else if (opusMode == OpusMode.RESTRICTED_LOWDELAY) {
             this.application = OpusApplication.OPUS_APPLICATION_RESTRICTED_LOWDELAY;
         }
     }

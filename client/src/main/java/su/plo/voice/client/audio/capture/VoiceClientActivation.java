@@ -11,15 +11,18 @@ import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 
@@ -30,7 +33,9 @@ import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Config
-public final class VoiceClientActivation extends VoiceActivation implements ClientActivation {
+public final class VoiceClientActivation
+        extends VoiceActivation
+        implements ClientActivation {
 
     private final PlasmoVoiceClient voiceClient;
     private final ClientConfig config;
@@ -52,6 +57,9 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     @Getter
     private long lastActivation;
 
+    private @Nullable AudioEncoder monoEncoder;
+    private @Nullable AudioEncoder stereoEncoder;
+
     public VoiceClientActivation(@NotNull PlasmoVoiceClient voiceClient,
                                  @NotNull ClientConfig config,
                                  @NotNull ConfigClientActivation activationConfig,
@@ -66,6 +74,7 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
                 activation.isProximity(),
                 activation.isStereoSupported(),
                 activation.isTransitive(),
+                activation.getEncoderInfo().orElse(null),
                 activation.getWeight()
         );
 
@@ -95,6 +104,30 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
 
         configDistance.clearChangeListeners();
         configDistance.addChangeListener(this::onDistanceChange);
+
+        if (encoderInfo != null) {
+            CaptureInfo captureInfo = voiceClient.getServerInfo()
+                    .map(ServerInfo::getVoiceInfo)
+                    .map(ServerInfo.VoiceInfo::getCaptureInfo)
+                    .orElseThrow(() -> new IllegalStateException("not connected to voice server"));
+
+            int sampleRate = captureInfo.getSampleRate();
+
+            this.monoEncoder = voiceClient.getCodecManager().createEncoder(
+                    encoderInfo,
+                    captureInfo.getSampleRate(),
+                    false,
+                    (sampleRate / 1_000) * 20,
+                    captureInfo.getMtuSize()
+            );
+            this.stereoEncoder = voiceClient.getCodecManager().createEncoder(
+                    encoderInfo,
+                    captureInfo.getSampleRate(),
+                    true,
+                    (sampleRate / 1_000) * 20,
+                    captureInfo.getMtuSize()
+            );
+        }
     }
 
     @Override
@@ -128,6 +161,16 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     @Override
     public KeyBinding getDistanceDecreaseKey() {
         return distanceDecreaseKey.value();
+    }
+
+    @Override
+    public Optional<AudioEncoder> getMonoEncoder() {
+        return Optional.ofNullable(monoEncoder);
+    }
+
+    @Override
+    public Optional<AudioEncoder> getStereoEncoder() {
+        return Optional.ofNullable(stereoEncoder);
     }
 
     public KeyBindingConfigEntry getDistanceDecreaseConfigEntry() {
@@ -179,6 +222,15 @@ public final class VoiceClientActivation extends VoiceActivation implements Clie
     public void reset() {
         this.activated = false;
         this.lastActivation = 0L;
+    }
+
+    @Override
+    public void closeEncoders() {
+        getMonoEncoder().ifPresent(AudioEncoder::close);
+        getStereoEncoder().ifPresent(AudioEncoder::close);
+
+        this.monoEncoder = null;
+        this.stereoEncoder = null;
     }
 
     private @NotNull Result handlePTT() {

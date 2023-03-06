@@ -1,6 +1,5 @@
 package su.plo.voice.client.audio.source
 
-import com.google.common.base.Strings
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
@@ -32,6 +31,7 @@ import su.plo.voice.api.util.Params
 import su.plo.voice.client.audio.SoundOcclusion
 import su.plo.voice.client.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.config.ClientConfig
+import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
@@ -85,8 +85,8 @@ abstract class BaseClientAudioSource<T> constructor(
         val voiceInfo = serverInfo.voiceInfo
 
         // initialize decoder
-        if (Strings.emptyToNull(sourceInfo.codec) != null) {
-            decoder = createDecoder(voiceInfo)
+        sourceInfo.decoderInfo?.let {
+            decoder = createDecoder(voiceInfo, it)
         }
 
         // initialize encryption
@@ -128,8 +128,9 @@ abstract class BaseClientAudioSource<T> constructor(
         // initialize decoder
         if (sourceInfo.isStereo != this.sourceInfo.isStereo) {
             decoder?.close()
-            if (Strings.emptyToNull(sourceInfo.codec) != null) {
-                decoder = createDecoder(voiceInfo)
+
+            sourceInfo.decoderInfo?.let {
+                decoder = createDecoder(voiceInfo, it)
             }
             LOGGER.info("Update decoder for {}", sourceInfo)
         }
@@ -204,6 +205,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
+        println(sourceGroup.sources.contains(event.source))
         if (closed.get() || !sourceGroup.sources.contains(event.source)) return
         close()
     }
@@ -447,14 +449,13 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    private fun createDecoder(voiceInfo: VoiceInfo): AudioDecoder {
+    private fun createDecoder(voiceInfo: VoiceInfo, decoderInfo: CodecInfo): AudioDecoder {
         return voiceClient.codecManager.createDecoder(
-            sourceInfo.codec,
-            voiceInfo.capture.sampleRate,
+            decoderInfo,
+            voiceInfo.captureInfo.sampleRate,
             sourceInfo.isStereo,
             voiceInfo.bufferSize,
-            voiceInfo.capture.mtuSize,
-            Params.EMPTY
+            voiceInfo.captureInfo.mtuSize
         )
     }
 

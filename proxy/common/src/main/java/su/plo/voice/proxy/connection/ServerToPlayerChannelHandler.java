@@ -152,7 +152,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
         if (activations.size() > 0 || sourceLines.size() > 0) {
             player.sendPacket(new ConfigPacket(
                     packet.getServerId(),
-                    packet.getCodec(),
+                    packet.getCaptureInfo(),
                     packet.getEncryption(),
                     sourceLines.size() > 0 ? sourceLines : Sets.newHashSet(packet.getSourceLines()),
                     activations.size() > 0 ? activations : Sets.newHashSet(packet.getActivations()),

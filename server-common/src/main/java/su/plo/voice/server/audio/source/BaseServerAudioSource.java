@@ -8,6 +8,7 @@ import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.line.ServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 import java.util.Collection;
@@ -26,7 +27,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     protected final AddonContainer addon;
     @Getter
     protected final UUID id;
-    protected final String codec;
+    protected final @Nullable CodecInfo decoderInfo;
 
     @Getter
     protected @NotNull ServerSourceLine line;
@@ -44,14 +45,14 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     protected final List<Predicate<VoicePlayer>> filters = new CopyOnWriteArrayList<>();
 
     protected BaseServerAudioSource(@NotNull AddonContainer addon,
-                                 @NotNull UUID id,
-                                 @NotNull ServerSourceLine line,
-                                 @Nullable String codec,
-                                 boolean stereo) {
+                                    @NotNull UUID id,
+                                    @NotNull ServerSourceLine line,
+                                    @Nullable CodecInfo decoderInfo,
+                                    boolean stereo) {
         this.addon = addon;
         this.id = id;
         this.line = line;
-        this.codec = codec;
+        this.decoderInfo = decoderInfo;
         this.stereo = stereo;
     }
 

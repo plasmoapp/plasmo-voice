@@ -3,11 +3,14 @@ package su.plo.voice.server.audio.capture;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.util.Params;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 
 import java.util.List;
 import java.util.Set;
@@ -32,12 +35,23 @@ public final class VoiceServerActivation extends VoiceActivation implements Serv
                                  boolean proximity,
                                  boolean transitive,
                                  boolean stereoSupported,
+                                 @Nullable CodecInfo encoderInfo,
                                  int weight) {
-        super(name, translation, icon, distances, defaultDistance, proximity, stereoSupported, transitive, weight);
+        super(name, translation, icon, distances, defaultDistance, proximity, stereoSupported, transitive, encoderInfo, weight);
 
         this.addon = addon;
         this.transitive = transitive;
         this.permissions = permissions;
+
+        new CodecInfo(
+                "opus",
+                // todo: params class?
+                Params.builder()
+                        .set("mode", "VOIP")
+                        .set("bitrate", "32000")
+                        .build()
+                        .toStringMap()
+        );
     }
 
     @Override

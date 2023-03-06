@@ -287,7 +287,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
         // clear & initialize primary output device
         AudioFormat format = new AudioFormat(
-                (float) serverInfo.getVoiceInfo().getCapture().getSampleRate(),
+                (float) serverInfo.getVoiceInfo().getCaptureInfo().getSampleRate(),
                 16,
                 1,
                 true,

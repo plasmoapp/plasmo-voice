@@ -20,7 +20,11 @@ public interface AlAudioDevice extends AudioDevice {
     /**
      * Runs runnable in the device's context
      */
-    void runInContext(@NotNull DeviceRunnable runnable);
+    default void runInContext(@NotNull DeviceRunnable runnable) {
+        runInContext(runnable, true);
+    }
+
+    void runInContext(@NotNull DeviceRunnable runnable, boolean blocking);
 
     interface DeviceRunnable {
 

@@ -9,10 +9,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -47,6 +50,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
     protected boolean transitive;
     @Getter
     protected boolean stereoSupported;
+    protected @Nullable CodecInfo encoderInfo;
     @Getter
     protected int weight;
 
@@ -58,6 +62,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
                            boolean proximity,
                            boolean stereoSupported,
                            boolean transitive,
+                           @Nullable CodecInfo encoderInfo,
                            int weight) {
         this.name = checkNotNull(name);
         this.translation = translation;
@@ -66,9 +71,10 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.distances = checkNotNull(distances);
         this.defaultDistance = defaultDistance;
         this.proximity = proximity;
-        this.transitive = transitive;
-        this.weight = weight;
         this.stereoSupported = stereoSupported;
+        this.transitive = transitive;
+        this.encoderInfo = encoderInfo;
+        this.weight = weight;
     }
 
     @Override
@@ -89,6 +95,11 @@ public class VoiceActivation implements Activation, PacketSerializable {
     }
 
     @Override
+    public Optional<CodecInfo> getEncoderInfo() {
+        return Optional.ofNullable(encoderInfo);
+    }
+
+    @Override
     public void deserialize(ByteArrayDataInput in) {
         this.name = in.readUTF();
         this.translation = in.readUTF();
@@ -98,8 +109,12 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.defaultDistance = in.readInt();
         this.proximity = in.readBoolean();
         this.transitive = in.readBoolean();
-        this.weight = in.readInt();
         this.stereoSupported = in.readBoolean();
+        if (in.readBoolean()) {
+            this.encoderInfo = new CodecInfo();
+            encoderInfo.deserialize(in);
+        }
+        this.weight = in.readInt();
     }
 
     @Override
@@ -111,7 +126,9 @@ public class VoiceActivation implements Activation, PacketSerializable {
         out.writeInt(defaultDistance);
         out.writeBoolean(proximity);
         out.writeBoolean(transitive);
-        out.writeInt(weight);
         out.writeBoolean(stereoSupported);
+        out.writeBoolean(encoderInfo != null);
+        if (encoderInfo != null) encoderInfo.serialize(out);
+        out.writeInt(weight);
     }
 }

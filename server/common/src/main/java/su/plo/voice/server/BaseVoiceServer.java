@@ -39,6 +39,9 @@ import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.api.util.Params;
+import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo;
+import su.plo.voice.proto.data.audio.codec.opus.OpusEncoderInfo;
+import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 import su.plo.voice.server.audio.capture.ProximityServerActivation;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
@@ -364,18 +367,16 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         if (config == null) throw new IllegalStateException("server is not initialized yet");
 
         int sampleRate = config.voice().sampleRate();
-        Params params = Params.builder()
-                .set("mode", config.voice().opus().mode())
-                .set("bitrate", String.valueOf(config.voice().opus().bitrate()))
-                .build();
-
+        
         return codecs.createEncoder(
-                "opus",
+                new OpusEncoderInfo(
+                        OpusMode.valueOf(config.voice().opus().mode()),
+                        config.voice().opus().bitrate()
+                ),
                 sampleRate,
                 stereo,
                 (sampleRate / 1_000) * 20,
-                config.voice().mtuSize(),
-                params
+                config.voice().mtuSize()
         );
     }
 
@@ -385,12 +386,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         int sampleRate = config.voice().sampleRate();
         return codecs.createDecoder(
-                "opus",
+                new OpusDecoderInfo(),
                 sampleRate,
                 stereo,
                 (sampleRate / 1_000) * 20,
-                config.voice().mtuSize(),
-                Params.EMPTY
+                config.voice().mtuSize()
         );
     }
 

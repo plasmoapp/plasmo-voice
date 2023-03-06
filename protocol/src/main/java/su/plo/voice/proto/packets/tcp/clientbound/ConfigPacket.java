@@ -29,14 +29,14 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     @Getter
     private UUID serverId;
     @Getter
-    private CaptureInfo codec;
+    private CaptureInfo captureInfo;
     @Getter
     private @Nullable EncryptionInfo encryption;
     private Set<VoiceSourceLine> sourceLines;
     private Set<VoiceActivation> activations;
 
     public ConfigPacket(@NotNull UUID serverId,
-                        @NotNull CaptureInfo codec,
+                        @NotNull CaptureInfo captureInfo,
                         @Nullable EncryptionInfo encryption,
                         @NotNull Set<VoiceSourceLine> sourceLines,
                         @NotNull Set<VoiceActivation> activations,
@@ -44,7 +44,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         super(permissions);
 
         this.serverId = serverId;
-        this.codec = codec;
+        this.captureInfo = captureInfo;
         this.encryption = encryption;
         this.sourceLines = sourceLines;
         this.activations = activations;
@@ -62,8 +62,8 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     public void read(ByteArrayDataInput in) throws IOException {
         this.serverId = PacketUtil.readUUID(in);
 
-        this.codec = new CaptureInfo();
-        codec.deserialize(in);
+        this.captureInfo = new CaptureInfo();
+        captureInfo.deserialize(in);
 
         if (in.readBoolean()) {
             this.encryption = new EncryptionInfo();
@@ -94,7 +94,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
         PacketUtil.writeUUID(out, serverId);
-        checkNotNull(codec).serialize(out);
+        checkNotNull(captureInfo).serialize(out);
 
         out.writeBoolean(encryption != null);
         if (encryption != null) {

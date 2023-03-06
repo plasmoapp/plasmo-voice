@@ -11,6 +11,7 @@ import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
@@ -37,12 +38,12 @@ public final class VoiceServerDirectSource
     private Supplier<Collection<VoicePlayer>> playersSupplier;
 
     public VoiceServerDirectSource(@NotNull PlasmoVoice voice,
-                                      @NotNull UdpConnectionManager<? extends VoicePlayer, ? extends UdpConnection> udpConnections,
-                                      @NotNull AddonContainer addon,
-                                      @NotNull ServerSourceLine line,
-                                      @Nullable String codec,
-                                      boolean stereo) {
-        super(addon, UUID.randomUUID(), line, codec, stereo);
+                                   @NotNull UdpConnectionManager<? extends VoicePlayer, ? extends UdpConnection> udpConnections,
+                                   @NotNull AddonContainer addon,
+                                   @NotNull ServerSourceLine line,
+                                   @Nullable CodecInfo decoderInfo,
+                                   boolean stereo) {
+        super(addon, UUID.randomUUID(), line, decoderInfo, stereo);
 
         this.voice = voice;
         this.udpConnections = udpConnections;
@@ -105,7 +106,7 @@ public final class VoiceServerDirectSource
                 line.getId(),
                 name,
                 (byte) state.get(),
-                codec,
+                decoderInfo,
                 stereo,
                 iconVisible,
                 angle,

@@ -140,7 +140,6 @@ abstract class BaseProximityServerActivation(
                 voiceServer,
                 player,
                 sourceLine,
-                "opus",
                 false
             )
         }.apply {

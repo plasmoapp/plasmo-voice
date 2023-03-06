@@ -9,6 +9,7 @@ import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.source.*
 import su.plo.voice.api.server.player.VoiceServerPlayer
+import su.plo.voice.proto.data.audio.codec.CodecInfo
 import java.util.*
 
 class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : ServerSourceManager {
@@ -30,8 +31,8 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
     override fun createDirectSource(
         addonObject: Any,
         line: ServerSourceLine,
-        codec: String?,
-        stereo: Boolean
+        stereo: Boolean,
+        decoderInfo: CodecInfo?
     ): ServerDirectSource {
         val addon = validateAddon(addonObject)
 
@@ -40,7 +41,7 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
             voiceServer.udpConnectionManager,
             addon,
             line,
-            codec,
+            decoderInfo,
             stereo
         ).also { sourceById[it.id] = it }
     }
@@ -57,8 +58,8 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
         addonObject: Any,
         player: VoiceServerPlayer,
         line: ServerSourceLine,
-        codec: String?,
-        stereo: Boolean
+        stereo: Boolean,
+        decoderInfo: CodecInfo?
     ): ServerPlayerSource {
         val addon = validateAddon(addonObject)
 
@@ -66,7 +67,7 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
             voiceServer,
             addon,
             line,
-            codec,
+            decoderInfo,
             stereo,
             player
         ).also { sourceById[it.id] = it }
@@ -76,8 +77,8 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
         addonObject: Any,
         entity: MinecraftServerEntity,
         line: ServerSourceLine,
-        codec: String?,
-        stereo: Boolean
+        stereo: Boolean,
+        decoderInfo: CodecInfo?
     ): ServerEntitySource {
         val addon = validateAddon(addonObject)
 
@@ -88,7 +89,7 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
             voiceServer,
             addon,
             line,
-            codec,
+            decoderInfo,
             stereo,
             entity
         ).also { sourceById[it.id] = it }
@@ -98,8 +99,8 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
         addonObject: Any,
         position: ServerPos3d,
         line: ServerSourceLine,
-        codec: String?,
-        stereo: Boolean
+        stereo: Boolean,
+        decoderInfo: CodecInfo?
     ): ServerStaticSource {
         val addon = validateAddon(addonObject)
 
@@ -107,7 +108,7 @@ class VoiceServerSourceManager(private val voiceServer: PlasmoVoiceServer) : Ser
             voiceServer,
             addon,
             line,
-            codec,
+            decoderInfo,
             stereo,
             position
         ).also { sourceById[it.id] = it }

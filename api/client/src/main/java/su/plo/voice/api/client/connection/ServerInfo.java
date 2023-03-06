@@ -98,7 +98,7 @@ public interface ServerInfo {
          *
          * @return the capture info
          */
-        @NotNull CaptureInfo getCapture();
+        @NotNull CaptureInfo getCaptureInfo();
 
         /**
          * Gets the voice source lines

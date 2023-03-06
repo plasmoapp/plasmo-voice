@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.proto.data.pos.Pos3d;
 
@@ -31,7 +32,7 @@ public final class DirectSourceInfo extends SourceInfo {
                             @NotNull UUID lineId,
                             @Nullable String sourceName,
                             byte state,
-                            @NotNull String codec,
+                            @Nullable CodecInfo decoderInfo,
                             boolean stereo,
                             boolean iconVisible,
                             int angle,
@@ -39,7 +40,7 @@ public final class DirectSourceInfo extends SourceInfo {
                             @Nullable Pos3d relativePosition,
                             @Nullable Pos3d lookAngle,
                             boolean cameraRelative) {
-        super(addonId, sourceId, lineId, sourceName, state, codec, stereo, iconVisible, angle);
+        super(addonId, sourceId, lineId, sourceName, state, decoderInfo, stereo, iconVisible, angle);
 
         this.sender = sender;
         this.relativePosition = relativePosition;
