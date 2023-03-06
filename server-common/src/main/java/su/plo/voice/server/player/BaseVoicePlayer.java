@@ -8,7 +8,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
-import su.plo.voice.api.server.PlasmoCommonVoiceServer;
+import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
 import su.plo.voice.api.server.player.PlayerModLoader;
@@ -27,7 +27,7 @@ import java.util.UUID;
 @ToString(doNotUseGetters = true, exclude = "publicKey")
 public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implements VoicePlayer {
 
-    private final PlasmoCommonVoiceServer voiceServer;
+    private final PlasmoBaseVoiceServer voiceServer;
     @Getter
     protected final @NotNull P instance;
 

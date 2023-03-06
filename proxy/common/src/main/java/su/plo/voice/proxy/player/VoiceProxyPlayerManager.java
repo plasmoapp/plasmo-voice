@@ -22,7 +22,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public final class VoiceProxyPlayerManager
         extends BaseVoicePlayerManager<VoiceProxyPlayer>
-        implements ConnectionManager<ClientPacketTcpHandler, VoiceProxyPlayer> {
+        implements su.plo.voice.api.server.player.VoiceProxyPlayerManager {
 
     private final PlasmoVoiceProxy voiceProxy;
     private final MinecraftProxyLib minecraftProxy;

@@ -2,6 +2,8 @@ package su.plo.voice.api.server.audio.capture;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.api.server.permission.PermissionDefault;
+import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -71,6 +73,23 @@ public interface ServerActivation extends Activation {
          * Adds a permission to the activation
          */
         @NotNull Builder addPermission(@NotNull String permission);
+
+        /**
+         * Sets permission default that will be used for permissions registration
+         *
+         * <p>
+         *     Set this to null, if you want to register permissions by yourself in {@link PermissionsManager}
+         * </p>
+         * <p>
+         *     All permissions will be automatically unregistered in {@link PermissionsManager}
+         *     after unregistering activation in {@link ServerActivationManager}. This cannot be disabled
+         * </p>
+         *
+         * <p>
+         *     Default: {@link PermissionDefault#OP}
+         * </p>
+         */
+        @NotNull Builder setPermissionDefault(@Nullable PermissionDefault permissionDefault);
 
         /**
          * Sets the activation's available distances

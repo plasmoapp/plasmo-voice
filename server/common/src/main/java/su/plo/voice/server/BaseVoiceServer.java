@@ -21,8 +21,8 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
+import su.plo.voice.api.server.audio.line.BaseServerSourceLineManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
-import su.plo.voice.api.server.audio.source.ServerSourceManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
@@ -38,14 +38,12 @@ import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo;
 import su.plo.voice.proto.data.audio.codec.opus.OpusEncoderInfo;
 import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 import su.plo.voice.server.audio.capture.ProximityServerActivation;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
-import su.plo.voice.server.audio.source.VoiceServerSourceManager;
 import su.plo.voice.server.command.*;
 import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.server.config.VoiceServerLanguages;
@@ -81,8 +79,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected final TcpServerConnectionManager tcpConnectionManager = new VoiceTcpServerConnectionManager(this);
     @Getter
     protected final UdpServerConnectionManager udpConnectionManager = new VoiceUdpServerConnectionManager(this);
-    @Getter
-    protected final ServerSourceManager sourceManager = new VoiceServerSourceManager(this);
 
     protected UdpServer udpServer;
     @Getter
@@ -137,7 +133,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         super.onInitialize();
 
         eventBus.call(new VoiceServerInitializeEvent(this));
-        eventBus.register(this, sourceManager);
         eventBus.register(this, udpConnectionManager);
         eventBus.register(this, getMinecraftServer());
         eventBus.register(this, proximityActivation);
@@ -149,7 +144,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         this.activationManager = new VoiceServerActivationManager(this, tcpConnectionManager, playerManager);
         eventBus.register(this, activationManager);
-        this.sourceLineManager = new VoiceServerSourceLineManager(tcpConnectionManager, addons);
+        this.sourceLineManager = new VoiceServerSourceLineManager(this);
 
         // mutes
         MuteStorageFactory muteStorageFactory = new MuteStorageFactory(this, backgroundExecutor);
@@ -202,7 +197,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         stopUdpServer();
 
         // cleanup
-        sourceManager.clear();
         sourceLineManager.clear();
         activationManager.clear();
         playerManager.clear();
@@ -367,7 +361,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         if (config == null) throw new IllegalStateException("server is not initialized yet");
 
         int sampleRate = config.voice().sampleRate();
-        
+
         return codecs.createEncoder(
                 new OpusEncoderInfo(
                         OpusMode.valueOf(config.voice().opus().mode()),

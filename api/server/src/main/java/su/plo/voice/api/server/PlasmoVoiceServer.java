@@ -6,7 +6,7 @@ import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.addon.ServerAddonManagerProvider;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
-import su.plo.voice.api.server.audio.source.ServerSourceManager;
+import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
@@ -20,7 +20,7 @@ import java.util.Optional;
 /**
  * The Plasmo Client Server API
  */
-public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
+public interface PlasmoVoiceServer extends PlasmoBaseVoiceServer {
 
     /**
      * Gets the server's addon manager instance
@@ -42,7 +42,7 @@ public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
 
     /**
      * Gets the {@link VoicePlayerManager}
-     *
+     * <p>
      * This manager can be used to get voice players
      *
      * @return {@link VoicePlayerManager}
@@ -50,8 +50,15 @@ public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
     @NotNull VoicePlayerManager<VoiceServerPlayer> getPlayerManager();
 
     /**
-     * Gets the {@link MuteManager}
+     * Gets the {@link ServerSourceLineManager}
      *
+     * @return {@link ServerSourceLineManager}
+     */
+    @NotNull ServerSourceLineManager getSourceLineManager();
+
+    /**
+     * Gets the {@link MuteManager}
+     * <p>
      * This manager can be used to mute or unmute players voice
      *
      * @return {@link MuteManager}
@@ -59,15 +66,8 @@ public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
     @NotNull MuteManager getMuteManager();
 
     /**
-     * Gets the {@link ServerSourceManager}
-     *
-     * @return {@link ServerSourceManager}
-     */
-    @NotNull ServerSourceManager getSourceManager();
-
-    /**
      * Gets the {@link TcpServerConnectionManager}
-     *
+     * <p>
      * This manager can be used to broadcast to tcp connections
      *
      * @return {@link TcpServerConnectionManager}
@@ -76,7 +76,7 @@ public interface PlasmoVoiceServer extends PlasmoCommonVoiceServer {
 
     /**
      * Gets the {@link UdpServerConnectionManager}
-     *
+     * <p>
      * This manager can be used to broadcast or manage udp connections
      *
      * @return {@link UdpServerConnectionManager}

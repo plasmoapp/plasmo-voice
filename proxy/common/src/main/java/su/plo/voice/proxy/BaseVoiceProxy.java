@@ -15,7 +15,6 @@ import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.addon.ServerAddonManagerProvider;
 import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
-import su.plo.voice.api.proxy.audio.source.ProxySourceManager;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.event.VoiceProxyInitializeEvent;
 import su.plo.voice.api.proxy.event.VoiceProxyShutdownEvent;
@@ -24,8 +23,7 @@ import su.plo.voice.api.proxy.event.socket.UdpProxyServerCreateEvent;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
-import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
-import su.plo.voice.proxy.audio.source.VoiceProxySourceManager;
+import su.plo.voice.api.server.audio.line.ProxySourceLineManager;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
 import su.plo.voice.proxy.connection.VoiceUdpProxyConnectionManager;
 import su.plo.voice.proxy.player.VoiceProxyPlayerManager;
@@ -34,7 +32,7 @@ import su.plo.voice.proxy.server.VoiceRemoteServerManager;
 import su.plo.voice.proxy.socket.NettyUdpProxyServer;
 import su.plo.voice.proxy.util.AddressUtil;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
-import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
+import su.plo.voice.server.audio.line.VoiceProxySourceLineManager;
 import su.plo.voice.server.config.VoiceServerLanguages;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
@@ -68,13 +66,11 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     @Getter
     protected VoiceProxyPlayerManager playerManager;
     @Getter
-    protected ServerSourceLineManager sourceLineManager;
+    protected ProxySourceLineManager sourceLineManager;
     @Getter
     protected ServerActivationManager activationManager;
     @Getter
     protected VoiceServerLanguages languages;
-    @Getter
-    protected final ProxySourceManager sourceManager = new VoiceProxySourceManager(this);
 
     protected BaseVoiceProxy(@NotNull ModrinthLoader loader) {
         super(
@@ -94,11 +90,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
         eventBus.call(new VoiceProxyInitializeEvent(this));
 
-        this.sourceLineManager = new VoiceServerSourceLineManager(playerManager, addons);
+        this.sourceLineManager = new VoiceProxySourceLineManager(this);
         this.activationManager = new VoiceServerActivationManager(this, playerManager, playerManager);
         eventBus.register(this, activationManager);
 
-        eventBus.register(this, sourceManager);
         eventBus.register(this, udpConnectionManager);
         eventBus.register(this, playerManager);
         eventBus.register(this, getMinecraftServer());

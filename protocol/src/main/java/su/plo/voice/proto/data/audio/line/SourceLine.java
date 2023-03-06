@@ -9,32 +9,24 @@ import java.util.UUID;
 public interface SourceLine {
 
     /**
-     * Gets the line id
-     *
-     * @return the line id
+     * @return the source line id
      */
     @NotNull UUID getId();
 
     /**
-     * Gets the line name
-     *
-     * @return the line name
+     * @return the source line name
      */
     @NotNull String getName();
 
     /**
-     * Gets the line's translation string
-     *
-     * @return the line's translation string
+     * @return the source line translation string
      */
     @NotNull String getTranslation();
 
     /**
-     * Gets the line's icon
+     * Gets the source line icon
      *
-     * Minecraft ResourceLocation or base64 in format: "base64;base64_string"
-     *
-     * @return the line's icon
+     * @return minecraft's ResourceLocation or base64 in format: "base64;base64_string
      */
     @NotNull String getIcon();
 

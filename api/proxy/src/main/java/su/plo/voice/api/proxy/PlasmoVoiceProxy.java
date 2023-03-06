@@ -4,21 +4,19 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
 import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.addon.ServerAddonManagerProvider;
-import su.plo.voice.api.proxy.audio.source.ProxySourceManager;
 import su.plo.voice.api.proxy.config.ProxyConfig;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
-import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
-import su.plo.voice.api.server.PlasmoCommonVoiceServer;
-import su.plo.voice.api.server.player.VoicePlayerManager;
+import su.plo.voice.api.server.PlasmoBaseVoiceServer;
+import su.plo.voice.api.server.player.VoiceProxyPlayerManager;
 
 import java.util.Optional;
 
 /**
  * The Plasmo Server Proxy API
  */
-public interface PlasmoVoiceProxy extends PlasmoCommonVoiceServer {
+public interface PlasmoVoiceProxy extends PlasmoBaseVoiceServer {
 
     /**
      * Gets the server's addon manager instance
@@ -48,13 +46,13 @@ public interface PlasmoVoiceProxy extends PlasmoCommonVoiceServer {
     @NotNull UdpProxyConnectionManager getUdpConnectionManager();
 
     /**
-     * Gets the {@link VoicePlayerManager}
+     * Gets the {@link VoiceProxyPlayerManager}
      * <p>
      * This manager can be used to get voice players
      *
-     * @return {@link VoicePlayerManager}
+     * @return {@link VoiceProxyPlayerManager}
      */
-    @NotNull VoicePlayerManager<VoiceProxyPlayer> getPlayerManager();
+    @NotNull VoiceProxyPlayerManager getPlayerManager();
 
     /**
      * Gets the {@link UdpProxyServer}
@@ -71,13 +69,6 @@ public interface PlasmoVoiceProxy extends PlasmoCommonVoiceServer {
      * @return {@link UdpProxyServer}
      */
     Optional<UdpProxyServer> getUdpProxyServer();
-
-    /**
-     * Gets the {@link ProxySourceManager}
-     *
-     * @return {@link ProxySourceManager}
-     */
-    @NotNull ProxySourceManager getSourceManager();
 
     /**
      * Gets the {@link ProxyConfig}

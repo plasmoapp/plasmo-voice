@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.audio.source.AudioSource;
-import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 
@@ -18,9 +18,9 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
 
     @NotNull UUID getId();
 
-    @NotNull ServerSourceLine getLine();
+    @NotNull BaseServerSourceLine getLine();
 
-    void setLine(@NotNull ServerSourceLine line);
+    void setLine(@NotNull BaseServerSourceLine line);
 
     int getState();
 
@@ -53,9 +53,7 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
 
     /**
      * @param player player to check
-     *
      * @return true if player matching all filters
-     *
      * @see ServerAudioSource#addFilter(Predicate)
      * @see ServerAudioSource#removeFilter(Predicate)
      * @see ServerAudioSource#getFilters()
@@ -64,9 +62,7 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
 
     /**
      * @param player player to check
-     *
      * @return true if player not matching any filter
-     *
      * @see ServerAudioSource#addFilter(Predicate)
      * @see ServerAudioSource#removeFilter(Predicate)
      * @see ServerAudioSource#getFilters()

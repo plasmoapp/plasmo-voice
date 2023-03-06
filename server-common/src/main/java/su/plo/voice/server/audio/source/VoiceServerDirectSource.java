@@ -2,9 +2,9 @@ package su.plo.voice.server.audio.source;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.api.server.PlasmoBaseVoiceServer;
+import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerDirectSource;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
@@ -27,7 +27,7 @@ public final class VoiceServerDirectSource
         extends BaseServerAudioSource<DirectSourceInfo>
         implements ServerDirectSource {
 
-    private final PlasmoVoice voice;
+    private final PlasmoBaseVoiceServer voiceServer;
     private final UdpConnectionManager<? extends VoicePlayer, ? extends UdpConnection> udpConnections;
 
     private VoicePlayer sender;
@@ -37,15 +37,15 @@ public final class VoiceServerDirectSource
 
     private Supplier<Collection<VoicePlayer>> playersSupplier;
 
-    public VoiceServerDirectSource(@NotNull PlasmoVoice voice,
+    public VoiceServerDirectSource(@NotNull PlasmoBaseVoiceServer voiceServer,
                                    @NotNull UdpConnectionManager<? extends VoicePlayer, ? extends UdpConnection> udpConnections,
                                    @NotNull AddonContainer addon,
-                                   @NotNull ServerSourceLine line,
+                                   @NotNull BaseServerSourceLine line,
                                    @Nullable CodecInfo decoderInfo,
                                    boolean stereo) {
         super(addon, UUID.randomUUID(), line, decoderInfo, stereo);
 
-        this.voice = voice;
+        this.voiceServer = voiceServer;
         this.udpConnections = udpConnections;
     }
 
@@ -120,7 +120,7 @@ public final class VoiceServerDirectSource
     @Override
     public boolean sendAudioPacket(@NotNull SourceAudioPacket packet, @Nullable UUID activationId) {
         ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, activationId);
-        if (!voice.getEventBus().call(event)) return false;
+        if (!voiceServer.getEventBus().call(event)) return false;
 
         packet.setSourceState((byte) state.get());
 
@@ -146,7 +146,7 @@ public final class VoiceServerDirectSource
     @Override
     public boolean sendPacket(Packet<?> packet) {
         ServerSourcePacketEvent event = new ServerSourcePacketEvent(this, packet);
-        if (!voice.getEventBus().call(event)) return false;
+        if (!voiceServer.getEventBus().call(event)) return false;
 
         if (playersSupplier != null) {
             for (VoicePlayer player : playersSupplier.get()) {

@@ -5,10 +5,11 @@ import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.api.PlasmoVoice;
+import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.connection.ConnectionManager;
@@ -32,18 +33,18 @@ public final class VoiceServerActivationManager implements ServerActivationManag
 
     private static final String WILDCARD_ACTIVATION_PERMISSION = "pv.activation.*";
 
-    private final PlasmoVoice voice;
+    private final PlasmoBaseVoiceServer voiceServer;
     private final ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer> tcpConnections;
     private final AddonManager addons;
     private final VoicePlayerManager<?> players;
     private final Map<UUID, ServerActivation> activationById = Maps.newConcurrentMap();
 
-    public VoiceServerActivationManager(@NotNull PlasmoVoice voice,
+    public VoiceServerActivationManager(@NotNull PlasmoBaseVoiceServer voiceServer,
                                         @NotNull ConnectionManager<ClientPacketTcpHandler, ? extends VoicePlayer> tcpConnections,
                                         @NotNull VoicePlayerManager<?> players) {
-        this.voice = voice;
+        this.voiceServer = voiceServer;
         this.tcpConnections = tcpConnections;
-        this.addons = voice.getAddonManager();
+        this.addons = voiceServer.getAddonManager();
         this.players = players;
     }
 
@@ -83,8 +84,13 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         ServerActivation activation = activationById.get(id);
         if (activation != null) {
             ServerActivationUnregisterEvent event = new ServerActivationUnregisterEvent(activation);
-            voice.getEventBus().call(event);
-            if (event.isCancelled()) return false;
+            if (!voiceServer.getEventBus().call(event)) return false;
+
+            activation.getPermissions().forEach(permission ->
+                    voiceServer.getMinecraftServer()
+                            .getPermissionsManager()
+                            .unregister(permission)
+            );
 
             activationById.remove(id);
 
@@ -181,11 +187,18 @@ public final class VoiceServerActivationManager implements ServerActivationManag
         private boolean proximity = true;
         private boolean stereoSupported = false;
 
+        private PermissionDefault permissionDefault;
         private CodecInfo encoderInfo;
 
         @Override
-        public ServerActivation.@NotNull Builder addPermission(@NotNull String permission) {
+        public @NotNull ServerActivation.Builder addPermission(@NotNull String permission) {
             permissions.add(permission);
+            return this;
+        }
+
+        @Override
+        public ServerActivation.@NotNull Builder setPermissionDefault(@Nullable PermissionDefault permissionDefault) {
+            this.permissionDefault = permissionDefault;
             return this;
         }
 
@@ -245,8 +258,16 @@ public final class VoiceServerActivationManager implements ServerActivationManag
                     weight
             );
 
+            if (permissionDefault != null) {
+                permissions.forEach(permission ->
+                        voiceServer.getMinecraftServer()
+                                .getPermissionsManager()
+                                .register(permission, permissionDefault)
+                );
+            }
+
             ServerActivationRegisterEvent event = new ServerActivationRegisterEvent(activation);
-            if (!voice.getEventBus().call(event))
+            if (!voiceServer.getEventBus().call(event))
                 throw new IllegalStateException("Activation registration was cancelled");
 
             activationById.put(activation.getId(), activation);

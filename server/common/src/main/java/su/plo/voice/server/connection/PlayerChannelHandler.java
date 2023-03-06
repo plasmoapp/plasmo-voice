@@ -21,6 +21,7 @@ import su.plo.voice.util.version.SemanticVersion;
 import java.security.KeyFactory;
 import java.security.spec.EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
+import java.util.Objects;
 import java.util.Optional;
 
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
@@ -100,7 +101,12 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull SourceInfoRequestPacket packet) {
-        Optional<ServerAudioSource<?>> source = voiceServer.getSourceManager().getSourceById(packet.getSourceId());
+        Optional<? extends ServerAudioSource<?>> source = voiceServer.getSourceLineManager()
+                .getLines()
+                .stream()
+                .map(line -> line.getSourceById(packet.getSourceId()).orElse((ServerAudioSource<?>) null))
+                .filter(Objects::nonNull)
+                .findFirst();
         if (!source.isPresent()) return;
 
         if (source.get().notMatchFilters(player)) {

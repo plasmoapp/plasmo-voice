@@ -121,7 +121,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
                 voiceServer.getSourceLineManager()
                         .getLines()
                         .stream()
-                        .map(line -> line.getPlayerSourceLine(receiver))
+                        .map(line -> line.getSourceLineForPlayer(receiver))
                         .collect(Collectors.toSet()),
                 voiceServer.getActivationManager()
                         .getActivations()

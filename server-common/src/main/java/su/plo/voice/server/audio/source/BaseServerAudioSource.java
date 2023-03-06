@@ -5,7 +5,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.server.audio.line.ServerSourceLine;
+import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
@@ -30,7 +30,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     protected final @Nullable CodecInfo decoderInfo;
 
     @Getter
-    protected @NotNull ServerSourceLine line;
+    protected @NotNull BaseServerSourceLine line;
     @Getter
     protected @Nullable String name;
     @Getter
@@ -46,7 +46,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
 
     protected BaseServerAudioSource(@NotNull AddonContainer addon,
                                     @NotNull UUID id,
-                                    @NotNull ServerSourceLine line,
+                                    @NotNull BaseServerSourceLine line,
                                     @Nullable CodecInfo decoderInfo,
                                     boolean stereo) {
         this.addon = addon;
@@ -62,7 +62,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     }
 
     @Override
-    public synchronized void setLine(@NotNull ServerSourceLine line) {
+    public synchronized void setLine(@NotNull BaseServerSourceLine line) {
         if (!this.line.equals(line)) {
             this.line = line;
             setDirty();

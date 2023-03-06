@@ -142,7 +142,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
                     voiceProxy.getSourceLineManager()
                             .getLines()
                             .stream()
-                            .map((line) -> line.getPlayerSourceLine(player))
+                            .map((line) -> line.getSourceLineForPlayer(player))
                             .collect(Collectors.toSet())
             );
 
@@ -164,27 +164,30 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
 
     @Override
     public void handle(@NotNull PlayerListPacket packet) {
-//        if (!isPlayerOnVoiceServer()) return;
-//
-//        player.sendPacket(new PlayerListPacket(
-//                voiceProxy.getUdpConnectionManager().getConnections()
-//                        .stream()
+        if (!isPlayerOnVoiceServer()) return;
+
+        // todo: vanish support?
+        player.sendPacket(new PlayerListPacket(
+                voiceProxy.getUdpConnectionManager().getConnections()
+                        .stream()
 //                        .filter((connection) ->
 //                                player.getInstance()
 //                                        .getTabList()
 //                                        .containsEntry(connection.getPlayer().getInstance().getUUID())
 //                        )
-//                        .map(connection -> connection.getPlayer().getInfo())
-//                        .collect(Collectors.toList())
-//        ));
-//
-//        throw new CancelForwardingException();
+                        .filter(connection -> !connection.getPlayer().equals(this.player))
+                        .map(connection -> connection.getPlayer().createPlayerInfo())
+                        .collect(Collectors.toList())
+        ));
+
+        throw new CancelForwardingException();
     }
 
     @Override
     public void handle(@NotNull PlayerInfoUpdatePacket packet) {
         if (!isPlayerOnVoiceServer()) return;
 
+        // todo: vanish support?
         voiceProxy.getPlayerManager().getPlayerById(packet.getPlayerInfo().getPlayerId())
                 .ifPresent((player) -> ((VoiceProxyPlayerConnection) player).update(packet.getPlayerInfo()));
 //        voiceProxy.getPlayerManager().getPlayerById(packet.getPlayerInfo().getPlayerId()).ifPresent((player) -> {

@@ -15,6 +15,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.*;
 import su.plo.voice.server.player.BaseVoicePlayer;
 
+import java.util.Objects;
 import java.util.Optional;
 
 // should be two channel handlers
@@ -58,7 +59,12 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
 
     @Override
     public void handle(@NotNull SourceInfoRequestPacket packet) {
-        Optional<ServerAudioSource<?>> source = voiceProxy.getSourceManager().getSourceById(packet.getSourceId());
+        Optional<? extends ServerAudioSource<?>> source = voiceProxy.getSourceLineManager()
+                .getLines()
+                .stream()
+                .map(line -> line.getSourceById(packet.getSourceId()).orElse((ServerAudioSource<?>) null))
+                .filter(Objects::nonNull)
+                .findFirst();
         if (!source.isPresent()) return;
 
         if (source.get().notMatchFilters(player)) {
