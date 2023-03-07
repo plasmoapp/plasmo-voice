@@ -18,10 +18,10 @@ abstract class VoiceServerPositionalSource<S : SourceInfo>(
     private val voiceServer: PlasmoVoiceServer,
     addon: AddonContainer,
     id: UUID,
-    line: ServerSourceLine,
+    private val serverSourceLine: ServerSourceLine,
     decoderInfo: CodecInfo?,
     stereo: Boolean
-) : BaseServerAudioSource<S>(addon, id, line, decoderInfo, stereo), ServerPositionalSource<S> {
+) : BaseServerAudioSource<S>(addon, id, serverSourceLine, decoderInfo, stereo), ServerPositionalSource<S> {
 
     private val playerPosition = ServerPos3d()
 
@@ -81,6 +81,9 @@ abstract class VoiceServerPositionalSource<S : SourceInfo>(
         }
         return true
     }
+
+    override fun getLine(): ServerSourceLine =
+        serverSourceLine
 
     companion object {
 
