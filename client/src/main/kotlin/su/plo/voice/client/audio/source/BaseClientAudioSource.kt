@@ -205,7 +205,6 @@ abstract class BaseClientAudioSource<T> constructor(
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
-        println(sourceGroup.sources.contains(event.source))
         if (closed.get() || !sourceGroup.sources.contains(event.source)) return
         close()
     }

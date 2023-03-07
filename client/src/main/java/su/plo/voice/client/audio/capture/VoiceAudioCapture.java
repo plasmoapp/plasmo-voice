@@ -202,13 +202,13 @@ public final class VoiceAudioCapture implements AudioCapture {
                         || config.getVoice().getDisabled().value()
                         || isServerMuted()
                 ) {
-                    if (parentActivation.isActivated()) {
+                    if (parentActivation.isActive()) {
                         parentActivation.reset();
                         sendVoiceEndPacket(parentActivation);
                     }
 
                     activations.getActivations().forEach((activation) -> {
-                        if (activation.isActivated()) {
+                        if (activation.isActive()) {
                             activation.reset();
                             sendVoiceEndPacket(activation);
                         }
@@ -229,7 +229,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 boolean transitiveReached = false;
 
                 for (ClientActivation activation : activations.getActivations()) {
-                    if ((activation.isDisabled() && !activation.isActivated()) ||
+                    if ((activation.isDisabled() && !activation.isActive()) ||
                             activation.equals(parentActivation)
                     ) continue;
 

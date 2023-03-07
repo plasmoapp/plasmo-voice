@@ -78,7 +78,7 @@ class OverlayRenderer(
                     toRenderByPlayerId[selfSourceInfo.playerId]?.apply {
                         activated = voiceClient.activationManager
                             .getActivationById(selfSourceInfo.activationId)
-                            .orElse(null)?.isActivated
+                            .orElse(null)?.isActive
                             ?: false
                     }
                     // todo: WHEN_TALKING?

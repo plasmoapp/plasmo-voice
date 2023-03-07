@@ -1,14 +1,10 @@
 package su.plo.voice.server.audio.capture
 
 import su.plo.lib.api.server.permission.PermissionDefault
-import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.capture.ProximityServerActivationHelper
-import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent
-import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent
-import su.plo.voice.api.server.player.VoiceServerPlayer
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
 import su.plo.voice.server.config.VoiceServerConfig
@@ -60,35 +56,4 @@ class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
         if (event.oldDistance == -1) return
         event.player.visualizeDistance(event.distance)
     }
-
-    @EventSubscribe(priority = EventPriority.HIGHEST)
-    fun onPlayerSpeak(event: PlayerSpeakEvent) {
-        val player = event.player as VoiceServerPlayer
-        val packet = event.packet
-
-        if (dropPacket(player, packet.distance.toInt())) return
-
-        proximityHelper!!.getPlayerSource(player, packet.activationId, packet.isStereo)?.let { source ->
-            proximityHelper!!.sendAudioPacket(player, source, packet)
-        }
-    }
-
-    @EventSubscribe(priority = EventPriority.HIGHEST)
-    fun onPlayerSpeakEnd(event: PlayerSpeakEndEvent) {
-        val player = event.player as VoiceServerPlayer
-        val packet = event.packet
-
-        if (dropPacket(player, packet.distance.toInt())) return
-
-        proximityHelper!!.getPlayerSource(player, packet.activationId, null)?.let { source ->
-            proximityHelper!!.sendAudioEndPacket(source, packet)
-        }
-    }
-
-    private fun dropPacket(player: VoiceServerPlayer, distance: Int): Boolean =
-        proximityHelper?.activation?.checkPermissions(player) == false || !voiceServer.config
-            .voice()
-            .proximity()
-            .distances()
-            .contains(distance)
 }

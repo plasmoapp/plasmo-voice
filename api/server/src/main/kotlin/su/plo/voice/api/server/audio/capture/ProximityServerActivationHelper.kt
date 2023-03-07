@@ -8,6 +8,7 @@ import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.source.ServerPlayerSource
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent
 import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent
+import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.api.server.player.VoiceServerPlayer
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
@@ -18,20 +19,22 @@ import java.util.*
 
 /**
  * Helper class for proximity activations
- *
- * Automatically creates player sources in [getPlayerSource]
- *
- * Uses [SelfActivationInfo] for [sendAudioPacket] and [sendAudioEndPacket]
  */
 class ProximityServerActivationHelper(
     voiceServer: PlasmoVoiceServer,
     val activation: ServerActivation,
-    val sourceLine: ServerSourceLine
+    val sourceLine: ServerSourceLine,
+    private val distanceSupplier: DistanceSupplier? = null
 ) {
 
     private val selfActivationInfo = SelfActivationInfo(voiceServer.udpConnectionManager)
 
     private val sourceByPlayerId: MutableMap<UUID, ServerPlayerSource> = Maps.newConcurrentMap()
+
+    init {
+        activation.onPlayerActivation(this::onActivation)
+        activation.onPlayerActivationEnd(this::onActivationEnd)
+    }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
     fun onSourceSendPacket(event: ServerSourcePacketEvent) {
@@ -56,7 +59,21 @@ class ProximityServerActivationHelper(
     fun onClientDisconnected(event: UdpClientDisconnectedEvent) =
         sourceByPlayerId.remove(event.connection.player.instance.uuid)
 
-    fun sendAudioEndPacket(
+    private fun onActivation(player: VoicePlayer, packet: PlayerAudioPacket) {
+        getPlayerSource(player as VoiceServerPlayer, packet.isStereo).also {
+            val distance = distanceSupplier?.getDistance(player, packet) ?: packet.distance
+            sendAudioPacket(player, it, packet, distance)
+        }
+    }
+
+    private fun onActivationEnd(player: VoicePlayer, packet: PlayerAudioEndPacket) {
+        getPlayerSource(player as VoiceServerPlayer).also {
+            val distance = distanceSupplier?.getDistance(player, packet) ?: packet.distance
+            sendAudioEndPacket(it, packet, distance)
+        }
+    }
+
+    private fun sendAudioEndPacket(
         source: ServerPlayerSource,
         packet: PlayerAudioEndPacket,
         distance: Short = packet.distance
@@ -68,7 +85,7 @@ class ProximityServerActivationHelper(
         }
     }
 
-    fun sendAudioPacket(
+    private fun sendAudioPacket(
         player: VoiceServerPlayer,
         source: ServerPlayerSource,
         packet: PlayerAudioPacket,
@@ -86,13 +103,10 @@ class ProximityServerActivationHelper(
         }
     }
 
-    fun getPlayerSource(
+    private fun getPlayerSource(
         player: VoiceServerPlayer,
-        activationId: UUID,
-        isStereo: Boolean?
-    ): ServerPlayerSource? {
-        if (activationId != activation.id) return null
-
+        isStereo: Boolean? = null
+    ): ServerPlayerSource {
         return sourceByPlayerId.getOrPut(player.instance.uuid) {
             sourceLine.createPlayerSource(player)
         }.apply {
@@ -102,5 +116,12 @@ class ProximityServerActivationHelper(
                 setStereo(isStereo && activation.isStereoSupported)
             }
         }
+    }
+
+    interface DistanceSupplier {
+
+        fun getDistance(player: VoiceServerPlayer, packet: PlayerAudioPacket): Short
+
+        fun getDistance(player: VoiceServerPlayer, packet: PlayerAudioEndPacket): Short
     }
 }

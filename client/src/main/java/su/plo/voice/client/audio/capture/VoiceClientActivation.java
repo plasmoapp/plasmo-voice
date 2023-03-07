@@ -53,7 +53,7 @@ public final class VoiceClientActivation
     private final AtomicBoolean disabled = new AtomicBoolean(false);
 
     @Getter
-    private boolean activated;
+    private boolean active;
     @Getter
     private long lastActivation;
 
@@ -199,8 +199,8 @@ public final class VoiceClientActivation
     @Override
     public @NotNull Result process(short[] samples, @Nullable Result result) {
         if (isDisabled()) {
-            if (this.activated) {
-                this.activated = false;
+            if (this.active) {
+                this.active = false;
                 return Result.END;
             }
 
@@ -220,7 +220,7 @@ public final class VoiceClientActivation
 
     @Override
     public void reset() {
-        this.activated = false;
+        this.active = false;
         this.lastActivation = 0L;
     }
 
@@ -237,21 +237,21 @@ public final class VoiceClientActivation
         boolean pressed = getPttKey().isPressed();
 
         if (pressed) {
-            if (!activated) this.activated = true;
+            if (!active) this.active = true;
             this.lastActivation = System.currentTimeMillis();
-        } else if (activated && (System.currentTimeMillis() - lastActivation > 350L)) {
-            this.activated = false;
+        } else if (active && (System.currentTimeMillis() - lastActivation > 350L)) {
+            this.active = false;
 
             return Result.END;
         }
 
-        return activated ? Result.ACTIVATED : Result.NOT_ACTIVATED;
+        return active ? Result.ACTIVATED : Result.NOT_ACTIVATED;
     }
 
     private @NotNull Result handleVoice(short[] samples, @Nullable Result result) {
         if (configToggle.value()) {
-            if (activated) {
-                this.activated = false;
+            if (active) {
+                this.active = false;
                 return Result.END;
             }
 
@@ -260,11 +260,11 @@ public final class VoiceClientActivation
 
         if (result != null) {
             if (result == Result.ACTIVATED) {
-                this.activated = true;
+                this.active = true;
                 this.lastActivation = System.currentTimeMillis();
                 return result;
             } else if (result == Result.END) {
-                this.activated = false;
+                this.active = false;
                 return result;
             }
         }
@@ -273,13 +273,13 @@ public final class VoiceClientActivation
         boolean voiceDetected = AudioUtil.containsMinAudioLevel(samples, config.getVoice().getActivationThreshold().value());
         if (lastActivated || voiceDetected) {
             if (voiceDetected) this.lastActivation = System.currentTimeMillis();
-            if (!activated) this.activated = true;
+            if (!active) this.active = true;
 
             return Result.ACTIVATED;
         }
 
-        if (activated) {
-            this.activated = false;
+        if (active) {
+            this.active = false;
             return Result.END;
         }
 
@@ -290,16 +290,16 @@ public final class VoiceClientActivation
         if (result == null) return Result.NOT_ACTIVATED;
 
         if (configToggle.value()) {
-            if (activated) {
-                this.activated = false;
+            if (active) {
+                this.active = false;
                 return Result.END;
             }
 
             return Result.NOT_ACTIVATED;
         }
 
-        this.activated = result == Result.ACTIVATED;
-        if (activated) this.lastActivation = System.currentTimeMillis();
+        this.active = result == Result.ACTIVATED;
+        if (active) this.lastActivation = System.currentTimeMillis();
 
         return result;
     }

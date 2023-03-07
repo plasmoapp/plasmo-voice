@@ -3,10 +3,12 @@ package su.plo.voice.api.server.player;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
+import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 
 import java.security.PublicKey;
+import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,6 +51,11 @@ public interface VoicePlayer {
      * @return the activation's distance or -1 if client not sent the distances
      */
     int getActivationDistanceById(@NotNull UUID activationId);
+
+    /**
+     * @return current player's active activations
+     */
+    Collection<ServerActivation> getActiveActivations();
 
     /**
      * Visualizes sphere distance if client has enabled this feature

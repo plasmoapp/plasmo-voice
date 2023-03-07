@@ -4,7 +4,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
-import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.proto.data.audio.capture.Activation;
 
 import java.util.Optional;
@@ -43,11 +42,11 @@ public interface ClientActivation extends Activation {
     boolean isDisabled();
 
     /**
-     * Checks if activation is activated
+     * Checks if activation is active
      *
-     * @return true if activation is activated
+     * @return true if activation is active
      */
-    boolean isActivated();
+    boolean isActive();
 
     long getLastActivation();
 

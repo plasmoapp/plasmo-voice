@@ -1,6 +1,7 @@
 package su.plo.voice.server.player;
 
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -21,11 +22,13 @@ import su.plo.voice.proto.packets.tcp.clientbound.DistanceVisualizePacket;
 import java.security.PublicKey;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @RequiredArgsConstructor
 @ToString(doNotUseGetters = true, exclude = "publicKey")
-public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implements VoicePlayer {
+public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer>
+        implements VoicePlayer {
 
     private final PlasmoBaseVoiceServer voiceServer;
     @Getter
@@ -42,6 +45,8 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer> implement
     private PublicKey publicKey;
 
     private final Map<UUID, Integer> distanceByActivationId = Maps.newConcurrentMap();
+    @Getter
+    private final Set<ServerActivation> activeActivations = Sets.newConcurrentHashSet();
 
     @Override
     public void sendPacket(@NotNull Packet<?> packet) {

@@ -142,7 +142,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         this.playerManager = new VoiceServerPlayerManager(this, getMinecraftServer());
         eventBus.register(this, playerManager);
 
-        this.activationManager = new VoiceServerActivationManager(this, tcpConnectionManager, playerManager);
+        this.activationManager = new VoiceServerActivationManager(this, tcpConnectionManager);
         eventBus.register(this, activationManager);
         this.sourceLineManager = new VoiceServerSourceLineManager(this);
 

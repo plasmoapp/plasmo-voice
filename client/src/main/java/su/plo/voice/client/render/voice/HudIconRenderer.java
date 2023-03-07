@@ -55,7 +55,7 @@ public final class HudIconRenderer {
         ClientActivation currentActivation = null;
         for (int index = activations.size() - 1; index >= 0; index--) {
             ClientActivation activation = activations.get(index);
-            HudActivationRenderEvent renderEvent = new HudActivationRenderEvent(activation, activation.isActivated());
+            HudActivationRenderEvent renderEvent = new HudActivationRenderEvent(activation, activation.isActive());
             voiceClient.getEventBus().call(renderEvent);
 
             if (!renderEvent.isRender()) continue;
