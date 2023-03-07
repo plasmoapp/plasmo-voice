@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.addon.ServerAddonManagerProvider;
+import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
@@ -121,5 +122,5 @@ public interface PlasmoVoiceServer extends PlasmoBaseVoiceServer {
      * <br/>
      * params will be created from {@link ServerConfig}
      */
-    @NotNull AudioEncoder createOpusDecoder(boolean stereo);
+    @NotNull AudioDecoder createOpusDecoder(boolean stereo);
 }

@@ -16,6 +16,7 @@ import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.addon.ServerAddonManagerProvider;
+import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.logging.DebugLogger;
@@ -375,7 +376,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     @Override
-    public @NotNull AudioEncoder createOpusDecoder(boolean stereo) {
+    public @NotNull AudioDecoder createOpusDecoder(boolean stereo) {
         if (config == null) throw new IllegalStateException("server is not initialized yet");
 
         int sampleRate = config.voice().sampleRate();
