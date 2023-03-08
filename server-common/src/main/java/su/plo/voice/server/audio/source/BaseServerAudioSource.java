@@ -30,7 +30,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     protected final @Nullable CodecInfo decoderInfo;
 
     @Getter
-    protected @NotNull BaseServerSourceLine line;
+    protected final BaseServerSourceLine line;
     @Getter
     protected @Nullable String name;
     @Getter
@@ -59,15 +59,6 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     @Override
     public int getState() {
         return state.get();
-    }
-
-    @Override
-    public synchronized void setLine(@NotNull BaseServerSourceLine line) {
-        if (!this.line.equals(line)) {
-            this.line = line;
-            setDirty();
-            increaseSourceState();
-        }
     }
 
     @Override

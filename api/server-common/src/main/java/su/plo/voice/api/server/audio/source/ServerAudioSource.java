@@ -20,8 +20,6 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
 
     @NotNull BaseServerSourceLine getLine();
 
-    void setLine(@NotNull BaseServerSourceLine line);
-
     int getState();
 
     void setAngle(int angle);
@@ -50,6 +48,13 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
     @NotNull Collection<Predicate<VoicePlayer>> getFilters();
 
     void clearFilters();
+
+    /**
+     * Removes source from {@link #getLine()}
+     */
+    default void remove() {
+        getLine().removeSource(this);
+    }
 
     /**
      * @param player player to check

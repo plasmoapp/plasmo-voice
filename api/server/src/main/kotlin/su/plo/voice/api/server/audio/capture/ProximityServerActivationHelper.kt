@@ -110,8 +110,6 @@ class ProximityServerActivationHelper(
         return sourceByPlayerId.getOrPut(player.instance.uuid) {
             sourceLine.createPlayerSource(player)
         }.apply {
-            line = sourceLine
-        }.apply {
             isStereo?.let { isStereo ->
                 setStereo(isStereo && activation.isStereoSupported)
             }
