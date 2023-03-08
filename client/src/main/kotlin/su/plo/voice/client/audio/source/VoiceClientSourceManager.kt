@@ -33,6 +33,11 @@ class VoiceClientSourceManager(
         ::CopyOnWriteArrayList
     )
 
+    private val sourcesByEntityId: ListMultimap<Int, ClientAudioSource<EntitySourceInfo>> = Multimaps.newListMultimap(
+        Maps.newConcurrentMap(),
+        ::CopyOnWriteArrayList
+    )
+
     private val sourceById: MutableMap<UUID, ClientAudioSource<out SourceInfo>> = Maps.newConcurrentMap()
     private val sourceRequestById: MutableMap<UUID, Long> = Maps.newConcurrentMap()
     private val selfSourceInfoById: MutableMap<UUID, VoiceClientSelfSourceInfo> = Maps.newConcurrentMap()
@@ -65,6 +70,9 @@ class VoiceClientSourceManager(
         return sourcesByLineId[lineId]
     }
 
+    override fun getEntitySources(entityId: Int): Collection<ClientAudioSource<EntitySourceInfo>> =
+        sourcesByEntityId[entityId]
+
     override fun getPlayerSources(playerId: UUID): Collection<ClientAudioSource<PlayerSourceInfo>> =
         sourcesByPlayerId[playerId]
 
@@ -85,6 +93,7 @@ class VoiceClientSourceManager(
         sourceById.values.forEach { it.close() }
         sourcesByLineId.clear()
         sourcesByPlayerId.clear()
+        sourcesByEntityId.clear()
         sourceRequestById.clear()
         selfSourceInfoById.clear()
     }
@@ -128,13 +137,14 @@ class VoiceClientSourceManager(
                     val source = createPlayerSource(sourceInfo)
                     sourceById[sourceInfo.getId()] = source
                     sourcesByLineId.put(sourceInfo.getLineId(), source)
-                    sourcesByPlayerId.put(source.sourceInfo.playerInfo.playerId, source)
+                    sourcesByPlayerId.put(sourceInfo.playerInfo.playerId, source)
                 }
 
                 is EntitySourceInfo -> {
                     val source = createEntitySource(sourceInfo)
                     sourceById[sourceInfo.getId()] = source
                     sourcesByLineId.put(sourceInfo.getLineId(), source)
+                    sourcesByEntityId.put(sourceInfo.entityId, source)
                 }
 
                 is StaticSourceInfo -> {
@@ -192,6 +202,10 @@ class VoiceClientSourceManager(
 
         (source.sourceInfo as? PlayerSourceInfo)?.playerInfo?.let {
             sourcesByPlayerId.remove(it.playerId, source)
+        }
+
+        (source.sourceInfo as? EntitySourceInfo)?.entityId?.let {
+            sourcesByEntityId.remove(it, source)
         }
     }
 

@@ -26,13 +26,13 @@ import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.event.render.PlayerRenderEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.ModCamera;
-import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public final class SourceIconRenderer {
 
@@ -105,8 +105,11 @@ public final class SourceIconRenderer {
         } else if (playerInfo.get().isVoiceDisabled()) { // client disabled voicechat
             iconLocation = "plasmovoice:textures/icons/headset_disabled.png";
         } else {
-            Collection<ClientAudioSource<PlayerSourceInfo>> sources = voiceClient.getSourceManager()
-                    .getPlayerSources(player.getUUID());
+            Collection<ClientAudioSource<?>> sources = voiceClient.getSourceManager()
+                    .getPlayerSources(player.getUUID())
+                    .stream()
+                    .map(source -> (ClientAudioSource<?>) source) // todo: waytoodank
+                    .collect(Collectors.toList());;
 
             hasPercent = volumeAction.isShown(player);
             if (hasPercent) {
@@ -121,21 +124,7 @@ public final class SourceIconRenderer {
 
             if (sources.isEmpty()) return;
 
-            ClientSourceLine highestSourceLine = null;
-            for (ClientAudioSource<PlayerSourceInfo> source : sources) {
-                if (!source.isActivated() || !source.getSourceInfo().isIconVisible()) continue;
-
-                Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
-                        .getLineById(source.getSourceInfo().getLineId());
-                if (!sourceLine.isPresent()) continue;
-
-                if (highestSourceLine == null ||
-                        highestSourceLine.getWeight() < sourceLine.get().getWeight()
-                ) {
-                    highestSourceLine = sourceLine.get();
-                }
-            }
-
+            ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(sources);
             if (highestSourceLine == null) return;
 
             // speaking
@@ -165,27 +154,21 @@ public final class SourceIconRenderer {
 
         if (isIconHidden() || entity.isInvisibleTo(clientPlayer)) return;
 
-        Optional<ClientAudioSource<?>> source = voiceClient.getSourceManager()
-                .getSourceById(entity.getUUID(), false);
+        Collection<ClientAudioSource<?>> sources = voiceClient.getSourceManager()
+                .getEntitySources(entity.getId())
+                .stream()
+                .map(source -> (ClientAudioSource<?>) source) // todo: waytoodank
+                .collect(Collectors.toList());
 
-        if (!source.isPresent() ||
-                !source.get().isActivated() ||
-                !source.get().getSourceInfo().isIconVisible()
-        ) return;
-
-        Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
-                .getLineById(source.get().getSourceInfo().getLineId());
-        if (!sourceLine.isPresent()) return;
-
-        // speaking
-        String iconLocation = sourceLine.get().getIcon();
+        ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(sources);
+        if (highestSourceLine == null) return;
 
         renderEntity(
                 event.getStack(),
                 event.getCamera(),
                 event.getLight(),
                 entity,
-                new ResourceLocation(iconLocation),
+                new ResourceLocation(highestSourceLine.getIcon()),
                 event.hasLabel(),
                 false
         );
@@ -435,5 +418,24 @@ public final class SourceIconRenderer {
     private boolean isIconHidden() {
         int showIcons = config.getOverlay().getShowSourceIcons().value();
         return showIcons == 2 || (UMinecraft.getSettings().hideGui && showIcons == 0);
+    }
+
+    private ClientSourceLine getHighestActivatedSourceLine(@NotNull Collection<ClientAudioSource<?>> sources) {
+        ClientSourceLine highestSourceLine = null;
+        for (ClientAudioSource<?> source : sources) {
+            if (!source.isActivated() || !source.getSourceInfo().isIconVisible()) continue;
+
+            Optional<ClientSourceLine> sourceLine = voiceClient.getSourceLineManager()
+                    .getLineById(source.getSourceInfo().getLineId());
+            if (!sourceLine.isPresent()) continue;
+
+            if (highestSourceLine == null ||
+                    highestSourceLine.getWeight() < sourceLine.get().getWeight()
+            ) {
+                highestSourceLine = sourceLine.get();
+            }
+        }
+
+        return highestSourceLine;
     }
 }
