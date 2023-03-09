@@ -38,13 +38,13 @@ class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
             .setPermissionDefault(PermissionDefault.TRUE)
             .build()
 
-        val sourceLine = voiceServer.sourceLineManager.register(
+        val sourceLine = voiceServer.sourceLineManager.createBuilder(
             voiceServer,
             VoiceSourceLine.PROXIMITY_NAME,
             "pv.activation.proximity",
             "plasmovoice:textures/icons/speaker.png",
             1
-        )
+        ).build()
 
         proximityHelper = ProximityServerActivationHelper(voiceServer, activation, sourceLine)
         voiceServer.eventBus.register(voiceServer, proximityHelper!!)

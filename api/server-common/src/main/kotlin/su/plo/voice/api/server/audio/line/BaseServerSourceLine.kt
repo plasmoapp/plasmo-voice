@@ -2,6 +2,7 @@ package su.plo.voice.api.server.audio.line
 
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.audio.source.AudioSourceManager
+import su.plo.voice.api.server.audio.capture.ServerActivation
 import su.plo.voice.api.server.audio.source.ServerAudioSource
 import su.plo.voice.api.server.audio.source.ServerDirectSource
 import su.plo.voice.api.server.player.VoicePlayer
@@ -55,4 +56,30 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
      */
     fun removeSource(source: ServerAudioSource<*>) =
         removeSource(source.id)
+
+    interface Builder<T : BaseServerSourceLine> {
+
+        /**
+         * Sets the line's players
+         *
+         * If true, [ServerSourceLinePlayersSets] will be created for this source line
+         *
+         * Default: false
+         *
+         * @see [BaseServerSourceLine.playersSets]
+         */
+        fun withPlayers(withPlayers: Boolean): Builder<T>
+
+        /**
+         * Sets line's default volume
+         *
+         * Default: 1.0; Min: 0.0; Max: 1.0
+         */
+        fun setDefaultVolume(defaultVolume: Double): Builder<T>
+
+        /**
+         * Builds and registers the source line
+         */
+        fun build(): T
+    }
 }
