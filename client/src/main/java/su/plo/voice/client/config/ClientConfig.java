@@ -11,6 +11,7 @@ import su.plo.config.ConfigField;
 import su.plo.config.entry.*;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.lib.api.MathLib;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.overlay.OverlayPosition;
@@ -272,10 +273,10 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField
-        private SourceLineVolumes volumes = new SourceLineVolumes();
+        private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(true);
 
         @ConfigField
-        private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(true);
+        private SourceLineVolumes volumes = new SourceLineVolumes();
 
 //        @ConfigField
 //        protected EnumConfigEntry<ClientActivation.Type> activationType = new EnumConfigEntry<>(
@@ -300,6 +301,13 @@ public final class ClientConfig {
                 return volumeByLineName.computeIfAbsent(
                         lineName,
                         (c) -> new DoubleConfigEntry(1D, 0D, 2D)
+                );
+            }
+
+            public synchronized DoubleConfigEntry getVolume(@NotNull String lineName, double defaultVolume) {
+                return volumeByLineName.computeIfAbsent(
+                        lineName,
+                        (c) -> new DoubleConfigEntry(MathLib.clamp(defaultVolume, 0D, 1D), 0D, 2D)
                 );
             }
 

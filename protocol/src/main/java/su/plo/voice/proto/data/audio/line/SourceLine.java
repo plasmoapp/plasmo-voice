@@ -31,6 +31,11 @@ public interface SourceLine {
     @NotNull String getIcon();
 
     /**
+     * @return the source line default volume
+     */
+    double getDefaultVolume();
+
+    /**
      * Gets the line's weight
      * <p>
      * todo: doc

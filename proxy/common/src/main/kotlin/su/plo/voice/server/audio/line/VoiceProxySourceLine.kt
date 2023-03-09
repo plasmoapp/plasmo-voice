@@ -10,6 +10,17 @@ class VoiceProxySourceLine(
     name: String,
     translation: String,
     icon: String,
+    defaultVolume: Double,
     weight: Int,
     withPlayers: Boolean
-) : ProxySourceLine, VoiceBaseServerSourceLine(voiceProxy, addon, name, translation, icon, weight, withPlayers)
+) : ProxySourceLine,
+    VoiceBaseServerSourceLine(
+        voiceProxy,
+        addon,
+        name,
+        translation,
+        icon,
+        defaultVolume,
+        weight,
+        withPlayers
+    )

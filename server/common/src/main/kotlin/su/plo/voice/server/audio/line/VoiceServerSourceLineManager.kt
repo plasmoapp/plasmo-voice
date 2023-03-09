@@ -15,7 +15,8 @@ class VoiceServerSourceLineManager(
         translation: String,
         icon: String,
         weight: Int,
-        withPlayers: Boolean
+        withPlayers: Boolean,
+        defaultVolume: Double
     ): ServerSourceLine {
         val addon = voiceServer.addonManager.getAddon(addonObject)
             .orElseThrow { IllegalArgumentException("addonObject is not an addon") }
@@ -26,6 +27,7 @@ class VoiceServerSourceLineManager(
             name,
             translation,
             icon,
+            defaultVolume,
             weight,
             withPlayers
         ).also { line ->

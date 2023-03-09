@@ -15,7 +15,8 @@ class VoiceProxySourceLineManager(
         translation: String,
         icon: String,
         weight: Int,
-        withPlayers: Boolean
+        withPlayers: Boolean,
+        defaultVolume: Double
     ): ProxySourceLine {
         val addon = voiceProxy.addonManager.getAddon(addonObject)
             .orElseThrow { IllegalArgumentException("addonObject is not an addon") }
@@ -26,6 +27,7 @@ class VoiceProxySourceLineManager(
             name,
             translation,
             icon,
+            defaultVolume,
             weight,
             withPlayers
         ).also { line ->

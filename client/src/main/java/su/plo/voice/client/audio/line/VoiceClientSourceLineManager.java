@@ -96,7 +96,9 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
             stateEntry.setDefault(OverlaySourceState.OFF);
         }
 
-        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume(line.getName());
+        DoubleConfigEntry volumeEntry = config.getVoice()
+                .getVolumes()
+                .getVolume(line.getName(), line.getDefaultVolume());
         ClientSourceLine clientLine = new VoiceClientSourceLine(volumeEntry, line);
 
         return register(clientLine);

@@ -21,9 +21,10 @@ abstract class VoiceBaseServerSourceLine(
     name: String,
     translation: String,
     icon: String,
+    defaultVolume: Double,
     weight: Int,
     withPlayers: Boolean
-) : BaseServerSourceLine, VoiceSourceLine(name, translation, icon, weight, null) {
+) : BaseServerSourceLine, VoiceSourceLine(name, translation, icon, defaultVolume, weight, null) {
 
     override val playersSets: ServerSourceLinePlayersSets? =
         if (withPlayers) VoiceServerSourceLinePlayersSets(this) else null
@@ -36,6 +37,7 @@ abstract class VoiceBaseServerSourceLine(
                 name,
                 translation,
                 icon,
+                defaultVolume,
                 weight,
                 it.getPlayersSet(player).getPlayers()
                     .stream()

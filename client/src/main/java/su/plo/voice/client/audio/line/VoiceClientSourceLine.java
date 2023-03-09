@@ -20,6 +20,7 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
                 line.getName(),
                 line.getTranslation(),
                 line.getIcon(),
+                line.getDefaultVolume(),
                 line.getWeight(),
                 line.hasPlayers() ? Sets.newConcurrentHashSet(line.getPlayers()) : null
         );

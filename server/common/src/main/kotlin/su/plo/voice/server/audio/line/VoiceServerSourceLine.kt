@@ -20,9 +20,20 @@ class VoiceServerSourceLine(
     name: String,
     translation: String,
     icon: String,
+    defaultVolume: Double,
     weight: Int,
     withPlayers: Boolean
-) : ServerSourceLine, VoiceBaseServerSourceLine(voiceServer, addon, name, translation, icon, weight, withPlayers) {
+) : ServerSourceLine,
+    VoiceBaseServerSourceLine(
+        voiceServer,
+        addon,
+        name,
+        translation,
+        icon,
+        defaultVolume,
+        weight,
+        withPlayers
+    ) {
 
     override fun createPlayerSource(
         player: VoiceServerPlayer,

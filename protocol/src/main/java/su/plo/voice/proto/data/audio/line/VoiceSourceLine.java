@@ -42,18 +42,22 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     @Getter
     protected String icon;
     @Getter
+    protected double defaultVolume;
+    @Getter
     protected int weight;
     protected Set<MinecraftGameProfile> players = null;
 
     public VoiceSourceLine(@NotNull String name,
                            @NotNull String translation,
                            @NotNull String icon,
+                           double defaultVolume,
                            int weight,
                            @Nullable Set<MinecraftGameProfile> players) {
+        this.id = generateId(name);
         this.name = checkNotNull(name);
         this.translation = translation;
         this.icon = checkNotNull(icon);
-        this.id = generateId(name);
+        this.defaultVolume = Math.max(Math.min(defaultVolume, 1D), 0D);
         this.weight = weight;
         this.players = players;
     }
@@ -64,6 +68,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
         this.id = generateId(name);
         this.translation = in.readUTF();
         this.icon = in.readUTF();
+        this.defaultVolume = in.readDouble();
         this.weight = in.readInt();
         if (in.readBoolean()) {
             this.players = new HashSet<>();
@@ -81,6 +86,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
         out.writeUTF(name);
         out.writeUTF(translation);
         out.writeUTF(icon);
+        out.writeDouble(defaultVolume);
         out.writeInt(weight);
         out.writeBoolean(hasPlayers());
         if (hasPlayers()) {

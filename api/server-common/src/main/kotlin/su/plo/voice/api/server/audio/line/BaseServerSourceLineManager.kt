@@ -14,6 +14,7 @@ interface BaseServerSourceLineManager<T : BaseServerSourceLine> : SourceLineMana
         translation: String,
         icon: String,
         weight: Int,
-        withPlayers: Boolean = false
+        withPlayers: Boolean = false,
+        defaultVolume: Double = 1.0
     ): T
 }
