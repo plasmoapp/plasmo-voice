@@ -64,11 +64,12 @@ public final class VoiceClientActivation
                                  @NotNull ClientConfig config,
                                  @NotNull ConfigClientActivation activationConfig,
                                  @NotNull IntConfigEntry activationDistance,
-                                 @NotNull Activation activation) {
+                                 @NotNull Activation activation,
+                                 @NotNull String icon) {
         super(
                 activation.getName(),
                 activation.getTranslation(),
-                activation.getIcon(),
+                icon,
                 new ArrayList<>(activation.getDistances()),
                 activation.getDefaultDistance(),
                 activation.isProximity(),

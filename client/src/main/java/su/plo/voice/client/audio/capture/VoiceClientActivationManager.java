@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -14,6 +15,7 @@ import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEve
 import su.plo.voice.api.client.event.audio.capture.ClientActivationUnregisteredEvent;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
+import su.plo.voice.client.render.voice.VoiceIconUtil;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
@@ -90,12 +92,18 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                     serverActivation.getMaxDistance()
             );
 
+            String icon = VoiceIconUtil.INSTANCE.getIcon(
+                    serverActivation.getIcon(),
+                    new ResourceLocation("plasmovoice:textures/addons/activations/" + serverActivation.getName())
+            );
+
             ClientActivation activation = register(new VoiceClientActivation(
                     voiceClient,
                     config,
                     activationConfig,
                     activationDistance,
-                    serverActivation
+                    serverActivation,
+                    icon
             ));
 
             voiceClient.getServerConnection().ifPresent((connection) -> connection.sendPacket(
@@ -198,7 +206,8 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 config,
                 activationConfig,
                 activationDistance,
-                serverActivation
+                serverActivation,
+                ""
         );
     }
 }

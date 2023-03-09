@@ -1,32 +1,34 @@
-package su.plo.voice.api.server.audio.line
+package su.plo.voice.api.server.audio.capture
 
-import su.plo.voice.api.audio.line.SourceLineManager
+import su.plo.voice.api.audio.capture.ActivationManager
 import java.io.InputStream
 import java.util.*
 
-interface BaseServerSourceLineManager<T : BaseServerSourceLine> : SourceLineManager<T> {
-
+// todo: doc
+interface ServerActivationManager : ActivationManager<ServerActivation> {
     /**
-     * @return a new [T] builder
+     * Creates a new activation builder
      */
     fun createBuilder(
         addonObject: Any,
         name: String,
         translation: String,
         icon: String,
+        permission: String,
         weight: Int
-    ): BaseServerSourceLine.Builder<T>
+    ): ServerActivation.Builder
 
     /**
-     * @return a new [T] builder
+     * Creates a new activation builder
      */
     fun createBuilder(
         addonObject: Any,
         name: String,
         translation: String,
         icon: InputStream,
+        permission: String,
         weight: Int
-    ): BaseServerSourceLine.Builder<T> {
+    ): ServerActivation.Builder {
         val base64 = Base64.getEncoder().encodeToString(icon.readBytes())
 
         return createBuilder(
@@ -34,6 +36,7 @@ interface BaseServerSourceLineManager<T : BaseServerSourceLine> : SourceLineMana
             name,
             translation,
             "base64;$base64",
+            permission,
             weight
         )
     }

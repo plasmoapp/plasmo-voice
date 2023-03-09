@@ -15,11 +15,12 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
     private final DoubleConfigEntry volumeEntry;
 
     public VoiceClientSourceLine(@NotNull DoubleConfigEntry volumeEntry,
-                                 @NotNull SourceLine line) {
+                                 @NotNull SourceLine line,
+                                 @NotNull String icon) {
         super(
                 line.getName(),
                 line.getTranslation(),
-                line.getIcon(),
+                icon,
                 line.getDefaultVolume(),
                 line.getWeight(),
                 line.hasPlayers() ? Sets.newConcurrentHashSet(line.getPlayers()) : null

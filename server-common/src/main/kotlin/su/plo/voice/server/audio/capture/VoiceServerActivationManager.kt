@@ -24,7 +24,6 @@ import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationUnregisterPacket
 import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler
 import su.plo.voice.server.player.BaseVoicePlayer
-import java.lang.IllegalArgumentException
 import java.util.*
 import java.util.function.Consumer
 
