@@ -6,7 +6,7 @@ lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }
 annotations  = { module = "org.jetbrains:annotations", version = "23.0.0" }
 guava        = { module = "com.google.guava:guava", version = "31.1-jre" }
 gson         = { module = "com.google.code.gson:gson", version = "2.9.0" }
-guice        = { module = "com.google.inject:guice", version = "5.0.1" }
+
 log4j        = { module = "org.apache.logging.log4j:log4j-core", version = "2.17.1" }
 junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
@@ -15,6 +15,11 @@ rnnoise      = { module = "su.plo.rnnoise:rnnoise", version = "2.0.0" }
 netty        = { module = "io.netty:netty-all", version = "4.1.77.Final"}
 config       = { module = "su.plo.config:config", version = "1.0.0" }
 luckperms    = { module = "net.luckperms:api", version = "5.4" }
+
+guice        = { module = "com.google.inject:guice", version = "5.0.1" }
+javax-inject = { module = "javax.inject:javax.inject", version = "1" }
+aopalliance  = { module = "aopalliance:aopalliance", version = "1.0" }
+
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.3.2"}
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.1"}
 

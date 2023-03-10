@@ -98,6 +98,8 @@ dependencies {
         common(rootProject.libs.guice)
     } else {
         "include"(rootProject.libs.guice)
+        "include"(rootProject.libs.aopalliance)
+        "include"(rootProject.libs.javax.inject)
     }
 }
 
