@@ -14,6 +14,7 @@ import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.proto.packets.tcp.clientbound.AnimatedActionBarPacket;
@@ -77,7 +78,12 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer>
 
     @Override
     public void visualizeDistance(int radius, int hexColor) {
-        sendPacket(new DistanceVisualizePacket(radius, hexColor));
+        sendPacket(new DistanceVisualizePacket(radius, hexColor, null));
+    }
+
+    @Override
+    public void visualizeDistance(@NotNull Pos3d position, int radius, int hexColor) {
+        sendPacket(new DistanceVisualizePacket(radius, hexColor, position));
     }
 
     @Override

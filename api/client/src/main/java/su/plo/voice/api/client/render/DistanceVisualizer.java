@@ -1,5 +1,8 @@
 package su.plo.voice.api.client.render;
 
+import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.pos.Pos3d;
+
 public interface DistanceVisualizer {
 
     /**
@@ -8,5 +11,5 @@ public interface DistanceVisualizer {
      * @param radius sphere radius
      * @param color HEX color
      */
-    void render(int radius, int color);
+    void render(int radius, int color, @Nullable Pos3d position);
 }

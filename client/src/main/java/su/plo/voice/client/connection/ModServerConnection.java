@@ -434,7 +434,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
     @Override
     public void handle(@NotNull DistanceVisualizePacket packet) {
-        voiceClient.getDistanceVisualizer().render(packet.getRadius(), packet.getHexColor());
+        voiceClient.getDistanceVisualizer().render(packet.getRadius(), packet.getHexColor(), packet.getPosition());
     }
 
     @Override

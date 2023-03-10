@@ -5,6 +5,7 @@ import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
+import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
 
 import java.security.PublicKey;
@@ -72,6 +73,23 @@ public interface VoicePlayer {
      */
     default void visualizeDistance(int radius) {
         visualizeDistance(radius, 0x00a000);
+    }
+
+    /**
+     * Visualizes sphere distance on position if client has enabled this feature
+     *
+     * @param radius sphere radius
+     * @param hexColor int hex color (e.g. 0x00a000)
+     */
+    void visualizeDistance(@NotNull Pos3d position, int radius, int hexColor);
+
+    /**
+     * Visualizes sphere distance on position with color 0x00a000 if client has enabled this feature
+     *
+     * @param radius sphere radius
+     */
+    default void visualizeDistance(@NotNull Pos3d position, int radius) {
+        visualizeDistance(position, radius, 0x00a000);
     }
 
     /**

@@ -70,7 +70,8 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                     config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()) {
                 voiceClient.getDistanceVisualizer().render(
                         activation.getDistance(),
-                        0x00a000
+                        0x00a000,
+                        null
                 );
             }
         }
