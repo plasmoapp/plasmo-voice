@@ -48,6 +48,7 @@ public final class AlOutputDevice
 
     private static final Logger LOGGER = LogManager.getLogger(AlOutputDevice.class);
 
+    @Getter
     private final ExecutorService executor;
     @Getter
     private final Listener listener = new AlListener();
