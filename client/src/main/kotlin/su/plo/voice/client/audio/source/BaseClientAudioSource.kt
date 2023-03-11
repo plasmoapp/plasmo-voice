@@ -1,6 +1,5 @@
 package su.plo.voice.client.audio.source
 
-import kotlinx.coroutines.*
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
@@ -49,6 +48,8 @@ abstract class BaseClientAudioSource<T> constructor(
     final override var sourceInfo: T
 ) : ClientAudioSource<T> where T : SourceInfo {
 
+    private val executor = Executors.newSingleThreadScheduledExecutor()
+
     private val playerPosition = FloatArray(3)
     private val position = FloatArray(3)
     private val lookAngle = FloatArray(3)
@@ -65,7 +66,7 @@ abstract class BaseClientAudioSource<T> constructor(
     private var encryption: Encryption? = null
     private var decoder: AudioDecoder? = null
 
-    private var endRequest: Job? = null
+    private var endRequest: ScheduledFuture<*>? = null
 
     override var closeTimeoutMs: Long = 500
 
@@ -153,28 +154,26 @@ abstract class BaseClientAudioSource<T> constructor(
 
     override fun process(packet: SourceAudioPacket) {
         if (isClosed() || lineMute.value()) return
-
-        SCOPE.launch { processAudioPacket(packet) }
+        executor.execute { processAudioPacket(packet) }
     }
 
     override fun process(packet: SourceAudioEndPacket) {
         if (isClosed() || lineMute.value()) return
 
-        SCOPE.launch { processAudioEndPacket(packet) }
-        endRequest?.cancel()
-        endRequest = SCOPE.launch {
-            try {
-                delay(100L)
-                reset()
-            } catch (_: CancellationException) {
-            }
-        }
+        executor.execute { processAudioEndPacket(packet) }
+        endRequest?.cancel(false)
+        endRequest = executor.schedule(
+            { reset() },
+            100L,
+            TimeUnit.MILLISECONDS
+        )
     }
 
     override fun close() {
         activated.set(false)
         canHear.set(false)
         closed.set(true)
+        if (!executor.isShutdown) executor.shutdown()
 
         decoder?.close()
         sourceGroup.clear()
@@ -236,8 +235,10 @@ abstract class BaseClientAudioSource<T> constructor(
 
         // todo: waytoodank
         endRequest?.let {
-            it.cancel()
-            endRequest = null
+            if (it.getDelay(TimeUnit.MILLISECONDS) > 40L) {
+                it.cancel(false)
+                endRequest = null
+            }
         }
 
         // update source positions
@@ -493,9 +494,7 @@ abstract class BaseClientAudioSource<T> constructor(
     }
 
     companion object {
-        private val ZERO_VECTOR = floatArrayOf(0f, 0f, 0f)
-        private val LOGGER: Logger = LogManager.getLogger()
-
-        private val SCOPE = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
+        val ZERO_VECTOR = floatArrayOf(0f, 0f, 0f)
+        val LOGGER: Logger = LogManager.getLogger()
     }
 }
