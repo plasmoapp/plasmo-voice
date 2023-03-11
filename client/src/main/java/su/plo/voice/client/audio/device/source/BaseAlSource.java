@@ -11,7 +11,6 @@ import su.plo.voice.api.client.event.audio.device.source.AlSourcePlayEvent;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceStopEvent;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceUpdateParamEvent;
 import su.plo.voice.client.audio.AlUtil;
-import su.plo.voice.client.audio.device.AlOutputDevice;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Arrays;
@@ -19,13 +18,13 @@ import java.util.Arrays;
 public abstract class BaseAlSource implements AlSource {
 
     protected final PlasmoVoiceClient client;
-    protected final AlOutputDevice device;
+    protected final AlAudioDevice device;
     protected final int format;
     protected int pointer;
 
     private Pos3d position;
 
-    protected BaseAlSource(PlasmoVoiceClient client, AlOutputDevice device, boolean stereo, int pointer) {
+    protected BaseAlSource(PlasmoVoiceClient client, AlAudioDevice device, boolean stereo, int pointer) {
         this.client = client;
         this.device = device;
         this.pointer = pointer;
