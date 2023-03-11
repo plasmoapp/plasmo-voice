@@ -195,7 +195,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     }
 
     protected void renderList(@NotNull UMatrixStack stack, int x, int y, int mouseX, int mouseY, float delta) {
-        RenderUtil.enableScissor(0, y0 - 4, width, y1 + 4);
+        RenderUtil.enableScissor(0, 0, width, y1 - y0 + 4);
         for (int index = 0; index < entries.size(); index++) {
             Entry entry = entries.get(index);
             EntryPosition position = entryPositions.get(index);

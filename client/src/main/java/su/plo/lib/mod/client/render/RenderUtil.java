@@ -27,13 +27,12 @@ public class RenderUtil {
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
 
     public static void enableScissor(int x, int y, int width, int height) {
-        int windowHeight = UResolution.getWindowHeight();
         double scaleFactor = UResolution.getScaleFactor();
 
-        double scaledX = (double) x * scaleFactor;
-        double scaledY = (double) windowHeight - (double) height * scaleFactor;
-        double scaledWidth = (double) (width - x) * scaleFactor;
-        double scaledHeight = (double) (height - y) * scaleFactor;
+        double scaledX = x * scaleFactor;
+        double scaledY = y * scaleFactor;
+        double scaledWidth = width * scaleFactor;
+        double scaledHeight = height * scaleFactor;
 
         //#if MC<11502
         //$$ GL11.glEnable(GL11.GL_SCISSOR_TEST);
@@ -451,6 +450,10 @@ public class RenderUtil {
         //#else
         RenderSystem.lineWidth(width);
         //#endif
+    }
+
+    public static boolean hasLightLayer() {
+        return RenderSystem.getShaderTexture(2) != 0;
     }
 
     public static void turnOnLightLayer() {
