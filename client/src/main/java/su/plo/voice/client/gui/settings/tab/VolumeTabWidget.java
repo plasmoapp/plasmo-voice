@@ -66,12 +66,12 @@ public final class VolumeTabWidget extends TabWidget {
 
     @EventSubscribe
     public void onPlayerConnected(@NotNull VoicePlayerConnectedEvent event) {
-        refreshPlayerEntries();
+        UMinecraft.getMinecraft().execute(this::refreshPlayerEntries);
     }
 
     @EventSubscribe
     public void onPlayerDisconnected(@NotNull VoicePlayerDisconnectedEvent event) {
-        refreshPlayerEntries();
+        UMinecraft.getMinecraft().execute(this::refreshPlayerEntries);
     }
 
     private void createSourceLineVolume(@NotNull ClientSourceLine sourceLine) {
