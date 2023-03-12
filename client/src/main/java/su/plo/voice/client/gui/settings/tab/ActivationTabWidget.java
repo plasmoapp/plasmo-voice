@@ -2,9 +2,11 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import gg.essential.universal.UMinecraft;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -67,12 +69,12 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
     @EventSubscribe
     public void onActivationRegister(@NotNull ClientActivationRegisteredEvent event) {
-        init();
+        UMinecraft.getMinecraft().execute(this::init);
     }
 
     @EventSubscribe
     public void onActivationUnregister(@NotNull ClientActivationUnregisteredEvent event) {
-        init();
+        UMinecraft.getMinecraft().execute(this::init);
     }
 
     private void createActivation(ClientActivation activation, boolean canInherit) {
