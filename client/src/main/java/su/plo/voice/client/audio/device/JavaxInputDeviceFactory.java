@@ -33,10 +33,7 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
             deviceName = getDefaultDeviceName();
         }
 
-        AudioDevice device = new JavaxInputDevice(client, deviceName);
-        device.open(format, params);
-
-        return device;
+        return new JavaxInputDevice(client, deviceName, format, params);
     }
 
     @Override

@@ -32,10 +32,7 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
             deviceName = getDefaultDeviceName();
         }
 
-        AudioDevice device = new AlOutputDevice(voiceClient, deviceName);
-        device.open(format, params);
-
-        return device;
+        return new AlOutputDevice(voiceClient, deviceName, format, params);
     }
 
     @Override

@@ -1,7 +1,11 @@
 package su.plo.voice.api.client.audio.device.source;
 
+import su.plo.voice.api.client.audio.device.AlAudioDevice;
+
 // todo: doc
 public interface AlSource extends DeviceSource {
+
+    AlAudioDevice getDevice();
 
     long getPointer();
 

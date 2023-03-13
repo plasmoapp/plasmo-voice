@@ -25,35 +25,12 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
 
     private TargetDataLine device;
 
-    public JavaxInputDevice(PlasmoVoiceClient client, @Nullable String name) {
-        super(client, name);
-    }
-
-    @Override
-    public synchronized void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
-        checkNotNull(params, "params cannot be null");
-
-        DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
-        voiceClient.getEventBus().call(preOpenEvent);
-
-        if (preOpenEvent.isCancelled()) {
-            throw new DeviceException("Device opening has been canceled");
-        }
-
-        try {
-            this.format = format;
-            this.params = params;
-            this.bufferSize = ((int) format.getSampleRate() / 1_000) * 2 * 20;
-
-            this.device = openDevice(name, format);
-            device.open(format);
-        } catch (LineUnavailableException e) {
-            throw new DeviceException("Failed to open javax device", e);
-        }
-
-        LOGGER.info("Device " + name + " initialized");
-
-        voiceClient.getEventBus().call(new DeviceOpenEvent(this));
+    public JavaxInputDevice(PlasmoVoiceClient client,
+                            @Nullable String name,
+                            @NotNull AudioFormat format,
+                            @NotNull Params params) throws DeviceException {
+        super(client, name, format, params);
+        open();
     }
 
     @Override
@@ -65,27 +42,12 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
             this.device = null;
         }
 
-        voiceClient.getEventBus().call(new DeviceClosedEvent(this));
+        getVoiceClient().getEventBus().call(new DeviceClosedEvent(this));
     }
 
     @Override
     public boolean isOpen() {
         return device != null && device.isOpen();
-    }
-
-    @Override
-    public @Nullable String getName() {
-        return name;
-    }
-
-    @Override
-    public Optional<AudioFormat> getFormat() {
-        return Optional.ofNullable(format);
-    }
-
-    @Override
-    public Optional<Params> getParams() {
-        return Optional.ofNullable(params);
     }
 
     @Override
@@ -121,16 +83,32 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
     }
 
     @Override
-    public short[] read() {
-        return read(bufferSize);
+    protected void open() throws DeviceException {
+        if (isOpen()) throw new DeviceException("Device is already open");
+
+        DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, getParams());
+        getVoiceClient().getEventBus().call(preOpenEvent);
+
+        if (preOpenEvent.isCancelled()) {
+            throw new DeviceException("Device opening has been canceled");
+        }
+
+        try {
+            this.device = openDevice();
+            device.open(getFormat());
+        } catch (LineUnavailableException e) {
+            throw new DeviceException("Failed to open javax device", e);
+        }
+
+        LOGGER.info("Device {} initialized", getName());
+
+        getVoiceClient().getEventBus().call(new DeviceOpenEvent(this));
     }
 
-    @Override
-    public DeviceType getType() {
-        return DeviceType.INPUT;
-    }
+    private TargetDataLine openDevice() throws DeviceException {
+        AudioFormat format = getFormat();
+        String deviceName = getName();
 
-    private TargetDataLine openDevice(String deviceName, AudioFormat format) throws DeviceException {
         if (deviceName == null) {
             DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
             try {

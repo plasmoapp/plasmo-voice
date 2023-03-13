@@ -29,29 +29,12 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     private long devicePointer;
     private boolean started = false;
 
-    public AlInputDevice(PlasmoVoiceClient client, @Nullable String name) {
-        super(client, name);
-    }
-
-    @Override
-    public void open(@NotNull AudioFormat format, @NotNull Params params) throws DeviceException {
-        if (isOpen()) throw new DeviceException("Device is already open");
-        checkNotNull(params, "params cannot be null");
-
-        DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, params);
-        voiceClient.getEventBus().call(preOpenEvent);
-
-        if (preOpenEvent.isCancelled()) {
-            throw new DeviceException("Device opening has been canceled");
-        }
-
-        this.format = format;
-        this.params = params;
-        this.bufferSize = ((int) format.getSampleRate() / 1_000) * 20;
-        this.devicePointer = openDevice(name, format);
-
-        LOGGER.info("Device " + name + " initialized");
-        voiceClient.getEventBus().call(new DeviceOpenEvent(this));
+    public AlInputDevice(PlasmoVoiceClient client,
+                         @Nullable String name,
+                         @NotNull AudioFormat format,
+                         @NotNull Params params) throws DeviceException {
+        super(client, name, format, params);
+        open();
     }
 
     @Override
@@ -62,30 +45,15 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
             AlUtil.checkErrors("Close capture device");
             this.devicePointer = 0L;
 
-            LOGGER.info("Device " + name + " closed");
+            LOGGER.info("Device {} closed", getName());
         }
 
-        voiceClient.getEventBus().call(new DeviceClosedEvent(this));
+        getVoiceClient().getEventBus().call(new DeviceClosedEvent(this));
     }
 
     @Override
     public boolean isOpen() {
         return devicePointer != 0L;
-    }
-
-    @Override
-    public @Nullable String getName() {
-        return name;
-    }
-
-    @Override
-    public Optional<AudioFormat> getFormat() {
-        return Optional.ofNullable(format);
-    }
-
-    @Override
-    public Optional<Params> getParams() {
-        return Optional.ofNullable(params);
     }
 
     @Override
@@ -125,7 +93,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     public short[] read(int bufferSize) {
         if (!isOpen() || bufferSize > available()) return null;
 
-        short[] shorts = new short[bufferSize * format.getChannels()];
+        short[] shorts = new short[bufferSize * getFormat().getChannels()];
         ALC11.alcCaptureSamples(devicePointer, shorts, bufferSize);
         AlUtil.checkErrors("Capture samples");
 
@@ -133,24 +101,34 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     }
 
     @Override
-    public short[] read() {
-        return read(bufferSize);
+    protected void open() throws DeviceException {
+        if (isOpen()) throw new DeviceException("Device is already open");
+
+        DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, getParams());
+        getVoiceClient().getEventBus().call(preOpenEvent);
+
+        if (preOpenEvent.isCancelled()) {
+            throw new DeviceException("Device opening has been canceled");
+        }
+
+        this.devicePointer = openDevice();
+
+        LOGGER.info("Device {} initialized", getName());
+        getVoiceClient().getEventBus().call(new DeviceOpenEvent(this));
     }
 
-    @Override
-    public DeviceType getType() {
-        return DeviceType.INPUT;
-    }
+    private long openDevice() throws DeviceException {
+        AudioFormat format = getFormat();
+        String deviceName = getName();
 
-    private long openDevice(String deviceName, AudioFormat format) throws DeviceException {
         int alFormat = format.getChannels() == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
 
         long l;
         if (deviceName == null) {
             // default device
-            l = ALC11.alcCaptureOpenDevice((ByteBuffer) null, (int) format.getSampleRate(), alFormat, bufferSize);
+            l = ALC11.alcCaptureOpenDevice((ByteBuffer) null, (int) format.getSampleRate(), alFormat, getBufferSize());
         } else {
-            l = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, bufferSize);
+            l = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getBufferSize());
         }
 
         if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {

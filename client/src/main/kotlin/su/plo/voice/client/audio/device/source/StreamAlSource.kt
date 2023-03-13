@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.device.source
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.future
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.openal.AL11
 import org.lwjgl.system.MemoryUtil
@@ -12,6 +13,7 @@ import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.AlOutputDevice
 import java.nio.Buffer
 import java.nio.ByteBuffer
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -24,8 +26,6 @@ class StreamAlSource private constructor(
 ) : BaseAlSource(client, device, stereo, pointer) {
 
     private var closeTimeoutMs = 25000L
-
-    private val deviceContext = device.executor.asCoroutineDispatcher()
 
     private val numBuffers: Int
     private val queue = LinkedBlockingQueue<ByteBuffer>()
@@ -117,30 +117,43 @@ class StreamAlSource private constructor(
         }
     }
 
-    override fun close() {
+    override suspend fun close() {
         if (!isStreaming.get()) return
         device.runInContext {
-            stop()
-
-            client.eventBus.call(AlSourceClosedEvent(this))
-
-            removeProcessedBuffers()
-
-            AL11.alDeleteBuffers(buffers)
-            AlUtil.checkErrors("Delete buffers")
-
-            AL11.alDeleteSources(intArrayOf(pointer))
-            AlUtil.checkErrors("Delete source")
-
-            pointer = 0
+            closeSync()
         }
+    }
+
+    override fun closeAsync(): CompletableFuture<Void?> {
+        if (!isStreaming.get()) return CompletableFuture.completedFuture(null)
+
+        return device.coroutineScope.future {
+            closeSync()
+            null
+        }
+    }
+
+    private fun closeSync() {
+        stop()
+
+        client.eventBus.call(AlSourceClosedEvent(this@StreamAlSource))
+
+        removeProcessedBuffers()
+
+        AL11.alDeleteBuffers(buffers)
+        AlUtil.checkErrors("Delete buffers")
+
+        AL11.alDeleteSources(intArrayOf(pointer))
+        AlUtil.checkErrors("Delete source")
+
+        pointer = 0
     }
 
     private fun startStreamThread() {
         isStreaming.set(true)
         val alSource = this
 
-        CoroutineScope(deviceContext).launch {
+        device.coroutineScope.launch {
             buffers = IntArray(numBuffers)
             AL11.alGenBuffers(buffers)
             AlUtil.checkErrors("Source gen buffers")
@@ -227,7 +240,7 @@ class StreamAlSource private constructor(
     private fun fillAndPushBuffer(buffer: Int): Boolean {
         val byteBuffer = queue.poll() ?: return false
 
-        AL11.alBufferData(buffer, format, byteBuffer, device.format.get().sampleRate.toInt())
+        AL11.alBufferData(buffer, format, byteBuffer, device.format.sampleRate.toInt())
         if (AlUtil.checkErrors("Assigning buffer data")) return false
 
         AL11.alSourceQueueBuffers(pointer, intArrayOf(buffer))
@@ -259,18 +272,16 @@ class StreamAlSource private constructor(
 
         @JvmStatic
         fun create(device: AlOutputDevice, client: PlasmoVoiceClient, stereo: Boolean, numBuffers: Int): AlSource {
-            val context = device.executor.asCoroutineDispatcher()
+            AlUtil.checkDeviceContext(device)
 
-            return runBlocking(context) {
-                val pointer = IntArray(1)
-                AL11.alGenSources(pointer)
-                if (AlUtil.checkErrors("Allocate new source")) {
-                    throw DeviceException("Failed to allocate new source")
-                }
+            val pointer = IntArray(1)
+            AL11.alGenSources(pointer)
+            if (AlUtil.checkErrors("Allocate new source")) {
+                throw DeviceException("Failed to allocate new source")
+            }
 
-                StreamAlSource(client, device, stereo, numBuffers, pointer[0]).also { source ->
-                    client.eventBus.call(AlSourceCreatedEvent(source))
-                }
+            return StreamAlSource(client, device, stereo, numBuffers, pointer[0]).also { source ->
+                client.eventBus.call(AlSourceCreatedEvent(source))
             }
         }
     }

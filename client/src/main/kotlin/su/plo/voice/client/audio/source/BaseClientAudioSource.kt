@@ -1,6 +1,9 @@
 package su.plo.voice.client.audio.source
 
 import kotlinx.coroutines.*
+import kotlinx.coroutines.future.future
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
@@ -13,7 +16,6 @@ import su.plo.voice.api.audio.codec.AudioDecoder
 import su.plo.voice.api.audio.codec.CodecException
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AlAudioDevice
-import su.plo.voice.api.client.audio.device.AlListenerDevice
 import su.plo.voice.api.client.audio.device.DeviceType
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.device.source.SourceGroup
@@ -37,9 +39,8 @@ import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import java.util.*
+import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledFuture
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.sqrt
 
@@ -54,7 +55,7 @@ abstract class BaseClientAudioSource<T> constructor(
     private val lookAngle = FloatArray(3)
 
 
-    override var sourceGroup: SourceGroup = createSourceGroup(sourceInfo)
+    override var sourceGroup: SourceGroup = runBlocking { createSourceGroup(sourceInfo) }
 
     private var lineVolume: DoubleConfigEntry
     private var lineMute: BooleanConfigEntry
@@ -77,6 +78,8 @@ abstract class BaseClientAudioSource<T> constructor(
     private val resetted = AtomicBoolean(false)
     private val activated = AtomicBoolean(false)
     private val canHear = AtomicBoolean(false)
+
+    private val mutex = Mutex()
 
     init {
         val serverInfo = voiceClient.serverInfo
@@ -103,52 +106,53 @@ abstract class BaseClientAudioSource<T> constructor(
         )
     }
 
-    @Synchronized
-    override fun update(sourceInfo: T) {
-        val serverInfo = voiceClient.serverInfo
-            .orElseThrow { IllegalStateException("Not connected") }
+    override fun update(sourceInfo: T): Unit = runBlocking {
+        mutex.withLock {
+            val serverInfo = voiceClient.serverInfo
+                .orElseThrow { IllegalStateException("Not connected") }
 
-        val voiceInfo = serverInfo.voiceInfo
-        val stereoChanged = isStereo(this.sourceInfo) != isStereo(sourceInfo)
+            val voiceInfo = serverInfo.voiceInfo
+            val stereoChanged = isStereo(this@BaseClientAudioSource.sourceInfo) != isStereo(sourceInfo)
 
-        // initialize sources
-        if (stereoChanged) {
-            val oldSourceGroup = sourceGroup
-            sourceGroup = createSourceGroup(sourceInfo)
-            oldSourceGroup.clear()
+            // initialize sources
+            if (stereoChanged) {
+                val oldSourceGroup = sourceGroup
+                sourceGroup = createSourceGroup(sourceInfo)
+                oldSourceGroup.clear()
 
-            LOGGER.info(
-                "Update device sources for {} in {}",
-                sourceInfo,
-                if (isStereo(sourceInfo)) "stereo" else "mono"
-            )
-        }
-
-        // initialize decoder
-        if (sourceInfo.isStereo != this.sourceInfo.isStereo) {
-            decoder?.close()
-
-            sourceInfo.decoderInfo?.let {
-                decoder = createDecoder(voiceInfo, it)
+                LOGGER.info(
+                    "Update device sources for {} in {}",
+                    sourceInfo,
+                    if (isStereo(sourceInfo)) "stereo" else "mono"
+                )
             }
-            LOGGER.info("Update decoder for {}", sourceInfo)
+
+            // initialize decoder
+            if (sourceInfo.isStereo != this@BaseClientAudioSource.sourceInfo.isStereo) {
+                decoder?.close()
+
+                sourceInfo.decoderInfo?.let {
+                    decoder = createDecoder(voiceInfo, it)
+                }
+                LOGGER.info("Update decoder for {}", sourceInfo)
+            }
+
+            // initialize encryption
+            serverInfo.encryption.ifPresent {
+                encryption = it
+            }
+
+            // initialize volumes
+            if (sourceInfo.lineId != this@BaseClientAudioSource.sourceInfo.lineId) {
+                lineVolume = getLineVolume(sourceInfo)
+                lineMute = getLineMute(sourceInfo)
+                LOGGER.info("Update source line for {}", sourceInfo)
+            }
+
+            this@BaseClientAudioSource.sourceInfo = sourceInfo
+
+            voiceClient.eventBus.call(AudioSourceInitializedEvent(this@BaseClientAudioSource))
         }
-
-        // initialize encryption
-        serverInfo.encryption.ifPresent {
-            encryption = it
-        }
-
-        // initialize volumes
-        if (sourceInfo.lineId != this.sourceInfo.lineId) {
-            lineVolume = getLineVolume(sourceInfo)
-            lineMute = getLineMute(sourceInfo)
-            LOGGER.info("Update source line for {}", sourceInfo)
-        }
-
-        this.sourceInfo = sourceInfo
-
-        voiceClient.eventBus.call(AudioSourceInitializedEvent(this))
     }
 
     override fun process(packet: SourceAudioPacket) {
@@ -171,7 +175,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    override fun close() {
+    override suspend fun close() = mutex.withLock{
         activated.set(false)
         canHear.set(false)
         closed.set(true)
@@ -179,15 +183,21 @@ abstract class BaseClientAudioSource<T> constructor(
         decoder?.close()
         sourceGroup.clear()
 
-        voiceClient.eventBus.call(AudioSourceClosedEvent(this))
+        voiceClient.eventBus.call(AudioSourceClosedEvent(this@BaseClientAudioSource))
         LOGGER.info("Source {} closed", sourceInfo)
     }
+
+    override fun closeAsync(): CompletableFuture<Void?> =
+        SCOPE.future {
+            close()
+            null
+        }
 
     override fun isActivated(): Boolean {
         if (activated.get()) {
             if (closeTimeoutMs > 0L && System.currentTimeMillis() - lastActivation > closeTimeoutMs) {
                 LOGGER.warn("Voice end packet was not received. Resetting audio source")
-                reset()
+                resetAsync()
                 return false
             }
             return true
@@ -207,17 +217,16 @@ abstract class BaseClientAudioSource<T> constructor(
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
         if (closed.get() || !sourceGroup.sources.contains(event.source)) return
-        close()
+        closeAsync()
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceStopped(event: AlStreamSourceStoppedEvent) {
         if (closed.get() || !sourceGroup.sources.contains(event.source) || closeTimeoutMs == 0L) return
-        reset()
+        resetAsync()
     }
 
-    @Synchronized
-    private fun processAudioPacket(packet: SourceAudioPacket) {
+    private suspend fun processAudioPacket(packet: SourceAudioPacket) = mutex.withLock {
         if (packet.sourceState != sourceInfo.state) {
             LOGGER.warn("Drop packet with bad source state {}", sourceInfo)
             return
@@ -331,19 +340,23 @@ abstract class BaseClientAudioSource<T> constructor(
         resetted.set(false)
     }
 
-    @Synchronized
-    private fun processAudioEndPacket(packet: SourceAudioEndPacket) {
+    private suspend fun processAudioEndPacket(packet: SourceAudioEndPacket) = mutex.withLock {
         if (!activated.get()) return
         lastSequenceNumbers[sourceInfo.lineId] = packet.sequenceNumber
     }
 
-    @Synchronized
-    private fun reset() {
+    private suspend fun reset() = mutex.withLock {
         if (!resetted.compareAndSet(false, true)) return
         if (decoder != null) decoder!!.reset()
         activated.set(false)
         canHear.set(false)
     }
+
+    private fun resetAsync() =
+        SCOPE.future {
+            reset()
+            null
+        }
 
     protected open fun getPlayerPosition(position: FloatArray): FloatArray {
         // todo: find out why modApi remapping not working in kotlin
@@ -382,14 +395,10 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    private fun updateSource(volume: Float, maxDistance: Int) {
+    private suspend fun updateSource(volume: Float, maxDistance: Int) {
         for (source in sourceGroup.sources) {
             if (source !is AlSource) continue
-
             val device = source.device as AlAudioDevice
-            if (device is AlListenerDevice) {
-                (device as AlListenerDevice).listener.update()
-            }
 
             device.runInContext {
                 source.volume = volume
@@ -422,7 +431,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    private fun createSourceGroup(sourceInfo: T): SourceGroup {
+    private suspend fun createSourceGroup(sourceInfo: T): SourceGroup {
         return voiceClient.deviceManager.createSourceGroup(DeviceType.OUTPUT).also {
             it.create(isStereo(sourceInfo), Params.EMPTY)
 

@@ -51,9 +51,9 @@ public final class ClientLoopbackSource implements LoopbackSource {
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
-                AlAudioDevice device = (AlAudioDevice) alSource.getDevice();
+                AlAudioDevice device = alSource.getDevice();
 
-                device.runInContext(() -> {
+                device.runInContextBlocking(() -> {
                     alSource.setFloat(0x100E, 4F); // AL_MAX_GAIN
                     if (relative) alSource.setInt(0x202, 1); // AL_SOURCE_RELATIVE
 
@@ -97,9 +97,9 @@ public final class ClientLoopbackSource implements LoopbackSource {
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
-                AlAudioDevice device = (AlAudioDevice) alSource.getDevice();
+                AlAudioDevice device = alSource.getDevice();
 
-                device.runInContext(() -> {
+                device.runInContextBlocking(() -> {
                     alSource.setVolume(volume);
                     if (!relative) alSource.setFloatArray(0x1004, position); // AL_POSITION
                 });

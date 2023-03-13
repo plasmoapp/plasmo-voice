@@ -3,6 +3,7 @@ package su.plo.voice.client.audio.source
 import com.google.common.collect.ListMultimap
 import com.google.common.collect.Maps
 import com.google.common.collect.Multimaps
+import kotlinx.coroutines.runBlocking
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.source.ClientAudioSource
 import su.plo.voice.api.client.audio.source.ClientSelfSourceInfo
@@ -88,9 +89,8 @@ class VoiceClientSourceManager(
     override fun getSelfSourceInfos(): Collection<ClientSelfSourceInfo> =
         selfSourceInfoById.values
 
-    @Synchronized
     override fun clear() {
-        sourceById.values.forEach { it.close() }
+        sourceById.values.forEach { it.closeAsync().get() }
         sourcesByLineId.clear()
         sourcesByPlayerId.clear()
         sourcesByEntityId.clear()
@@ -99,20 +99,21 @@ class VoiceClientSourceManager(
     }
 
     // todo: refactor somehow pepega
-    override fun update(sourceInfo: SourceInfo) {
+    override fun update(sourceInfo: SourceInfo): Unit = runBlocking {
         try {
             if (sourceById.containsKey(sourceInfo.id)) {
                 val source = sourceById[sourceInfo.id]!!
                 if (source.isClosed()) {
                     sourceRequestById.remove(sourceInfo.id)
-                    return
+                    return@runBlocking
                 }
                 if (source.sourceInfo.lineId !== sourceInfo.lineId) {
                     sourcesByLineId.remove(source.sourceInfo.lineId, source)
                     sourcesByLineId.put(sourceInfo.lineId, source)
                 }
 
-                if (source.sourceInfo.javaClass != sourceInfo.javaClass) return
+                if (source.sourceInfo.javaClass != sourceInfo.javaClass)
+                    return@runBlocking
 
                 when (sourceInfo) {
                     is StaticSourceInfo ->
@@ -129,7 +130,7 @@ class VoiceClientSourceManager(
 
                     else -> throw IllegalArgumentException("Invalid source type")
                 }
-                return
+                return@runBlocking
             }
 
             when (sourceInfo) {
@@ -167,7 +168,6 @@ class VoiceClientSourceManager(
         }
     }
 
-    @Synchronized
     override fun sendSourceInfoRequest(sourceId: UUID, requestIfExist: Boolean) {
         if (!requestIfExist && sourceById.containsKey(sourceId)) return
 
@@ -191,7 +191,6 @@ class VoiceClientSourceManager(
     }
 
     @EventSubscribe
-    @Synchronized
     fun onAudioSourceClosed(event: AudioSourceClosedEvent) {
         val source = event.source
 

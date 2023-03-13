@@ -1,5 +1,7 @@
 package su.plo.voice.api.client.audio.device;
 
+import org.jetbrains.annotations.NotNull;
+
 // todo: doc
 public interface InputDevice extends AudioDevice {
 
@@ -31,10 +33,12 @@ public interface InputDevice extends AudioDevice {
      *
      * @return samples or null if bufferSize is greater than available samples
      */
-    short[] read();
+    default short[] read() {
+        return read(getBufferSize());
+    }
 
     @Override
-    default DeviceType getType() {
+    default @NotNull DeviceType getType() {
         return DeviceType.INPUT;
     }
 }

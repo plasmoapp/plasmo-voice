@@ -38,8 +38,7 @@ public final class AlUtil {
     }
 
     public static boolean sameDeviceContext(AlAudioDevice device) {
-        return device.getContextPointer().isPresent()
-                && EXTThreadLocalContext.alcGetThreadContext() == device.getContextPointer().get();
+        return EXTThreadLocalContext.alcGetThreadContext() == device.getContextPointer();
     }
 
     public static boolean checkErrors(String sectionName) {

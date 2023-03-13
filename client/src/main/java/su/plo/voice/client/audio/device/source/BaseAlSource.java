@@ -4,7 +4,6 @@ import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlAudioDevice;
-import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.device.source.AlSourcePauseEvent;
 import su.plo.voice.api.client.event.audio.device.source.AlSourcePlayEvent;
@@ -38,7 +37,7 @@ public abstract class BaseAlSource implements AlSource {
     }
 
     @Override
-    public AudioDevice getDevice() {
+    public AlAudioDevice getDevice() {
         return device;
     }
 

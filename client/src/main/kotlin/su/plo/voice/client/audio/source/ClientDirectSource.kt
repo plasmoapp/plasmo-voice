@@ -1,5 +1,6 @@
 package su.plo.voice.client.audio.source
 
+import kotlinx.coroutines.runBlocking
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import su.plo.config.entry.BooleanConfigEntry
@@ -31,7 +32,7 @@ class ClientDirectSource(
         }
 
         super.update(sourceInfo)
-        updateSourceParams()
+        runBlocking { updateSourceParams() }
     }
 
     override fun process(packet: SourceAudioPacket) {
@@ -108,7 +109,7 @@ class ClientDirectSource(
         } ?: position
     }
 
-    private fun updateSourceParams() {
+    private suspend fun updateSourceParams() {
         for (source in sourceGroup.sources) {
             if (source !is AlSource) continue
 

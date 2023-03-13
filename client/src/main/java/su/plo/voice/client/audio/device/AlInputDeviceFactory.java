@@ -29,10 +29,7 @@ public final class AlInputDeviceFactory implements DeviceFactory {
         checkNotNull(format, "format cannot be null");
         checkNotNull(params, "params cannot be null");
 
-        AudioDevice device = new AlInputDevice(client, deviceName);
-        device.open(format, params);
-
-        return device;
+        return new AlInputDevice(client, deviceName, format, params);
     }
 
     @Override

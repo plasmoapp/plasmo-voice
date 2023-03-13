@@ -7,6 +7,7 @@ import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
 
@@ -30,5 +31,8 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
      */
     fun canHear(): Boolean
 
-    fun close()
+    @JvmSynthetic
+    suspend fun close()
+
+    fun closeAsync(): CompletableFuture<Void?>
 }

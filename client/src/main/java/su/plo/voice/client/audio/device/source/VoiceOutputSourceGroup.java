@@ -30,7 +30,7 @@ public final class VoiceOutputSourceGroup implements SourceGroup {
 
     @Override
     public void clear() {
-        sources.forEach(DeviceSource::close);
+        sources.forEach(DeviceSource::closeAsync);
         sources.clear();
     }
 
