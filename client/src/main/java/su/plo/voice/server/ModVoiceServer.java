@@ -97,7 +97,7 @@ public final class ModVoiceServer
 
     @Override
     public @NotNull File getConfigFolder() {
-        return new File("config/" + modId);
+        return new File("config/" + modId + "/server");
     }
 
     @Override
