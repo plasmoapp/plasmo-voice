@@ -53,6 +53,7 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
+import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -183,6 +184,11 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Override
     protected void onInitialize() {
+        // download crowdin translations
+        PlasmoCrowdinMod.INSTANCE.downloadTranslations(
+                new File(getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName())
+        );
+
         loadAddons();
         super.onInitialize();
 

@@ -1,5 +1,6 @@
 [versions]
 junit5 = "5.8.2"
+crowdin = "1.0.0"
 
 [libraries]
 lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }
@@ -24,8 +25,11 @@ kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", ve
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.1" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version = "1.6.1" }
 
+crowdin-lib = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
+
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
 architectury-loom   = { id = "dev.architectury.loom", version = "0.12.0-SNAPSHOT" }
 shadow              = { id = "com.github.johnrengelman.shadow", version = "7.1.0" }
 idea-ext            = { id = "org.jetbrains.gradle.plugin.idea-ext", version = "1.1.7"}
+crowdin-plugin      = { id = "su.plo.crowdin.plugin", version.ref = "crowdin" }

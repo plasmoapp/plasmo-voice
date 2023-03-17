@@ -59,7 +59,7 @@ public final class OverlayTabWidget extends TabWidget {
 
         addEntry(createCategoryEntry("gui.plasmovoice.overlay.activation_icon"));
         addEntry(createToggleEntry(
-                "gui.plasmovoice.overlay.activation_icon_show",
+                MinecraftTextComponent.translatable("gui.plasmovoice.overlay.activation_icon_show"),
                 null,
                 config.getOverlay().getShowActivationIcon()
         ));
@@ -68,14 +68,14 @@ public final class OverlayTabWidget extends TabWidget {
         addEntry(createCategoryEntry("gui.plasmovoice.overlay.source_icons"));
         addEntry(createShowIcons());
         addEntry(createToggleEntry(
-                "gui.plasmovoice.overlay.show_static_source_icons",
+                MinecraftTextComponent.translatable("gui.plasmovoice.overlay.show_static_source_icons"),
                 null,
                 config.getOverlay().getShowStaticSourceIcons()
         ));
 
         addEntry(createCategoryEntry("gui.plasmovoice.overlay"));
         addEntry(createToggleEntry(
-                "gui.plasmovoice.overlay.enable",
+                MinecraftTextComponent.translatable("gui.plasmovoice.overlay.enable"),
                 null,
                 config.getOverlay().getOverlayEnabled()
         ));
@@ -104,7 +104,7 @@ public final class OverlayTabWidget extends TabWidget {
                     MinecraftTextComponent.translatable(sourceLine.getTranslation()),
                     widget,
                     configEntry,
-                    ImmutableList.of(),
+                    null,
                     new ResourceLocation(sourceLine.getIcon()),
                     null
             ));
@@ -137,7 +137,7 @@ public final class OverlayTabWidget extends TabWidget {
                     MinecraftTextComponent.translatable(sourceLine.getTranslation()),
                     widget,
                     configEntry,
-                    ImmutableList.of(),
+                    null,
                     new ResourceLocation(sourceLine.getIcon()),
                     (button, element) -> element.setText(OVERLAY_DISPLAYS.get(0))
             ));
@@ -244,7 +244,7 @@ public final class OverlayTabWidget extends TabWidget {
         public OverlaySourceEntry(@NotNull MinecraftTextComponent text,
                                   @NotNull W widget,
                                   @NotNull ConfigEntry<?> entry,
-                                  @NotNull List<MinecraftTextComponent> tooltip,
+                                  @Nullable MinecraftTextComponent tooltip,
                                   @NotNull ResourceLocation iconLocation,
                                   @Nullable OptionResetAction<W> resetAction) {
             super(text, widget, entry, tooltip, resetAction);

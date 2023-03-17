@@ -3,11 +3,13 @@ import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.noServerRunConfigs
 
 val mavenGroup: String by rootProject
+val isMainProject = project.name == file("../mainProject").readText().trim()
 
 plugins {
     kotlin("jvm")
     id("gg.essential.multi-version")
     id("gg.essential.defaults")
+    id("su.plo.crowdin.plugin")
 }
 
 group = "$mavenGroup.client"
@@ -32,6 +34,11 @@ loom.runs {
     }
 }
 
+plasmoCrowdin {
+    projectId = "plasmo-voice"
+    sourceFileName = "client.json"
+    resourceDir = "assets/plasmovoice/lang"
+}
 
 val common by configurations.creating
 configurations.compileClasspath { extendsFrom(common) }
@@ -93,6 +100,9 @@ dependencies {
     common(rootProject.libs.opus)
     common(rootProject.libs.config)
     common(rootProject.libs.rnnoise)
+    common(rootProject.libs.crowdin.lib) {
+        isTransitive = false
+    }
 
     if (platform.isForge) {
         common(rootProject.libs.guice)
@@ -104,6 +114,11 @@ dependencies {
 }
 
 tasks {
+    processResources {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        dependsOn(plasmoCrowdinDownload)
+    }
+
     jar {
         mergePlatformSpecifics()
 
@@ -115,6 +130,7 @@ tasks {
     shadowJar {
         configurations = listOf(common)
 
+        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
         if (platform.isForge) {
             relocate("gg.essential.universal", "su.plo.universal")
         }

@@ -9,7 +9,8 @@
         "MixinEntityRenderer",
         "MixinKeyboardHandler",
         "MixinLanguageManager",
-        "MixinMouseHandler"
+        "MixinMouseHandler",
+        "MixinReloadableResourceManager"
     ],
     "injectors": {
         "defaultRequire": 1

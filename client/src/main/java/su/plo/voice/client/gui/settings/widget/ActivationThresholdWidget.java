@@ -65,7 +65,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
                 button -> controller.start(),
                 (button, matrices, mouseX, mouseY) -> {
                     if (!button.isActive()) {
-                        parent.setTooltip(ImmutableList.of(NOT_AVAILABLE));
+                        parent.setTooltip(NOT_AVAILABLE);
                     }
                 },
                 START_ICON,

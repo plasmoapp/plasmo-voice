@@ -22,7 +22,6 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
-import su.plo.voice.api.server.audio.line.BaseServerSourceLineManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
@@ -225,6 +224,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
             this.languages = new VoiceServerLanguages(config.defaultLanguage());
             languages.register(
+                    "plasmo-voice",
+                    "server.toml",
                     this::getResource,
                     new File(getConfigFolder(), "languages")
             );

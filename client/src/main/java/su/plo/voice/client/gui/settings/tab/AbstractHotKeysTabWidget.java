@@ -60,7 +60,9 @@ public abstract class AbstractHotKeysTabWidget extends TabWidget {
                 MinecraftTextComponent.translatable(translatable),
                 keyBinding,
                 entry,
-                GuiUtil.multiLineTooltip(tooltipTranslatable)
+                tooltipTranslatable != null
+                        ? MinecraftTextComponent.translatable(tooltipTranslatable)
+                        : null
         );
     }
 }

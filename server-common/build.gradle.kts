@@ -6,5 +6,7 @@ dependencies {
     api(project(":api:server-common"))
     api(project(":common"))
 
+    api(rootProject.libs.crowdin.lib)
+
     compileOnly(rootProject.libs.netty)
 }

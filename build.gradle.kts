@@ -12,6 +12,7 @@ plugins {
     idea
     alias(libs.plugins.shadow)
     alias(libs.plugins.idea.ext)
+    alias(libs.plugins.crowdin.plugin) apply false
 
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.lombok") version "1.6.10"

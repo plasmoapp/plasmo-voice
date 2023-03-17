@@ -57,6 +57,8 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             this.hoveredEntry = getEntryAtPosition(mouseX, mouseY).orElse(null);
+        } else {
+            this.hoveredEntry = null;
         }
 
         int trackX0 = getScrollbarPosition();

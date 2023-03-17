@@ -1,6 +1,5 @@
 package su.plo.voice.client.gui.settings;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UKeyboard;
@@ -103,8 +102,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                     sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
-                    parent.setTooltip(ImmutableList.of(
-                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.microphone"),
+                    parent.setTooltip(MinecraftTextComponent.translatable(
+                            "gui.plasmovoice.toggle.microphone",
                             MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
                                     MinecraftTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(MinecraftTextStyle.GREEN)
                             ).withStyle(MinecraftTextStyle.GRAY)
@@ -133,8 +132,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                     sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
-                    parent.setTooltip(ImmutableList.of(
-                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.microphone"),
+                    parent.setTooltip(MinecraftTextComponent.translatable(
+                            "gui.plasmovoice.toggle.microphone",
                             MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
                                     MinecraftTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(MinecraftTextStyle.RED)
                             ).withStyle(MinecraftTextStyle.GRAY)
@@ -174,8 +173,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                     sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
-                    parent.setTooltip(ImmutableList.of(
-                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.voice"),
+                    parent.setTooltip(MinecraftTextComponent.translatable(
+                            "gui.plasmovoice.toggle.voice",
                             MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
                                     MinecraftTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(MinecraftTextStyle.GREEN)
                             ).withStyle(MinecraftTextStyle.GRAY)
@@ -203,8 +202,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                     sendStateUpdate();
                 },
                 (button, matrices, mouseX, mouseY) -> {
-                    parent.setTooltip(ImmutableList.of(
-                            MinecraftTextComponent.translatable("gui.plasmovoice.toggle.voice"),
+                    parent.setTooltip(MinecraftTextComponent.translatable(
+                            "gui.plasmovoice.toggle.voice",
                             MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
                                     MinecraftTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(MinecraftTextStyle.RED)
                             ).withStyle(MinecraftTextStyle.GRAY)

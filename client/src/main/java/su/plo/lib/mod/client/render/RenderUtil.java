@@ -21,6 +21,8 @@ import su.plo.lib.mod.client.chat.ClientTextConverter;
 import java.util.Iterator;
 import java.util.List;
 
+import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
+
 @UtilityClass
 public class RenderUtil {
 
@@ -335,9 +337,9 @@ public class RenderUtil {
     public static int drawStringMultiLine(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color, int width) {
         color = adjustColor(color);
 
-        String string = getTextConverter().convertToUniversal(text).getFormattedText();
+        String string = getFormattedString(text);
 
-        List<String> lines = UGraphics.listFormattedStringToWidth(string, width);
+        List<String> lines = getStringSplitToWidth(string, width, true, true);
         int lineHeight = UGraphics.getFontHeight();
 
         for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight) {
@@ -381,6 +383,10 @@ public class RenderUtil {
 
         List<String> lines = UGraphics.listFormattedStringToWidth(textString, width - UGraphics.getStringWidth("..."));
         return lines.get(0) + "...";
+    }
+
+    public static String getFormattedString(MinecraftTextComponent text) {
+        return getTextConverter().convertToUniversal(text).getFormattedText();
     }
 
     public static void enableColorLogic() {

@@ -1,11 +1,10 @@
-[server]
 [server.pv.error]
 no_permissions = "&cI'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error."
 player_only_command = "Only player can execute this command"
 player_not_found = "Player not found"
-
-mod_missing_kick_message = "Sorry, you need to install the Plasmo Voice mod to play on this server.\nDownload here: https://modrinth.com/plugin/plasmo-voice"
-
+mod_missing_kick_message = """
+Sorry, you need to install the Plasmo Voice mod to play on this server.
+Download here: https://modrinth.com/plugin/plasmo-voice"""
 version_not_supported = "Sorry, your Plasmo Voice version is not supported on this server. %s"
 version_not_supported_click = "Download supported version"
 version_not_supported_hover = "%s"
@@ -16,14 +15,13 @@ temporarily_muted = "You've been muted %1$s. Reason: %2$s"
 permanently_muted = "You've been permanently muted. Reason: %s"
 unmuted = "You've been unmuted"
 
-[server.pv.mutes.durations]
-seconds = "for %s sec"
-minutes = "for %s min"
-hours = "for %s h"
-days = "for %s d"
-weeks = "for %s w"
+  [server.pv.mutes.durations]
+  seconds = "for %s sec"
+  minutes = "for %s min"
+  hours = "for %s h"
+  days = "for %s d"
+  weeks = "for %s w"
 
-[server.pv.command]
 [server.pv.command.mute]
 usage = "Usage: /vmute <player> [duration] [reason]"
 already_muted = "%s already muted"

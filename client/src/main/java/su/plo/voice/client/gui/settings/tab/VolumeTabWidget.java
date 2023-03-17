@@ -6,6 +6,7 @@ import gg.essential.universal.UMatrixStack;
 import gg.essential.universal.UMinecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
@@ -87,7 +88,7 @@ public final class VolumeTabWidget extends TabWidget {
                 createMuteButton(buttons, updateButtons, muteEntry),
                 volumeEntry,
                 muteEntry,
-                Collections.emptyList(),
+                null,
                 new ResourceLocation(sourceLine.getIcon()),
                 (button, element) -> updateButtons.run()
         ));
@@ -144,7 +145,7 @@ public final class VolumeTabWidget extends TabWidget {
                 createMuteButton(buttons, updateButtons, muteEntry),
                 volumeEntry,
                 muteEntry,
-                Collections.emptyList(),
+                null,
                 player,
                 (button, element) -> updateButtons.run()
         ));
@@ -219,7 +220,7 @@ public final class VolumeTabWidget extends TabWidget {
                                      @NotNull List<Button> buttons,
                                      @NotNull ConfigEntry<?> entry,
                                      @NotNull ConfigEntry<Boolean> muteEntry,
-                                     @NotNull List<MinecraftTextComponent> tooltip,
+                                     @Nullable MinecraftTextComponent tooltip,
                                      @NotNull ResourceLocation iconLocation,
                                      @NotNull OptionResetAction<W> resetAction) {
             super(text, widget, buttons, entry, tooltip, resetAction);
@@ -270,7 +271,7 @@ public final class VolumeTabWidget extends TabWidget {
                                  @NotNull List<Button> buttons,
                                  @NotNull ConfigEntry<?> entry,
                                  @NotNull ConfigEntry<Boolean> muteEntry,
-                                 @NotNull List<MinecraftTextComponent> tooltip,
+                                 @Nullable MinecraftTextComponent tooltip,
                                  @NotNull VoicePlayerInfo player,
                                  @NotNull OptionResetAction<W> resetAction) {
             super(MinecraftTextComponent.literal(player.getPlayerNick()), widget, buttons, entry, tooltip, resetAction, 30);

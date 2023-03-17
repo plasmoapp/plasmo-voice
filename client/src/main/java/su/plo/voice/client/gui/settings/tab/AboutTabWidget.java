@@ -22,6 +22,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
+import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
+
 public final class AboutTabWidget extends TabWidget {
 
     public AboutTabWidget(@NotNull VoiceSettingsScreen parent,
@@ -64,24 +66,24 @@ public final class AboutTabWidget extends TabWidget {
                 new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Github"), button -> {
                     openLink("https://github.com/plasmoapp/plasmo-voice");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(MinecraftTextComponent.literal("https://github.com/plasmoapp/plasmo-voice")));
+                    setTooltip(MinecraftTextComponent.literal("https://github.com/plasmoapp/plasmo-voice"));
                 }),
                 new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Discord"), button -> {
                     openLink("https://discord.com/invite/uueEqzwCJJ");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(MinecraftTextComponent.literal("https://discord.com/invite/uueEqzwCJJ")));
+                    setTooltip(MinecraftTextComponent.literal("https://discord.com/invite/uueEqzwCJJ"));
                 })
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
                 new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Modrinth"), button -> {
                     openLink("https://modrinth.com/mod/plasmo-voice");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(MinecraftTextComponent.literal("https://modrinth.com/mod/plasmo-voice")));
+                    setTooltip(MinecraftTextComponent.literal("https://modrinth.com/mod/plasmo-voice"));
                 }),
                 new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Spigot"), button -> {
                     openLink("https://www.spigotmc.org/resources/plasmo-voice-server.91064/");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(ImmutableList.of(MinecraftTextComponent.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/")));
+                    setTooltip(MinecraftTextComponent.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/"));
                 })
         )));
         this.addEntry(new TextEntry(MinecraftTextComponent.translatable("gui.plasmovoice.about.copyright")));
@@ -158,9 +160,7 @@ public final class AboutTabWidget extends TabWidget {
                         MinecraftTextComponent.literal(link),
                         (button) -> openLink(linkUrl),
                         (button, matrices, mouseX, mouseY) -> {
-                            setTooltip(ImmutableList.of(
-                                    MinecraftTextComponent.literal(linkUrl)
-                            ));
+                            setTooltip(MinecraftTextComponent.literal(linkUrl));
                         });
 
             } else {

@@ -1,12 +1,12 @@
 package su.plo.voice.client.gui.settings;
 
-import com.google.common.collect.ImmutableList;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
@@ -21,7 +21,9 @@ import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.gui.settings.tab.*;
 
-import java.util.List;
+import java.util.stream.Collectors;
+
+import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
 
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
@@ -38,7 +40,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Getter
     private int titleWidth;
     @Setter
-    private List<MinecraftTextComponent> tooltip;
+    private @Nullable MinecraftTextComponent tooltip;
 
     @Setter
     private boolean preventEscClose;
@@ -166,10 +168,21 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         aboutFeature.render(stack, delta);
 
         if (tooltip == null && isTitleHovered(mouseX, mouseY))
-            this.tooltip = getVersionTooltip();
+            tooltip = getVersionTooltip();
 
-        if (tooltip != null)
-            screen.renderTooltip(stack, tooltip, mouseX, mouseY);
+        if (tooltip != null) {
+            screen.renderTooltip(
+                    stack,
+                    getStringSplitToWidth(
+                            RenderUtil.getFormattedString(tooltip),
+                            180,
+                            true,
+                            true
+                    ).stream().map(MinecraftTextComponent::literal).collect(Collectors.toList()),
+                    mouseX,
+                    mouseY
+            );
+        }
     }
 
     @Override
@@ -220,10 +233,10 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         return title;
     }
 
-    private List<MinecraftTextComponent> getVersionTooltip() {
+    private MinecraftTextComponent getVersionTooltip() {
         String[] versionSplit = voiceClient.getVersion().split("\\+");
         if (versionSplit.length < 2) return null;
 
-        return ImmutableList.of(MinecraftTextComponent.literal("build+" + versionSplit[1]));
+        return MinecraftTextComponent.literal("build+" + versionSplit[1]);
     }
 }

@@ -37,20 +37,20 @@ public final class AdvancedTabWidget extends TabWidget {
 
         addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.visual")));
         addEntry(createToggleEntry(
-                "gui.plasmovoice.advanced.visualize_voice_distance",
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance"),
                 null,
                 config.getAdvanced().getVisualizeVoiceDistance()
         ));
         addEntry(createToggleEntry(
-                "gui.plasmovoice.advanced.visualize_voice_distance_on_join",
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance_on_join"),
                 null,
                 config.getAdvanced().getVisualizeVoiceDistanceOnJoin()
         ));
 
         addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.audio_engine")));
         addEntry(createIntSliderWidget(
-                "gui.plasmovoice.advanced.directional_sources_angle",
-                "gui.plasmovoice.advanced.directional_sources_angle.tooltip",
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle.tooltip"),
                 config.getAdvanced().getDirectionalSourcesAngle(),
                 ""
         ));
@@ -91,7 +91,7 @@ public final class AdvancedTabWidget extends TabWidget {
                 MinecraftTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono"),
                 toggleButton,
                 config.getAdvanced().getStereoSourcesToMono(),
-                GuiUtil.multiLineTooltip("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
                 (button, element) -> onUpdate.run()
         );
     }

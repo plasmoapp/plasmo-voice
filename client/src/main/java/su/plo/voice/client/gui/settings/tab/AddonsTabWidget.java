@@ -40,24 +40,24 @@ public final class AddonsTabWidget extends TabWidget {
             switch (widget.getType()) {
                 case INT_SLIDER:
                     addEntry(createIntSliderWidget(
-                            widget.getTranslatable(),
-                            widget.getTooltipTranslatable(),
+                            MinecraftTextComponent.translatable(widget.getTranslatable()),
+                            MinecraftTextComponent.translatable(widget.getTooltipTranslatable()),
                             (IntConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
                     ));
                     break;
                 case VOLUME_SLIDER:
                     addEntry(createVolumeSlider(
-                            widget.getTranslatable(),
-                            widget.getTooltipTranslatable(),
+                            MinecraftTextComponent.translatable(widget.getTranslatable()),
+                            MinecraftTextComponent.translatable(widget.getTooltipTranslatable()),
                             (DoubleConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
                     ));
                     break;
                 case TOGGLE:
                     addEntry(createToggleEntry(
-                            widget.getTranslatable(),
-                            widget.getTooltipTranslatable(),
+                            MinecraftTextComponent.translatable(widget.getTranslatable()),
+                            MinecraftTextComponent.translatable(widget.getTooltipTranslatable()),
                             (BooleanConfigEntry) widget.getConfigEntry()
                     ));
                     break;

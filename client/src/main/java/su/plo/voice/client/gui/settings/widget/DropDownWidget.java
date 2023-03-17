@@ -104,7 +104,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
             if ((mouseX >= x && mouseX <= x + width) &&
                     (mouseY >= elementY && mouseY <= elementY + ELEMENT_HEIGHT)) {
                 if (tooltip && RenderUtil.getTextWidth(element) > (width - 10)) {
-                    parent.setTooltip(ImmutableList.of(element));
+                    parent.setTooltip(element);
                 }
                 RenderUtil.fill(stack, x + 1, elementY, x + width - 1, elementY + ELEMENT_HEIGHT, -0xCDCDCE);
             }

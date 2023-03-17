@@ -1,11 +1,9 @@
 package su.plo.lib.mod.client.gui.screen;
 
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-
-import java.util.List;
 
 public interface TooltipScreen {
 
-    void setTooltip(@NotNull List<MinecraftTextComponent> tooltip);
+    void setTooltip(@Nullable MinecraftTextComponent tooltip);
 }
