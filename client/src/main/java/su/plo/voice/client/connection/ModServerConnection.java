@@ -299,7 +299,6 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
             voiceClient.getDeviceManager().add(outputDevice);
         } catch (Exception e) {
             LOGGER.error("Failed to open primary OpenAL output device", e);
-            return;
         }
 
         ServerInfoInitializedEvent event = new ServerInfoInitializedEvent(serverInfo, packet);

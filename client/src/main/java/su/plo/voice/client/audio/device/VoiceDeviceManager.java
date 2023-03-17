@@ -7,6 +7,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -168,10 +169,8 @@ public final class VoiceDeviceManager implements DeviceManager {
 
     @Override
     public OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception {
-        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_OUTPUT");
-        if (!deviceFactory.isPresent()) {
-            throw new DeviceException("OpenAL output device factory is not initialized");
-        }
+        DeviceFactory deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_OUTPUT")
+                .orElseThrow(() -> new DeviceException("OpenAL output device factory is not initialized"));
 
         if (format == null) {
             if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
@@ -180,11 +179,7 @@ public final class VoiceDeviceManager implements DeviceManager {
             format = serverInfo.getVoiceInfo().getFormat(false);
         }
 
-        AudioDevice device = deviceFactory.get().openDevice(
-                format,
-                config.getVoice().getOutputDevice().value(),
-                getDefaultOutputParams()
-        );
+        String deviceName = getDeviceName(deviceFactory, config.getVoice().getOutputDevice());
 
 //        device.addFilter(new CompressorFilter(
 //                (int) format.getSampleRate(),
@@ -197,7 +192,11 @@ public final class VoiceDeviceManager implements DeviceManager {
 //                config.getAdvanced().getLimiterThreshold()
 //        ));
 
-        return (OutputDevice<AlSource>) device;
+        return (OutputDevice<AlSource>) deviceFactory.openDevice(
+                format,
+                deviceName,
+                getDefaultOutputParams()
+        );
     }
 
     @Override
@@ -209,25 +208,39 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     private InputDevice openAlInputDevice(@NotNull AudioFormat format) throws Exception {
-        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_INPUT");
-        if (!deviceFactory.isPresent()) throw new IllegalStateException("OpenAL input factory is not registered");
+        DeviceFactory deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_INPUT")
+                .orElseThrow(() -> new IllegalStateException("OpenAL input factory is not registered"));
 
-        return (InputDevice) deviceFactory.get().openDevice(
+        String deviceName = getDeviceName(deviceFactory, config.getVoice().getInputDevice());
+
+        return (InputDevice) deviceFactory.openDevice(
                 format,
-                Strings.emptyToNull(config.getVoice().getInputDevice().value()),
+                deviceName,
                 Params.EMPTY
         );
     }
 
     private InputDevice openJavaxInputDevice(@NotNull AudioFormat format) throws Exception {
-        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("JAVAX_INPUT");
-        if (!deviceFactory.isPresent()) throw new IllegalStateException("Javax input factory is not registered");
+        DeviceFactory deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("JAVAX_INPUT")
+                .orElseThrow(() -> new IllegalStateException("Javax input factory is not registered"));
 
-        return (InputDevice) deviceFactory.get().openDevice(
+        String deviceName = getDeviceName(deviceFactory, config.getVoice().getInputDevice());
+
+        return (InputDevice) deviceFactory.openDevice(
                 format,
-                Strings.emptyToNull(config.getVoice().getInputDevice().value()),
+                deviceName,
                 Params.EMPTY
         );
+    }
+
+    private String getDeviceName(DeviceFactory deviceFactory, ConfigEntry<String> configEntry) {
+        String deviceName = configEntry.value();
+        if (!Strings.isNullOrEmpty(deviceName) && !deviceFactory.getDeviceNames().contains(deviceName)) {
+            deviceName = null;
+            configEntry.set("");
+        }
+
+        return Strings.emptyToNull(deviceName);
     }
 
     private List<AudioDevice> getDevicesList(AudioDevice device) {

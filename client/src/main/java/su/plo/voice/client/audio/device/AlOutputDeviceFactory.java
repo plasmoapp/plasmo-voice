@@ -28,7 +28,7 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
         checkNotNull(format, "format cannot be null");
         checkNotNull(params, "params cannot be null");
 
-        if (Strings.emptyToNull(deviceName) == null) {
+        if (Strings.isNullOrEmpty(deviceName)) {
             deviceName = getDefaultDeviceName();
         }
 
