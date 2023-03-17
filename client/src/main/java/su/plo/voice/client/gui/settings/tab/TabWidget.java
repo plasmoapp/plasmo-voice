@@ -26,6 +26,7 @@ import su.plo.voice.client.gui.settings.widget.*;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
@@ -424,8 +425,9 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
     public class ButtonOptionEntry<W extends GuiAbstractWidget> extends OptionEntry<W> {
 
-        private final List<Button> buttons;
-        private final List<GuiAbstractWidget> widgets;
+        protected final List<GuiAbstractWidget> widgets;
+
+        protected final List<Button> buttons;
 
         public ButtonOptionEntry(@NotNull MinecraftTextComponent text,
                                  @NotNull W widget,
@@ -448,20 +450,31 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             this.buttons = buttons;
             this.widgets = Lists.newArrayList(element, resetButton);
             widgets.addAll(buttons);
-
-            if (widgets.size() == 0) throw new IllegalArgumentException("buttons cannot be empty");
         }
 
         @Override
         protected void renderElement(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta, int elementY) {
-            element.setX(x + entryWidth - element.getWidth() - 8 - resetButton.getWidth() - buttons.get(0).getWidth());
+            if (buttons.size() == 0) {
+                super.renderElement(stack, index, x, y, entryWidth, mouseX, mouseY, hovered, delta, elementY);
+                return;
+            }
+
+            List<Button> visibleButtons = buttons.stream()
+                    .filter(Button::isVisible)
+                    .collect(Collectors.toList());
+
+            int visibleButtonsWidth = visibleButtons.stream()
+                    .map(Button::getWidth)
+                    .reduce(0, Integer::sum);
+
+            element.setX(x + entryWidth - element.getWidth() - (visibleButtons.size() * 4) - resetButton.getWidth() - 4 - visibleButtonsWidth);
             element.setY(elementY);
             element.render(stack, mouseX, mouseY, delta);
 
-            for (Button button : buttons) {
-                if (!button.isVisible()) continue;
+            for (int i = 0; i < visibleButtons.size(); i++) {
+                Button button = visibleButtons.get(i);
 
-                button.setX(x + entryWidth - button.getWidth() - 24);
+                button.setX(x + entryWidth - button.getWidth() - ((i + 1) * 24) - (i * 8));
                 button.setY(elementY);
                 button.render(stack, mouseX, mouseY, delta);
             }

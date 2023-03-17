@@ -3,11 +3,15 @@ package su.plo.voice.client.gui.settings.tab;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import gg.essential.universal.UMinecraft;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import su.plo.config.entry.BooleanConfigEntry;
+import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.gui.components.Button;
+import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
@@ -100,12 +104,14 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
     private OptionEntry<CircularButton> createActivationType(ClientActivation activation,
                                                              ConfigClientActivation activationConfig,
                                                              boolean canInherit) {
-        CircularButton button = new CircularButton(
+        CircularButton typeButton = new CircularButton(
                 canInherit ? TYPES : NO_INHERIT_TYPES,
                 activation.getType().ordinal(),
                 0,
                 0,
-                ELEMENT_WIDTH,
+                activation.getType() == ClientActivation.Type.PUSH_TO_TALK
+                        ? ELEMENT_WIDTH
+                        : ELEMENT_WIDTH - 24,
                 20,
                 (index) -> {
                     activationConfig.getConfigType().set(
@@ -116,10 +122,12 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 Button.NO_TOOLTIP
         );
 
-        return new OptionEntry<>(
+        return new ActivationToggleStateEntry(
                 MinecraftTextComponent.translatable("gui.plasmovoice.activation.type"),
-                button,
+                typeButton,
                 activationConfig.getConfigType(),
+                activationConfig.getConfigToggle(),
+                null,
                 (btn, element) -> {
                     element.setIndex(0);
                     element.updateValue();
@@ -191,5 +199,58 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 textField,
                 activationDistance
         );
+    }
+
+    private class ActivationToggleStateEntry extends ButtonOptionEntry<CircularButton> {
+
+        public ActivationToggleStateEntry(@NotNull MinecraftTextComponent text,
+                                          @NotNull CircularButton widget,
+                                          @NotNull EnumConfigEntry<ClientActivation.Type> entry,
+                                          @NotNull BooleanConfigEntry stateEntry,
+                                          @Nullable MinecraftTextComponent tooltip,
+                                          @Nullable OptionResetAction<CircularButton> resetAction) {
+            super(text, widget, Lists.newArrayList(), entry, tooltip, resetAction);
+
+            if (entry.value() == ClientActivation.Type.PUSH_TO_TALK) return;
+
+            IconButton disableToggleState = new IconButton(
+                    parent.getWidth() - 52,
+                    8,
+                    20,
+                    20,
+                    (button) -> {
+                        buttons.get(0).setVisible(false);
+                        buttons.get(1).setVisible(true);
+
+                        stateEntry.set(true);
+                    },
+                    Button.NO_TOOLTIP,
+                    new ResourceLocation("plasmovoice:textures/icons/microphone_menu.png"),
+                    true
+            );
+            IconButton enableToggleState = new IconButton(
+                    parent.getWidth() - 52,
+                    8,
+                    20,
+                    20,
+                    (button) -> {
+                        buttons.get(0).setVisible(true);
+                        buttons.get(1).setVisible(false);
+
+                        stateEntry.set(false);
+                    },
+                    Button.NO_TOOLTIP,
+                    new ResourceLocation("plasmovoice:textures/icons/microphone_menu_disabled.png"),
+                    true
+            );
+
+            disableToggleState.setVisible(!stateEntry.value());
+            enableToggleState.setVisible(stateEntry.value());
+
+            buttons.add(disableToggleState);
+            buttons.add(enableToggleState);
+
+            widgets.addAll(buttons);
+        }
     }
 }
