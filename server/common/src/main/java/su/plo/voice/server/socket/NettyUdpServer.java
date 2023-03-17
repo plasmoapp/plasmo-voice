@@ -58,7 +58,7 @@ public final class NettyUdpServer implements UdpServer {
         });
 
         try {
-            ChannelFuture channelFuture = bootstrap.bind(port).sync();
+            ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
             channelGroup.add(channelFuture.channel());
             this.socketAddress = (InetSocketAddress) channelFuture.channel().localAddress();
         } catch (InterruptedException e) {

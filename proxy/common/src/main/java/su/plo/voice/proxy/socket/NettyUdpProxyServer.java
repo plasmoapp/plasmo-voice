@@ -52,7 +52,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
 
         logger.info("UDP proxy server is starting on {}:{}", ip, port);
         try {
-            ChannelFuture channelFuture = bootstrap.bind(port).sync();
+            ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
             this.channel = (NioDatagramChannel) channelFuture.channel();
             this.socketAddress = channel.localAddress();
         } catch (InterruptedException e) {
