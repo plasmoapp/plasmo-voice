@@ -273,7 +273,7 @@ public final class ClientConfig {
         private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(true);
+        private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(false);
 
         @ConfigField
         private SourceLineVolumes volumes = new SourceLineVolumes();
