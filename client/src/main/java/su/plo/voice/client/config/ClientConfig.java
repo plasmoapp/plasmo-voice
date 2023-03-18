@@ -304,13 +304,6 @@ public final class ClientConfig {
                 );
             }
 
-            public synchronized DoubleConfigEntry getVolume(@NotNull String lineName, double defaultVolume) {
-                return volumeByLineName.computeIfAbsent(
-                        lineName,
-                        (c) -> new DoubleConfigEntry(MathLib.clamp(defaultVolume, 0D, 1D), 0D, 2D)
-                );
-            }
-
             public synchronized void setMute(@NotNull String lineName, boolean muted) {
                 getMute(lineName).set(muted);
             }
@@ -348,11 +341,8 @@ public final class ClientConfig {
 
                 volumeByLineName.forEach((key, entry) -> {
                     Map<String, Object> value = Maps.newHashMap();
-
-                    if (!entry.isDefault()) {
-                        value.put("volume", entry.value());
-                        serialized.put(key, value);
-                    }
+                    value.put("volume", entry.value());
+                    serialized.put(key, value);
                 });
 
                 muteByLineName.forEach((key, entry) -> {

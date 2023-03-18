@@ -10,6 +10,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
+import su.plo.lib.api.MathLib;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.client.config.ClientConfig;
@@ -109,7 +110,8 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
         DoubleConfigEntry volumeEntry = config.getVoice()
                 .getVolumes()
-                .getVolume(line.getName(), line.getDefaultVolume());
+                .getVolume(line.getName());
+        volumeEntry.setDefault(MathLib.clamp(line.getDefaultVolume(), 0D, 1D));
         ClientSourceLine clientLine = new VoiceClientSourceLine(volumeEntry, line, icon);
 
         return register(clientLine);
