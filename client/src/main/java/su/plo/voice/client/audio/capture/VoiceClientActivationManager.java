@@ -33,7 +33,23 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
     private ClientActivation parentActivation;
 
-    private final List<ClientActivation> activations = new CopyOnWriteArrayList<>();
+    private final List<ClientActivation> activations = new CopyOnWriteArrayList<>() {
+
+        @Override
+        public boolean add(ClientActivation activation) {
+            int index;
+            for (index = 0; index < this.size(); index++) {
+                ClientActivation activationToCompare = this.get(index);
+                if (activation.getWeight() > activationToCompare.getWeight()) break;
+                if (activation.getWeight() == activationToCompare.getWeight()) {
+                    if (activation.getName().compareToIgnoreCase(activationToCompare.getName()) == -1) break;
+                }
+            }
+
+            super.add(index, activation);
+            return true;
+        }
+    };
     private final Map<UUID, ClientActivation> activationById = Maps.newConcurrentMap();
 
     private boolean initialized = false;
@@ -47,13 +63,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     public @NotNull ClientActivation register(@NotNull ClientActivation activation) {
         unregister(activation.getId());
 
-        int index;
-        for (index = 0; index < activations.size(); index++) {
-            ClientActivation act = activations.get(index);
-            if (activation.getWeight() >= act.getWeight()) break;
-        }
-
-        activations.add(index, activation);
+        activations.add(activation);
         activationById.put(activation.getId(), activation);
 
         if (activation.getId().equals(VoiceActivation.PROXIMITY_ID)) {

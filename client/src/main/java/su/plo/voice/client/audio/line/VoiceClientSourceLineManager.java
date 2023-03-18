@@ -28,7 +28,23 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     private final ClientConfig config;
 
-    private final List<ClientSourceLine> lines = new CopyOnWriteArrayList<>();
+    private final List<ClientSourceLine> lines = new CopyOnWriteArrayList<>() {
+
+        @Override
+        public boolean add(ClientSourceLine sourceLine) {
+            int index;
+            for (index = 0; index < this.size(); index++) {
+                ClientSourceLine lineToCompare = this.get(index);
+                if (sourceLine.getWeight() > lineToCompare.getWeight()) break;
+                if (sourceLine.getWeight() == lineToCompare.getWeight()) {
+                    if (sourceLine.getName().compareToIgnoreCase(lineToCompare.getName()) == -1) break;
+                }
+            }
+
+            super.add(index, sourceLine);
+            return true;
+        }
+    };
     private final Map<UUID, ClientSourceLine> lineById = Maps.newConcurrentMap();
 
     @Override
@@ -73,14 +89,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
     public @NotNull ClientSourceLine register(@NotNull ClientSourceLine line) {
         unregister(line.getId());
 
-        int index;
-        for (index = 0; index < lines.size(); index++) {
-            ClientSourceLine act = lines.get(index);
-            if (line.getWeight() >= act.getWeight()) break;
-            // todo: compare by translated text if weight is equals
-        }
-
-        lines.add(index, line);
+        lines.add(line);
         lineById.put(line.getId(), line);
 
         return line;
