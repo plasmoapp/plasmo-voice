@@ -135,6 +135,8 @@ class OverlayRenderer(
     ) {
         if (Minecraft.getInstance().level == null) return
 
+        val overlayStyle = config.overlay.overlayStyle.value()
+
         // todo: entity renderer?
         val sourceName = sourceInfo.sourceName
         val textWidth = RenderUtil.getTextWidth(sourceName) + 8
@@ -155,35 +157,44 @@ class OverlayRenderer(
         val backgroundColor = (0.25f * 255.0f).toInt() shl 24
 
         // render helm
-        sourceInfo.player?.let {
-            if (position.isRight) {
-                x -= 16
-            }
+        if (overlayStyle.hasSkin()) {
+            sourceInfo.player?.let {
+                if (position.isRight) {
+                    x -= 16
+                }
 
-            UGraphics.bindTexture(0, loadSkin(it))
-            UGraphics.color4f(1f, 1f, 1f, 1f)
-            RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
-            UGraphics.enableBlend()
-            RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
-            UGraphics.disableBlend()
-            if (!position.isRight) {
-                x += 16 + 1
+                UGraphics.bindTexture(0, loadSkin(it))
+                UGraphics.color4f(1f, 1f, 1f, 1f)
+                RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
+                UGraphics.enableBlend()
+                RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
+                UGraphics.disableBlend()
+                if (!position.isRight) {
+                    x += 16 + 1
+                }
             }
-        }
-
-        if (position.isRight) {
-            x -= textWidth + 1
         }
 
         // render text
-        RenderUtil.fill(stack, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
-        RenderUtil.drawString(stack, sourceName, x + 4, y + 4, 0xFFFFFF, false)
+        if (overlayStyle.hasName()) {
+            if (position.isRight) {
+                x -= textWidth + 1
+            }
+
+            RenderUtil.fill(stack, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
+            RenderUtil.drawString(stack, sourceName, x + 4, y + 4, 0xFFFFFF, false)
+
+            if (sourceInfo.activated && !position.isRight) {
+                x += textWidth + 1
+            }
+        }
+
+        // render line icon
         if (sourceInfo.activated) {
             if (position.isRight) {
                 x -= 16 + 1
-            } else {
-                x += textWidth + 1
             }
+
             RenderUtil.fill(stack, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
             UGraphics.bindTexture(0, ResourceLocation(sourceLine.icon))
             UGraphics.color4f(1f, 1f, 1f, 1f)

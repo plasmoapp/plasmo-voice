@@ -16,6 +16,7 @@ import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.overlay.OverlayPosition;
 import su.plo.voice.client.config.overlay.OverlaySourceState;
+import su.plo.voice.client.config.overlay.OverlayStyle;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 
@@ -412,6 +413,12 @@ public final class ClientConfig {
         private EnumConfigEntry<OverlayPosition> overlayPosition = new EnumConfigEntry<>(
                 OverlayPosition.class,
                 OverlayPosition.TOP_LEFT
+        );
+
+        @ConfigField
+        private EnumConfigEntry<OverlayStyle> overlayStyle = new EnumConfigEntry<>(
+                OverlayStyle.class,
+                OverlayStyle.NAME_SKIN
         );
 
         @ConfigField

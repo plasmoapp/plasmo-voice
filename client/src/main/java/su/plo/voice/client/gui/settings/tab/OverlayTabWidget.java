@@ -21,13 +21,16 @@ import su.plo.voice.client.config.ClientConfig;
 import su.plo.voice.client.config.IconPosition;
 import su.plo.voice.client.config.overlay.OverlayPosition;
 import su.plo.voice.client.config.overlay.OverlaySourceState;
+import su.plo.voice.client.config.overlay.OverlayStyle;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.OverlaySourceStateButton;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public final class OverlayTabWidget extends TabWidget {
 
@@ -80,6 +83,7 @@ public final class OverlayTabWidget extends TabWidget {
                 config.getOverlay().getOverlayEnabled()
         ));
         addEntry(createOverlayPosition());
+        addEntry(createOverlayStyle());
 
         addEntry(createCategoryEntry("gui.plasmovoice.overlay.sources"));
 
@@ -197,6 +201,31 @@ public final class OverlayTabWidget extends TabWidget {
                 (btn, element) -> element.setText(
                         MinecraftTextComponent.translatable(config.getOverlay().getActivationIconPosition().value().getTranslation())
                 )
+        );
+    }
+
+    private OptionEntry<DropDownWidget> createOverlayStyle() {
+        EnumConfigEntry<OverlayStyle> configEntry = config.getOverlay().getOverlayStyle();
+
+        DropDownWidget dropDown = new DropDownWidget(
+                parent,
+                0,
+                0,
+                ELEMENT_WIDTH,
+                20,
+                configEntry.value().getTranslatable(),
+                Arrays.stream(OverlayStyle.values())
+                        .map(OverlayStyle::getTranslatable)
+                        .collect(Collectors.toList()),
+                false,
+                (index) -> configEntry.set(OverlayStyle.fromOrdinal(index))
+        );
+
+        return new OptionEntry<>(
+                MinecraftTextComponent.translatable("gui.plasmovoice.overlay.style"),
+                dropDown,
+                configEntry,
+                (btn, element) -> element.setText(configEntry.value().getTranslatable())
         );
     }
 
