@@ -26,7 +26,7 @@ import su.plo.lib.mod.client.chat.ClientTextConverter;
 import java.util.Iterator;
 import java.util.List;
 
-import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
+import static su.plo.voice.client.utils.TextKt.*;
 
 @UtilityClass
 public class RenderUtil {
@@ -394,7 +394,14 @@ public class RenderUtil {
     }
 
     public static String stringToWidth(String string, int width, boolean tail) {
-        List<String> lines = UGraphics.listFormattedStringToWidth(string, width);
+        List<String> lines = splitStringToWidthTruncated(
+                string,
+                width,
+                1,
+                false,
+                true,
+                "..."
+        );
 
         return lines.get(tail ? lines.size() - 1 : 0);
     }
@@ -409,15 +416,7 @@ public class RenderUtil {
     }
 
     public static String getOrderedString(MinecraftTextComponent text, int width) {
-        String textString = getTextConverter().convertToUniversal(text).getFormattedText();
-        int textWidth = UGraphics.getStringWidth(textString);
-
-        if (textWidth <= width) {
-            return textString;
-        }
-
-        List<String> lines = UGraphics.listFormattedStringToWidth(textString, width - UGraphics.getStringWidth("..."));
-        return lines.get(0) + "...";
+        return getTruncatedString(getFormattedString(text), width, "...");
     }
 
     public static String getFormattedString(MinecraftTextComponent text) {

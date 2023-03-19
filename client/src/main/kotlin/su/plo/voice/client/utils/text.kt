@@ -11,6 +11,20 @@ fun String.width() = UGraphics.getStringWidth(this)
 
 fun MinecraftTextComponent.width() = RenderUtil.getTextWidth(this)
 
+fun getTruncatedString(
+    text: String,
+    maxWidth: Float,
+    trimmedTextSuffix: String = "..."
+) : String {
+    if (text.width() <= maxWidth) return text
+
+    var length = text.length
+    while (length > 0 && (text.substring(0, length) + trimmedTextSuffix).width() > maxWidth)
+        length--
+
+    return text.substring(0, length) + trimmedTextSuffix
+}
+
 // https://github.com/EssentialGG/Elementa/blob/master/src/main/kotlin/gg/essential/elementa/utils/text.kt
 fun splitStringToWidthTruncated(
     text: String,
