@@ -86,6 +86,11 @@ public final class ClientLoopbackSource implements LoopbackSource {
         if (volumeEntry != null) {
             volume *= volumeEntry.value().floatValue();
         }
+
+        if (config.getAdvanced().getExponentialVolumeSlider().value()) {
+            volume = (float) Math.pow(volume, 3);
+        }
+
         updateSources(volume);
         for (DeviceSource source : sourceGroup.getSources()) {
             samples = source.getDevice().processFilters(samples);

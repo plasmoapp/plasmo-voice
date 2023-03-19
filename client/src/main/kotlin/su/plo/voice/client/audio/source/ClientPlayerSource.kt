@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.source
 
 import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
 import su.plo.voice.api.client.PlasmoVoiceClient
@@ -30,24 +31,11 @@ class ClientPlayerSource(
         super.process(packet)
     }
 
-    override fun getPosition(position: FloatArray): FloatArray {
-        sourcePlayer?.let { player ->
-            position[0] = player.x.toFloat()
-            position[1] = (player.y + player.eyeHeight).toFloat()
-            position[2] = player.z.toFloat()
-        }
-        return position
-    }
+    override fun getPosition(): Vec3 =
+        sourcePlayer?.eyePosition ?: Vec3.ZERO
 
-    override fun getLookAngle(lookAngle: FloatArray): FloatArray {
-        sourcePlayer?.let { player ->
-            val playerLookAngle = player.lookAngle
-            lookAngle[0] = playerLookAngle.x.toFloat()
-            lookAngle[1] = playerLookAngle.y.toFloat()
-            lookAngle[2] = playerLookAngle.z.toFloat()
-        }
-        return lookAngle
-    }
+    override fun getLookAngle(): Vec3 =
+        sourcePlayer?.lookAngle ?: Vec3.ZERO
 
     private val sourceMute: BooleanConfigEntry
         get() {

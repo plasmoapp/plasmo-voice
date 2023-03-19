@@ -11,7 +11,6 @@ import su.plo.config.ConfigField;
 import su.plo.config.entry.*;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.lib.api.MathLib;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.overlay.OverlayPosition;
@@ -384,6 +383,12 @@ public final class ClientConfig {
 
         @ConfigField
         private BooleanConfigEntry panning = new BooleanConfigEntry(true);
+
+        @ConfigField
+        private BooleanConfigEntry exponentialVolumeSlider = new BooleanConfigEntry(true);
+
+        @ConfigField
+        private BooleanConfigEntry exponentialDistanceGain = new BooleanConfigEntry(true);
     }
 
     @Config

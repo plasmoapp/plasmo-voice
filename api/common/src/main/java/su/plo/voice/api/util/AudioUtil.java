@@ -241,6 +241,20 @@ public final class AudioUtil {
         return mono;
     }
 
+    public static short[] normalizeAudioLevel(short[] samples, double targetAudioLevel) {
+        double currentAudioLevel = calculateAudioLevel(samples, 0, samples.length);
+//        double currentAudioLevel = -14;
+        double targetGain = dbToMul(targetAudioLevel - currentAudioLevel);
+
+        System.out.println(currentAudioLevel + " " + targetGain);
+
+        for (int i = 0; i < samples.length; i++) {
+            samples[i] *= targetGain;
+        }
+
+        return samples;
+    }
+
     /**
      * Gets the highest absolute sample
      */
@@ -296,6 +310,10 @@ public final class AudioUtil {
 
     public static float dbToMul(float db) {
         return Float.isFinite(db) ? (float) Math.pow(10.0F, db / 20.0F) : 0.0F;
+    }
+
+    public static double dbToMul(double db) {
+        return Double.isFinite(db) ? (float) Math.pow(10.0D, db / 20.0D) : 0.0D;
     }
 
     public static float gainCoefficient(int sampleRate, float time) {

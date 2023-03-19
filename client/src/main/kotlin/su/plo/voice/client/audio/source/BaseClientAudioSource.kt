@@ -34,6 +34,7 @@ import su.plo.voice.api.util.Params
 import su.plo.voice.client.audio.SoundOcclusion
 import su.plo.voice.client.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.config.ClientConfig
+import su.plo.voice.client.utils.toFloatArray
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
@@ -42,18 +43,14 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
-import kotlin.math.sqrt
+import kotlin.math.acos
+import kotlin.math.pow
 
 abstract class BaseClientAudioSource<T> constructor(
     protected val voiceClient: PlasmoVoiceClient,
     protected val config: ClientConfig,
     final override var sourceInfo: T
 ) : ClientAudioSource<T> where T : SourceInfo {
-
-    private val playerPosition = FloatArray(3)
-    private val position = FloatArray(3)
-    private val lookAngle = FloatArray(3)
-
 
     override var sourceGroup: SourceGroup = runBlocking { createSourceGroup(sourceInfo) }
 
@@ -175,7 +172,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    override suspend fun close() = mutex.withLock{
+    override suspend fun close() = mutex.withLock {
         activated.set(false)
         canHear.set(false)
         closed.set(true)
@@ -249,21 +246,15 @@ abstract class BaseClientAudioSource<T> constructor(
             endRequest = null
         }
 
-        // update source positions
-        try {
-            getPlayerPosition(playerPosition)
-            getPosition(position)
-            getLookAngle(lookAngle)
-        } catch (e: IllegalStateException) {
-            close()
-            return
-        }
+        // get source positions
+        val playerPosition = getPlayerPosition()
+        val position = getPosition()
+        val lookAngle = getLookAngle()
 
-        val distance = packet.distance.toInt()
+        val distance = packet.distance.toDouble()
 
-        val sourceDistance = getSourceDistance(position)
-        val minSourceDistance = sourceDistance.coerceAtMost(distance)
-        val distanceGain = 1f - minSourceDistance.toFloat() / distance.toFloat()
+        val sourceDistance = position.distanceTo(playerPosition)
+        val distanceGain = calculateDistanceGain(sourceDistance.coerceAtMost(distance), distance)
 
         // calculate volume
         var volume = config.voice.volume.value() * sourceVolume.value() * lineVolume.value()
@@ -285,12 +276,29 @@ abstract class BaseClientAudioSource<T> constructor(
             }
         }
 
-        // update source volume & distance
-        if (isStereoOrPanningDisabled(sourceInfo) && distance > 0) {
-            updateSource(volume.toFloat() * distanceGain, packet.distance.toInt())
-        } else {
-            updateSource(volume.toFloat(), packet.distance.toInt())
+        if (config.advanced.exponentialVolumeSlider.value() && volume < 1) {
+            volume = volume.pow(3)
         }
+
+        // calculate and apply directional angle gain
+        if (config.voice.directionalSources.value() || sourceInfo.angle > 0) {
+            val positionDiffNormalized = playerPosition.subtract(position).normalize()
+            val angle = Math.toDegrees(acos(positionDiffNormalized.dot(lookAngle)))
+
+            val innerAngle =
+                if (sourceInfo.angle > 0) sourceInfo.angle
+                else config.advanced.directionalSourcesAngle.value() / 2
+
+            if (angle > innerAngle) {
+                val outAngle = angle - innerAngle
+                volume *= calculateAngleGain(outAngle, innerAngle.toDouble())
+            }
+        }
+
+        volume *= distanceGain
+
+        // update source volume & distance
+        updateSource(volume.toFloat(), position, lookAngle)
 
         // after updating the source, source can be closed by reloading the device,
         // so we need to make sure that source is not closed rn
@@ -358,29 +366,38 @@ abstract class BaseClientAudioSource<T> constructor(
             null
         }
 
-    protected open fun getPlayerPosition(position: FloatArray): FloatArray {
-        // todo: find out why modApi remapping not working in kotlin
-        val player: LocalPlayer = Minecraft.getInstance().player ?: return position
+    protected open fun getPlayerPosition(): Vec3 =
+        Minecraft.getInstance().player?.eyePosition ?: Vec3.ZERO
 
-        position[0] = player.x.toFloat()
-        position[1] = (player.y + player.eyeHeight).toFloat()
-        position[2] = player.z.toFloat()
-        return position
+    protected open fun calculateAngleGain(outAngle: Double, innerAngle: Double): Double {
+        var angleGain = 1.0 - outAngle / (OUTER_ANGLE - innerAngle)
+        if (config.advanced.exponentialDistanceGain.value())
+            angleGain = angleGain.pow(3.0)
+
+        return angleGain
     }
 
-    protected abstract fun getPosition(position: FloatArray): FloatArray
+    protected open fun calculateDistanceGain(sourceDistance: Double, maxDistance: Double): Double {
+        var distanceGain = 1.0 - (sourceDistance / maxDistance)
+        if (config.advanced.exponentialDistanceGain.value())
+            distanceGain = distanceGain.pow(3.0)
 
-    protected abstract fun getLookAngle(lookAngle: FloatArray): FloatArray
+        return distanceGain
+    }
+
+    protected abstract fun getPosition(): Vec3
+
+    protected abstract fun getLookAngle(): Vec3
 
     protected open fun shouldCalculateOcclusion(): Boolean {
         return config.voice.soundOcclusion.value()
     }
 
-    private fun calculateOcclusion(position: FloatArray): Double {
+    private fun calculateOcclusion(position: Vec3): Double {
         val player: LocalPlayer = Minecraft.getInstance().player ?: return 0.0
         return SoundOcclusion.getOccludedPercent(
             player.level,
-            Vec3(position[0].toDouble(), position[1].toDouble(), position[2].toDouble()),
+            position,
             player.eyePosition
         )
     }
@@ -395,7 +412,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    private suspend fun updateSource(volume: Float, maxDistance: Int) {
+    private suspend fun updateSource(volume: Float, position: Vec3, lookAngle: Vec3) {
         for (source in sourceGroup.sources) {
             if (source !is AlSource) continue
             val device = source.device as AlAudioDevice
@@ -405,28 +422,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
                 if (isPanningDisabled()) return@runInContext
 
-                source.setFloatArray(0x1004, position) // AL_POSITION
-                source.setFloat(0x1020, 0f) // AL_REFERENCE_DISTANCE
-                if (maxDistance > 0) {
-                    source.setFloat(0x1023, maxDistance.toFloat()) // AL_MAX_DISTANCE
-                }
-                if (config.voice.directionalSources.value()) {
-                    source.setFloatArray(0x1005, lookAngle) // AL_DIRECTION
-                    source.setFloat(0x1022, 0f) // AL_CONE_OUTER_GAIN
-                    source.setFloat(
-                        0x1001,  // AL_CONE_INNER_ANGLE
-                        90f
-                    )
-                    source.setFloat(
-                        0x1002,  // AL_CONE_OUTER_ANGLE
-                        180f
-                    )
-                } else {
-                    source.setFloatArray(
-                        0x1005,
-                        ZERO_VECTOR
-                    ) // AL_DIRECTION
-                }
+                source.setFloatArray(0x1004, position.toFloatArray()) // AL_POSITION
             }
         }
     }
@@ -438,13 +434,11 @@ abstract class BaseClientAudioSource<T> constructor(
             for (source in it.sources) {
                 if (source !is AlSource) continue
 
-                val device = source.device as AlAudioDevice
+                val device = source.device
                 device.runInContext {
                     source.setFloat(0x100E, 4f) // AL_MAX_GAIN
-                    if (!isPanningDisabled())
-                        source.setInt(0xD000, 0xD003) // AL_DISTANCE_MODEL // AL_LINEAR_DISTANCE
-                    else {
-                        source.setInt(AL10.AL_DISTANCE_MODEL, AL10.AL_NONE);
+                    source.setInt(AL10.AL_DISTANCE_MODEL, AL10.AL_NONE)
+                    if (isPanningDisabled()) {
                         source.setInt(
                             0x202,  // AL_SOURCE_RELATIVE
                             1
@@ -494,15 +488,8 @@ abstract class BaseClientAudioSource<T> constructor(
         return sourceInfo.isStereo && !config.advanced.stereoSourcesToMono.value()
     }
 
-    private fun getSourceDistance(position: FloatArray): Int {
-        val xDiff = (playerPosition[0] - position[0]).toDouble()
-        val yDiff = (playerPosition[1] - position[1]).toDouble()
-        val zDiff = (playerPosition[2] - position[2]).toDouble()
-        return sqrt(xDiff * xDiff + yDiff * yDiff + zDiff * zDiff).toInt()
-    }
-
     companion object {
-        private val ZERO_VECTOR = floatArrayOf(0f, 0f, 0f)
+        private val OUTER_ANGLE: Double = 180.0
         private val LOGGER: Logger = LogManager.getLogger()
 
         private val SCOPE = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())

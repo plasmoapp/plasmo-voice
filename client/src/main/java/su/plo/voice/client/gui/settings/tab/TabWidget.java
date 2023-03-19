@@ -156,10 +156,6 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
     }
 
-    protected CategoryEntry createCategoryEntry(@NotNull String translatable) {
-        return new CategoryEntry(MinecraftTextComponent.translatable(translatable));
-    }
-
     protected OptionEntry<ToggleButton> createToggleEntry(@NotNull MinecraftTextComponent text,
                                                           @Nullable MinecraftTextComponent tooltip,
                                                           @NotNull ConfigEntry<Boolean> entry) {

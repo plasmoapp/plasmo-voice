@@ -69,6 +69,10 @@
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "Addons use stereo sources for better audio quality. The quality is much better, but facing doesn't affect the panning. Sound only fades out with distance.\n\nWhen this option is enabled, stereo sources are converted to the usual mono sources. Quality is worse, but they will now have panning.",
     "gui.plasmovoice.advanced.panning": "Stereo positioning",
 
+    "gui.plasmovoice.advanced.exponential_volume": "Exponential Volume",
+    "gui.plasmovoice.advanced.exponential_volume.volume_slider": "Volume Slider",
+    "gui.plasmovoice.advanced.exponential_volume.distance_gain": "Distance Gain",
+
 
     "gui.plasmovoice.hotkeys": "Hotkeys",
 

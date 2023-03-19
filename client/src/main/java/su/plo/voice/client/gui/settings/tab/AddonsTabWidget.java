@@ -34,7 +34,7 @@ public final class AddonsTabWidget extends TabWidget {
     }
 
     private void createAddonEntry(@NotNull VoiceAddonConfig addonConfig) {
-        addEntry(createCategoryEntry(addonConfig.getAddon().getName()));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable(addonConfig.getAddon().getName())));
 
         addonConfig.getWidgets().forEach((widget) -> {
             switch (widget.getType()) {

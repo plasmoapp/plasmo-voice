@@ -3,6 +3,7 @@ package su.plo.voice.client.audio.source
 import kotlinx.coroutines.runBlocking
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
+import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
 import su.plo.voice.api.client.PlasmoVoiceClient
@@ -10,6 +11,7 @@ import su.plo.voice.api.client.audio.device.AlAudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.client.config.ClientConfig
+import su.plo.voice.client.utils.toVec3
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
@@ -49,31 +51,21 @@ class ClientDirectSource(
         return isActivated()
     }
 
-    override fun getPosition(position: FloatArray): FloatArray {
+    override fun getPosition(): Vec3 {
         if (sourceInfo.relativePosition != null) {
-            if (sourceInfo.isCameraRelative) {
-                position[0] = sourceInfo.relativePosition!!.x.toFloat()
-                position[1] = sourceInfo.relativePosition!!.y.toFloat()
-                position[2] = sourceInfo.relativePosition!!.z.toFloat()
+            return if (sourceInfo.isCameraRelative) {
+                sourceInfo.relativePosition!!.toVec3()
             } else {
-                return getAbsoluteSourcePosition(position)
+                getAbsoluteSourcePosition()
             }
-        } else {
-            position[0] = 0f
-            position[1] = 0f
-            position[2] = 0f
         }
 
-        return position
+        return Vec3.ZERO
     }
 
-    override fun getLookAngle(lookAngle: FloatArray): FloatArray {
-        // todo: lookAngle?
-        lookAngle[0] = 0f
-        lookAngle[1] = 0f
-        lookAngle[2] = 0f
-        return lookAngle
-    }
+    // todo: lookAngle?
+    override fun getLookAngle(): Vec3 =
+        Vec3.ZERO
 
     override fun shouldCalculateOcclusion(): Boolean {
         return false // todo: relative position occlusion
@@ -82,6 +74,10 @@ class ClientDirectSource(
     override fun isPanningDisabled(): Boolean {
         return sourceInfo.isCameraRelative || super.isPanningDisabled()
     }
+
+    override fun calculateDistanceGain(sourceDistance: Double, maxDistance: Double) =
+        if (sourceInfo.isCameraRelative) 1.0
+        else super.calculateDistanceGain(sourceDistance, maxDistance)
 
     private fun createSourceMute(sourceInfo: DirectSourceInfo): BooleanConfigEntry? =
         sourceInfo.sender?.let {
@@ -97,16 +93,16 @@ class ClientDirectSource(
                 .getVolume("source_${it.id}")
         } ?: super.sourceVolume
 
-    private fun getAbsoluteSourcePosition(position: FloatArray): FloatArray {
+    private fun getAbsoluteSourcePosition(): Vec3 {
         return sourceInfo.relativePosition?.let {
-            val player: LocalPlayer = Minecraft.getInstance().player ?: return position
+            val player: LocalPlayer = Minecraft.getInstance().player ?: return Vec3.ZERO
 
-            position[0] = (player.x + it.x).toFloat()
-            position[1] = (player.y + player.eyeHeight + it.y).toFloat()
-            position[2] = (player.z + it.z).toFloat()
-
-            return position
-        } ?: position
+            return Vec3(
+                player.x + it.x,
+                player.y + player.eyeHeight + it.y,
+                player.z + it.z
+            )
+        } ?: Vec3.ZERO
     }
 
     private suspend fun updateSourceParams() {

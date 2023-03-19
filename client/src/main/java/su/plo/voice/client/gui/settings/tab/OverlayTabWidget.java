@@ -60,7 +60,7 @@ public final class OverlayTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(createCategoryEntry("gui.plasmovoice.overlay.activation_icon"));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.overlay.activation_icon")));
         addEntry(createToggleEntry(
                 MinecraftTextComponent.translatable("gui.plasmovoice.overlay.activation_icon_show"),
                 null,
@@ -68,7 +68,7 @@ public final class OverlayTabWidget extends TabWidget {
         ));
         addEntry(createActivationIconPosition());
 
-        addEntry(createCategoryEntry("gui.plasmovoice.overlay.source_icons"));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.overlay.source_icons")));
         addEntry(createShowIcons());
         addEntry(createToggleEntry(
                 MinecraftTextComponent.translatable("gui.plasmovoice.overlay.show_static_source_icons"),
@@ -76,7 +76,7 @@ public final class OverlayTabWidget extends TabWidget {
                 config.getOverlay().getShowStaticSourceIcons()
         ));
 
-        addEntry(createCategoryEntry("gui.plasmovoice.overlay"));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.overlay")));
         addEntry(createToggleEntry(
                 MinecraftTextComponent.translatable("gui.plasmovoice.overlay.enable"),
                 null,
@@ -85,7 +85,7 @@ public final class OverlayTabWidget extends TabWidget {
         addEntry(createOverlayPosition());
         addEntry(createOverlayStyle());
 
-        addEntry(createCategoryEntry("gui.plasmovoice.overlay.sources"));
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.overlay.sources")));
 
         List<ClientSourceLine> sourceLines = Lists.newArrayList(this.sourceLines.getLines());
         Collections.reverse(sourceLines);

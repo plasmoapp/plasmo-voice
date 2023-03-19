@@ -1,8 +1,9 @@
 package su.plo.voice.client.audio.source
 
+import net.minecraft.world.phys.Vec3
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.client.config.ClientConfig
-import su.plo.voice.proto.data.audio.source.DirectSourceInfo
+import su.plo.voice.client.utils.toVec3
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo
 
 class ClientStaticSource(
@@ -11,17 +12,9 @@ class ClientStaticSource(
     sourceInfo: StaticSourceInfo
 ) : BaseClientAudioSource<StaticSourceInfo>(voiceClient, config, sourceInfo) {
 
-    override fun getPosition(position: FloatArray): FloatArray {
-        position[0] = sourceInfo.position.x.toFloat()
-        position[1] = sourceInfo.position.y.toFloat()
-        position[2] = sourceInfo.position.z.toFloat()
-        return position
-    }
+    override fun getPosition(): Vec3 =
+        sourceInfo.position.toVec3()
 
-    override fun getLookAngle(lookAngle: FloatArray): FloatArray {
-        lookAngle[0] = sourceInfo.lookAngle.x.toFloat()
-        lookAngle[1] = sourceInfo.lookAngle.y.toFloat()
-        lookAngle[2] = sourceInfo.lookAngle.z.toFloat()
-        return lookAngle
-    }
+    override fun getLookAngle(): Vec3 =
+        sourceInfo.lookAngle.toVec3()
 }

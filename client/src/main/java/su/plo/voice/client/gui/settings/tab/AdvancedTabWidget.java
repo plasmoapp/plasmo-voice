@@ -57,6 +57,18 @@ public final class AdvancedTabWidget extends TabWidget {
         addEntry(createStereoToMonoSources());
         addEntry(createPanning());
 
+        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")));
+        addEntry(createToggleEntry(
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.volume_slider"),
+                null,
+                config.getAdvanced().getExponentialVolumeSlider()
+        ));
+        addEntry(createToggleEntry(
+                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.distance_gain"),
+                null,
+                config.getAdvanced().getExponentialDistanceGain()
+        ));
+
 //        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.compressor")));
 //        addEntry(createIntSliderWidget(
 //                "gui.plasmovoice.advanced.compressor_threshold",

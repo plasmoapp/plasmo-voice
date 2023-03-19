@@ -2,12 +2,10 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import gg.essential.universal.UGraphics;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.GuiUtil;
-import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -20,13 +18,9 @@ import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
 
 public final class DevicesTabWidget extends TabWidget {
 
