@@ -1,10 +1,8 @@
 package su.plo.voice.client.gui.settings;
 
-import com.google.common.collect.ImmutableList;
 import gg.essential.universal.UDesktop;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UScreen;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
@@ -18,7 +16,6 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
 
 import java.net.URI;
-import java.util.List;
 
 public final class VoiceNotAvailableScreen extends GuiScreen {
 
@@ -32,7 +29,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     private int x;
     private int y;
 
-    private List<MinecraftTextComponent> message;
+    private MinecraftTextComponent message;
 
     public VoiceNotAvailableScreen(@NotNull BaseVoiceClient voiceClient) {
         setNotAvailable();
@@ -42,8 +39,11 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (message.size() == 3 && button == 0) {
-            int lineWidth = RenderUtil.getTextWidth(message.get(2));
+        String formattedMessage = RenderUtil.getFormattedString(message);
+        String[] messageLines = formattedMessage.split("\n");
+
+        if (messageLines.length == 3 && button == 0) {
+            int lineWidth = UGraphics.getStringWidth(messageLines[2]);
             int lineHeight = UGraphics.getFontHeight();
             float x = (float) (getWidth() / 2 - lineWidth / 2);
 
@@ -82,48 +82,32 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
 
     @Override
     public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
-        int maxWidth = 0;
-        for (MinecraftTextComponent line : message) {
-            int lineWidth = RenderUtil.getTextWidth(line);
-            if (lineWidth > maxWidth) {
-                maxWidth = lineWidth;
-            }
-        }
-
-        button.setY(y + (UGraphics.getFontHeight() * message.size()) + 20);
-
         screen.renderBackground(stack);
 
-        for (int i = 0; i < message.size(); i++) {
-            MinecraftTextComponent line = message.get(i);
-            RenderUtil.drawString(
-                    stack,
-                    line,
-                    getWidth() / 2 - RenderUtil.getTextWidth(line) / 2,
-                    y + (10 * (i + 1)),
-                    16777215
-            );
-        }
+        int messageLines = RenderUtil.drawStringMultiLineCentered(
+                stack,
+                message,
+                getWidth(),
+                y,
+                0,
+                16777215
+        );
+
+        button.setY(y + (UGraphics.getFontHeight() * messageLines) + 20);
 
         super.render(stack, mouseX, mouseY, delta);
     }
 
     public void setNotAvailable() {
-        this.message = ImmutableList.of(
-                MinecraftTextComponent.translatable("gui.plasmovoice.not_available")
-        );
+        this.message = MinecraftTextComponent.translatable("gui.plasmovoice.not_available");
     }
 
     public void setConnecting() {
-        this.message = ImmutableList.of(MinecraftTextComponent.translatable("gui.plasmovoice.connecting"));
+        this.message = MinecraftTextComponent.translatable("gui.plasmovoice.connecting");
     }
 
     public void setCannotConnect() {
-        this.message = ImmutableList.of(
-                MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_1"),
-                MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_2"),
-                MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp_3", WIKI_LINK)
-        );
+        this.message = MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp", WIKI_LINK);
     }
 
     private void openLink(@NotNull String link) {

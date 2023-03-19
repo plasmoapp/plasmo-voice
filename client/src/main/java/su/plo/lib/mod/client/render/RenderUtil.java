@@ -362,6 +362,29 @@ public class RenderUtil {
         return lines.size();
     }
 
+    public static int drawStringMultiLineCentered(UMatrixStack stack, MinecraftTextComponent text, int width, int y, int yGap, int color) {
+        color = adjustColor(color);
+
+        String string = getFormattedString(text);
+
+        List<String> lines = getStringSplitToWidth(string, width, true, true);
+        int lineHeight = UGraphics.getFontHeight();
+
+        for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight + yGap) {
+            String orderedText = line.next();
+            UGraphics.drawString(
+                    stack,
+                    orderedText,
+                    (float) width / 2 - (float) UGraphics.getStringWidth(orderedText) / 2,
+                    (float) y + lineHeight,
+                    color,
+                    true
+            );
+        }
+
+        return lines.size();
+    }
+
     public static int getStringX(String string, int x, boolean dropShadow) {
         return x + UGraphics.getStringWidth(string) + (dropShadow ? 1 : 0);
     }
