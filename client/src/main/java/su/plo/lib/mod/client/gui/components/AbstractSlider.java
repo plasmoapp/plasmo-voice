@@ -45,6 +45,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
         RenderUtil.blit(stack, x, y, 0, 46 + textureV * 20, width / 2, height);
         RenderUtil.blit(stack, x + width / 2, y, 200 - width / 2, 46 + textureV * 20, width / 2, height);
+        UGraphics.color4f(1F, 1F, 1F, 1F);
     }
 
     @Override

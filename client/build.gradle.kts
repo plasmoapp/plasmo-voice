@@ -57,6 +57,7 @@ dependencies {
         val fabricApiVersion = when (platform.mcVersion) {
             11902 -> "0.73.2+1.19.2"
             11903 -> "0.73.2+1.19.3"
+            11904 -> "0.76.0+1.19.4"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -65,16 +66,16 @@ dependencies {
         "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
     }
 
-    modApi("gg.essential:universalcraft-$platform:254") {
+    modApi("gg.essential:universalcraft-$platform:262") {
         exclude(group = "org.jetbrains.kotlin")
     }
 
     if (platform.isForge) {
-        common("gg.essential:universalcraft-$platform:254") {
+        common("gg.essential:universalcraft-$platform:262") {
             exclude(group = "org.jetbrains.kotlin")
         }
     } else {
-        "include"("gg.essential:universalcraft-$platform:254") {
+        "include"("gg.essential:universalcraft-$platform:262") {
             exclude(group = "org.jetbrains.kotlin")
         }
     }

@@ -3,6 +3,11 @@ package su.plo.lib.mod.client.render;
 //#if MC<11502
 //$$ import net.minecraft.client.renderer.GlStateManager;
 //#else
+
+//#if MC>=11904
+//$$ import net.minecraft.client.gui.Font;
+//#endif
+
 import com.mojang.blaze3d.platform.GlStateManager;
 //#endif
 
@@ -315,6 +320,13 @@ public class RenderUtil {
         //#if MC<11602
         //$$ UGraphics.drawString(stack, formattedText, (float) x, (float) y, color, dropShadow);
         //#else
+
+        //#if MC>=11904
+        //$$ Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;
+        //#else
+        boolean displayMode = seeThrough;
+        //#endif
+
         MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
         UMinecraft.getFontRenderer().drawInBatch(
                 formattedText,
@@ -324,7 +336,7 @@ public class RenderUtil {
                 dropShadow,
                 stack.peek().getModel(),
                 irendertypebuffer$impl,
-                seeThrough,
+                displayMode,
                 0,
                 light
         );

@@ -125,6 +125,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
 
         UGraphics.bindTexture(0, WIDGETS_LOCATION);
         RenderUtil.blit(stack, x + 1, y + 1, 1, 47, (int) ((sliderWidth - 2) * controller.getMicrophoneValue()), height - 2);
+        UGraphics.color4f(1F, 1F, 1F, 1F);
     }
 
     @EventSubscribe

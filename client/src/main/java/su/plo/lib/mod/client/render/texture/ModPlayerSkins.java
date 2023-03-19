@@ -23,6 +23,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
+import static su.plo.mod.client.render.TextureUtilKt.registerBase64Texture;
+
 public final class ModPlayerSkins {
 
     private static final Cache<String, ResourceLocation> skins = CacheBuilder
@@ -40,22 +42,13 @@ public final class ModPlayerSkins {
         if (skinLocation != null) return;
 
         if (fallback != null) {
-            RenderSystem.recordRenderCall(() -> {
-                ResourceLocation fallbackIdentifier = new ResourceLocation(
-                        "plasmovoice",
-                        "skins/" + Hashing.sha1().hashUnencodedChars(nick.toLowerCase())
-                );
-                try {
-                    UMinecraft.getMinecraft().getTextureManager().register(
-                            fallbackIdentifier,
-                            new DynamicTexture(NativeImage.fromBase64(fallback))
-                    );
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                // fallback
-                skins.put(nick, fallbackIdentifier);
-            });
+            ResourceLocation fallbackIdentifier = new ResourceLocation(
+                    "plasmovoice",
+                    "skins/" + Hashing.sha1().hashUnencodedChars(nick.toLowerCase())
+            );
+
+            registerBase64Texture(fallback, fallbackIdentifier);
+            skins.put(nick, fallbackIdentifier);
         }
 
         GameProfile profile = new GameProfile(playerId, nick);

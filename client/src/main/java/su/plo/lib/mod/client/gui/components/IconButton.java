@@ -96,6 +96,7 @@ public final class IconButton extends Button {
         RenderUtil.blit(stack, x + 2, y + 2, 0, 0, 16, 16, 16, 16);
 
         UGraphics.disableDepth();
+        UGraphics.color4f(1F, 1F, 1F, 1F);
     }
 
     public boolean hasShadow() {

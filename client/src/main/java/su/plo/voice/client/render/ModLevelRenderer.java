@@ -38,7 +38,7 @@ public final class ModLevelRenderer extends ModRenderer {
     private int getLight(@NotNull Pos3d blockPos) {
         return LevelRenderer.getLightColor(
                 level,
-                new BlockPos(blockPos.getX(), blockPos.getY(), blockPos.getZ())
+                new BlockPos((int) blockPos.getX(), (int) blockPos.getY(), (int) blockPos.getZ())
         );
     }
 }
