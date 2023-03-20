@@ -29,7 +29,8 @@ import java.util.function.Consumer
 
 class VoiceServerActivationManager(
     private val voiceServer: PlasmoBaseVoiceServer,
-    private val tcpConnections: ConnectionManager<ClientPacketTcpHandler, out VoicePlayer>
+    private val tcpConnections: ConnectionManager<ClientPacketTcpHandler, out VoicePlayer>,
+    private val weightSupplier: ((activationName: String) -> Optional<Int>)?
 ) : ServerActivationManager {
 
     private val activationById: MutableMap<UUID, ServerActivation> = Maps.newConcurrentMap()
@@ -64,7 +65,7 @@ class VoiceServerActivationManager(
             translation,
             icon,
             Sets.newHashSet<String>(permission),
-            weight
+            weightSupplier?.invoke(name)?.orElse(null) ?: weight
         )
     }
 

@@ -26,7 +26,8 @@ class VoiceServerSourceLineManager(
             translation,
             icon,
             defaultVolume,
-            weight,
+            voiceServer.config.voice().weights().getSourceLineWeight(name)
+                .orElse(weight),
             withPlayers
         )
     }

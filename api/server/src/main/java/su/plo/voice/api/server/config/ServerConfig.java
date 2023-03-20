@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Optional;
 
 /**
  * Plasmo Voice Server config
@@ -57,6 +58,15 @@ public interface ServerConfig {
         @NotNull Proximity proximity();
 
         @NotNull Opus opus();
+
+        @NotNull Weights weights();
+
+        interface Weights {
+
+            Optional<Integer> getActivationWeight(@NotNull String activationName);
+
+            Optional<Integer> getSourceLineWeight(@NotNull String sourceLineName);
+        }
 
         interface Proximity {
 

@@ -91,7 +91,11 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         eventBus.call(new VoiceProxyInitializeEvent(this));
 
         this.sourceLineManager = new VoiceProxySourceLineManager(this);
-        this.activationManager = new VoiceServerActivationManager(this, playerManager);
+        this.activationManager = new VoiceServerActivationManager(
+                this,
+                playerManager,
+                null
+        );
         eventBus.register(this, activationManager);
 
         eventBus.register(this, udpConnectionManager);

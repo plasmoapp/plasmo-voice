@@ -1,9 +1,11 @@
 package su.plo.voice.server.config;
 
+import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
@@ -11,10 +13,7 @@ import su.plo.config.ConfigFieldProcessor;
 import su.plo.config.ConfigValidator;
 import su.plo.voice.api.server.config.ServerConfig;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -119,6 +118,30 @@ public final class VoiceServerConfig implements ServerConfig {
 
         @ConfigField
         private Opus opus = new Opus();
+
+        @ConfigField
+        private Weights weights = new Weights();
+
+        @Config
+        @Data
+        @Accessors(fluent = true)
+        public static class Weights implements ServerConfig.Voice.Weights {
+
+            @ConfigField(path = "activations")
+            private Map<String, Integer> weightByActivationName = Maps.newConcurrentMap();
+            @ConfigField(path = "source_lines")
+            private Map<String, Integer> weightBySourceLineName = Maps.newConcurrentMap();
+
+            @Override
+            public Optional<Integer> getActivationWeight(@NotNull String activationName) {
+                return Optional.ofNullable(weightByActivationName.get(activationName));
+            }
+
+            @Override
+            public Optional<Integer> getSourceLineWeight(@NotNull String sourceLineName) {
+                return Optional.ofNullable(weightBySourceLineName.get(sourceLineName));
+            }
+        }
 
         @Config
         @Data
