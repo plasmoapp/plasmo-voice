@@ -21,14 +21,8 @@ public final class PermissionsManager {
      *
      * @param name permission name
      * @param permissionDefault permission default value
-     *
-     * @throws IllegalArgumentException if permission with specified name is already exists
      */
     public void register(@NotNull String name, @NotNull PermissionDefault permissionDefault) {
-        if (defaultPermissionByName.containsKey(name)) {
-            throw new IllegalArgumentException("Permissions with name '" + name + "' already exist");
-        }
-
         defaultPermissionByName.put(name, permissionDefault);
     }
 

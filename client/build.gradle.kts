@@ -147,6 +147,14 @@ tasks {
             exclude(dependency("org.checkerframework:.*"))
 
             exclude("README.md")
+
+            if (platform.isForge) {
+                exclude("fabric.mod.json")
+            } else {
+                exclude("plasmovoice-forge.mixins.json")
+                exclude("pack.mcmeta")
+                exclude("META-INF/mods.toml")
+            }
         }
     }
 

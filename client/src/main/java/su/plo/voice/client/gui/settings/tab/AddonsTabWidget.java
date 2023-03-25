@@ -41,7 +41,9 @@ public final class AddonsTabWidget extends TabWidget {
                 case INT_SLIDER:
                     addEntry(createIntSliderWidget(
                             MinecraftTextComponent.translatable(widget.getTranslatable()),
-                            MinecraftTextComponent.translatable(widget.getTooltipTranslatable()),
+                            widget.getTooltipTranslatable() != null
+                                    ? MinecraftTextComponent.translatable(widget.getTooltipTranslatable())
+                                    : null,
                             (IntConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
                     ));
@@ -49,7 +51,9 @@ public final class AddonsTabWidget extends TabWidget {
                 case VOLUME_SLIDER:
                     addEntry(createVolumeSlider(
                             MinecraftTextComponent.translatable(widget.getTranslatable()),
-                            MinecraftTextComponent.translatable(widget.getTooltipTranslatable()),
+                            widget.getTooltipTranslatable() != null
+                                    ? MinecraftTextComponent.translatable(widget.getTooltipTranslatable())
+                                    : null,
                             (DoubleConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
                     ));
@@ -57,7 +61,9 @@ public final class AddonsTabWidget extends TabWidget {
                 case TOGGLE:
                     addEntry(createToggleEntry(
                             MinecraftTextComponent.translatable(widget.getTranslatable()),
-                            MinecraftTextComponent.translatable(widget.getTooltipTranslatable()),
+                            widget.getTooltipTranslatable() != null
+                                    ? MinecraftTextComponent.translatable(widget.getTooltipTranslatable())
+                                    : null,
                             (BooleanConfigEntry) widget.getConfigEntry()
                     ));
                     break;

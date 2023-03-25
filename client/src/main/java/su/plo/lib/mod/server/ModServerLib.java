@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
 import su.plo.lib.mod.chat.ComponentTextConverter;
@@ -21,10 +22,7 @@ import su.plo.lib.mod.server.command.ModCommandManager;
 import su.plo.lib.mod.server.entity.ModServerEntity;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
 import su.plo.lib.mod.server.world.ModServerWorld;
-import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.config.ServerLanguages;
-import su.plo.voice.api.server.event.player.PlayerJoinEvent;
-import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
@@ -60,6 +58,8 @@ public final class ModServerLib implements MinecraftServerLib {
     public ModServerLib(@NotNull Supplier<ServerLanguages> languagesSupplier) {
         this.textConverter = new ServerComponentTextConverter(new ComponentTextConverter(), languagesSupplier);
         this.commandManager = new ModCommandManager(this, textConverter);
+
+        PlayerQuitEvent.INSTANCE.registerListener(player -> playerById.remove(player.getUUID()));
     }
 
     @Override
@@ -188,15 +188,5 @@ public final class ModServerLib implements MinecraftServerLib {
     @Override
     public @NotNull String getVersion() {
         return server.getServerVersion();
-    }
-
-    @EventSubscribe
-    public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
-        getPlayerByInstance(event.getPlayer());
-    }
-
-    @EventSubscribe
-    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        playerById.remove(event.getPlayerId());
     }
 }

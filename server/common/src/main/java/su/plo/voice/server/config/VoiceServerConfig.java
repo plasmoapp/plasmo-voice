@@ -23,7 +23,7 @@ import java.util.stream.Collectors;
 @Accessors(fluent = true)
 public final class VoiceServerConfig implements ServerConfig {
 
-    @ConfigField(path = "server_id", comment = "Used to store server-related config file on the client\nSet it to a single value on different servers if you want them to share config")
+    @ConfigField(comment = "Used to store server-related config file on the client\nSet it to a single value on different servers if you want them to share config")
     private String serverId = UUID.randomUUID().toString();
 
     @ConfigField
@@ -89,28 +89,28 @@ public final class VoiceServerConfig implements ServerConfig {
 
         private byte[] aesEncryptionKey = null;
 
-        @ConfigField(path = "sample_rate", comment = "Supported sample rates:\n8000\n12000\n24000\n48000")
+        @ConfigField(comment = "Supported sample rates:\n8000\n12000\n24000\n48000")
         @ConfigValidator(
                 value = SampleRateValidator.class,
                 allowed = {"8000", "16000", "24000", "48000"}
         )
         private int sampleRate = 48_000;
 
-        @ConfigField(path = "keep_alive_timeout")
+        @ConfigField
         @ConfigValidator(
                 value = KeepAliveTimeoutValidator.class,
                 allowed = "1000-120000"
         )
         private int keepAliveTimeoutMs = 15_000;
 
-        @ConfigField(path = "mtu_size")
+        @ConfigField
         @ConfigValidator(
                 value = MtuSizeValidator.class,
                 allowed = "128-5000"
         )
         private int mtuSize = 1024;
 
-        @ConfigField(path = "client_mod_required")
+        @ConfigField
         private boolean clientModRequired = false;
 
         @ConfigField
@@ -152,7 +152,7 @@ public final class VoiceServerConfig implements ServerConfig {
             @ConfigFieldProcessor(DistancesSorter.class)
             private List<Integer> distances = Arrays.asList(8, 16, 32);
 
-            @ConfigField(path = "default_distance")
+            @ConfigField
             private int defaultDistance = 16;
 
             @NoArgsConstructor

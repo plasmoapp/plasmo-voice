@@ -7,7 +7,7 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.AddonDependency;
-import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.addon.AddonLoaderScope;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -17,7 +17,7 @@ import java.util.Optional;
 public final class PlasmoVoiceAddon implements AddonContainer {
 
     private final @NotNull PlasmoVoice object;
-    private final @NotNull AddonScope scope;
+    private final @NotNull AddonLoaderScope scope;
 
     @Override
     public String getId() {
@@ -30,7 +30,7 @@ public final class PlasmoVoiceAddon implements AddonContainer {
     }
 
     @Override
-    public @NotNull AddonScope getScope() {
+    public @NotNull AddonLoaderScope getScope() {
         return scope;
     }
 

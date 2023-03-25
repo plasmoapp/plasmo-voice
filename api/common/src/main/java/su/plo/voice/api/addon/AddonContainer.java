@@ -37,7 +37,7 @@ public interface AddonContainer {
      *
      * @return the addon scope
      */
-    AddonScope getScope();
+    AddonLoaderScope getScope();
 
     /**
      * Gets the addon version

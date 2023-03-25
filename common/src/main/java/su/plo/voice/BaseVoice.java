@@ -1,15 +1,12 @@
 package su.plo.voice;
 
-import com.google.common.collect.ImmutableList;
 import com.google.inject.Module;
 import lombok.Getter;
-import lombok.NonNull;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonManager;
-import su.plo.voice.api.addon.AddonScope;
 import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
@@ -22,13 +19,11 @@ import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
 import java.io.InputStream;
-import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class BaseVoice implements PlasmoVoice {
 
-    protected final AddonScope scope;
     protected final ModrinthLoader loader;
     @Getter
     protected final Logger logger;
@@ -42,13 +37,11 @@ public abstract class BaseVoice implements PlasmoVoice {
     @Getter
     protected ScheduledExecutorService backgroundExecutor;
 
-    protected BaseVoice(@NonNull AddonScope scope,
-                        @NotNull ModrinthLoader loader,
+    protected BaseVoice(@NotNull ModrinthLoader loader,
                         @NotNull Logger logger) {
-        this.scope = scope;
         this.loader = loader;
         this.logger = logger;
-        this.addons = new VoiceAddonManager(this, scope);
+        this.addons = new VoiceAddonManager(this);
 
         encryption.register(new AesEncryptionSupplier());
 
@@ -63,11 +56,6 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected void onShutdown() {
         backgroundExecutor.shutdown();
         addons.clear();
-    }
-
-    protected void loadAddons() {
-        addonsFolders().forEach(File::mkdirs);
-        addons.load(addonsFolders());
     }
 
     @Override
@@ -95,12 +83,4 @@ public abstract class BaseVoice implements PlasmoVoice {
     }
 
     public abstract Module createInjectModule();
-
-    protected abstract File modsFolder();
-
-    protected List<File> addonsFolders() {
-        return ImmutableList.of(
-                new File(modsFolder(), "plasmovoice")
-        );
-    }
 }

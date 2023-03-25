@@ -41,4 +41,9 @@ public interface MinecraftServerPlayer extends MinecraftCommandSource {
      * Kicks the player with specified reason
      */
     void kick(@NotNull MinecraftTextComponent reason);
+
+    /**
+     * Gets the backed entity object
+     */
+    <T> T getInstance();
 }

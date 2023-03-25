@@ -2,6 +2,8 @@ package su.plo.voice.api.client;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.PlasmoVoice;
+import su.plo.voice.api.addon.AddonsLoader;
+import su.plo.voice.api.addon.ClientAddonsLoader;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
@@ -21,6 +23,17 @@ import java.util.Optional;
  * The Plasmo Client Voice API
  */
 public interface PlasmoVoiceClient extends PlasmoVoice {
+
+    /**
+     * Gets the server's addons loaders
+     *
+     * <p>Use this method to get the addons loader for loading client addons</p>
+     *
+     * @return the addons loader
+     */
+    static AddonsLoader getAddonsLoader() {
+        return ClientAddonsLoader.INSTANCE;
+    }
 
     /**
      * Gets the {@link DeviceFactoryManager}

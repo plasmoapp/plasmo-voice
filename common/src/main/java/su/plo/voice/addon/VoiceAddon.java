@@ -5,9 +5,8 @@ import lombok.NonNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.AddonDependency;
-import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.addon.AddonLoaderScope;
 
-import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
 
@@ -18,7 +17,7 @@ public final class VoiceAddon implements AddonContainer {
     @Getter
     private final String name;
     @Getter
-    private final AddonScope scope;
+    private final AddonLoaderScope scope;
     @Getter
     private final String version;
     @Getter
@@ -32,7 +31,7 @@ public final class VoiceAddon implements AddonContainer {
 
     public VoiceAddon(@NonNull String id,
                       @NonNull String name,
-                      @NonNull AddonScope scope,
+                      @NonNull AddonLoaderScope scope,
                       @NonNull String version,
                       @NonNull List<String> authors,
                       @NonNull List<AddonDependency> dependencies,

@@ -16,7 +16,7 @@ public final class VoiceReloadCommand implements MinecraftCommand {
 
     @Override
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
-        voiceServer.loadConfig();
+        voiceServer.loadConfig(true);
 
         voiceServer.getPlayerManager().getPlayers()
                 .stream()

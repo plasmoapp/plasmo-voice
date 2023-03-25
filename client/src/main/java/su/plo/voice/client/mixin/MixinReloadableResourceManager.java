@@ -34,7 +34,7 @@ public abstract class MixinReloadableResourceManager {
 
         List<PackResources> list = new ArrayList<>(packs);
         list.add(new PlasmoCrowdinPack(
-                new File(ModVoiceClient.INSTANCE.getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName()))
+                new File(new File("config/plasmovoice"), PlasmoCrowdinMod.INSTANCE.getFolderName()))
         );
         return list;
     }

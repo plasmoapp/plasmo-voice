@@ -1,6 +1,5 @@
 package su.plo.voice.proxy;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.inject.AbstractModule;
@@ -11,17 +10,16 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
-import su.plo.voice.api.addon.AddonScope;
-import su.plo.voice.api.addon.ServerAddonManagerProvider;
+import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
-import su.plo.voice.api.proxy.event.VoiceProxyInitializeEvent;
 import su.plo.voice.api.proxy.event.VoiceProxyShutdownEvent;
-import su.plo.voice.api.proxy.event.config.VoiceProxyConfigLoadedEvent;
+import su.plo.voice.api.proxy.event.config.VoiceProxyConfigReloadedEvent;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerCreateEvent;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
+import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ProxySourceLineManager;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
@@ -41,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -74,12 +71,11 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     protected BaseVoiceProxy(@NotNull ModrinthLoader loader) {
         super(
-                AddonScope.PROXY,
                 loader,
                 LogManager.getLogger("PlasmoVoiceProxy")
         );
 
-        ServerAddonManagerProvider.Companion.setAddonManager(getAddonManager());
+        ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
 
     @Override
@@ -87,8 +83,6 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         this.playerManager = new VoiceProxyPlayerManager(this, getMinecraftServer());
 
         super.onInitialize();
-
-        eventBus.call(new VoiceProxyInitializeEvent(this));
 
         this.sourceLineManager = new VoiceProxySourceLineManager(this);
         this.activationManager = new VoiceServerActivationManager(
@@ -102,7 +96,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         eventBus.register(this, playerManager);
         eventBus.register(this, getMinecraftServer());
 
-        loadConfig();
+        loadConfig(false);
     }
 
     @Override
@@ -118,7 +112,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         super.onShutdown();
     }
 
-    public void loadConfig() {
+    public void loadConfig(boolean reload) {
         boolean restartUdpServer = true;
 
         try {
@@ -169,7 +163,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         }
 
         debugLogger.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
-        eventBus.call(new VoiceProxyConfigLoadedEvent(this));
+        if (reload) eventBus.call(new VoiceProxyConfigReloadedEvent(this));
+        else addons.initializeLoadedAddons();
 
         if (restartUdpServer) startUdpServer();
         loadServers();
@@ -227,15 +222,9 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             @Override
             protected void configure() {
                 bind(PlasmoVoiceProxy.class).toInstance(BaseVoiceProxy.this);
+                bind(PlasmoBaseVoiceServer.class).toInstance(BaseVoiceProxy.this);
             }
         };
-    }
-
-    @Override
-    protected List<File> addonsFolders() {
-        return ImmutableList.of(
-                new File(getConfigFolder(), "addons")
-        );
     }
 
     protected abstract PermissionSupplier createPermissionSupplier();

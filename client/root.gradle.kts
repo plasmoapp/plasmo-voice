@@ -21,5 +21,5 @@ preprocess {
     forge11904.link(fabric11904)
 
     fabric11902.link(fabric11903, file("1.19.3-1.19.2.txt"))
-    forge11902.link(forge11903, file("1.19.3-1.19.2.txt"))
+    forge11902.link(fabric11902)
 }

@@ -73,7 +73,7 @@ class VoiceServerActivation(
         if (distances.size == 0)
             return true
 
-        if (distances[0] == -1)
+        if (distances.size == 2 && distances[0] == -1)
             return distance in 1..distances[1]
 
         return distances.contains(distance)

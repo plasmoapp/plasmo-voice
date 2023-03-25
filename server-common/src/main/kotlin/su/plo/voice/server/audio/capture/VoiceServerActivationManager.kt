@@ -122,7 +122,13 @@ class VoiceServerActivationManager(
             activation.activationStartListeners.forEach { it.onActivationStart(player) }
         }
 
-        activation.activationListeners.forEach { it.onActivation(player, packet) }
+        for (listener in activation.activationListeners) {
+            val result = listener.onActivation(player, packet)
+            if (result == ServerActivation.Result.HANDLED) {
+                event.isCancelled = true
+                break
+            }
+        }
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
@@ -140,7 +146,14 @@ class VoiceServerActivationManager(
         if (activation.requirements?.checkRequirements(player, packet) == false) return
 
         player.activeActivations.remove(activation)
-        activation.activationEndListeners.forEach { it.onActivationEnd(player, packet) }
+
+        for (listener in activation.activationEndListeners) {
+            val result = listener.onActivationEnd(player, packet)
+            if (result == ServerActivation.Result.HANDLED) {
+                event.isCancelled = true
+                break
+            }
+        }
     }
 
     @EventSubscribe

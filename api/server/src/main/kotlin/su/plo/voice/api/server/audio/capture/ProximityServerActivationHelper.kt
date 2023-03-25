@@ -59,30 +59,41 @@ class ProximityServerActivationHelper(
     fun onClientDisconnected(event: UdpClientDisconnectedEvent) =
         sourceByPlayerId.remove(event.connection.player.instance.uuid)
 
-    private fun onActivation(player: VoicePlayer, packet: PlayerAudioPacket) {
+    private fun onActivation(player: VoicePlayer, packet: PlayerAudioPacket): ServerActivation.Result {
         getPlayerSource(player as VoiceServerPlayer, packet.isStereo).also {
             val distance = distanceSupplier?.getDistance(player, packet) ?: packet.distance
-            sendAudioPacket(player, it, packet, distance)
+            if (sendAudioPacket(player, it, packet, distance)) {
+                return ServerActivation.Result.HANDLED
+            }
         }
+
+        return ServerActivation.Result.IGNORED
     }
 
-    private fun onActivationEnd(player: VoicePlayer, packet: PlayerAudioEndPacket) {
+    private fun onActivationEnd(player: VoicePlayer, packet: PlayerAudioEndPacket): ServerActivation.Result {
         getPlayerSource(player as VoiceServerPlayer).also {
             val distance = distanceSupplier?.getDistance(player, packet) ?: packet.distance
-            sendAudioEndPacket(it, packet, distance)
+            if (sendAudioEndPacket(it, packet, distance)) {
+                return ServerActivation.Result.HANDLED
+            }
         }
+
+        return ServerActivation.Result.IGNORED
     }
 
     private fun sendAudioEndPacket(
         source: ServerPlayerSource,
         packet: PlayerAudioEndPacket,
         distance: Short = packet.distance
-    ) {
+    ): Boolean {
         val sourceEndPacket = SourceAudioEndPacket(source.id, packet.sequenceNumber)
 
         if (source.sendPacket(sourceEndPacket, distance)) {
             source.player.sendPacket(sourceEndPacket)
+            return true
         }
+
+        return false
     }
 
     private fun sendAudioPacket(
@@ -90,7 +101,7 @@ class ProximityServerActivationHelper(
         source: ServerPlayerSource,
         packet: PlayerAudioPacket,
         distance: Short = packet.distance
-    ) {
+    ): Boolean {
         val sourcePacket = SourceAudioPacket(
             packet.sequenceNumber, source.state.toByte(),
             packet.data,
@@ -100,7 +111,10 @@ class ProximityServerActivationHelper(
 
         if (source.sendAudioPacket(sourcePacket, distance, packet.activationId)) {
             selfActivationInfo.sendAudioInfo(player, source, packet.activationId, sourcePacket)
+            return true
         }
+
+        return false
     }
 
     private fun getPlayerSource(

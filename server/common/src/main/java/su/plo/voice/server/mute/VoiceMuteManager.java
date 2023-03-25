@@ -1,5 +1,6 @@
 package su.plo.voice.server.mute;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
@@ -24,14 +25,16 @@ public final class VoiceMuteManager implements MuteManager {
     }
 
     private final BaseVoiceServer voiceServer;
-    private final MuteStorage storage;
     private final VoiceServerPlayerManager playerManager;
 
+    @Getter
+    private MuteStorage muteStorage;
+
     public VoiceMuteManager(@NotNull BaseVoiceServer voiceServer,
-                            @NotNull MuteStorage storage,
+                            @NotNull MuteStorage muteStorage,
                             @NotNull ScheduledExecutorService executor) {
         this.voiceServer = voiceServer;
-        this.storage = storage;
+        this.muteStorage = muteStorage;
         this.playerManager = voiceServer.getPlayerManager();
 
         executor.scheduleAtFixedRate(this::tick, 0L, 5L, TimeUnit.SECONDS);
@@ -69,7 +72,7 @@ public final class VoiceMuteManager implements MuteManager {
 
         ServerMuteInfo muteInfo = new ServerMuteInfo(playerId, mutedById, System.currentTimeMillis(), duration, reason);
 
-        storage.putPlayerMute(player.getInstance().getUUID(), muteInfo);
+        muteStorage.putPlayerMute(player.getInstance().getUUID(), muteInfo);
 
         voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
         if (duration > 0) {
@@ -92,7 +95,7 @@ public final class VoiceMuteManager implements MuteManager {
 
     @Override
     public Optional<ServerMuteInfo> unmute(@NotNull UUID playerId, boolean silent) {
-        return storage.removeMuteByPlayerId(playerId)
+        return muteStorage.removeMuteByPlayerId(playerId)
                 .map(muteInfo -> {
                     playerManager.getPlayerById(playerId)
                             .ifPresent(player -> {
@@ -108,12 +111,12 @@ public final class VoiceMuteManager implements MuteManager {
 
     @Override
     public Optional<ServerMuteInfo> getMute(@NotNull UUID playerId) {
-        return storage.getMuteByPlayerId(playerId);
+        return muteStorage.getMuteByPlayerId(playerId);
     }
 
     @Override
-    public Collection<ServerMuteInfo> getMutedPlayers() {
-        return storage.getMutedPlayers();
+    public void setMuteStorage(@NotNull MuteStorage muteStorage) {
+        this.muteStorage = muteStorage;
     }
 
     public MinecraftTextComponent formatMuteReason(@Nullable String reason) {
@@ -123,7 +126,7 @@ public final class VoiceMuteManager implements MuteManager {
     }
 
     private void tick() {
-        getMutedPlayers().forEach((muteInfo) -> {
+        muteStorage.getMutedPlayers().forEach((muteInfo) -> {
             if (!isMuteValid(muteInfo)) {
                 unmute(muteInfo.getPlayerUUID(), false);
             }

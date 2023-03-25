@@ -1,6 +1,9 @@
 package su.plo.lib.velocity;
 
 import com.google.common.collect.Maps;
+import com.velocitypowered.api.event.Subscribe;
+import com.velocitypowered.api.event.connection.DisconnectEvent;
+import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -11,16 +14,15 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
 import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
 import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
+import su.plo.lib.api.server.event.player.PlayerJoinEvent;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.lib.velocity.chat.ComponentTextConverter;
 import su.plo.lib.velocity.command.VelocityCommandManager;
 import su.plo.lib.velocity.player.VelocityProxyPlayer;
 import su.plo.lib.velocity.server.VelocityProxyServerInfo;
 import su.plo.voice.api.event.EventBus;
-import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.config.ServerLanguages;
-import su.plo.voice.api.server.event.player.PlayerJoinEvent;
-import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
@@ -154,13 +156,18 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
         });
     }
 
-    @EventSubscribe
-    public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
-        getPlayerByInstance(event.getPlayer());
+    @Subscribe
+    public void onPlayerJoin(@NotNull PostLoginEvent event) {
+        PlayerJoinEvent.INSTANCE.getInvoker().onPlayerJoin(
+                getPlayerByInstance(event.getPlayer())
+        );
     }
 
-    @EventSubscribe
-    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        playerById.remove(event.getPlayerId());
+    @Subscribe
+    public void onPlayerQuit(@NotNull DisconnectEvent event) {
+        PlayerQuitEvent.INSTANCE.getInvoker().onPlayerQuit(
+                getPlayerByInstance(event.getPlayer())
+        );
+        playerById.remove(event.getPlayer().getUniqueId());
     }
 }

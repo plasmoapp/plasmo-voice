@@ -1,6 +1,5 @@
 package su.plo.voice.client;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
@@ -23,7 +22,7 @@ import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonContainer;
-import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.addon.ClientAddonsLoader;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
@@ -36,7 +35,6 @@ import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
-import su.plo.voice.api.client.event.VoiceClientInitializedEvent;
 import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
@@ -66,7 +64,6 @@ import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -106,10 +103,11 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     protected BaseVoiceClient(@NotNull ModrinthLoader loader) {
         super(
-                AddonScope.CLIENT,
                 loader,
                 LogManager.getLogger("PlasmoVoiceClient")
         );
+
+        ClientAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
 
 
@@ -189,7 +187,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
                 new File(getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName())
         );
 
-        loadAddons();
         super.onInitialize();
 
         loadConfig();
@@ -215,7 +212,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         eventBus.register(this, new SourceIconRenderer(this, config, volumeAction));
         eventBus.register(this, new OverlayRenderer(this, config));
 
-        getEventBus().call(new VoiceClientInitializedEvent(this));
+        // addons
+        addons.initializeLoadedAddons();
     }
 
     @Override
@@ -263,14 +261,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         return addonConfigs.computeIfAbsent(
                 addon.getId(),
                 (addonId) -> new VoiceAddonConfig(addon, config.getAddons().getAddon(addon.getId()))
-        );
-    }
-
-    @Override
-    protected List<File> addonsFolders() {
-        return ImmutableList.of(
-                modsFolder(),
-                new File(modsFolder(), "plasmovoice")
         );
     }
 

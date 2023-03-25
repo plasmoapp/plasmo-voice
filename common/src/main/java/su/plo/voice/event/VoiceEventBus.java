@@ -14,6 +14,7 @@ import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -63,10 +64,15 @@ public final class VoiceEventBus implements EventBus {
     }
 
     @Override
-    public <E extends Event> void callAsync(@NotNull E event) {
-        if (event instanceof EventCancellable)
-            throw new IllegalArgumentException("Cancellable event cannot be run async");
-        asyncExecutor.execute(() -> call(event));
+    public <E extends Event> CompletableFuture<E> callAsync(@NotNull E event) {
+        CompletableFuture<E> future = new CompletableFuture<>();
+
+        asyncExecutor.execute(() -> {
+            call(event);
+            future.complete(event);
+        });
+
+        return future;
     }
 
     @Override
@@ -103,8 +109,8 @@ public final class VoiceEventBus implements EventBus {
                 try {
                     method.invoke(listener, event);
                 } catch (Throwable e) {
-                    LOGGER.warn("Failed to call an event: {}", e.getMessage());
-                    e.printStackTrace();
+                    LOGGER.warn("Failed to fire an event:");
+                    e.getCause().printStackTrace();
                 }
             };
 

@@ -16,6 +16,7 @@ plugins {
 
     kotlin("jvm") version "1.6.10"
     kotlin("plugin.lombok") version "1.6.10"
+    kotlin("kapt") version("1.6.10")
 //    id("io.freefair.lombok") version "5.3.0"
     id("gg.essential.multi-version.root") apply false
 }

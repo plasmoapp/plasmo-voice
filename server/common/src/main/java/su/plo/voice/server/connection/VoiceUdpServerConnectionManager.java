@@ -1,16 +1,14 @@
 package su.plo.voice.server.connection;
 
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.api.event.EventSubscribe;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.UdpClientConnectEvent;
 import su.plo.voice.api.server.event.connection.UdpClientConnectedEvent;
 import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent;
-import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
@@ -24,7 +22,6 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-@AllArgsConstructor
 public final class VoiceUdpServerConnectionManager implements UdpServerConnectionManager {
 
     private final BaseVoiceServer voiceServer;
@@ -34,6 +31,14 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
 
     private final Map<UUID, UdpServerConnection> connectionBySecret = Maps.newConcurrentMap();
     private final Map<UUID, UdpServerConnection> connectionByPlayerId = Maps.newConcurrentMap();
+
+    public VoiceUdpServerConnectionManager(@NotNull BaseVoiceServer voiceServer) {
+        this.voiceServer = voiceServer;
+
+        PlayerQuitEvent.INSTANCE.registerListener(player ->
+                getConnectionByPlayerId(player.getUUID()).ifPresent(this::removeConnection)
+        );
+    }
 
     @Override
     public Optional<UUID> getPlayerIdBySecret(@NonNull UUID secret) {
@@ -137,10 +142,5 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
             if (filter == null || filter.test(connection.getPlayer()))
                 connection.sendPacket(packet);
         }
-    }
-
-    @EventSubscribe
-    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        getConnectionByPlayerId(event.getPlayerId()).ifPresent(this::removeConnection);
     }
 }

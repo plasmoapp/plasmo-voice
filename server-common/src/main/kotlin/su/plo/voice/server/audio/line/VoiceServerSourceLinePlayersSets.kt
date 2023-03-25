@@ -6,7 +6,7 @@ import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine
 import su.plo.voice.api.server.audio.line.ServerPlayersSet
 import su.plo.voice.api.server.audio.line.ServerSourceLinePlayersSets
-import su.plo.voice.api.server.event.player.PlayerQuitEvent
+import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.packets.Packet
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLinePlayerAddPacket
@@ -47,8 +47,8 @@ class VoiceServerSourceLinePlayersSets(
         VoiceBroadcastPlayersSet()
 
     @EventSubscribe
-    fun onPlayerQuit(event: PlayerQuitEvent) {
-        playersSets.remove(event.playerId)
+    fun onPlayerQuit(event: UdpClientDisconnectedEvent) {
+        playersSets.remove(event.connection.player.instance.uuid)
     }
 
     inner class VoiceBroadcastPlayersSet : ServerPlayersSet {

@@ -66,9 +66,14 @@ public interface PlasmoVoice {
     @NotNull String getVersion();
 
     /**
-     * Gets ths Plasmo Voice config folder
+     * Gets the Plasmo Voice config folder
      *
      * @return the config folder
      */
     @NotNull File getConfigFolder();
+
+    /**
+     * @return loader's config/plugins folder
+     */
+    @NotNull File getConfigsFolder();
 }

@@ -113,8 +113,8 @@ public final class ModVoiceClient extends BaseVoiceClient
     }
 
     @Override
-    protected File modsFolder() {
-        return new File("mods");
+    public @NotNull File getConfigsFolder() {
+        return new File("config");
     }
 
     @Override

@@ -2,6 +2,8 @@ package su.plo.voice.api.event;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.concurrent.CompletableFuture;
+
 public interface EventBus {
     /**
      * Calls the event
@@ -17,7 +19,7 @@ public interface EventBus {
      *
      * @param event the event to call
      */
-    <E extends Event> void callAsync(@NotNull E event);
+    <E extends Event> CompletableFuture<E> callAsync(@NotNull E event);
 
     /**
      * Registers all events in listener class

@@ -28,7 +28,7 @@ public final class VoiceMuteListCommand implements MinecraftCommand {
     public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
         VoiceMuteManager muteManager = (VoiceMuteManager) voiceServer.getMuteManager();
 
-        Collection<ServerMuteInfo> mutedPlayers = muteManager.getMutedPlayers();
+        Collection<ServerMuteInfo> mutedPlayers = muteManager.getMuteStorage().getMutedPlayers();
 
         source.sendMessage(MinecraftTextComponent.translatable("pv.command.mute_list.header"));
         if (mutedPlayers.isEmpty()) {

@@ -3,9 +3,9 @@ package su.plo.voice.server.connection;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.server.event.player.PlayerJoinEvent;
-import su.plo.voice.api.server.event.player.PlayerQuitEvent;
+import su.plo.lib.api.server.event.player.PlayerJoinEvent;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
@@ -29,10 +29,16 @@ public abstract class BaseServerChannelHandler {
 
     protected BaseServerChannelHandler(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
+
+        PlayerJoinEvent.INSTANCE.registerListener(this::onPlayerJoin);
+        PlayerQuitEvent.INSTANCE.registerListener(this::onPlayerQuit);
     }
 
     public void clear() {
         channels.clear();
+
+        PlayerJoinEvent.INSTANCE.unregisterListener(this::onPlayerJoin);
+        PlayerQuitEvent.INSTANCE.unregisterListener(this::onPlayerQuit);
     }
 
     protected void handleRegisterChannels(List<String> channels, VoiceServerPlayer player) {
@@ -59,30 +65,25 @@ public abstract class BaseServerChannelHandler {
                     voiceServer.getMinecraftServer().getVersion()
             );
         } else if (voiceServer.getConfig().voice().clientModRequired()) {
-            kickModRequired(player);
+            kickModRequired(player.getInstance());
         }
     }
 
-    @EventSubscribe
-    public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+    public void onPlayerJoin(@NotNull MinecraftServerPlayer player) {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
         if (voiceServer.getConfig().voice().clientModRequired()) {
-            cancelPlayerCheckFuture(event.getPlayerId());
+            cancelPlayerCheckFuture(player.getUUID());
 
-            playerCheckFutures.put(event.getPlayerId(), voiceServer.getBackgroundExecutor().schedule(() -> {
-                voiceServer.getPlayerManager().getPlayerById(event.getPlayerId()).ifPresent((player) ->
-                        voiceServer.getMinecraftServer().executeInMainThread(() -> kickModRequired(player))
-                );
+            playerCheckFutures.put(player.getUUID(), voiceServer.getBackgroundExecutor().schedule(() -> {
+                voiceServer.getMinecraftServer().executeInMainThread(() -> kickModRequired(player));
             }, 3000L, TimeUnit.MILLISECONDS));
         }
     }
 
-    @EventSubscribe
-    public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
-        channels.remove(event.getPlayerId());
-
-        cancelPlayerCheckFuture(event.getPlayerId());
+    public void onPlayerQuit(@NotNull MinecraftServerPlayer player) {
+        channels.remove(player.getUUID());
+        cancelPlayerCheckFuture(player.getUUID());
     }
 
     private void cancelPlayerCheckFuture(@NotNull UUID playerId) {
@@ -90,8 +91,8 @@ public abstract class BaseServerChannelHandler {
         if (future != null) future.cancel(false);
     }
 
-    private void kickModRequired(VoiceServerPlayer player) {
-        player.getInstance().kick(MinecraftTextComponent.translatable(
+    private void kickModRequired(@NotNull MinecraftServerPlayer player) {
+        player.kick(MinecraftTextComponent.translatable(
                 "pv.error.mod_missing_kick_message"
         ));
     }

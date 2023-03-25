@@ -7,11 +7,11 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.MinecraftServerLib;
+import su.plo.lib.api.server.event.player.PlayerJoinEvent;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.mod.server.ModServerLib;
-import su.plo.voice.api.server.event.player.PlayerJoinEvent;
-import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.server.connection.ModServerChannelHandler;
 import su.plo.voice.server.connection.ModServerServiceChannelHandler;
 import su.plo.voice.server.player.PermissionSupplier;
@@ -101,8 +101,8 @@ public final class ModVoiceServer
     }
 
     @Override
-    protected File modsFolder() {
-        return new File("mods");
+    public @NotNull File getConfigsFolder() {
+        return new File("config");
     }
 
     @Override
@@ -131,10 +131,14 @@ public final class ModVoiceServer
         ServerLifecycleEvents.SERVER_STOPPING.register(this::onShutdown);
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, mcServer) ->
-                eventBus.call(new PlayerJoinEvent(handler.getPlayer(), handler.getPlayer().getUUID()))
+                PlayerJoinEvent.INSTANCE.getInvoker().onPlayerJoin(
+                        minecraftServerLib.getPlayerByInstance(handler.getPlayer())
+                )
         );
         ServerPlayConnectionEvents.DISCONNECT.register((handler, mcServer) ->
-                eventBus.call(new PlayerQuitEvent(handler.getPlayer(), handler.getPlayer().getUUID()))
+                PlayerQuitEvent.INSTANCE.getInvoker().onPlayerQuit(
+                        minecraftServerLib.getPlayerByInstance(handler.getPlayer())
+                )
         );
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) ->
                 onCommandRegister(dispatcher)
@@ -241,15 +245,19 @@ public final class ModVoiceServer
     //$$
     //$$ @SubscribeEvent
     //$$ public void onPlayerJoin(PlayerEvent.PlayerLoggedInEvent event) {
-    //$$     if (event.getEntity() instanceof ServerPlayer player) {
-    //$$         eventBus.call(new PlayerJoinEvent(player, player.getUUID()));
+    //$$     if (event.getEntity() instanceof ServerPlayer) {
+    //$$         PlayerJoinEvent.INSTANCE.getInvoker().onPlayerJoin(
+    //$$             minecraftServerLib.getPlayerByInstance(event.getEntity())
+    //$$         )
     //$$     }
     //$$ }
     //$$
     //$$ @SubscribeEvent
     //$$ public void onPlayerQuit(PlayerEvent.PlayerLoggedOutEvent event) {
-    //$$     if (event.getEntity() instanceof ServerPlayer player) {
-    //$$         eventBus.call(new PlayerQuitEvent(player, player.getUUID()));
+    //$$     if (event.getEntity() instanceof ServerPlayer) {
+    //$$         PlayerQuitEvent.INSTANCE.getInvoker().onPlayerQuit(
+    //$$             minecraftServerLib.getPlayerByInstance(event.getEntity())
+    //$$         )
     //$$     }
     //$$ }
     //$$

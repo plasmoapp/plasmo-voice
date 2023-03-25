@@ -6,6 +6,8 @@ import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.addon.AddonContainer;
+import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
+import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
@@ -125,7 +127,10 @@ public interface ServerActivation extends Activation {
     @FunctionalInterface
     interface PlayerActivationListener {
 
-        void onActivation(@NotNull VoicePlayer player, @NotNull PlayerAudioPacket packet);
+        /**
+         * @return {@link Result#HANDLED} is {@link PlayerSpeakEvent} should be cancelled
+         */
+        @NotNull ServerActivation.Result onActivation(@NotNull VoicePlayer player, @NotNull PlayerAudioPacket packet);
     }
 
     @FunctionalInterface
@@ -137,7 +142,16 @@ public interface ServerActivation extends Activation {
     @FunctionalInterface
     interface PlayerActivationEndListener {
 
-        void onActivationEnd(@NotNull VoicePlayer player, @NotNull PlayerAudioEndPacket packet);
+        /**
+         * @return {@link Result#HANDLED} is {@link PlayerSpeakEndEvent} should be cancelled
+         */
+        @NotNull ServerActivation.Result onActivationEnd(@NotNull VoicePlayer player, @NotNull PlayerAudioEndPacket packet);
+    }
+
+    enum Result {
+
+        IGNORED,
+        HANDLED
     }
 
     interface Requirements {

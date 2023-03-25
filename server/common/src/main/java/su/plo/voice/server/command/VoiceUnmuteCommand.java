@@ -67,7 +67,9 @@ public final class VoiceUnmuteCommand implements MinecraftCommand {
         if (arguments.length <= 1) {
             String argument = arguments.length > 0 ? arguments[0] : "";
 
-            return voiceServer.getMuteManager().getMutedPlayers()
+            return voiceServer.getMuteManager()
+                    .getMuteStorage()
+                    .getMutedPlayers()
                     .stream()
                     .map((muteInfo) -> {
                         Optional<MinecraftGameProfile> player = minecraftServer.getGameProfile(muteInfo.getPlayerUUID());

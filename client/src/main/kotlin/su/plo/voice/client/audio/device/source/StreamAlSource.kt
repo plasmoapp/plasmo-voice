@@ -45,9 +45,8 @@ class StreamAlSource private constructor(
 
     override fun play() {
         AlUtil.checkDeviceContext(device)
-        AlSourcePlayEvent(this).also {
-            if (!client.eventBus.call(it)) return
-        }
+
+        if (!client.eventBus.call(AlSourcePlayEvent(this))) return
 
         val isStreaming = isStreaming.get()
         val state = state
@@ -101,9 +100,7 @@ class StreamAlSource private constructor(
         buffer.put(samples)
         (buffer as Buffer).flip()
 
-        AlSourceWriteEvent(this, buffer).also {
-            if (!client.eventBus.call(AlSourceWriteEvent(this, buffer))) return
-        }
+        if (!client.eventBus.call(AlSourceWriteEvent(this, buffer))) return
 
         queue.offer(buffer)
         if (samples != emptyBuffer) {

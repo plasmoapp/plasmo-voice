@@ -2,8 +2,6 @@ package su.plo.voice.velocity;
 
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
-import com.velocitypowered.api.event.connection.DisconnectEvent;
-import com.velocitypowered.api.event.connection.PostLoginEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.permission.Tristate;
@@ -13,12 +11,10 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.server.event.command.ProxyCommandsRegisterEvent;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.velocity.VelocityProxyLib;
-import su.plo.voice.api.proxy.event.command.CommandsRegisterEvent;
-import su.plo.voice.api.server.event.player.PlayerJoinEvent;
-import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
@@ -30,7 +26,8 @@ import java.nio.file.Path;
 @Plugin(
         id = "plasmovoice",
         name = "PlasmoVoice",
-        version = BuildConstants.VERSION
+        version = BuildConstants.VERSION,
+        authors = "Apehum"
 )
 public final class VelocityVoiceProxy extends BaseVoiceProxy {
 
@@ -54,33 +51,20 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     public void onProxyInitialization(@NotNull ProxyInitializeEvent event) {
         minecraftServer.setPermissions(createPermissionSupplier());
 
-        // load addons before commands registration
-        loadAddons();
-
         // register commands
-        eventBus.call(new CommandsRegisterEvent(this, minecraftServer.getCommandManager()));
+        ProxyCommandsRegisterEvent.INSTANCE.getInvoker().onCommandsRegister(minecraftServer.getCommandManager(), minecraftServer);
         minecraftServer.getCommandManager().registerCommands(proxyServer);
         proxyServer.getEventManager().register(this, minecraftServer.getCommandManager());
 
         super.onInitialize();
 
+        proxyServer.getEventManager().register(this, minecraftServer);
         proxyServer.getEventManager().register(this, new VelocityProxyChannelHandler(proxyServer, this));
     }
 
     @Subscribe
     public void onProxyShutdown(@NotNull ProxyShutdownEvent event) {
         super.onShutdown();
-    }
-
-    // todo: move to listener?
-    @Subscribe
-    public void onPlayerJoin(@NotNull PostLoginEvent event) {
-        eventBus.call(new PlayerJoinEvent(event.getPlayer(), event.getPlayer().getUniqueId()));
-    }
-
-    @Subscribe
-    public void onPlayerQuit(@NotNull DisconnectEvent event) {
-        eventBus.call(new PlayerQuitEvent(event.getPlayer(), event.getPlayer().getUniqueId()));
     }
 
     @Override
@@ -94,7 +78,7 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     }
 
     @Override
-    protected File modsFolder() {
+    public @NotNull File getConfigsFolder() {
         return new File("plugins");
     }
 

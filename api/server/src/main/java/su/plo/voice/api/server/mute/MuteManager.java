@@ -1,9 +1,9 @@
 package su.plo.voice.api.server.mute;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.server.mute.storage.MuteStorage;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -49,5 +49,10 @@ public interface MuteManager {
     /**
      * @return collection of the muted players
      */
-    Collection<ServerMuteInfo> getMutedPlayers();
+    @NotNull MuteStorage getMuteStorage();
+
+    /**
+     * Sets mute storage implementation
+     */
+    void setMuteStorage(@NotNull MuteStorage muteStorage);
 }

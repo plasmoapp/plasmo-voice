@@ -307,8 +307,8 @@ abstract class BaseClientAudioSource<T> constructor(
         // packet compensation
         if (lastSequenceNumber >= 0) {
             val packetsToCompensate = (packet.sequenceNumber - (lastSequenceNumber + 1)).toInt()
-            if (packetsToCompensate <= 4) {
-                LOGGER.debug("Compensate {} packets", packetsToCompensate)
+            if (packetsToCompensate in 1..4) {
+                LOGGER.warn("Compensate {} packets", packetsToCompensate)
                 for (i in 0 until packetsToCompensate) {
                     if (decoder != null && decoder is AudioDecoderPlc && !sourceInfo.isStereo) {
                         try {

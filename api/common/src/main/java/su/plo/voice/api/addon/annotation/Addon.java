@@ -1,6 +1,6 @@
 package su.plo.voice.api.addon.annotation;
 
-import su.plo.voice.api.addon.AddonScope;
+import su.plo.voice.api.addon.AddonLoaderScope;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -11,39 +11,34 @@ import java.lang.annotation.Target;
 @Target({ElementType.TYPE})
 public @interface Addon {
 
-    /**
-     * Returns the addon id
-     *
+    /***
      * @return the addon id
      */
     String id();
 
     /**
-     * Returns the addon name
-     * <p></p>
-     * Can be translatable
+     * Can be translatable key
      *
      * @return the addon name
      */
     String name() default "";
 
     /**
-     * Returns the addon scope
-     *
      * @return the addon scope
      */
-    AddonScope scope();
+    AddonLoaderScope scope();
 
     /**
-     * Returns the addon version
-     *
      * @return the addon version
      */
     String version();
 
     /**
-     * Returns the addon authors
-     *
+     * @return the addon license, default is MIT
+     */
+    String license() default "MIT";
+
+    /**
      * @return the addon authors
      */
     String[] authors();

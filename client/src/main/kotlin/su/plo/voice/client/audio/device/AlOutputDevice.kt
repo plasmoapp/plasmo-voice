@@ -74,11 +74,24 @@ class AlOutputDevice
         open()
     }
 
+    override fun reload() {
+        if (!isOpen()) return
+
+        runBlocking(coroutineScope.coroutineContext) {
+            mutex.withLock {
+                closeSync()
+                openSync()
+            }
+        }
+    }
+
     override fun close() {
         if (!isOpen()) return
 
         runBlocking(coroutineScope.coroutineContext) {
-            closeSync()
+            mutex.withLock {
+                closeSync()
+            }
         }
     }
 
@@ -107,9 +120,11 @@ class AlOutputDevice
 
         return try {
             runBlocking(coroutineScope.coroutineContext) {
-                val source = create(this@AlOutputDevice, voiceClient, stereo, numBuffers)
-                sources.add(source)
-                source
+                mutex.withLock {
+                    val source = create(this@AlOutputDevice, voiceClient, stereo, numBuffers)
+                    sources.add(source)
+                    source
+                }
             }
         } catch (e: RuntimeException) {
             if (e.cause is DeviceException) {
@@ -152,6 +167,21 @@ class AlOutputDevice
         }
 
     override fun open(): Unit = runBlocking(coroutineScope.coroutineContext) {
+        mutex.withLock {
+            openSync()
+        }
+    }
+
+    @EventSubscribe(priority = EventPriority.LOWEST)
+    fun onSourceClosed(event: AlSourceClosedEvent) {
+        coroutineScope.launch {
+            mutex.withLock {
+                sources.remove(event.source)
+            }
+        }
+    }
+
+    private fun openSync() {
         if (isOpen()) throw DeviceException("Device is already open")
 
         DevicePreOpenEvent(this@AlOutputDevice, params).also {
@@ -203,16 +233,7 @@ class AlOutputDevice
         voiceClient.eventBus.call(DeviceOpenEvent(this@AlOutputDevice))
     }
 
-    @EventSubscribe(priority = EventPriority.LOWEST)
-    fun onSourceClosed(event: AlSourceClosedEvent) {
-        coroutineScope.launch {
-            mutex.withLock {
-                sources.remove(event.source)
-            }
-        }
-    }
-
-    private suspend fun closeSync() = mutex.withLock {
+    private suspend fun closeSync() {
         closeSources()
         listener.stop()
 
@@ -307,7 +328,7 @@ class AlOutputDevice
             job = coroutineScope.launch {
                 while (true) {
                     update()
-                    delay(5)
+                    delay(5L)
                 }
             }
         }

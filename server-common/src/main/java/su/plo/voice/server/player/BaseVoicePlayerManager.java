@@ -1,13 +1,12 @@
 package su.plo.voice.server.player;
 
 import com.google.common.collect.Maps;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.event.EventPriority;
+import su.plo.lib.api.server.event.player.PlayerJoinEvent;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.server.event.player.PlayerJoinEvent;
 import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent;
-import su.plo.voice.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoicePlayerManager;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPlayerInfoPacket;
@@ -18,12 +17,16 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArraySet;
 
-@RequiredArgsConstructor
 public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements VoicePlayerManager<P> {
 
     protected final Map<UUID, P> playerById = Maps.newConcurrentMap();
     protected final Map<String, P> playerByName = Maps.newConcurrentMap();
     protected final Set<String> synchronizedPermissions = new CopyOnWriteArraySet<>();
+
+    public BaseVoicePlayerManager() {
+        PlayerJoinEvent.INSTANCE.registerListener(this::onPlayerJoin);
+        PlayerQuitEvent.INSTANCE.registerListener(this::onPlayerQuit);
+    }
 
     @Override
     public Collection<P> getPlayers() {
@@ -52,6 +55,9 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
         playerById.clear();
         playerByName.clear();
         synchronizedPermissions.clear();
+
+        PlayerJoinEvent.INSTANCE.unregisterListener(this::onPlayerJoin);
+        PlayerQuitEvent.INSTANCE.unregisterListener(this::onPlayerQuit);
     }
 
     @EventSubscribe
@@ -67,16 +73,12 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
         player.sendPacket(new ConfigPlayerInfoPacket(permissions));
     }
 
-    @EventSubscribe(priority = EventPriority.LOWEST)
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        wrap(event.getPlayer());
+    public void onPlayerJoin(@NotNull MinecraftServerPlayer player) {
+        wrap(player.getInstance());
     }
 
-    @EventSubscribe(priority = EventPriority.HIGHEST)
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        P player = playerById.remove(event.getPlayerId());
-        if (player == null) return;
-
-        playerByName.remove(player.getInstance().getName());
+    public void onPlayerQuit(@NotNull MinecraftServerPlayer player) {
+        playerById.remove(player.getUUID());
+        playerByName.remove(player.getName());
     }
 }

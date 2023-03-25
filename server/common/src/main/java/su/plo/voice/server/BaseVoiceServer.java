@@ -9,27 +9,25 @@ import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.lib.api.server.event.command.ServerCommandsRegisterEvent;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
-import su.plo.voice.api.addon.AddonScope;
-import su.plo.voice.api.addon.ServerAddonManagerProvider;
+import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.logging.DebugLogger;
+import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.event.VoiceServerInitializeEvent;
 import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
-import su.plo.voice.api.server.event.command.CommandsRegisterEvent;
-import su.plo.voice.api.server.event.config.VoiceServerConfigLoadedEvent;
-import su.plo.voice.api.server.event.mute.MuteStorageCreateEvent;
+import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
@@ -108,12 +106,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     protected BaseVoiceServer(@NotNull ModrinthLoader loader) {
         super(
-                AddonScope.SERVER,
                 loader,
                 LogManager.getLogger("PlasmoVoiceServer")
         );
 
-        ServerAddonManagerProvider.Companion.setAddonManager(getAddonManager());
+        ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
 
     @Override
@@ -132,7 +129,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         super.onInitialize();
 
-        eventBus.call(new VoiceServerInitializeEvent(this));
         eventBus.register(this, udpConnectionManager);
         eventBus.register(this, getMinecraftServer());
         eventBus.register(this, proximityActivation);
@@ -152,11 +148,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         // mutes
         MuteStorageFactory muteStorageFactory = new MuteStorageFactory(this, backgroundExecutor);
-        MuteStorage muteStorage = muteStorageFactory.createStorage("json");
-
-        MuteStorageCreateEvent muteStorageCreateEvent = new MuteStorageCreateEvent(muteStorage);
-        eventBus.call(muteStorageCreateEvent);
-        this.muteStorage = muteStorageCreateEvent.getStorage();
+        this.muteStorage = muteStorageFactory.createStorage("json");
 
         try {
             this.muteStorage.init();
@@ -176,8 +168,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             // luckperms not found
         }
 
-        // load config
-        loadConfig();
+        loadConfig(false);
     }
 
     @Override
@@ -212,7 +203,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         super.onShutdown();
     }
 
-    public void loadConfig() {
+    public void loadConfig(boolean reload) {
         boolean restartUdpServer = true;
 
         try {
@@ -263,10 +254,12 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         }
 
         debugLogger.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
-        eventBus.call(new VoiceServerConfigLoadedEvent(this, config));
 
         // register proximity activation
         proximityActivation.register(config);
+
+        if (reload) eventBus.call(new VoiceServerConfigReloadedEvent(this, config));
+        else addons.initializeLoadedAddons();
 
         if (restartUdpServer) startUdpServer();
     }
@@ -322,9 +315,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     protected void registerDefaultCommandsAndPermissions() {
-        // load addons
-        loadAddons();
-
         // register permissions
         PermissionsManager permissions = getMinecraftServer().getPermissionsManager();
         permissions.clear();
@@ -336,7 +326,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         MinecraftCommandManager<MinecraftCommand> commandManager = getMinecraftServer().getCommandManager();
         commandManager.clear();
 
-        eventBus.call(new CommandsRegisterEvent(this, commandManager));
+        ServerCommandsRegisterEvent.INSTANCE.getInvoker().onCommandsRegister(commandManager, getMinecraftServer());
 
         commandManager.register("vlist", new VoiceListCommand(this));
         commandManager.register("vrc", new VoiceReconnectCommand(this));
@@ -358,6 +348,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             @Override
             protected void configure() {
                 bind(PlasmoVoiceServer.class).toInstance(BaseVoiceServer.this);
+                bind(PlasmoBaseVoiceServer.class).toInstance(BaseVoiceServer.this);
             }
         };
     }

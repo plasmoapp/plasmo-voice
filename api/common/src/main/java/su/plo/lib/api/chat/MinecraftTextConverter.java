@@ -13,9 +13,9 @@ public interface MinecraftTextConverter<T> {
         return convertToJson(convert(text));
     }
 
-    T convertFromJson(@NotNull String json);
+    @NotNull T convertFromJson(@NotNull String json);
 
-    T convert(@NotNull MinecraftTextComponent text);
+    @NotNull T convert(@NotNull MinecraftTextComponent text);
 
     default List<T> convert(@NotNull List<MinecraftTextComponent> list) {
         return list.stream()

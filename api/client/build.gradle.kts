@@ -9,7 +9,6 @@ val javadocProjects = listOf(
 
 dependencies {
     api(project(":api:common"))
-    api(libs.config)
 
     shadow(project(":api:common"))
 }
