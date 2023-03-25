@@ -248,7 +248,7 @@ public final class ModVoiceServer
     //$$     if (event.getEntity() instanceof ServerPlayer) {
     //$$         PlayerJoinEvent.INSTANCE.getInvoker().onPlayerJoin(
     //$$             minecraftServerLib.getPlayerByInstance(event.getEntity())
-    //$$         )
+    //$$         );
     //$$     }
     //$$ }
     //$$
@@ -257,7 +257,7 @@ public final class ModVoiceServer
     //$$     if (event.getEntity() instanceof ServerPlayer) {
     //$$         PlayerQuitEvent.INSTANCE.getInvoker().onPlayerQuit(
     //$$             minecraftServerLib.getPlayerByInstance(event.getEntity())
-    //$$         )
+    //$$         );
     //$$     }
     //$$ }
     //$$
