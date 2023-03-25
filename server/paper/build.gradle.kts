@@ -83,10 +83,7 @@ tasks {
         dependsOn.add(shadowJar)
     }
 
-    compileKotlin {
-        kotlinOptions {
-            val key = "-Xjvm-default="
-            freeCompilerArgs = freeCompilerArgs.filterNot { it.startsWith(key) } + listOf(key + "all")
-        }
+    java {
+        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
     }
 }
