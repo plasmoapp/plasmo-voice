@@ -9,4 +9,5 @@ dependencies {
     api(rootProject.libs.crowdin.lib)
 
     compileOnly(rootProject.libs.netty)
+    compileOnly(rootProject.libs.luckperms)
 }

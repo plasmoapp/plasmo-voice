@@ -32,6 +32,7 @@ import su.plo.voice.proxy.util.AddressUtil;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceProxySourceLineManager;
 import su.plo.voice.server.config.VoiceServerLanguages;
+import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
 
@@ -69,6 +70,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     @Getter
     protected VoiceServerLanguages languages;
 
+    protected LuckPermsListener luckPermsListener;
+
     protected BaseVoiceProxy(@NotNull ModrinthLoader loader) {
         super(
                 loader,
@@ -96,12 +99,23 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         eventBus.register(this, playerManager);
         eventBus.register(this, getMinecraftServer());
 
+        if (LuckPermsListener.Companion.hasLuckPerms()) {
+            this.luckPermsListener = new LuckPermsListener(this, backgroundExecutor);
+            luckPermsListener.subscribe();
+            logger.info("LuckPerms permissions listener attached");
+        }
+
         loadConfig(false);
     }
 
     @Override
     protected void onShutdown() {
         eventBus.call(new VoiceProxyShutdownEvent(this));
+
+        if (luckPermsListener != null) {
+            luckPermsListener.unsubscribe();
+            this.luckPermsListener = null;
+        }
 
         if (udpProxyServer != null) {
             udpProxyServer.stop();

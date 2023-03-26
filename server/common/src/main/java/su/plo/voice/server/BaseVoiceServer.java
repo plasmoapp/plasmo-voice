@@ -160,12 +160,10 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         this.muteManager = new VoiceMuteManager(this, this.muteStorage, backgroundExecutor);
 
-        try {
-            Class.forName("net.luckperms.api.LuckPermsProvider");
-            this.luckPermsListener = new LuckPermsListener(this, playerManager, backgroundExecutor);
+        if (LuckPermsListener.Companion.hasLuckPerms()) {
+            this.luckPermsListener = new LuckPermsListener(this, backgroundExecutor);
             luckPermsListener.subscribe();
-        } catch (IllegalStateException | ClassNotFoundException ignored) {
-            // luckperms not found
+            logger.info("LuckPerms permissions listener attached");
         }
 
         loadConfig(false);
