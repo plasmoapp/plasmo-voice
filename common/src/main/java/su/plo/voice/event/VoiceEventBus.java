@@ -205,8 +205,10 @@ public final class VoiceEventBus implements EventBus {
         checkIfAddon(addon);
 
         List<Object> addonListeners = registeredAddonListeners.get(addon);
-        addonListeners.remove(listener);
-        if (addonListeners.size() == 0) registeredAddonListeners.remove(addon);
+        if (addonListeners != null) {
+            addonListeners.remove(listener);
+            if (addonListeners.size() == 0) registeredAddonListeners.remove(addon);
+        }
 
         List<EventHandler<?>> listenerHandlers = registeredListeners.remove(listener);
 
