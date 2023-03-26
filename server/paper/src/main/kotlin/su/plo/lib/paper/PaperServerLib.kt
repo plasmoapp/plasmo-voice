@@ -67,9 +67,8 @@ class PaperServerLib(
         require(instance is World) { "instance is not ${World::class.java}" }
 
         return worldByInstance.computeIfAbsent(
-            instance,
-            ::PaperServerWorld
-        )
+            instance
+        ) { PaperServerWorld(instance, loader) }
     }
 
     override fun getWorlds(): Collection<MinecraftServerWorld> =

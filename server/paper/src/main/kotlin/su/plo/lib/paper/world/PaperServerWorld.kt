@@ -3,13 +3,15 @@ package su.plo.lib.paper.world
 import org.bukkit.Bukkit
 import org.bukkit.World
 import org.bukkit.entity.Entity
+import org.bukkit.plugin.java.JavaPlugin
 import su.plo.lib.api.server.entity.MinecraftServerEntity
 import su.plo.lib.api.server.world.MinecraftServerWorld
 import su.plo.lib.paper.world.GameEventUtil.parseGameEvent
 import java.util.*
 
 class PaperServerWorld(
-    private val level: World
+    private val level: World,
+    private val loader: JavaPlugin
 ) : MinecraftServerWorld {
 
     override fun getKey(): String {
@@ -21,7 +23,11 @@ class PaperServerWorld(
         if (majorMinecraftVersion < 19) return
 
         val paperEntity = entity.getInstance<Entity>()
-        level.sendGameEvent(paperEntity, parseGameEvent(gameEvent)!!, paperEntity.location.toVector())
+        Bukkit.getScheduler().runTask(
+            loader
+        ) { ->
+            level.sendGameEvent(paperEntity, parseGameEvent(gameEvent)!!, paperEntity.location.toVector())
+        }
     }
 
     override fun <T> getInstance() = level as T

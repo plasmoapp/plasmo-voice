@@ -36,7 +36,7 @@ public final class ModServerWorld implements MinecraftServerWorld {
     public void sendGameEvent(@NotNull MinecraftServerEntity entity, @NotNull String gameEvent) {
         //#if MC>=11900
         Entity serverEntity = entity.getInstance();
-        level.gameEvent(serverEntity, parseGameEvent(gameEvent), serverEntity.position());
+        level.getServer().execute(() -> level.gameEvent(serverEntity, parseGameEvent(gameEvent), serverEntity.position()));
         //#endif
     }
 
