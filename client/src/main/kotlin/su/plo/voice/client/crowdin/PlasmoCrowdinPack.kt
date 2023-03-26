@@ -38,15 +38,7 @@ class PlasmoCrowdinPack(
         namespace: String,
         prefix: String,
         resourceOutput: PackResources.ResourceOutput
-    ) {
-        crowdinFolder.list()
-            ?.let { files ->
-                files
-                    .filter { it.endsWith(".json") }
-                    .map { ResourceLocation("plasmovoice", "lang/${it}") }
-                    .forEach { resourceOutput.accept(it, getResource(packType, it)) }
-            }
-    }
+    ) {}
 
     override fun isBuiltin() = true
     //#else
@@ -63,12 +55,7 @@ class PlasmoCrowdinPack(
     //$$     namespace: String,
     //$$     prefix: String,
     //$$     predicate: Predicate<ResourceLocation>
-    //$$ ): Collection<ResourceLocation> =
-    //$$     File(crowdinFolder, prefix)
-    //$$         .list()
-    //$$         ?.map { ResourceLocation("plasmovoice", "lang/${it}") }
-    //$$         ?.toList()
-    //$$         ?: ArrayList()
+    //$$ ): Collection<ResourceLocation> = emptyList()
     //$$
     //$$ override fun hasResource(packType: PackType, resourceLocation: ResourceLocation): Boolean {
     //$$     if (resourceLocation.namespace != "plasmovoice") return false
