@@ -15,6 +15,8 @@ public abstract class MixinLanguageManager {
     //#if MC>=11904
     //$$ @Inject(method = "setSelected", at = @At("HEAD"))
     //$$ public void setSelected(String languageCode, CallbackInfo ci) {
+    //$$     if (ModVoiceClient.INSTANCE == null) return;
+    //$$
     //$$     ModVoiceClient.INSTANCE.getEventBus().call(
     //$$             new LanguageChangedEvent(languageCode)
     //$$     );
@@ -22,6 +24,8 @@ public abstract class MixinLanguageManager {
     //#else
     @Inject(method = "setSelected", at = @At("HEAD"))
     public void setSelected(LanguageInfo languageInfo, CallbackInfo ci) {
+        if (ModVoiceClient.INSTANCE == null) return;
+
         ModVoiceClient.INSTANCE.getEventBus().call(
                 new LanguageChangedEvent(languageInfo.getCode())
         );
