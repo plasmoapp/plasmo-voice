@@ -10,7 +10,9 @@
         "MixinKeyboardHandler",
         "MixinLanguageManager",
         "MixinMouseHandler",
-        "MixinReloadableResourceManager"
+        "MixinReloadableResourceManager",
+        "MixinSkinManager",
+        "MixinPlayerListEntry"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -20,7 +20,11 @@ object PlasmoCrowdinMod {
         CoroutineScope(Dispatchers.Default).launch {
             logger.info("Downloading translations")
 
-            val translations = PlasmoCrowdinLib.downloadRawTranslations("plasmo-voice", "client.json").await()
+            val translations = try {
+                PlasmoCrowdinLib.downloadRawTranslations("plasmo-voice", "client.json").await()
+            } catch (e: Exception) {
+                return@launch
+            }
 
             crowdinFolder.mkdirs()
             translations.forEach { (languageName, languageBytes) ->

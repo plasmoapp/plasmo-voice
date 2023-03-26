@@ -55,6 +55,7 @@ import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
+import su.plo.voice.client.render.cape.DeveloperCapeManager;
 import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
 import su.plo.voice.client.render.voice.SourceIconRenderer;
@@ -186,10 +187,11 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Override
     protected void onInitialize() {
-        // download crowdin translations
         PlasmoCrowdinMod.INSTANCE.downloadTranslations(
                 new File(getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName())
         );
+
+        DeveloperCapeManager.INSTANCE.fetchDevelopers();
 
         super.onInitialize();
 
@@ -235,6 +237,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         config.save(true);
         udpClientManager.removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
         getServerConnection().ifPresent(ServerConnection::close);
+
+        DeveloperCapeManager.INSTANCE.clearLoadedCapes();
     }
 
     @Override
