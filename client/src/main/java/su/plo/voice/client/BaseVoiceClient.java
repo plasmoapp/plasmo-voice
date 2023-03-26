@@ -61,6 +61,7 @@ import su.plo.voice.client.render.voice.SourceIconRenderer;
 import su.plo.voice.client.render.voice.VoiceDistanceVisualizer;
 import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.util.version.ModrinthVersion;
+import su.plo.voice.util.version.SemanticVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -119,6 +120,9 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @EventSubscribe
     public void onUdpConnected(@NotNull UdpClientConnectedEvent event) {
         try {
+            // don't check for updates in dev/alpha builds
+            if (!SemanticVersion.parse(getVersion()).isRelease()) return;
+
             ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
                     .ifPresent(version -> {
                         ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
