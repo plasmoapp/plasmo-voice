@@ -125,6 +125,7 @@ class VoiceServerActivationManager(
         for (listener in activation.activationListeners) {
             val result = listener.onActivation(player, packet)
             if (result == ServerActivation.Result.HANDLED) {
+                event.result = result
                 event.isCancelled = true
                 break
             }
@@ -150,6 +151,7 @@ class VoiceServerActivationManager(
         for (listener in activation.activationEndListeners) {
             val result = listener.onActivationEnd(player, packet)
             if (result == ServerActivation.Result.HANDLED) {
+                event.result = result
                 event.isCancelled = true
                 break
             }
