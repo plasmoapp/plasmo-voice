@@ -5,7 +5,6 @@ load: STARTUP
 api-version: 1.16
 authors: [ Apehum ]
 softdepend:
-  - PlaceholderAPI
   - LuckPerms
   - PlaceholderAPI
 #depend:
