@@ -32,7 +32,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 //#else
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-//$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 //$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 //$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
 //$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
@@ -58,7 +57,7 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     private final String modId = "plasmovoice";
 
-    private final KeyMapping menuKey = new KeyMapping(
+    public static final KeyMapping MENU_KEY = new KeyMapping(
             "key.plasmovoice.settings",
             InputConstants.Type.KEYSYM,
             UKeyboard.KEY_V,
@@ -104,7 +103,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     @EventSubscribe
     public void onKeyPressed(@NotNull KeyPressedEvent event) {
         if (UMinecraft.getPlayer() == null) return;
-        if (menuKey.consumeClick()) openSettings();
+        if (MENU_KEY.consumeClick()) openSettings();
     }
 
     @Override
@@ -135,7 +134,7 @@ public final class ModVoiceClient extends BaseVoiceClient
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
         ClientPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
 
-        KeyBindingHelper.registerKeyBinding(this.menuKey);
+        KeyBindingHelper.registerKeyBinding(this.MENU_KEY);
     }
 
     @Override
@@ -169,11 +168,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ @SubscribeEvent
     //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
     //$$     onServerDisconnect();
-    //$$ }
-    //$$
-    //$$ @SubscribeEvent
-    //$$ public void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
-    //$$     event.register(menuKey);
     //$$ }
     //$$
     //$$ @Override
