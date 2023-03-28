@@ -18,7 +18,7 @@ import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.tab.*;
 
 import java.util.stream.Collectors;
@@ -29,7 +29,7 @@ import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
 
     private final BaseVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
     private final MinecraftTextComponent title;
     @Getter
     private final VoiceSettingsNavigation navigation;
@@ -46,7 +46,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     private boolean preventEscClose;
 
     public VoiceSettingsScreen(@NotNull BaseVoiceClient voiceClient,
-                               @NotNull ClientConfig config) {
+                               @NotNull VoiceClientConfig config) {
         this.voiceClient = voiceClient;
         this.config = config;
         this.title = getSettingsTitle();

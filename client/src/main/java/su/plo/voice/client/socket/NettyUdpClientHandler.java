@@ -10,7 +10,7 @@ import su.plo.voice.api.client.event.connection.UdpClientPacketReceivedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.audio.source.VoiceClientSelfSourceInfo;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
@@ -32,14 +32,14 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     private final Logger logger = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
     private final NettyUdpClient client;
     private final ScheduledFuture<?> ticker;
 
     private long keepAlive = System.currentTimeMillis();
 
     public NettyUdpClientHandler(@NotNull BaseVoiceClient voiceClient,
-                                 @NotNull ClientConfig config,
+                                 @NotNull VoiceClientConfig config,
                                  @NotNull NettyUdpClient client) {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
         this.config = checkNotNull(config, "config");

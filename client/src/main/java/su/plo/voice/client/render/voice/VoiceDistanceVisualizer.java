@@ -16,7 +16,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.render.ModCamera;
 import su.plo.voice.proto.data.pos.Pos3d;
@@ -31,7 +31,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     private static final int SPHERE_SLICE = 36;
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private final Map<UUID, VisualizeEntry> entries = Maps.newConcurrentMap();
 

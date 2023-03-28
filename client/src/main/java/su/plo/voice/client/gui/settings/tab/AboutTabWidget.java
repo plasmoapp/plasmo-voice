@@ -15,20 +15,18 @@ import su.plo.lib.mod.client.language.LanguageUtil;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
-import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
-
 public final class AboutTabWidget extends TabWidget {
 
     public AboutTabWidget(@NotNull VoiceSettingsScreen parent,
                           @NotNull PlasmoVoiceClient voiceClient,
-                          @NotNull ClientConfig config) {
+                          @NotNull VoiceClientConfig config) {
         super(parent, voiceClient, config);
 
         loadSkins();

@@ -10,7 +10,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.util.Params;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.ActivationThresholdWidget;
@@ -34,7 +34,7 @@ public final class DevicesTabWidget extends TabWidget {
 
     public DevicesTabWidget(VoiceSettingsScreen parent,
                             PlasmoVoiceClient voiceClient,
-                            ClientConfig config,
+                            VoiceClientConfig config,
                             MicrophoneTestController testController) {
         super(parent, voiceClient, config);
 

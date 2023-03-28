@@ -13,7 +13,7 @@ import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEvent;
 import su.plo.voice.api.client.event.audio.capture.ClientActivationUnregisteredEvent;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.render.voice.VoiceIconUtil;
 import su.plo.voice.proto.data.audio.capture.Activation;
@@ -29,7 +29,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private ClientActivation parentActivation;
 
@@ -92,7 +92,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
     @Override
     public @NotNull Collection<ClientActivation> register(@NotNull Collection<Activation> activations) {
-        ClientConfig.Server serverConfig = getServerConfig();
+        VoiceClientConfig.Server serverConfig = getServerConfig();
 
         for (Activation serverActivation : activations) {
             ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
@@ -182,7 +182,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         this.initialized = false;
     }
 
-    private ClientConfig.Server getServerConfig() {
+    private VoiceClientConfig.Server getServerConfig() {
         return config.getServers().getById(
                 voiceClient.getServerInfo()
                         .map(ServerInfo::getServerId)
@@ -190,7 +190,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         ).orElseThrow(() -> new IllegalStateException("Server config is empty"));
     }
 
-    private VoiceClientActivation createParentActivation(@NotNull ClientConfig.Server serverConfig) {
+    private VoiceClientActivation createParentActivation(@NotNull VoiceClientConfig.Server serverConfig) {
         Activation serverActivation = new VoiceActivation(
                 VoiceActivation.PROXIMITY_NAME,
                 "pv.activation.parent",

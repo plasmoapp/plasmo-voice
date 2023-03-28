@@ -12,7 +12,7 @@ import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.client.config.addon.AddonConfig;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 
 import java.util.List;
 import java.util.Map;
@@ -24,7 +24,7 @@ public final class VoiceAddonConfig implements AddonConfig {
 
     @Getter
     private final AddonContainer addon;
-    private final ClientConfig.Addons.Addon config;
+    private final VoiceClientConfig.Addons.Addon config;
 
     private final Map<String, ConfigWidget> widgetsByTranslatable = Maps.newConcurrentMap();
     @Getter

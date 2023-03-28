@@ -47,7 +47,7 @@ import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
 import su.plo.voice.client.audio.source.VoiceClientSourceManager;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.config.keybind.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
@@ -97,7 +97,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     private DistanceVisualizer distanceVisualizer;
 
     @Getter
-    protected ClientConfig config;
+    protected VoiceClientConfig config;
     @Getter
     protected final Map<String, AddonConfig> addonConfigs = Maps.newHashMap();
 
@@ -280,14 +280,14 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         File configFile = new File(getConfigFolder(), "client.toml");
 
         try {
-            this.config = toml.load(ClientConfig.class, configFile, false);
-            toml.save(ClientConfig.class, config, configFile);
+            this.config = toml.load(VoiceClientConfig.class, configFile, false);
+            toml.save(VoiceClientConfig.class, config, configFile);
         } catch (IOException e) {
             logger.warn("Failed to load the config", e);
 
             try {
-                this.config = new ClientConfig();
-                toml.save(ClientConfig.class, config, configFile);
+                this.config = new VoiceClientConfig();
+                toml.save(VoiceClientConfig.class, config, configFile);
             } catch (IOException e1) {
                 throw new RuntimeException("Failed to save default config", e1);
             }

@@ -10,10 +10,10 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
+import su.plo.voice.api.client.config.IconPosition;
 import su.plo.voice.api.client.event.render.HudActivationRenderEvent;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.client.config.IconPosition;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.HudRenderEvent;
 
 import java.util.List;
@@ -22,7 +22,7 @@ import java.util.List;
 public final class HudIconRenderer {
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     @EventSubscribe
     public void onHudRender(@NotNull HudRenderEvent event) {

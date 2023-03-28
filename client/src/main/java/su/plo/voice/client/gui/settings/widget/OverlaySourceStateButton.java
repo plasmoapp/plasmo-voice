@@ -8,7 +8,7 @@ import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
-import su.plo.voice.client.config.overlay.OverlaySourceState;
+import su.plo.voice.api.client.config.overlay.OverlaySourceState;
 
 public final class OverlaySourceStateButton extends GuiAbstractWidget {
 

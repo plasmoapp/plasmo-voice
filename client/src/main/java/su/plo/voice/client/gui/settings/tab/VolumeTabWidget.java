@@ -23,7 +23,7 @@ import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.event.connection.VoicePlayerConnectedEvent;
 import su.plo.voice.api.client.event.connection.VoicePlayerDisconnectedEvent;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 import su.plo.voice.client.gui.settings.widget.VolumeSliderWidget;
@@ -43,7 +43,7 @@ public final class VolumeTabWidget extends TabWidget {
 
     public VolumeTabWidget(@NotNull VoiceSettingsScreen parent,
                            @NotNull PlasmoVoiceClient voiceClient,
-                           @NotNull ClientConfig config) {
+                           @NotNull VoiceClientConfig config) {
         super(parent, voiceClient, config);
 
         this.voiceClient = voiceClient;

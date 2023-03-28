@@ -15,7 +15,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.key.MouseScrollEvent;
 
 import java.util.Optional;
@@ -23,13 +23,13 @@ import java.util.Optional;
 public final class PlayerVolumeAction {
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private Player focusedPlayer;
     private long lastScroll;
 
     public PlayerVolumeAction(@NotNull PlasmoVoiceClient voiceClient,
-                              @NotNull ClientConfig config) {
+                              @NotNull VoiceClientConfig config) {
         this.voiceClient = voiceClient;
         this.config = config;
 

@@ -11,11 +11,13 @@ import su.plo.config.ConfigField;
 import su.plo.config.entry.*;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.voice.api.client.config.ClientConfig;
+import su.plo.voice.api.client.config.IconPosition;
+import su.plo.voice.api.client.config.overlay.OverlayPosition;
+import su.plo.voice.api.client.config.overlay.OverlaySourceState;
+import su.plo.voice.api.client.config.overlay.OverlayStyle;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
-import su.plo.voice.client.config.overlay.OverlayPosition;
-import su.plo.voice.client.config.overlay.OverlaySourceState;
-import su.plo.voice.client.config.overlay.OverlayStyle;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 
@@ -29,7 +31,7 @@ import java.util.concurrent.Executor;
 // todo: need to rewrite this class, it's a mess
 @Config
 @Data
-public final class ClientConfig {
+public final class VoiceClientConfig implements ClientConfig {
 
     private static final TomlConfiguration toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
@@ -75,7 +77,7 @@ public final class ClientConfig {
 
     private synchronized void save() {
         try {
-            toml.save(ClientConfig.class, this, configFile);
+            toml.save(VoiceClientConfig.class, this, configFile);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to save the config", e);
         }
@@ -228,13 +230,13 @@ public final class ClientConfig {
 
     @Config
     @Data
-    public static class Voice {
+    public static class Voice implements ClientConfig.Voice {
 
         @ConfigField
-        private ConfigEntry<Boolean> disabled = new ConfigEntry<>(false);
+        private BooleanConfigEntry disabled = new BooleanConfigEntry(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> microphoneDisabled = new ConfigEntry<>(false);
+        private BooleanConfigEntry microphoneDisabled = new BooleanConfigEntry(false);
 
         @ConfigField
         private DoubleConfigEntry activationThreshold = new DoubleConfigEntry(-30D, -60D, 0);
@@ -246,46 +248,40 @@ public final class ClientConfig {
         private ConfigEntry<String> outputDevice = new ConfigEntry<>("");
 
         @ConfigField
-        private ConfigEntry<Boolean> useJavaxInput = new ConfigEntry<>(false);
+        private BooleanConfigEntry useJavaxInput = new BooleanConfigEntry(false);
 
         @ConfigField
         private DoubleConfigEntry microphoneVolume = new DoubleConfigEntry(1D, 0D, 2D);
 
         @ConfigField
-        private ConfigEntry<Boolean> noiseSuppression = new ConfigEntry<>(false);
+        private BooleanConfigEntry noiseSuppression = new BooleanConfigEntry(false);
 
         @ConfigField
         private DoubleConfigEntry volume = new DoubleConfigEntry(1D, 0D, 2D);
 
         @ConfigField
-        private ConfigEntry<Boolean> compressorLimiter = new ConfigEntry<>(true);
+        private BooleanConfigEntry compressorLimiter = new BooleanConfigEntry(true);
 
         @ConfigField
-        private ConfigEntry<Boolean> soundOcclusion = new ConfigEntry<>(false);
+        private BooleanConfigEntry soundOcclusion = new BooleanConfigEntry(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> directionalSources = new ConfigEntry<>(false);
+        private BooleanConfigEntry directionalSources = new BooleanConfigEntry(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> hrtf = new ConfigEntry<>(false);
+        private BooleanConfigEntry hrtf = new BooleanConfigEntry(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> stereoCapture = new ConfigEntry<>(false);
+        private BooleanConfigEntry stereoCapture = new BooleanConfigEntry(false);
 
         @ConfigField
-        private ConfigEntry<Boolean> listenerCameraRelative = new ConfigEntry<>(false);
+        private BooleanConfigEntry listenerCameraRelative = new BooleanConfigEntry(false);
 
         @ConfigField
         private SourceLineVolumes volumes = new SourceLineVolumes();
 
-//        @ConfigField
-//        protected EnumConfigEntry<ClientActivation.Type> activationType = new EnumConfigEntry<>(
-//                ClientActivation.Type.class,
-//                ClientActivation.Type.PUSH_TO_TALK
-//        );
-
         @Data
-        public static class SourceLineVolumes implements SerializableConfigEntry {
+        public static class SourceLineVolumes implements SerializableConfigEntry, Volumes {
 
             private Map<String, DoubleConfigEntry> volumeByLineName = Maps.newHashMap();
             private Map<String, BooleanConfigEntry> muteByLineName = Maps.newHashMap();
@@ -293,10 +289,12 @@ public final class ClientConfig {
             public SourceLineVolumes() {
             }
 
+            @Override
             public synchronized void setVolume(@NotNull String lineName, double volume) {
                 getVolume(lineName).set(volume);
             }
 
+            @Override
             public synchronized DoubleConfigEntry getVolume(@NotNull String lineName) {
                 return volumeByLineName.computeIfAbsent(
                         lineName,
@@ -304,10 +302,12 @@ public final class ClientConfig {
                 );
             }
 
+            @Override
             public synchronized void setMute(@NotNull String lineName, boolean muted) {
                 getMute(lineName).set(muted);
             }
 
+            @Override
             public synchronized BooleanConfigEntry getMute(@NotNull String lineName) {
                 return muteByLineName.computeIfAbsent(
                         lineName,
@@ -361,13 +361,13 @@ public final class ClientConfig {
 
     @Config
     @Data
-    public static class Advanced {
+    public static class Advanced implements ClientConfig.Advanced {
 
         @ConfigField
-        private ConfigEntry<Boolean> visualizeVoiceDistance = new ConfigEntry<>(true);
+        private BooleanConfigEntry visualizeVoiceDistance = new BooleanConfigEntry(true);
 
         @ConfigField
-        private ConfigEntry<Boolean> visualizeVoiceDistanceOnJoin = new ConfigEntry<>(false);
+        private BooleanConfigEntry visualizeVoiceDistanceOnJoin = new BooleanConfigEntry(false);
 
         @ConfigField
         private IntConfigEntry compressorThreshold = new IntConfigEntry(-10, -60, 0);
@@ -430,15 +430,17 @@ public final class ClientConfig {
         private SourceStates sourceStates = new SourceStates();
 
         @Data
-        public static class SourceStates implements SerializableConfigEntry {
+        public static class SourceStates implements SerializableConfigEntry, ClientConfig.Overlay.SourceStates {
 
             private Map<String, EnumConfigEntry<OverlaySourceState>> stateByLineName = Maps.newHashMap();
 
+            @Override
             public synchronized void setState(@NotNull String lineName,
                                               @NotNull OverlaySourceState state) {
                 getState(lineName).set(state);
             }
 
+            @Override
             public synchronized EnumConfigEntry<OverlaySourceState> getState(@NotNull String lineName) {
                 return stateByLineName.computeIfAbsent(
                         lineName,

@@ -27,7 +27,7 @@ import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
@@ -45,7 +45,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;
     private final ClientActivationManager activations;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private final Set<UUID> activationStreams = Sets.newHashSet();
     private final Map<UUID, Long> activationSequenceNumbers = Maps.newHashMap();
@@ -58,7 +58,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     private Thread thread;
 
     public VoiceAudioCapture(@NotNull PlasmoVoiceClient voiceClient,
-                             @NotNull ClientConfig config) {
+                             @NotNull VoiceClientConfig config) {
         this.voiceClient = voiceClient;
         this.devices = voiceClient.getDeviceManager();
         this.activations = voiceClient.getActivationManager();

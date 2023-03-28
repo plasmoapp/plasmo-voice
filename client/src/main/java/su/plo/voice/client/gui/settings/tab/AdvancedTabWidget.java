@@ -2,12 +2,11 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.mod.client.gui.GuiUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.OutputDevice;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
 
@@ -25,7 +24,7 @@ public final class AdvancedTabWidget extends TabWidget {
 
     public AdvancedTabWidget(VoiceSettingsScreen parent,
                              PlasmoVoiceClient voiceClient,
-                             ClientConfig config) {
+                             VoiceClientConfig config) {
         super(parent, voiceClient, config);
 
         this.devices = voiceClient.getDeviceManager();

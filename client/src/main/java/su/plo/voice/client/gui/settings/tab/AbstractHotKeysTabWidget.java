@@ -4,10 +4,9 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.mod.client.gui.GuiUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.HotKeyWidget;
@@ -20,7 +19,7 @@ public abstract class AbstractHotKeysTabWidget extends TabWidget {
 
     public AbstractHotKeysTabWidget(@NotNull VoiceSettingsScreen parent,
                                     @NotNull PlasmoVoiceClient voiceClient,
-                                    @NotNull ClientConfig config) {
+                                    @NotNull VoiceClientConfig config) {
         super(parent, voiceClient, config);
 
         this.hotKeys = voiceClient.getKeyBindings();

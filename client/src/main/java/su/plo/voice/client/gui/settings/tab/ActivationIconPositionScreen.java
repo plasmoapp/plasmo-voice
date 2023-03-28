@@ -6,7 +6,7 @@ import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
-import su.plo.voice.client.config.IconPosition;
+import su.plo.voice.api.client.config.IconPosition;
 import su.plo.voice.client.gui.settings.HudPositionScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 

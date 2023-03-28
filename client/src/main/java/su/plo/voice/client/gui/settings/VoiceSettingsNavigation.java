@@ -15,7 +15,7 @@ import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
@@ -31,7 +31,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceSettingsScreen parent;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private final List<Button> disableMicrophoneButtons = Lists.newArrayList();
     private final List<Button> disableVoiceButtons = Lists.newArrayList();
@@ -45,7 +45,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
     public VoiceSettingsNavigation(@NotNull PlasmoVoiceClient voiceClient,
                                    @NotNull VoiceSettingsScreen parent,
-                                   @NotNull ClientConfig config) {
+                                   @NotNull VoiceClientConfig config) {
         this.voiceClient = voiceClient;
         this.parent = parent;
         this.config = config;

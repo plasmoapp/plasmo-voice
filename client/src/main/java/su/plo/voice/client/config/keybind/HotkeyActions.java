@@ -8,13 +8,13 @@ import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 
 @RequiredArgsConstructor
 public final class HotkeyActions {
 
     private final KeyBindings keyBindings;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     public void register() {
         setHotkeyAction(

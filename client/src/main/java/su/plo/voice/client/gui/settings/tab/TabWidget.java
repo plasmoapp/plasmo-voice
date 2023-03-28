@@ -19,7 +19,7 @@ import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.*;
 
@@ -33,11 +33,11 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
     protected static final int ELEMENT_WIDTH = 124;
 
     protected final PlasmoVoiceClient voiceClient;
-    protected final ClientConfig config;
+    protected final VoiceClientConfig config;
 
     public TabWidget(@NotNull VoiceSettingsScreen parent,
                      @NotNull PlasmoVoiceClient voiceClient,
-                     @NotNull ClientConfig config) {
+                     @NotNull VoiceClientConfig config) {
         super(
                 parent,
                 303,
@@ -166,6 +166,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                 ELEMENT_WIDTH,
                 20
         );
+        toggleButton.setActive(!entry.isDisabled());
 
         return new OptionEntry<>(
                 text,

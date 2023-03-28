@@ -16,7 +16,7 @@ import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Optional;
@@ -25,7 +25,7 @@ import java.util.Optional;
 public final class ClientLoopbackSource implements LoopbackSource {
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
     private final boolean relative;
 
     private final float[] position = new float[3];

@@ -17,11 +17,11 @@ import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
-import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.client.config.IconPosition;
-import su.plo.voice.client.config.overlay.OverlayPosition;
-import su.plo.voice.client.config.overlay.OverlaySourceState;
-import su.plo.voice.client.config.overlay.OverlayStyle;
+import su.plo.voice.api.client.config.IconPosition;
+import su.plo.voice.api.client.config.overlay.OverlayPosition;
+import su.plo.voice.api.client.config.overlay.OverlaySourceState;
+import su.plo.voice.api.client.config.overlay.OverlayStyle;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.OverlaySourceStateButton;
@@ -50,7 +50,7 @@ public final class OverlayTabWidget extends TabWidget {
 
     public OverlayTabWidget(VoiceSettingsScreen parent,
                             PlasmoVoiceClient voiceClient,
-                            ClientConfig config) {
+                            VoiceClientConfig config) {
         super(parent, voiceClient, config);
 
         this.sourceLines = voiceClient.getSourceLineManager();
@@ -218,7 +218,7 @@ public final class OverlayTabWidget extends TabWidget {
                         .map(OverlayStyle::getTranslatable)
                         .collect(Collectors.toList()),
                 false,
-                (index) -> configEntry.set(OverlayStyle.fromOrdinal(index))
+                (index) -> configEntry.set(OverlayStyle.Companion.fromOrdinal(index))
         );
 
         return new OptionEntry<>(

@@ -20,7 +20,7 @@ import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEve
 import su.plo.voice.api.client.event.audio.capture.ClientActivationUnregisteredEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.capture.VoiceClientActivation;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -50,7 +50,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
     public ActivationTabWidget(@NotNull VoiceSettingsScreen parent,
                                @NotNull PlasmoVoiceClient voiceClient,
-                               @NotNull ClientConfig config) {
+                               @NotNull VoiceClientConfig config) {
         super(parent, voiceClient, config);
 
         this.activations = voiceClient.getActivationManager();
@@ -85,7 +85,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
         if (!serverInfo.isPresent()) throw new IllegalStateException("Not connected");
 
-        Optional<ClientConfig.Server> serverConfig = config.getServers().getById(serverInfo.get().getServerId());
+        Optional<VoiceClientConfig.Server> serverConfig = config.getServers().getById(serverInfo.get().getServerId());
         if (!serverConfig.isPresent()) throw new IllegalStateException("Not connected");
 
         Optional<ConfigClientActivation> activationConfig = config.getActivations().getActivation(activation.getId());

@@ -1,11 +1,7 @@
 package su.plo.voice.client.audio.line;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.platform.NativeImage;
-import com.mojang.blaze3d.systems.RenderSystem;
-import gg.essential.universal.UMinecraft;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
@@ -13,8 +9,8 @@ import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.api.MathLib;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
-import su.plo.voice.client.config.ClientConfig;
-import su.plo.voice.client.config.overlay.OverlaySourceState;
+import su.plo.voice.api.client.config.overlay.OverlaySourceState;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.render.voice.VoiceIconUtil;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
@@ -26,7 +22,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class VoiceClientSourceLineManager implements ClientSourceLineManager {
 
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private final List<ClientSourceLine> lines = new CopyOnWriteArrayList<>() {
 

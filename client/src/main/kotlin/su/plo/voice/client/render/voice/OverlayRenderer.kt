@@ -13,10 +13,10 @@ import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.line.ClientSourceLine
+import su.plo.voice.api.client.config.overlay.OverlayPosition
+import su.plo.voice.api.client.config.overlay.OverlaySourceState
 import su.plo.voice.api.event.EventSubscribe
-import su.plo.voice.client.config.ClientConfig
-import su.plo.voice.client.config.overlay.OverlayPosition
-import su.plo.voice.client.config.overlay.OverlaySourceState
+import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.event.render.HudRenderEvent
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
@@ -26,7 +26,7 @@ import java.util.*
 
 class OverlayRenderer(
     private val voiceClient: PlasmoVoiceClient,
-    private val config: ClientConfig
+    private val config: VoiceClientConfig
 ) {
 
     @EventSubscribe
@@ -157,7 +157,7 @@ class OverlayRenderer(
         val backgroundColor = (0.25f * 255.0f).toInt() shl 24
 
         // render helm
-        if (overlayStyle.hasSkin()) {
+        if (overlayStyle.hasSkin) {
             sourceInfo.player?.let {
                 if (position.isRight) {
                     x -= 16
@@ -176,7 +176,7 @@ class OverlayRenderer(
         }
 
         // render text
-        if (overlayStyle.hasName()) {
+        if (overlayStyle.hasName) {
             if (position.isRight) {
                 x -= textWidth + 1
             }

@@ -4,13 +4,12 @@ import net.minecraft.client.Minecraft
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import su.plo.voice.api.client.PlasmoVoiceClient
-import su.plo.voice.client.config.ClientConfig
+import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo
-import java.util.*
 
 class ClientEntitySource(
     voiceClient: PlasmoVoiceClient,
-    config: ClientConfig,
+    config: VoiceClientConfig,
     sourceInfo: EntitySourceInfo
 ) : BaseClientAudioSource<EntitySourceInfo>(voiceClient, config, sourceInfo) {
 

@@ -33,7 +33,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.ModVoiceClient;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.language.LanguageChangedEvent;
 import su.plo.voice.client.socket.NettyUdpClient;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
@@ -62,7 +62,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final BaseVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
     private final ClientSourceLineManager sourceLines;
     private final ClientActivationManager activations;
     private final ClientSourceManager sources;
@@ -264,11 +264,11 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
         voiceClient.setServerInfo(serverInfo);
 
-        Optional<ClientConfig.Server> configServer = voiceClient.getConfig().getServers().getById(serverInfo.getServerId());
+        Optional<VoiceClientConfig.Server> configServer = voiceClient.getConfig().getServers().getById(serverInfo.getServerId());
         if (!configServer.isPresent()) { // put config server if it doesn't exist
             voiceClient.getConfig().getServers().put(
                     serverInfo.getServerId(),
-                    new ClientConfig.Server()
+                    new VoiceClientConfig.Server()
             );
         }
 

@@ -23,7 +23,7 @@ import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -39,7 +39,7 @@ public final class NettyUdpClient implements UdpClient {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
     @Getter
     private final UUID secret;
 
@@ -55,7 +55,7 @@ public final class NettyUdpClient implements UdpClient {
     private boolean timedOut;
 
     public NettyUdpClient(@NotNull BaseVoiceClient voiceClient,
-                          @NotNull ClientConfig config,
+                          @NotNull VoiceClientConfig config,
                           @NotNull UUID secret) {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
         this.config = checkNotNull(config, "config");

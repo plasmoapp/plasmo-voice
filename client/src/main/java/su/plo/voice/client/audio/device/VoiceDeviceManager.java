@@ -18,12 +18,11 @@ import su.plo.voice.client.audio.device.source.VoiceOutputSourceGroup;
 import su.plo.voice.client.audio.filter.GainFilter;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -34,7 +33,7 @@ public final class VoiceDeviceManager implements DeviceManager {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private final List<AudioDevice> inputDevices = new CopyOnWriteArrayList<>();
     private final List<AudioDevice> outputDevices = new CopyOnWriteArrayList<>();

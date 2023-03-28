@@ -14,12 +14,9 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
-
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 @RequiredArgsConstructor
 public final class MicrophoneTestController {
@@ -27,7 +24,7 @@ public final class MicrophoneTestController {
     private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private double highestDB = -127.0D;
     private long lastUpdate = 0L;

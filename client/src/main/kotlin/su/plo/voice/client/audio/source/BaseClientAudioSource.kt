@@ -33,7 +33,7 @@ import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.api.util.Params
 import su.plo.voice.client.audio.SoundOcclusion
 import su.plo.voice.client.audio.codec.AudioDecoderPlc
-import su.plo.voice.client.config.ClientConfig
+import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.utils.toFloatArray
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
@@ -48,7 +48,7 @@ import kotlin.math.pow
 
 abstract class BaseClientAudioSource<T> constructor(
     protected val voiceClient: PlasmoVoiceClient,
-    protected val config: ClientConfig,
+    protected val config: VoiceClientConfig,
     final override var sourceInfo: T
 ) : ClientAudioSource<T> where T : SourceInfo {
 
@@ -259,7 +259,6 @@ abstract class BaseClientAudioSource<T> constructor(
         // calculate volume
         var volume = config.voice.volume.value() * sourceVolume.value() * lineVolume.value()
         if (shouldCalculateOcclusion()) {
-            // todo: disable occlusion via client addon?
             var occlusion: Double = calculateOcclusion(position)
             if (lastOcclusion >= 0) {
                 lastOcclusion = if (occlusion > lastOcclusion) {
@@ -390,7 +389,7 @@ abstract class BaseClientAudioSource<T> constructor(
     protected abstract fun getLookAngle(): Vec3
 
     protected open fun shouldCalculateOcclusion(): Boolean {
-        return config.voice.soundOcclusion.value()
+        return !config.voice.soundOcclusion.isDisabled && config.voice.soundOcclusion.value()
     }
 
     private fun calculateOcclusion(position: Vec3): Double {

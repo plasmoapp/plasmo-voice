@@ -17,7 +17,7 @@ import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.ConfigKeyBindings;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
@@ -38,7 +38,7 @@ public final class VoiceClientActivation
         implements ClientActivation {
 
     private final PlasmoVoiceClient voiceClient;
-    private final ClientConfig config;
+    private final VoiceClientConfig config;
 
     private final IntConfigEntry configDistance;
     private final ConfigEntry<ClientActivation.Type> configType;
@@ -61,7 +61,7 @@ public final class VoiceClientActivation
     private @Nullable AudioEncoder stereoEncoder;
 
     public VoiceClientActivation(@NotNull PlasmoVoiceClient voiceClient,
-                                 @NotNull ClientConfig config,
+                                 @NotNull VoiceClientConfig config,
                                  @NotNull ConfigClientActivation activationConfig,
                                  @NotNull IntConfigEntry activationDistance,
                                  @NotNull Activation activation,

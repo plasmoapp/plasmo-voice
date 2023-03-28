@@ -11,17 +11,15 @@ import su.plo.voice.api.client.audio.source.ClientSourceManager
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.client.BaseVoiceClient
-import su.plo.voice.client.config.ClientConfig
+import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.proto.data.audio.source.*
 import su.plo.voice.proto.packets.tcp.serverbound.SourceInfoRequestPacket
 import java.util.*
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
-import java.util.function.Consumer
 
 class VoiceClientSourceManager(
     private val voiceClient: BaseVoiceClient,
-    private val config: ClientConfig
+    private val config: VoiceClientConfig
 ) : ClientSourceManager {
 
     private val sourcesByLineId: ListMultimap<UUID, ClientAudioSource<*>> = Multimaps.newListMultimap(

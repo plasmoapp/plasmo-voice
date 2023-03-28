@@ -6,7 +6,7 @@ import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.client.BaseVoiceClient;
-import su.plo.voice.client.config.ClientConfig;
+import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
@@ -19,7 +19,7 @@ public final class AddonsTabWidget extends TabWidget {
 
     public AddonsTabWidget(@NotNull VoiceSettingsScreen parent,
                            @NotNull BaseVoiceClient voiceClient,
-                           @NotNull ClientConfig config) {
+                           @NotNull VoiceClientConfig config) {
         super(parent, voiceClient, config);
 
         this.voiceClient = voiceClient;

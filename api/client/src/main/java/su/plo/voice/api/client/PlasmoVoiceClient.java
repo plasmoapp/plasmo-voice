@@ -10,6 +10,7 @@ import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
+import su.plo.voice.api.client.config.ClientConfig;
 import su.plo.voice.api.client.config.addon.AddonConfig;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.api.client.connection.ServerConnection;
@@ -126,4 +127,9 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
      * @return {@link AddonConfig}
      */
     @NotNull AddonConfig getAddonConfig(@NotNull Object addon);
+
+    /**
+     * @returns {@link ClientConfig}
+     */
+    @NotNull ClientConfig getConfig();
 }
