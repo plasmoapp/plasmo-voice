@@ -3,6 +3,8 @@ package su.plo.voice.server.mute;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.voice.api.server.event.mute.PlayerVoiceMutedEvent;
+import su.plo.voice.api.server.event.mute.PlayerVoiceUnmutedEvent;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
@@ -88,7 +90,7 @@ public final class VoiceMuteManager implements MuteManager {
             ));
         }
 
-        // todo: voice mute event
+        voiceServer.getEventBus().call(new PlayerVoiceMutedEvent(this, muteInfo));
 
         return Optional.of(muteInfo);
     }
@@ -103,7 +105,7 @@ public final class VoiceMuteManager implements MuteManager {
                                 player.getInstance().sendMessage(MinecraftTextComponent.translatable("pv.mutes.unmuted"));
                             });
 
-                    // todo: voice unmute event
+                    voiceServer.getEventBus().call(new PlayerVoiceUnmutedEvent(this, muteInfo));
 
                     return muteInfo;
                 });
