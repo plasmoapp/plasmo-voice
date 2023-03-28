@@ -52,8 +52,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
         RemoteServer remoteServer = voiceProxy.getRemoteServerManager().getServer(
                 player.getInstance().getServer()
                         .get()
-                        .getServer()
-                        .getInfo()
+                        .getServerInfo()
                         .getName()
         ).get();
 

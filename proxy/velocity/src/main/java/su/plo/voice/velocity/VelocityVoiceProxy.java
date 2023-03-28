@@ -11,7 +11,7 @@ import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.server.event.command.ProxyCommandsRegisterEvent;
+import su.plo.lib.api.proxy.event.command.ProxyCommandsRegisterEvent;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.velocity.VelocityProxyLib;

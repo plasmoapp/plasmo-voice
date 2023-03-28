@@ -14,6 +14,11 @@ public interface MinecraftCommand {
         return ImmutableList.of();
     }
 
+    /**
+     * Note: Arguments are not null only on execution
+     *
+     * @return true if command source has permission to execute this command
+     */
     default boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
         return true;
     }

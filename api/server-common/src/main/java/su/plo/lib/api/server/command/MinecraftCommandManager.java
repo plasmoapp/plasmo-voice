@@ -38,4 +38,6 @@ public abstract class MinecraftCommandManager<T extends MinecraftCommand> {
         commandByName.clear();
         this.registered = false;
     }
+
+    public abstract MinecraftCommandSource getCommandSource(@NotNull Object source);
 }

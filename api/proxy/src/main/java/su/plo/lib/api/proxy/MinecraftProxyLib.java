@@ -15,8 +15,6 @@ import java.util.UUID;
 
 public interface MinecraftProxyLib extends MinecraftCommonServerLib {
 
-    @NotNull EventBus getEventBus();
-
     Optional<MinecraftProxyPlayer> getPlayerById(@NotNull UUID playerId);
 
     @NotNull MinecraftProxyPlayer getPlayerByInstance(@NotNull Object instance);

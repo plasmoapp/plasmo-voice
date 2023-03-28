@@ -32,8 +32,7 @@ import java.util.function.Predicate;
 @RequiredArgsConstructor
 public final class ModCommand implements Command<CommandSourceStack>, Predicate<CommandSourceStack>, SuggestionProvider<CommandSourceStack> {
 
-    private final MinecraftServerLib minecraftServer;
-    private final ServerTextConverter<Component> textConverter;
+    private final ModCommandManager commandManager;
     private final MinecraftCommand command;
 
     public LiteralCommandNode<CommandSourceStack> register(CommandDispatcher<CommandSourceStack> dispatcher, String label) {
@@ -48,7 +47,7 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
 
     @Override
     public int run(CommandContext<CommandSourceStack> context) throws CommandSyntaxException {
-        MinecraftCommandSource source = getCommandSource(context.getSource());
+        MinecraftCommandSource source = commandManager.getCommandSource(context.getSource());
 
         int spaceIndex = context.getInput().indexOf(' ');
         String[] args;
@@ -77,7 +76,7 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
         int spaceIndex = context.getInput().indexOf(' ');
         String[] args = context.getInput().substring(spaceIndex + 1).split(" ", -1);
 
-        List<String> results = command.suggest(getCommandSource(context.getSource()), args);
+        List<String> results = command.suggest(commandManager.getCommandSource(context.getSource()), args);
 
         // Defaults to sub nodes, but we have just one giant args node, so offset accordingly
         builder = builder.createOffset(builder.getInput().lastIndexOf(' ') + 1);
@@ -91,15 +90,6 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
 
     @Override
     public boolean test(CommandSourceStack source) {
-        return command.hasPermission(getCommandSource(source), null);
-    }
-
-    private MinecraftCommandSource getCommandSource(CommandSourceStack source) {
-        Entity entity = source.getEntity();
-        if (entity instanceof Player) {
-            return minecraftServer.getPlayerByInstance(entity);
-        }
-
-        return new ModDefaultCommandSource(source, textConverter);
+        return command.hasPermission(commandManager.getCommandSource(source), null);
     }
 }

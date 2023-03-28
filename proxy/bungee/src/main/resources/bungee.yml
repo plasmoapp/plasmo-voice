@@ -1,0 +1,6 @@
+name: PlasmoVoice
+version: ${version}
+main: su.plo.voice.bungee.BungeeVoiceLoader
+author: Apehum
+softDepends:
+  - LuckPerms

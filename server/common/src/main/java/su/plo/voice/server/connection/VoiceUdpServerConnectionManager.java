@@ -132,7 +132,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
         connectionByPlayerId.remove(player.getInstance().getUUID());
         connectionBySecret.remove(connection.getSecret());
 
-        voiceServer.getLogger().info("{} disconnected", connection.getPlayer());
+        voiceServer.getDebugLogger().log("{} disconnected", connection.getPlayer());
         voiceServer.getEventBus().call(new UdpClientDisconnectedEvent(connection));
     }
 

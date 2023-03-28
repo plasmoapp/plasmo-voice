@@ -6,20 +6,18 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
 import su.plo.lib.api.proxy.connection.MinecraftProxyServerConnection;
-import su.plo.lib.api.proxy.server.MinecraftProxyServer;
 import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
-import su.plo.lib.velocity.server.VelocityProxyServer;
 
 public final class VelocityProxyServerConnection implements MinecraftProxyServerConnection {
 
+    private final MinecraftProxyLib minecraftProxy;
     @Getter
     private final ServerConnection instance;
-    private final VelocityProxyServer server;
 
     public VelocityProxyServerConnection(@NotNull MinecraftProxyLib minecraftProxy,
                                          @NotNull ServerConnection instance) {
+        this.minecraftProxy = minecraftProxy;
         this.instance = instance;
-        this.server = new VelocityProxyServer(minecraftProxy, instance.getServer());
     }
 
     @Override
@@ -28,12 +26,7 @@ public final class VelocityProxyServerConnection implements MinecraftProxyServer
     }
 
     @Override
-    public @NotNull MinecraftProxyServer getServer() {
-        return server;
-    }
-
-    @Override
     public @NotNull MinecraftProxyServerInfo getServerInfo() {
-        return server.getInfo();
+        return minecraftProxy.getServerInfoByServerInstance(instance.getServer());
     }
 }

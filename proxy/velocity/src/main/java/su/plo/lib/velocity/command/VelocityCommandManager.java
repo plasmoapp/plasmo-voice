@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
 import su.plo.lib.api.proxy.command.MinecraftProxyCommand;
-import su.plo.lib.api.proxy.event.command.MinecraftCommandExecuteEvent;
+import su.plo.lib.api.proxy.event.command.ProxyCommandExecuteEvent;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
 import su.plo.lib.velocity.chat.ComponentTextConverter;
@@ -26,7 +26,7 @@ public final class VelocityCommandManager extends MinecraftCommandManager<Minecr
         String commandAlias = command.split(" ")[0];
 
         MinecraftCommandSource commandSource = getCommandSource(event.getCommandSource());
-        minecraftProxy.getEventBus().call(new MinecraftCommandExecuteEvent(commandSource, command));
+        ProxyCommandExecuteEvent.INSTANCE.getInvoker().onCommandExecute(commandSource, command);
 
         MinecraftProxyCommand proxyCommand = commandByName.get(commandAlias);
         if (proxyCommand == null) return;
@@ -47,17 +47,21 @@ public final class VelocityCommandManager extends MinecraftCommandManager<Minecr
     public synchronized void registerCommands(@NotNull ProxyServer proxyServer) {
         commandByName.forEach((name, command) -> {
             // todo: group commands and use aliases?
-            VelocityCommand velocityCommand = new VelocityCommand(this, minecraftProxy, textConverter, command);
+            VelocityCommand velocityCommand = new VelocityCommand(this, command);
             proxyServer.getCommandManager().register(name, velocityCommand);
         });
         this.registered = true;
     }
 
-    public MinecraftCommandSource getCommandSource(@NotNull CommandSource source) {
+    @Override
+    public MinecraftCommandSource getCommandSource(@NotNull Object source) {
+        if (!(source instanceof CommandSource))
+            throw new IllegalArgumentException("source is not " + CommandSource.class);
+
         if (source instanceof Player) {
             return minecraftProxy.getPlayerByInstance(source);
         }
 
-        return new VelocityDefaultCommandSource(source, textConverter);
+        return new VelocityDefaultCommandSource(((CommandSource) source), textConverter);
     }
 }

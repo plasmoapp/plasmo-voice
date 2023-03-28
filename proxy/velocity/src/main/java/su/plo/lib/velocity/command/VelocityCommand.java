@@ -15,8 +15,6 @@ import java.util.List;
 public final class VelocityCommand implements SimpleCommand {
 
     private final VelocityCommandManager commandManager;
-    private final MinecraftProxyLib minecraftProxy;
-    private final ComponentTextConverter textConverter;
     private final MinecraftProxyCommand command;
 
     @Override
@@ -24,10 +22,7 @@ public final class VelocityCommand implements SimpleCommand {
         MinecraftCommandSource source = commandManager.getCommandSource(invocation.source());
 
         if (!command.hasPermission(source, invocation.arguments())) {
-            source.sendMessage( // todo: use ServerLanguage?
-                    MinecraftTextComponent.literal("I'm sorry, but you do not have permission to perform this command. Please contact the server administrators if you believe that this is in error.")
-                            .withStyle(MinecraftTextStyle.RED)
-            );
+            source.sendMessage(MinecraftTextComponent.translatable("pv.error.no_permissions"));
             return;
         }
 
@@ -41,6 +36,6 @@ public final class VelocityCommand implements SimpleCommand {
 
     @Override
     public boolean hasPermission(Invocation invocation) {
-        return command.hasPermission(commandManager.getCommandSource(invocation.source()), invocation.arguments());
+        return command.hasPermission(commandManager.getCommandSource(invocation.source()), null);
     }
 }

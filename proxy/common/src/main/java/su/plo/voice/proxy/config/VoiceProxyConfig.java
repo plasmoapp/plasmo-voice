@@ -39,7 +39,9 @@ public final class VoiceProxyConfig implements ProxyConfig {
     @ConfigField
     private VoiceHost host = new VoiceHost();
 
-    @ConfigField
+    @ConfigField(nullComment = "[servers]\n" +
+            "farmworld = \"127.0.0.1:25565\"\n" +
+            "overworld = \"127.0.0.1:25566\"")
     private Servers servers = new Servers();
 
     @Data

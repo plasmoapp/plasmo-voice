@@ -34,7 +34,7 @@ import java.util.stream.Collectors;
 
 public final class VelocityProxyLib implements MinecraftProxyLib {
 
-    private final Map<UUID, VelocityProxyPlayer> playerById = Maps.newConcurrentMap();
+    private final Map<UUID, MinecraftProxyPlayer> playerById = Maps.newConcurrentMap();
     private final Map<String, VelocityProxyServerInfo> serverByName = Maps.newConcurrentMap();
 
     private final ProxyServer proxyServer;
@@ -91,10 +91,7 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
 
     @Override
     public Collection<MinecraftProxyPlayer> getPlayers() {
-        return proxyServer.getAllPlayers()
-                .stream()
-                .map(this::getPlayerByInstance)
-                .collect(Collectors.toList());
+        return playerById.values();
     }
 
     @Override
@@ -139,7 +136,8 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
 
     @Override
     public Collection<MinecraftProxyServerInfo> getServers() {
-        return proxyServer.getAllServers().stream()
+        return proxyServer.getAllServers()
+                .stream()
                 .map(this::getServerInfoByServerInstance)
                 .collect(Collectors.toList());
     }
