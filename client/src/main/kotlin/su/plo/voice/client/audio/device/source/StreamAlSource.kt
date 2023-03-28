@@ -75,13 +75,6 @@ class StreamAlSource private constructor(
         AlUtil.checkErrors("Source stop")
         isStreaming.set(false)
 
-        // todo: do not self lock thread
-//        if (Thread.currentThread() !== thread) {
-//            try {
-//                thread!!.join()
-//            } catch (ignored: InterruptedException) {
-//            }
-//        }
         queue.clear()
     }
 

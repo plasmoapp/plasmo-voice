@@ -63,13 +63,15 @@ class ClientDirectSource(
         return Vec3.ZERO
     }
 
-    // todo: lookAngle?
-    override fun getLookAngle(): Vec3 =
-        Vec3.ZERO
+    override fun getLookAngle(): Vec3 {
+        if (sourceInfo.lookAngle == null || sourceInfo.relativePosition == null)
+            return Vec3.ZERO
 
-    override fun shouldCalculateOcclusion(): Boolean {
-        return false // todo: relative position occlusion
+        return sourceInfo.lookAngle!!.toVec3()
     }
+
+    override fun shouldCalculateOcclusion() =
+        sourceInfo.relativePosition != null && super.shouldCalculateOcclusion()
 
     override fun isPanningDisabled(): Boolean {
         return sourceInfo.isCameraRelative || super.isPanningDisabled()
