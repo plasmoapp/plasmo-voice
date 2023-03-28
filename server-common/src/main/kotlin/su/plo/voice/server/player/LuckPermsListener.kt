@@ -45,12 +45,6 @@ class LuckPermsListener(
             NodeClearEvent::class.java,
             ::onNodeClear
         ))
-
-        subscriptions.add(luckPermsBus.subscribe(
-            UserDataRecalculateEvent::class.java
-        ) {
-            println(it.data)
-        })
     }
 
     fun unsubscribe() {
@@ -72,8 +66,6 @@ class LuckPermsListener(
     }
 
     private fun onNodeMutate(event: NodeMutateEvent, node: Node) {
-        println(node)
-
         if (event.isUser) {
             val user = event.target as User
 

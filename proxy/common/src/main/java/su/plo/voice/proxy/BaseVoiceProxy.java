@@ -56,7 +56,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     @Getter
     private final UdpProxyConnectionManager udpConnectionManager = new VoiceUdpProxyConnectionManager(this);
     @Getter
-    private final RemoteServerManager remoteServerManager = new VoiceRemoteServerManager();
+    private final RemoteServerManager remoteServerManager = new VoiceRemoteServerManager(this);
 
     @Getter
     private VoiceProxyConfig config;

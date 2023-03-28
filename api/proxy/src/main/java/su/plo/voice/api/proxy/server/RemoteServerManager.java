@@ -2,17 +2,16 @@ package su.plo.voice.api.proxy.server;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Collection;
 import java.util.Optional;
 
+/**
+ * This manager represents additional ip:port mappings for connection to backend UDP server
+ *
+ * <p>
+ *     By default, proxy's backend address will be used for connection to backend UDP server
+ * </p>
+ */
 public interface RemoteServerManager {
-
-    /**
-     * Gets the all UDP remote servers
-     *
-     * @return Collection of {@link RemoteServer}
-     */
-    Collection<RemoteServer> getAllServers();
 
     /**
      * Gets the {@link RemoteServer} by name

@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.proxy.connection.MinecraftProxyServerConnection;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
@@ -24,6 +25,7 @@ import javax.crypto.spec.SecretKeySpec;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -38,25 +40,15 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
 
     @Override
     public void handle(@NotNull ConnectionPacket packet) {
-        if (!isPlayerOnVoiceServer()) {
-//            voiceProxy.getPlayerManager().broadcast(
-//                    new PlayerDisconnectPacket(player.getInstance().getUUID()),
-//                    (player) -> player.getInstance()
-//                            .getTabList()
-//                            .containsEntry(this.player.getInstance().getUUID())
-//            );
-            voiceProxy.getUdpConnectionManager().removeConnection(player);
-            return;
-        }
+//        if (isCurrentServerWithoutVoice()) {
+//            voiceProxy.getUdpConnectionManager().removeConnection(player);
+//            return;
+//        }
 
-        RemoteServer remoteServer = voiceProxy.getRemoteServerManager().getServer(
-                player.getInstance().getServer()
-                        .get()
-                        .getServerInfo()
-                        .getName()
-        ).get();
+        Optional<RemoteServer> remoteServer = getCurrentRemoteServer();
+        if (!remoteServer.isPresent()) return;
 
-        if (!remoteServer.isAesEncryptionKeySet()) {
+        if (!remoteServer.get().isAesEncryptionKeySet()) {
             player.getInstance().getServer().ifPresent((connection) -> {
                 try {
                     byte[] aesEncryptionKey = voiceProxy.getConfig().aesEncryptionKey();
@@ -96,7 +88,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
 
         voiceProxy.getUdpConnectionManager()
                 .getConnectionByPlayerId(player.getInstance().getUUID())
-                .ifPresent((connection) -> connection.setRemoteServer(remoteServer));
+                .ifPresent((connection) -> connection.setRemoteServer(remoteServer.get()));
 
         sendConnectionPacket(secret);
         throw new CancelForwardingException();
@@ -163,50 +155,54 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
 
     @Override
     public void handle(@NotNull PlayerListPacket packet) {
-        if (!isPlayerOnVoiceServer()) return;
-
-        // todo: vanish support?
-        player.sendPacket(new PlayerListPacket(
-                voiceProxy.getUdpConnectionManager().getConnections()
-                        .stream()
-//                        .filter((connection) ->
-//                                player.getInstance()
-//                                        .getTabList()
-//                                        .containsEntry(connection.getPlayer().getInstance().getUUID())
-//                        )
-                        .filter(connection -> !connection.getPlayer().equals(this.player))
-                        .map(connection -> connection.getPlayer().createPlayerInfo())
-                        .collect(Collectors.toList())
-        ));
-
-        throw new CancelForwardingException();
+//        if (isCurrentServerWithoutAesKey()) return;
+//
+//        System.out.println(
+//                voiceProxy.getUdpConnectionManager().getConnections()
+//                        .stream()
+////                        .filter((connection) ->
+////                                player.getInstance()
+////                                        .getTabList()
+////                                        .containsEntry(connection.getPlayer().getInstance().getUUID())
+////                        )
+//                        .filter(connection -> !connection.getPlayer().equals(this.player))
+//                        .map(connection -> connection.getPlayer().createPlayerInfo())
+//                        .collect(Collectors.toList())
+//        );
+//        player.sendPacket(new PlayerListPacket(
+//                voiceProxy.getUdpConnectionManager().getConnections()
+//                        .stream()
+////                        .filter((connection) ->
+////                                player.getInstance()
+////                                        .getTabList()
+////                                        .containsEntry(connection.getPlayer().getInstance().getUUID())
+////                        )
+//                        .filter(connection -> !connection.getPlayer().equals(this.player))
+//                        .map(connection -> connection.getPlayer().createPlayerInfo())
+//                        .collect(Collectors.toList())
+//        ));
+//
+//        throw new CancelForwardingException();
     }
 
     @Override
     public void handle(@NotNull PlayerInfoUpdatePacket packet) {
-        if (!isPlayerOnVoiceServer()) return;
-
-        // todo: vanish support?
-        voiceProxy.getPlayerManager().getPlayerById(packet.getPlayerInfo().getPlayerId())
-                .ifPresent((player) -> ((VoiceProxyPlayerConnection) player).update(packet.getPlayerInfo()));
+//        if (isCurrentServerWithoutAesKey()) return;
+//
 //        voiceProxy.getPlayerManager().getPlayerById(packet.getPlayerInfo().getPlayerId()).ifPresent((player) -> {
-//            if (player.update(packet.getPlayerInfo())) {
-//                voiceProxy.getPlayerManager().broadcast(
-//                        packet,
-//                        (filterPlayer) -> filterPlayer.getInstance()
-//                                .getTabList()
-//                                .containsEntry(player.getInstance().getUUID())
-//                );
+//            boolean update = ((VoiceProxyPlayerConnection) player).update(packet.getPlayerInfo());
+//            if (update) {
+//                voiceProxy.getPlayerManager().broadcast(packet);
 //            }
 //        });
-
+//
 //        throw new CancelForwardingException();
     }
 
     @Override
     public void handle(@NotNull PlayerDisconnectPacket packet) {
-        if (!isPlayerOnVoiceServer()) return;
-        throw new CancelForwardingException();
+//        if (isCurrentServerWithoutAesKey()) return;
+//        throw new CancelForwardingException();
     }
 
     @Override
@@ -257,11 +253,17 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
     public void handle(@NotNull AnimatedActionBarPacket packet) {
     }
 
-    private boolean isPlayerOnVoiceServer() {
-        return voiceProxy.getUdpProxyServer().isPresent() &&
-                player.getInstance().getServer()
-                        .map((connection) -> voiceProxy.getRemoteServerManager().getServer(connection.getServerInfo().getName()).isPresent())
-                        .orElse(false);
+    private boolean isCurrentServerWithoutAesKey() {
+        return !getCurrentRemoteServer()
+                .map(RemoteServer::isAesEncryptionKeySet)
+                .orElse(false);
+    }
+
+    private Optional<RemoteServer> getCurrentRemoteServer() {
+        Optional<MinecraftProxyServerConnection> server = player.getInstance().getServer();
+        if (!server.isPresent()) return Optional.empty();
+
+        return voiceProxy.getRemoteServerManager().getServer(server.get().getServerInfo().getName());
     }
 
     private void sendConnectionPacket(@NotNull UUID secret) {

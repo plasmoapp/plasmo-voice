@@ -1,26 +1,35 @@
 package su.plo.voice.proxy.server;
 
 import com.google.common.collect.Maps;
+import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
+import su.plo.voice.proxy.BaseVoiceProxy;
 
-import java.util.Collection;
+import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Optional;
 
+@RequiredArgsConstructor
 public final class VoiceRemoteServerManager implements RemoteServerManager {
+
+    private final BaseVoiceProxy voiceProxy;
 
     private final Map<String, RemoteServer> servers = Maps.newConcurrentMap();
 
     @Override
     public Optional<RemoteServer> getServer(@NotNull String name) {
-        return Optional.ofNullable(servers.get(name));
-    }
+        if (!servers.containsKey(name)) {
+            return voiceProxy.getMinecraftServer()
+                    .getServerByName(name)
+                    // only InetSocketAddress is supported
+                    .filter(serverInfo -> serverInfo.getAddress() instanceof InetSocketAddress)
+                    .map(this::registerByServerInfo);
+        }
 
-    @Override
-    public Collection<RemoteServer> getAllServers() {
-        return servers.values();
+        return Optional.ofNullable(servers.get(name));
     }
 
     @Override
@@ -41,5 +50,21 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
     @Override
     public void clear() {
         servers.clear();
+    }
+
+    private RemoteServer getByServerInfo(@NotNull MinecraftProxyServerInfo serverInfo) {
+        RemoteServer remoteServer = servers.get(serverInfo.getName());
+        if (remoteServer != null) return remoteServer;
+
+        return registerByServerInfo(serverInfo);
+    }
+
+    private RemoteServer registerByServerInfo(@NotNull MinecraftProxyServerInfo serverInfo) {
+        if (!(serverInfo.getAddress() instanceof InetSocketAddress))
+            throw new IllegalArgumentException("only InetSocketAddress is supported");
+
+        VoiceRemoteServer remoteServer = new VoiceRemoteServer(serverInfo.getName(), (InetSocketAddress) serverInfo.getAddress());
+        servers.put(serverInfo.getName(), remoteServer);
+        return remoteServer;
     }
 }

@@ -7,6 +7,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
 
+import java.net.SocketAddress;
 import java.util.Objects;
 
 @RequiredArgsConstructor
@@ -20,6 +21,11 @@ public final class VelocityProxyServerInfo implements MinecraftProxyServerInfo {
     @Override
     public @NotNull String getName() {
         return instance.getName();
+    }
+
+    @Override
+    public @NotNull SocketAddress getAddress() {
+        return instance.getAddress();
     }
 
     @Override
