@@ -88,7 +88,11 @@ public final class PlayerVolumeAction {
 //            points.add(playerPos);
             playerPos = playerPos.add(rotVector);
 //            points.add(playerPos);
-            BlockState state = level.getBlockState(new BlockPos((int) playerPos.x, (int) playerPos.y, (int) playerPos.z));
+            BlockState state = level.getBlockState(new BlockPos(
+                    (int) Math.floor(playerPos.x),
+                    (int) Math.floor(playerPos.y),
+                    (int) Math.floor(playerPos.z)
+            ));
             if (!state.isAir() && state.getMaterial().isSolid()) {
                 break;
             }

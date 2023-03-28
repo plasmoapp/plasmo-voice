@@ -21,8 +21,8 @@ public final class SoundOcclusion {
         if (Double.isNaN(sound.x) || Double.isNaN(sound.y) || Double.isNaN(sound.z)) return occludedPercent;
         if (Double.isNaN(listener.x) || Double.isNaN(listener.y) || Double.isNaN(listener.z)) return occludedPercent;
 
-        BlockPos listenerPos = new BlockPos((int) listener.x, (int) listener.y, (int) listener.z);
-        BlockPos soundPos = new BlockPos((int) sound.x, (int) sound.y, (int) sound.z);
+        BlockPos listenerPos = new BlockPos((int) Math.floor(listener.x), (int) Math.floor(listener.y), (int) Math.floor(listener.z));
+        BlockPos soundPos = new BlockPos((int) Math.floor(sound.x), (int) Math.floor(sound.y), (int) Math.floor(sound.z));
         int i = 0;
 
         while (i++ < 200) {
@@ -71,7 +71,7 @@ public final class SoundOcclusion {
                 }
             }
 
-            soundPos = new BlockPos((int) sound.x, (int) sound.y, (int) sound.z);
+            soundPos = new BlockPos((int) Math.floor(sound.x), (int) Math.floor(sound.y), (int) Math.floor(sound.z));
             if (soundPosOffset != null) {
                 soundPos = soundPos.offset(soundPosOffset);
             }

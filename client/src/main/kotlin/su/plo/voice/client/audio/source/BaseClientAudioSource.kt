@@ -394,6 +394,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
     private fun calculateOcclusion(position: Vec3): Double {
         val player: LocalPlayer = Minecraft.getInstance().player ?: return 0.0
+
         return SoundOcclusion.getOccludedPercent(
             player.level,
             position,
