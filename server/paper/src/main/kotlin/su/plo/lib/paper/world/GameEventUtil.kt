@@ -6,7 +6,7 @@ import org.bukkit.NamespacedKey
 object GameEventUtil {
 
     // avoid <1.19 ClassNotFoundException error
-    fun parseGameEvent(gameEventName: String): GameEvent? {
+    fun parseGameEvent(gameEventName: String): GameEvent {
         val gameEventKey: NamespacedKey
         val split = gameEventName.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         gameEventKey = if (split.size == 2) {

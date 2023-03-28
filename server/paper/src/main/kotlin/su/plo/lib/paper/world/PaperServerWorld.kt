@@ -19,14 +19,17 @@ class PaperServerWorld(
     }
 
     override fun sendGameEvent(entity: MinecraftServerEntity, gameEvent: String) {
-        val majorMinecraftVersion = Bukkit.getMinecraftVersion().substringBefore(".").toInt()
-        if (majorMinecraftVersion < 19) return
+        val minorMinecraftVersion = Bukkit.getMinecraftVersion()
+            .substringAfter(".")
+            .substringBefore(".")
+            .toInt()
+        if (minorMinecraftVersion < 19) return
 
         val paperEntity = entity.getInstance<Entity>()
         Bukkit.getScheduler().runTask(
             loader
         ) { ->
-            level.sendGameEvent(paperEntity, parseGameEvent(gameEvent)!!, paperEntity.location.toVector())
+            level.sendGameEvent(paperEntity, parseGameEvent(gameEvent), paperEntity.location.toVector())
         }
     }
 
