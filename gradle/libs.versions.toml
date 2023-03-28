@@ -14,7 +14,7 @@ junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref 
 opus         = { module = "su.plo.opus:opus", version = "2.0.0" }
 rnnoise      = { module = "su.plo.rnnoise:rnnoise", version = "2.0.0" }
 netty        = { module = "io.netty:netty-all", version = "4.1.77.Final"}
-config       = { module = "su.plo.config:config", version = "1.0.0" }
+config       = { module = "su.plo.config:config", version = "1.0.1" }
 luckperms    = { module = "net.luckperms:api", version = "5.4" }
 
 guice        = { module = "com.google.inject:guice", version = "5.0.1" }
