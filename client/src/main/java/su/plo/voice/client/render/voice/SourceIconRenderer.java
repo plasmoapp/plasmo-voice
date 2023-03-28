@@ -87,7 +87,7 @@ public final class SourceIconRenderer {
         if (clientPlayer == null) return;
 
         if (isIconHidden()
-                || player.getUUID().equals(clientPlayer.getUUID()) // todo: configurable?
+                || player.getUUID().equals(clientPlayer.getUUID())
                 || event.isFakePlayer()
                 || player.isInvisibleTo(clientPlayer)
         ) return;
