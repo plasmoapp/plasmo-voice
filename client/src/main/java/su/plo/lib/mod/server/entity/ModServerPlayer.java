@@ -136,7 +136,8 @@ public final class ModServerPlayer
 
     @Override
     public boolean canSee(@NotNull MinecraftServerPlayerEntity player) {
-        return !player.isInvisibleTo(this);
+        ServerPlayer serverPlayer = player.getInstance();
+        return !serverPlayer.isInvisibleTo(instance);
     }
 
     @Override

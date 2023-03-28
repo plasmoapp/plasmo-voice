@@ -28,8 +28,6 @@ public interface MinecraftEntity {
 
     float getHitBoxHeight();
 
-    boolean isInvisibleTo(@NotNull MinecraftPlayerEntity player);
-
     /**
      * Gets the backed entity object
      */

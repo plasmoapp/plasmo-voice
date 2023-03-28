@@ -3,6 +3,7 @@ package su.plo.lib.paper.entity
 import lombok.RequiredArgsConstructor
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
+import org.bukkit.entity.Player
 import su.plo.lib.api.entity.MinecraftPlayerEntity
 import su.plo.lib.api.server.MinecraftServerLib
 import su.plo.lib.api.server.entity.MinecraftServerEntity
@@ -53,10 +54,6 @@ open class PaperServerEntity<E : LivingEntity>(
     override fun getHitBoxWidth() = instance.boundingBox.widthX.toFloat()
 
     override fun getHitBoxHeight() = instance.boundingBox.height.toFloat()
-
-    override fun isInvisibleTo(player: MinecraftPlayerEntity): Boolean {
-        TODO("Not implemented")
-    }
 
     override fun <T> getInstance() = instance as T
 

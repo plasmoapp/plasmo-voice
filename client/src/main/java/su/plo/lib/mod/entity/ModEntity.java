@@ -71,11 +71,6 @@ public class ModEntity<E extends Entity> implements MinecraftEntity {
     }
 
     @Override
-    public boolean isInvisibleTo(@NotNull MinecraftPlayerEntity player) {
-        return instance.isInvisibleTo(player.getInstance());
-    }
-
-    @Override
     public <T> T getInstance() {
         return (T) instance;
     }
