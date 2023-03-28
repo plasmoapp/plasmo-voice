@@ -46,7 +46,7 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     public void open() throws CodecException {
         try {
             this.decoder = new OpusDecoder(sampleRate, channels);
-            this.buffer = new short[mtuSize];
+            this.buffer = new short[mtuSize * channels];
         } catch (OpusException e) {
             throw new CodecException("Failed to open opus decoder", e);
         }
