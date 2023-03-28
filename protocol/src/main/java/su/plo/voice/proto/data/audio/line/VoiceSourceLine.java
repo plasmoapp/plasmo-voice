@@ -103,7 +103,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     }
 
     @Override
-    public @NotNull Collection<MinecraftGameProfile> getPlayers() {
+    public @Nullable Collection<MinecraftGameProfile> getPlayers() {
         return players;
     }
 }

@@ -5,9 +5,11 @@ import com.google.common.io.ByteArrayDataOutput;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
+import java.util.Collections;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -39,5 +41,13 @@ public class VoicePlayerInfo implements PacketSerializable {
         out.writeBoolean(muted);
         out.writeBoolean(voiceDisabled);
         out.writeBoolean(microphoneMuted);
+    }
+
+    public @NotNull MinecraftGameProfile toGameProfile() {
+        return new MinecraftGameProfile(
+                playerId,
+                playerNick,
+                Collections.emptyList()
+        );
     }
 }

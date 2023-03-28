@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import lombok.*;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Objects;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -46,6 +48,22 @@ public class MinecraftGameProfile implements PacketSerializable {
             out.writeUTF(property.getValue());
             out.writeUTF(property.getSignature());
         }
+    }
+
+    @Override
+    public boolean equals(@Nullable Object object) {
+        if (this == object) {
+            return true;
+        } else if (object != null && this.getClass() == object.getClass()) {
+            MinecraftGameProfile gameProfile = (MinecraftGameProfile) object;
+            return this.id.equals(gameProfile.id) && Objects.equals(this.name, gameProfile.getName());
+        } else {
+            return false;
+        }
+    }
+
+    public int hashCode() {
+        return Objects.hash(this.id, this.name);
     }
 
     @Data

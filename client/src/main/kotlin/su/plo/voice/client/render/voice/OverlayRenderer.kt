@@ -49,7 +49,7 @@ class OverlayRenderer(
             if (sourceLine.hasPlayers() && sourceState == OverlaySourceState.ALWAYS) {
                 val toRenderByPlayerId: MutableMap<UUID, RenderSourceInfo> = Maps.newHashMap()
 
-                for (player in sourceLine.players.sortedBy { it.name }) {
+                for (player in sourceLine.players!!.sortedBy { it.name }) {
                     val renderSourceInfo = RenderSourceInfo(
                         player.id,
                         MinecraftTextComponent.literal(player.name),

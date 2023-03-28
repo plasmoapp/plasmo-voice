@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UMatrixStack;
 import gg.essential.universal.UMinecraft;
@@ -20,6 +21,7 @@ import su.plo.lib.mod.client.render.texture.ModPlayerSkins;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
+import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.event.connection.VoicePlayerConnectedEvent;
 import su.plo.voice.api.client.event.connection.VoicePlayerDisconnectedEvent;
 import su.plo.voice.api.event.EventSubscribe;
@@ -27,11 +29,11 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 import su.plo.voice.client.gui.settings.widget.VolumeSliderWidget;
+import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
+import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class VolumeTabWidget extends TabWidget {
@@ -124,18 +126,58 @@ public final class VolumeTabWidget extends TabWidget {
 
         voiceClient.getServerConnection()
                 .ifPresent((connection) -> {
-                    connection.getPlayers()
+                    Map<UUID, MinecraftGameProfile> players = Maps.newHashMap();
+
+                    joinMap(players, connection.getPlayers()
                             .stream()
                             .filter(player -> player.getPlayerNick().toLowerCase().contains(currentSearch))
-                            .filter(player -> !UMinecraft.getPlayer().getUUID().equals(player.getPlayerId()))
-                            .sorted(Comparator.comparing(VoicePlayerInfo::getPlayerNick))
+                            .map(VoicePlayerInfo::toGameProfile)
+                            .collect(Collectors.toList())
+                    );
+                    joinMap(players, voiceClient.getSourceLineManager()
+                            .getLines()
+                            .stream()
+                            .map(ClientSourceLine::getPlayers)
+                            .filter(Objects::nonNull)
+                            .flatMap(Collection::stream)
+                            .collect(Collectors.toList())
+                    );
+                    joinMap(players, voiceClient.getSourceManager()
+                            .getSources()
+                            .stream()
+                            .map(ClientAudioSource::getSourceInfo)
+                            .filter(sourceInfo -> sourceInfo instanceof DirectSourceInfo)
+                            .map(sourceInfo -> ((DirectSourceInfo) sourceInfo).getSender())
+                            .filter(Objects::nonNull)
+                            .collect(Collectors.toList())
+                    );
+
+                    players.values()
+                            .stream()
+                            .filter(player -> !UMinecraft.getPlayer().getUUID().equals(player.getId()))
+                            .sorted(Comparator.comparing(MinecraftGameProfile::getName))
                             .forEach(this::createPlayerVolume);
                 });
     }
 
-    private void createPlayerVolume(@NotNull VoicePlayerInfo player) {
-        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume("source_" + player.getPlayerId().toString());
-        ConfigEntry<Boolean> muteEntry = config.getVoice().getVolumes().getMute("source_" + player.getPlayerId().toString());
+    private void joinMap(Map<UUID, MinecraftGameProfile> map, Collection<MinecraftGameProfile> joinCollection) {
+        joinCollection.forEach(gameProfile -> {
+            MinecraftGameProfile mapGameProfile = map.get(gameProfile.getId());
+
+            if (Objects.equals(gameProfile, mapGameProfile) &&
+                    gameProfile.getProperties().size() > mapGameProfile.getProperties().size()
+            ) {
+                map.put(gameProfile.getId(), gameProfile);
+                return;
+            }
+
+            map.put(gameProfile.getId(), gameProfile);
+        });
+    }
+
+    private void createPlayerVolume(@NotNull MinecraftGameProfile player) {
+        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume("source_" + player.getId().toString());
+        ConfigEntry<Boolean> muteEntry = config.getVoice().getVolumes().getMute("source_" + player.getId().toString());
 
         List<Button> buttons = Lists.newArrayList();
         Runnable updateButtons = createMuteButtonAction(buttons, muteEntry);
@@ -264,7 +306,7 @@ public final class VolumeTabWidget extends TabWidget {
 
     class PlayerVolumeEntry<W extends GuiAbstractWidget> extends ButtonOptionEntry<W> {
 
-        private final VoicePlayerInfo player;
+        private final MinecraftGameProfile player;
         private final ConfigEntry<Boolean> muteEntry;
 
         public PlayerVolumeEntry(@NotNull W widget,
@@ -272,9 +314,9 @@ public final class VolumeTabWidget extends TabWidget {
                                  @NotNull ConfigEntry<?> entry,
                                  @NotNull ConfigEntry<Boolean> muteEntry,
                                  @Nullable MinecraftTextComponent tooltip,
-                                 @NotNull VoicePlayerInfo player,
+                                 @NotNull MinecraftGameProfile player,
                                  @NotNull OptionResetAction<W> resetAction) {
-            super(MinecraftTextComponent.literal(player.getPlayerNick()), widget, buttons, entry, tooltip, resetAction, 30);
+            super(MinecraftTextComponent.literal(player.getName()), widget, buttons, entry, tooltip, resetAction, 30);
 
             this.muteEntry = muteEntry;
             this.player = player;
@@ -320,12 +362,8 @@ public final class VolumeTabWidget extends TabWidget {
         }
 
         private ResourceLocation loadSkin() {
-            ModPlayerSkins.loadSkin(
-                    player.getPlayerId(),
-                    player.getPlayerNick(),
-                    null
-            );
-            return ModPlayerSkins.getSkin(player.getPlayerId(), player.getPlayerNick());
+            ModPlayerSkins.loadSkin(player);
+            return ModPlayerSkins.getSkin(player.getId(), player.getName());
         }
     }
 }
