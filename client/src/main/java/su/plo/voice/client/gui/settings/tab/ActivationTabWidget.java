@@ -11,7 +11,6 @@ import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextStyle;
-import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -25,8 +24,8 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.client.gui.settings.widget.CircularButton;
 import su.plo.voice.client.gui.settings.widget.DistanceSliderWidget;
+import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.HotKeyWidget;
 import su.plo.voice.client.gui.settings.widget.NumberTextFieldWidget;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
@@ -102,37 +101,37 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
             createDistance(activation, activationConfig.get(), activationDistance.get());
     }
 
-    private OptionEntry<CircularButton> createActivationType(ClientActivation activation,
+    private OptionEntry<DropDownWidget> createActivationType(ClientActivation activation,
                                                              ConfigClientActivation activationConfig,
                                                              boolean canInherit) {
-        CircularButton typeButton = new CircularButton(
-                canInherit ? TYPES : NO_INHERIT_TYPES,
-                activation.getType().ordinal(),
+        DropDownWidget dropdown = new DropDownWidget(
+                parent,
                 0,
                 0,
                 activation.getType() == ClientActivation.Type.PUSH_TO_TALK
                         ? ELEMENT_WIDTH
                         : ELEMENT_WIDTH - 24,
                 20,
+                TYPES.get(activation.getType().ordinal()),
+                canInherit ? TYPES : NO_INHERIT_TYPES,
+                false,
                 (index) -> {
                     activationConfig.getConfigType().set(
                             ClientActivation.Type.values()[index]
                     );
                     init();
-                },
-                Button.NO_TOOLTIP
+                }
         );
 
         return new ActivationToggleStateEntry(
                 MinecraftTextComponent.translatable("gui.plasmovoice.activation.type"),
-                typeButton,
+                dropdown,
                 MinecraftTextComponent.translatable(activation.getTranslation()),
                 activationConfig.getConfigType(),
                 activationConfig.getConfigToggle(),
                 null,
                 (btn, element) -> {
-                    element.setIndex(0);
-                    element.updateValue();
+                    element.setText(TYPES.get(activation.getType().ordinal()));
                     init();
                 }
         );
@@ -203,15 +202,15 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
     }
 
-    private class ActivationToggleStateEntry extends ButtonOptionEntry<CircularButton> {
+    private class ActivationToggleStateEntry extends ButtonOptionEntry<DropDownWidget> {
 
         public ActivationToggleStateEntry(@NotNull MinecraftTextComponent text,
-                                          @NotNull CircularButton widget,
+                                          @NotNull DropDownWidget widget,
                                           @NotNull MinecraftTextComponent activationName,
                                           @NotNull EnumConfigEntry<ClientActivation.Type> entry,
                                           @NotNull BooleanConfigEntry stateEntry,
                                           @Nullable MinecraftTextComponent tooltip,
-                                          @Nullable OptionResetAction<CircularButton> resetAction) {
+                                          @Nullable OptionResetAction<DropDownWidget> resetAction) {
             super(text, widget, Lists.newArrayList(), entry, tooltip, resetAction);
 
             if (entry.value() == ClientActivation.Type.PUSH_TO_TALK) return;
