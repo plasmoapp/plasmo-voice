@@ -1,6 +1,6 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 import gg.essential.universal.UGraphics;
 import gg.essential.universal.UKeyboard;
 import gg.essential.universal.UMatrixStack;
@@ -179,8 +179,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     public void keysReleased() {
-        entry.value().getKeys().clear();
-        entry.value().getKeys().addAll(ImmutableList.copyOf(pressedKeys));
+        entry.value().setKeys(ImmutableSet.copyOf(pressedKeys));
         pressedKeys.clear();
         parent.setFocusedHotKey(null);
     }

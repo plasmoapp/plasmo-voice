@@ -56,7 +56,7 @@ public interface ClientActivation extends Activation {
 
     void reset();
 
-    void closeEncoders();
+    void cleanup();
 
     enum Type {
 

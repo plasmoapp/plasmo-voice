@@ -27,10 +27,7 @@ import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Config
@@ -227,9 +224,14 @@ public final class VoiceClientActivation
     }
 
     @Override
-    public void closeEncoders() {
+    public void cleanup() {
         getMonoEncoder().ifPresent(AudioEncoder::close);
         getStereoEncoder().ifPresent(AudioEncoder::close);
+
+        toggleKey.value().clearPressListener();
+        distanceIncreaseKey.value().clearPressListener();
+        distanceDecreaseKey.value().clearPressListener();
+        configDistance.clearChangeListeners();
 
         this.monoEncoder = null;
         this.stereoEncoder = null;

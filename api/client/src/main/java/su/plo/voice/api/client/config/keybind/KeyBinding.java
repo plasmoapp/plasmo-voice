@@ -16,6 +16,8 @@ public interface KeyBinding {
 
     Set<Key> getKeys();
 
+    void setKeys(@NotNull Set<Key> newKeys);
+
     boolean isAnyContext();
 
     boolean isPressed();
@@ -30,10 +32,22 @@ public interface KeyBinding {
 
     void clearPressListener();
 
+    void addKeysChangeListener(@NotNull OnKeysChange onKeysChange);
+
+    void removeKeysChangeListener(@NotNull OnKeysChange onKeysChange);
+
+    void clearKeysChangeListeners();
+
     @FunctionalInterface
     interface OnPress {
 
         void onPress(@NotNull Action action);
+    }
+
+    @FunctionalInterface
+    interface OnKeysChange {
+
+        void onKeysChange(@NotNull Set<Key> newKeys);
     }
 
     enum Action {

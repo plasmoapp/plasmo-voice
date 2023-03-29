@@ -16,6 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class VoiceKeyBinding implements KeyBinding {
 
     private final Set<OnPress> onPress = new CopyOnWriteArraySet<>();
+    private final Set<OnKeysChange> onKeysChange = new CopyOnWriteArraySet<>();
 
     private final KeyBindings keyBindings;
     @Getter
@@ -38,6 +39,14 @@ public final class VoiceKeyBinding implements KeyBinding {
     @Override
     public Set<Key> getKeys() {
         return keys;
+    }
+
+    @Override
+    public void setKeys(@NotNull Set<Key> newKeys) {
+        keys.clear();
+        keys.addAll(newKeys);
+        onKeysChange.forEach(action -> action.onKeysChange(newKeys));
+        resetState();
     }
 
     @Override
@@ -73,8 +82,23 @@ public final class VoiceKeyBinding implements KeyBinding {
         onPress.clear();
     }
 
+    @Override
+    public void addKeysChangeListener(@NotNull OnKeysChange onKeysChange) {
+        this.onKeysChange.add(onKeysChange);
+    }
+
+    @Override
+    public void removeKeysChangeListener(@NotNull OnKeysChange onKeysChange) {
+        this.onKeysChange.remove(onKeysChange);
+    }
+
     public @NotNull VoiceKeyBinding copy() {
         return new VoiceKeyBinding(keyBindings, name, new ArrayList<>(keys), anyContext);
+    }
+
+    @Override
+    public void clearKeysChangeListeners() {
+        onKeysChange.clear();
     }
 
     @Override

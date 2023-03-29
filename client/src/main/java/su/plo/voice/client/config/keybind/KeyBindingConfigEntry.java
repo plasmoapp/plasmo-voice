@@ -16,8 +16,7 @@ public final class KeyBindingConfigEntry extends ConfigEntry<KeyBinding> {
             return;
         }
 
-        value.getKeys().clear();
-        value.getKeys().addAll(this.defaultValue.getKeys());
+        value.setKeys(this.defaultValue.getKeys());
     }
 
     @Override

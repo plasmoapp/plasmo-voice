@@ -151,7 +151,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     public boolean unregister(@NotNull UUID id) {
         ClientActivation activation = activationById.remove(id);
         if (activation != null) {
-            activation.closeEncoders();
+            activation.cleanup();
 
             if (id.equals(VoiceActivation.PROXIMITY_ID)) {
                 this.parentActivation = createParentActivation(getServerConfig());
@@ -177,6 +177,8 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
     @Override
     public void clear() {
+        activations.forEach(ClientActivation::cleanup);
+        
         activations.clear();
         activationById.clear();
         this.initialized = false;
