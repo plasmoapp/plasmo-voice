@@ -186,9 +186,15 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     }
 
     public void onEntryHeightChange() {
-        this.scrollHeight = entries.stream()
-                .map(Entry::getHeight)
-                .reduce(0, Integer::sum);
+        this.scrollHeight = 0;
+        entryPositions.clear();
+
+        entries.forEach(entry -> {
+            EntryPosition lastPosition = getLastEntryPosition();
+            entryPositions.add(new EntryPosition(lastPosition.bottom, lastPosition.bottom + entry.getHeight()));
+
+            this.scrollHeight += entry.getHeight();
+        });
     }
 
     // ???
@@ -271,8 +277,10 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         }
 
         public void setHeight(int height) {
-            this.height = height;
-            AbstractScrollbar.this.onEntryHeightChange();
+            if (this.height != height) {
+                this.height = height;
+                AbstractScrollbar.this.onEntryHeightChange();
+            }
         }
 
         @Override

@@ -3,6 +3,7 @@ package su.plo.lib.mod.client.language;
 import com.mojang.blaze3d.platform.InputConstants;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
+import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.LiteralContents;
@@ -20,6 +21,14 @@ public class LanguageUtil {
 
     public static boolean has(String key) {
         return Language.getInstance().has(key);
+    }
+
+    public static String getSelectedLanguage() {
+        //#if MC>=11904
+        //$$ return Minecraft.getInstance().getLanguageManager().getSelected();
+        //#else
+        return Minecraft.getInstance().getLanguageManager().getSelected().getCode();
+        //#endif
     }
 
     // todo: legacy

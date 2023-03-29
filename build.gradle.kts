@@ -41,7 +41,7 @@ subprojects {
                 standardOutput = outputStream
             }
             outputStream.toString().trim()
-        }
+        }.substring(0, 7) // windows moment?
         version = "${buildVersion.split("+")[0]}+$gitCommitHash"
     } else {
         version = buildVersion
