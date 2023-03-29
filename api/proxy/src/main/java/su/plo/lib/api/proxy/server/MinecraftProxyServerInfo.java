@@ -9,4 +9,6 @@ public interface MinecraftProxyServerInfo {
     @NotNull String getName();
 
     @NotNull SocketAddress getAddress();
+
+    int getPlayerCount();
 }

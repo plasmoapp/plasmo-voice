@@ -13,4 +13,7 @@ class BungeeProxyServerInfo(
 
     override fun getAddress(): SocketAddress =
         instance.socketAddress
+
+    override fun getPlayerCount(): Int =
+        instance.players.size
 }

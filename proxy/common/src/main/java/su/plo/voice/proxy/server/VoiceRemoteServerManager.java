@@ -1,9 +1,10 @@
 package su.plo.voice.proxy.server;
 
 import com.google.common.collect.Maps;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
 import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.proxy.BaseVoiceProxy;
@@ -12,12 +13,38 @@ import java.net.InetSocketAddress;
 import java.util.Map;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public final class VoiceRemoteServerManager implements RemoteServerManager {
 
     private final BaseVoiceProxy voiceProxy;
 
     private final Map<String, RemoteServer> servers = Maps.newConcurrentMap();
+
+    public VoiceRemoteServerManager(@NotNull BaseVoiceProxy voiceProxy) {
+        this.voiceProxy = voiceProxy;
+
+        PlayerQuitEvent.INSTANCE.registerListener(player -> {
+            MinecraftProxyPlayer proxyPlayer = (MinecraftProxyPlayer) player;
+
+            voiceProxy.getMinecraftServer().getServers().forEach(server -> {
+                int playerCount = server.getPlayerCount();
+                if (proxyPlayer.getServer()
+                        .map(playerServer -> playerServer.getServerInfo().getName().equals(server.getName()))
+                        .orElse(false)
+                ) {
+                    playerCount -= 1;
+                }
+
+                if (playerCount > 0) return;
+
+                getServer(server.getName())
+                        .filter(RemoteServer::isAesEncryptionKeySet)
+                        .ifPresent(remoteServer -> {
+                            voiceProxy.getDebugLogger().log("Reset AES encryption state for {}", remoteServer);
+                            ((VoiceRemoteServer) remoteServer).setAesEncryptionKeySet(false);
+                        });
+            });
+        });
+    }
 
     @Override
     public Optional<RemoteServer> getServer(@NotNull String name) {

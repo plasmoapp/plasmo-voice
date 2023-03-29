@@ -104,7 +104,7 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
                 serverByName.remove(name);
                 return Optional.empty();
             } else if (!serverInfo.getInstance().equals(server.get().getServerInfo())) {
-                serverInfo = new VelocityProxyServerInfo(server.get().getServerInfo());
+                serverInfo = new VelocityProxyServerInfo(server.get());
                 serverByName.put(name, serverInfo);
             }
 
@@ -124,10 +124,10 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
 
         VelocityProxyServerInfo serverInfo = serverByName.get(server.getServerInfo().getName());
         if (serverInfo == null) {
-            serverInfo = new VelocityProxyServerInfo(server.getServerInfo());
+            serverInfo = new VelocityProxyServerInfo(server);
             serverByName.put(server.getServerInfo().getName(), serverInfo);
         } else if (!serverInfo.getInstance().equals(server.getServerInfo())) {
-            serverInfo = new VelocityProxyServerInfo(server.getServerInfo());
+            serverInfo = new VelocityProxyServerInfo(server);
             serverByName.put(server.getServerInfo().getName(), serverInfo);
         }
 
@@ -150,7 +150,7 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
     private void loadServers() {
         proxyServer.getAllServers().forEach((server) -> {
             ServerInfo serverInfo = server.getServerInfo();
-            serverByName.put(serverInfo.getName(), new VelocityProxyServerInfo(serverInfo));
+            serverByName.put(serverInfo.getName(), new VelocityProxyServerInfo(server));
         });
     }
 

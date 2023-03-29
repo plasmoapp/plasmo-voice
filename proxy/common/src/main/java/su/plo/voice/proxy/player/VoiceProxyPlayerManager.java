@@ -5,9 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
 import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
+import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
-import su.plo.voice.api.server.connection.ConnectionManager;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
 import su.plo.voice.server.player.BaseVoicePlayerManager;
@@ -77,5 +77,15 @@ public final class VoiceProxyPlayerManager
             if ((filter == null || filter.test(player)) && player.hasVoiceChat())
                 player.sendPacket(packet);
         }
+    }
+
+    @Override
+    public void onPlayerJoin(@NotNull MinecraftServerPlayer player) {
+        super.onPlayerJoin(player);
+    }
+
+    @Override
+    public void onPlayerQuit(@NotNull MinecraftServerPlayer player) {
+        super.onPlayerQuit(player);
     }
 }
