@@ -150,6 +150,8 @@
     "message.plasmovoice.occlusion_changed": "Sound Occlusion: %s",
     "message.plasmovoice.distance_changed": "%s Voice Distance: %d",
 
+    "message.plasmovoice.activation.toggle": "%s: %s",
+
     "message.plasmovoice.update_available": "New version %1$s of Plasmo Voice is available: %2$s",
     "message.plasmovoice.update_available.click": "Download",
     "message.plasmovoice.update_available.hover": "%s"

@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
+import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
@@ -42,7 +43,7 @@ public final class VoiceClientActivation
 
     private final IntConfigEntry configDistance;
     private final ConfigEntry<ClientActivation.Type> configType;
-    private final ConfigEntry<Boolean> configToggle;
+    private final BooleanConfigEntry configToggle;
 
     private final KeyBindingConfigEntry pttKey;
     private final KeyBindingConfigEntry toggleKey;
@@ -307,7 +308,17 @@ public final class VoiceClientActivation
 
     private void onToggle(@NotNull KeyBinding.Action action) {
         if (action != KeyBinding.Action.DOWN || getType() == Type.PUSH_TO_TALK) return;
-        configToggle.set(!configToggle.value());
+        configToggle.invert();
+
+        UChat.actionBar(RenderUtil.getTextConverter().convert(
+                MinecraftTextComponent.translatable(
+                        "message.plasmovoice.activation.toggle",
+                        MinecraftTextComponent.translatable(translation),
+                        !configToggle.value()
+                                ? MinecraftTextComponent.translatable("message.plasmovoice.on")
+                                : MinecraftTextComponent.translatable("message.plasmovoice.off")
+                )
+        ));
     }
 
     private void onDistanceIncrease(@NotNull KeyBinding.Action action) {
