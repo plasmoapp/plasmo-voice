@@ -17,17 +17,21 @@ public final class AddonDependency {
     private final String id;
     @Getter
     private final boolean optional;
+    @Getter
+    private final boolean mod;
 
     /**
      * Creates a new addon dependency
      *
      * @param id       the addon id
      * @param optional whether this dependency is optional
+     * @param mod      whether this dependency is mod dependency
      */
-    public AddonDependency(@NonNull String id, boolean optional) {
+    public AddonDependency(@NonNull String id, boolean optional, boolean mod) {
         this.id = id;
         checkArgument(!id.isEmpty(), "id cannot be empty");
         this.optional = optional;
+        this.mod = mod;
     }
 
     @Override

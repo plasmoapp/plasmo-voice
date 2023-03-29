@@ -19,4 +19,10 @@ public @interface Dependency {
      * @return true if dependency is optional
      */
     boolean optional() default false;
+
+    /**
+     * Returns whether this dependency is mod dependency
+     * @return true if dependency is mod
+     */
+    boolean mod() default false;
 }

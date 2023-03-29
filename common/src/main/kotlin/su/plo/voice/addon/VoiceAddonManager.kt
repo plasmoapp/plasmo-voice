@@ -8,9 +8,7 @@ import org.apache.logging.log4j.LogManager
 import su.plo.voice.BaseVoice
 import su.plo.voice.api.addon.*
 import su.plo.voice.api.addon.annotation.Addon
-import su.plo.voice.api.addon.annotation.Dependency
 import java.util.*
-import java.util.stream.Collectors
 
 class VoiceAddonManager(
     private val voice: BaseVoice
@@ -43,13 +41,13 @@ class VoiceAddonManager(
             addon.scope,
             addon.version,
             Lists.newArrayList(*addon.authors),
-            Arrays.stream(addon.dependencies)
-                .map { dependency: Dependency -> AddonDependency(dependency.id, dependency.optional) }
-                .collect(Collectors.toList()),
+            addon.dependencies.map { dependency ->
+                AddonDependency(dependency.id, dependency.optional, dependency.mod)
+            },
             addonClass
         )
 
-        addonContainer.dependencies.filter { !it.isOptional }.forEach { dependency ->
+        addonContainer.dependencies.filter { !it.isOptional && !it.isMod }.forEach { dependency ->
             if (!addonById.containsKey(dependency.id)) {
                 LOGGER.error("Addon \"{}\" is missing dependency \"{}\"", addonContainer.id, dependency.id)
                 return
