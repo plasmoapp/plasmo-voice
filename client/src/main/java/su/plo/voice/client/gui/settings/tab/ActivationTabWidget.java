@@ -10,6 +10,7 @@ import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -125,6 +126,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         return new ActivationToggleStateEntry(
                 MinecraftTextComponent.translatable("gui.plasmovoice.activation.type"),
                 typeButton,
+                MinecraftTextComponent.translatable(activation.getTranslation()),
                 activationConfig.getConfigType(),
                 activationConfig.getConfigToggle(),
                 null,
@@ -205,6 +207,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
         public ActivationToggleStateEntry(@NotNull MinecraftTextComponent text,
                                           @NotNull CircularButton widget,
+                                          @NotNull MinecraftTextComponent activationName,
                                           @NotNull EnumConfigEntry<ClientActivation.Type> entry,
                                           @NotNull BooleanConfigEntry stateEntry,
                                           @Nullable MinecraftTextComponent tooltip,
@@ -224,7 +227,15 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
                         stateEntry.set(true);
                     },
-                    Button.NO_TOOLTIP,
+                    (button, render, mouseX, mouseY) -> {
+                        parent.setTooltip(MinecraftTextComponent.translatable(
+                                "gui.plasmovoice.activation.toggle",
+                                activationName,
+                                MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                        MinecraftTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(MinecraftTextStyle.GREEN)
+                                ).withStyle(MinecraftTextStyle.GRAY)
+                        ));
+                    },
                     new ResourceLocation("plasmovoice:textures/icons/microphone_menu.png"),
                     true
             );
@@ -239,7 +250,15 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
                         stateEntry.set(false);
                     },
-                    Button.NO_TOOLTIP,
+                    (button, render, mouseX, mouseY) -> {
+                        parent.setTooltip(MinecraftTextComponent.translatable(
+                                "gui.plasmovoice.activation.toggle",
+                                activationName,
+                                MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                        MinecraftTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(MinecraftTextStyle.RED)
+                                ).withStyle(MinecraftTextStyle.GRAY)
+                        ));
+                    },
                     new ResourceLocation("plasmovoice:textures/icons/microphone_menu_disabled.png"),
                     true
             );

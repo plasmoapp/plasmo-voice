@@ -45,6 +45,8 @@
     "gui.plasmovoice.devices.directional_sources.tooltip": "Will make the sound slightly quieter if the sound source is not looking directly at you, and is outside of the specified angle.\n\nApplies to the players you hear.",
     "gui.plasmovoice.devices.hrtf": "HRTF",
     "gui.plasmovoice.devices.hrtf.tooltip": "Improves accuracy of audio positioning, making it easier to understand where the sound is coming from in 3D space.\n\nMay slightly make the audio quality worse.\n\nApplies to the players you hear.",
+
+
     "gui.plasmovoice.activation": "Activation",
 
     "gui.plasmovoice.activation.type": "Activation Type",
@@ -53,6 +55,7 @@
     "gui.plasmovoice.activation.type_inherit": "Inherit",
     "gui.plasmovoice.activation.ptt_button": "Push-To-Talk Button",
     "gui.plasmovoice.activation.toggle_button": "Toggle Button",
+    "gui.plasmovoice.activation.toggle": "Toggle \"%s\"\n%s",
     "gui.plasmovoice.activation.distance": "%s Distance",
 
 
