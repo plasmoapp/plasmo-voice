@@ -47,7 +47,7 @@ import java.util.UUID;
 public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoiceProxy {
 
     public static final String CHANNEL_STRING = "plasmo:voice/v2";
-    public static final String SERVICE_CHANNEL_STRING = "plasmo:voice/proxy/v2";
+    public static final String SERVICE_CHANNEL_STRING = "plasmo:voice/v2/service";
 
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 

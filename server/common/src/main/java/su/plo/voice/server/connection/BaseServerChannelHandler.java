@@ -44,7 +44,7 @@ public abstract class BaseServerChannelHandler {
     protected void handleRegisterChannels(List<String> channels, VoiceServerPlayer player) {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
-        if (channels.contains(BaseVoiceServer.CHANNEL_STRING)) {
+        if (channels.contains(BaseVoiceServer.FLAG_CHANNEL_STRING)) {
             voiceServer.getTcpConnectionManager().requestPlayerInfo(player);
             cancelPlayerCheckFuture(player.getInstance().getUUID());
 
@@ -64,26 +64,29 @@ public abstract class BaseServerChannelHandler {
                     SemanticVersion.parse(voiceServer.getVersion()),
                     voiceServer.getMinecraftServer().getVersion()
             );
-        } else if (voiceServer.getConfig().voice().clientModRequired()) {
-            kickModRequired(player.getInstance());
         }
     }
 
     public void onPlayerJoin(@NotNull MinecraftServerPlayer player) {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
-        if (voiceServer.getConfig().voice().clientModRequired()) {
+        if (shouldKick(player)) {
             cancelPlayerCheckFuture(player.getUUID());
 
             playerCheckFutures.put(player.getUUID(), voiceServer.getBackgroundExecutor().schedule(() -> {
                 voiceServer.getMinecraftServer().executeInMainThread(() -> kickModRequired(player));
-            }, 3000L, TimeUnit.MILLISECONDS));
+            }, voiceServer.getConfig().voice().clientModRequiredCheckTimeoutMs(), TimeUnit.MILLISECONDS));
         }
     }
 
     public void onPlayerQuit(@NotNull MinecraftServerPlayer player) {
         channels.remove(player.getUUID());
         cancelPlayerCheckFuture(player.getUUID());
+    }
+
+    private boolean shouldKick(@NotNull MinecraftServerPlayer player) {
+        return voiceServer.getConfig().voice().clientModRequired() &&
+                !player.hasPermission("pv.bypass_mod_requirement");
     }
 
     private void cancelPlayerCheckFuture(@NotNull UUID playerId) {

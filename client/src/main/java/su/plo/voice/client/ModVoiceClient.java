@@ -5,7 +5,6 @@ import gg.essential.universal.UKeyboard;
 import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
@@ -18,6 +17,7 @@ import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.render.ModEntityRenderer;
 import su.plo.voice.client.render.ModHudRenderer;
 import su.plo.voice.client.render.ModLevelRenderer;
+import su.plo.voice.server.ModVoiceServer;
 import su.plo.voice.util.version.ModrinthLoader;
 
 //#if FABRIC
@@ -51,7 +51,6 @@ public final class ModVoiceClient extends BaseVoiceClient
         //#endif
 {
 
-    public static final ResourceLocation CHANNEL = new ResourceLocation(CHANNEL_STRING);
     // static instance is used for access from mixins
     public static ModVoiceClient INSTANCE;
 
@@ -132,9 +131,10 @@ public final class ModVoiceClient extends BaseVoiceClient
                 (context) -> levelRenderer.render(context.world(), context.matrixStack(), context.camera(), context.tickDelta())
         );
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
-        ClientPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
+        ClientPlayNetworking.registerGlobalReceiver(ModVoiceServer.CHANNEL, handler);
+        ClientPlayNetworking.registerGlobalReceiver(ModVoiceServer.FLAG_CHANNEL, (client, handler, buf, responseSender) -> {});
 
-        KeyBindingHelper.registerKeyBinding(this.MENU_KEY);
+        KeyBindingHelper.registerKeyBinding(MENU_KEY);
     }
 
     @Override

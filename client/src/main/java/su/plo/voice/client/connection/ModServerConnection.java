@@ -45,6 +45,7 @@ import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proto.packets.tcp.serverbound.LanguageRequestPacket;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
+import su.plo.voice.server.ModVoiceServer;
 
 import javax.crypto.Cipher;
 import javax.sound.sampled.AudioFormat;
@@ -101,7 +102,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         if (encoded == null) return;
 
         connection.send(new ServerboundCustomPayloadPacket(
-                ModVoiceClient.CHANNEL,
+                ModVoiceServer.CHANNEL,
                 new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded))
         ));
     }

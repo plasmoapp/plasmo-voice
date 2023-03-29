@@ -114,6 +114,9 @@ public final class VoiceServerConfig implements ServerConfig {
         private boolean clientModRequired = false;
 
         @ConfigField
+        private long clientModRequiredCheckTimeoutMs = 3_000L;
+
+        @ConfigField
         private Proximity proximity = new Proximity();
 
         @ConfigField

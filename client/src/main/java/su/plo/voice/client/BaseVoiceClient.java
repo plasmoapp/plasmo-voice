@@ -72,8 +72,6 @@ import java.util.Optional;
 
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
 
-    public static final String CHANNEL_STRING = "plasmo:voice/v2";
-
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     @Getter

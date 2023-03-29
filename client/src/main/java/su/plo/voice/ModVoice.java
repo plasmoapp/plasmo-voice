@@ -52,6 +52,13 @@ public final class ModVoice
     //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
     //$$     );
     //$$
+    //$$     NetworkRegistry.newEventChannel(
+    //$$             ModVoiceServer.FLAG_CHANNEL,
+    //$$             () -> NetworkRegistry.ACCEPTVANILLA,
+    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA),
+    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
+    //$$     );
+    //$$
     //$$     EventNetworkChannel serviceChannel = NetworkRegistry.newEventChannel(
     //$$             ModVoiceServer.SERVICE_CHANNEL,
     //$$             () -> NetworkRegistry.ACCEPTVANILLA,
@@ -65,7 +72,6 @@ public final class ModVoice
     //$$
     //$$ @SubscribeEvent
     //$$ public void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
-    //$$     System.out.println(event);
     //$$     event.register(ModVoiceClient.MENU_KEY);
     //$$ }
     //#endif

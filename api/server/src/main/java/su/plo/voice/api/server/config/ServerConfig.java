@@ -55,6 +55,8 @@ public interface ServerConfig {
 
         boolean clientModRequired();
 
+        long clientModRequiredCheckTimeoutMs();
+
         @NotNull Proximity proximity();
 
         @NotNull Opus opus();

@@ -65,7 +65,7 @@ class PaperServerPlayer(
         instance.sendPluginMessage(loader, channel, data)
 
     override fun kick(reason: MinecraftTextComponent) {
-        instance.kickPlayer(reason.toString()) // todo: use BaseComponent?
+        instance.kickPlayer(textConverter.convert(this, reason).toLegacyText())
     }
 
     override fun canSee(player: MinecraftServerPlayerEntity) =

@@ -49,6 +49,7 @@ public final class ModVoiceServer
         extends BaseVoiceServer {
 
     public static final ResourceLocation CHANNEL = new ResourceLocation(CHANNEL_STRING);
+    public static final ResourceLocation FLAG_CHANNEL = new ResourceLocation(FLAG_CHANNEL_STRING);
     public static final ResourceLocation SERVICE_CHANNEL = new ResourceLocation(SERVICE_CHANNEL_STRING);
 
     private final String modId = "plasmovoice";
