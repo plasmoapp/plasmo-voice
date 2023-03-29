@@ -29,8 +29,5 @@
     "depends": {
         "fabric": "*",
         "fabricloader": "*"
-    },
-    "suggests": {
-        "soundphysics": "*"
     }
 }
