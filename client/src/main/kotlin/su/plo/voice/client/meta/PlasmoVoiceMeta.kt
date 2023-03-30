@@ -58,7 +58,6 @@ data class PlasmoVoiceMeta(
             // todo: cache?
 
             val url = URL("https://vc.plo.su/meta.json?language=${languageName}")
-            println(url)
 
             val metaJson = try {
                 JsonParser.parseString(
