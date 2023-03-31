@@ -39,6 +39,7 @@ Players need to install the Fabric or Forge mod on the client for the voice chat
 <img src="https://i.imgur.com/3AL6qTq.gif" width="1280px" />
 
 ## Client features
+
 - **RNNoise noise reduction.**
 - **OpenAL sound engine, great audio positioning.**
 - **[Sound Physics Remastered](https://modrinth.com/mod/sound-physics-remastered) compatability with [pv-addon-soundphysics](https://modrinth.com/mod/pv-addon-soundphysics).**
@@ -49,8 +50,8 @@ Players need to install the Fabric or Forge mod on the client for the voice chat
 - **Optional Directional Sources.** Makes the sound source quieter if it's not looking directly at you.
 - **Choose the position of the GUI icons and toggle the visibility of the player icons.**
 - **Mute and change the volume of the players in the Minecraft social menu.**
-- **Hold `RBM` while looking at the player, and then use the scroll wheel to adjust the volume.**
-- **Stereo Sources.**
+- **Hold `RMB` while looking at the player, and then use the scroll wheel to adjust the volume.**
+- **Stereo sources.**
 - **Discord-like overlay.**
 - **Smooth volume controls.**
 
@@ -64,8 +65,7 @@ Check out voice settings by pressing `V`. Make sure you have the right devices s
 - **Configurable voice distance.**
 - **Server muting with chat commands.**
 - **Option to kick players who don't have the client mod installed.**
-- **Permissions for priority, speaking, voice activation, and muting.**
-- **Permissions work on Fabric & Forge with the /vperms command.**
+- **Permissions.**
 - **Voice chat works in singleplayer and when using the Open to LAN feature.**
 - **Placeholder API support.**
 - **Vanish support.**
