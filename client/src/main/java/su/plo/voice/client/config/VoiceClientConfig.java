@@ -543,6 +543,8 @@ public final class VoiceClientConfig implements ClientConfig {
 
                 // what the fuck
                 map.forEach((key, value) -> {
+                    key = key.replaceAll("\"", "");
+
                     if (value instanceof Boolean) {
                         entries.put(key, new BooleanConfigEntry((Boolean) value));
                     } else if (value instanceof Long) {
@@ -559,11 +561,7 @@ public final class VoiceClientConfig implements ClientConfig {
             public synchronized Object serialize() {
                 Map<String, Object> serialized = Maps.newHashMap();
 
-                entries.forEach((key, entry) -> {
-                    if (!entry.isDefault()) {
-                        serialized.put(key, entry.value());
-                    }
-                });
+                entries.forEach((key, entry) -> serialized.put(key, entry.value()));
 
                 return serialized;
             }
