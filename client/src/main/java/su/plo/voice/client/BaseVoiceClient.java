@@ -43,6 +43,7 @@ import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
+import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
 import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
@@ -111,12 +112,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         ClientAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
-
-
-//    protected BaseVoiceClient() {
-//        // JavaX input
-//        getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
-//    }
 
     @EventSubscribe
     public void onUdpConnected(@NotNull UdpClientConnectedEvent event) {
