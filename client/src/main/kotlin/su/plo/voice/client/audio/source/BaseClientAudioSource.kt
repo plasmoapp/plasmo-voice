@@ -85,7 +85,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
         // initialize decoder
         sourceInfo.decoderInfo?.let {
-            decoder = createDecoder(voiceInfo, it)
+            decoder = createDecoder(sourceInfo, voiceInfo, it)
         }
 
         // initialize encryption
@@ -101,6 +101,8 @@ abstract class BaseClientAudioSource<T> constructor(
             sourceInfo,
             if (isStereo(sourceInfo)) "stereo" else "mono"
         )
+
+        voiceClient.eventBus.call(AudioSourceInitializedEvent(this))
     }
 
     override fun update(sourceInfo: T): Unit = runBlocking {
@@ -129,8 +131,9 @@ abstract class BaseClientAudioSource<T> constructor(
                 decoder?.close()
 
                 sourceInfo.decoderInfo?.let {
-                    decoder = createDecoder(voiceInfo, it)
+                    decoder = createDecoder(sourceInfo, voiceInfo, it)
                 }
+                lastSequenceNumbers.clear()
                 LOGGER.info("Update decoder for {}", sourceInfo)
             }
 
@@ -450,7 +453,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    private fun createDecoder(voiceInfo: VoiceInfo, decoderInfo: CodecInfo): AudioDecoder {
+    private fun createDecoder(sourceInfo: T, voiceInfo: VoiceInfo, decoderInfo: CodecInfo): AudioDecoder {
         return voiceClient.codecManager.createDecoder(
             decoderInfo,
             voiceInfo.captureInfo.sampleRate,
