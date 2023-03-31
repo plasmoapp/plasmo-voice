@@ -1,7 +1,7 @@
 val mavenGroup: String by rootProject
+val buildVersion: String by rootProject
 
 val bungeeVersion: String by project
-val buildVersion: String by rootProject
 
 group = "$mavenGroup.bungee"
 
@@ -12,8 +12,9 @@ repositories {
 dependencies {
     compileOnly("net.md-5:bungeecord-api:$bungeeVersion")
     compileOnly("net.md-5:bungeecord-proxy:$bungeeVersion")
+    compileOnly(rootProject.libs.versions.bstats.map { "org.bstats:bstats-bungeecord:$it" })
 
-    api(project(":proxy:common"))
+    compileOnly(project(":proxy:common"))
     compileOnly(rootProject.libs.netty)
 
     // shadow projects
@@ -38,6 +39,7 @@ dependencies {
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
     shadow(rootProject.libs.kotlinx.json)
+    shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-bungeecord:$it" })
 }
 
 tasks {
@@ -57,6 +59,9 @@ tasks {
         archiveBaseName.set("PlasmoVoice-BungeeCord")
         archiveAppendix.set("")
         archiveClassifier.set("")
+
+        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
+        relocate("org.bstats", "su.plo.voice.bstats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))

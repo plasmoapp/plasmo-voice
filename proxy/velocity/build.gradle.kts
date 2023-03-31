@@ -3,9 +3,9 @@ import org.gradle.plugins.ide.idea.model.IdeaProject
 import org.jetbrains.gradle.ext.*
 
 val mavenGroup: String by rootProject
+val buildVersion: String by rootProject
 
 val velocityVersion: String by project
-val buildVersion: String by rootProject
 
 plugins {
     id("org.jetbrains.gradle.plugin.idea-ext")
@@ -16,8 +16,9 @@ group = "$mavenGroup.velocity"
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:$velocityVersion")
     annotationProcessor("com.velocitypowered:velocity-api:$velocityVersion")
+    compileOnly(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
 
-    api(project(":proxy:common"))
+    compileOnly(project(":proxy:common"))
     compileOnly(rootProject.libs.netty)
 
     // shadow projects
@@ -41,6 +42,7 @@ dependencies {
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
     shadow(rootProject.libs.kotlinx.json)
+    shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
 }
 
 val templateSource = file("src/main/templates")
@@ -87,6 +89,9 @@ tasks {
         archiveBaseName.set("PlasmoVoice-Velocity")
         archiveAppendix.set("")
         archiveClassifier.set("")
+
+        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
+        relocate("org.bstats", "su.plo.voice.bstats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
