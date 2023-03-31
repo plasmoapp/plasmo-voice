@@ -6,6 +6,8 @@ import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import su.plo.lib.api.server.permission.PermissionTristate
 import su.plo.lib.paper.PaperServerLib
+import su.plo.ustats.UStats
+import su.plo.ustats.paper.PaperUStatsPlatform
 import su.plo.voice.paper.connection.PaperServerChannelHandler
 import su.plo.voice.paper.connection.PaperServerServiceChannelHandler
 import su.plo.voice.paper.integration.VoicePlaceholder
@@ -22,6 +24,8 @@ class PaperVoiceServer(
 
     private lateinit var handler: PaperServerChannelHandler
     private lateinit var serviceHandler: PaperServerServiceChannelHandler
+
+    private lateinit var uStats: UStats
 
     public override fun onInitialize() {
         registerDefaultCommandsAndPermissions()
@@ -51,6 +55,13 @@ class PaperVoiceServer(
                 }
         }
 
+        this.uStats = UStats(
+            USTATS_PROJECT_UUID,
+            version,
+            PaperUStatsPlatform,
+            configFolder
+        )
+
         // Initialize integrations
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             VoicePlaceholder(this).register()
@@ -59,6 +70,8 @@ class PaperVoiceServer(
 
     public override fun onShutdown() {
         super.onShutdown()
+
+        uStats.close()
     }
 
     override fun getVersion() = plugin.description.version

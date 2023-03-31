@@ -70,6 +70,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
+// todo: merge with ModVoiceClient
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
 
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);

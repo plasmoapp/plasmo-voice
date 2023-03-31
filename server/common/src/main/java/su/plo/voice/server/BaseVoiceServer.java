@@ -70,6 +70,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     public static final String FLAG_CHANNEL_STRING = "plasmo:voice/v2/installed";
     public static final String SERVICE_CHANNEL_STRING = "plasmo:voice/v2/service";
 
+    public static final UUID USTATS_PROJECT_UUID = UUID.fromString("2b87ab55-5ec8-48ef-b8bb-a5018e53d65e");
+
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     @Getter

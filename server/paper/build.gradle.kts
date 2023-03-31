@@ -12,8 +12,9 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${paperVersion}")
     compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
+    compileOnly(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 
-    implementation(project(":server:common"))
+    compileOnly(project(":server:common"))
 
     // shadow projects
     listOf(
@@ -37,6 +38,7 @@ dependencies {
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
     shadow(rootProject.libs.kotlinx.json)
+    shadow(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 }
 
 tasks {
