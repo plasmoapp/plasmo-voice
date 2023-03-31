@@ -59,6 +59,9 @@ tasks {
         archiveAppendix.set("")
         archiveClassifier.set("")
 
+        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
+        relocate("su.plo.ustats", "su.plo.voice.ustats")
+
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
