@@ -26,6 +26,13 @@ public interface AudioFilter {
     boolean isEnabled();
 
     /**
+     * @return number of required device channels to process this filter. With "0" this will be ignored
+     */
+    default int getSupportedChannels() {
+        return 0;
+    }
+
+    /**
      * Represents the filter priority in execution
      */
     enum Priority {

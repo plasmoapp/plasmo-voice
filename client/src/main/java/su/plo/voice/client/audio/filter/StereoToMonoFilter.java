@@ -25,4 +25,9 @@ public final class StereoToMonoFilter implements AudioFilter {
     public boolean isEnabled() {
         return activeEntry.value();
     }
+
+    @Override
+    public int getSupportedChannels() {
+        return 2;
+    }
 }

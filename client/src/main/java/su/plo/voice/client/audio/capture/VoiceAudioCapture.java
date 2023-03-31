@@ -305,8 +305,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
                 processedSamples = device.processFilters(
                         processedSamples,
-                        (filter) -> (filter instanceof StereoToMonoFilter) ||
-                                (filter instanceof NoiseSuppressionFilter)
+                        (filter) -> (filter instanceof StereoToMonoFilter)
                 );
                 encoded.stereoProcessed = processedSamples;
                 encoded.stereo = encode(stereoEncoder, processedSamples);

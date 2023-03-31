@@ -29,7 +29,6 @@ public final class ClientLoopbackSource implements LoopbackSource {
     private final boolean relative;
 
     private final float[] position = new float[3];
-    private final Pos3d playerPosition = new Pos3d(0D, 0D, 0D);
 
     private SourceGroup sourceGroup;
     @Getter
@@ -51,6 +50,7 @@ public final class ClientLoopbackSource implements LoopbackSource {
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
+                alSource.setCloseTimeoutMs(0L);
                 AlAudioDevice device = alSource.getDevice();
 
                 device.runInContextBlocking(() -> {
