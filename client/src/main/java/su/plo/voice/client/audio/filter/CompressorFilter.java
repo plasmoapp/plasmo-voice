@@ -42,6 +42,11 @@ public final class CompressorFilter implements AudioFilter {
         return activeEntry.value();
     }
 
+    @Override
+    public int getSupportedChannels() {
+        return 1;
+    }
+
     public synchronized void compress(float[] samples) {
         float compressorThreshold = thresholdEntry.value();
 

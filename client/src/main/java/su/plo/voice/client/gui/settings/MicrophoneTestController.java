@@ -12,7 +12,6 @@ import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureProcessedEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
@@ -77,16 +76,15 @@ public final class MicrophoneTestController {
     @EventSubscribe
     public void onAudioCaptureProcessed(@NotNull AudioCaptureProcessedEvent event) {
         short[] samples;
-        if (event.getSamplesProcessed() != null) {
-            samples = event.getSamplesProcessed();
+        if (event.getMonoSamplesProcessed() != null) {
+            samples = event.getMonoSamplesProcessed();
         } else {
             samples = new short[event.getSamples().length];
             System.arraycopy(event.getSamples(), 0, samples, 0, event.getSamples().length);
 
             samples = event.getDevice().processFilters(
                     samples,
-                    (filter) -> isStereo() &&
-                            ((filter instanceof StereoToMonoFilter) || (filter instanceof NoiseSuppressionFilter))
+                    (filter) -> isStereoSupported() && (filter instanceof StereoToMonoFilter)
             );
         }
 
@@ -114,14 +112,14 @@ public final class MicrophoneTestController {
     private void initializeLoopbackSource() throws DeviceException {
         this.source = voiceClient.getSourceManager().createLoopbackSource(true);
         try {
-            source.initialize(isStereo());
+            source.initialize(isStereoSupported());
         } catch (DeviceException e) {
             this.source = null;
             throw e;
         }
     }
 
-    private boolean isStereo() {
+    private boolean isStereoSupported() {
         return config.getVoice().getStereoCapture().value() && !config.getAdvanced().getStereoSourcesToMono().value();
     }
 }

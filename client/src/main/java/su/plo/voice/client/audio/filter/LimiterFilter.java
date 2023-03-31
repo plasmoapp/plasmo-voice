@@ -61,6 +61,11 @@ public class LimiterFilter implements AudioFilter {
         return activeEntry.value();
     }
 
+    @Override
+    public int getSupportedChannels() {
+        return 1;
+    }
+
     public synchronized void limit(float[] samples) {
         float limiterThreshold;
 

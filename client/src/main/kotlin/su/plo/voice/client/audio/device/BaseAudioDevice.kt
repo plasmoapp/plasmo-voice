@@ -2,7 +2,6 @@ package su.plo.voice.client.audio.device
 
 import com.google.common.collect.ListMultimap
 import com.google.common.collect.Multimaps
-import lombok.Getter
 import lombok.RequiredArgsConstructor
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AudioDevice
@@ -54,11 +53,15 @@ abstract class BaseAudioDevice(
         filters.values()
 
     override fun processFilters(samples: ShortArray, excludeFilter: Predicate<AudioFilter>?): ShortArray {
+        val channels = format.channels
+
         var samples = samples
         for (filter in filters.values()) {
-            if (filter.isEnabled && excludeFilter?.test(filter) != true) {
-                samples = filter.process(samples)
-            }
+            if (!filter.isEnabled) continue
+            if (filter.supportedChannels > 0 && filter.supportedChannels != channels) continue
+            if (excludeFilter?.test(filter) == true) continue
+
+            samples = filter.process(samples)
         }
         return samples
     }
