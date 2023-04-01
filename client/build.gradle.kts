@@ -51,6 +51,7 @@ repositories {
 
 dependencies {
     compileOnly(rootProject.libs.netty)
+
 //    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
     if (platform.isFabric) {
@@ -66,17 +67,31 @@ dependencies {
         "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
     }
 
-    modApi("gg.essential:universalcraft-$platform:262") {
+    modApi(rootProject.libs.versions.universalcraft.map {
+        "gg.essential:universalcraft-$platform:$it"
+    }) {
         exclude(group = "org.jetbrains.kotlin")
     }
-
     if (platform.isForge) {
-        common("gg.essential:universalcraft-$platform:262") {
+        common(rootProject.libs.versions.universalcraft.map {
+            "gg.essential:universalcraft-$platform:$it"
+        }) {
             exclude(group = "org.jetbrains.kotlin")
         }
     } else {
-        "include"("gg.essential:universalcraft-$platform:262") {
+        "include"(rootProject.libs.versions.universalcraft.map {
+            "gg.essential:universalcraft-$platform:$it"
+        }) {
             exclude(group = "org.jetbrains.kotlin")
+        }
+    }
+
+    rootProject.libs.versions.ustats.map { "su.plo.ustats:$platform:$it" }.also {
+        modApi(it)
+        if (platform.isForge) {
+            common(it)
+        } else {
+            "include"(it)
         }
     }
 
@@ -134,6 +149,7 @@ tasks {
         relocate("su.plo.crowdin", "su.plo.voice.crowdin")
         if (platform.isForge) {
             relocate("gg.essential.universal", "su.plo.universal")
+            relocate("su.plo.ustats", "su.plo.voice.ustats")
         }
 
         dependencies {

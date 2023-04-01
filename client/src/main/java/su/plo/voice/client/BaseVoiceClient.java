@@ -55,7 +55,6 @@ import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.client.meta.PlasmoVoiceMeta;
 import su.plo.voice.client.render.cape.DeveloperCapeManager;
 import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
@@ -70,6 +69,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
+// todo: merge with ModVoiceClient
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
 
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
@@ -110,12 +110,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         ClientAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
-
-
-//    protected BaseVoiceClient() {
-//        // JavaX input
-//        getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
-//    }
 
     @EventSubscribe
     public void onUdpConnected(@NotNull UdpClientConnectedEvent event) {

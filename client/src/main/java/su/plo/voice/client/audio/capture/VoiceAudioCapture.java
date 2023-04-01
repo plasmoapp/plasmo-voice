@@ -2,11 +2,17 @@ package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.sun.jna.Platform;
 import lombok.Setter;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.api.chat.MinecraftTextClickEvent;
+import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.lib.api.chat.MinecraftTextHoverEvent;
+import su.plo.lib.api.chat.MinecraftTextStyle;
+import su.plo.lib.mod.client.chat.ClientChatUtil;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -25,9 +31,10 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.Params;
-import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.mac.AVAuthorizationStatus;
+import su.plo.voice.client.mac.AVCaptureDevice;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
@@ -90,6 +97,22 @@ public final class VoiceAudioCapture implements AudioCapture {
         AudioCaptureInitializeEvent event = new AudioCaptureInitializeEvent(this);
         voiceClient.getEventBus().call(event);
         if (event.isCancelled()) return;
+
+        // check macos permissions
+        if (Platform.isMac()) {
+            AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
+            if (authorizationStatus != AVAuthorizationStatus.AUTHORIZED) {
+                ClientChatUtil.sendChatMessage(
+                        MinecraftTextComponent.translatable(
+                                "message.plasmovoice.macos_incompatible_launcher",
+                                MinecraftTextComponent.literal("Prism Launcher")
+                                        .withStyle(MinecraftTextStyle.YELLOW)
+                                        .clickEvent(MinecraftTextClickEvent.clickEvent(MinecraftTextClickEvent.Action.OPEN_URL, "https://prismlauncher.org"))
+                                        .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.literal("https://prismlauncher.org")))
+                        )
+                );
+            }
+        }
 
         // initialize input device
         AudioFormat format = serverInfo.getVoiceInfo().getFormat(

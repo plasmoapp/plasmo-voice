@@ -3,6 +3,7 @@ package su.plo.voice.bungee
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
 import net.md_5.bungee.api.plugin.Plugin
+import org.bstats.bungeecord.Metrics
 import su.plo.lib.api.proxy.event.command.ProxyCommandsRegisterEvent
 import su.plo.lib.api.server.permission.PermissionTristate
 import su.plo.lib.bungee.BungeeProxyLib
@@ -18,6 +19,8 @@ class BungeeVoiceProxy(
 ) : BaseVoiceProxy(ModrinthLoader.BUNGEECORD) {
 
     private lateinit var minecraftServer: BungeeProxyLib
+    
+    private lateinit var metrics: Metrics
 
     fun onEnable() {
         minecraftServer = BungeeProxyLib(plugin, ::getLanguages)
@@ -32,10 +35,13 @@ class BungeeVoiceProxy(
 
         proxyServer.pluginManager.registerListener(plugin, minecraftServer)
         proxyServer.pluginManager.registerListener(plugin, BungeeProxyChannelHandler(this))
+
+        this.metrics = Metrics(plugin, 18094)
     }
 
     fun onDisable() {
         super.onShutdown()
+        metrics.shutdown()
     }
 
     override fun getVersion(): String = plugin.description.version

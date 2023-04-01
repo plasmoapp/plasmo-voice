@@ -1,6 +1,9 @@
 [versions]
 junit5 = "5.8.2"
 crowdin = "1.0.0"
+ustats = "1.0.0"
+universalcraft = "262"
+bstats = "3.0.2"
 
 [libraries]
 lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }

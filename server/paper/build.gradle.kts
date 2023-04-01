@@ -12,8 +12,9 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${paperVersion}")
     compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
+    compileOnly(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 
-    implementation(project(":server:common"))
+    compileOnly(project(":server:common"))
 
     // shadow projects
     listOf(
@@ -37,6 +38,7 @@ dependencies {
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
     shadow(rootProject.libs.kotlinx.json)
+    shadow(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 }
 
 tasks {
@@ -56,6 +58,9 @@ tasks {
         archiveBaseName.set("PlasmoVoice-Paper")
         archiveAppendix.set("")
         archiveClassifier.set("")
+
+        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
+        relocate("su.plo.ustats", "su.plo.voice.ustats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))

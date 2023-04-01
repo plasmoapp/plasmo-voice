@@ -12,6 +12,7 @@ import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
+import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.connection.ModClientChannelHandler;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.render.ModEntityRenderer;
@@ -81,9 +82,12 @@ public final class ModVoiceClient extends BaseVoiceClient
 
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
 
-        // OpenAL input
+        // OpenAL
         factoryManager.registerDeviceFactory(new AlOutputDeviceFactory(this));
         factoryManager.registerDeviceFactory(new AlInputDeviceFactory(this));
+
+        // JavaX input
+        getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
 
         this.hudRenderer = new ModHudRenderer(this);
         this.levelRenderer = new ModLevelRenderer(this);

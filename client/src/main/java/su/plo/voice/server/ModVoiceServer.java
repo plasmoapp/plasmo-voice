@@ -12,6 +12,8 @@ import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.mod.server.ModServerLib;
+import su.plo.ustats.UStats;
+import su.plo.ustats.mod.ModUStatsPlatform;
 import su.plo.voice.server.connection.ModServerChannelHandler;
 import su.plo.voice.server.connection.ModServerServiceChannelHandler;
 import su.plo.voice.server.player.PermissionSupplier;
@@ -60,6 +62,8 @@ public final class ModVoiceServer
     private ModServerChannelHandler handler;
     private ModServerServiceChannelHandler serviceHandler;
 
+    private UStats uStats;
+
     //#if FORGE
     //$$ private final EventNetworkChannel channel;
     //$$ private final EventNetworkChannel serviceChannel;
@@ -82,6 +86,13 @@ public final class ModVoiceServer
         minecraftServerLib.setPermissions(createPermissionSupplier());
         minecraftServerLib.onInitialize();
         super.onInitialize();
+
+        this.uStats = new UStats(
+                USTATS_PROJECT_UUID,
+                getVersion(),
+                new ModUStatsPlatform(server),
+                getConfigFolder()
+        );
     }
 
     private void onShutdown(MinecraftServer server) {
@@ -89,6 +100,8 @@ public final class ModVoiceServer
         this.server = null;
         minecraftServerLib.onShutdown();
         handler.clear();
+
+        uStats.close();
     }
 
     private void onCommandRegister(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {
