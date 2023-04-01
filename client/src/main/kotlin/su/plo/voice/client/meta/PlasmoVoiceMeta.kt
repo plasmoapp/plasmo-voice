@@ -57,7 +57,7 @@ data class PlasmoVoiceMeta(
         private fun fetchSync(languageName: String) {
             // todo: cache?
 
-            val url = URL("https://vc.plo.su/meta.json?language=${languageName}")
+            val url = URL("https://plasmovoice.com/meta.json?language=${languageName}")
 
             val metaJson = try {
                 JsonParser.parseString(

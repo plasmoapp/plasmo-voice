@@ -30,7 +30,7 @@ object DeveloperCapeManager {
         val capeLocation = ResourceLocation("plasmovoice", "developer_capes/${playerName.lowercase()}")
 
         Util.backgroundExecutor().execute {
-            val url = URL("https://vc.plo.su/capes/$playerName.png")
+            val url = URL("https://plasmovoice.com/capes/$playerName.png")
 
             val texture = MinecraftProfileTexture(url.toString(), HashMap())
             val string = Hashing.sha1().hashUnencodedChars(texture.hash).toString()
