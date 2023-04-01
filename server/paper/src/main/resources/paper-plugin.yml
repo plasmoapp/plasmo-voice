@@ -1,0 +1,20 @@
+name: PlasmoVoice
+version: ${version}
+main: su.plo.voice.paper.PaperVoiceLoader
+description: PlasmoVoice plugin with Paper and Folia support
+api-version: '1.19'
+authors: [ Apehum ]
+bootstrapper: su.plo.voice.paper.PaperVoiceBootstrap
+loader: su.plo.voice.paper.PaperPluginLoader
+
+folia-supported: true
+
+has-open-classloader: true
+
+dependencies:
+  - name: LuckPerms
+    required: false
+    bootstrap: true
+  - name: PlaceholderAPI
+    required: false
+    bootstrap: true
