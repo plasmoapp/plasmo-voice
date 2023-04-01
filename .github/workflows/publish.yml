@@ -28,6 +28,23 @@ jobs:
       with:
         arguments: build
 
+    - name: Publish Velocity/BungeeCord/Paper to Modrinth
+      uses: Apehum/mc-publish@v1.1
+      with:
+        name: 'Plasmo Voice'
+        split-releases: true
+        files-primary: build/libs/*-@(Velocity|BungeeCord|Paper)-*.jar
+        version-resolver: 'exact'
+
+        game-versions: |
+          1.19.2
+          1.19.3
+          1.19.4
+
+        modrinth-unfeature-mode: 'none'
+        modrinth-id: 1bZhdhsH
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
     - name: Publish Client to Modrinth/CurseForge
       uses: Apehum/mc-publish@v1.1
       with:
@@ -42,23 +59,6 @@ jobs:
 
         curseforge-id: 467028
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
-
-    - name: Publish Velocity/BungeeCord/Paper to Modrinth
-      uses: Apehum/mc-publish@v1.1
-      with:
-        name: 'Plasmo Voice'
-        split-releases: true
-        files-primary: build/libs/*-@(Velocity|BungeeCord|Paper)-*.jar
-        version-resolver: 'exact'
-        
-        game-versions: |
-          1.19.2
-          1.19.3
-          1.19.4
-
-        modrinth-unfeature-mode: 'none'
-        modrinth-id: 1bZhdhsH
-        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
         
     - name: Publish to GitHub
       uses: Apehum/mc-publish@v1.1
