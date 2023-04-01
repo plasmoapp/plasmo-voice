@@ -7,7 +7,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.filter.AudioFilter
-import su.plo.voice.api.util.Params
 import java.util.function.Predicate
 import javax.sound.sampled.AudioFormat
 
@@ -15,8 +14,7 @@ import javax.sound.sampled.AudioFormat
 abstract class BaseAudioDevice(
     protected val voiceClient: PlasmoVoiceClient,
     override val name: String?,
-    override val format: AudioFormat,
-    override val params: Params
+    override val format: AudioFormat
 ) : AudioDevice {
 
     override val bufferSize = format.sampleRate.toInt() / 1000 * 20

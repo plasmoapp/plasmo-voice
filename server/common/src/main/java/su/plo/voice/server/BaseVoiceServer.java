@@ -139,6 +139,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         this.permissionSupplier = createPermissionSupplier();
 
         this.playerManager = new VoiceServerPlayerManager(this, getMinecraftServer());
+        playerManager.registerPermission("pv.allow_freecam");
         eventBus.register(this, playerManager);
 
         this.activationManager = new VoiceServerActivationManager(
@@ -322,6 +323,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         permissions.register("pv.list", PermissionDefault.TRUE);
         permissions.register("pv.reconnect", PermissionDefault.TRUE);
+
+        permissions.register("pv.allow_freecam", PermissionDefault.TRUE);
 
         // register commands
         MinecraftCommandManager<MinecraftCommand> commandManager = getMinecraftServer().getCommandManager();

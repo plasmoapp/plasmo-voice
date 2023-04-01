@@ -275,9 +275,6 @@ public final class VoiceClientConfig implements ClientConfig {
         private BooleanConfigEntry stereoCapture = new BooleanConfigEntry(false);
 
         @ConfigField
-        private BooleanConfigEntry listenerCameraRelative = new BooleanConfigEntry(false);
-
-        @ConfigField
         private SourceLineVolumes volumes = new SourceLineVolumes();
 
         @Data
@@ -383,6 +380,9 @@ public final class VoiceClientConfig implements ClientConfig {
 
         @ConfigField
         private BooleanConfigEntry panning = new BooleanConfigEntry(true);
+
+        @ConfigField
+        private BooleanConfigEntry cameraSoundListener = new BooleanConfigEntry(true);
 
         @ConfigField
         private BooleanConfigEntry exponentialVolumeSlider = new BooleanConfigEntry(true);

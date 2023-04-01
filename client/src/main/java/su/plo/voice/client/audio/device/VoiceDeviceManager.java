@@ -193,17 +193,8 @@ public final class VoiceDeviceManager implements DeviceManager {
 
         return (OutputDevice<AlSource>) deviceFactory.openDevice(
                 format,
-                deviceName,
-                getDefaultOutputParams()
+                deviceName
         );
-    }
-
-    @Override
-    public @NotNull Params getDefaultOutputParams() {
-        return Params.builder()
-                .set("hrtf", config.getVoice().getHrtf().value())
-                .set("listenerCameraRelative", config.getVoice().getListenerCameraRelative().value())
-                .build();
     }
 
     private InputDevice openAlInputDevice(@NotNull AudioFormat format) throws Exception {
@@ -214,8 +205,7 @@ public final class VoiceDeviceManager implements DeviceManager {
 
         return (InputDevice) deviceFactory.openDevice(
                 format,
-                deviceName,
-                Params.EMPTY
+                deviceName
         );
     }
 
@@ -227,8 +217,7 @@ public final class VoiceDeviceManager implements DeviceManager {
 
         return (InputDevice) deviceFactory.openDevice(
                 format,
-                deviceName,
-                Params.EMPTY
+                deviceName
         );
     }
 

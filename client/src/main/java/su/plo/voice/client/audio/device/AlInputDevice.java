@@ -8,19 +8,14 @@ import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALC11;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
-import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.AlUtil;
 
 import javax.sound.sampled.AudioFormat;
 import java.nio.ByteBuffer;
-import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class AlInputDevice extends BaseAudioDevice implements InputDevice {
 
@@ -31,9 +26,8 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
     public AlInputDevice(PlasmoVoiceClient client,
                          @Nullable String name,
-                         @NotNull AudioFormat format,
-                         @NotNull Params params) throws DeviceException {
-        super(client, name, format, params);
+                         @NotNull AudioFormat format) throws DeviceException {
+        super(client, name, format);
         open();
     }
 
@@ -104,7 +98,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     protected void open() throws DeviceException {
         if (isOpen()) throw new DeviceException("Device is already open");
 
-        DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this, getParams());
+        DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this);
         getVoiceClient().getEventBus().call(preOpenEvent);
 
         if (preOpenEvent.isCancelled()) {

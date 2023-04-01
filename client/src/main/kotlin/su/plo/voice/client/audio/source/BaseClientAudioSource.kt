@@ -369,7 +369,13 @@ abstract class BaseClientAudioSource<T> constructor(
         }
 
     protected open fun getPlayerPosition(): Vec3 =
-        Minecraft.getInstance().player?.eyePosition ?: Vec3.ZERO
+        if (config.advanced.cameraSoundListener.value()
+            && voiceClient.serverInfo.orElse(null)
+                ?.playerInfo
+                ?.get("pv.allow_freecam")
+                ?.orElse(true) == true
+        ) Minecraft.getInstance().cameraEntity?.eyePosition ?: Vec3.ZERO
+        else Minecraft.getInstance().player?.eyePosition ?: Vec3.ZERO
 
     protected open fun calculateAngleGain(outAngle: Double, innerAngle: Double): Double {
         var angleGain = 1.0 - outAngle / (OUTER_ANGLE - innerAngle)

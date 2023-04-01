@@ -14,13 +14,12 @@ public interface DeviceFactory {
      * Opens a new device
      *
      * @param deviceName the device name
-     * @param params device params, may be different depending on DeviceFactory
      *
      * @return a new device
      *
      * @throws DeviceException if device cannot be open
      */
-    AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException;
+    AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException;
 
     /**
      * Gets the default device name

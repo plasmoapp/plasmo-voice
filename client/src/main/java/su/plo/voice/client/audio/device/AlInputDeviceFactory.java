@@ -25,11 +25,10 @@ public final class AlInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
+    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
         checkNotNull(format, "format cannot be null");
-        checkNotNull(params, "params cannot be null");
 
-        return new AlInputDevice(client, deviceName, format, params);
+        return new AlInputDevice(client, deviceName, format);
     }
 
     @Override

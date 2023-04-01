@@ -8,7 +8,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
-import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.*;
 import java.util.ArrayList;
@@ -25,15 +24,14 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
+    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
         checkNotNull(format, "format cannot be null");
-        checkNotNull(params, "params cannot be null");
 
         if (Strings.emptyToNull(deviceName) == null) {
             deviceName = getDefaultDeviceName();
         }
 
-        return new JavaxInputDevice(client, deviceName, format, params);
+        return new JavaxInputDevice(client, deviceName, format);
     }
 
     @Override
