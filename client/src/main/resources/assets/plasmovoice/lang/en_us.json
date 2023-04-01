@@ -152,6 +152,8 @@
 
     "message.plasmovoice.activation.toggle": "%s: %s",
 
+    "message.plasmovoice.macos_incompatible_launcher": "You can't use microphone because your Minecraft Launcher doesn't support microphone permissions on MacOS. You should switch to %s.",
+
     "message.plasmovoice.update_available": "New version %1$s of Plasmo Voice is available: %2$s",
     "message.plasmovoice.update_available.click": "Download",
     "message.plasmovoice.update_available.hover": "%s"
