@@ -6,6 +6,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
 import org.apache.logging.log4j.LogManager
 import org.apache.logging.log4j.Logger
@@ -250,7 +251,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
 
         // get source positions
-        val playerPosition = getPlayerPosition()
+        val playerPosition = getListenerPosition()
         val position = getPosition()
         val lookAngle = getLookAngle()
 
@@ -368,14 +369,17 @@ abstract class BaseClientAudioSource<T> constructor(
             null
         }
 
-    protected open fun getPlayerPosition(): Vec3 =
+    protected fun getListener(): Entity? =
         if (config.advanced.cameraSoundListener.value()
             && voiceClient.serverInfo.orElse(null)
                 ?.playerInfo
                 ?.get("pv.allow_freecam")
                 ?.orElse(true) == true
-        ) Minecraft.getInstance().cameraEntity?.eyePosition ?: Vec3.ZERO
-        else Minecraft.getInstance().player?.eyePosition ?: Vec3.ZERO
+        ) Minecraft.getInstance().cameraEntity
+        else Minecraft.getInstance().player
+
+    protected open fun getListenerPosition(): Vec3 =
+        getListener()?.eyePosition ?: Vec3.ZERO
 
     protected open fun calculateAngleGain(outAngle: Double, innerAngle: Double): Double {
         var angleGain = 1.0 - outAngle / (OUTER_ANGLE - innerAngle)
@@ -424,12 +428,24 @@ abstract class BaseClientAudioSource<T> constructor(
     private suspend fun updateSource(volume: Float, position: Vec3, lookAngle: Vec3) {
         for (source in sourceGroup.sources) {
             if (source !is AlSource) continue
-            val device = source.device as AlAudioDevice
+            val device = source.device
 
             device.runInContext {
                 source.volume = volume
 
-                if (isPanningDisabled()) return@runInContext
+                if (isPanningDisabled()) {
+                    source.setInt(
+                        0x202,  // AL_SOURCE_RELATIVE
+                        1
+                    )
+                    source.setFloatArray(0x1004, POSITION_ZERO)
+                    return@runInContext
+                } else {
+                    source.setInt(
+                        0x202,  // AL_SOURCE_RELATIVE
+                        0
+                    )
+                }
 
                 source.setFloatArray(0x1004, position.toFloatArray()) // AL_POSITION
             }
@@ -447,12 +463,6 @@ abstract class BaseClientAudioSource<T> constructor(
                 device.runInContext {
                     source.setFloat(0x100E, 4f) // AL_MAX_GAIN
                     source.setInt(AL10.AL_DISTANCE_MODEL, AL10.AL_NONE)
-                    if (isPanningDisabled()) {
-                        source.setInt(
-                            0x202,  // AL_SOURCE_RELATIVE
-                            1
-                        )
-                    }
                     source.play()
                 }
             }
@@ -500,6 +510,7 @@ abstract class BaseClientAudioSource<T> constructor(
     companion object {
         private val OUTER_ANGLE: Double = 180.0
         private val LOGGER: Logger = LogManager.getLogger()
+        private val POSITION_ZERO = floatArrayOf(0f, 0f, 0f)
 
         private val SCOPE = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
     }
