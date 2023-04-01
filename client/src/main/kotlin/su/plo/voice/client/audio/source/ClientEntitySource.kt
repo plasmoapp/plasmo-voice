@@ -19,6 +19,9 @@ class ClientEntitySource(
     override fun getLookAngle(): Vec3 =
         sourceEntity?.lookAngle ?: Vec3.ZERO
 
+    override fun isPanningDisabled(): Boolean =
+        sourceEntity == getListener() || super.isPanningDisabled()
+
     private val sourceEntity: Entity?
         get() {
             return Minecraft.getInstance().level?.getEntity(sourceInfo.entityId)
