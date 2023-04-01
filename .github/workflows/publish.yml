@@ -40,8 +40,8 @@ jobs:
         modrinth-id: 1bZhdhsH
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
-        # curseforge-id: 394468
-        # curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        curseforge-id: 467028
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
     - name: Publish Velocity/BungeeCord/Paper to Modrinth
       uses: Apehum/mc-publish@v1.1
