@@ -40,9 +40,7 @@ plasmoCrowdin {
     resourceDir = "assets/plasmovoice/lang"
 }
 
-val common by configurations.creating
-configurations.compileClasspath { extendsFrom(common) }
-configurations.runtimeClasspath { extendsFrom(common) }
+val shadowCommon by configurations.creating
 
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
@@ -51,6 +49,7 @@ repositories {
 
 dependencies {
     compileOnly(rootProject.libs.netty)
+    compileOnly(rootProject.libs.rnnoise)
 
 //    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
@@ -73,23 +72,23 @@ dependencies {
         exclude(group = "org.jetbrains.kotlin")
     }
     if (platform.isForge) {
-        common(rootProject.libs.versions.universalcraft.map {
+        shadowCommon(rootProject.libs.versions.universalcraft.map {
             "gg.essential:universalcraft-$platform:$it"
         }) {
-            exclude(group = "org.jetbrains.kotlin")
+            isTransitive = false
         }
     } else {
         "include"(rootProject.libs.versions.universalcraft.map {
             "gg.essential:universalcraft-$platform:$it"
         }) {
-            exclude(group = "org.jetbrains.kotlin")
+            isTransitive = false
         }
     }
 
     rootProject.libs.versions.ustats.map { "su.plo.ustats:$platform:$it" }.also {
         modApi(it)
         if (platform.isForge) {
-            common(it)
+            shadowCommon(it)
         } else {
             "include"(it)
         }
@@ -108,20 +107,20 @@ dependencies {
 
     includedProjects.forEach {
         implementation(project(it))
-        common(project(it)) {
+        shadowCommon(project(it)) {
             isTransitive = false
         }
     }
 
-    common(rootProject.libs.opus)
-    common(rootProject.libs.config)
-    common(rootProject.libs.rnnoise)
-    common(rootProject.libs.crowdin.lib) {
+    shadowCommon(rootProject.libs.opus)
+    shadowCommon(rootProject.libs.config)
+    shadowCommon(rootProject.libs.rnnoise)
+    shadowCommon(rootProject.libs.crowdin.lib) {
         isTransitive = false
     }
 
     if (platform.isForge) {
-        common(rootProject.libs.guice)
+        shadowCommon(rootProject.libs.guice)
     } else {
         "include"(rootProject.libs.guice)
         "include"(rootProject.libs.aopalliance)
@@ -144,11 +143,11 @@ tasks {
     }
 
     shadowJar {
-        configurations = listOf(common)
+        configurations = listOf(shadowCommon)
 
         relocate("su.plo.crowdin", "su.plo.voice.crowdin")
         if (platform.isForge) {
-            relocate("gg.essential.universal", "su.plo.universal")
+            relocate("gg.essential.universal", "su.plo.voice.universal")
             relocate("su.plo.ustats", "su.plo.voice.ustats")
         }
 
@@ -175,7 +174,7 @@ tasks {
     }
 
     remapJar {
-        dependsOn(common)
+        dependsOn(shadowJar)
         input.set(shadowJar.get().archiveFile)
     }
 
