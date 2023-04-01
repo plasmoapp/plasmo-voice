@@ -3,7 +3,6 @@ package su.plo.voice.client.audio.device
 import com.google.common.base.Preconditions
 import com.google.common.collect.Sets
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -32,16 +31,14 @@ import java.nio.IntBuffer
 import java.util.*
 import java.util.concurrent.*
 import javax.sound.sampled.AudioFormat
-import kotlin.properties.Delegates
 
 class AlOutputDevice
 @Throws(DeviceException::class) constructor(
     voiceClient: PlasmoVoiceClient,
     name: String?,
-    format: AudioFormat,
-    params: Params
+    format: AudioFormat
 ) :
-    BaseAudioDevice(voiceClient, name, format, params),
+    BaseAudioDevice(voiceClient, name, format),
     AlAudioDevice,
     HrtfAudioDevice,
     OutputDevice<AlSource> {
@@ -184,7 +181,7 @@ class AlOutputDevice
     private fun openSync() {
         if (isOpen()) throw DeviceException("Device is already open")
 
-        DevicePreOpenEvent(this@AlOutputDevice, params).also {
+        DevicePreOpenEvent(this@AlOutputDevice).also {
             if (!voiceClient.eventBus.call(it)) throw DeviceException("Device opening has been canceled")
         }
 
@@ -207,9 +204,8 @@ class AlOutputDevice
         }
 
         hrtfSupported = aLCCapabilities.ALC_SOFT_HRTF
-        if (params.containsKey("hrtf") && hrtfSupported) {
-            val hrtf = params.get<Any>("hrtf")
-            if (hrtf == true) enableHrtf()
+        if (hrtfSupported && voiceClient.config.voice.hrtf.value()) {
+            enableHrtf()
         }
 
         AL10.alEnable(512)
@@ -342,7 +338,12 @@ class AlOutputDevice
             val lookVector: Vector3f
             val upVector: Vector3f
 
-            if (params.get("listenerCameraRelative")) {
+            if (voiceClient.config.advanced.cameraSoundListener.value()
+                && voiceClient.serverInfo.orElse(null)
+                    ?.playerInfo
+                    ?.get("pv.allow_freecam")
+                    ?.orElse(true) == true
+            ) {
                 val camera = Minecraft.getInstance().gameRenderer.mainCamera
 
                 position = camera.position

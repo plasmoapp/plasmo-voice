@@ -85,9 +85,4 @@ public interface DeviceManager {
      * @throws Exception if device cannot be open
      */
     OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception;
-
-    /**
-     * @return params for output device from voice config
-     */
-    @NotNull Params getDefaultOutputParams();
 }

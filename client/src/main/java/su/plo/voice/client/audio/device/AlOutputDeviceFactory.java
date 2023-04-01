@@ -11,7 +11,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
-import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.List;
@@ -24,15 +23,14 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
     private final PlasmoVoiceClient voiceClient;
 
     @Override
-    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName, @NotNull Params params) throws DeviceException {
+    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
         checkNotNull(format, "format cannot be null");
-        checkNotNull(params, "params cannot be null");
 
         if (Strings.isNullOrEmpty(deviceName)) {
             deviceName = getDefaultDeviceName();
         }
 
-        return new AlOutputDevice(voiceClient, deviceName, format, params);
+        return new AlOutputDevice(voiceClient, deviceName, format);
     }
 
     @Override

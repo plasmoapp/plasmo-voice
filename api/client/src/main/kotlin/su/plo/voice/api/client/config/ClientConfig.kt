@@ -44,8 +44,6 @@ interface ClientConfig {
 
         val stereoCapture: BooleanConfigEntry
 
-        val listenerCameraRelative: BooleanConfigEntry
-
         val volumes: Volumes
 
         interface Volumes {
@@ -71,6 +69,8 @@ interface ClientConfig {
         val stereoSourcesToMono: BooleanConfigEntry
 
         val panning: BooleanConfigEntry
+
+        val cameraSoundListener: BooleanConfigEntry
 
         val exponentialVolumeSlider: BooleanConfigEntry
 

@@ -108,25 +108,18 @@ public final class AdvancedTabWidget extends TabWidget {
     }
 
     private OptionEntry<ToggleButton> createPanning() {
-        Runnable onUpdate = () -> {
-            devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT)
-                    .forEach(OutputDevice::closeSourcesAsync);
-        };
-
         ToggleButton toggleButton = new ToggleButton(
                 config.getAdvanced().getPanning(),
                 0,
                 0,
                 ELEMENT_WIDTH,
-                20,
-                (toggled) -> onUpdate.run()
+                20
         );
 
         return new OptionEntry<>(
                 MinecraftTextComponent.translatable("gui.plasmovoice.advanced.panning"),
                 toggleButton,
-                config.getAdvanced().getPanning(),
-                (button, element) -> onUpdate.run()
+                config.getAdvanced().getPanning()
         );
     }
 }

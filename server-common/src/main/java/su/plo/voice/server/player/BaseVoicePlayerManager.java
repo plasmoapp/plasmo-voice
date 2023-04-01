@@ -64,7 +64,7 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
     public void onPermissionUpdate(@NotNull PlayerPermissionUpdateEvent event) {
         String permission = event.getPermission();
 
-        if (synchronizedPermissions.contains(permission)) return;
+        if (!synchronizedPermissions.contains(permission)) return;
         VoicePlayer player = event.getPlayer();
 
         Map<String, Boolean> permissions = Maps.newHashMap();

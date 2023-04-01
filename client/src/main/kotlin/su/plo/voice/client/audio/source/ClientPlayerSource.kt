@@ -37,6 +37,9 @@ class ClientPlayerSource(
     override fun getLookAngle(): Vec3 =
         sourcePlayer?.lookAngle ?: Vec3.ZERO
 
+    override fun isPanningDisabled(): Boolean =
+        sourcePlayer == getListener() || super.isPanningDisabled()
+
     private val sourceMute: BooleanConfigEntry
         get() {
             return config.voice

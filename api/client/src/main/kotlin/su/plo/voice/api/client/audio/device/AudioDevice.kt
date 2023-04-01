@@ -79,13 +79,6 @@ interface AudioDevice {
     val format: AudioFormat
 
     /**
-     * Gets the device params
-     *
-     * @return the device params
-     */
-    val params: Params
-
-    /**
      * Gets the device buffer size calculated from format
      *
      * @return the buffer size
