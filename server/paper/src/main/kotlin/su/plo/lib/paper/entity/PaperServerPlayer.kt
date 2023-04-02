@@ -9,9 +9,7 @@ import su.plo.lib.api.chat.MinecraftTextComponent
 import su.plo.lib.api.server.MinecraftServerLib
 import su.plo.lib.api.server.entity.MinecraftServerEntity
 import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity
-import su.plo.lib.api.server.permission.PermissionTristate
 import su.plo.lib.paper.chat.BaseComponentTextConverter
-import su.plo.voice.proto.data.player.MinecraftGameProfile
 import su.plo.voice.server.player.PermissionSupplier
 import java.util.*
 

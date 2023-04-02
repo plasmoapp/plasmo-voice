@@ -81,17 +81,20 @@ class PaperServerLib(
     override fun getPlayerByInstance(instance: Any): MinecraftServerPlayerEntity {
         require(instance is Player) { "instance is not ${Player::class.java}" }
 
-        return playerById.computeIfAbsent(
-            instance.uniqueId
-        ) { _ ->
-            PaperServerPlayer(
+        var serverPlayer = playerById[instance.uniqueId]
+        if ((serverPlayer?.getInstance() as? Player)?.entityId != instance.entityId) {
+            serverPlayer = PaperServerPlayer(
                 loader,
                 this,
                 textConverter,
                 permissions!!,
                 instance
             )
+
+            playerById[instance.uniqueId] = serverPlayer
         }
+
+        return serverPlayer
     }
 
     override fun getPlayerByName(name: String): Optional<MinecraftServerPlayerEntity> {
