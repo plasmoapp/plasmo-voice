@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.player;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.server.MinecraftCommonServerLib;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -11,19 +12,41 @@ import java.util.UUID;
  */
 public interface VoicePlayerManager<P extends VoicePlayer> {
 
-    /**
-     * Gets the {@link P} by uuid
-     *
+    /***
      * @param playerId player's unique id
      *
-     * @return {@link P}
+     * @return {@link P} by uuid
      */
-    Optional<P> getPlayerById(@NotNull UUID playerId);
+    default Optional<P> getPlayerById(@NotNull UUID playerId) {
+        return getPlayerById(playerId, true);
+    }
+
+    /***
+     * @param playerId player's unique id
+     * @param useServerInstance should get player instance from {@link MinecraftCommonServerLib}
+     *                        if VoicePlayer is not found in {@link VoicePlayerManager} map
+     *
+     * @return {@link P} by uuid
+     */
+    Optional<P> getPlayerById(@NotNull UUID playerId, boolean useServerInstance);
 
     /**
-     * Gets the {@link P} by name
+     * @param playerName player's name
+     *
+     * @return {@link P} by name
      */
-    Optional<P> getPlayerByName(@NotNull String playerName);
+    default Optional<P> getPlayerByName(@NotNull String playerName) {
+        return getPlayerByName(playerName, true);
+    }
+
+    /**
+     * @param playerName player's name
+     * @param useServerInstance should get player instance from {@link MinecraftCommonServerLib}
+     *                        if VoicePlayer is not found in {@link VoicePlayerManager} map
+     *
+     * @return @return {@link P} by name
+     */
+    Optional<P> getPlayerByName(@NotNull String playerName, boolean useServerInstance);
 
     /**
      * Gets the {@link P} by server player
