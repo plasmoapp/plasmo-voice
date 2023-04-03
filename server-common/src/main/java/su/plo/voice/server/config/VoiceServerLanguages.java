@@ -65,7 +65,6 @@ public final class VoiceServerLanguages implements ServerLanguages {
                         crowdinProjectId,
                         e.getMessage()
                 );
-                e.printStackTrace();
             }
 
             File crowdinFolder = new File(languagesFolder, ".crowdin");
