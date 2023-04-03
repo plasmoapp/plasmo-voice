@@ -49,7 +49,7 @@ repositories {
 
 dependencies {
     compileOnly(rootProject.libs.netty)
-    compileOnly(rootProject.libs.rnnoise)
+    implementation(rootProject.libs.rnnoise)
 
 //    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
 
