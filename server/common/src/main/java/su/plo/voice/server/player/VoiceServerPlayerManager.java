@@ -17,9 +17,10 @@ public final class VoiceServerPlayerManager extends BaseVoicePlayerManager<Voice
     private final MinecraftServerLib minecraftServer;
 
     @Override
-    public Optional<VoiceServerPlayer> getPlayerById(@NotNull UUID playerId) {
+    public Optional<VoiceServerPlayer> getPlayerById(@NotNull UUID playerId, boolean useServerInstance) {
         VoiceServerPlayer voicePlayer = playerById.get(playerId);
         if (voicePlayer != null) return Optional.of(voicePlayer);
+        else if (!useServerInstance) return Optional.empty();
 
         return minecraftServer.getPlayerById(playerId)
                 .map((player) -> playerById.computeIfAbsent(
@@ -33,9 +34,10 @@ public final class VoiceServerPlayerManager extends BaseVoicePlayerManager<Voice
     }
 
     @Override
-    public Optional<VoiceServerPlayer> getPlayerByName(@NotNull String playerName) {
+    public Optional<VoiceServerPlayer> getPlayerByName(@NotNull String playerName, boolean useServerInstance) {
         VoiceServerPlayer voicePlayer = playerByName.get(playerName);
         if (voicePlayer != null) return Optional.of(voicePlayer);
+        else if (!useServerInstance) return Optional.empty();
 
         return minecraftServer.getPlayerByName(playerName)
                 .map((player) -> playerByName.computeIfAbsent(

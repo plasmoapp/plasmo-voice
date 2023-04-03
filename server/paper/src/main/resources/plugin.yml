@@ -9,3 +9,5 @@ softdepend:
   - PlaceholderAPI
 #depend:
 #  - kotlin-stdlib
+
+folia-supported: true

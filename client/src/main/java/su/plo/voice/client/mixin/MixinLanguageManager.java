@@ -18,6 +18,14 @@ public abstract class MixinLanguageManager {
 
     @Inject(method = "<init>", at = @At("RETURN"))
     private void init(String string, CallbackInfo ci) {
+        //#if FORGE
+        //$$ try {
+        //$$     Class.forName("kotlin.jvm.internal.Intrinsics");
+        //$$ } catch (Exception ignored) {
+        //$$     return;
+        //$$ }
+        //#endif
+
         PlasmoVoiceMeta.Companion.fetch(string);
     }
 

@@ -7,8 +7,6 @@ object AVCaptureDevice {
     val authorizationStatus: AVAuthorizationStatus
         get() {
             // https://developer.apple.com/documentation/avfoundation/avauthorizationstatus
-            println(checkMacOsVersion(10, 14))
-            println(System.getProperty("os.version"))
             if (!checkMacOsVersion(10, 14))
                 return AVAuthorizationStatus.AUTHORIZED
 

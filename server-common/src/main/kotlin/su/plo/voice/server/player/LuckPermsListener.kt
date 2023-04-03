@@ -69,7 +69,7 @@ class LuckPermsListener(
         if (event.isUser) {
             val user = event.target as User
 
-            val player = voiceServer.playerManager.getPlayerById(user.uniqueId).orElse(null) ?: return
+            val player = voiceServer.playerManager.getPlayerById(user.uniqueId, false).orElse(null) ?: return
             if (!player.hasVoiceChat()) return
 
             onLpPermissionChange(player, node.key)

@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.proxy.MinecraftProxyLib;
 import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
-import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.proto.packets.Packet;
@@ -28,9 +27,10 @@ public final class VoiceProxyPlayerManager
     private final MinecraftProxyLib minecraftProxy;
 
     @Override
-    public Optional<VoiceProxyPlayer> getPlayerById(@NotNull UUID playerId) {
+    public Optional<VoiceProxyPlayer> getPlayerById(@NotNull UUID playerId, boolean useServerInstance) {
         VoiceProxyPlayer voicePlayer = playerById.get(playerId);
         if (voicePlayer != null) return Optional.of(voicePlayer);
+        else if (!useServerInstance) return Optional.empty();
 
         return minecraftProxy.getPlayerById(playerId)
                 .map((player) -> playerById.computeIfAbsent(
@@ -45,9 +45,10 @@ public final class VoiceProxyPlayerManager
     }
 
     @Override
-    public Optional<VoiceProxyPlayer> getPlayerByName(@NotNull String playerName) {
+    public Optional<VoiceProxyPlayer> getPlayerByName(@NotNull String playerName, boolean useServerInstance) {
         VoiceProxyPlayer voicePlayer = playerByName.get(playerName);
         if (voicePlayer != null) return Optional.of(voicePlayer);
+        else if (!useServerInstance) return Optional.empty();
 
         return minecraftProxy.getPlayerByName(playerName)
                 .map((player) -> playerByName.computeIfAbsent(
@@ -77,15 +78,5 @@ public final class VoiceProxyPlayerManager
             if ((filter == null || filter.test(player)) && player.hasVoiceChat())
                 player.sendPacket(packet);
         }
-    }
-
-    @Override
-    public void onPlayerJoin(@NotNull MinecraftServerPlayer player) {
-        super.onPlayerJoin(player);
-    }
-
-    @Override
-    public void onPlayerQuit(@NotNull MinecraftServerPlayer player) {
-        super.onPlayerQuit(player);
     }
 }

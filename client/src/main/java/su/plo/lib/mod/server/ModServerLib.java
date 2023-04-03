@@ -104,19 +104,22 @@ public final class ModServerLib implements MinecraftServerLib {
 
     @Override
     public @NotNull MinecraftServerPlayerEntity getPlayerByInstance(@NotNull Object instance) {
-        if (!(instance instanceof ServerPlayer serverPlayer))
+        if (!(instance instanceof ServerPlayer serverInstance))
             throw new IllegalArgumentException("instance is not " + ServerPlayer.class);
 
-        return playerById.computeIfAbsent(
-                serverPlayer.getUUID(),
-                (playerId) -> new ModServerPlayer(
-                        this,
-                        textConverter,
-                        permissions,
-                        resources,
-                        serverPlayer
-                )
-        );
+        MinecraftServerPlayerEntity serverPlayer = playerById.get(serverInstance.getUUID());
+        if (serverPlayer == null || ((ServerPlayer) serverPlayer.getInstance()).getId() != serverInstance.getId()) {
+            serverPlayer = new ModServerPlayer(
+                    this,
+                    textConverter,
+                    permissions,
+                    resources,
+                    serverInstance
+            );
+            playerById.put(serverInstance.getUUID(), serverPlayer);
+        }
+
+        return serverPlayer;
     }
 
     @Override

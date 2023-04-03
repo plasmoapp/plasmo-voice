@@ -5,14 +5,14 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
-import su.plo.voice.api.client.PlasmoVoiceClient
+import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 
 class ClientPlayerSource(
-    voiceClient: PlasmoVoiceClient,
+    voiceClient: BaseVoiceClient,
     config: VoiceClientConfig,
     sourceInfo: PlayerSourceInfo
 ) : BaseClientAudioSource<PlayerSourceInfo>(voiceClient, config, sourceInfo) {

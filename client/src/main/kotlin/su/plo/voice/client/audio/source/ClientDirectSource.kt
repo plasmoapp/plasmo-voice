@@ -6,10 +6,10 @@ import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
-import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AlAudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
+import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.utils.toVec3
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
@@ -17,7 +17,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 
 class ClientDirectSource(
-    voiceClient: PlasmoVoiceClient,
+    voiceClient: BaseVoiceClient,
     config: VoiceClientConfig,
     sourceInfo: DirectSourceInfo
 ) : BaseClientAudioSource<DirectSourceInfo>(voiceClient, config, sourceInfo) {

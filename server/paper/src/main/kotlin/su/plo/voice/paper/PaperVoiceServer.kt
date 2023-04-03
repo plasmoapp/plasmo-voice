@@ -20,7 +20,7 @@ class PaperVoiceServer(
     private val plugin: JavaPlugin
 ) : BaseVoiceServer(ModrinthLoader.PAPER), Listener {
 
-    private val minecraftServerLib: PaperServerLib = PaperServerLib(plugin, ::languages)
+    private val minecraftServerLib = PaperServerLib(plugin, ::languages)
 
     private lateinit var handler: PaperServerChannelHandler
     private lateinit var serviceHandler: PaperServerServiceChannelHandler

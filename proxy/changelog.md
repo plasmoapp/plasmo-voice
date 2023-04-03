@@ -1,0 +1,1 @@
+- fixed bug when missing translations keys are not falling back to default language
