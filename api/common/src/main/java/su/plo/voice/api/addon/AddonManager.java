@@ -18,6 +18,13 @@ public interface AddonManager {
     void load(@NotNull Object addonObject);
 
     /**
+     * Unloads an addon
+     *
+     * @param addonObject object annotated with {@link Addon}
+     */
+    void unload(@NotNull Object addonObject);
+
+    /**
      * Checks if an addon is loaded
      * @return true if an addon is loaded
      */
