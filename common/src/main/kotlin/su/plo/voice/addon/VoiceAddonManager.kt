@@ -17,6 +17,8 @@ class VoiceAddonManager(
     private val addonByInstance: MutableMap<Any, AddonContainer> = Maps.newHashMap()
     private val addonById: MutableMap<String, AddonContainer> = Maps.newHashMap()
 
+    private val initializedAddons: MutableSet<String> = HashSet()
+
     private var initialized = false
 
     init {
@@ -58,6 +60,20 @@ class VoiceAddonManager(
         loadAddon(addonContainer)
     }
 
+    @Synchronized
+    override fun unload(addonObject: Any) {
+        val addonClass: Class<*> = addonObject.javaClass
+        require(addonClass.isAnnotationPresent(Addon::class.java)) { "Addon object must be annotated with @Addon" }
+
+        val addon = addonClass.getAnnotation(
+            Addon::class.java
+        )
+
+        if (!initializedAddons.contains(addon.id)) return
+
+        addonById[addon.id]?.let { shutdownAddon(it) }
+    }
+
     override fun isLoaded(id: String): Boolean {
         return addonById.containsKey(id)
     }
@@ -83,17 +99,11 @@ class VoiceAddonManager(
 
     @Synchronized
     fun clear() {
-        addonById.values.forEach { addon ->
-            if (addon.id == "plasmovoice") return@forEach
-
-            voice.eventBus.unregister(addon.instance.get())
-            LOGGER.info(
-                "Addon {} v{} by {} unloaded",
-                addon.id,
-                addon.version,
-                java.lang.String.join(", ", addon.authors)
-            )
-        }
+        addonById.values.filter { initializedAddons.contains(it.id) }
+            .forEach { addon ->
+                if (addon.id == "plasmovoice") return@forEach
+                shutdownAddon(addon)
+            }
 
         this.initialized = false
     }
@@ -120,15 +130,32 @@ class VoiceAddonManager(
 
     private fun initializeAddon(addon: AddonContainer) {
         val addonInstance = addon.instance.get()
-
         if (addonInstance is AddonInitializer) {
             addonInstance.onAddonInitialize()
         }
 
         voice.eventBus.register(addonInstance, addonInstance)
+        initializedAddons.add(addon.id)
 
         LOGGER.info(
             "{} v{} by {} loaded",
+            addon.id,
+            addon.version,
+            java.lang.String.join(", ", addon.authors)
+        )
+    }
+
+    private fun shutdownAddon(addon: AddonContainer) {
+        val addonInstance = addon.instance.get()
+        if (addonInstance is AddonInitializer) {
+            addonInstance.onAddonShutdown()
+        }
+
+        voice.eventBus.unregister(addon.instance.get())
+        initializedAddons.remove(addon.id)
+
+        LOGGER.info(
+            "Addon {} v{} by {} unloaded",
             addon.id,
             addon.version,
             java.lang.String.join(", ", addon.authors)

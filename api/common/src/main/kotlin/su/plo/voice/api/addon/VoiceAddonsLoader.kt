@@ -18,6 +18,11 @@ abstract class VoiceAddonsLoader : AddonsLoader {
     }
 
     @Synchronized
+    override fun unload(addonObject: Any) {
+        addonManager?.unload(addonObject)
+    }
+
+    @Synchronized
     @Internal
     fun setAddonManager(addonManager: AddonManager) {
         this.addonManager = addonManager
