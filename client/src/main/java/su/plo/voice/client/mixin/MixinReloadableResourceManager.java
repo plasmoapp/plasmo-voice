@@ -30,6 +30,14 @@ public abstract class MixinReloadableResourceManager {
             index = 1
     )
     private List<PackResources> onPostReload(List<PackResources> packs) {
+        //#if FORGE
+        //$$ try {
+        //$$     Class.forName("kotlin.jvm.internal.Intrinsics");
+        //$$ } catch (Exception ignored) {
+        //$$     return packs;
+        //$$ }
+        //#endif
+
         if (this.type != PackType.CLIENT_RESOURCES) return packs;
 
         List<PackResources> list = new ArrayList<>(packs);

@@ -1,1 +1,2 @@
 - fixed bug when Plasmo Voice worked after first join, but didn't after reconnect
+- fixed crash on forge without "kotlin for forge" installed
