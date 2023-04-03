@@ -203,6 +203,7 @@ public final class VoiceServerLanguages implements ServerLanguages {
         for (Map.Entry<String, VoiceServerLanguage> entry : languages.entrySet()) {
             VoiceServerLanguage language = this.languages.computeIfAbsent(entry.getKey(), (key) -> entry.getValue());
             language.merge(entry.getValue());
+            language.merge(defaultLanguage);
         }
 
         this.languages.forEach((languageName, language) -> {
