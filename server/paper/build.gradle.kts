@@ -2,6 +2,7 @@ val mavenGroup: String by rootProject
 
 val paperVersion: String by project
 val placeholderApiVersion: String by project
+val foliaVersion: String by project
 
 group = "$mavenGroup.paper"
 
@@ -12,6 +13,7 @@ repositories {
 dependencies {
     compileOnly("io.papermc.paper:paper-api:${paperVersion}")
     compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
+    compileOnly("dev.folia:folia-api:${foliaVersion}")
     compileOnly(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 
     compileOnly(project(":server:common"))
@@ -43,7 +45,7 @@ dependencies {
 
 tasks {
     processResources {
-        filesMatching("plugin.yml") {
+        filesMatching(mutableListOf("plugin.yml", "paper-plugin.yml")) {
             expand(
                 mutableMapOf(
                     "version" to version

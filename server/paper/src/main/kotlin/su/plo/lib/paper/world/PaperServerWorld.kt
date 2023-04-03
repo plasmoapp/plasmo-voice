@@ -26,11 +26,7 @@ class PaperServerWorld(
         if (minorMinecraftVersion < 19) return
 
         val paperEntity = entity.getInstance<Entity>()
-        Bukkit.getScheduler().runTask(
-            loader
-        ) { ->
-            level.sendGameEvent(paperEntity, parseGameEvent(gameEvent), paperEntity.location.toVector())
-        }
+        FoliaUtils.runTaskFor(paperEntity, loader) { level.sendGameEvent(paperEntity, parseGameEvent(gameEvent), paperEntity.location.toVector()) }
     }
 
     override fun <T> getInstance() = level as T
