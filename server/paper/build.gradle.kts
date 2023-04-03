@@ -11,9 +11,9 @@ repositories {
 }
 
 dependencies {
+    compileOnly("dev.folia:folia-api:${foliaVersion}")
     compileOnly("io.papermc.paper:paper-api:${paperVersion}")
     compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
-    compileOnly("dev.folia:folia-api:${foliaVersion}")
     compileOnly(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 
     compileOnly(project(":server:common"))
