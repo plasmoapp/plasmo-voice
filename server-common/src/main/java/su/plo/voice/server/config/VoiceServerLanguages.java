@@ -235,7 +235,7 @@ public final class VoiceServerLanguages implements ServerLanguages {
         Toml jarDefaults = null;
         try (InputStream is = resourceLoader.load("languages/" + languageName + ".toml")) {
             if (is != null) jarDefaults = new Toml().read(new InputStreamReader(is, Charsets.UTF_8));
-        } catch (IOException ignored) {
+        } catch (Exception ignored) {
         }
 
         if (crowdinDefaults == null && jarDefaults == null) {
