@@ -41,6 +41,7 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
@@ -78,6 +79,9 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     private final DeviceFactoryManager deviceFactoryManager = new VoiceDeviceFactoryManager();
     @Getter
     private final UdpClientManager udpClientManager = new VoiceUdpClientManager();
+
+    @Getter
+    protected final DebugLogger debugLogger = new DebugLogger(logger);
 
     @Setter
     private ServerInfo serverInfo;
@@ -289,10 +293,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             eventBus.register(this, config.getKeyBindings());
         }
 
-        if (config.getDebug().value() || System.getProperty("plasmovoice.debug") != null) {
-            Configurator.setLevel(logger.getName(), Level.DEBUG);
-        } else {
-            Configurator.setLevel(logger.getName(), Level.INFO);
-        }
+        debugLogger.enabled(config.getDebug().value() || System.getProperty("plasmovoice.debug") != null);
     }
 }

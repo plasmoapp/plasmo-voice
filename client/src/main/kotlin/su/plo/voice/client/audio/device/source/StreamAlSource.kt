@@ -204,7 +204,6 @@ class StreamAlSource private constructor(
                 }
 
                 if (closeTimeoutMs > 0L && System.currentTimeMillis() - lastBufferTime > closeTimeoutMs) {
-                    LOGGER.info("Stream timed out. Closing...")
                     close()
                     break
                 }
