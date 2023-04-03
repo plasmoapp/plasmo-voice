@@ -1,2 +1,1 @@
-- fixed bug when Plasmo Voice worked after first join, but didn't after reconnect
-- fixed bug when missing translations keys are not falling back to default language
+- fixed an exception on server language loading (java.lang.Exception: Can't load language resource)
