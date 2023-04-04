@@ -61,6 +61,7 @@ public final class ModClientChannelHandler
     //$$     NetworkEvent.Context context = event.getSource().get();
     //$$     if (context.getDirection() != NetworkDirection.PLAY_TO_CLIENT || event.getPayload() == null) return;
     //$$     receive(context.getNetworkManager(), event.getPayload());
+    //$$     context.setPacketHandled(true);
     //$$ }
     //#endif
 

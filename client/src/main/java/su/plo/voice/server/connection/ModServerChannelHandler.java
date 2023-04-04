@@ -123,6 +123,7 @@ public final class ModServerChannelHandler
     //$$     NetworkEvent.Context context = event.getSource().get();
     //$$     if (context.getDirection() != NetworkDirection.PLAY_TO_SERVER || event.getPayload() == null) return;
     //$$     receive(context.getSender(), event.getPayload());
+    //$$     context.setPacketHandled(true);
     //$$ }
     //#endif
 }
