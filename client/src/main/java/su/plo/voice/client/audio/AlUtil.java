@@ -12,7 +12,7 @@ import javax.sound.sampled.AudioFormat.Encoding;
 
 public final class AlUtil {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(AlUtil.class);
 
     private static String getErrorMessage(int errorCode) {
         switch (errorCode) {

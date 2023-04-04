@@ -15,15 +15,10 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.network.chat.Component;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
-import org.apache.logging.log4j.LogManager;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.server.MinecraftServerLib;
-import su.plo.lib.api.server.chat.ServerTextConverter;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandSource;
+import su.plo.voice.BaseVoice;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -65,7 +60,7 @@ public final class ModCommand implements Command<CommandSourceStack>, Predicate<
         try {
             command.execute(source, args);
         } catch (Exception e) {
-            LogManager.getLogger().error("Error while executing command", e);
+            BaseVoice.LOGGER.error("Error while executing command", e);
             throw e;
         }
         return 1;

@@ -11,9 +11,8 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.connection.ServerInfoInitializedEvent;
 import su.plo.voice.api.client.event.connection.UdpClientPacketSendEvent;
@@ -35,8 +34,6 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class NettyUdpClient implements UdpClient {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
@@ -81,7 +78,7 @@ public final class NettyUdpClient implements UdpClient {
         });
 
         try {
-            LOGGER.info("Connecting to {}:{}", ip, port);
+            BaseVoice.LOGGER.info("Connecting to {}:{}", ip, port);
             ChannelFuture channelFuture = bootstrap.connect(ip, port).sync();
             this.channel = (NioDatagramChannel) channelFuture.channel();
         } catch (InterruptedException e) {
@@ -95,9 +92,9 @@ public final class NettyUdpClient implements UdpClient {
     @Override
     public void close(@NotNull UdpClientClosedEvent.Reason reason) {
         if (channel == null) {
-            LOGGER.info("Disconnecting before connecting with reason {}", reason);
+            BaseVoice.LOGGER.info("Disconnecting before connecting with reason {}", reason);
         } else {
-            LOGGER.info("Disconnecting from {} with reason {}", channel.remoteAddress(), reason);
+            BaseVoice.LOGGER.info("Disconnecting from {} with reason {}", channel.remoteAddress(), reason);
         }
 
         handler.close();
@@ -117,7 +114,7 @@ public final class NettyUdpClient implements UdpClient {
 
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
 
-        LOGGER.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
+        BaseVoice.LOGGER.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
 
         UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
         if (!voiceClient.getEventBus().call(event)) return;
@@ -144,7 +141,7 @@ public final class NettyUdpClient implements UdpClient {
     public void onServerInfoUpdate(ServerInfoInitializedEvent event) {
         if (this.connected) return;
 
-        LOGGER.info("Connected to {}", channel.remoteAddress());
+        BaseVoice.LOGGER.info("Connected to {}", channel.remoteAddress());
         this.connected = true;
 
         voiceClient.getEventBus().call(new UdpClientConnectedEvent(this));

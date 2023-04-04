@@ -543,7 +543,8 @@ public final class VoiceClientConfig implements ClientConfig {
 
                 // what the fuck
                 map.forEach((key, value) -> {
-                    key = key.replaceAll("\"", "");
+                    // todo: move to config lib
+                    key = key.replaceAll("(^\")|(\"$)", "");
 
                     if (value instanceof Boolean) {
                         entries.put(key, new BooleanConfigEntry((Boolean) value));

@@ -5,9 +5,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
@@ -41,7 +38,6 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
@@ -80,9 +76,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     private final UdpClientManager udpClientManager = new VoiceUdpClientManager();
 
-    @Getter
-    protected final DebugLogger debugLogger = new DebugLogger(logger);
-
     @Setter
     private ServerInfo serverInfo;
 
@@ -107,10 +100,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     protected VoiceSettingsScreen settingsScreen;
 
     protected BaseVoiceClient(@NotNull ModrinthLoader loader) {
-        super(
-                loader,
-                LogManager.getLogger("PlasmoVoiceClient")
-        );
+        super(loader);
 
         ClientAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
@@ -138,7 +128,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
                         ));
                     });
         } catch (Exception e) {
-            logger.warn("Failed to check for updates", e);
+            LOGGER.warn("Failed to check for updates", e);
         }
     }
 
@@ -219,7 +209,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Override
     protected void onShutdown() {
-        logger.info("Shutting down");
+        LOGGER.info("Shutting down");
 
         eventBus.unregister(this);
 
@@ -278,7 +268,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             this.config = toml.load(VoiceClientConfig.class, configFile, false);
             toml.save(VoiceClientConfig.class, config, configFile);
         } catch (IOException e) {
-            logger.warn("Failed to load the config", e);
+            LOGGER.warn("Failed to load the config", e);
 
             try {
                 this.config = new VoiceClientConfig();
@@ -293,6 +283,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             eventBus.register(this, config.getKeyBindings());
         }
 
-        debugLogger.enabled(config.getDebug().value() || System.getProperty("plasmovoice.debug") != null);
+        BaseVoice.DEBUG_LOGGER.enabled(config.getDebug().value() || System.getProperty("plasmovoice.debug") != null);
     }
 }

@@ -57,7 +57,7 @@ subprojects {
         compileOnly(rootProject.libs.gson)
         compileOnly(rootProject.libs.guice)
 
-        api(rootProject.libs.log4j)
+        api(rootProject.libs.slf4j)
         api(rootProject.libs.annotations)
         api(rootProject.libs.lombok)
 
@@ -69,7 +69,7 @@ subprojects {
 
         testImplementation(rootProject.libs.guava)
         testImplementation(rootProject.libs.gson)
-        testImplementation(rootProject.libs.log4j)
+        testImplementation(rootProject.libs.slf4j)
     }
 
     tasks.test {

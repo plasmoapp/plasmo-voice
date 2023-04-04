@@ -1,1 +1,0 @@
-- fixed an exception on server language loading (java.lang.Exception: Can't load language resource)

@@ -3,11 +3,10 @@ package su.plo.voice.client.audio.device;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -29,8 +28,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @RequiredArgsConstructor
 public final class VoiceDeviceManager implements DeviceManager {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
@@ -152,7 +149,7 @@ public final class VoiceDeviceManager implements DeviceManager {
             try {
                 device = openAlInputDevice(format);
             } catch (Exception e) {
-                LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
+                BaseVoice.LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
 
                 device = openJavaxInputDevice(format);
             }

@@ -1,9 +1,9 @@
 package su.plo.voice.server.connection;
 
 import com.google.common.collect.Maps;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerConnectionManager;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
@@ -69,14 +69,14 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
                 port
         ));
 
-        voiceServer.getDebugLogger().log("Sent connection packet to {}", player.getInstance().getName());
+        BaseVoice.DEBUG_LOGGER.log("Sent connection packet to {}", player.getInstance().getName());
     }
 
     @Override
     public void requestPlayerInfo(@NotNull VoiceServerPlayer player) {
         player.sendPacket(new PlayerInfoRequestPacket());
 
-        voiceServer.getDebugLogger().log("Sent player info request packet to {}", player.getInstance().getName());
+        BaseVoice.DEBUG_LOGGER.log("Sent player info request packet to {}", player.getInstance().getName());
     }
 
     @Override
@@ -105,7 +105,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
                     encryptCipher.doFinal(voiceConfig.aesEncryptionKey())
             );
         } catch (Exception e) {
-            LogManager.getLogger().error("Failed to encode encryption data: {}", e.toString());
+            BaseVoice.LOGGER.error("Failed to encode encryption data: {}", e.toString());
             e.printStackTrace();
             return;
         }
@@ -133,7 +133,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
         );
         receiver.sendPacket(packet);
 
-        voiceServer.getDebugLogger().log("Sent {} to {}", packet, receiver.getInstance().getName());
+        BaseVoice.DEBUG_LOGGER.log("Sent {} to {}", packet, receiver.getInstance().getName());
     }
 
     @Override

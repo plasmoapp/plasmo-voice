@@ -4,10 +4,10 @@ import com.google.common.collect.Maps;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
 import su.plo.config.ConfigValidator;
@@ -25,7 +25,7 @@ import java.util.function.Predicate;
 @Accessors(fluent = true)
 public final class VoiceProxyConfig implements ProxyConfig {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoiceProxyConfig.class);
 
     private byte[] aesEncryptionKey = null;
     private UUID forwardingSecret = null;

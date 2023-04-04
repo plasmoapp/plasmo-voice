@@ -3,10 +3,9 @@ package su.plo.voice.client.audio.capture;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.IntConfigEntry;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
@@ -25,8 +24,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 @RequiredArgsConstructor
 public final class VoiceClientActivationManager implements ClientActivationManager {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
@@ -70,7 +67,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getId(), activation);
 
             if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
-                LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
+                BaseVoice.LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
                 activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
             }
 
@@ -210,7 +207,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         IntConfigEntry activationDistance = serverConfig.getActivationDistance(serverActivation.getId(), serverActivation);
         activationDistance.setDefault(0, 0, 0);
         if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
-            LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
+            BaseVoice.LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
             activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
         }
 

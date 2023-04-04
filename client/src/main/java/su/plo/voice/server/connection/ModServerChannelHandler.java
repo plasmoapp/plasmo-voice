@@ -61,8 +61,6 @@ public final class ModServerChannelHandler
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
                     .ifPresent(packet -> {
-//                        LogManager.getLogger().info("Channel packet received {}", packet);
-
                         VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
 
                         PlayerChannelHandler channel = channels.computeIfAbsent(

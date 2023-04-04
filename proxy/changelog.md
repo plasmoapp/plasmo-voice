@@ -1,1 +1,1 @@
-- fixed an exception on server language loading (java.lang.Exception: Can't load language resource)
+- now slf4j is used for logging to fix crash on BungeeCord

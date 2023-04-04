@@ -6,9 +6,8 @@ import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
-import org.apache.logging.log4j.LogManager;
 import su.plo.lib.api.proxy.connection.MinecraftProxyServerConnection;
-import su.plo.voice.api.proxy.PlasmoVoiceProxy;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
@@ -40,20 +39,20 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 .orElse(false)
         ) return;
 
-        voiceProxy.getDebugLogger().log("Connection with secret {}", secret);
+        BaseVoice.DEBUG_LOGGER.log("Connection with secret {}", secret);
 
         Optional<UUID> playerId = voiceProxy.getUdpConnectionManager().getPlayerIdBySecret(secret);
         if (!playerId.isPresent()) {
-            voiceProxy.getDebugLogger().log("Player not found by secret {}", secret);
+            BaseVoice.DEBUG_LOGGER.log("Player not found by secret {}", secret);
             return;
         }
 
         Optional<UUID> remoteSecret = voiceProxy.getUdpConnectionManager().getRemoteSecretByPlayerId(playerId.get());
         if (!remoteSecret.isPresent()) {
-            voiceProxy.getDebugLogger().log("Remote secret not found by player id {}", playerId.get());
+            BaseVoice.DEBUG_LOGGER.log("Remote secret not found by player id {}", playerId.get());
             return;
         }
-        voiceProxy.getDebugLogger().log("{} remote secret: {}", playerId, remoteSecret);
+        BaseVoice.DEBUG_LOGGER.log("{} remote secret: {}", playerId, remoteSecret);
 
         Optional<VoiceProxyPlayer> player = voiceProxy.getPlayerManager().getPlayerById(playerId.get());
         if (!player.isPresent()) return;
@@ -64,7 +63,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         Optional<RemoteServer> remoteServer = voiceProxy.getRemoteServerManager()
                 .getServer(playerServer.get().getServerInfo().getName());
         if (!remoteServer.isPresent()) return;
-        voiceProxy.getDebugLogger().log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
+        BaseVoice.DEBUG_LOGGER.log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
 
         NettyUdpProxyConnection connection = new NettyUdpProxyConnection(
                 voiceProxy,
@@ -101,16 +100,16 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
             } catch (CancelForwardingException ignored) {
                 return true;
             } catch (IOException e) {
-                voiceProxy.getDebugLogger().log("Failed to decode packet", e);
+                BaseVoice.DEBUG_LOGGER.log("Failed to decode packet", e);
             } catch (ClassCastException e) {
-                voiceProxy.getDebugLogger().log(
+                BaseVoice.DEBUG_LOGGER.log(
                         "Packet {} was received from remote server: {}; connection remote server: {}",
                         nettyPacket.getPacketUdp(),
                         sender,
                         connection.getRemoteServer().getAddress()
                 );
 
-                if (voiceProxy.getDebugLogger().enabled()) {
+                if (BaseVoice.DEBUG_LOGGER.enabled()) {
                     e.printStackTrace();
                 }
             }

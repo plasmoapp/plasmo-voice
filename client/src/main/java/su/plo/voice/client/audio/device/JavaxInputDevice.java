@@ -1,9 +1,8 @@
 package su.plo.voice.client.audio.device;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -15,8 +14,6 @@ import su.plo.voice.api.util.AudioUtil;
 import javax.sound.sampled.*;
 
 public final class JavaxInputDevice extends BaseAudioDevice implements InputDevice {
-
-    private static final Logger LOGGER = LogManager.getLogger(JavaxInputDevice.class);
 
     private TargetDataLine device;
 
@@ -94,7 +91,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
             throw new DeviceException("Failed to open javax device", e);
         }
 
-        LOGGER.info("Device {} initialized", getName());
+        BaseVoice.LOGGER.info("Device {} initialized", getName());
 
         getVoiceClient().getEventBus().call(new DeviceOpenEvent(this));
     }

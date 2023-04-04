@@ -2,9 +2,8 @@ package su.plo.voice.client.socket;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.connection.UdpClientPacketReceivedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
@@ -28,8 +27,6 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
 
     private static final long MAX_KEEP_ALIVE_TIMEOUT = 30_000L;
     private static final long MAX_SOFT_KEEP_ALIVE_TIMEOUT = 7_000L;
-
-    private final Logger logger = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
@@ -88,7 +85,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         voiceClient.getSourceManager().getSourceById(packet.getSourceId())
                 .ifPresent(source -> {
                     if (source.getSourceInfo().getState() != packet.getSourceState()) {
-                        logger.warn(
+                        BaseVoice.DEBUG_LOGGER.log(
                                 "Drop audio packet with bad source state: packet source state={}, source={}",
                                 packet.getSourceState(), source.getSourceInfo()
                         );
@@ -121,7 +118,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
 
         long diff = System.currentTimeMillis() - keepAlive;
         if (diff > MAX_KEEP_ALIVE_TIMEOUT) {
-            logger.warn("UDP timed out. Disconnecting...");
+            BaseVoice.LOGGER.warn("UDP timed out. Disconnecting...");
             client.close(UdpClientClosedEvent.Reason.TIMED_OUT);
         } else if (diff > MAX_SOFT_KEEP_ALIVE_TIMEOUT) {
             client.setTimedOut(true);

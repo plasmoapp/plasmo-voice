@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
@@ -58,7 +59,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
 
     @Override
     public void setRemoteAddress(@NotNull InetSocketAddress remoteAddress) {
-        voiceServer.getDebugLogger().log("Set remote address for {} from {} to {}",
+        BaseVoice.DEBUG_LOGGER.log("Set remote address for {} from {} to {}",
                 player.getInstance().getName(),
                 this.remoteAddress, remoteAddress
         );

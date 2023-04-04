@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
 import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
 import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.proxy.BaseVoiceProxy;
@@ -39,7 +40,7 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
                 getServer(server.getName())
                         .filter(RemoteServer::isAesEncryptionKeySet)
                         .ifPresent(remoteServer -> {
-                            voiceProxy.getDebugLogger().log("Reset AES encryption state for {}", remoteServer);
+                            BaseVoice.DEBUG_LOGGER.log("Reset AES encryption state for {}", remoteServer);
                             ((VoiceRemoteServer) remoteServer).setAesEncryptionKeySet(false);
                         });
             });

@@ -5,9 +5,10 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import su.plo.config.toml.Toml;
 import su.plo.config.toml.TomlWriter;
 import su.plo.crowdin.PlasmoCrowdinLib;
@@ -22,6 +23,8 @@ import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public final class VoiceServerLanguages implements ServerLanguages {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(VoiceServerLanguages.class);
 
     private final String defaultLanguageName;
 
@@ -60,7 +63,7 @@ public final class VoiceServerLanguages implements ServerLanguages {
             try {
                 downloadCrowdinTranslations(crowdinProjectId, fileName, languagesFolder);
             } catch (Exception e) {
-                LogManager.getLogger().warn(
+                LOGGER.warn(
                         "Failed to download crowdin project {} translations: {}",
                         crowdinProjectId,
                         e.getMessage()

@@ -2,9 +2,8 @@ package su.plo.voice.client.gui.settings;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
@@ -19,8 +18,6 @@ import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
 
 @RequiredArgsConstructor
 public final class MicrophoneTestController {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
@@ -42,7 +39,7 @@ public final class MicrophoneTestController {
         try {
             initializeLoopbackSource();
         } catch (DeviceException e) {
-            LOGGER.error("Failed to initialize source for mic test", e);
+            BaseVoice.LOGGER.error("Failed to initialize source for mic test", e);
             this.source = null;
         }
     }
@@ -51,7 +48,7 @@ public final class MicrophoneTestController {
         try {
             initializeLoopbackSource();
         } catch (DeviceException e) {
-            LOGGER.error("Failed to initialize source for mic test", e);
+            BaseVoice.LOGGER.error("Failed to initialize source for mic test", e);
             this.source = null;
             return;
         }

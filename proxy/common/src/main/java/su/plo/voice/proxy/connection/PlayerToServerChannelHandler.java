@@ -2,10 +2,9 @@ package su.plo.voice.proxy.connection;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
@@ -68,7 +67,7 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
         if (!source.isPresent()) return;
 
         if (source.get().notMatchFilters(player)) {
-            LogManager.getLogger().warn(
+            BaseVoice.LOGGER.warn(
                     "{} tried to request a source {} to which he doesn't have access",
                     player.getInstance().getName(), source.get().getSourceInfo()
             );

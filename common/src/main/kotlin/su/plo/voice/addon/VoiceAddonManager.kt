@@ -4,7 +4,6 @@ import com.google.common.base.Strings
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import com.google.inject.Guice
-import org.apache.logging.log4j.LogManager
 import su.plo.voice.BaseVoice
 import su.plo.voice.api.addon.*
 import su.plo.voice.api.addon.annotation.Addon
@@ -51,7 +50,7 @@ class VoiceAddonManager(
 
         addonContainer.dependencies.filter { !it.isOptional && !it.isMod }.forEach { dependency ->
             if (!addonById.containsKey(dependency.id)) {
-                LOGGER.error("Addon \"{}\" is missing dependency \"{}\"", addonContainer.id, dependency.id)
+                BaseVoice.LOGGER.error("Addon \"{}\" is missing dependency \"{}\"", addonContainer.id, dependency.id)
                 return
             }
         }
@@ -137,7 +136,7 @@ class VoiceAddonManager(
         voice.eventBus.register(addonInstance, addonInstance)
         initializedAddons.add(addon.id)
 
-        LOGGER.info(
+        BaseVoice.LOGGER.info(
             "{} v{} by {} loaded",
             addon.id,
             addon.version,
@@ -154,16 +153,11 @@ class VoiceAddonManager(
         voice.eventBus.unregister(addon.instance.get())
         initializedAddons.remove(addon.id)
 
-        LOGGER.info(
+        BaseVoice.LOGGER.info(
             "Addon {} v{} by {} unloaded",
             addon.id,
             addon.version,
             java.lang.String.join(", ", addon.authors)
         )
-    }
-
-    companion object {
-
-        private val LOGGER = LogManager.getLogger(VoiceAddonManager::class.java)
     }
 }

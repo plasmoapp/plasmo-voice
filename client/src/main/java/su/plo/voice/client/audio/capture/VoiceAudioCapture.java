@@ -47,7 +47,7 @@ import java.util.*;
 
 public final class VoiceAudioCapture implements AudioCapture {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(VoiceAudioCapture.class);
 
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;

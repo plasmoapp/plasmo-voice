@@ -32,7 +32,6 @@ import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.BaseVoiceClient;
-import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.language.LanguageChangedEvent;
 import su.plo.voice.client.socket.NettyUdpClient;
@@ -60,7 +59,7 @@ import java.util.UUID;
 
 public final class ModServerConnection implements ServerConnection, ClientPacketTcpHandler {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(ModServerConnection.class);
 
     private final BaseVoiceClient voiceClient;
     private final VoiceClientConfig config;
@@ -187,7 +186,6 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         voiceClient.getEventBus().call(event);
         if (event.isCancelled()) return;
 
-//        LogManager.getLogger().info("Channel packet received {}", packet);
         try {
             packet.handle(this);
         } catch (Exception e) {

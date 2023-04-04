@@ -2,10 +2,9 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.GuiUtil;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -23,8 +22,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class DevicesTabWidget extends TabWidget {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final MicrophoneTestController testController;
     private final DeviceManager devices;
@@ -234,7 +231,7 @@ public final class DevicesTabWidget extends TabWidget {
                     try {
                         device.reload();
                     } catch (DeviceException e) {
-                        LogManager.getLogger().warn("Failed to reload device: {}", e.getMessage());
+                        BaseVoice.LOGGER.warn("Failed to reload device: {}", e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -266,7 +263,7 @@ public final class DevicesTabWidget extends TabWidget {
             voiceClient.getDeviceManager().replace(null, outputDevice);
             testController.restart();
         } catch (Exception e) {
-            LOGGER.error("Failed to open primary OpenAL output device", e);
+            BaseVoice.LOGGER.error("Failed to open primary OpenAL output device", e);
         }
     }
 
@@ -276,7 +273,7 @@ public final class DevicesTabWidget extends TabWidget {
 
             devices.replace(null, device);
         } catch (Exception e) {
-            LOGGER.error("Failed to open input device", e);
+            BaseVoice.LOGGER.error("Failed to open input device", e);
         }
     }
 }

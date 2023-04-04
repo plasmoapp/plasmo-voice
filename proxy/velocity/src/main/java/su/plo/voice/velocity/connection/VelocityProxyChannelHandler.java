@@ -11,8 +11,8 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.PacketUtil;
@@ -73,7 +73,7 @@ public class VelocityProxyChannelHandler {
                 mac.update(aesEncryptionKey, 0, aesEncryptionKey.length);
 
                 if (!MessageDigest.isEqual(signature, mac.doFinal())) {
-                    LogManager.getLogger().warn("Received invalid AES key signature from {}", connection);
+                    BaseVoice.LOGGER.warn("Received invalid AES key signature from {}", connection);
                     return;
                 }
 

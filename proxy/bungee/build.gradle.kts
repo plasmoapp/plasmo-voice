@@ -68,6 +68,7 @@ tasks {
             exclude(dependency("org.slf4j:slf4j-api"))
             exclude(dependency("org.jetbrains:annotations"))
             exclude(dependency("com.google.guava:guava"))
+            exclude(dependency("com.google.code.gson:gson"))
 
             exclude("su/plo/opus/*")
             exclude("natives/opus/**/*")
