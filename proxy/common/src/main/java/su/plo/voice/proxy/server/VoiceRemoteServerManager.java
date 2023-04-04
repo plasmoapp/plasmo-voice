@@ -9,6 +9,7 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.proxy.BaseVoiceProxy;
+import su.plo.voice.proxy.util.AddressUtil;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -91,7 +92,8 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
         if (!(serverInfo.getAddress() instanceof InetSocketAddress))
             throw new IllegalArgumentException("only InetSocketAddress is supported");
 
-        VoiceRemoteServer remoteServer = new VoiceRemoteServer(serverInfo.getName(), (InetSocketAddress) serverInfo.getAddress());
+        InetSocketAddress serverAddress = AddressUtil.resolveAddress((InetSocketAddress) serverInfo.getAddress());
+        VoiceRemoteServer remoteServer = new VoiceRemoteServer(serverInfo.getName(), serverAddress);
         servers.put(serverInfo.getName(), remoteServer);
         return remoteServer;
     }

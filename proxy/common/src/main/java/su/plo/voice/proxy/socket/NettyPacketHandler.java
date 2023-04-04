@@ -18,6 +18,8 @@ import su.plo.voice.proxy.connection.CancelForwardingException;
 import su.plo.voice.socket.NettyPacketUdp;
 
 import java.io.IOException;
+import java.net.Inet4Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.Optional;
@@ -64,6 +66,15 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 .getServer(playerServer.get().getServerInfo().getName());
         if (!remoteServer.isPresent()) return;
         BaseVoice.DEBUG_LOGGER.log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
+
+        if (!remoteServer.get().isAesEncryptionKeySet()) {
+            BaseVoice.LOGGER.warn(
+                    "Aes encryption for server {} is not present. Dropping connection for {}",
+                    remoteServer.get(),
+                    player.get().getInstance().getName()
+            );
+            return;
+        }
 
         NettyUdpProxyConnection connection = new NettyUdpProxyConnection(
                 voiceProxy,
