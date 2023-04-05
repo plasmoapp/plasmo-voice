@@ -1,0 +1,1 @@
+- option to disable crowdin translations

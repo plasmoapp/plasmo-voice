@@ -174,13 +174,15 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Override
     protected void onInitialize() {
-        PlasmoCrowdinMod.INSTANCE.downloadTranslations(
-                new File(getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName())
-        );
-
         super.onInitialize();
 
         loadConfig();
+
+        if (!config.getDisableCrowdin().value()) {
+            PlasmoCrowdinMod.INSTANCE.downloadTranslations(
+                    new File(getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName())
+            );
+        }
 
         this.distanceVisualizer = new VoiceDistanceVisualizer(this, config);
 

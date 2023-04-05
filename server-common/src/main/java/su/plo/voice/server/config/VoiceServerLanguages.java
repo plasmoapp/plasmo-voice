@@ -28,6 +28,7 @@ public final class VoiceServerLanguages implements ServerLanguages {
     private static final Logger LOGGER = LoggerFactory.getLogger(VoiceServerLanguages.class);
 
     private final String defaultLanguageName;
+    private final boolean crowdinDisabled;
 
     private final Map<String, VoiceServerLanguage> languages = Maps.newHashMap();
 
@@ -80,15 +81,17 @@ public final class VoiceServerLanguages implements ServerLanguages {
                               @NotNull ResourceLoader resourceLoader,
                               @NotNull File languagesFolder) {
         try {
-            try {
-                downloadCrowdinTranslations(crowdinProjectId, fileName, languagesFolder);
-            } catch (Exception e) {
-                LOGGER.warn(
-                        "Failed to download crowdin project {} ({}) translations: {}",
-                        crowdinProjectId,
-                        fileName,
-                        e.getMessage()
-                );
+            if (!crowdinDisabled) {
+                try {
+                    downloadCrowdinTranslations(crowdinProjectId, fileName, languagesFolder);
+                } catch (Exception e) {
+                    LOGGER.warn(
+                            "Failed to download crowdin project {} ({}) translations: {}",
+                            crowdinProjectId,
+                            fileName,
+                            e.getMessage()
+                    );
+                }
             }
 
             File crowdinFolder = new File(languagesFolder, ".crowdin");

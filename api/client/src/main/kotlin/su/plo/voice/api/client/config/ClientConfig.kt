@@ -9,6 +9,8 @@ interface ClientConfig {
 
     val debug: BooleanConfigEntry
 
+    val disableCrowdin: BooleanConfigEntry
+
     val voice: Voice
 
     val advanced: Advanced

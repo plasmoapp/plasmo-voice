@@ -15,6 +15,10 @@ public interface ServerConfig {
 
     @NotNull String defaultLanguage();
 
+    boolean debug();
+
+    boolean disableCrowdin();
+
     @NotNull Host host();
 
     @NotNull Voice voice();

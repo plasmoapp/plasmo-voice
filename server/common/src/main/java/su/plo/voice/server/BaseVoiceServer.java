@@ -212,7 +212,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceServerLanguages(config.defaultLanguage());
+            this.languages = new VoiceServerLanguages(config.defaultLanguage(), config.disableCrowdin());
             languages.register(
                     "plasmo-voice",
                     "server.toml",

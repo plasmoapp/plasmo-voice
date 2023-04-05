@@ -37,6 +37,9 @@ public final class VoiceProxyConfig implements ProxyConfig {
     private boolean debug = false;
 
     @ConfigField
+    private boolean disableCrowdin = false;
+
+    @ConfigField
     private VoiceHost host = new VoiceHost();
 
     @ConfigField(nullComment = "[servers]\n" +

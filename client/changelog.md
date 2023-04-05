@@ -1,3 +1,4 @@
 - fixed crash on forge server (Caused by: java.lang.RuntimeException: Attempted to load class net/minecraft/client/Options) https://github.com/plasmoapp/plasmo-voice/issues/296 
 - fixed "Unknown custom packet identifier: plasmo:voice/v2" spam in forge
 - added support for device connections and disconnections (https://github.com/plasmoapp/plasmo-voice/issues/294)
+- added option to disable crowdin translations

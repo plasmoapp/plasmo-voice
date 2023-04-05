@@ -133,7 +133,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceServerLanguages(config.defaultLanguage());
+            this.languages = new VoiceServerLanguages(config.defaultLanguage(), config.disableCrowdin());
 //            languages.register(
 //                    this::getResource,
 //                    new File(getConfigFolder(), "languages"),
