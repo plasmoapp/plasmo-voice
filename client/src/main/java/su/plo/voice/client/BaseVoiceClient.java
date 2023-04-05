@@ -99,6 +99,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     protected VoiceSettingsScreen settingsScreen;
 
+    private boolean updatesChecked;
+
     protected BaseVoiceClient(@NotNull ModrinthLoader loader) {
         super(loader);
 
@@ -107,6 +109,9 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @EventSubscribe
     public void onUdpConnected(@NotNull UdpClientConnectedEvent event) {
+        if (this.updatesChecked) return;
+        this.updatesChecked = true;
+
         backgroundExecutor.execute(() -> {
             try {
                 // don't check for updates in dev/alpha builds or if it disabled in the config
@@ -228,6 +233,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         getServerConnection().ifPresent(ServerConnection::close);
 
         DeveloperCapeManager.INSTANCE.clearLoadedCapes();
+        this.updatesChecked = false;
     }
 
     @Override
