@@ -28,25 +28,6 @@ jobs:
       with:
         arguments: build
 
-    - name: Publish Paper to Modrinth
-      uses: Apehum/mc-publish@v1.1
-      with:
-        name: 'Plasmo Voice'
-        split-releases: true
-        files-primary: build/libs/*-@(Paper)-*.jar
-        version-resolver: 'exact'
-
-        changelog-file: server/changelog.md
-
-        game-versions: |
-          1.19.2
-          1.19.3
-          1.19.4
-
-        modrinth-unfeature-mode: 'none'
-        modrinth-id: 1bZhdhsH
-        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
-
     - name: Publish to GitHub
       uses: Apehum/mc-publish@v1.1
       with:
