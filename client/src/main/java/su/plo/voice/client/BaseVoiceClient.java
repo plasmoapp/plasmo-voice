@@ -202,7 +202,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         eventBus.register(this, sourceManager);
 
         // hotkey actions
-        new HotkeyActions(getKeyBindings(), config).register();
+        new HotkeyActions(this, getKeyBindings(), config).register();
         PlayerVolumeAction volumeAction = new PlayerVolumeAction(this, config);
         eventBus.register(this, volumeAction);
 
