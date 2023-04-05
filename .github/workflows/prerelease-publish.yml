@@ -32,5 +32,5 @@ jobs:
       uses: Apehum/mc-publish@v1.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-generate-changelog: false
+        github-generate-changelog: true
         github-prerelease: true
