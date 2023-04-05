@@ -60,16 +60,20 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
             return;
         }
 
+        BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(packet.getPublicKey());
 
-            ((BaseVoicePlayer<?>) player).setPublicKey(keyFactory.generatePublic(publicKeySpec));
+            voicePlayer.setPublicKey(keyFactory.generatePublic(publicKeySpec));
         } catch (Exception e) {
             BaseVoice.LOGGER.error("Failed to generate RSA public key: {}", e.toString());
             e.printStackTrace();
             return;
         }
+
+        voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
+        voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
 
         tcpConnections.connect(player);
     }
