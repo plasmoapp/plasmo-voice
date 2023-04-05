@@ -19,7 +19,7 @@ import java.net.URI;
 
 public final class VoiceNotAvailableScreen extends GuiScreen {
 
-    private static final String WIKI_LINK = "https://github.com/plasmoapp/plasmo-voice/wiki/How-to-install-Server";
+    private static final String WIKI_LINK = "https://plasmovoice.com/docs/server/installing";
     private static final int WIDTH = 248;
     private static final int HEIGHT = 50;
 
