@@ -40,6 +40,9 @@ public final class VoiceProxyConfig implements ProxyConfig {
     private boolean disableCrowdin = false;
 
     @ConfigField
+    private boolean checkForUpdates = true;
+
+    @ConfigField
     private VoiceHost host = new VoiceHost();
 
     @ConfigField(nullComment = "[servers]\n" +

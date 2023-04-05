@@ -15,6 +15,8 @@ public interface ProxyConfig {
 
     boolean disableCrowdin();
 
+    boolean checkForUpdates();
+
     @NotNull Host host();
 
     interface Host {

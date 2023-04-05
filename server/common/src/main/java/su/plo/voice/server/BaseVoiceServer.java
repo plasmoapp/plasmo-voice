@@ -111,18 +111,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     @Override
     protected void onInitialize() {
-        // check for updates
-        try {
-            ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), loader)
-                    .ifPresent(version -> LOGGER.warn(
-                            "New version available {}: {}",
-                            version.version(),
-                            version.downloadLink())
-                    );
-        } catch (IOException e) {
-            LOGGER.error("Failed to check for updates", e);
-        }
-
         super.onInitialize();
 
         eventBus.register(this, udpConnectionManager);
@@ -164,6 +152,9 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         }
 
         loadConfig(false);
+
+        // check for updates
+        checkForUpdates();
     }
 
     @Override
@@ -306,6 +297,23 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             this.udpServer.stop();
             eventBus.call(new UdpServerStoppedEvent(udpServer));
             this.udpServer = null;
+        }
+    }
+
+    private void checkForUpdates() {
+        if (config.checkForUpdates()) {
+            backgroundExecutor.execute(() -> {
+                try {
+                    ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), loader)
+                            .ifPresent(version -> LOGGER.warn(
+                                    "New version available {}: {}",
+                                    version.version(),
+                                    version.downloadLink())
+                            );
+                } catch (IOException e) {
+                    LOGGER.error("Failed to check for updates", e);
+                }
+            });
         }
     }
 

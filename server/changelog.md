@@ -1,1 +1,2 @@
-- option to disable crowdin translations
+- option to disable crowdin translations in config
+- option to disable check for updates in config

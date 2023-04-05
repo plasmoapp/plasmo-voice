@@ -42,6 +42,9 @@ public final class VoiceClientConfig implements ClientConfig {
     private BooleanConfigEntry disableCrowdin = new BooleanConfigEntry(false);
 
     @ConfigField
+    private BooleanConfigEntry checkForUpdates = new BooleanConfigEntry(false);
+
+    @ConfigField
     private Voice voice = new Voice();
 
     @ConfigField

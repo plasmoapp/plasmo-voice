@@ -19,6 +19,8 @@ public interface ServerConfig {
 
     boolean disableCrowdin();
 
+    boolean checkForUpdates();
+
     @NotNull Host host();
 
     @NotNull Voice voice();

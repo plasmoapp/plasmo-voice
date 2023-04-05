@@ -1,3 +1,4 @@
 - now slf4j is used for logging to fix crash on BungeeCord
 - resolve backend servers hostnames if unresolved
-- option to disable crowdin translations
+- option to disable crowdin translations in config
+- option to disable check for updates in config

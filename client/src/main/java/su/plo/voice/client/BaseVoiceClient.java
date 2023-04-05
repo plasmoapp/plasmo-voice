@@ -107,29 +107,31 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @EventSubscribe
     public void onUdpConnected(@NotNull UdpClientConnectedEvent event) {
-        try {
-            // don't check for updates in dev/alpha builds
-            if (!SemanticVersion.parse(getVersion()).isRelease()) return;
+        backgroundExecutor.execute(() -> {
+            try {
+                // don't check for updates in dev/alpha builds or if it disabled in the config
+                if (!SemanticVersion.parse(getVersion()).isRelease() || !config.getCheckForUpdates().value()) return;
 
-            ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
-                    .ifPresent(version -> {
-                        ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
-                                MinecraftTextComponent.translatable(
-                                        "message.plasmovoice.update_available",
-                                        version.version(),
-                                        MinecraftTextComponent.translatable("message.plasmovoice.update_available.click")
-                                                .withStyle(MinecraftTextStyle.YELLOW)
-                                                .clickEvent(MinecraftTextClickEvent.openUrl(version.downloadLink()))
-                                                .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.translatable(
-                                                        "message.plasmovoice.update_available.hover",
-                                                        version.downloadLink()
-                                                )))
-                                )
-                        ));
-                    });
-        } catch (Exception e) {
-            LOGGER.warn("Failed to check for updates", e);
-        }
+                ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
+                        .ifPresent(version -> {
+                            ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
+                                    MinecraftTextComponent.translatable(
+                                            "message.plasmovoice.update_available",
+                                            version.version(),
+                                            MinecraftTextComponent.translatable("message.plasmovoice.update_available.click")
+                                                    .withStyle(MinecraftTextStyle.YELLOW)
+                                                    .clickEvent(MinecraftTextClickEvent.openUrl(version.downloadLink()))
+                                                    .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.translatable(
+                                                            "message.plasmovoice.update_available.hover",
+                                                            version.downloadLink()
+                                                    )))
+                                    )
+                            ));
+                        });
+            } catch (Exception e) {
+                LOGGER.warn("Failed to check for updates", e);
+            }
+        });
     }
 
     // todo: why is this here?

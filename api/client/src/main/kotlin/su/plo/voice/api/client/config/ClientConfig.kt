@@ -11,6 +11,8 @@ interface ClientConfig {
 
     val disableCrowdin: BooleanConfigEntry
 
+    val checkForUpdates: BooleanConfigEntry
+
     val voice: Voice
 
     val advanced: Advanced

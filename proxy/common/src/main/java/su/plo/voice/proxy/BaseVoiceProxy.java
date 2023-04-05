@@ -33,6 +33,7 @@ import su.plo.voice.server.config.VoiceServerLanguages;
 import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,6 +100,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         }
 
         loadConfig(false);
+
+        checkForUpdates();
     }
 
     @Override
@@ -175,6 +178,23 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
         if (restartUdpServer) startUdpServer();
         loadServers();
+    }
+
+    private void checkForUpdates() {
+        if (config.checkForUpdates()) {
+            backgroundExecutor.execute(() -> {
+                try {
+                    ModrinthVersion.checkForUpdates(getVersion(), "1.19.3", loader)
+                            .ifPresent(version -> LOGGER.warn(
+                                    "New version available {}: {}",
+                                    version.version(),
+                                    version.downloadLink())
+                            );
+                } catch (IOException e) {
+                    LOGGER.error("Failed to check for updates", e);
+                }
+            });
+        }
     }
 
     private void loadServers() {

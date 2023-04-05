@@ -36,6 +36,9 @@ public final class VoiceServerConfig implements ServerConfig {
     private boolean disableCrowdin = false;
 
     @ConfigField
+    private boolean checkForUpdates = true;
+
+    @ConfigField
     private Host host = new Host();
 
     @ConfigField
