@@ -102,7 +102,7 @@ public final class VoiceAudioCapture implements AudioCapture {
         // check macos permissions
         if (Platform.isMac()) {
             AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
-            if (authorizationStatus != AVAuthorizationStatus.AUTHORIZED) {
+            if (authorizationStatus == AVAuthorizationStatus.RESTRICTED) {
                 ClientChatUtil.sendChatMessage(
                         MinecraftTextComponent.translatable(
                                 "message.plasmovoice.macos_incompatible_launcher",
