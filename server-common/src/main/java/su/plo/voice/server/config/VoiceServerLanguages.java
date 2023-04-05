@@ -19,6 +19,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
@@ -59,13 +60,33 @@ public final class VoiceServerLanguages implements ServerLanguages {
                          @Nullable String fileName,
                          @NotNull ResourceLoader resourceLoader,
                          @NotNull File languagesFolder) {
+        CompletableFuture.runAsync(() ->
+                registerSync(crowdinProjectId, fileName, resourceLoader, languagesFolder)
+        );
+    }
+
+    @Override
+    public Map<String, String> getServerLanguage(@Nullable String languageName) {
+        return getLanguage(languageName, "server");
+    }
+
+    @Override
+    public Map<String, String> getClientLanguage(@Nullable String languageName) {
+        return getLanguage(languageName, "client");
+    }
+
+    private void registerSync(@NotNull String crowdinProjectId,
+                              @Nullable String fileName,
+                              @NotNull ResourceLoader resourceLoader,
+                              @NotNull File languagesFolder) {
         try {
             try {
                 downloadCrowdinTranslations(crowdinProjectId, fileName, languagesFolder);
             } catch (Exception e) {
                 LOGGER.warn(
-                        "Failed to download crowdin project {} translations: {}",
+                        "Failed to download crowdin project {} ({}) translations: {}",
                         crowdinProjectId,
+                        fileName,
                         e.getMessage()
                 );
             }
@@ -115,16 +136,6 @@ public final class VoiceServerLanguages implements ServerLanguages {
         }
     }
 
-    @Override
-    public Map<String, String> getServerLanguage(@Nullable String languageName) {
-        return getLanguage(languageName, "server");
-    }
-
-    @Override
-    public Map<String, String> getClientLanguage(@Nullable String languageName) {
-        return getLanguage(languageName, "client");
-    }
-
     private void downloadCrowdinTranslations(@NotNull String crowdinProjectId,
                                              @Nullable String fileName,
                                              @NotNull File languagesFolder) throws Exception {
@@ -167,8 +178,8 @@ public final class VoiceServerLanguages implements ServerLanguages {
         }
     }
 
-    private void register(@NotNull Map<String, VoiceServerLanguage> languages,
-                          @NotNull File languagesFolder) throws IOException {
+    private synchronized void register(@NotNull Map<String, VoiceServerLanguage> languages,
+                                       @NotNull File languagesFolder) throws IOException {
         if (languages.size() == 0) return;
 
         final VoiceServerLanguage defaultLanguage = languages.getOrDefault(
