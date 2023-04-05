@@ -21,6 +21,11 @@ public interface InputDevice extends AudioDevice {
     int available();
 
     /**
+     * @return true if device was started
+     */
+    boolean isStarted();
+
+    /**
      * Read samples with the capacity of bufferSize
      *
      * @param bufferSize the frame size

@@ -400,7 +400,6 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             resetButton.setX(x + entryWidth - 20);
             resetButton.setY(elementY);
             resetButton.setActive(entry != null && !isDefault());
-            resetButton.setIconColor(!resetButton.isActive() ? -0x5f5f60 : 0);
             resetButton.render(stack, mouseX, mouseY, delta);
         }
 

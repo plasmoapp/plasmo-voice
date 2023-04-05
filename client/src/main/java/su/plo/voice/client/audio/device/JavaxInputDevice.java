@@ -61,6 +61,11 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
     }
 
     @Override
+    public boolean isStarted() {
+        return true;
+    }
+
+    @Override
     public short[] read(int bufferSize) {
         if (!isOpen()) throw new IllegalStateException("Device is not open");
 
@@ -99,15 +104,6 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
     private TargetDataLine openDevice() throws DeviceException {
         AudioFormat format = getFormat();
         String deviceName = getName();
-
-        if (deviceName == null) {
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-            try {
-                return (TargetDataLine) AudioSystem.getLine(info);
-            } catch (Exception e) {
-                throw new DeviceException("No devices available", e);
-            }
-        }
 
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
         for (Mixer.Info mixerInfo : mixers) {

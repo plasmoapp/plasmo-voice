@@ -168,6 +168,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
         // cleanup devices
         voiceClient.getDeviceManager().clear(null);
+        voiceClient.getDeviceManager().stopJob();
     }
 
     public void generateKeyPair() throws Exception {
@@ -299,6 +300,8 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         } catch (Exception e) {
             LOGGER.error("Failed to open primary OpenAL output device", e);
         }
+
+        voiceClient.getDeviceManager().startJob();
 
         ServerInfoInitializedEvent event = new ServerInfoInitializedEvent(serverInfo, packet);
         voiceClient.getEventBus().call(event);

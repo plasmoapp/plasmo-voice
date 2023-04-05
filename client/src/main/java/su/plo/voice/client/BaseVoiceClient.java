@@ -80,7 +80,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     private ServerInfo serverInfo;
 
     @Getter
-    private DeviceManager deviceManager;
+    private VoiceDeviceManager deviceManager;
     @Getter
     private AudioCapture audioCapture;
     @Getter

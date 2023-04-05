@@ -126,6 +126,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
         config.save(true);
 
+        navigation.getActiveTab().ifPresent(TabWidget::removed);
         voiceClient.getEventBus().unregister(voiceClient, this);
         voiceClient.getEventBus().unregister(voiceClient, testController);
     }

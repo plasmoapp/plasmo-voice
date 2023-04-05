@@ -83,6 +83,10 @@ public final class IconButton extends Button {
             }
         }
 
+        if (iconColor == 0 && !active) {
+            iconColor = -0x5f5f60;
+        }
+
         if (iconColor != 0) {
             float alpha = (float) (iconColor >> 24 & 255) / 255F;
             float red = (float) (iconColor >> 16 & 255) / 255F;

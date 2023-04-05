@@ -26,7 +26,6 @@ import su.plo.voice.api.util.Params
 import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.source.StreamAlSource.Companion.create
 import java.nio.Buffer
-import java.nio.ByteBuffer
 import java.nio.IntBuffer
 import java.util.*
 import java.util.concurrent.*
@@ -35,7 +34,7 @@ import javax.sound.sampled.AudioFormat
 class AlOutputDevice
 @Throws(DeviceException::class) constructor(
     voiceClient: PlasmoVoiceClient,
-    name: String?,
+    name: String,
     format: AudioFormat
 ) :
     BaseAudioDevice(voiceClient, name, format),
@@ -52,6 +51,9 @@ class AlOutputDevice
 
     override var devicePointer: Long = 0
     override var contextPointer: Long = 0
+
+    private var hasDisconnectEXT = false
+    private var disconnected = false
 
     private val mutex = Mutex()
 
@@ -83,7 +85,7 @@ class AlOutputDevice
     }
 
     override fun close() {
-        if (!isOpen()) return
+        if (!isOpen() && !disconnected) return
 
         runBlocking(coroutineScope.coroutineContext) {
             mutex.withLock {
@@ -93,7 +95,11 @@ class AlOutputDevice
     }
 
     override fun isOpen(): Boolean {
-        return devicePointer != 0L
+        if (devicePointer != 0L && hasDisconnectEXT && ALC11.alcGetInteger(devicePointer, 787) == 0 && !disconnected) {
+            disconnected = true
+        }
+
+        return devicePointer != 0L && !disconnected
     }
 
     @Throws(DeviceException::class)
@@ -186,6 +192,7 @@ class AlOutputDevice
         }
 
         devicePointer = openDevice(name)
+        hasDisconnectEXT = ALC10.alcIsExtensionPresent(devicePointer, "ALC_EXT_disconnect")
 
         val aLCCapabilities = ALC.createCapabilities(devicePointer)
         if (AlUtil.checkAlcErrors(devicePointer, "Get capabilities")) {
@@ -238,7 +245,7 @@ class AlOutputDevice
         if (contextPointer != 0L) {
             ALC11.alcDestroyContext(contextPointer)
         }
-        if (devicePointer != 0L) {
+        if (devicePointer != 0L && !disconnected) {
             ALC11.alcCloseDevice(devicePointer)
         }
 
@@ -251,18 +258,12 @@ class AlOutputDevice
 
     @Throws(DeviceException::class)
     private fun openDevice(deviceName: String?): Long {
-        val l = if (deviceName == null) {
-            // default device
-            ALC11.alcOpenDevice(null as ByteBuffer?)
-        } else {
-            ALC11.alcOpenDevice(deviceName)
+        val devicePointer = ALC11.alcOpenDevice(deviceName)
+        if (devicePointer == 0L || AlUtil.checkAlcErrors(devicePointer, "Open device")) {
+            throw IllegalStateException("Failed to open OpenAL device")
         }
 
-        if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
-            return l
-        }
-
-        throw IllegalStateException("Failed to open OpenAL device")
+        return devicePointer
     }
 
     override fun isHrtfSupported(): Boolean {
