@@ -3,6 +3,10 @@ val buildVersion: String by rootProject
 
 val bungeeVersion: String by project
 
+plugins {
+    id("su.plo.voice.relocate")
+}
+
 group = "$mavenGroup.bungee"
 
 repositories {
