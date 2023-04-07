@@ -4,6 +4,10 @@ val paperVersion: String by project
 val placeholderApiVersion: String by project
 val foliaVersion: String by project
 
+plugins {
+    id("su.plo.voice.relocate")
+}
+
 group = "$mavenGroup.paper"
 
 repositories {
@@ -14,6 +18,7 @@ dependencies {
     compileOnly("dev.folia:folia-api:${foliaVersion}")
     compileOnly("io.papermc.paper:paper-api:${paperVersion}")
     compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
+
     compileOnly(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 
     compileOnly(project(":server:common"))
@@ -33,13 +38,19 @@ dependencies {
         }
     }
     // shadow external deps
-    shadow(rootProject.libs.guice)
-    shadow(rootProject.libs.opus)
-    shadow(rootProject.libs.config)
-    shadow(rootProject.libs.crowdin.lib)
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
     shadow(rootProject.libs.kotlinx.json)
+
+    shadow(rootProject.libs.guice) {
+        exclude("com.google.guava")
+    }
+
+    shadow(rootProject.libs.opus)
+    shadow(rootProject.libs.config)
+    shadow(rootProject.libs.crowdin.lib) {
+        isTransitive = false
+    }
     shadow(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
 }
 
@@ -61,17 +72,18 @@ tasks {
         archiveAppendix.set("")
         archiveClassifier.set("")
 
-        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
-        relocate("su.plo.ustats", "su.plo.voice.ustats")
+        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+        relocate("su.plo.ustats", "su.plo.voice.libs.ustats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
             exclude(dependency("org.jetbrains:annotations"))
-            exclude(dependency("com.google.guava:guava"))
 
             exclude("su/plo/opus/*")
             exclude("natives/opus/**/*")
+
+            exclude("DebugProbesKt.bin")
             exclude("META-INF/**")
         }
     }

@@ -17,6 +17,7 @@ import su.plo.lib.api.proxy.event.command.ProxyCommandsRegisterEvent;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.velocity.VelocityProxyLib;
+import su.plo.voice.BuildConstants;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;

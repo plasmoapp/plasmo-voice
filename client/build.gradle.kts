@@ -120,7 +120,9 @@ dependencies {
     }
 
     if (platform.isForge) {
-        shadowCommon(rootProject.libs.guice)
+        shadowCommon(rootProject.libs.guice) {
+            exclude("com.google.guava")
+        }
     } else {
         "include"(rootProject.libs.guice)
         "include"(rootProject.libs.aopalliance)
@@ -156,10 +158,6 @@ tasks {
             exclude(dependency("org.slf4j:slf4j-api"))
             exclude(dependency("org.jetbrains:annotations"))
             exclude(dependency("com.google.guava:.*"))
-            exclude(dependency("com.google.code.findbugs:.*"))
-            exclude(dependency("com.google.errorprone:.*"))
-            exclude(dependency("com.google.j2objc:.*"))
-            exclude(dependency("org.checkerframework:.*"))
 
             exclude("README.md")
 
