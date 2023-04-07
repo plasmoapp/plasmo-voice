@@ -15,5 +15,5 @@ class BungeeProxyServerInfo(
         instance.socketAddress
 
     override fun getPlayerCount(): Int =
-        instance.players.size
+        instance.players.filter { it.isConnected }.size
 }
