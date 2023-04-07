@@ -146,7 +146,6 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     // Class methods
     public void renderButton(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
         UGraphics.bindTexture(0, WIDGETS_LOCATION);
-        ;
         UGraphics.color4f(1F, 1F, 1F, alpha);
 
         UGraphics.enableBlend();

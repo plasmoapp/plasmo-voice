@@ -83,6 +83,7 @@ public final class IconButton extends Button {
             }
         }
 
+        int iconColor = this.iconColor;
         if (iconColor == 0 && !active) {
             iconColor = -0x5f5f60;
         }
