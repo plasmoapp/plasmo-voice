@@ -221,6 +221,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 config.host().forwardingSecret(forwardingSecret);
             }
 
+            // load server id from ENV
+            if (System.getenv("PLASMO_VOICE_SERVER_ID") != null) {
+                config.serverId(System.getenv("PLASMO_VOICE_SERVER_ID"));
+            }
+
             // load AES key
             byte[] aesKey;
             if (oldConfig != null && oldConfig.voice().aesEncryptionKey() != null) {
