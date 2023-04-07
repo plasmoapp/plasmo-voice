@@ -5,6 +5,7 @@ import kotlinx.coroutines.future.future
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.openal.AL11
 import org.lwjgl.system.MemoryUtil
+import su.plo.voice.BaseVoice
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
@@ -204,6 +205,7 @@ class StreamAlSource private constructor(
                 }
 
                 if (closeTimeoutMs > 0L && System.currentTimeMillis() - lastBufferTime > closeTimeoutMs) {
+                    BaseVoice.DEBUG_LOGGER.log("Stream timed out. Closing...")
                     close()
                     break
                 }

@@ -4,9 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.mute.ServerMuteInfo;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.server.mute.VoiceMuteManager;
@@ -22,7 +21,6 @@ import java.util.concurrent.ExecutorService;
 @RequiredArgsConstructor
 public final class JsonMuteStorage implements MuteStorage {
 
-    private static final Logger LOGGER = LogManager.getLogger();
     private static final Gson GSON = new Gson();
     private static final Type MUTE_MAP_TYPE = new TypeToken<Map<UUID, ServerMuteInfo>>() {
     }.getType();
@@ -86,7 +84,7 @@ public final class JsonMuteStorage implements MuteStorage {
             try {
                 save();
             } catch (Exception e) {
-                LOGGER.error("Failed to save json mute storage: {}", e.toString());
+                BaseVoice.LOGGER.error("Failed to save json mute storage: {}", e.toString());
                 e.printStackTrace();
             }
         });

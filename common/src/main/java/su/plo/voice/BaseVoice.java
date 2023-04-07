@@ -2,14 +2,16 @@ package su.plo.voice;
 
 import com.google.inject.Module;
 import lombok.Getter;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
+import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.client.audio.codec.VoiceCodecManager;
 import su.plo.voice.client.audio.codec.opus.OpusCodecSupplier;
 import su.plo.voice.encryption.VoiceEncryptionManager;
@@ -17,16 +19,16 @@ import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;
 import su.plo.voice.util.version.ModrinthLoader;
 
-import java.io.File;
 import java.io.InputStream;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class BaseVoice implements PlasmoVoice {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger("PlasmoVoice");
+    public static final DebugLogger DEBUG_LOGGER = new DebugLogger(LOGGER);
+
     protected final ModrinthLoader loader;
-    @Getter
-    protected final Logger logger;
 
     protected final EventBus eventBus = new VoiceEventBus(this);
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
@@ -37,10 +39,8 @@ public abstract class BaseVoice implements PlasmoVoice {
     @Getter
     protected ScheduledExecutorService backgroundExecutor;
 
-    protected BaseVoice(@NotNull ModrinthLoader loader,
-                        @NotNull Logger logger) {
+    protected BaseVoice(@NotNull ModrinthLoader loader) {
         this.loader = loader;
-        this.logger = logger;
         this.addons = new VoiceAddonManager(this);
 
         encryption.register(new AesEncryptionSupplier());

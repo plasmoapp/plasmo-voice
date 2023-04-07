@@ -1,16 +1,12 @@
 package su.plo.lib.paper.entity
 
-import lombok.RequiredArgsConstructor
 import org.bukkit.Location
 import org.bukkit.entity.LivingEntity
-import org.bukkit.entity.Player
-import su.plo.lib.api.entity.MinecraftPlayerEntity
 import su.plo.lib.api.server.MinecraftServerLib
 import su.plo.lib.api.server.entity.MinecraftServerEntity
 import su.plo.lib.api.server.world.ServerPos3d
 import su.plo.voice.proto.data.pos.Pos3d
 
-@RequiredArgsConstructor
 open class PaperServerEntity<E : LivingEntity>(
     protected val minecraftServer: MinecraftServerLib,
     protected val instance: E

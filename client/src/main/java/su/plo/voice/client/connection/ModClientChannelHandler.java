@@ -6,8 +6,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
@@ -61,6 +61,7 @@ public final class ModClientChannelHandler
     //$$     NetworkEvent.Context context = event.getSource().get();
     //$$     if (context.getDirection() != NetworkDirection.PLAY_TO_CLIENT || event.getPayload() == null) return;
     //$$     receive(context.getNetworkManager(), event.getPayload());
+    //$$     context.setPacketHandled(true);
     //$$ }
     //#endif
 
@@ -72,7 +73,7 @@ public final class ModClientChannelHandler
                 this.connection.generateKeyPair();
                 voiceClient.getEventBus().register(voiceClient, this.connection);
             } catch (Exception e) {
-                LogManager.getLogger().error("Failed to initialize server connection: {}", e.toString());
+                BaseVoice.LOGGER.error("Failed to initialize server connection: {}", e.toString());
                 e.printStackTrace();
                 return;
             }

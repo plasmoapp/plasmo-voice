@@ -1,7 +1,7 @@
 package su.plo.voice.client.audio.codec.opus;
 
-import org.concentus.OpusDecoder;
-import org.concentus.OpusException;
+import su.plo.opus.concentus.OpusDecoder;
+import su.plo.opus.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 
 public final class JavaOpusDecoder implements BaseOpusDecoder {

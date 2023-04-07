@@ -11,6 +11,12 @@ public interface ProxyConfig {
 
     @NotNull String defaultLanguage();
 
+    boolean debug();
+
+    boolean disableCrowdin();
+
+    boolean checkForUpdates();
+
     @NotNull Host host();
 
     interface Host {

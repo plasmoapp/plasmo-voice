@@ -13,10 +13,9 @@ import org.apache.logging.log4j.Logger
 import org.lwjgl.openal.AL10
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
+import su.plo.voice.BaseVoice
 import su.plo.voice.api.audio.codec.AudioDecoder
 import su.plo.voice.api.audio.codec.CodecException
-import su.plo.voice.api.client.PlasmoVoiceClient
-import su.plo.voice.api.client.audio.device.AlAudioDevice
 import su.plo.voice.api.client.audio.device.DeviceType
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.device.source.SourceGroup
@@ -98,7 +97,7 @@ abstract class BaseClientAudioSource<T> constructor(
         // initialize volumes
         lineVolume = getLineVolume(sourceInfo)
         lineMute = getLineMute(sourceInfo)
-        voiceClient.debugLogger.log(
+        BaseVoice.DEBUG_LOGGER.log(
             "Source {} initialized in {}",
             sourceInfo,
             if (isStereo(sourceInfo)) "stereo" else "mono"
@@ -121,7 +120,7 @@ abstract class BaseClientAudioSource<T> constructor(
                 sourceGroup = createSourceGroup(sourceInfo)
                 oldSourceGroup.clear()
 
-                voiceClient.debugLogger.log(
+                BaseVoice.DEBUG_LOGGER.log(
                     "Update device sources for {} in {}",
                     sourceInfo,
                     if (isStereo(sourceInfo)) "stereo" else "mono"
@@ -136,7 +135,7 @@ abstract class BaseClientAudioSource<T> constructor(
                     decoder = createDecoder(sourceInfo, voiceInfo, it)
                 }
                 lastSequenceNumbers.clear()
-                voiceClient.debugLogger.log("Update decoder for {}", sourceInfo)
+                BaseVoice.DEBUG_LOGGER.log("Update decoder for {}", sourceInfo)
             }
 
             // initialize encryption
@@ -148,7 +147,7 @@ abstract class BaseClientAudioSource<T> constructor(
             if (sourceInfo.lineId != this@BaseClientAudioSource.sourceInfo.lineId) {
                 lineVolume = getLineVolume(sourceInfo)
                 lineMute = getLineMute(sourceInfo)
-                voiceClient.debugLogger.log("Update source line for {}", sourceInfo)
+                BaseVoice.DEBUG_LOGGER.log("Update source line for {}", sourceInfo)
             }
 
             this@BaseClientAudioSource.sourceInfo = sourceInfo
@@ -186,7 +185,7 @@ abstract class BaseClientAudioSource<T> constructor(
         sourceGroup.clear()
 
         voiceClient.eventBus.call(AudioSourceClosedEvent(this@BaseClientAudioSource))
-        voiceClient.debugLogger.log("Source {} closed", sourceInfo)
+        BaseVoice.DEBUG_LOGGER.log("Source {} closed", sourceInfo)
     }
 
     override fun closeAsync(): CompletableFuture<Void?> =
@@ -239,7 +238,7 @@ abstract class BaseClientAudioSource<T> constructor(
         // drop packet with bad order
         if (lastSequenceNumber >= 0 && packet.sequenceNumber <= lastSequenceNumber) {
             if (lastSequenceNumber - packet.sequenceNumber < 10L) {
-                voiceClient.debugLogger.log("Drop packet with bad order")
+                BaseVoice.DEBUG_LOGGER.log("Drop packet with bad order")
                 return
             }
             lastSequenceNumbers.remove(sourceInfo.lineId)
@@ -510,7 +509,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
     companion object {
         private val OUTER_ANGLE: Double = 180.0
-        private val LOGGER: Logger = LogManager.getLogger()
+        private val LOGGER: Logger = LogManager.getLogger(BaseClientAudioSource::class.java)
         private val POSITION_ZERO = floatArrayOf(0f, 0f, 0f)
 
         private val SCOPE = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())

@@ -5,6 +5,7 @@ import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.UdpClientConnectEvent;
 import su.plo.voice.api.server.event.connection.UdpClientConnectedEvent;
@@ -69,7 +70,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
         if (bySecret != null) bySecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
-        voiceServer.getDebugLogger().log("{} ({}) connected", connection.getPlayer().getInstance().getName(), connection.getRemoteAddress());
+        BaseVoice.DEBUG_LOGGER.log("{} ({}) connected", connection.getPlayer().getInstance().getName(), connection.getRemoteAddress());
         voiceServer.getEventBus().call(new UdpClientConnectedEvent(connection));
     }
 
@@ -132,7 +133,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
         connectionByPlayerId.remove(player.getInstance().getUUID());
         connectionBySecret.remove(connection.getSecret());
 
-        voiceServer.getDebugLogger().log("{} disconnected", connection.getPlayer().getInstance().getName());
+        BaseVoice.DEBUG_LOGGER.log("{} disconnected", connection.getPlayer().getInstance().getName());
         voiceServer.getEventBus().call(new UdpClientDisconnectedEvent(connection));
     }
 

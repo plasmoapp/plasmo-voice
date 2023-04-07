@@ -47,7 +47,7 @@ import java.util.*;
 
 public final class VoiceAudioCapture implements AudioCapture {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(VoiceAudioCapture.class);
 
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;
@@ -87,7 +87,8 @@ public final class VoiceAudioCapture implements AudioCapture {
         return Optional.ofNullable(encryption);
     }
 
-    private Optional<InputDevice> getDevice() {
+    @Override
+    public Optional<InputDevice> getDevice() {
         Collection<AudioDevice> devices = this.devices.getDevices(DeviceType.INPUT);
         return Optional.ofNullable((InputDevice) devices.stream().findFirst().orElse(null));
     }
@@ -101,7 +102,7 @@ public final class VoiceAudioCapture implements AudioCapture {
         // check macos permissions
         if (Platform.isMac()) {
             AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
-            if (authorizationStatus != AVAuthorizationStatus.AUTHORIZED) {
+            if (authorizationStatus == AVAuthorizationStatus.RESTRICTED) {
                 ClientChatUtil.sendChatMessage(
                         MinecraftTextComponent.translatable(
                                 "message.plasmovoice.macos_incompatible_launcher",
@@ -125,7 +126,6 @@ public final class VoiceAudioCapture implements AudioCapture {
                 devices.replace(null, device);
             } catch (Exception e) {
                 LOGGER.error("Failed to open input device", e);
-                return;
             }
         }
 
@@ -209,6 +209,11 @@ public final class VoiceAudioCapture implements AudioCapture {
                 }
 
                 device.get().start();
+                if (!device.get().isStarted()) {
+                    Thread.sleep(1_000L);
+                    continue;
+                }
+
                 short[] samples = device.get().read();
                 if (samples == null) {
                     Thread.sleep(5L);
@@ -291,6 +296,9 @@ public final class VoiceAudioCapture implements AudioCapture {
                         encoded.monoProcessed
                 ));
             } catch (InterruptedException ignored) {
+                break;
+            } catch (Exception e) {
+                e.printStackTrace();
                 break;
             }
         }

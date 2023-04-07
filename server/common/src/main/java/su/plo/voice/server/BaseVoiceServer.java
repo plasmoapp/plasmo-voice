@@ -5,13 +5,12 @@ import com.google.common.io.ByteStreams;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.lib.api.server.event.command.ServerCommandsRegisterEvent;
 import su.plo.lib.api.server.command.MinecraftCommand;
 import su.plo.lib.api.server.command.MinecraftCommandManager;
+import su.plo.lib.api.server.event.command.ServerCommandsRegisterEvent;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionsManager;
 import su.plo.voice.BaseVoice;
@@ -19,7 +18,6 @@ import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
-import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
@@ -75,8 +73,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
     @Getter
-    protected final DebugLogger debugLogger = new DebugLogger(logger);
-    @Getter
     protected final TcpServerConnectionManager tcpConnectionManager = new VoiceTcpServerConnectionManager(this);
     @Getter
     protected final UdpServerConnectionManager udpConnectionManager = new VoiceUdpServerConnectionManager(this);
@@ -108,28 +104,13 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     private Encryption defaultEncryption;
 
     protected BaseVoiceServer(@NotNull ModrinthLoader loader) {
-        super(
-                loader,
-                LogManager.getLogger("PlasmoVoiceServer")
-        );
+        super(loader);
 
         ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
 
     @Override
     protected void onInitialize() {
-        // check for updates
-        try {
-            ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), loader)
-                    .ifPresent(version -> logger.warn(
-                            "New version available {}: {}",
-                            version.version(),
-                            version.downloadLink())
-                    );
-        } catch (IOException e) {
-            logger.error("Failed to check for updates", e);
-        }
-
         super.onInitialize();
 
         eventBus.register(this, udpConnectionManager);
@@ -157,7 +138,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         try {
             this.muteStorage.init();
         } catch (Exception e) {
-            getLogger().error("Failed to initialize mute storage: {}", e.toString());
+            LOGGER.error("Failed to initialize mute storage: {}", e.toString());
             e.printStackTrace();
             return;
         }
@@ -167,10 +148,13 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         if (LuckPermsListener.Companion.hasLuckPerms()) {
             this.luckPermsListener = new LuckPermsListener(this, backgroundExecutor);
             luckPermsListener.subscribe();
-            logger.info("LuckPerms permissions listener attached");
+            LOGGER.info("LuckPerms permissions listener attached");
         }
 
         loadConfig(false);
+
+        // check for updates
+        checkForUpdates();
     }
 
     @Override
@@ -186,7 +170,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             try {
                 muteStorage.close();
             } catch (Exception e) {
-                getLogger().error("Failed to close mute storage: {}", e.toString());
+                LOGGER.error("Failed to close mute storage: {}", e.toString());
                 e.printStackTrace();
             }
         }
@@ -219,7 +203,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceServerLanguages(config.defaultLanguage());
+            this.languages = new VoiceServerLanguages(config.defaultLanguage(), config.disableCrowdin());
             languages.register(
                     "plasmo-voice",
                     "server.toml",
@@ -255,7 +239,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             throw new IllegalStateException("Failed to load config", e);
         }
 
-        debugLogger.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
+        DEBUG_LOGGER.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
 
         // register proximity activation
         proximityActivation.register(config);
@@ -304,7 +288,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 connectedPlayers.forEach(tcpConnectionManager::requestPlayerInfo);
             }
         } catch (Exception e) {
-            getLogger().error("Failed to start the udp server", e);
+            LOGGER.error("Failed to start the udp server", e);
         }
     }
 
@@ -313,6 +297,23 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             this.udpServer.stop();
             eventBus.call(new UdpServerStoppedEvent(udpServer));
             this.udpServer = null;
+        }
+    }
+
+    private void checkForUpdates() {
+        if (config.checkForUpdates()) {
+            backgroundExecutor.execute(() -> {
+                try {
+                    ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), loader)
+                            .ifPresent(version -> LOGGER.warn(
+                                    "New version available {}: {}",
+                                    version.version(),
+                                    version.downloadLink())
+                            );
+                } catch (IOException e) {
+                    LOGGER.error("Failed to check for updates", e);
+                }
+            });
         }
     }
 

@@ -5,6 +5,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.server.BaseVoiceServer;
@@ -39,7 +40,7 @@ public abstract class BaseServerServiceChannelHandler {
             mac.init(key);
             mac.update(aesEncryptionKey, 0, aesEncryptionKey.length);
             if (!MessageDigest.isEqual(signature, mac.doFinal())) {
-                voiceServer.getLogger().warn("Received invalid AES key signature from player " + player.getInstance().getUUID());
+                BaseVoice.LOGGER.warn("Received invalid AES key signature from player " + player.getInstance().getUUID());
                 return;
             }
 
@@ -53,7 +54,7 @@ public abstract class BaseServerServiceChannelHandler {
                     output.toByteArray()
             );
 
-            voiceServer.getDebugLogger().log("Received AES key from proxy server");
+            BaseVoice.DEBUG_LOGGER.log("Received AES key from proxy server");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         } catch (InvalidKeyException e) {

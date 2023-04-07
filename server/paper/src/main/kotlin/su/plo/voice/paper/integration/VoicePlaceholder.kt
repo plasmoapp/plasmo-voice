@@ -29,7 +29,7 @@ class VoicePlaceholder(
             val voicePlayer = voiceServer.playerManager.getPlayerById(it.uniqueId)
                 .orElse(null) ?: return null
 
-            when(params.lowercase()) {
+            when(params) {
                 "installed" -> voicePlayer.hasVoiceChat().toString()
 
                 "hasVoiceChat" -> voicePlayer.hasVoiceChat().toString()

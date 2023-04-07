@@ -12,13 +12,14 @@ plugins {
     idea
     alias(libs.plugins.shadow)
     alias(libs.plugins.idea.ext)
-    alias(libs.plugins.crowdin.plugin) apply false
+    alias(libs.plugins.crowdin.plugin) apply(false)
 
-    kotlin("jvm") version "1.6.10"
-    kotlin("plugin.lombok") version "1.6.10"
+    kotlin("jvm") version("1.6.10")
+    kotlin("plugin.lombok") version("1.6.10")
     kotlin("kapt") version("1.6.10")
-//    id("io.freefair.lombok") version "5.3.0"
-    id("gg.essential.multi-version.root") apply false
+
+    id("gg.essential.multi-version.root") apply(false)
+    id("su.plo.voice.relocate") version("1.0.1") apply(false)
 }
 
 subprojects {
@@ -57,7 +58,7 @@ subprojects {
         compileOnly(rootProject.libs.gson)
         compileOnly(rootProject.libs.guice)
 
-        api(rootProject.libs.log4j)
+        api(rootProject.libs.slf4j)
         api(rootProject.libs.annotations)
         api(rootProject.libs.lombok)
 
@@ -69,7 +70,7 @@ subprojects {
 
         testImplementation(rootProject.libs.guava)
         testImplementation(rootProject.libs.gson)
-        testImplementation(rootProject.libs.log4j)
+        testImplementation(rootProject.libs.slf4j)
     }
 
     tasks.test {
@@ -130,6 +131,7 @@ allprojects {
         maven("https://repo.plo.su")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://repo.papermc.io/repository/maven-public/")
+        maven("https://jitpack.io/")
     }
 }
 

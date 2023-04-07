@@ -1,7 +1,7 @@
-package su.plo.voice.velocity;
+package su.plo.voice;
 
 // The constants are replaced before compilation
-public class BuildConstants {
+public final class BuildConstants {
 
     public static final String VERSION = "${version}";
 }

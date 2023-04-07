@@ -10,15 +10,10 @@ import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.server.PlasmoVoiceServer;
-import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
-import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
@@ -69,7 +64,7 @@ public final class NettyUdpServer implements UdpServer {
             throw e;
         }
 
-        voiceServer.getLogger().info("UDP server is started on {}", socketAddress);
+        BaseVoice.LOGGER.info("UDP server is started on {}", socketAddress);
     }
 
     @Override
@@ -79,7 +74,7 @@ public final class NettyUdpServer implements UdpServer {
         channelGroup.close();
         loopGroup.shutdownGracefully();
 
-        voiceServer.getLogger().info("UDP server is stopped");
+        BaseVoice.LOGGER.info("UDP server is stopped");
     }
 
     @Override

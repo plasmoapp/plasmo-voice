@@ -1,14 +1,10 @@
-import org.gradle.plugins.ide.idea.model.IdeaModel
-import org.gradle.plugins.ide.idea.model.IdeaProject
-import org.jetbrains.gradle.ext.*
-
 val mavenGroup: String by rootProject
 val buildVersion: String by rootProject
 
 val velocityVersion: String by project
 
 plugins {
-    id("org.jetbrains.gradle.plugin.idea-ext")
+    id("su.plo.voice.relocate")
 }
 
 group = "$mavenGroup.velocity"
@@ -36,50 +32,16 @@ dependencies {
         }
     }
     // shadow external deps
-    shadow(rootProject.libs.opus)
-    shadow(rootProject.libs.config)
-    shadow(rootProject.libs.crowdin.lib)
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
     shadow(rootProject.libs.kotlinx.json)
-    shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
-}
 
-val templateSource = file("src/main/templates")
-val templateDestination = layout.buildDirectory.dir("generated/sources/templates")
-val generateTemplates = tasks.register<Copy>("generateTemplates") {
-    val props = mutableMapOf(
-        "version" to buildVersion
-    )
-
-    inputs.properties(props)
-
-    from(templateSource)
-    into(templateDestination)
-    expand(props)
-}
-
-sourceSets.main.get().java.srcDir(generateTemplates.map { it.outputs })
-
-fun Project.idea(block: IdeaModel.() -> Unit) =
-    (this as ExtensionAware).extensions.configure("idea", block)
-
-fun IdeaProject.settings(block: ProjectSettings.() -> Unit) =
-    (this@settings as ExtensionAware).extensions.configure(block)
-
-@Suppress("UNCHECKED_CAST")
-val ProjectSettings.taskTriggers: TaskTriggersConfig
-    get() = (this as ExtensionAware).extensions.getByName("taskTriggers") as TaskTriggersConfig
-
-rootProject.idea {
-    project {
-        settings {
-            taskTriggers {
-                afterSync(generateTemplates)
-                beforeBuild(generateTemplates)
-            }
-        }
+    shadow(rootProject.libs.opus)
+    shadow(rootProject.libs.config)
+    shadow(rootProject.libs.crowdin.lib) {
+        isTransitive = false
     }
+    shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
 }
 
 tasks {
@@ -90,17 +52,18 @@ tasks {
         archiveAppendix.set("")
         archiveClassifier.set("")
 
-        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
+        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
         relocate("org.bstats", "su.plo.voice.bstats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
             exclude(dependency("org.jetbrains:annotations"))
-            exclude(dependency("com.google.guava:guava"))
 
             exclude("su/plo/opus/*")
             exclude("natives/opus/**/*")
+
+            exclude("DebugProbesKt.bin")
             exclude("META-INF/**")
         }
     }

@@ -1,7 +1,7 @@
 package su.plo.voice.server.connection;
 
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
@@ -54,22 +54,26 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
         if (
                 (System.getProperty("plasmovoice.alpha.disableversioncheck") == null && !serverVersion.isRelease() && !serverVersion.string().equals(clientVersion.string())) || // alpha check
-                clientVersion.major() != serverVersion.major()
+                        clientVersion.major() != serverVersion.major()
         ) {
             ServerVersionUtil.suggestSupportedVersion(player, serverVersion, packet.getMinecraftVersion());
             return;
         }
 
+        BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(packet.getPublicKey());
 
-            ((BaseVoicePlayer<?>) player).setPublicKey(keyFactory.generatePublic(publicKeySpec));
+            voicePlayer.setPublicKey(keyFactory.generatePublic(publicKeySpec));
         } catch (Exception e) {
-            LogManager.getLogger().error("Failed to generate RSA public key: {}", e.toString());
+            BaseVoice.LOGGER.error("Failed to generate RSA public key: {}", e.toString());
             e.printStackTrace();
             return;
         }
+
+        voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
+        voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
 
         tcpConnections.connect(player);
     }
@@ -110,7 +114,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         if (!source.isPresent()) return;
 
         if (source.get().notMatchFilters(player)) {
-            LogManager.getLogger().warn(
+            BaseVoice.LOGGER.warn(
                     "{} tried to request a source {} to which he doesn't have access",
                     player.getInstance().getName(), source.get().getSourceInfo()
             );

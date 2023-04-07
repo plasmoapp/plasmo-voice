@@ -1,16 +1,12 @@
 package su.plo.voice.client.audio.filter;
 
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.rnnoise.Denoiser;
 
 public final class NoiseSuppressionFilter extends LimiterFilter {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final ConfigEntry<Boolean> activeEntry;
 
@@ -30,7 +26,7 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
             try {
                 instance = new Denoiser();
             } catch (Exception e) {
-                LOGGER.error("RNNoise is not available on this platform");
+                BaseVoice.LOGGER.error("RNNoise is not available on this platform");
                 activeEntry.set(false);
             }
         } else if (instance != null) {

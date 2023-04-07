@@ -3,6 +3,10 @@ val buildVersion: String by rootProject
 
 val bungeeVersion: String by project
 
+plugins {
+    id("su.plo.voice.relocate")
+}
+
 group = "$mavenGroup.bungee"
 
 repositories {
@@ -32,13 +36,19 @@ dependencies {
         }
     }
     // shadow external deps
-    shadow(rootProject.libs.guice)
-    shadow(rootProject.libs.opus)
-    shadow(rootProject.libs.config)
-    shadow(rootProject.libs.crowdin.lib)
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
     shadow(rootProject.libs.kotlinx.json)
+
+    shadow(rootProject.libs.guice) {
+        exclude("com.google.guava")
+    }
+
+    shadow(rootProject.libs.opus)
+    shadow(rootProject.libs.config)
+    shadow(rootProject.libs.crowdin.lib) {
+        isTransitive = false
+    }
     shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-bungeecord:$it" })
 }
 
@@ -60,17 +70,18 @@ tasks {
         archiveAppendix.set("")
         archiveClassifier.set("")
 
-        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
-        relocate("org.bstats", "su.plo.voice.bstats")
+        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+        relocate("org.bstats", "su.plo.voice.libs.bstats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
             exclude(dependency("org.jetbrains:annotations"))
-            exclude(dependency("com.google.guava:guava"))
 
             exclude("su/plo/opus/*")
             exclude("natives/opus/**/*")
+
+            exclude("DebugProbesKt.bin")
             exclude("META-INF/**")
         }
     }
@@ -90,6 +101,6 @@ tasks {
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(8))
     }
 }

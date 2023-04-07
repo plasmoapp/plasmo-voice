@@ -98,8 +98,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                     disableMicrophoneButtons.get(0).setVisible(false);
                     disableMicrophoneButtons.get(1).setVisible(true);
                     config.getVoice().getMicrophoneDisabled().set(true);
-
-                    sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(MinecraftTextComponent.translatable(
@@ -128,8 +126,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                         this.disableVoiceButtons.get(1).setVisible(false);
                         config.getVoice().getDisabled().set(false);
                     }
-
-                    sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(MinecraftTextComponent.translatable(
@@ -169,8 +165,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                         disableMicrophoneButtons.get(0).setVisible(false);
                         disableMicrophoneButtons.get(1).setVisible(true);
                     }
-
-                    sendStateUpdate();
                 },
                 (button, render, mouseX, mouseY) -> {
                     parent.setTooltip(MinecraftTextComponent.translatable(
@@ -198,8 +192,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                         disableMicrophoneButtons.get(0).setVisible(true);
                         disableMicrophoneButtons.get(1).setVisible(false);
                     }
-
-                    sendStateUpdate();
                 },
                 (button, matrices, mouseX, mouseY) -> {
                     parent.setTooltip(MinecraftTextComponent.translatable(
@@ -419,15 +411,5 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         width += (tabButtons.size() - 1) * 4;
 
         return width;
-    }
-
-    private void sendStateUpdate() {
-        voiceClient.getServerConnection()
-                .ifPresent((connection) -> {
-                    connection.sendPacket(new PlayerStatePacket(
-                            config.getVoice().getDisabled().value(),
-                            config.getVoice().getMicrophoneDisabled().value()
-                    ));
-                });
     }
 }

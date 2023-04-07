@@ -23,6 +23,7 @@ object PlasmoCrowdinMod {
             val translations = try {
                 PlasmoCrowdinLib.downloadRawTranslations("plasmo-voice", "client.json").await()
             } catch (e: Exception) {
+                logger.warn("Failed to download translations: {}", e.message)
                 return@launch
             }
 

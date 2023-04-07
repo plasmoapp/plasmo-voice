@@ -2,10 +2,8 @@ package su.plo.voice.event;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.addon.VoiceAddonManager;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.event.*;
 
@@ -20,8 +18,6 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
 public final class VoiceEventBus implements EventBus {
-
-    private static final Logger LOGGER = LogManager.getLogger(VoiceAddonManager.class);
 
     // listener -> event handlers
     private final Map<Object, List<EventHandler<?>>> registeredListeners = Maps.newConcurrentMap();
@@ -109,7 +105,7 @@ public final class VoiceEventBus implements EventBus {
                 try {
                     method.invoke(listener, event);
                 } catch (Throwable e) {
-                    LOGGER.warn("Failed to fire an event:");
+                    BaseVoice.LOGGER.warn("Failed to fire an event:");
                     e.printStackTrace();
                 }
             };

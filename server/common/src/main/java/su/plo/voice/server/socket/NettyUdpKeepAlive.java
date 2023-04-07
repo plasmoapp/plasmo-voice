@@ -1,6 +1,7 @@
 package su.plo.voice.server.socket;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.server.BaseVoiceServer;
@@ -31,7 +32,7 @@ public final class NettyUdpKeepAlive {
 
         for (UdpServerConnection connection : voiceServer.getUdpConnectionManager().getConnections()) {
             if (now - connection.getKeepAlive() > voiceServer.getConfig().voice().keepAliveTimeoutMs()) {
-                voiceServer.getDebugLogger().log("UDP connection timed out: {}", connection);
+                BaseVoice.DEBUG_LOGGER.log("UDP connection timed out: {}", connection);
                 voiceServer.getUdpConnectionManager().removeConnection(connection);
                 voiceServer.getTcpConnectionManager().requestPlayerInfo(connection.getPlayer());
             } else if (now - connection.getSentKeepAlive() >= 1_000L) {

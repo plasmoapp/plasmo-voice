@@ -2,13 +2,17 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.minecraft.client.Minecraft;
+import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.GuiUtil;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
+import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
+import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
+import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
@@ -23,8 +27,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 public final class DevicesTabWidget extends TabWidget {
-
-    private static final Logger LOGGER = LogManager.getLogger();
 
     private final MicrophoneTestController testController;
     private final DeviceManager devices;
@@ -89,12 +91,23 @@ public final class DevicesTabWidget extends TabWidget {
         addEntry(createHrtfEntry());
     }
 
+    @EventSubscribe
+    public void onDeviceOpen(@NotNull DeviceOpenEvent event) {
+        Minecraft.getInstance().execute(this::init);
+    }
+
+    @EventSubscribe
+    public void onDeviceClose(@NotNull DeviceClosedEvent event) {
+        Minecraft.getInstance().execute(this::init);
+    }
+
     private ButtonOptionEntry<ActivationThresholdWidget> createThresholdEntry() {
         if (threshold != null) voiceClient.getEventBus().unregister(voiceClient, threshold);
         this.threshold = new ActivationThresholdWidget(
                 parent,
                 config.getVoice().getActivationThreshold(),
-                devices,
+                voiceClient.getAudioCapture(),
+                voiceClient.getDeviceManager(),
                 testController,
                 0,
                 0,
@@ -150,6 +163,8 @@ public final class DevicesTabWidget extends TabWidget {
                     reloadInputDevice();
                 }
         );
+
+        dropdown.setActive(!inputDeviceNames.isEmpty());
 
         return new OptionEntry<>(
                 MinecraftTextComponent.translatable("gui.plasmovoice.devices.microphone"),
@@ -216,6 +231,8 @@ public final class DevicesTabWidget extends TabWidget {
                 }
         );
 
+        dropdown.setActive(!outputDeviceNames.isEmpty());
+
         return new OptionEntry<>(
                 MinecraftTextComponent.translatable("gui.plasmovoice.devices.output_device"),
                 dropdown,
@@ -234,7 +251,7 @@ public final class DevicesTabWidget extends TabWidget {
                     try {
                         device.reload();
                     } catch (DeviceException e) {
-                        LogManager.getLogger().warn("Failed to reload device: {}", e.getMessage());
+                        BaseVoice.LOGGER.warn("Failed to reload device: {}", e.getMessage());
                         e.printStackTrace();
                     }
                 }
@@ -266,7 +283,7 @@ public final class DevicesTabWidget extends TabWidget {
             voiceClient.getDeviceManager().replace(null, outputDevice);
             testController.restart();
         } catch (Exception e) {
-            LOGGER.error("Failed to open primary OpenAL output device", e);
+            BaseVoice.LOGGER.error("Failed to open primary OpenAL output device", e);
         }
     }
 
@@ -276,7 +293,7 @@ public final class DevicesTabWidget extends TabWidget {
 
             devices.replace(null, device);
         } catch (Exception e) {
-            LOGGER.error("Failed to open input device", e);
+            BaseVoice.LOGGER.error("Failed to open input device", e);
         }
     }
 }

@@ -7,7 +7,7 @@ import net.md_5.bungee.api.connection.Server
 import net.md_5.bungee.api.event.PluginMessageEvent
 import net.md_5.bungee.api.plugin.Listener
 import net.md_5.bungee.event.EventHandler
-import org.apache.logging.log4j.LogManager
+import su.plo.voice.BaseVoice
 import su.plo.voice.proto.packets.PacketHandler
 import su.plo.voice.proto.packets.PacketUtil
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec
@@ -59,7 +59,7 @@ class BungeeProxyChannelHandler(
             mac.update(aesEncryptionKey, 0, aesEncryptionKey.size)
 
             if (!MessageDigest.isEqual(signature, mac.doFinal())) {
-                LogManager.getLogger().warn("Received invalid AES key signature from {}", connection)
+                BaseVoice.LOGGER.warn("Received invalid AES key signature from {}", connection)
                 return
             }
 

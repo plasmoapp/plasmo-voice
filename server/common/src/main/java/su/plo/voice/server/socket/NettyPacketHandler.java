@@ -4,6 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.udp.PacketUdp;
@@ -34,7 +35,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                     try {
                         connection.handlePacket(packet.getPacket());
                     } catch (IOException e) {
-                        voiceServer.getDebugLogger().log("Failed to decode packet", e);
+                        BaseVoice.DEBUG_LOGGER.log("Failed to decode packet", e);
                     }
 
                     return true;

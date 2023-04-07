@@ -12,7 +12,7 @@ import javax.sound.sampled.AudioFormat.Encoding;
 
 public final class AlUtil {
 
-    private static final Logger LOGGER = LogManager.getLogger();
+    private static final Logger LOGGER = LogManager.getLogger(AlUtil.class);
 
     private static String getErrorMessage(int errorCode) {
         switch (errorCode) {
@@ -71,7 +71,7 @@ public final class AlUtil {
     public static boolean checkAlcErrors(long deviceHandle, String sectionName) {
         int i = ALC11.alcGetError(deviceHandle);
         if (i != 0) {
-            LOGGER.error("{}{}: {}", sectionName, deviceHandle, getAlcErrorMessage(i));
+            LOGGER.error("{} {}: {}", sectionName, deviceHandle, getAlcErrorMessage(i));
             return true;
         } else {
             return false;

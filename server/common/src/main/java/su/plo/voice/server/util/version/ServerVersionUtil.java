@@ -3,7 +3,8 @@ package su.plo.voice.server.util.version;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
-import org.apache.logging.log4j.LogManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import su.plo.lib.api.chat.MinecraftTextClickEvent;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.api.chat.MinecraftTextHoverEvent;
@@ -18,6 +19,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 public final class ServerVersionUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(ServerVersionUtil.class);
 
     private static final Cache<String, String> LINKS_CACHE = CacheBuilder
             .newBuilder()
@@ -60,7 +63,7 @@ public final class ServerVersionUtil {
                             )))
             ));
         } catch (ExecutionException e) {
-            LogManager.getLogger().error("Failed to get version from modrinth", e);
+            LOGGER.error("Failed to get version from modrinth", e);
         }
     }
 

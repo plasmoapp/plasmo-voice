@@ -7,9 +7,8 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import lombok.RequiredArgsConstructor;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
 import su.plo.voice.proxy.BaseVoiceProxy;
@@ -20,8 +19,6 @@ import java.util.Optional;
 
 @RequiredArgsConstructor
 public final class NettyUdpProxyServer implements UdpProxyServer {
-
-    private final Logger logger = LogManager.getLogger();
 
     private final BaseVoiceProxy voiceProxy;
 
@@ -50,7 +47,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             }
         });
 
-        logger.info("UDP proxy server is starting on {}:{}", ip, port);
+        BaseVoice.LOGGER.info("UDP proxy server is starting on {}:{}", ip, port);
         try {
             ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
             this.channel = (NioDatagramChannel) channelFuture.channel();
@@ -62,14 +59,14 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             stop();
             throw e;
         }
-        logger.info("UDP proxy server is started on {}", socketAddress);
+        BaseVoice.LOGGER.info("UDP proxy server is started on {}", socketAddress);
     }
 
     @Override
     public void stop() {
         channel.close();
         loopGroup.shutdownGracefully();
-        logger.info("UDP proxy server is stopped");
+        BaseVoice.LOGGER.info("UDP proxy server is stopped");
 
         voiceProxy.getEventBus().call(new UdpProxyServerStoppedEvent(this));
     }

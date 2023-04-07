@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.proxy.connection.MinecraftProxyServerConnection;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
@@ -17,7 +18,6 @@ import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.packets.tcp.clientbound.*;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
-import su.plo.voice.proxy.player.VoiceProxyPlayerConnection;
 
 import javax.crypto.Mac;
 import javax.crypto.SecretKey;
@@ -80,7 +80,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
                 packet.getSecret()
         );
 
-        voiceProxy.getDebugLogger().log(
+        BaseVoice.DEBUG_LOGGER.log(
                 "{} secret: {}; remote secret: {}",
                 player.getInstance().getName(),
                 secret, packet.getSecret()

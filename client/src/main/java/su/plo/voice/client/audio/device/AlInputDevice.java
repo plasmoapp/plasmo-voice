@@ -3,9 +3,7 @@ package su.plo.voice.client.audio.device;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import org.lwjgl.openal.AL11;
-import org.lwjgl.openal.ALC11;
+import org.lwjgl.openal.*;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -15,17 +13,19 @@ import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
 import su.plo.voice.client.audio.AlUtil;
 
 import javax.sound.sampled.AudioFormat;
-import java.nio.ByteBuffer;
 
 public final class AlInputDevice extends BaseAudioDevice implements InputDevice {
 
     private static final Logger LOGGER = LogManager.getLogger(AlInputDevice.class);
 
     private long devicePointer;
+    private boolean hasDisconnectEXT;
+
     private boolean started = false;
+    private boolean disconnected = false;
 
     public AlInputDevice(PlasmoVoiceClient client,
-                         @Nullable String name,
+                         @NotNull String name,
                          @NotNull AudioFormat format) throws DeviceException {
         super(client, name, format);
         open();
@@ -36,9 +36,11 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         if (isOpen()) {
             stop();
             ALC11.alcCaptureCloseDevice(devicePointer);
-            AlUtil.checkErrors("Close capture device");
-            this.devicePointer = 0L;
 
+            this.devicePointer = 0L;
+            LOGGER.info("Device {} closed", getName());
+        } else if (disconnected) {
+            this.devicePointer = 0L;
             LOGGER.info("Device {} closed", getName());
         }
 
@@ -47,7 +49,11 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
     @Override
     public boolean isOpen() {
-        return devicePointer != 0L;
+        if (devicePointer != 0L && (hasDisconnectEXT && ALC11.alcGetInteger(devicePointer, 787) == 0) && !disconnected) {
+            this.disconnected = true;
+        }
+
+        return devicePointer != 0L && !disconnected;
     }
 
     @Override
@@ -55,7 +61,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         if (!isOpen() || started) return;
 
         ALC11.alcCaptureStart(devicePointer);
-        AlUtil.checkErrors("Start device");
+        if (AlUtil.checkAlcErrors(devicePointer, "Start device")) return;
 
         this.started = true;
     }
@@ -65,13 +71,13 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         if (!isOpen() || !started) return;
 
         ALC11.alcCaptureStop(devicePointer);
-        AlUtil.checkErrors("Stop capture device");
+        AlUtil.checkAlcErrors(devicePointer, "Stop capture device");
         started = false;
 
         int available = available();
         short[] data = new short[available];
         ALC11.alcCaptureSamples(devicePointer, data, data.length);
-        AlUtil.checkErrors("Capture available samples");
+        AlUtil.checkAlcErrors(devicePointer, "Capture available samples");
     }
 
     @Override
@@ -79,8 +85,14 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         if (!isOpen() || !started) return 0;
 
         int samples = ALC11.alcGetInteger(devicePointer, ALC11.ALC_CAPTURE_SAMPLES);
-        AlUtil.checkErrors("Get available samples count");
+        AlUtil.checkAlcErrors(devicePointer, "Get available samples count");
+
         return samples;
+    }
+
+    @Override
+    public boolean isStarted() {
+        return started;
     }
 
     @Override
@@ -89,7 +101,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
         short[] shorts = new short[bufferSize * getFormat().getChannels()];
         ALC11.alcCaptureSamples(devicePointer, shorts, bufferSize);
-        AlUtil.checkErrors("Capture samples");
+        AlUtil.checkAlcErrors(devicePointer, "Capture samples");
 
         return shorts;
     }
@@ -106,6 +118,9 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         }
 
         this.devicePointer = openDevice();
+        this.disconnected = false;
+
+        this.hasDisconnectEXT = ALC10.alcIsExtensionPresent(devicePointer, "ALC_EXT_disconnect");
 
         LOGGER.info("Device {} initialized", getName());
         getVoiceClient().getEventBus().call(new DeviceOpenEvent(this));
@@ -117,18 +132,12 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
         int alFormat = format.getChannels() == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
 
-        long l;
-        if (deviceName == null) {
-            // default device
-            l = ALC11.alcCaptureOpenDevice((ByteBuffer) null, (int) format.getSampleRate(), alFormat, getBufferSize());
-        } else {
-            l = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getBufferSize());
+        long devicePointer = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getBufferSize());
+
+        if (devicePointer == 0L || AlUtil.checkAlcErrors(devicePointer, "Open device")) {
+            throw new DeviceException("Failed to open OpenAL device");
         }
 
-        if (l != 0L && !AlUtil.checkAlcErrors(l, "Open device")) {
-            return l;
-        }
-
-        throw new DeviceException("Failed to open OpenAL device");
+        return devicePointer;
     }
 }

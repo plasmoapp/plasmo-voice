@@ -47,6 +47,11 @@ public interface AudioCapture {
     Optional<Encryption> getEncryption();
 
     /**
+     * @return current input device if it was initialized in {@link #initialize(ServerInfo)}
+     */
+    Optional<InputDevice> getDevice();
+
+    /**
      * Initializes {@link AudioCapture} and starts a new thread that captures audio data from opened microphone.
      * After audio data capture, {@link AudioCapture} iterates all {@link ClientActivation}s by
      *

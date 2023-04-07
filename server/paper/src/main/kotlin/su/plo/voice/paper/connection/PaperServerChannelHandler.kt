@@ -27,8 +27,6 @@ class PaperServerChannelHandler(voiceServer: BaseVoiceServer) : BaseServerChanne
         try {
             PacketTcpCodec.decode<PacketHandler>(ByteStreams.newDataInput(message))
                 .ifPresent { packet ->
-//                        LogManager.getLogger().info("Channel packet received {}", packet);
-
                     val voicePlayer = voiceServer.playerManager.wrap(player)
 
                     val channel = channels.computeIfAbsent(

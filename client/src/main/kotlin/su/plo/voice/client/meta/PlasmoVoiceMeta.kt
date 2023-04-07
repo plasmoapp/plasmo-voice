@@ -60,8 +60,11 @@ data class PlasmoVoiceMeta(
             val url = URL("https://plasmovoice.com/meta.json?language=${languageName}")
 
             val metaJson = try {
+                val connection = url.openConnection()
+                connection.connectTimeout = 3_000
+
                 JsonParser.parseString(
-                    url.openStream().bufferedReader().use { it.readText() }
+                    connection.getInputStream().bufferedReader().use { it.readText() }
                 ).asJsonObject
             } catch (e: Exception) {
                 e.printStackTrace()

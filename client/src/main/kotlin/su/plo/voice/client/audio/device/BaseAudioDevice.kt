@@ -13,7 +13,7 @@ import javax.sound.sampled.AudioFormat
 @RequiredArgsConstructor
 abstract class BaseAudioDevice(
     protected val voiceClient: PlasmoVoiceClient,
-    override val name: String?,
+    override val name: String,
     override val format: AudioFormat
 ) : AudioDevice {
 

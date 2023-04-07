@@ -19,11 +19,23 @@ public class AddressUtil {
 
         int port = uri.getPort() == -1 ? 60606 : uri.getPort();
         try {
-            InetAddress ia = InetAddresses.forUriString(uri.getHost());
-            return new InetSocketAddress(ia, port);
+            return new InetSocketAddress(uri.getHost(), port);
         } catch (IllegalArgumentException e) {
             return InetSocketAddress.createUnresolved(uri.getHost(), port);
         }
+    }
+
+    public static InetSocketAddress resolveAddress(@NotNull InetSocketAddress address) {
+        if (address.isUnresolved()) {
+            URI uri = URI.create("udp://" + address.getHostString());
+            if (uri.getHost() == null) {
+                throw new IllegalStateException("Invalid hostname/IP " + address.getHostString());
+            }
+
+            address = new InetSocketAddress(uri.getHost(), address.getPort());
+        }
+
+        return address;
     }
 
     private AddressUtil() {

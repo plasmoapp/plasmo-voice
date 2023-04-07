@@ -1,8 +1,8 @@
 package su.plo.voice.client.audio.codec.opus;
 
-import org.concentus.OpusApplication;
-import org.concentus.OpusEncoder;
-import org.concentus.OpusException;
+import su.plo.opus.concentus.OpusApplication;
+import su.plo.opus.concentus.OpusEncoder;
+import su.plo.opus.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 

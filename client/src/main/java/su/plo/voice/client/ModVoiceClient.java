@@ -32,6 +32,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
 //#else
+//$$ import net.minecraftforge.fml.common.Mod;
+//$$ import net.minecraftforge.api.distmarker.Dist;
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 //$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 //$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -39,6 +41,7 @@ import net.fabricmc.loader.api.ModContainer;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //$$ import net.minecraftforge.fml.ModList;
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
+//$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 //#endif
 
 import java.io.File;
@@ -177,6 +180,15 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ @Override
     //$$ public @NotNull String getVersion() {
     //$$     return ModList.get().getModFileById("plasmovoice").versionString();
+    //$$ }
+    //$$
+    //$$ @Mod.EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
+    //$$ public static class ModBusEvents {
+    //$$
+    //$$     @SubscribeEvent
+    //$$     public static void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
+    //$$         event.register(MENU_KEY);
+    //$$     }
     //$$ }
     //#endif
 }

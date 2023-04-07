@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true)

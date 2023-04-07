@@ -69,7 +69,7 @@ interface AudioDevice {
      *
      * @return the device name
      */
-    val name: String?
+    val name: String
 
     /**
      * Gets the device audio format

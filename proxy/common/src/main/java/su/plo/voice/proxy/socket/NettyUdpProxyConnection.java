@@ -7,7 +7,6 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;

@@ -17,7 +17,6 @@ import net.fabricmc.api.ModInitializer;
 //$$ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 //$$ import net.minecraftforge.network.NetworkRegistry;
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
-//$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 //#endif
 
 //#if FORGE
@@ -68,11 +67,6 @@ public final class ModVoice
     //$$
     //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE, channel, serviceChannel);
     //$$     MinecraftForge.EVENT_BUS.register(voiceServer);
-    //$$ }
-    //$$
-    //$$ @SubscribeEvent
-    //$$ public void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
-    //$$     event.register(ModVoiceClient.MENU_KEY);
     //$$ }
     //#endif
 

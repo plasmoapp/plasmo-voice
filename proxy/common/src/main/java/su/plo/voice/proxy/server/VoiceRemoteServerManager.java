@@ -2,12 +2,15 @@ package su.plo.voice.proxy.server;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.proxy.connection.MinecraftProxyServerConnection;
 import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
 import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
 import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.proxy.BaseVoiceProxy;
+import su.plo.voice.proxy.util.AddressUtil;
 
 import java.net.InetSocketAddress;
 import java.util.Map;
@@ -24,25 +27,14 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
 
         PlayerQuitEvent.INSTANCE.registerListener(player -> {
             MinecraftProxyPlayer proxyPlayer = (MinecraftProxyPlayer) player;
+            Optional<MinecraftProxyServerConnection> playerServer = proxyPlayer.getServer();
 
-            voiceProxy.getMinecraftServer().getServers().forEach(server -> {
-                int playerCount = server.getPlayerCount();
-                if (proxyPlayer.getServer()
-                        .map(playerServer -> playerServer.getServerInfo().getName().equals(server.getName()))
-                        .orElse(false)
-                ) {
-                    playerCount -= 1;
-                }
+            if (playerServer.isPresent()) {
+                resetServerAesState(playerServer.get().getServerInfo());
+                return;
+            }
 
-                if (playerCount > 0) return;
-
-                getServer(server.getName())
-                        .filter(RemoteServer::isAesEncryptionKeySet)
-                        .ifPresent(remoteServer -> {
-                            voiceProxy.getDebugLogger().log("Reset AES encryption state for {}", remoteServer);
-                            ((VoiceRemoteServer) remoteServer).setAesEncryptionKeySet(false);
-                        });
-            });
+            voiceProxy.getMinecraftServer().getServers().forEach(this::resetServerAesState);
         });
     }
 
@@ -79,6 +71,16 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
         servers.clear();
     }
 
+    private void resetServerAesState(@NotNull MinecraftProxyServerInfo server) {
+        if (server.getPlayerCount() > 0) return;
+        getServer(server.getName())
+                .filter(RemoteServer::isAesEncryptionKeySet)
+                .ifPresent(remoteServer -> {
+                    BaseVoice.DEBUG_LOGGER.log("Reset AES encryption state for {}", remoteServer);
+                    ((VoiceRemoteServer) remoteServer).setAesEncryptionKeySet(false);
+                });
+    }
+
     private RemoteServer getByServerInfo(@NotNull MinecraftProxyServerInfo serverInfo) {
         RemoteServer remoteServer = servers.get(serverInfo.getName());
         if (remoteServer != null) return remoteServer;
@@ -90,7 +92,8 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
         if (!(serverInfo.getAddress() instanceof InetSocketAddress))
             throw new IllegalArgumentException("only InetSocketAddress is supported");
 
-        VoiceRemoteServer remoteServer = new VoiceRemoteServer(serverInfo.getName(), (InetSocketAddress) serverInfo.getAddress());
+        InetSocketAddress serverAddress = AddressUtil.resolveAddress((InetSocketAddress) serverInfo.getAddress());
+        VoiceRemoteServer remoteServer = new VoiceRemoteServer(serverInfo.getName(), serverAddress);
         servers.put(serverInfo.getName(), remoteServer);
         return remoteServer;
     }

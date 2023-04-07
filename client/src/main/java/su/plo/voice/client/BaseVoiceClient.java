@@ -5,9 +5,6 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.core.config.Configurator;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
@@ -41,7 +38,6 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
 import su.plo.voice.client.audio.device.VoiceDeviceFactoryManager;
@@ -80,14 +76,11 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     private final UdpClientManager udpClientManager = new VoiceUdpClientManager();
 
-    @Getter
-    protected final DebugLogger debugLogger = new DebugLogger(logger);
-
     @Setter
     private ServerInfo serverInfo;
 
     @Getter
-    private DeviceManager deviceManager;
+    private VoiceDeviceManager deviceManager;
     @Getter
     private AudioCapture audioCapture;
     @Getter
@@ -106,40 +99,44 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     protected VoiceSettingsScreen settingsScreen;
 
+    private boolean updatesChecked;
+
     protected BaseVoiceClient(@NotNull ModrinthLoader loader) {
-        super(
-                loader,
-                LogManager.getLogger("PlasmoVoiceClient")
-        );
+        super(loader);
 
         ClientAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
 
     @EventSubscribe
     public void onUdpConnected(@NotNull UdpClientConnectedEvent event) {
-        try {
-            // don't check for updates in dev/alpha builds
-            if (!SemanticVersion.parse(getVersion()).isRelease()) return;
+        if (this.updatesChecked) return;
+        this.updatesChecked = true;
 
-            ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
-                    .ifPresent(version -> {
-                        ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
-                                MinecraftTextComponent.translatable(
-                                        "message.plasmovoice.update_available",
-                                        version.version(),
-                                        MinecraftTextComponent.translatable("message.plasmovoice.update_available.click")
-                                                .withStyle(MinecraftTextStyle.YELLOW)
-                                                .clickEvent(MinecraftTextClickEvent.openUrl(version.downloadLink()))
-                                                .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.translatable(
-                                                        "message.plasmovoice.update_available.hover",
-                                                        version.downloadLink()
-                                                )))
-                                )
-                        ));
-                    });
-        } catch (Exception e) {
-            logger.warn("Failed to check for updates", e);
-        }
+        backgroundExecutor.execute(() -> {
+            try {
+                // don't check for updates in dev/alpha builds or if it disabled in the config
+                if (!SemanticVersion.parse(getVersion()).isRelease() || !config.getCheckForUpdates().value()) return;
+
+                ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
+                        .ifPresent(version -> {
+                            ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
+                                    MinecraftTextComponent.translatable(
+                                            "message.plasmovoice.update_available",
+                                            version.version(),
+                                            MinecraftTextComponent.translatable("message.plasmovoice.update_available.click")
+                                                    .withStyle(MinecraftTextStyle.YELLOW)
+                                                    .clickEvent(MinecraftTextClickEvent.openUrl(version.downloadLink()))
+                                                    .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.translatable(
+                                                            "message.plasmovoice.update_available.hover",
+                                                            version.downloadLink()
+                                                    )))
+                                    )
+                            ));
+                        });
+            } catch (Exception e) {
+                LOGGER.warn("Failed to check for updates", e);
+            }
+        });
     }
 
     // todo: why is this here?
@@ -184,13 +181,15 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Override
     protected void onInitialize() {
-        PlasmoCrowdinMod.INSTANCE.downloadTranslations(
-                new File(getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName())
-        );
-
         super.onInitialize();
 
         loadConfig();
+
+        if (!config.getDisableCrowdin().value()) {
+            PlasmoCrowdinMod.INSTANCE.downloadTranslations(
+                    new File(getConfigFolder(), PlasmoCrowdinMod.INSTANCE.getFolderName())
+            );
+        }
 
         this.distanceVisualizer = new VoiceDistanceVisualizer(this, config);
 
@@ -203,7 +202,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         eventBus.register(this, sourceManager);
 
         // hotkey actions
-        new HotkeyActions(getKeyBindings(), config).register();
+        new HotkeyActions(this, getKeyBindings(), config).register();
         PlayerVolumeAction volumeAction = new PlayerVolumeAction(this, config);
         eventBus.register(this, volumeAction);
 
@@ -219,7 +218,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Override
     protected void onShutdown() {
-        logger.info("Shutting down");
+        LOGGER.info("Shutting down");
 
         eventBus.unregister(this);
 
@@ -234,6 +233,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         getServerConnection().ifPresent(ServerConnection::close);
 
         DeveloperCapeManager.INSTANCE.clearLoadedCapes();
+        this.updatesChecked = false;
     }
 
     @Override
@@ -278,7 +278,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             this.config = toml.load(VoiceClientConfig.class, configFile, false);
             toml.save(VoiceClientConfig.class, config, configFile);
         } catch (IOException e) {
-            logger.warn("Failed to load the config", e);
+            LOGGER.warn("Failed to load the config", e);
 
             try {
                 this.config = new VoiceClientConfig();
@@ -293,6 +293,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             eventBus.register(this, config.getKeyBindings());
         }
 
-        debugLogger.enabled(config.getDebug().value() || System.getProperty("plasmovoice.debug") != null);
+        BaseVoice.DEBUG_LOGGER.enabled(config.getDebug().value() || System.getProperty("plasmovoice.debug") != null);
     }
 }

@@ -5,13 +5,11 @@ import com.google.common.io.ByteStreams;
 import com.google.inject.AbstractModule;
 import com.google.inject.Module;
 import lombok.Getter;
-import org.apache.logging.log4j.LogManager;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.ServerAddonsLoader;
-import su.plo.voice.api.logging.DebugLogger;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.event.VoiceProxyShutdownEvent;
@@ -35,6 +33,7 @@ import su.plo.voice.server.config.VoiceServerLanguages;
 import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
 import java.io.IOException;
@@ -51,8 +50,6 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     protected static final ConfigurationProvider TOML = ConfigurationProvider.getProvider(TomlConfiguration.class);
 
-    @Getter
-    protected final DebugLogger debugLogger = new DebugLogger(logger);
     @Getter
     private final UdpProxyConnectionManager udpConnectionManager = new VoiceUdpProxyConnectionManager(this);
     @Getter
@@ -73,10 +70,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     protected LuckPermsListener luckPermsListener;
 
     protected BaseVoiceProxy(@NotNull ModrinthLoader loader) {
-        super(
-                loader,
-                LogManager.getLogger("PlasmoVoiceProxy")
-        );
+        super(loader);
 
         ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
     }
@@ -102,10 +96,12 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         if (LuckPermsListener.Companion.hasLuckPerms()) {
             this.luckPermsListener = new LuckPermsListener(this, backgroundExecutor);
             luckPermsListener.subscribe();
-            logger.info("LuckPerms permissions listener attached");
+            LOGGER.info("LuckPerms permissions listener attached");
         }
 
         loadConfig(false);
+
+        checkForUpdates();
     }
 
     @Override
@@ -140,7 +136,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceServerLanguages(config.defaultLanguage());
+            this.languages = new VoiceServerLanguages(config.defaultLanguage(), config.disableCrowdin());
 //            languages.register(
 //                    this::getResource,
 //                    new File(getConfigFolder(), "languages"),
@@ -176,12 +172,29 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             throw new IllegalStateException("Failed to load config", e);
         }
 
-        debugLogger.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
+        DEBUG_LOGGER.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
         if (reload) eventBus.call(new VoiceProxyConfigReloadedEvent(this));
         else addons.initializeLoadedAddons();
 
         if (restartUdpServer) startUdpServer();
         loadServers();
+    }
+
+    private void checkForUpdates() {
+        if (config.checkForUpdates()) {
+            backgroundExecutor.execute(() -> {
+                try {
+                    ModrinthVersion.checkForUpdates(getVersion(), "1.19.3", loader)
+                            .ifPresent(version -> LOGGER.warn(
+                                    "New version available {}: {}",
+                                    version.version(),
+                                    version.downloadLink())
+                            );
+                } catch (IOException e) {
+                    LOGGER.error("Failed to check for updates", e);
+                }
+            });
+        }
     }
 
     private void loadServers() {
@@ -191,14 +204,14 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             String address = entry.getValue();
 
             if (!getMinecraftServer().getServerByName(name).isPresent()) {
-                getLogger().warn("Server {} not found", name);
+                LOGGER.warn("Server {} not found", name);
                 continue;
             }
 
             try {
                 remoteServerManager.register(new VoiceRemoteServer(name, AddressUtil.parseAddress(address)));
             } catch (Exception e) {
-                getLogger().error("Server {} has invalid address {}", name, address, e);
+                LOGGER.error("Server {} has invalid address {}", name, address, e);
             }
         }
     }
@@ -221,7 +234,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             server.start(config.host().ip(), port);
             this.udpProxyServer = server;
         } catch (Exception e) {
-            getLogger().error("Failed to start the udp server", e);
+            LOGGER.error("Failed to start the udp server", e);
         }
     }
 

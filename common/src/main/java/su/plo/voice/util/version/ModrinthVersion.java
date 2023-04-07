@@ -15,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.Optional;
 
 @Data
@@ -96,7 +97,10 @@ public final class ModrinthVersion {
                 loader, minecraftVersion
         ));
 
-        try (InputStream in = url.openStream();
+        URLConnection connection = url.openConnection();
+        connection.setConnectTimeout(10_000);
+
+        try (InputStream in = connection.getInputStream();
              Reader reader = new InputStreamReader(in)
         ) {
             return GSON.fromJson(reader, JsonArray.class);

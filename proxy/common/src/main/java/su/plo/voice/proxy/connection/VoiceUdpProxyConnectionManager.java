@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.lib.api.server.player.MinecraftServerPlayer;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
@@ -104,7 +105,7 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         if (byRemoteSecret != null) byRemoteSecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
-        voiceProxy.getDebugLogger().log(
+        BaseVoice.DEBUG_LOGGER.log(
                 "{} ({}) connected",
                 connection.getPlayer().getInstance().getName(),
                 connection.getRemoteAddress()
@@ -174,7 +175,7 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         playerIdBySecret.remove(connection.getRemoteSecret());
         playerIdByRemoteSecret.remove(connection.getSecret());
 
-        voiceProxy.getDebugLogger().log("{} disconnected", connection.getPlayer().getInstance().getName());
+        BaseVoice.DEBUG_LOGGER.log("{} disconnected", connection.getPlayer().getInstance().getName());
         voiceProxy.getEventBus().call(new UdpClientDisconnectedEvent(connection));
     }
 
