@@ -10,6 +10,7 @@ plugins {
     id("gg.essential.multi-version")
     id("gg.essential.defaults")
     id("su.plo.crowdin.plugin")
+    id("su.plo.voice.relocate")
 }
 
 group = "$mavenGroup.client"
@@ -63,7 +64,7 @@ dependencies {
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
-        "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
+//        "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
     }
 
     modApi(rootProject.libs.versions.universalcraft.map {
@@ -112,6 +113,12 @@ dependencies {
         }
     }
 
+    // kotlin
+    shadowCommon(kotlin("stdlib-jdk8"))
+    shadowCommon(rootProject.libs.kotlinx.coroutines)
+    shadowCommon(rootProject.libs.kotlinx.coroutines.jdk8)
+    shadowCommon(rootProject.libs.kotlinx.json)
+
     shadowCommon(rootProject.libs.opus)
     shadowCommon(rootProject.libs.config)
     shadowCommon(rootProject.libs.rnnoise)
@@ -147,7 +154,7 @@ tasks {
     shadowJar {
         configurations = listOf(shadowCommon)
 
-        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
+        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
         if (platform.isForge) {
             relocate("gg.essential.universal", "su.plo.voice.universal")
             relocate("su.plo.ustats", "su.plo.voice.ustats")
@@ -167,6 +174,7 @@ tasks {
                 exclude("plasmovoice-forge.mixins.json")
                 exclude("pack.mcmeta")
                 exclude("META-INF/mods.toml")
+                exclude("DebugProbesKt.bin")
             }
         }
     }
