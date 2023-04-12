@@ -59,8 +59,10 @@ class PaperServerPlayer(
     override fun getPermission(permission: String) =
         permissions.getPermission(instance, permission)
 
-    override fun sendPacket(channel: String, data: ByteArray) =
+    override fun sendPacket(channel: String, data: ByteArray) {
+        if (!isOnline) return
         instance.sendPluginMessage(loader, channel, data)
+    }
 
     override fun kick(reason: MinecraftTextComponent) {
         instance.kickPlayer(textConverter.convert(this, reason).toLegacyText())
