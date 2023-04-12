@@ -22,15 +22,7 @@ public final class VoiceServerPlayerManager extends BaseVoicePlayerManager<Voice
         if (voicePlayer != null) return Optional.of(voicePlayer);
         else if (!useServerInstance) return Optional.empty();
 
-        return minecraftServer.getPlayerById(playerId)
-                .map((player) -> playerById.computeIfAbsent(
-                        player.getUUID(),
-                        (pId) -> {
-                            VoiceServerPlayer newPlayer = new VoiceServerPlayerEntity(voiceServer, player);
-                            playerByName.put(newPlayer.getInstance().getName(), newPlayer);
-                            return newPlayer;
-                        }
-                ));
+        return minecraftServer.getPlayerById(playerId).map(this::wrap);
     }
 
     @Override
@@ -39,24 +31,22 @@ public final class VoiceServerPlayerManager extends BaseVoicePlayerManager<Voice
         if (voicePlayer != null) return Optional.of(voicePlayer);
         else if (!useServerInstance) return Optional.empty();
 
-        return minecraftServer.getPlayerByName(playerName)
-                .map((player) -> playerByName.computeIfAbsent(
-                        player.getName(),
-                        (pId) -> {
-                            VoiceServerPlayer newPlayer = new VoiceServerPlayerEntity(voiceServer, player);
-                            playerById.put(newPlayer.getInstance().getUUID(), newPlayer);
-                            return newPlayer;
-                        }
-                ));
+        return minecraftServer.getPlayerByName(playerName).map(this::wrap);
     }
 
     @Override
     public @NotNull VoiceServerPlayer wrap(@NotNull Object instance) {
-        MinecraftServerPlayerEntity serverPlayer = minecraftServer.getPlayerByInstance(instance);
+        return wrap(minecraftServer.getPlayerByInstance(instance));
+    }
 
+    private @NotNull VoiceServerPlayer wrap(@NotNull MinecraftServerPlayerEntity serverPlayer) {
         return playerById.computeIfAbsent(
                 serverPlayer.getUUID(),
-                (playerId) -> new VoiceServerPlayerEntity(voiceServer, serverPlayer)
+                (playerId) -> {
+                    VoiceServerPlayer newPlayer = new VoiceServerPlayerEntity(voiceServer, serverPlayer);
+                    playerByName.put(newPlayer.getInstance().getName(), newPlayer);
+                    return newPlayer;
+                }
         );
     }
 }
