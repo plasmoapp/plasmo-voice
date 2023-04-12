@@ -1,6 +1,7 @@
 package su.plo.lib.paper.command
 
 import org.bukkit.command.CommandSender
+import org.bukkit.command.SimpleCommandMap
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
 import su.plo.lib.api.server.MinecraftServerLib
@@ -18,7 +19,14 @@ class PaperCommandManager(
     fun registerCommands(loader: JavaPlugin) {
         commandByName.forEach { (name, command) ->
             val paperCommand = PaperCommand(this, command, name)
-            loader.server.commandMap.register("plasmovoice", paperCommand)
+
+            val commandMap = loader.server.javaClass
+                .getDeclaredField("commandMap").also {
+                    it.isAccessible = true
+                }
+                .get(loader.server) as SimpleCommandMap
+
+            commandMap.register("plasmovoice", paperCommand)
         }
 
         registered = true

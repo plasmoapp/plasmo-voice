@@ -7,11 +7,15 @@ public interface MinecraftChatHolder {
 
     void sendMessage(@NotNull MinecraftTextComponent text);
 
-    void sendMessage(@NotNull String text);
-
-    void sendActionBar(@NotNull String text);
+    default void sendMessage(@NotNull String text) {
+        sendMessage(MinecraftTextComponent.literal(text));
+    }
 
     void sendActionBar(@NotNull MinecraftTextComponent text);
+
+    default void sendActionBar(@NotNull String text) {
+        sendActionBar(MinecraftTextComponent.literal(text));
+    }
 
     @NotNull String getLanguage();
 }

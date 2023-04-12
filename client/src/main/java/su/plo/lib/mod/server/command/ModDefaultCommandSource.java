@@ -16,18 +16,8 @@ public final class ModDefaultCommandSource implements MinecraftCommandSource {
     private final ServerTextConverter<Component> textConverter;
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        source.sendSystemMessage(Component.literal(text));
-    }
-
-    @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
         source.sendSystemMessage(textConverter.convert(this, text));
-    }
-
-    @Override
-    public void sendActionBar(@NotNull String text) {
-        source.sendSystemMessage(Component.literal(text));
     }
 
     @Override

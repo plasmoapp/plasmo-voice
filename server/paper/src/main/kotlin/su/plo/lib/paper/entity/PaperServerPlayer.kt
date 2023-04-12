@@ -1,6 +1,6 @@
 package su.plo.lib.paper.entity
 
-import net.kyori.adventure.text.Component
+import net.md_5.bungee.api.ChatMessageType
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -39,16 +39,10 @@ class PaperServerPlayer(
         instance.scoreboard.getObjective(DisplaySlot.BELOW_NAME) != null
 
     override fun sendMessage(text: MinecraftTextComponent) =
-        instance.sendMessage(textConverter.convert(this, text))
-
-    override fun sendMessage(text: String) =
-        instance.sendMessage(text)
-
-    override fun sendActionBar(text: String) =
-        instance.sendActionBar(Component.text(text))
+        instance.spigot().sendMessage(textConverter.convert(this, text))
 
     override fun sendActionBar(text: MinecraftTextComponent) =
-        instance.sendActionBar(textConverter.convert(this, text))
+        instance.spigot().sendMessage(ChatMessageType.ACTION_BAR, textConverter.convert(this, text))
 
     override fun getLanguage() =
         instance.locale

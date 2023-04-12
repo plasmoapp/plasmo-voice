@@ -33,12 +33,6 @@ class BungeeProxyPlayer(
     override fun sendMessage(text: MinecraftTextComponent) =
         instance.sendMessage(textConverter.convert(this, text))
 
-    override fun sendMessage(text: String) =
-        instance.sendMessage(TextComponent(text))
-
-    override fun sendActionBar(text: String) =
-        instance.sendMessage(ChatMessageType.ACTION_BAR, TextComponent(text))
-
     override fun sendActionBar(text: MinecraftTextComponent) =
         instance.sendMessage(ChatMessageType.ACTION_BAR, textConverter.convert(this, text))
 

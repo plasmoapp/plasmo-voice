@@ -68,7 +68,7 @@ class PaperServerLib(
 
         return worldByInstance.computeIfAbsent(
             instance
-        ) { PaperServerWorld(instance, loader) }
+        ) { PaperServerWorld(this, loader, instance) }
     }
 
     override fun getWorlds(): Collection<MinecraftServerWorld> =
@@ -141,7 +141,8 @@ class PaperServerLib(
 
     override fun getPort() = Bukkit.getServer().port
 
-    override fun getVersion() = Bukkit.getMinecraftVersion()
+    override fun getVersion() =
+        Bukkit.getVersion().substringAfter("MC: ").substringBefore(")")
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerJoin(event: org.bukkit.event.player.PlayerJoinEvent) {

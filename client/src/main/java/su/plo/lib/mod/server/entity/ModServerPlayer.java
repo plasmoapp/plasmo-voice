@@ -116,18 +116,6 @@ public final class ModServerPlayer
     }
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        instance.sendSystemMessage(Component.literal(text));
-    }
-
-    @Override
-    public void sendActionBar(@NotNull String text) {
-        instance.connection.send(new ClientboundSetActionBarTextPacket(
-                Component.literal(text)
-        ));
-    }
-
-    @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
         instance.connection.send(new ClientboundSetActionBarTextPacket(
                 textConverter.convert(this, text)

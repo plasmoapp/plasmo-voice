@@ -21,16 +21,6 @@ public final class VelocityDefaultCommandSource implements MinecraftCommandSourc
     }
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        source.sendMessage(Component.text(text));
-    }
-
-    @Override
-    public void sendActionBar(@NotNull String text) {
-        source.sendActionBar(Component.text(text));
-    }
-
-    @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
         source.sendActionBar(textConverter.convert(this, text));
     }
