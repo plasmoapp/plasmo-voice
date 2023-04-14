@@ -17,4 +17,7 @@ class ClientStaticSource(
 
     override fun getLookAngle(): Vec3 =
         sourceInfo.lookAngle.toVec3()
+
+    override fun shouldCalculateDirectionalGain() =
+        sourceInfo.angle > 0 && super.shouldCalculateDirectionalGain()
 }

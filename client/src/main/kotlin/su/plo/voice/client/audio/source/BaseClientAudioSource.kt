@@ -284,12 +284,12 @@ abstract class BaseClientAudioSource<T> constructor(
         }
 
         // calculate and apply directional angle gain
-        if (config.voice.directionalSources.value() || sourceInfo.angle > 0) {
+        if (shouldCalculateDirectionalGain()) {
             val positionDiffNormalized = playerPosition.subtract(position).normalize()
             val angle = Math.toDegrees(acos(positionDiffNormalized.dot(lookAngle)))
 
             val innerAngle =
-                if (sourceInfo.angle > 0) sourceInfo.angle
+                if (sourceInfo.angle > 0) sourceInfo.angle / 2
                 else config.advanced.directionalSourcesAngle.value() / 2
 
             if (angle > innerAngle) {
@@ -301,7 +301,7 @@ abstract class BaseClientAudioSource<T> constructor(
         volume *= distanceGain
 
         // update source volume & distance
-        updateSource(volume.toFloat(), position, lookAngle)
+        updateSource(volume.toFloat(), position)
 
         // after updating the source, source can be closed by reloading the device,
         // so we need to make sure that source is not closed rn
@@ -401,6 +401,9 @@ abstract class BaseClientAudioSource<T> constructor(
 
     protected abstract fun getLookAngle(): Vec3
 
+    protected open fun shouldCalculateDirectionalGain(): Boolean =
+        config.voice.directionalSources.value() || sourceInfo.angle > 0
+
     protected open fun shouldCalculateOcclusion(): Boolean {
         return !config.voice.soundOcclusion.isDisabled && config.voice.soundOcclusion.value()
     }
@@ -425,7 +428,7 @@ abstract class BaseClientAudioSource<T> constructor(
         }
     }
 
-    private suspend fun updateSource(volume: Float, position: Vec3, lookAngle: Vec3) {
+    private suspend fun updateSource(volume: Float, position: Vec3) {
         for (source in sourceGroup.sources) {
             if (source !is AlSource) continue
             val device = source.device
