@@ -100,6 +100,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
+        if (voiceServer.getMuteManager().getMute(player.getInstance().getUUID()).isPresent()) return;
         voiceServer.getEventBus().call(new PlayerSpeakEndEvent(player, packet));
     }
 
