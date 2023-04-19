@@ -1,0 +1,160 @@
+{
+    "key.plasmovoice.settings": "Настройки голоса",
+
+    "key.plasmovoice.general": "Основные",
+    "key.plasmovoice.general.mute_microphone": "Заглушить микрофон",
+    "key.plasmovoice.general.disable_voice": "Отключить голосовой чат",
+    "key.plasmovoice.general.action": "Кнопка действия",
+
+    "key.plasmovoice.distance": "Дистанция голоса %s",
+    "key.plasmovoice.distance.increase": "Увеличить дистанцию голоса",
+    "key.plasmovoice.distance.decrease": "Понизить дистанцию голоса",
+
+    "key.plasmovoice.occlusion": "Звуковое затухание",
+    "key.plasmovoice.occlusion.toggle": "Переключить звуковое затухание",
+
+
+    "gui.plasmovoice.title": "Параметры %1$s %2$s",
+    "gui.plasmovoice.toggle.microphone": "Переключить микрофон\n%s",
+    "gui.plasmovoice.toggle.voice": "Переключить голосовой чат\n%s",
+    "gui.plasmovoice.toggle.currently": "В данный момент: %s",
+    "gui.plasmovoice.toggle.enabled": "ВКЛЮЧЕНО",
+    "gui.plasmovoice.toggle.disabled": "ВЫКЛЮЧЕНО",
+
+
+    "gui.plasmovoice.devices": "Устройства",
+
+    "gui.plasmovoice.devices.microphone": "Микрофон",
+    "gui.plasmovoice.devices.activation_threshold": "Порог активации",
+    "gui.plasmovoice.devices.activation_threshold.tooltip": "Это имеет значение только при настройке типа активации на «Голосовую активацию».\n\nПередвиньте ползунок до той точки, когда уровень громкости повышается только во время Вашей речи.\n\nВы также можете нажать на значок, чтобы включить тестирование микрофона и услышать свой голос.",
+    "gui.plasmovoice.devices.not_available": "Недоступно",
+    "gui.plasmovoice.devices.default": "Система по умолчанию",
+    "gui.plasmovoice.devices.microphone_volume": "Громкость микрофона",
+    "gui.plasmovoice.devices.noise_suppression": "Шумоподавление",
+    "gui.plasmovoice.devices.noise_suppression.tooltip": "Шумоподавление RNNoise.\n\nИспользует нейронные сети. Работает отлично, но может потреблять много ресурсов процессора.\n\nПрименяется к Вашему микрофону.\n\nRNNoise — это Шумоподавление на основе рекурсивных нейронных сетей.",
+    "gui.plasmovoice.devices.stereo_capture": "Запись звука в стерео",
+    "gui.plasmovoice.devices.stereo_capture.tooltip": "Записывает звук в стерео, затем преобразует его в моно.\nМожет улучшить качество, но звук становится тише.",
+    "gui.plasmovoice.devices.output": "Вывод",
+
+    "gui.plasmovoice.devices.output_device": "Устройство вывода",
+    "gui.plasmovoice.devices.volume": "Громкость",
+    "gui.plasmovoice.devices.volume.tooltip": "Повышение громкости выше 100% может вызвать искажения звука.",
+    "gui.plasmovoice.devices.occlusion": "Затухание звука",
+    "gui.plasmovoice.devices.occlusion.tooltip": "Излучает луч от игрока к каждому источнику звука и затушёвывает звук, если препятствия находятся на пути.\n\nПолезно, если Вы не хотите слышать звуки из других комнат, однако иногда работает неправильно, поэтому лучше отключать его, когда он не нужен.",
+    "gui.plasmovoice.devices.directional_sources": "Направленные источники звука",
+    "gui.plasmovoice.devices.directional_sources.tooltip": "Звук становится немного тише, если источник звука не направлен прямо на Вас и находится вне указанного угла.\n\nПрименяется к игрокам, чьи звуки Вы слышите.",
+    "gui.plasmovoice.devices.hrtf": "Связанная с головой передаточная функция",
+    "gui.plasmovoice.devices.hrtf.tooltip": "Улучшает точность позиционирования звука, облегчая возможность понимать, откуда идёт звук в 3D-пространстве.\n\nПрименяется к игрокам, чьи звуки Вы слышите.",
+
+
+    "gui.plasmovoice.activation": "Активация",
+
+    "gui.plasmovoice.activation.type": "Тип активации",
+    "gui.plasmovoice.activation.type_ptt": "Нажали — говорите",
+    "gui.plasmovoice.activation.type_voice": "Голос",
+    "gui.plasmovoice.activation.type_inherit": "Наследовать звук",
+    "gui.plasmovoice.activation.ptt_button": "Кнопка «режим рации»",
+    "gui.plasmovoice.activation.toggle_button": "Переключение кнопки",
+    "gui.plasmovoice.activation.toggle": "Переключение \"%s\"\n%s",
+    "gui.plasmovoice.activation.distance": "Дистанция %s",
+
+
+    "gui.plasmovoice.advanced": "Расширенные",
+
+    "gui.plasmovoice.advanced.visual": "Визуальные элементы и пользовательский интерфейс",
+    "gui.plasmovoice.advanced.visualize_voice_distance": "Визуализация расстояния до голоса",
+    "gui.plasmovoice.advanced.visualize_voice_distance_on_join": "Визуализация при подключении",
+
+    "gui.plasmovoice.advanced.audio_engine": "Звуковой движок",
+    "gui.plasmovoice.advanced.directional_sources_angle": "Угол направленности источников звука",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip": "Угол, при котором Вы услышите звуковой источник на 100%, если включена опция «Направленные источники звука».\n\nЗначение 360 означает, что опция выключена.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono": "Моно-стерео источники",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "Аддоны используют стерео источники для более высокого качества звука. Качество значительно лучше, но направление не влияет на панорамирование. Звук постепенно ослабевает только на расстоянии.\n\nКогда эта опция включена, стерео источники конвертируются в обычные моно источники. Качество хуже, но теперь они будут иметь панорамирование.",
+    "gui.plasmovoice.advanced.panning": "Позиционирование звука в стерео",
+
+    "gui.plasmovoice.advanced.exponential_volume": "Экспоненциальный уровень громкости",
+    "gui.plasmovoice.advanced.exponential_volume.volume_slider": "Ползунковый регулятор громкости",
+    "gui.plasmovoice.advanced.exponential_volume.distance_gain": "Увеличение расстояния",
+
+
+    "gui.plasmovoice.hotkeys": "Горячие клавиши",
+
+
+    "gui.plasmovoice.volume": "Громкость",
+
+    "gui.plasmovoice.volume.sources": "Громкость источников звука",
+    "gui.plasmovoice.volume.players": "Громкость звука игроков",
+    "gui.plasmovoice.volume.players_search": "Поиск...",
+
+
+    "gui.plasmovoice.about.made_by": "%s разработан автором — ",
+    "gui.plasmovoice.about.huix": "Концепция и дизайн",
+    "gui.plasmovoice.about.programming": "Программирование",
+    "gui.plasmovoice.about.artist": "Исполнитель",
+
+    "gui.plasmovoice.about.support": "Спасибо за Вашу поддержку",
+
+    "gui.plasmovoice.about.links": "На %s",
+    "gui.plasmovoice.about.copyright": "Используйте только официальные источники и не распространяйте мод без нашего разрешения. Вы можете связаться с нами в Discord, если у Вас есть вопросы, нужна помощь, есть предложения или предложения сотрудничества.",
+
+
+    "gui.plasmovoice.overlay": "Наложение",
+
+    "gui.plasmovoice.overlay.activation_icon": "Иконка Hud",
+    "gui.plasmovoice.overlay.activation_icon_show": "Показывать HUD-иконку",
+    "gui.plasmovoice.overlay.activation_icon_position": "Расположение HUD-иконки",
+    "gui.plasmovoice.overlay.activation_icon_position.choose": "Выбрать расположение иконки",
+    "gui.plasmovoice.overlay.hud_position.top_left": "Слева вверху",
+    "gui.plasmovoice.overlay.hud_position.top_center": "По центру вверху",
+    "gui.plasmovoice.overlay.hud_position.top_right": "Справа вверху",
+    "gui.plasmovoice.overlay.hud_position.bottom_left": "Слева внизу",
+    "gui.plasmovoice.overlay.hud_position.bottom_center": "По центру внизу",
+    "gui.plasmovoice.overlay.hud_position.bottom_right": "Справа внизу",
+
+    "gui.plasmovoice.overlay.source_icons": "Иконки сущности",
+    "gui.plasmovoice.overlay.show_source_icons": "Показывать иконки сущности",
+    "gui.plasmovoice.overlay.show_source_icons.hud": "Только GUI",
+    "gui.plasmovoice.overlay.show_source_icons.always": "Всегда",
+    "gui.plasmovoice.overlay.show_source_icons.hidden": "Скрыты",
+    "gui.plasmovoice.overlay.show_static_source_icons": "Отображать на статических источниках",
+
+    "gui.plasmovoice.overlay.enable": "Включить наложение",
+    "gui.plasmovoice.overlay.position": "Расположение наложения",
+    "gui.plasmovoice.overlay.position.choose": "Выбрать расположение наложения",
+    "gui.plasmovoice.overlay.style": "Стиль наложения",
+    "gui.plasmovoice.overlay.style.name_skin": "Имя и Скин",
+    "gui.plasmovoice.overlay.style.skin": "Только скин",
+    "gui.plasmovoice.overlay.style.name": "Только имя",
+
+    "gui.plasmovoice.overlay.sources": "Наложения источников",
+    "gui.plasmovoice.overlay.sources.when_talking": "Когда разговаривают",
+    "gui.plasmovoice.overlay.sources.always": "Всегда",
+    "gui.plasmovoice.overlay.sources.never": "Никогда",
+
+
+    "gui.plasmovoice.addons": "Аддоны",
+
+
+    "gui.plasmovoice.not_available": "На этом сервере Plasmo Voice не установлен.",
+    "gui.plasmovoice.connecting": "Соединение к UDP-серверу...",
+    "gui.plasmovoice.cannot_connect_to_udp": "Невозможно подключиться к UDP-серверу,\nпохоже на то, что UDP-порт закрыт. Прочитайте википедию:\n%s",
+
+
+    "pv.activation.parent": "Основной",
+
+
+    "message.plasmovoice.close": "Закрыть",
+    "message.plasmovoice.on": "Включить",
+    "message.plasmovoice.off": "Выключить",
+
+    "message.plasmovoice.occlusion_changed": "Затухание звука: %s",
+    "message.plasmovoice.distance_changed": "Дистанция звука %s: %d",
+
+    "message.plasmovoice.activation.toggle": "%s: %s",
+
+    "message.plasmovoice.macos_incompatible_launcher": "Вы не можете использовать микрофон на Minecraft Launcher в MacOS из-за отсутствия разрешений на использование микрофона. Рекомендуется переключиться на %s.",
+
+    "message.plasmovoice.update_available": "Доступна новая версия Plasmo Voice %1$s: %2$s",
+    "message.plasmovoice.update_available.click": "Загрузить",
+    "message.plasmovoice.update_available.hover": "%s"
+}
