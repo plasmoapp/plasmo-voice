@@ -1,6 +1,8 @@
 import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
+import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
+import gg.essential.gradle.util.prebundle
 
 val mavenGroup: String by rootProject
 val isMainProject = project.name == file("../mainProject").readText().trim()
@@ -43,6 +45,13 @@ plasmoCrowdin {
 
 val shadowCommon by configurations.creating
 
+val relocatedUC = registerRelocationAttribute("relocate-uc") {
+    relocate("gg.essential.universal", "su.plo.voice.universal")
+}
+val universalCraft by configurations.creating {
+    attributes { attribute(relocatedUC, true) }
+}
+
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
     maven("https://repo.spongepowered.org/repository/maven-public/")
@@ -67,24 +76,13 @@ dependencies {
 //        "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
     }
 
-    modApi(rootProject.libs.versions.universalcraft.map {
+    universalCraft(rootProject.libs.versions.universalcraft.map {
         "gg.essential:universalcraft-$platform:$it"
     }) {
-        exclude(group = "org.jetbrains.kotlin")
+        isTransitive = false
     }
-    if (platform.isForge) {
-        shadowCommon(rootProject.libs.versions.universalcraft.map {
-            "gg.essential:universalcraft-$platform:$it"
-        }) {
-            isTransitive = false
-        }
-    } else {
-        "include"(rootProject.libs.versions.universalcraft.map {
-            "gg.essential:universalcraft-$platform:$it"
-        }) {
-            isTransitive = false
-        }
-    }
+    modApi(prebundle(universalCraft))
+    shadowCommon(prebundle(universalCraft))
 
     rootProject.libs.versions.ustats.map { "su.plo.ustats:$platform:$it" }.also {
         modApi(it)
@@ -155,8 +153,8 @@ tasks {
         configurations = listOf(shadowCommon)
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+
         if (platform.isForge) {
-            relocate("gg.essential.universal", "su.plo.voice.universal")
             relocate("su.plo.ustats", "su.plo.voice.ustats")
         }
 

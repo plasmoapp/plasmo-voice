@@ -13,11 +13,11 @@ import com.mojang.blaze3d.platform.GlStateManager;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.Tesselator;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
-import gg.essential.universal.UResolution;
-import gg.essential.universal.wrappers.message.UTextComponent;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.UMinecraft;
+import su.plo.voice.universal.UResolution;
+import su.plo.voice.universal.wrappers.message.UTextComponent;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.renderer.MultiBufferSource;
 import su.plo.lib.api.chat.MinecraftTextComponent;

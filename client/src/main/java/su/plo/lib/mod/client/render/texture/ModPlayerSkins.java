@@ -8,7 +8,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
-import gg.essential.universal.UMinecraft;
+import su.plo.voice.universal.UMinecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.DynamicTexture;
 import net.minecraft.client.resources.DefaultPlayerSkin;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static su.plo.mod.client.render.TextureUtilKt.registerBase64Texture;
+import static su.plo.lib.mod.client.render.TextureUtilKt.registerBase64Texture;
 
 public final class ModPlayerSkins {
 

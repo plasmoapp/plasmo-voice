@@ -1,9 +1,9 @@
 package su.plo.voice.client.render.voice;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.UMinecraft;
 import lombok.NonNull;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;

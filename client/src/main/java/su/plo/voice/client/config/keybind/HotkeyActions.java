@@ -1,6 +1,6 @@
 package su.plo.voice.client.config.keybind;
 
-import gg.essential.universal.UChat;
+import su.plo.voice.universal.UChat;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;

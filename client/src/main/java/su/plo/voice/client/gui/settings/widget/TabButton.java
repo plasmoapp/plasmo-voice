@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;

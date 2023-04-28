@@ -2,10 +2,10 @@ package su.plo.voice.client.render.voice
 
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
-import gg.essential.universal.UGraphics
-import gg.essential.universal.UMatrixStack
-import gg.essential.universal.UResolution.scaledHeight
-import gg.essential.universal.UResolution.scaledWidth
+import su.plo.voice.universal.UGraphics
+import su.plo.voice.universal.UMatrixStack
+import su.plo.voice.universal.UResolution.scaledHeight
+import su.plo.voice.universal.UResolution.scaledWidth
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.api.chat.MinecraftTextComponent

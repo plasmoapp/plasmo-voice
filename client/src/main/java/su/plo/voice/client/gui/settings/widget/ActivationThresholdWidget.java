@@ -1,8 +1,8 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;

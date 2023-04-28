@@ -1,7 +1,7 @@
 package su.plo.voice.client.utils
 
-import gg.essential.universal.ChatColor
-import gg.essential.universal.UGraphics
+import su.plo.voice.universal.ChatColor
+import su.plo.voice.universal.UGraphics
 import su.plo.lib.api.chat.MinecraftTextComponent
 import su.plo.lib.mod.client.render.RenderUtil
 

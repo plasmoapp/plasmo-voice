@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;

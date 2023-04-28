@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui;
 
-import gg.essential.universal.UMinecraft;
-import gg.essential.universal.UScreen;
+import su.plo.voice.universal.UMinecraft;
+import su.plo.voice.universal.UScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
