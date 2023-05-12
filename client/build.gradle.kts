@@ -2,7 +2,7 @@ import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
-import gg.essential.gradle.util.prebundle
+import gg.essential.util.prebundleNow
 
 val mavenGroup: String by rootProject
 val isMainProject = project.name == file("../mainProject").readText().trim()
@@ -81,8 +81,8 @@ dependencies {
     }) {
         isTransitive = false
     }
-    modApi(prebundle(universalCraft))
-    shadowCommon(prebundle(universalCraft))
+    modApi(prebundleNow(universalCraft))
+    shadowCommon(prebundleNow(universalCraft))
 
     rootProject.libs.versions.ustats.map { "su.plo.ustats:$platform:$it" }.also {
         modApi(it)
