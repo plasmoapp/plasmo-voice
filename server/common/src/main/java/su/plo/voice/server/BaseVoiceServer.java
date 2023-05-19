@@ -212,7 +212,9 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             );
 
             // load forwarding secret
-            File forwardingSecretFile = new File(getConfigFolder(), "forwarding-secret");
+            File forwardingSecretFile = System.getenv().containsKey("PLASMO_VOICE_FORWARDING_SECRET_FILE")
+                    ? new File(System.getenv("PLASMO_VOICE_FORWARDING_SECRET_FILE"))
+                    : new File(getConfigFolder(), "forwarding-secret");
             if (System.getenv("PLASMO_VOICE_FORWARDING_SECRET") != null) {
                 UUID forwardingSecret = UUID.fromString(System.getenv("PLASMO_VOICE_FORWARDING_SECRET"));
                 config.host().forwardingSecret(forwardingSecret);
