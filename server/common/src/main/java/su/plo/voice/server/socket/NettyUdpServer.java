@@ -37,9 +37,9 @@ public final class NettyUdpServer implements UdpServer {
         this.keepAlive = new NettyUdpKeepAlive(voiceServer);
 
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(loopGroup)
-                .channel(NioDatagramChannel.class)
-                .option(ChannelOption.SO_BROADCAST, true);
+        bootstrap
+                .group(loopGroup)
+                .channel(NioDatagramChannel.class);
 
         bootstrap.handler(new ChannelInitializer<NioDatagramChannel>() {
             @Override
