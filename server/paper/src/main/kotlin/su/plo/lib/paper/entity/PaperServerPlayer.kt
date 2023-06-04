@@ -62,8 +62,15 @@ class PaperServerPlayer(
         instance.kickPlayer(textConverter.convert(this, reason).toLegacyText())
     }
 
-    override fun canSee(player: MinecraftServerPlayerEntity) =
-        instance.canSee((player as PaperServerPlayer).instance)
+    override fun canSee(player: MinecraftServerPlayerEntity): Boolean {
+        val serverPlayer = (player as PaperServerPlayer).instance
+
+        if (serverPlayer.gameMode == GameMode.SPECTATOR) {
+            return instance.gameMode == GameMode.SPECTATOR
+        }
+
+        return instance.canSee(serverPlayer)
+    }
 
     override fun getRegisteredChannels(): Set<String> =
         instance.listeningPluginChannels
