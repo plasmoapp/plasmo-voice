@@ -18,6 +18,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+//#if MC>=12000
+//$$ import net.minecraft.locale.Language;
+//#endif
+
 @ToString
 public final class ScreenWrapper
         extends UScreen {
@@ -217,6 +221,15 @@ public final class ScreenWrapper
     public void renderTooltip(UMatrixStack stack, List<MinecraftTextComponent> tooltip, int mouseX, int mouseY) {
         // todo: legacy?
 
+        //#if MC>=12000
+        //$$ ((Screen) this).setTooltipForNextRenderPass(
+        //$$         Language.getInstance().getVisualOrder(
+        //$$                 new ArrayList<>(
+        //$$                         RenderUtil.getTextConverter().convert(tooltip)
+        //$$                 )
+        //$$         )
+        //$$ );
+        //#else
         ((Screen) this).renderComponentTooltip(
                 stack.toMC(),
                 new ArrayList<>(
@@ -225,6 +238,7 @@ public final class ScreenWrapper
                 mouseX,
                 mouseY
         );
+        //#endif
     }
 
 //    @RequiredArgsConstructor

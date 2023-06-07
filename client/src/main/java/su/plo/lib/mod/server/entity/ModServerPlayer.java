@@ -27,6 +27,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import static su.plo.lib.mod.server.utils.ServerPlayerKt.serverLevel;
+
 public final class ModServerPlayer
         extends ModPlayer<ServerPlayer>
         implements MinecraftServerPlayerEntity {
@@ -58,7 +60,7 @@ public final class ModServerPlayer
     @Override
     public @NotNull ServerPos3d getServerPosition() {
         return new ServerPos3d(
-                minecraftServer.getWorld(instance.getLevel()),
+                minecraftServer.getWorld(serverLevel(instance)),
                 instance.position().x(),
                 instance.position().y(),
                 instance.position().z(),
@@ -69,7 +71,7 @@ public final class ModServerPlayer
 
     @Override
     public @NotNull ServerPos3d getServerPosition(@NotNull ServerPos3d position) {
-        position.setWorld(minecraftServer.getWorld(instance.getLevel()));
+        position.setWorld(minecraftServer.getWorld(serverLevel(instance)));
 
         position.setX(instance.position().x());
         position.setY(instance.position().y());
@@ -83,7 +85,7 @@ public final class ModServerPlayer
 
     @Override
     public @NotNull MinecraftServerWorld getWorld() {
-        return minecraftServer.getWorld(instance.getLevel());
+        return minecraftServer.getWorld(serverLevel(instance));
     }
 
     @Override

@@ -35,6 +35,7 @@ import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.audio.SoundOcclusion
 import su.plo.voice.client.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.config.VoiceClientConfig
+import su.plo.voice.client.utils.level
 import su.plo.voice.client.utils.toFloatArray
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
@@ -412,7 +413,7 @@ abstract class BaseClientAudioSource<T> constructor(
         val player: LocalPlayer = Minecraft.getInstance().player ?: return 0.0
 
         return SoundOcclusion.getOccludedPercent(
-            player.level,
+            player.level(),
             position,
             player.eyePosition
         )
