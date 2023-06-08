@@ -1,6 +1,7 @@
 package su.plo.voice;
 
 import com.google.inject.Module;
+import kotlinx.coroutines.Dispatchers;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -56,6 +57,12 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected void onShutdown() {
         backgroundExecutor.shutdown();
         addons.clear();
+        try {
+            Dispatchers.INSTANCE.shutdown();
+        } catch (Exception e) {
+            DEBUG_LOGGER.log("Failed to shutdown coroutine dispatchers", e);
+            // shutdown quietly
+        }
     }
 
     @Override

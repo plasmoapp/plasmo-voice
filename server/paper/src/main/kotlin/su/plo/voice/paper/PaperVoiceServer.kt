@@ -69,9 +69,8 @@ class PaperVoiceServer(
     }
 
     public override fun onShutdown() {
-        super.onShutdown()
-
         uStats.close()
+        super.onShutdown()
     }
 
     override fun getVersion() = plugin.description.version
