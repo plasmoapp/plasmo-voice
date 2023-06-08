@@ -1,6 +1,6 @@
 package su.plo.lib.paper.entity
 
-import net.kyori.adventure.text.Component
+import net.md_5.bungee.api.ChatMessageType
 import org.bukkit.GameMode
 import org.bukkit.entity.Player
 import org.bukkit.plugin.java.JavaPlugin
@@ -39,16 +39,10 @@ class PaperServerPlayer(
         instance.scoreboard.getObjective(DisplaySlot.BELOW_NAME) != null
 
     override fun sendMessage(text: MinecraftTextComponent) =
-        instance.sendMessage(textConverter.convert(this, text))
-
-    override fun sendMessage(text: String) =
-        instance.sendMessage(text)
-
-    override fun sendActionBar(text: String) =
-        instance.sendActionBar(Component.text(text))
+        instance.spigot().sendMessage(textConverter.convert(this, text))
 
     override fun sendActionBar(text: MinecraftTextComponent) =
-        instance.sendActionBar(textConverter.convert(this, text))
+        instance.spigot().sendMessage(ChatMessageType.ACTION_BAR, textConverter.convert(this, text))
 
     override fun getLanguage() =
         instance.locale
@@ -59,15 +53,24 @@ class PaperServerPlayer(
     override fun getPermission(permission: String) =
         permissions.getPermission(instance, permission)
 
-    override fun sendPacket(channel: String, data: ByteArray) =
+    override fun sendPacket(channel: String, data: ByteArray) {
+        if (!isOnline) return
         instance.sendPluginMessage(loader, channel, data)
+    }
 
     override fun kick(reason: MinecraftTextComponent) {
         instance.kickPlayer(textConverter.convert(this, reason).toLegacyText())
     }
 
-    override fun canSee(player: MinecraftServerPlayerEntity) =
-        instance.canSee((player as PaperServerPlayer).instance)
+    override fun canSee(player: MinecraftServerPlayerEntity): Boolean {
+        val serverPlayer = (player as PaperServerPlayer).instance
+
+        if (serverPlayer.gameMode == GameMode.SPECTATOR) {
+            return instance.gameMode == GameMode.SPECTATOR
+        }
+
+        return instance.canSee(serverPlayer)
+    }
 
     override fun getRegisteredChannels(): Set<String> =
         instance.listeningPluginChannels

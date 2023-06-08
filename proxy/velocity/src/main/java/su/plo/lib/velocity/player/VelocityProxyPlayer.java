@@ -112,16 +112,6 @@ public final class VelocityProxyPlayer implements MinecraftProxyPlayer {
     }
 
     @Override
-    public void sendMessage(@NotNull String text) {
-        instance.sendMessage(Component.text(text));
-    }
-
-    @Override
-    public void sendActionBar(@NotNull String text) {
-        instance.sendActionBar(Component.text(text));
-    }
-
-    @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
         instance.sendActionBar(textConverter.convert(this, text));
     }

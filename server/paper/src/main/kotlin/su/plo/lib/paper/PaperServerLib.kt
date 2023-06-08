@@ -68,7 +68,7 @@ class PaperServerLib(
 
         return worldByInstance.computeIfAbsent(
             instance
-        ) { PaperServerWorld(instance, loader) }
+        ) { PaperServerWorld(this, loader, instance) }
     }
 
     override fun getWorlds(): Collection<MinecraftServerWorld> =
@@ -113,13 +113,13 @@ class PaperServerLib(
 
     override fun getGameProfile(playerId: UUID): Optional<MinecraftGameProfile> {
         return Optional.of(Bukkit.getServer().getOfflinePlayer(playerId))
-            .filter(OfflinePlayer::hasPlayedBefore)
+            .filter { it.isOnline || it.hasPlayedBefore() }
             .map(::getGameProfile)
     }
 
     override fun getGameProfile(name: String): Optional<MinecraftGameProfile> {
         return Optional.of(Bukkit.getServer().getOfflinePlayer(name))
-            .filter(OfflinePlayer::hasPlayedBefore)
+            .filter { it.isOnline || it.hasPlayedBefore() }
             .map(::getGameProfile)
     }
 
@@ -141,9 +141,10 @@ class PaperServerLib(
 
     override fun getPort() = Bukkit.getServer().port
 
-    override fun getVersion() = Bukkit.getMinecraftVersion()
+    override fun getVersion() =
+        Bukkit.getVersion().substringAfter("MC: ").substringBefore(")")
 
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     fun onPlayerJoin(event: org.bukkit.event.player.PlayerJoinEvent) {
         PlayerJoinEvent.invoker.onPlayerJoin(
             getPlayerByInstance(event.player)

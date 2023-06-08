@@ -1,6 +1,6 @@
 package su.plo.voice.client.audio.source;
 
-import gg.essential.universal.UMinecraft;
+import su.plo.voice.universal.UMinecraft;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

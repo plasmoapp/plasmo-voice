@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.render.shader;
 
-import gg.essential.universal.shader.BlendState;
-import gg.essential.universal.shader.UShader;
+import su.plo.voice.universal.shader.BlendState;
+import su.plo.voice.universal.shader.UShader;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;

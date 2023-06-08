@@ -1,9 +1,9 @@
 package su.plo.voice.client.render.voice;
 
 import com.google.common.collect.Maps;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.UMinecraft;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;

@@ -1,8 +1,9 @@
 package su.plo.lib.mod.client.gui.screen;
 
 import com.google.common.collect.Lists;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.UMinecraft;
+import su.plo.voice.universal.UResolution;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.screens.Screen;
@@ -158,12 +159,14 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
     }
 
     // getters
+    @Override
     public int getWidth() {
-        return screen.width;
+        return UResolution.getScaledWidth();
     }
 
+    @Override
     public int getHeight() {
-        return screen.height;
+        return UResolution.getScaledHeight();
     }
 
     public MinecraftTextComponent getTitle() {

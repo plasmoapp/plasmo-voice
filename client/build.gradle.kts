@@ -1,6 +1,8 @@
 import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
+import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
+import gg.essential.util.prebundleNow
 
 val mavenGroup: String by rootProject
 val isMainProject = project.name == file("../mainProject").readText().trim()
@@ -10,6 +12,7 @@ plugins {
     id("gg.essential.multi-version")
     id("gg.essential.defaults")
     id("su.plo.crowdin.plugin")
+    id("su.plo.voice.relocate")
 }
 
 group = "$mavenGroup.client"
@@ -42,6 +45,13 @@ plasmoCrowdin {
 
 val shadowCommon by configurations.creating
 
+val relocatedUC = registerRelocationAttribute("relocate-uc") {
+    relocate("gg.essential.universal", "su.plo.voice.universal")
+}
+val universalCraft by configurations.creating {
+    attributes { attribute(relocatedUC, true) }
+}
+
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
     maven("https://repo.spongepowered.org/repository/maven-public/")
@@ -58,32 +68,22 @@ dependencies {
             11902 -> "0.73.2+1.19.2"
             11903 -> "0.73.2+1.19.3"
             11904 -> "0.76.0+1.19.4"
+            12000 -> "0.83.0+1.20"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
-        "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
+//        "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
     }
 
-    modApi(rootProject.libs.versions.universalcraft.map {
+    universalCraft(rootProject.libs.versions.universalcraft.map {
         "gg.essential:universalcraft-$platform:$it"
     }) {
-        exclude(group = "org.jetbrains.kotlin")
+        isTransitive = false
     }
-    if (platform.isForge) {
-        shadowCommon(rootProject.libs.versions.universalcraft.map {
-            "gg.essential:universalcraft-$platform:$it"
-        }) {
-            isTransitive = false
-        }
-    } else {
-        "include"(rootProject.libs.versions.universalcraft.map {
-            "gg.essential:universalcraft-$platform:$it"
-        }) {
-            isTransitive = false
-        }
-    }
+    modApi(prebundleNow(universalCraft))
+    shadowCommon(prebundleNow(universalCraft))
 
     rootProject.libs.versions.ustats.map { "su.plo.ustats:$platform:$it" }.also {
         modApi(it)
@@ -111,6 +111,12 @@ dependencies {
             isTransitive = false
         }
     }
+
+    // kotlin
+    shadowCommon(kotlin("stdlib-jdk8"))
+    shadowCommon(rootProject.libs.kotlinx.coroutines)
+    shadowCommon(rootProject.libs.kotlinx.coroutines.jdk8)
+    shadowCommon(rootProject.libs.kotlinx.json)
 
     shadowCommon(rootProject.libs.opus)
     shadowCommon(rootProject.libs.config)
@@ -147,9 +153,9 @@ tasks {
     shadowJar {
         configurations = listOf(shadowCommon)
 
-        relocate("su.plo.crowdin", "su.plo.voice.crowdin")
+        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+
         if (platform.isForge) {
-            relocate("gg.essential.universal", "su.plo.voice.universal")
             relocate("su.plo.ustats", "su.plo.voice.ustats")
         }
 
@@ -167,6 +173,7 @@ tasks {
                 exclude("plasmovoice-forge.mixins.json")
                 exclude("pack.mcmeta")
                 exclude("META-INF/mods.toml")
+                exclude("DebugProbesKt.bin")
             }
         }
     }

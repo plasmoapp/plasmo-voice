@@ -70,6 +70,9 @@ class ClientDirectSource(
         return sourceInfo.lookAngle!!.toVec3()
     }
 
+    override fun shouldCalculateDirectionalGain() =
+        (sourceInfo.lookAngle != null && sourceInfo.relativePosition == null) && super.shouldCalculateDirectionalGain()
+
     override fun shouldCalculateOcclusion() =
         sourceInfo.relativePosition != null && super.shouldCalculateOcclusion()
 

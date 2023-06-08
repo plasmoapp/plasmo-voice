@@ -1,9 +1,9 @@
 package su.plo.voice.client.render.voice;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
-import gg.essential.universal.UResolution;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.UMinecraft;
+import su.plo.voice.universal.UResolution;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -70,10 +70,14 @@ public final class HudIconRenderer {
     private void renderIcon(@NotNull UMatrixStack stack, @NotNull ResourceLocation iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
+        UGraphics.depthFunc(515);
         UGraphics.bindTexture(0, iconLocation);
         UGraphics.color4f(1F, 1F, 1F, 1F);
 
+        stack.push();
+        stack.translate(0f, 0f, 1000f);
         RenderUtil.blit(stack, calcIconX(iconPosition.getX()), calcIconY(iconPosition.getY()), 0, 0, 16, 16, 16, 16);
+        stack.pop();
     }
 
     private int calcIconX(Integer x) {

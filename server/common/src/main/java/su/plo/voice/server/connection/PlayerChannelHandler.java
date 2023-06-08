@@ -44,7 +44,11 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         voiceServer.getEventBus().call(event);
         if (event.isCancelled()) return;
 
-        packet.handle(this);
+        try {
+            packet.handle(this);
+        } catch (Exception e) {
+            BaseVoice.DEBUG_LOGGER.log("Failed to handle packet ({}): {}", packet, e);
+        }
     }
 
     @Override
@@ -80,6 +84,8 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerStatePacket packet) {
+        if (!player.hasVoiceChat()) return;
+
         BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
         voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
         voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
@@ -100,15 +106,20 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
+        if (!player.hasVoiceChat()) return;
+
+        if (voiceServer.getMuteManager().getMute(player.getInstance().getUUID()).isPresent()) return;
         voiceServer.getEventBus().call(new PlayerSpeakEndEvent(player, packet));
     }
 
     @Override
     public void handle(@NotNull SourceInfoRequestPacket packet) {
+        if (!player.hasVoiceChat()) return;
+
         Optional<? extends ServerAudioSource<?>> source = voiceServer.getSourceLineManager()
                 .getLines()
                 .stream()
-                .map(line -> line.getSourceById(packet.getSourceId()).orElse((ServerAudioSource<?>) null))
+                .map(line -> line.getSourceById(packet.getSourceId()).orElse(null))
                 .filter(Objects::nonNull)
                 .findFirst();
         if (!source.isPresent()) return;

@@ -26,7 +26,11 @@ public interface ServerConnection {
 
     Optional<VoicePlayerInfo> getClientPlayer();
 
-    void sendPacket(Packet<?> packet);
+    default void sendPacket(@NotNull Packet<?> packet) {
+        sendPacket(packet, true);
+    }
+
+    void sendPacket(@NotNull Packet<?> packet, boolean checkUdpConnection);
 
     void close();
 

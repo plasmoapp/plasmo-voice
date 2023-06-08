@@ -32,10 +32,9 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
     public void start(String ip, int port) {
 
         Bootstrap bootstrap = new Bootstrap();
-        bootstrap.group(loopGroup)
-                .channel(NioDatagramChannel.class)
-                .option(ChannelOption.AUTO_CLOSE, true)
-                .option(ChannelOption.SO_BROADCAST, true);
+        bootstrap
+                .group(loopGroup)
+                .channel(NioDatagramChannel.class);
 
         bootstrap.handler(new ChannelInitializer<NioDatagramChannel>() {
             @Override

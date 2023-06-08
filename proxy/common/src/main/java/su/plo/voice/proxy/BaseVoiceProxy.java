@@ -146,7 +146,9 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
             // load forwarding secret
             UUID forwardingSecret;
-            File forwardingSecretFile = new File(getConfigFolder(), "forwarding-secret");
+            File forwardingSecretFile = System.getenv().containsKey("PLASMO_VOICE_FORWARDING_SECRET_FILE")
+                    ? new File(System.getenv("PLASMO_VOICE_FORWARDING_SECRET_FILE"))
+                    : new File(getConfigFolder(), "forwarding-secret");
             if (System.getenv("PLASMO_VOICE_FORWARDING_SECRET") != null) {
                 forwardingSecret = UUID.fromString(System.getenv("PLASMO_VOICE_FORWARDING_SECRET"));
             } else if (forwardingSecretFile.exists()) {

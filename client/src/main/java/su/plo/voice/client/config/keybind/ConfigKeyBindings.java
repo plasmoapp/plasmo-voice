@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
-import gg.essential.universal.UScreen;
+import su.plo.voice.universal.UScreen;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;

@@ -15,14 +15,6 @@ class BungeeDefaultCommandSource(
         source.sendMessage(textConverter.convert(this, text))
     }
 
-    override fun sendMessage(text: String) {
-        source.sendMessage(text)
-    }
-
-    override fun sendActionBar(text: String) {
-        /* do nothing */
-    }
-
     override fun sendActionBar(text: MinecraftTextComponent) {
         /* do nothing */
     }

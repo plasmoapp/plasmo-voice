@@ -12,16 +12,10 @@ class PaperDefaultCommandSource(
 ) : MinecraftCommandSource {
 
     override fun sendMessage(text: MinecraftTextComponent) =
-        source.sendMessage(textConverter.convert(this, text)!!)
-
-    override fun sendMessage(text: String) =
-        source.sendMessage(text)
-
-    override fun sendActionBar(text: String) =
-        source.sendMessage(text)
+        source.spigot().sendMessage(textConverter.convert(this, text))
 
     override fun sendActionBar(text: MinecraftTextComponent) =
-        source.sendMessage(textConverter.convert(this, text))
+        source.spigot().sendMessage(textConverter.convert(this, text))
 
     override fun getLanguage(): String = "en_us"
 

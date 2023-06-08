@@ -96,12 +96,12 @@ public final class ModVoiceServer
     }
 
     private void onShutdown(MinecraftServer server) {
+        if (uStats != null) uStats.close();
+
         super.onShutdown();
         this.server = null;
         minecraftServerLib.onShutdown();
         handler.clear();
-
-        uStats.close();
     }
 
     private void onCommandRegister(@NotNull CommandDispatcher<CommandSourceStack> dispatcher) {

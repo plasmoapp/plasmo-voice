@@ -23,10 +23,8 @@ import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.InputDevice;
-import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.*;
-import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
@@ -394,16 +392,17 @@ public final class VoiceAudioCapture implements AudioCapture {
                                  byte[] encoded) {
         if (activation.getTranslation().equals("pv.activation.parent")) return;
 
-        Optional<UdpClient> udpClient = voiceClient.getUdpClientManager().getClient();
-        if (!udpClient.isPresent()) return;
-
-        udpClient.get().sendPacket(new PlayerAudioPacket(
-                getSequenceNumber(activation),
-                encoded,
-                activation.getId(),
-                (short) activation.getDistance(),
-                isStereo
-        ));
+        voiceClient.getUdpClientManager()
+                .getClient()
+                .ifPresent(udpClient ->
+                        udpClient.sendPacket(new PlayerAudioPacket(
+                                getSequenceNumber(activation),
+                                encoded,
+                                activation.getId(),
+                                (short) activation.getDistance(),
+                                isStereo
+                        ))
+                );
     }
 
     private void sendVoiceEndPacket(ClientActivation activation) {
@@ -412,14 +411,13 @@ public final class VoiceAudioCapture implements AudioCapture {
         if (monoEncoder != null) monoEncoder.reset();
         if (stereoEncoder != null) stereoEncoder.reset();
 
-        Optional<ServerConnection> connection = voiceClient.getServerConnection();
-        if (!connection.isPresent()) return;
-
-        connection.get().sendPacket(new PlayerAudioEndPacket(
-                getSequenceNumber(activation),
-                activation.getId(),
-                (short) activation.getDistance()
-        ));
+        voiceClient.getServerConnection().ifPresent(connection ->
+                connection.sendPacket(new PlayerAudioEndPacket(
+                        getSequenceNumber(activation),
+                        activation.getId(),
+                        (short) activation.getDistance()
+                ))
+        );
     }
 
     private long getSequenceNumber(@NotNull ClientActivation activation) {

@@ -3,7 +3,6 @@ package su.plo.voice.client.audio;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.material.Material;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -79,7 +78,11 @@ public final class SoundOcclusion {
             if (i <= 1) continue;
 
             BlockState state = world.getBlockState(prevSoundPos);
-            Material material = state.getMaterial();
+            //#if MC>=12000
+            //$$ boolean isSolid = state.isSolidRender(world, prevSoundPos);
+            //#else
+            boolean isSolid = state.getMaterial().isSolid();
+            //#endif
             VoxelShape collisionShape = state.getCollisionShape(world, prevSoundPos);
 
             if (state.isAir()
@@ -89,7 +92,7 @@ public final class SoundOcclusion {
             BlockHitResult rayTrace = collisionShape.clip(prevSound, listener, prevSoundPos);
             if (rayTrace == null) continue;
 
-            double newOcclusion = material.isSolid() ? OCCLUSION_MULTIPLIER : OCCLUSION_MULTIPLIER / 2.0D;
+            double newOcclusion = isSolid ? OCCLUSION_MULTIPLIER : OCCLUSION_MULTIPLIER / 2.0D;
 
             if (occludedPercent > 0) {
                 occludedPercent += newOcclusion / 4;

@@ -1,7 +1,6 @@
 package su.plo.lib.mod.client.gui.screen;
 
-import gg.essential.universal.*;
-import gg.essential.universal.wrappers.message.UTextComponent;
+import su.plo.voice.universal.*;
 import lombok.Getter;
 import lombok.ToString;
 import net.minecraft.client.gui.screens.Screen;
@@ -18,7 +17,10 @@ import su.plo.voice.client.event.key.KeyPressedEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+//#if MC>=12000
+//$$ import net.minecraft.locale.Language;
+//#endif
 
 @ToString
 public final class ScreenWrapper
@@ -218,13 +220,25 @@ public final class ScreenWrapper
 
     public void renderTooltip(UMatrixStack stack, List<MinecraftTextComponent> tooltip, int mouseX, int mouseY) {
         // todo: legacy?
-        renderComponentTooltip(
+
+        //#if MC>=12000
+        //$$ ((Screen) this).setTooltipForNextRenderPass(
+        //$$         Language.getInstance().getVisualOrder(
+        //$$                 new ArrayList<>(
+        //$$                         RenderUtil.getTextConverter().convert(tooltip)
+        //$$                 )
+        //$$         )
+        //$$ );
+        //#else
+        ((Screen) this).renderComponentTooltip(
                 stack.toMC(),
-                new ArrayList<>(RenderUtil.getTextConverter()
-                        .convert(tooltip)),
+                new ArrayList<>(
+                        RenderUtil.getTextConverter().convert(tooltip)
+                ),
                 mouseX,
                 mouseY
         );
+        //#endif
     }
 
 //    @RequiredArgsConstructor

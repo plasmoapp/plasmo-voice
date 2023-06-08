@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.gui.widget;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.USound;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.USound;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;

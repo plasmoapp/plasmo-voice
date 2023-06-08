@@ -34,6 +34,7 @@ dependencies {
     // shadow external deps
     shadow(kotlin("stdlib-jdk8"))
     shadow(rootProject.libs.kotlinx.coroutines)
+    shadow(rootProject.libs.kotlinx.coroutines.jdk8)
     shadow(rootProject.libs.kotlinx.json)
 
     shadow(rootProject.libs.opus)

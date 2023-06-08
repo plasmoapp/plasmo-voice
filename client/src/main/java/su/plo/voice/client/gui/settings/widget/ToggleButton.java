@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;

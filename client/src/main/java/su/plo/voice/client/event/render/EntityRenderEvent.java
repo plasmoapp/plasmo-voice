@@ -1,6 +1,6 @@
 package su.plo.voice.client.event.render;
 
-import gg.essential.universal.UMatrixStack;
+import su.plo.voice.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.NonNull;
 import net.minecraft.world.entity.Entity;

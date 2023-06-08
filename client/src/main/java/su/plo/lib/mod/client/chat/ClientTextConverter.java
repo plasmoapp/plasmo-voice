@@ -1,6 +1,6 @@
 package su.plo.lib.mod.client.chat;
 
-import gg.essential.universal.wrappers.message.UTextComponent;
+import su.plo.voice.universal.wrappers.message.UTextComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.network.chat.Component;

@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui;
 
-import gg.essential.universal.UMinecraft;
-import gg.essential.universal.UScreen;
+import su.plo.voice.universal.UMinecraft;
+import su.plo.voice.universal.UScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -88,12 +88,18 @@ public final class PlayerVolumeAction {
 //            points.add(playerPos);
             playerPos = playerPos.add(rotVector);
 //            points.add(playerPos);
-            BlockState state = level.getBlockState(new BlockPos(
+            BlockPos blockPos = new BlockPos(
                     (int) Math.floor(playerPos.x),
                     (int) Math.floor(playerPos.y),
                     (int) Math.floor(playerPos.z)
-            ));
-            if (!state.isAir() && state.getMaterial().isSolid()) {
+            );
+            BlockState state = level.getBlockState(blockPos);
+            //#if MC>=12000
+            //$$ boolean isSolid = state.isSolidRender(level, blockPos);
+            //#else
+            boolean isSolid = state.getMaterial().isSolid();
+            //#endif
+            if (!state.isAir() && isSolid) {
                 break;
             }
 

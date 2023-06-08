@@ -1,7 +1,7 @@
 package su.plo.voice.client.render.voice
 
 import net.minecraft.resources.ResourceLocation
-import su.plo.mod.client.render.registerBase64Texture
+import su.plo.lib.mod.client.render.registerBase64Texture
 
 object VoiceIconUtil {
 

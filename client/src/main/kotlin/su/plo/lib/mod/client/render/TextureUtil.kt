@@ -1,4 +1,4 @@
-package su.plo.mod.client.render
+package su.plo.lib.mod.client.render
 
 import com.google.common.base.Charsets
 import com.mojang.blaze3d.platform.NativeImage
