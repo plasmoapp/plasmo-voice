@@ -94,8 +94,11 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
     }
 
     @Override
-    public void sendPacket(Packet<?> packet) {
+    public void sendPacket(@NotNull Packet<?> packet, boolean checkUdpConnection) {
         if (!connection.isConnected()) return;
+
+        if (checkUdpConnection && !voiceClient.getUdpClientManager().isConnected())
+            return;
 
         byte[] encoded = PacketTcpCodec.encode(packet);
         if (encoded == null) return;
@@ -318,7 +321,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
                 keyPair.getPublic().getEncoded(),
                 voiceClient.getConfig().getVoice().getDisabled().value(),
                 voiceClient.getConfig().getVoice().getMicrophoneDisabled().value()
-        ));
+        ), false);
     }
 
     @Override

@@ -1,6 +1,5 @@
 package su.plo.voice.client.config.keybind;
 
-import su.plo.voice.universal.UChat;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
@@ -11,6 +10,7 @@ import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
+import su.plo.voice.universal.UChat;
 
 @RequiredArgsConstructor
 public final class HotkeyActions {
@@ -69,11 +69,11 @@ public final class HotkeyActions {
 
     private void sendPlayerStatePacket() {
         voiceClient.getServerConnection()
-                .ifPresent((connection) -> {
-                    connection.sendPacket(new PlayerStatePacket(
-                            config.getVoice().getDisabled().value(),
-                            config.getVoice().getMicrophoneDisabled().value()
-                    ));
-                });
+                .ifPresent((connection) ->
+                        connection.sendPacket(new PlayerStatePacket(
+                                config.getVoice().getDisabled().value(),
+                                config.getVoice().getMicrophoneDisabled().value()
+                        ))
+                );
     }
 }
