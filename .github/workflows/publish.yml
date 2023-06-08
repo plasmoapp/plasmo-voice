@@ -43,7 +43,7 @@ jobs:
           1.19.3
           1.19.4
 
-        modrinth-unfeature-mode: 'none'
+        modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
@@ -62,7 +62,7 @@ jobs:
           1.19.3
           1.19.4
 
-        modrinth-unfeature-mode: 'none'
+        modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
@@ -76,7 +76,7 @@ jobs:
 
         changelog-file: client/changelog.md
 
-        modrinth-unfeature-mode: 'none'
+        modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
