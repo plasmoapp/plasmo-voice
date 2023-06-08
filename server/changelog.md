@@ -1,6 +1,2 @@
-- option to disable crowdin translations in config
-- option to disable check for updates in config
-- kotlin was relocated to avoid conflicts with another plugins. Because some addons use kotlin from Plasmo Voice, they will be broken and you should update them:
-  - [pv-addons-lavaplayer-lib](https://modrinth.com/plugin/pv-addon-lavaplayer-lib/version/1.0.3)
-  - [pv-addons-discs](https://modrinth.com/plugin/pv-addon-discs/version/1.0.1)
-  - [pv-addons-groups](https://modrinth.com/plugin/pv-addon-discs/version/1.0.3)
+- minor bug fixes
+- relocate ustats to fix crash on fabric
