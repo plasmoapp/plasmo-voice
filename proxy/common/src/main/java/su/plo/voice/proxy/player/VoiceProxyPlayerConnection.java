@@ -17,10 +17,6 @@ public final class VoiceProxyPlayerConnection
     private final PlasmoVoiceProxy voiceProxy;
 
     @Setter
-    private boolean voiceDisabled;
-    @Setter
-    private boolean microphoneMuted;
-    @Setter
     private boolean muted;
 
     public VoiceProxyPlayerConnection(@NotNull PlasmoVoiceProxy voiceProxy,
