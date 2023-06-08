@@ -1,6 +1,0 @@
-- now slf4j is used for logging to fix crash on BungeeCord
-- resolve backend servers hostnames if unresolved
-- option to disable crowdin translations in config
-- option to disable check for updates in config
-- kotlin was relocated to avoid conflicts with another plugins. Because some addons use kotlin from Plasmo Voice, they will be broken and you should update them:
-    - [pv-addons-groups](https://modrinth.com/plugin/pv-addon-discs/version/1.0.3)

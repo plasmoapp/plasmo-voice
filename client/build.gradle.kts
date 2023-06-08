@@ -87,10 +87,8 @@ dependencies {
 
     rootProject.libs.versions.ustats.map { "su.plo.ustats:$platform:$it" }.also {
         modApi(it)
-        if (platform.isForge) {
-            shadowCommon(it)
-        } else {
-            "include"(it)
+        shadowCommon(it) {
+            isTransitive = false
         }
     }
 
@@ -155,9 +153,7 @@ tasks {
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
 
-        if (platform.isForge) {
-            relocate("su.plo.ustats", "su.plo.voice.ustats")
-        }
+        relocate("su.plo.ustats", "su.plo.voice.ustats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
