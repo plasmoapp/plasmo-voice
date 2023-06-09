@@ -1,2 +1,1 @@
-- minor bug fixes
-- relocate ustats to fix crash on fabric
+- Fixed crash when entering singeplayer twice
