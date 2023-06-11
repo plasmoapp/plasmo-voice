@@ -37,8 +37,8 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
         RenderUtil.drawString(
                 stack,
                 chooseText,
-                screen.width / 2 - RenderUtil.getTextWidth(chooseText) / 2,
-                screen.height / 2 - UGraphics.getFontHeight(),
+                getWidth() / 2 - RenderUtil.getTextWidth(chooseText) / 2,
+                getHeight() / 2 - UGraphics.getFontHeight(),
                 16777215
         );
     }

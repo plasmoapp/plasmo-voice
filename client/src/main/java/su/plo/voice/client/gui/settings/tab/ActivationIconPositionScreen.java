@@ -26,8 +26,8 @@ public final class ActivationIconPositionScreen extends HudPositionScreen<IconPo
     public void init() {
         super.init();
 
-        int width = screen.width;
-        int height = screen.height;
+        int width = getWidth();
+        int height = getHeight();
 
         addRenderWidget(createPositionButton(
                 BUTTON_OFFSET,
