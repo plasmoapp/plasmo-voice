@@ -54,7 +54,7 @@ class PaperServerPlayer(
         permissions.getPermission(instance, permission)
 
     override fun sendPacket(channel: String, data: ByteArray) {
-        if (!isOnline) return
+        if (!isOnline || !loader.isEnabled) return
         instance.sendPluginMessage(loader, channel, data)
     }
 
@@ -66,7 +66,7 @@ class PaperServerPlayer(
         val serverPlayer = (player as PaperServerPlayer).instance
 
         if (serverPlayer.gameMode == GameMode.SPECTATOR) {
-            return instance.gameMode == GameMode.SPECTATOR
+            return instance.gameMode == GameMode.SPECTATOR && instance.canSee(serverPlayer)
         }
 
         return instance.canSee(serverPlayer)
