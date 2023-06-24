@@ -1,1 +1,161 @@
+{
+    "key.plasmovoice.settings": "语音设置",
+
+    "key.plasmovoice.general": "通用",
+    "key.plasmovoice.general.mute_microphone": "麦克风静音",
+    "key.plasmovoice.general.disable_voice": "禁用语音聊天",
+    "key.plasmovoice.general.action": "操作按钮",
+
+    "key.plasmovoice.distance": "%s 语音距离",
+    "key.plasmovoice.distance.increase": "增加语音距离",
+    "key.plasmovoice.distance.decrease": "减小语音距离",
+
+    "key.plasmovoice.occlusion": "声音遮挡",
+    "key.plasmovoice.occlusion.toggle": "切换声音遮挡",
+
+
+    "gui.plasmovoice.title": "%1$s %2$s 设置",
+    "gui.plasmovoice.toggle.microphone": "切换麦克风\n%s",
+    "gui.plasmovoice.toggle.voice": "切换语音聊天\n%s",
+    "gui.plasmovoice.toggle.currently": "Currently: %s",
+    "gui.plasmovoice.toggle.enabled": "启用",
+    "gui.plasmovoice.toggle.disabled": "禁用",
+
+
+    "gui.plasmovoice.devices": "设备",
+
+    "gui.plasmovoice.devices.microphone": "麦克风",
+    "gui.plasmovoice.devices.activation_threshold": "激活阈值",
+    "gui.plasmovoice.devices.activation_threshold.tooltip": "仅当激活类型设置为“语音激活”时才相关.\n\n将滑块移动到音量仅在通话时超过它的位置.\n\n您也可以按下图标以启用麦克风测试并听到您的声音",
+    "gui.plasmovoice.devices.not_available": "不可用",
+    "gui.plasmovoice.devices.default": "系统默认",
+    "gui.plasmovoice.devices.microphone_volume": "麦克风音量",
+    "gui.plasmovoice.devices.noise_suppression": "噪声抑制",
+    "gui.plasmovoice.devices.noise_suppression.tooltip": "RN噪声抑制使用神经网络.工作效果很好,但可能占用大量CPU.\n\n应用于您的麦克风.",
+    "gui.plasmovoice.devices.stereo_capture": "立体捕获",
+    "gui.plasmovoice.devices.stereo_capture.tooltip": "以立体声捕获声音,然后将其转换为单声道.\n可以提高音质,但声音更安静",
+    "gui.plasmovoice.devices.output": "输出",
+
+    "gui.plasmovoice.devices.output_device": "输出设备",
+    "gui.plasmovoice.devices.volume": "音量",
+    "gui.plasmovoice.devices.volume.tooltip": "将音量调到100%以上可能会导致失真.",
+    "gui.plasmovoice.devices.occlusion": "声音遮挡",
+    "gui.plasmovoice.devices.occlusion.tooltip": "从播放器向每个声源投射一条光线,如果有障碍物,则会将声音消音.\n\n如果您不想听到其他房间的声音,但有时无法正常工作,因此在不需要时最好将其禁用.",
+    "gui.plasmovoice.devices.directional_sources": "定向来源",
+    "gui.plasmovoice.devices.directional_sources.tooltip": "Will make the sound slightly quieter if the sound source is not looking directly at you, and is outside of the specified angle.\n\nApplies to the players you hear.",
+    "gui.plasmovoice.devices.hrtf": "HRTF",
+    "gui.plasmovoice.devices.hrtf.tooltip": "Improves accuracy of audio positioning, making it easier to understand where the sound is coming from in 3D space.\n\nMay slightly make the audio quality worse.\n\nApplies to the players you hear.",
+
+
+    "gui.plasmovoice.activation": "激活",
+
+    "gui.plasmovoice.activation.type": "Activation Type",
+    "gui.plasmovoice.activation.type_ptt": "Push-To-Talk",
+    "gui.plasmovoice.activation.type_voice": "Voice",
+    "gui.plasmovoice.activation.type_inherit": "Inherit",
+    "gui.plasmovoice.activation.ptt_button": "Push-To-Talk Button",
+    "gui.plasmovoice.activation.toggle_button": "Toggle Button",
+    "gui.plasmovoice.activation.toggle": "Toggle \"%s\"\n%s",
+    "gui.plasmovoice.activation.distance": "%s Distance",
+
+
+    "gui.plasmovoice.advanced": "高级",
+
+    "gui.plasmovoice.advanced.visual": "视觉和用户界面",
+    "gui.plasmovoice.advanced.visualize_voice_distance": "可视化语音距离",
+    "gui.plasmovoice.advanced.visualize_voice_distance_on_join": "联接时可视化",
+
+    "gui.plasmovoice.advanced.audio_engine": "音频引擎",
+    "gui.plasmovoice.advanced.directional_sources_angle": "方向来源角度",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip": "An angle in which you will hear the source at 100% if directional sources option is enabled.\n\n360 is like if the option is disabled.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono": "单声道立体声源",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "Addons use stereo sources for better audio quality. The quality is much better, but facing doesn't affect the panning. Sound only fades out with distance.\n\nWhen this option is enabled, stereo sources are converted to the usual mono sources. Quality is worse, but they will now have panning.",
+    "gui.plasmovoice.advanced.panning": "立体声定位",
+
+    "gui.plasmovoice.advanced.exponential_volume": "指数音量",
+    "gui.plasmovoice.advanced.exponential_volume.volume_slider": "音量滑块",
+    "gui.plasmovoice.advanced.exponential_volume.distance_gain": "距离增益",
+
+
+    "gui.plasmovoice.hotkeys": "快捷键",
+
+
+    "gui.plasmovoice.volume": "音量",
+
+    "gui.plasmovoice.volume.sources": "来源体积",
+    "gui.plasmovoice.volume.players": "玩家数量",
+    "gui.plasmovoice.volume.players_search": "搜索...",
+
+
+    "gui.plasmovoice.about.made_by": "由 %s 制作",
+    "gui.plasmovoice.about.huix": "概念与设计",
+    "gui.plasmovoice.about.programming": "编程",
+    "gui.plasmovoice.about.artist": "艺术家",
+
+    "gui.plasmovoice.about.support": "感谢您的支持",
+
+    "gui.plasmovoice.about.links": "%s on",
+    "gui.plasmovoice.about.copyright": "请仅使用官方来源，未经我们许可，请勿重新分发mod.您可以在Discord上联系我们，了解任何问题、帮助、建议或优惠.",
+
+
+    "gui.plasmovoice.overlay": "覆盖",
+
+    "gui.plasmovoice.overlay.activation_icon": "Hud图标",
+    "gui.plasmovoice.overlay.activation_icon_show": "显示Hud图标",
+    "gui.plasmovoice.overlay.activation_icon_position": "Hud图标位置",
+    "gui.plasmovoice.overlay.activation_icon_position.choose": "选择图标位置",
+    "gui.plasmovoice.overlay.hud_position.top_left": "左上角",
+    "gui.plasmovoice.overlay.hud_position.top_center": "顶部居中",
+    "gui.plasmovoice.overlay.hud_position.top_right": "右上角",
+    "gui.plasmovoice.overlay.hud_position.bottom_left": "左下角",
+    "gui.plasmovoice.overlay.hud_position.bottom_center": "底部居中",
+    "gui.plasmovoice.overlay.hud_position.bottom_right": "右下角",
+
+    "gui.plasmovoice.overlay.source_icons": "实体图标",
+    "gui.plasmovoice.overlay.show_source_icons": "显示实体图标",
+    "gui.plasmovoice.overlay.show_source_icons.hud": "仅GUI",
+    "gui.plasmovoice.overlay.show_source_icons.always": "永远",
+    "gui.plasmovoice.overlay.show_source_icons.hidden": "隐藏",
+    "gui.plasmovoice.overlay.show_static_source_icons": "在静态来源上显示",
+
+    "gui.plasmovoice.overlay.enable": "启用覆盖",
+    "gui.plasmovoice.overlay.position": "覆盖位置",
+    "gui.plasmovoice.overlay.position.choose": "选择覆盖位置",
+    "gui.plasmovoice.overlay.style": "覆盖样式",
+    "gui.plasmovoice.overlay.style.name_skin": "姓名和皮肤",
+    "gui.plasmovoice.overlay.style.skin": "仅皮肤",
+    "gui.plasmovoice.overlay.style.name": "仅名称",
+
+    "gui.plasmovoice.overlay.sources": "叠加来源",
+    "gui.plasmovoice.overlay.sources.when_talking": "交谈时",
+    "gui.plasmovoice.overlay.sources.always": "永远",
+    "gui.plasmovoice.overlay.sources.never": "从不",
+
+
+    "gui.plasmovoice.addons": "加载项",
+
+
+    "gui.plasmovoice.not_available": "此服务器上未安装Plasmo Voice",
+    "gui.plasmovoice.connecting": "连接到UDP服务器...",
+    "gui.plasmovoice.cannot_connect_to_udp": "无法连接到UDP服务器,\n可能是UDP端口已关闭.阅读wiki:\n%s",
+
+
+    "pv.activation.parent": "Parent",
+
+
+    "message.plasmovoice.close": "结束",
+    "message.plasmovoice.on": "On",
+    "message.plasmovoice.off": "Off",
+
+    "message.plasmovoice.occlusion_changed": "声音遮挡: %s",
+    "message.plasmovoice.distance_changed": "%s 语音距离: %d",
+
+    "message.plasmovoice.activation.toggle": "%s: %s",
+
+    "message.plasmovoice.macos_incompatible_launcher": "您无法使用麦克风，因为您的Minecraft Launcher不支持MacOS上的麦克风权限.你应该切换到 %s.",
+
+    "message.plasmovoice.update_available": "新版本 %1$s Plasmo Voice可用: %2$s",
+    "message.plasmovoice.update_available.click": "下载",
+    "message.plasmovoice.update_available.hover": "%s"
+}
 
