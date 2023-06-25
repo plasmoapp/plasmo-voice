@@ -73,6 +73,7 @@ public final class NettyUdpServer implements UdpServer {
         if (keepAlive != null) keepAlive.close();
         channelGroup.close();
         loopGroup.shutdownGracefully();
+        executors.shutdownGracefully();
 
         BaseVoice.LOGGER.info("UDP server is stopped");
     }
