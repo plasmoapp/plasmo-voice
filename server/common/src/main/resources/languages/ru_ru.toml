@@ -1,0 +1,57 @@
+[server.pv.error]
+no_permissions = "&cУвы, но на выполнение этой команды у Вас нет разрешения. Если Вы считаете это ошибкой, свяжитесь с администраторами сервера."
+player_only_command = "Эту команду может выполнить только игрок."
+player_not_found = "Игрок не найден."
+mod_missing_kick_message = """
+Извините, Вам нужно установить Plasmo Voice, чтобы играть на сервере.
+Download here: https://modrinth.com/plugin/plasmo-voice"""
+version_not_supported = "Извините, Ваша версия Plasmo Voice не поддерживается на сервере. %s"
+version_not_supported_click = "Загрузить поддерживаемую версию"
+version_not_supported_hover = "%s"
+
+[server.pv.mutes]
+empty_reason = "не указана"
+temporarily_muted = "%1$s, Вам было выдано ограничение на общение. Причина: %2$s."
+permanently_muted = "Вам было выдано постоянное ограничение на общение. Причина: %s"
+unmuted = "Ограничение на общение было снято."
+
+  [server.pv.mutes.durations]
+  seconds = "на %s сек."
+  minutes = "на %s мин."
+  hours = "на %s час."
+  days = "на %s дн."
+  weeks = "на %s нед."
+
+[server.pv.command.mute]
+usage = "Использование: /vmute <игрок> [время действия] [причина]"
+already_muted = "%s уже в режиме без звука."
+temporarily_muted = "%1$s в режиме без звука %2$s. Причина: %3$s"
+permanently_muted = "%1$s находится в постоянном режиме без звука. Причина: %2$s"
+
+[server.pv.command.unmute]
+usage = "Использование: /vunmute <игрок>"
+not_muted = "%s не в режиме без звука."
+unmuted = "%s снят с режима без звука."
+
+[server.pv.command.mute_list]
+header = "Игроки в режиме без звука:"
+entry = "%1$s, срок действия истекает: %2$s. Причина: %3$s"
+entry_muted_by = "Звук %1$s заглушён %2$s, срок действия истекает: %3$s. Причина: %4$s"
+empty = "Нет игроков с отключённым звуком"
+expire_at = "%1$s в %2$s"
+never_expires = "никогда"
+expiration_date = "гггг.ММ.дд"
+expiration_time = "ЧЧ:мм:сс"
+
+[server.pv.command.list]
+message = "Клиенты (%1$s/%2$s): %3$s"
+empty = "Нет игроков с установленным Plasmo Voice"
+
+[server.pv.command.reconnect]
+message = "Отправлен пакет повторного подключения"
+
+[server.pv.command.reload]
+message = "Настройки перезагружены"
+
+[client.pv.activation]
+proximity = "Расстояние"
