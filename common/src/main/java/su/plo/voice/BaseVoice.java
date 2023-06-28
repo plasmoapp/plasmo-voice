@@ -57,12 +57,6 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected void onShutdown() {
         backgroundExecutor.shutdown();
         addons.clear();
-        try {
-            Dispatchers.INSTANCE.shutdown();
-        } catch (Exception e) {
-            DEBUG_LOGGER.log("Failed to shutdown coroutine dispatchers", e);
-            // shutdown quietly
-        }
     }
 
     @Override

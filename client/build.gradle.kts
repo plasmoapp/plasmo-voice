@@ -52,29 +52,34 @@ val universalCraft by configurations.creating {
     attributes { attribute(relocatedUC, true) }
 }
 
+fun uStatsVersion() = rootProject.libs.versions.ustats.map {
+    val minecraftVersion = when (platform.mcVersion) {
+        12001 -> "1.20"
+        else -> platform.mcVersionStr
+    }
+
+    "${minecraftVersion}-${platform.loaderStr}:$it"
+}.get()
+
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
-    maven("https://repo.spongepowered.org/repository/maven-public/")
 }
 
 dependencies {
     compileOnly(rootProject.libs.netty)
     implementation(rootProject.libs.rnnoise)
 
-//    compileOnly("org.spongepowered:mixin:0.7.11-SNAPSHOT")
-
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
             11902 -> "0.73.2+1.19.2"
             11903 -> "0.73.2+1.19.3"
             11904 -> "0.76.0+1.19.4"
-            12000 -> "0.83.0+1.20"
+            12001 -> "0.84.0+1.20.1"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
-//        "include"("net.fabricmc:fabric-language-kotlin:1.9.1+kotlin.1.8.10")
     }
 
     universalCraft(rootProject.libs.versions.universalcraft.map {
@@ -85,7 +90,7 @@ dependencies {
     modApi(prebundleNow(universalCraft))
     shadowCommon(prebundleNow(universalCraft))
 
-    rootProject.libs.versions.ustats.map { "su.plo.ustats:$platform:$it" }.also {
+    "su.plo.ustats:${uStatsVersion()}".also {
         modApi(it)
         shadowCommon(it) {
             isTransitive = false

@@ -161,12 +161,12 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
     // getters
     @Override
     public int getWidth() {
-        return UResolution.getScaledWidth();
+        return ((Screen) screen).width;
     }
 
     @Override
     public int getHeight() {
-        return UResolution.getScaledHeight();
+        return ((Screen) screen).height;
     }
 
     public MinecraftTextComponent getTitle() {

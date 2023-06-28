@@ -16,13 +16,11 @@ pluginManagement {
     }
 
     plugins {
-        val egtVersion = "0.1.18"
+        val egtVersion = "0.2.2"
         id("gg.essential.defaults") version egtVersion
         id("gg.essential.multi-version.root") version egtVersion
     }
 }
-
-enableFeaturePreview("VERSION_CATALOGS")
 
 rootProject.name = "PlasmoVoice"
 

@@ -161,7 +161,11 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ @SubscribeEvent
     //$$ public void onOverlayRender(RenderGuiOverlayEvent.Post event) {
     //$$     if (!event.getOverlay().id().equals(VanillaGuiOverlay.CHAT_PANEL.id())) return;
-    //$$     hudRenderer.render(event.getPoseStack(), event.getPartialTick());
+             //#if MC>=12000
+             //$$ hudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
+             //#else
+             //$$ hudRenderer.render(event.getPoseStack(), event.getPartialTick());
+             //#endif
     //$$ }
     //$$
     //$$ @SubscribeEvent
