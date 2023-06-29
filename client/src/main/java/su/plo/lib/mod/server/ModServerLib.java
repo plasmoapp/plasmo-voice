@@ -108,7 +108,7 @@ public final class ModServerLib implements MinecraftServerLib {
             throw new IllegalArgumentException("instance is not " + ServerPlayer.class);
 
         MinecraftServerPlayerEntity serverPlayer = playerById.get(serverInstance.getUUID());
-        if (serverPlayer == null || ((ServerPlayer) serverPlayer.getInstance()).getId() != serverInstance.getId()) {
+        if (serverPlayer == null) {
             serverPlayer = new ModServerPlayer(
                     this,
                     textConverter,
@@ -117,6 +117,8 @@ public final class ModServerLib implements MinecraftServerLib {
                     serverInstance
             );
             playerById.put(serverInstance.getUUID(), serverPlayer);
+        } else if (serverPlayer.getInstance() != serverInstance) {
+            ((ModServerPlayer) serverPlayer).setInstance(serverInstance);
         }
 
         return serverPlayer;

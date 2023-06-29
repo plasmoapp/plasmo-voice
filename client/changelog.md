@@ -1,2 +1,1 @@
-- Fixed crash when entering singeplayer twice
-- Fixed crash when trying to change hud icon/overlay position 
+- Fixed server bug when player can't hear/speak to others players after respawn
