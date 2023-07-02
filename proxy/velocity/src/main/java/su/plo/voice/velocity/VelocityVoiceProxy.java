@@ -3,6 +3,7 @@ package su.plo.voice.velocity;
 import com.google.inject.Inject;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
+import com.velocitypowered.api.event.proxy.ProxyReloadEvent;
 import com.velocitypowered.api.event.proxy.ProxyShutdownEvent;
 import com.velocitypowered.api.permission.Tristate;
 import com.velocitypowered.api.plugin.Dependency;
@@ -81,6 +82,11 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
         super.onShutdown();
 
         metrics.shutdown();
+    }
+
+    @Subscribe
+    public void onProxyConfigReload(@NotNull ProxyReloadEvent event) {
+        super.onProxyConfigReload();
     }
 
     @Override
