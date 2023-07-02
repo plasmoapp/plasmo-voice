@@ -122,6 +122,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         super.onShutdown();
     }
 
+    protected void onProxyConfigReload() {
+        remoteServerManager.clear();
+    }
+
     public void loadConfig(boolean reload) {
         boolean restartUdpServer = true;
 
