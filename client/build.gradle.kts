@@ -3,6 +3,7 @@ import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
 import gg.essential.util.prebundleNow
+import su.plo.config.toml.Toml
 
 val mavenGroup: String by rootProject
 val isMainProject = project.name == file("../mainProject").readText().trim()
@@ -61,6 +62,15 @@ fun uStatsVersion() = rootProject.libs.versions.ustats.map {
     "${minecraftVersion}-${platform.loaderStr}:$it"
 }.get()
 
+fun universalCraftVersion() = rootProject.libs.versions.universalcraft.map {
+    val minecraftVersion = when (platform.mcVersion) {
+        11802 -> "1.18.1"
+        else -> platform.mcVersionStr
+    }
+
+    "${minecraftVersion}-${platform.loaderStr}:$it"
+}.get()
+
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
 }
@@ -71,6 +81,7 @@ dependencies {
 
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
+            11802 -> "0.76.0+1.18.2"
             11902 -> "0.73.2+1.19.2"
             11903 -> "0.73.2+1.19.3"
             11904 -> "0.76.0+1.19.4"
@@ -82,9 +93,7 @@ dependencies {
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
     }
 
-    universalCraft(rootProject.libs.versions.universalcraft.map {
-        "gg.essential:universalcraft-$platform:$it"
-    }) {
+    universalCraft("gg.essential:universalcraft-${universalCraftVersion()}") {
         isTransitive = false
     }
     modApi(prebundleNow(universalCraft))
@@ -141,6 +150,27 @@ dependencies {
 
 tasks {
     processResources {
+        val versionInfo = readVersionInfo()
+
+        filesMatching(mutableListOf("META-INF/mods.toml")) {
+            expand(
+                mutableMapOf(
+                    "version" to version,
+                    "forgeVersion" to versionInfo.forgeVersion,
+                    "mcVersions" to versionInfo.forgeMcVersions
+                )
+            )
+        }
+
+        filesMatching(mutableListOf("fabric.mod.json")) {
+            expand(
+                mutableMapOf(
+                    "version" to version,
+                    "mcVersions" to versionInfo.fabricMcVersions
+                )
+            )
+        }
+
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
         dependsOn(plasmoCrowdinDownload)
     }
@@ -200,18 +230,23 @@ publishing {
         }
     }
 }
-//dependencies {
-//    implementation(project(":api:common"))
-//    implementation(project(":api:client"))
-//
-//    implementation(project(":common"))
-//    implementation(project(":protocol"))
-//
-//    compileOnly(rootProject.libs.netty)
-//    implementation(rootProject.libs.config)
-//    implementation(rootProject.libs.rnnoise)
-//}
 
-//apiValidation {
-//    ignoredProjects.add(":client-common")
-//}
+data class VersionInfo(
+    val forgeVersion: String,
+    val mcVersions: List<String>
+) {
+
+    // "${mcVersions}" -> "[1.20,1.20.1]"
+    val forgeMcVersions
+        get() = "[${mcVersions.joinToString(",")}]"
+
+    // ["${mcVersions}"] -> ["1.20", "1.20.1"]
+    val fabricMcVersions
+        get() = mcVersions.joinToString("\", \"")
+}
+
+fun readVersionInfo(): VersionInfo = Toml()
+    .read(file("../versions.toml"))
+    .getTable(platform.mcVersion.toString())?.let {
+        it.to(VersionInfo::class.java)
+    } ?: throw GradleException("Unsupported version ${platform.mcVersion}")

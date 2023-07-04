@@ -8,6 +8,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.properties.Property;
 import com.mojang.blaze3d.platform.NativeImage;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.core.UUIDUtil;
 import su.plo.voice.universal.UMinecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
 import net.minecraft.client.renderer.texture.DynamicTexture;
@@ -92,8 +93,13 @@ public final class ModPlayerSkins {
             ));
         });
 
-        skinLocation = UMinecraft.getMinecraft().getSkinManager().getInsecureSkinLocation(profile);
+        skinLocation = getInsecureSkinLocation(profile);
         skins.put(gameProfile.getName(), skinLocation);
+    }
+
+    public static ResourceLocation getInsecureSkinLocation(GameProfile gameProfile) {
+        MinecraftProfileTexture minecraftProfileTexture = UMinecraft.getMinecraft().getSkinManager().getInsecureSkinInformation(gameProfile).get(MinecraftProfileTexture.Type.SKIN);
+        return minecraftProfileTexture != null ?  UMinecraft.getMinecraft().getSkinManager().registerTexture(minecraftProfileTexture, MinecraftProfileTexture.Type.SKIN) : getDefaultSkin(gameProfile.getId());
     }
 
     public static synchronized @NotNull ResourceLocation getSkin(@NotNull UUID playerId, @NotNull String nick) {

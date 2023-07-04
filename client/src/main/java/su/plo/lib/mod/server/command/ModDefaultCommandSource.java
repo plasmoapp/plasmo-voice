@@ -17,12 +17,16 @@ public final class ModDefaultCommandSource implements MinecraftCommandSource {
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
+        //#if MC>=11900
         source.sendSystemMessage(textConverter.convert(this, text));
+        //#else
+        //$$ source.sendSuccess(textConverter.convert(this, text), true);
+        //#endif
     }
 
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
-        source.sendSystemMessage(textConverter.convert(this, text));
+        sendMessage(text);
     }
 
     @Override

@@ -20,6 +20,8 @@ import su.plo.voice.client.event.key.MouseScrollEvent;
 
 import java.util.Optional;
 
+import static su.plo.voice.client.extensions.OptionsKt.renderDistanceValue;
+
 public final class PlayerVolumeAction {
 
     private final PlasmoVoiceClient voiceClient;
@@ -84,7 +86,7 @@ public final class PlayerVolumeAction {
 
 //        points.clear();
 
-        for (int i = 0; i < (UMinecraft.getSettings().renderDistance().get() * 16); i++) {
+        for (int i = 0; i < (renderDistanceValue(UMinecraft.getSettings()) * 16); i++) {
 //            points.add(playerPos);
             playerPos = playerPos.add(rotVector);
 //            points.add(playerPos);

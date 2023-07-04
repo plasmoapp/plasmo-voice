@@ -1,4 +1,4 @@
-package su.plo.voice.client.utils
+package su.plo.voice.client.extensions
 
 import su.plo.voice.universal.ChatColor
 import su.plo.voice.universal.UGraphics

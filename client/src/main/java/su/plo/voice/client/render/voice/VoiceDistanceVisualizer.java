@@ -24,6 +24,8 @@ import su.plo.voice.proto.data.pos.Pos3d;
 import java.util.Map;
 import java.util.UUID;
 
+import static su.plo.voice.client.extensions.OptionsKt.renderDistanceValue;
+
 @RequiredArgsConstructor
 public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
@@ -44,7 +46,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     public synchronized void render(int radius, int color, @Nullable Pos3d position) {
         if (!config.getAdvanced().getVisualizeVoiceDistance().value()) return;
         // todo: legacy render distance
-        if (radius < 2 || radius > UMinecraft.getSettings().renderDistance().get() * 16) return;
+        if (radius < 2 || radius > renderDistanceValue(UMinecraft.getSettings()) * 16) return;
 
         VoiceDistanceRenderEvent event = new VoiceDistanceRenderEvent(this, radius, color);
         if (!voiceClient.getEventBus().call(event)) return;
@@ -75,7 +77,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             }
 
             if (value.position() != null &&
-                    event.getCamera().position().distanceTo(value.position()) > (UMinecraft.getSettings().renderDistance().get() * 16)
+                    event.getCamera().position().distanceTo(value.position()) > (renderDistanceValue(UMinecraft.getSettings()) * 16)
             ) {
                 entries.remove(key);
                 continue;

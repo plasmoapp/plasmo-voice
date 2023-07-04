@@ -26,8 +26,6 @@ import su.plo.lib.mod.client.chat.ClientTextConverter;
 import java.util.Iterator;
 import java.util.List;
 
-import static su.plo.voice.client.utils.TextKt.*;
-
 @UtilityClass
 public class RenderUtil {
 
@@ -351,7 +349,7 @@ public class RenderUtil {
 
         String string = getFormattedString(text);
 
-        List<String> lines = getStringSplitToWidth(string, width, true, true);
+        List<String> lines = su.plo.voice.client.extensions.TextKt.getStringSplitToWidth(string, width, true, true);
         int lineHeight = UGraphics.getFontHeight();
 
         for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight) {
@@ -367,7 +365,7 @@ public class RenderUtil {
 
         String string = getFormattedString(text);
 
-        List<String> lines = getStringSplitToWidth(string, width, true, true);
+        List<String> lines = su.plo.voice.client.extensions.TextKt.getStringSplitToWidth(string, width, true, true);
         int lineHeight = UGraphics.getFontHeight();
 
         for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight + yGap) {
@@ -394,7 +392,7 @@ public class RenderUtil {
     }
 
     public static String stringToWidth(String string, int width, boolean tail) {
-        List<String> lines = splitStringToWidthTruncated(
+        List<String> lines = su.plo.voice.client.extensions.TextKt.splitStringToWidthTruncated(
                 string,
                 width,
                 1,
@@ -416,7 +414,7 @@ public class RenderUtil {
     }
 
     public static String getOrderedString(MinecraftTextComponent text, int width) {
-        return getTruncatedString(getFormattedString(text), width, "...");
+        return su.plo.voice.client.extensions.TextKt.getTruncatedString(getFormattedString(text), width, "...");
     }
 
     public static String getFormattedString(MinecraftTextComponent text) {

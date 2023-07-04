@@ -23,7 +23,7 @@ import su.plo.voice.client.gui.settings.tab.*;
 
 import java.util.stream.Collectors;
 
-import static su.plo.voice.client.utils.TextKt.getStringSplitToWidth;
+import static su.plo.voice.client.extensions.TextKt.getStringSplitToWidth;
 
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {

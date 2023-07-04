@@ -1,4 +1,4 @@
-package su.plo.voice.client.utils
+package su.plo.voice.client.extensions
 
 import net.minecraft.world.phys.Vec3
 import su.plo.voice.proto.data.pos.Pos3d

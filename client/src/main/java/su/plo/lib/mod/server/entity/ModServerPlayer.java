@@ -29,6 +29,10 @@ import java.util.Set;
 
 import static su.plo.lib.mod.server.utils.ServerPlayerKt.serverLevel;
 
+//#if MC<11900
+//$$ import net.minecraft.Util;
+//#endif
+
 public final class ModServerPlayer
         extends ModPlayer<ServerPlayer>
         implements MinecraftServerPlayerEntity {
@@ -114,7 +118,11 @@ public final class ModServerPlayer
 
     @Override
     public void sendMessage(@NotNull MinecraftTextComponent text) {
+        //#if MC>=11900
         instance.sendSystemMessage(textConverter.convert(this, text));
+        //#else
+        //$$ instance.sendMessage(textConverter.convert(this, text), Util.NIL_UUID);
+        //#endif
     }
 
     @Override

@@ -13,10 +13,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.lib.mod.server.ModServerLib;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
 
+//#if MC>=11900
 //#if MC<11903
 //$$ import net.minecraft.world.entity.player.ProfilePublicKey;
 //$$
 //$$ import org.jetbrains.annotations.Nullable;
+//#endif
 //#endif
 
 @Mixin(ServerPlayer.class)
@@ -26,9 +28,13 @@ public abstract class MixinServerPlayer extends Player {
     public MixinServerPlayer(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
         super(level, blockPos, f, gameProfile);
     }
-    //#else
+    //#elseif MC>=11900
     //$$ public MixinServerPlayer(Level level, BlockPos blockPos, float f, GameProfile gameProfile, @Nullable ProfilePublicKey profilePublicKey) {
     //$$     super(level, blockPos, f, gameProfile, profilePublicKey);
+    //$$ }
+    //#else
+    //$$ public MixinServerPlayer(Level level, BlockPos blockPos, float f, GameProfile gameProfile) {
+    //$$     super(level, blockPos, f, gameProfile);
     //$$ }
     //#endif
 

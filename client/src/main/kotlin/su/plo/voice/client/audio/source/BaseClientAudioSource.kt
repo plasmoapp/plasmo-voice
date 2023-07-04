@@ -35,8 +35,8 @@ import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.audio.SoundOcclusion
 import su.plo.voice.client.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.config.VoiceClientConfig
-import su.plo.voice.client.utils.level
-import su.plo.voice.client.utils.toFloatArray
+import su.plo.voice.client.extensions.level
+import su.plo.voice.client.extensions.toFloatArray
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket

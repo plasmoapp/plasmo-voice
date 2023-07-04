@@ -18,7 +18,7 @@ public class ClientChatUtil {
         //#if MC>=11900
         UMinecraft.getPlayer().sendSystemMessage(message);
         //#elseif MC>=11602
-        //$$ UMinecraft.getPlayer().sendSystemMessage(message, null);
+        //$$ UMinecraft.getPlayer().sendMessage(message, null);
         //#elseif MC>=11202
         //$$ UMinecraft.getPlayer().sendMessage(message);
         //#else

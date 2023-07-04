@@ -35,13 +35,21 @@ import net.fabricmc.loader.api.ModContainer;
 //$$ import net.minecraftforge.fml.common.Mod;
 //$$ import net.minecraftforge.api.distmarker.Dist;
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-//$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-//$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
-//$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //$$ import net.minecraftforge.fml.ModList;
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
+
+//#if MC>=11900
+//$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+//$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
+//$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 //$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+//#else
+//$$ import net.minecraftforge.client.ClientRegistry;
+//$$ import net.minecraftforge.client.event.RenderGameOverlayEvent;
+//$$ import net.minecraftforge.client.event.RenderLevelLastEvent;
+//#endif
+
 //#endif
 
 import java.io.File;
@@ -155,9 +163,13 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#else
     //$$ public void onInitialize(EventNetworkChannel channel) {
     //$$     channel.addListener(handler::receive);
+             //#if MC<11900
+             //$$ ClientRegistry.registerKeyBinding(MENU_KEY);
+             //#endif
     //$$     super.onInitialize();
     //$$ }
     //$$ // todo: onShutdown mixin?
+    //#if MC>=11900
     //$$ @SubscribeEvent
     //$$ public void onOverlayRender(RenderGuiOverlayEvent.Post event) {
     //$$     if (!event.getOverlay().id().equals(VanillaGuiOverlay.CHAT_PANEL.id())) return;
@@ -181,11 +193,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     onServerDisconnect();
     //$$ }
     //$$
-    //$$ @Override
-    //$$ public @NotNull String getVersion() {
-    //$$     return ModList.get().getModFileById("plasmovoice").versionString();
-    //$$ }
-    //$$
     //$$ @Mod.EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
     //$$ public static class ModBusEvents {
     //$$
@@ -193,6 +200,28 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     public static void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
     //$$         event.register(MENU_KEY);
     //$$     }
+    //$$ }
+    //#else
+    //$$ @SubscribeEvent
+    //$$ public void onOverlayRender(RenderGameOverlayEvent.Post event) {
+    //$$     if (event.getType() != RenderGameOverlayEvent.ElementType.CHAT) return;
+    //$$     hudRenderer.render(event.getMatrixStack(), event.getPartialTicks());
+    //$$ }
+    //$$
+    //$$ @SubscribeEvent
+    //$$ public void onWorldRender(RenderLevelLastEvent event) {
+    //$$     levelRenderer.render(
+    //$$             UMinecraft.getWorld(),
+    //$$             event.getPoseStack(),
+    //$$             UMinecraft.getMinecraft().gameRenderer.getMainCamera(),
+    //$$             event.getPartialTick()
+    //$$     );
+    //$$ }
+    //#endif
+    //$$
+    //$$ @Override
+    //$$ public @NotNull String getVersion() {
+    //$$     return ModList.get().getModFileById("plasmovoice").versionString();
     //$$ }
     //#endif
 }

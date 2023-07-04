@@ -1,14 +1,18 @@
 package su.plo.lib.mod.client.render.particle;
 
-import com.mojang.blaze3d.vertex.VertexConsumer;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.core.particles.ParticleGroup;
-import net.minecraft.util.RandomSource;
+
 import net.minecraft.world.phys.AABB;
 
 import java.util.Optional;
+//#if MC>=11900
+import net.minecraft.util.RandomSource;
+//#else
+//$$ import java.util.Random;
+//#endif
 
 public abstract class Particle2D {
     private static final AABB EMPTY_BOUNDING_BOX = new AABB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
@@ -25,7 +29,11 @@ public abstract class Particle2D {
     protected boolean dead;
     protected float spacingXZ;
     protected float spacingY;
+    //#if MC>=11900
     protected final RandomSource random;
+    //#else
+    //$$ protected final Random random;
+    //#endif
     protected int age;
     protected int maxAge;
     protected float gravityStrength;
@@ -41,7 +49,11 @@ public abstract class Particle2D {
         this.collidesWithWorld = true;
         this.spacingXZ = 0.6F;
         this.spacingY = 1.8F;
+        //#if MC>=11900
         this.random = RandomSource.create();
+        //#else
+        //$$ this.random = new Random();
+        //#endif
         this.colorRed = 1.0F;
         this.colorGreen = 1.0F;
         this.colorBlue = 1.0F;

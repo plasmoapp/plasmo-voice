@@ -21,7 +21,11 @@ import su.plo.voice.util.version.ModrinthLoader;
 
 //#if FABRIC
 import me.lucko.fabric.api.permissions.v0.Permissions;
+//#if MC>=11900
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+//#else
+//$$ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+//#endif
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
@@ -154,9 +158,11 @@ public final class ModVoiceServer
                         minecraftServerLib.getPlayerByInstance(handler.getPlayer())
                 )
         );
-        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) ->
-                onCommandRegister(dispatcher)
-        );
+        //#if MC>=11900
+        CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, selection) -> onCommandRegister(dispatcher));
+        //#else
+        //$$ CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> onCommandRegister(dispatcher));
+        //#endif
     }
 
     @Override

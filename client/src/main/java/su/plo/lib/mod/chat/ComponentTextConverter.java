@@ -2,10 +2,7 @@ package su.plo.lib.mod.chat;
 
 import lombok.NonNull;
 import net.minecraft.ChatFormatting;
-import net.minecraft.network.chat.ClickEvent;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.HoverEvent;
-import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.network.chat.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.chat.*;
@@ -31,7 +28,11 @@ public final class ComponentTextConverter implements MinecraftTextConverter<Comp
         if (text instanceof MinecraftTranslatableText)
             component = convertTranslatable((MinecraftTranslatableText) text);
         else
+            //#if MC>=11900
             component = Component.literal(text.toString());
+            //#else
+            //$$ component = new TextComponent(text.toString());
+            //#endif
 
         // apply styles
         component = applyStyles(component, text.styles());
@@ -63,7 +64,11 @@ public final class ComponentTextConverter implements MinecraftTextConverter<Comp
             }
         }
 
+        //#if MC>=11900
         return Component.translatable(text.getKey(), args);
+        //#else
+        //$$ return new TranslatableComponent(text.getKey(), args);
+        //#endif
     }
 
     private MutableComponent applyClickEvent(@NotNull MutableComponent component,

@@ -50,12 +50,22 @@ class PlasmoCrowdinPack(
     //$$ override fun getResource(packType: PackType, resourceLocation: ResourceLocation): InputStream =
     //$$     getRootResource(resourceLocation.path.substringAfter("lang/"))!!
     //$$
+    //#if MC >=11900
     //$$ override fun getResources(
     //$$     packType: PackType,
     //$$     namespace: String,
     //$$     prefix: String,
     //$$     predicate: Predicate<ResourceLocation>
     //$$ ): Collection<ResourceLocation> = emptyList()
+    //#else
+    //$$ override fun getResources(
+    //$$     packType: PackType,
+    //$$     string: String,
+    //$$     string2: String,
+    //$$     i: Int,
+    //$$     predicate: Predicate<String>
+    //$$ ): Collection<ResourceLocation> = emptyList()
+    //#endif
     //$$
     //$$ override fun hasResource(packType: PackType, resourceLocation: ResourceLocation): Boolean {
     //$$     if (resourceLocation.namespace != "plasmovoice") return false

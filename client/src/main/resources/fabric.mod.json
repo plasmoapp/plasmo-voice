@@ -28,6 +28,7 @@
     ],
     "depends": {
         "fabric": "*",
-        "fabricloader": "*"
+        "fabricloader": "*",
+        "minecraft": ["${mcVersions}"]
     }
 }

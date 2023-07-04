@@ -1,4 +1,4 @@
-package su.plo.voice.client.utils
+package su.plo.voice.client.extensions
 
 import net.minecraft.client.player.LocalPlayer
 

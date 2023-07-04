@@ -46,6 +46,7 @@ public class LanguageUtil {
         }
 
         Component displayName = inputKey.getDisplayName();
+        //#if MC>=11900
         if (displayName.getContents() instanceof TranslatableContents translatable) {
             return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
         } else if (displayName.getContents() instanceof LiteralContents literal) {
@@ -53,5 +54,14 @@ public class LanguageUtil {
         } else {
             return MinecraftTextComponent.translatable("gui.none");
         }
+        //#else
+        //$$ if (displayName instanceof TranslatableComponent translatable) {
+        //$$     return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
+        //$$ } else if (displayName instanceof TextComponent literal) {
+        //$$     return MinecraftTextComponent.translatable(literal.getText());
+        //$$ } else {
+        //$$     return MinecraftTextComponent.translatable("gui.none");
+        //$$ }
+        //#endif
     }
 }
