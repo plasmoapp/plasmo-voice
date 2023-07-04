@@ -1,1 +1,0 @@
-net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggedOutEvent net.minecraftforge.client.event.ClientPlayerNetworkEvent.LoggingOut

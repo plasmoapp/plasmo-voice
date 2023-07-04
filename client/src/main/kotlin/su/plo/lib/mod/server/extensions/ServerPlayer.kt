@@ -1,4 +1,4 @@
-package su.plo.lib.mod.server.utils
+package su.plo.lib.mod.server.extensions
 
 import net.minecraft.server.level.ServerPlayer
 

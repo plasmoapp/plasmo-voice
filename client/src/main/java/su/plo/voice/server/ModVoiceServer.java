@@ -36,15 +36,23 @@ import net.fabricmc.loader.api.ModContainer;
 //#else
 //$$ import net.minecraftforge.event.RegisterCommandsEvent;
 //$$ import net.minecraftforge.event.entity.player.PlayerEvent;
-//$$ import net.minecraftforge.event.server.ServerStartedEvent;
-//$$ import net.minecraftforge.event.server.ServerStoppingEvent;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //$$ import net.minecraftforge.fml.ModList;
-//$$ import net.minecraftforge.network.event.EventNetworkChannel;
 //$$ import net.minecraftforge.server.permission.PermissionAPI;
-//$$ import net.minecraftforge.server.permission.nodes.PermissionNode;
-//$$
 //$$ import java.util.Optional;
+
+//#if MC>=11802
+//$$ import net.minecraftforge.event.server.ServerStartedEvent;
+//$$ import net.minecraftforge.event.server.ServerStoppingEvent;
+//$$ import net.minecraftforge.network.event.EventNetworkChannel;
+//$$ import net.minecraftforge.server.permission.nodes.PermissionNode;
+//#else
+//$$ import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
+//$$ import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
+//$$ import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
+
+//#endif
+
 //#endif
 
 import java.io.File;
@@ -230,21 +238,34 @@ public final class ModVoiceServer
     //$$             if (!(player instanceof ServerPlayer serverPlayer))
     //$$                 throw new IllegalArgumentException("player is not " + ServerPlayer.class);
     //$$
-    //$$             Optional<PermissionNode<?>> permissionNode = PermissionAPI.getRegisteredNodes().stream()
-    //$$                     .filter((node) -> node.getNodeName().equals(permission))
-    //$$                     .findAny();
-    //$$
-    //$$             if (permissionNode.isEmpty()) return PermissionTristate.UNDEFINED;
-    //$$
-    //$$             Boolean value = (Boolean) permissionNode.get().getDefaultResolver().resolve(serverPlayer, serverPlayer.getUUID());
-    //$$             if (value == null) return PermissionTristate.UNDEFINED;
-    //$$
-    //$$             return value ? PermissionTristate.TRUE : PermissionTristate.FALSE;
+                     //#if MC>=11802
+                     //$$ Optional<PermissionNode<?>> permissionNode = PermissionAPI.getRegisteredNodes().stream()
+                     //$$         .filter((node) -> node.getNodeName().equals(permission))
+                     //$$         .findAny();
+                     //$$
+                     //$$ if (permissionNode.isEmpty()) return PermissionTristate.UNDEFINED;
+                     //$$
+                     //$$ Boolean value = (Boolean) permissionNode.get().getDefaultResolver().resolve(serverPlayer, serverPlayer.getUUID());
+                     //$$ if (value == null) return PermissionTristate.UNDEFINED;
+                     //$$
+                     //$$ return value ? PermissionTristate.TRUE : PermissionTristate.FALSE;
+                     //#else
+                     //$$ if (!PermissionAPI.getPermissionHandler().getRegisteredNodes().contains(permission))
+                     //$$     return PermissionTristate.UNDEFINED;
+                     //$$
+                     //$$ return PermissionAPI.hasPermission(serverPlayer, permission)
+                     //$$         ? PermissionTristate.TRUE
+                     //$$         : PermissionTristate.FALSE;
+                     //#endif
     //$$         }
     //$$     };
     //$$ }
     //$$ @SubscribeEvent
+    //#if MC>=11802
     //$$ public void onServerStart(ServerStartedEvent event) {
+    //#else
+    //$$ public void onServerStart(FMLServerStartedEvent event) {
+    //#endif
     //$$     if (handler == null) {
     //$$         this.handler = new ModServerChannelHandler(this);
     //$$         channel.addListener(handler::receive);
@@ -259,7 +280,11 @@ public final class ModVoiceServer
     //$$ }
     //$$
     //$$ @SubscribeEvent
+    //#if MC>=11802
     //$$ public void onServerStopping(ServerStoppingEvent event) {
+    //#else
+    //$$ public void onServerStopping(FMLServerStoppingEvent event) {
+    //#endif
     //$$     onShutdown(event.getServer());
     //$$ }
     //$$

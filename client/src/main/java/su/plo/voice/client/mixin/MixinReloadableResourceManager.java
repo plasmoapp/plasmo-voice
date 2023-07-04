@@ -7,20 +7,33 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
-import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
 import su.plo.voice.client.crowdin.PlasmoCrowdinPack;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
+
+//#if MC>=11802
+import org.spongepowered.asm.mixin.injection.ModifyArg;
+
+import java.util.ArrayList;
+//#else
+//$$ import net.minecraft.server.packs.resources.ReloadInstance;
+//$$ import net.minecraft.util.Unit;
+//$$ import org.spongepowered.asm.mixin.injection.Inject;
+//$$ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+//$$ import java.util.concurrent.CompletableFuture;
+//$$ import java.util.concurrent.Executor;
+//#endif
 
 @Mixin(ReloadableResourceManager.class)
 public abstract class MixinReloadableResourceManager {
 
-    @Shadow @Final private PackType type;
+    @Shadow
+    @Final
+    private PackType type;
 
+    //#if MC>=11802
     @ModifyArg(
             method = "createReload",
             at = @At(
@@ -42,8 +55,20 @@ public abstract class MixinReloadableResourceManager {
 
         List<PackResources> list = new ArrayList<>(packs);
         list.add(new PlasmoCrowdinPack(
-                new File(new File("config/plasmovoice"), PlasmoCrowdinMod.INSTANCE.getFolderName()))
-        );
+                new File(new File("config/plasmovoice"), PlasmoCrowdinMod.INSTANCE.getFolderName())
+        ));
         return list;
     }
+    //#else
+    //$$ @Shadow public abstract void add(PackResources arg);
+    //$$
+    //$$ @Inject(method = "createReload", at = @At("RETURN"))
+    //$$ private void createReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture, List<PackResources> list, CallbackInfoReturnable<ReloadInstance> cir) {
+    //$$     if (this.type != PackType.CLIENT_RESOURCES) return;
+    //$$
+    //$$     this.add(new PlasmoCrowdinPack(
+    //$$             new File(new File("config/plasmovoice"), PlasmoCrowdinMod.INSTANCE.getFolderName())
+    //$$     ));
+    //$$ }
+    //#endif
 }

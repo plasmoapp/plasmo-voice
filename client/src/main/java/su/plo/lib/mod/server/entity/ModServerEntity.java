@@ -8,6 +8,8 @@ import su.plo.lib.api.server.world.MinecraftServerWorld;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.lib.mod.entity.ModEntity;
 
+import static su.plo.lib.mod.server.extensions.EntityKt.level;
+
 public final class ModServerEntity extends ModEntity<Entity> implements MinecraftServerEntity {
 
     private final MinecraftServerLib minecraftServer;
@@ -22,7 +24,7 @@ public final class ModServerEntity extends ModEntity<Entity> implements Minecraf
     @Override
     public @NotNull ServerPos3d getServerPosition() {
         return new ServerPos3d(
-                minecraftServer.getWorld(instance.getLevel()),
+                minecraftServer.getWorld(level(instance)),
                 instance.position().x(),
                 instance.position().y(),
                 instance.position().z(),
@@ -33,7 +35,7 @@ public final class ModServerEntity extends ModEntity<Entity> implements Minecraf
 
     @Override
     public @NotNull ServerPos3d getServerPosition(@NotNull ServerPos3d position) {
-        position.setWorld(minecraftServer.getWorld(instance.getLevel()));
+        position.setWorld(minecraftServer.getWorld(level(instance)));
 
         position.setX(instance.position().x());
         position.setY(instance.position().y());
@@ -47,6 +49,6 @@ public final class ModServerEntity extends ModEntity<Entity> implements Minecraf
 
     @Override
     public @NotNull MinecraftServerWorld getWorld() {
-        return minecraftServer.getWorld(instance.getLevel());
+        return minecraftServer.getWorld(level(instance));
     }
 }

@@ -1,0 +1,1 @@
+net.minecraft.network.protocol.game.ServerboundClientInformationPacket getLanguage() net.minecraft.network.protocol.game.ServerboundClientInformationPacket language()

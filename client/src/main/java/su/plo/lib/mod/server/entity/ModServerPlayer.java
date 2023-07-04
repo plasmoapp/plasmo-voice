@@ -27,7 +27,7 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
-import static su.plo.lib.mod.server.utils.ServerPlayerKt.serverLevel;
+import static su.plo.lib.mod.server.extensions.ServerPlayerKt.serverLevel;
 
 //#if MC<11900
 //$$ import net.minecraft.Util;

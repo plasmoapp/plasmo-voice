@@ -81,6 +81,7 @@ dependencies {
 
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
+            11701 -> "0.46.1+1.17"
             11802 -> "0.76.0+1.18.2"
             11902 -> "0.73.2+1.19.2"
             11903 -> "0.73.2+1.19.3"

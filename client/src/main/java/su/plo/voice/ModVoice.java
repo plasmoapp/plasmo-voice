@@ -15,8 +15,15 @@ import net.fabricmc.api.ModInitializer;
 //$$ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 //$$ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 //$$ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+
+//#if MC>=11802
 //$$ import net.minecraftforge.network.NetworkRegistry;
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
+//#else
+//$$ import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
+//$$ import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+//#endif
+
 //#endif
 
 //#if FORGE

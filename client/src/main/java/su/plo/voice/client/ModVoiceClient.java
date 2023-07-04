@@ -18,10 +18,11 @@ import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.render.ModEntityRenderer;
 import su.plo.voice.client.render.ModHudRenderer;
 import su.plo.voice.client.render.ModLevelRenderer;
-import su.plo.voice.server.ModVoiceServer;
 import su.plo.voice.util.version.ModrinthLoader;
 
 //#if FABRIC
+import su.plo.voice.server.ModVoiceServer;
+
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
@@ -31,31 +32,43 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 //#else
-//$$ import net.minecraftforge.fml.common.Mod;
-//$$ import net.minecraftforge.api.distmarker.Dist;
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //$$ import net.minecraftforge.fml.ModList;
+
+//#if MC>=11802
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
+//#else
+//$$ import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
+//#endif
 
 //#if MC>=11900
+//$$ import net.minecraftforge.fml.common.Mod;
+//$$ import net.minecraftforge.api.distmarker.Dist;
 //$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 //$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
 //$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 //$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 //#else
+//$$import net.minecraftforge.client.event.RenderGameOverlayEvent;
+
+//#if MC>=11802
 //$$ import net.minecraftforge.client.ClientRegistry;
-//$$ import net.minecraftforge.client.event.RenderGameOverlayEvent;
 //$$ import net.minecraftforge.client.event.RenderLevelLastEvent;
+//#else
+//$$ import net.minecraftforge.fmlclient.registry.ClientRegistry;
+//$$ import net.minecraftforge.client.event.RenderWorldLastEvent;
+//#endif
+
 //#endif
 
 //#endif
 
 import java.io.File;
 import java.util.Optional;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ModVoiceClient extends BaseVoiceClient
         //#if FABRIC
@@ -209,6 +222,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ }
     //$$
     //$$ @SubscribeEvent
+    //#if MC>=11802
     //$$ public void onWorldRender(RenderLevelLastEvent event) {
     //$$     levelRenderer.render(
     //$$             UMinecraft.getWorld(),
@@ -216,6 +230,21 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$             UMinecraft.getMinecraft().gameRenderer.getMainCamera(),
     //$$             event.getPartialTick()
     //$$     );
+    //$$ }
+    //#else
+    //$$ public void onWorldRender(RenderWorldLastEvent event) {
+    //$$     levelRenderer.render(
+    //$$             UMinecraft.getWorld(),
+    //$$             event.getMatrixStack(),
+    //$$             UMinecraft.getMinecraft().gameRenderer.getMainCamera(),
+    //$$             event.getPartialTicks()
+    //$$     );
+    //$$ }
+    //#endif
+    //$$
+    //$$ @SubscribeEvent
+    //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
+    //$$     onServerDisconnect();
     //$$ }
     //#endif
     //$$

@@ -20,8 +20,15 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 //#else
+
+//#if MC>=11802
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraftforge.network.NetworkEvent;
+//#else
+//$$ import net.minecraftforge.fmllegacy.network.NetworkDirection;
+//$$ import net.minecraftforge.fmllegacy.network.NetworkEvent;
+//#endif
+
 //$$ import net.minecraft.ResourceLocationException;
 //$$ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //$$
