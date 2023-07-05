@@ -62,7 +62,14 @@ public abstract class MixinReloadableResourceManager {
     //#else
     //$$ @Shadow public abstract void add(PackResources arg);
     //$$
-    //$$ @Inject(method = "createReload", at = @At("RETURN"))
+    //$$ @Inject(
+    //$$         method = "createReload",
+    //$$         at = @At(
+    //$$                 value = "INVOKE",
+    //$$                 target = "Lnet/minecraft/server/packs/resources/SimpleReloadableResourceManager;clear()V",
+    //$$                 shift = At.Shift.AFTER
+    //$$         )
+    //$$ )
     //$$ private void createReload(Executor executor, Executor executor2, CompletableFuture<Unit> completableFuture, List<PackResources> list, CallbackInfoReturnable<ReloadInstance> cir) {
     //$$     if (this.type != PackType.CLIENT_RESOURCES) return;
     //$$
