@@ -1,6 +1,6 @@
 [versions]
 junit5 = "5.8.2"
-crowdin = "1.0.1"
+crowdin = "1.0.2"
 ustats = "1.0.2"
 universalcraft = "277"
 bstats = "3.0.2"

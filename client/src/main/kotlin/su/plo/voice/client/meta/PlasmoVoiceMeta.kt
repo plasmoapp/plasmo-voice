@@ -1,6 +1,7 @@
 package su.plo.voice.client.meta
 
 import com.google.gson.Gson
+import com.google.gson.JsonElement
 import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
@@ -63,8 +64,9 @@ data class PlasmoVoiceMeta(
                 val connection = url.openConnection()
                 connection.connectTimeout = 3_000
 
-                JsonParser.parseString(
-                    connection.getInputStream().bufferedReader().use { it.readText() }
+                gson.fromJson(
+                    connection.getInputStream().bufferedReader().use { it.readText() },
+                    JsonElement::class.java
                 ).asJsonObject
             } catch (e: Exception) {
                 e.printStackTrace()
