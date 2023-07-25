@@ -196,9 +196,4 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
                 connection.sendPacket(packet);
         }
     }
-
-    @Override
-    public void broadcast(@NotNull Packet<ClientPacketUdpHandler> packet) {
-        broadcast(packet, null);
-    }
 }

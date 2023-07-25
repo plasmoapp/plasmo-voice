@@ -15,7 +15,6 @@ import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.tcp.clientbound.PlayerDisconnectPacket;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
@@ -91,7 +90,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         channel.disconnect();
         connected = false;
 
-        voiceServer.getTcpConnectionManager().broadcast(new PlayerDisconnectPacket(player.getInstance().getUUID()));
+        voiceServer.getTcpConnectionManager().broadcastPlayerDisconnect(player);
     }
 
     @Override
