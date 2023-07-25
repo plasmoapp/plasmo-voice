@@ -51,8 +51,6 @@ class BungeeVoiceProxy(
         super.onProxyConfigReload()
     }
 
-    override fun getVersion(): String = plugin.description.version
-
     override fun getConfigFolder(): File = plugin.dataFolder
 
     override fun getConfigsFolder() = File("plugins")

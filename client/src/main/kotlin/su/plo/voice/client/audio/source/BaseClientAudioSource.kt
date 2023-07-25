@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger
 import org.lwjgl.openal.AL10
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
+import su.plo.lib.mod.extensions.eyePosition
 import su.plo.voice.BaseVoice
 import su.plo.voice.api.audio.codec.AudioDecoder
 import su.plo.voice.api.audio.codec.CodecException
@@ -380,7 +381,7 @@ abstract class BaseClientAudioSource<T> constructor(
         else Minecraft.getInstance().player
 
     protected open fun getListenerPosition(): Vec3 =
-        getListener()?.eyePosition ?: Vec3.ZERO
+        getListener()?.eyePosition() ?: Vec3.ZERO
 
     protected open fun calculateAngleGain(outAngle: Double, innerAngle: Double): Double {
         var angleGain = 1.0 - outAngle / (OUTER_ANGLE - innerAngle)
@@ -415,7 +416,7 @@ abstract class BaseClientAudioSource<T> constructor(
         return SoundOcclusion.getOccludedPercent(
             player.level(),
             position,
-            player.eyePosition
+            player.eyePosition()
         )
     }
 

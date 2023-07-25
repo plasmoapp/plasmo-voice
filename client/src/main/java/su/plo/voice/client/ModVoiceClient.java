@@ -30,19 +30,16 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 //#else
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
-//$$ import net.minecraftforge.fml.ModList;
 
 //#if MC>=11802
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
-//#else
+//#elseif MC>=11701
 //$$ import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
+//#else
+//$$ import net.minecraftforge.fml.network.event.EventNetworkChannel;
 //#endif
 
 //#if MC>=11900
@@ -59,8 +56,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 //$$ import net.minecraftforge.client.ClientRegistry;
 //$$ import net.minecraftforge.client.event.RenderLevelLastEvent;
 //#else
+
+//#if MC>=11701
 //$$ import net.minecraftforge.fmlclient.registry.ClientRegistry;
+//#else
+//$$ import net.minecraftforge.fml.client.registry.ClientRegistry;
+//#endif
+
 //$$ import net.minecraftforge.client.event.RenderWorldLastEvent;
+
 //#endif
 
 //#endif
@@ -165,14 +169,6 @@ public final class ModVoiceClient extends BaseVoiceClient
         KeyBindingHelper.registerKeyBinding(MENU_KEY);
     }
 
-    @Override
-    public @NotNull String getVersion() {
-        ModContainer modContainer = FabricLoader.getInstance()
-                .getModContainer(modId)
-                .orElse(null);
-        checkNotNull(modContainer, "modContainer cannot be null");
-        return modContainer.getMetadata().getVersion().getFriendlyString();
-    }
     //#else
     //$$ public void onInitialize(EventNetworkChannel channel) {
     //$$     channel.addListener(handler::receive);
@@ -247,10 +243,5 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     onServerDisconnect();
     //$$ }
     //#endif
-    //$$
-    //$$ @Override
-    //$$ public @NotNull String getVersion() {
-    //$$     return ModList.get().getModFileById("plasmovoice").versionString();
-    //$$ }
     //#endif
 }

@@ -3,8 +3,6 @@ package su.plo.lib.mod.server.world;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.level.gameevent.GameEvent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.world.MinecraftServerWorld;
@@ -12,6 +10,9 @@ import su.plo.lib.api.server.world.MinecraftServerWorld;
 import java.util.Objects;
 
 //#if MC>=11900
+
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.gameevent.GameEvent;
 
 //#if MC>=11903
 import net.minecraft.core.registries.BuiltInRegistries;

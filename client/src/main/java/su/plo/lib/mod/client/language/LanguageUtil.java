@@ -47,17 +47,21 @@ public class LanguageUtil {
 
         Component displayName = inputKey.getDisplayName();
         //#if MC>=11900
-        if (displayName.getContents() instanceof TranslatableContents translatable) {
+        if (displayName.getContents() instanceof TranslatableContents) {
+            TranslatableContents translatable = (TranslatableContents) displayName.getContents();
             return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
-        } else if (displayName.getContents() instanceof LiteralContents literal) {
+        } else if (displayName.getContents() instanceof LiteralContents) {
+            LiteralContents literal = (LiteralContents) displayName.getContents();
             return MinecraftTextComponent.translatable(literal.text());
         } else {
             return MinecraftTextComponent.translatable("gui.none");
         }
         //#else
-        //$$ if (displayName instanceof TranslatableComponent translatable) {
+        //$$ if (displayName instanceof TranslatableComponent) {
+        //$$     TranslatableComponent translatable = (TranslatableComponent) displayName;
         //$$     return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
-        //$$ } else if (displayName instanceof TextComponent literal) {
+        //$$ } else if (displayName instanceof TextComponent) {
+        //$$     TextComponent literal = (TextComponent) displayName;
         //$$     return MinecraftTextComponent.translatable(literal.getText());
         //$$ } else {
         //$$     return MinecraftTextComponent.translatable("gui.none");

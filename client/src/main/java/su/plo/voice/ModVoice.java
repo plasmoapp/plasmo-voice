@@ -19,9 +19,12 @@ import net.fabricmc.api.ModInitializer;
 //#if MC>=11802
 //$$ import net.minecraftforge.network.NetworkRegistry;
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
-//#else
+//#elseif MC>=11701
 //$$ import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
 //$$ import net.minecraftforge.fmllegacy.network.NetworkRegistry;
+//#else
+//$$ import net.minecraftforge.fml.network.event.EventNetworkChannel;
+//$$ import net.minecraftforge.fml.network.NetworkRegistry;
 //#endif
 
 //#endif

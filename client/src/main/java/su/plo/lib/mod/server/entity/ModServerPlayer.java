@@ -7,7 +7,6 @@ import lombok.Setter;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
@@ -27,7 +26,15 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import static su.plo.lib.mod.extensions.EntityKt.xRot;
+import static su.plo.lib.mod.extensions.EntityKt.yRot;
 import static su.plo.lib.mod.server.extensions.ServerPlayerKt.serverLevel;
+
+//#if MC>=11701
+import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
+//#else
+//$$ import net.minecraft.network.protocol.game.ClientboundSetTitlesPacket;
+//#endif
 
 //#if MC<11900
 //$$ import net.minecraft.Util;
@@ -68,8 +75,8 @@ public final class ModServerPlayer
                 instance.position().x(),
                 instance.position().y(),
                 instance.position().z(),
-                instance.getXRot(),
-                instance.getYRot()
+                xRot(instance),
+                yRot(instance)
         );
     }
 
@@ -81,8 +88,8 @@ public final class ModServerPlayer
         position.setY(instance.position().y());
         position.setZ(instance.position().z());
 
-        position.setYaw(instance.getXRot());
-        position.setPitch(instance.getYRot());
+        position.setYaw(xRot(instance));
+        position.setPitch(yRot(instance));
 
         return position;
     }
@@ -127,9 +134,16 @@ public final class ModServerPlayer
 
     @Override
     public void sendActionBar(@NotNull MinecraftTextComponent text) {
+        //#if MC>=11701
         instance.connection.send(new ClientboundSetActionBarTextPacket(
                 textConverter.convert(this, text)
         ));
+        //#else
+        //$$ instance.connection.send(new ClientboundSetTitlesPacket(
+        //$$         ClientboundSetTitlesPacket.Type.ACTIONBAR,
+        //$$         textConverter.convert(this, text)
+        //$$ ));
+        //#endif
     }
 
     @Override

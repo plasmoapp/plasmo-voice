@@ -3,7 +3,6 @@ package su.plo.lib.mod.client.render.particle;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.client.particle.ParticleRenderType;
-import net.minecraft.core.particles.ParticleGroup;
 
 import net.minecraft.world.phys.AABB;
 
@@ -198,9 +197,5 @@ public abstract class Particle2D {
 
     public void setBoundingBox(AABB boundingBox) {
         this.boundingBox = boundingBox;
-    }
-
-    public Optional<ParticleGroup> getGroup() {
-        return Optional.empty();
     }
 }

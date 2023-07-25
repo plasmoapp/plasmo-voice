@@ -21,3 +21,7 @@ mcVersions = ["1.18.2"]
 [11701]
 forgeVersion = "[37,)"
 mcVersions = ["1.17.1"]
+
+[11605]
+forgeVersion = "[32,)"
+mcVersions = ["1.16.5"]

@@ -31,13 +31,10 @@ import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.util.TriState;
-import net.fabricmc.loader.api.FabricLoader;
-import net.fabricmc.loader.api.ModContainer;
 //#else
 //$$ import net.minecraftforge.event.RegisterCommandsEvent;
 //$$ import net.minecraftforge.event.entity.player.PlayerEvent;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
-//$$ import net.minecraftforge.fml.ModList;
 //$$ import net.minecraftforge.server.permission.PermissionAPI;
 //$$ import java.util.Optional;
 
@@ -46,18 +43,19 @@ import net.fabricmc.loader.api.ModContainer;
 //$$ import net.minecraftforge.event.server.ServerStoppingEvent;
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
 //$$ import net.minecraftforge.server.permission.nodes.PermissionNode;
-//#else
+//#elseif MC>=11701
 //$$ import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
 //$$ import net.minecraftforge.fmlserverevents.FMLServerStartedEvent;
 //$$ import net.minecraftforge.fmlserverevents.FMLServerStoppingEvent;
-
+//#else
+//$$ import net.minecraftforge.fml.network.event.EventNetworkChannel;
+//$$ import net.minecraftforge.fml.event.server.FMLServerStartedEvent;
+//$$ import net.minecraftforge.fml.event.server.FMLServerStoppingEvent;
 //#endif
 
 //#endif
 
 import java.io.File;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class ModVoiceServer
         extends BaseVoiceServer {
@@ -158,12 +156,12 @@ public final class ModVoiceServer
 
         ServerPlayConnectionEvents.JOIN.register((handler, sender, mcServer) ->
                 PlayerJoinEvent.INSTANCE.getInvoker().onPlayerJoin(
-                        minecraftServerLib.getPlayerByInstance(handler.getPlayer())
+                        minecraftServerLib.getPlayerByInstance(handler.player)
                 )
         );
         ServerPlayConnectionEvents.DISCONNECT.register((handler, mcServer) ->
                 PlayerQuitEvent.INSTANCE.getInvoker().onPlayerQuit(
-                        minecraftServerLib.getPlayerByInstance(handler.getPlayer())
+                        minecraftServerLib.getPlayerByInstance(handler.player)
                 )
         );
         //#if MC>=11900
@@ -174,21 +172,13 @@ public final class ModVoiceServer
     }
 
     @Override
-    public @NotNull String getVersion() {
-        ModContainer modContainer = FabricLoader.getInstance()
-                .getModContainer(modId)
-                .orElse(null);
-        checkNotNull(modContainer, "modContainer cannot be null");
-        return modContainer.getMetadata().getVersion().getFriendlyString();
-    }
-
-    @Override
     protected PermissionSupplier createPermissionSupplier() {
         return new PermissionSupplier() {
             @Override
             public boolean hasPermission(@NotNull Object player, @NotNull String permission) {
-                if (!(player instanceof ServerPlayer serverPlayer))
+                if (!(player instanceof ServerPlayer))
                     throw new IllegalArgumentException("player is not " + ServerPlayer.class);
+                ServerPlayer serverPlayer = (ServerPlayer) player;
 
                 PermissionDefault permissionDefault = minecraftServerLib.getPermissionsManager().getPermissionDefault(permission);
                 boolean isOp = server.getPlayerList().isOp(serverPlayer.getGameProfile());
@@ -198,34 +188,31 @@ public final class ModVoiceServer
 
             @Override
             public @NotNull PermissionTristate getPermission(@NotNull Object player, @NotNull String permission) {
-                if (!(player instanceof ServerPlayer serverPlayer))
+                if (!(player instanceof ServerPlayer))
                     throw new IllegalArgumentException("player is not " + ServerPlayer.class);
+                ServerPlayer serverPlayer = (ServerPlayer) player;
 
                 return toPermissionTristate(Permissions.getPermissionValue(serverPlayer, permission));
             }
 
             private PermissionTristate toPermissionTristate(TriState triState) {
-                return switch (triState) {
-                    case TRUE -> PermissionTristate.TRUE;
-                    case FALSE -> PermissionTristate.FALSE;
-                    case DEFAULT -> PermissionTristate.UNDEFINED;
-                };
+                switch (triState) {
+                    case TRUE: return PermissionTristate.TRUE;
+                    case FALSE: return PermissionTristate.FALSE;
+                    default: return PermissionTristate.UNDEFINED;
+                }
             }
         };
     }
     //#else
     //$$ @Override
-    //$$ public @NotNull String getVersion() {
-    //$$     return ModList.get().getModFileById("plasmovoice").versionString();
-    //$$ }
-    //$$
-    //$$ @Override
     //$$ protected PermissionSupplier createPermissionSupplier() {
     //$$     return new PermissionSupplier() {
     //$$         @Override
     //$$         public boolean hasPermission(@NotNull Object player, @NotNull String permission) {
-    //$$             if (!(player instanceof ServerPlayer serverPlayer))
+    //$$             if (!(player instanceof ServerPlayer))
     //$$                 throw new IllegalArgumentException("player is not " + ServerPlayer.class);
+    //$$             ServerPlayer serverPlayer = (ServerPlayer) player;
     //$$
     //$$             PermissionDefault permissionDefault = minecraftServerLib.getPermissionsManager().getPermissionDefault(permission);
     //$$             boolean isOp = server.getPlayerList().isOp(serverPlayer.getGameProfile());
@@ -235,8 +222,9 @@ public final class ModVoiceServer
     //$$
     //$$         @Override
     //$$         public @NotNull PermissionTristate getPermission(@NotNull Object player, @NotNull String permission) {
-    //$$             if (!(player instanceof ServerPlayer serverPlayer))
+    //$$             if (!(player instanceof ServerPlayer))
     //$$                 throw new IllegalArgumentException("player is not " + ServerPlayer.class);
+    //$$             ServerPlayer serverPlayer = (ServerPlayer) player;
     //$$
                      //#if MC>=11802
                      //$$ Optional<PermissionNode<?>> permissionNode = PermissionAPI.getRegisteredNodes().stream()

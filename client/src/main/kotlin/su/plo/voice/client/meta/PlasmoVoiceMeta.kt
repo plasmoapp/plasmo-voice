@@ -7,6 +7,7 @@ import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import su.plo.voice.BuildConstants
 import su.plo.voice.client.meta.developer.Developer
 import su.plo.voice.client.meta.developer.DeveloperRole
 import java.net.URL
@@ -62,6 +63,7 @@ data class PlasmoVoiceMeta(
 
             val metaJson = try {
                 val connection = url.openConnection()
+                connection.addRequestProperty("User-Agent", "Plasmo Voice " + BuildConstants.VERSION)
                 connection.connectTimeout = 3_000
 
                 gson.fromJson(

@@ -13,6 +13,10 @@ import com.mojang.blaze3d.platform.GlStateManager;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.Tesselator;
+import net.minecraft.client.renderer.texture.AbstractTexture;
+import net.minecraft.client.renderer.texture.SimpleTexture;
+import net.minecraft.client.renderer.texture.TextureManager;
+import net.minecraft.resources.ResourceLocation;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -55,6 +59,17 @@ public class RenderUtil {
         //#endif
     }
 
+    public static int getOrLoadTextureId(ResourceLocation resourceLocation) {
+        TextureManager textureManager = UMinecraft.getMinecraft().getTextureManager();
+        AbstractTexture texture = textureManager.getTexture(resourceLocation);
+        if (texture == null) {
+            texture = new SimpleTexture(resourceLocation);
+            textureManager.register(resourceLocation, (AbstractTexture)texture);
+        }
+
+        return ((AbstractTexture)texture).getId();
+    }
+
     public static void fill(UMatrixStack stack, int x0, int y0, int x1, int y1, int color) {
         int n;
         if (x0 < x1) {
@@ -88,7 +103,7 @@ public class RenderUtil {
     }
 
     public static void fillGradient(UMatrixStack stack,
-                                    int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z, boolean defaultBlend) {
+                                    int startX, int startY, int endX, int endY, int colorStart, int colorEnd, int z) {
         int f = colorStart >> 24 & 255;
         int g = colorStart >> 16 & 255;
         int h = colorStart >> 8 & 255;
@@ -103,8 +118,7 @@ public class RenderUtil {
                 startX, startY, endX, endY,
                 g, h, i, f,
                 k, l, m, j,
-                z,
-                defaultBlend
+                z
         );
     }
 
@@ -112,12 +126,7 @@ public class RenderUtil {
                                     int startX, int startY, int endX, int endY,
                                     int startRed, int startBlue, int startGreen, int startAlpha,
                                     int endRed, int endBlue, int endGreen, int endAlpha,
-                                    int z, boolean defaultBlend) {
-        if (defaultBlend) {
-//            disableTexture();
-            UGraphics.enableBlend();
-            defaultBlendFunc();
-        }
+                                    int z) {
         UGraphics buffer = UGraphics.getFromTessellator();
         buffer.beginWithDefaultShader(UGraphics.DrawMode.QUADS, UGraphics.CommonVertexFormats.POSITION_COLOR);
 
@@ -128,8 +137,6 @@ public class RenderUtil {
         );
 
         buffer.drawDirect();
-        UGraphics.disableBlend();
-//        enableTexture();
     }
 
     private static void fillGradient(UMatrixStack stack, UGraphics buffer,
@@ -488,10 +495,6 @@ public class RenderUtil {
         //#else
         RenderSystem.lineWidth(width);
         //#endif
-    }
-
-    public static boolean hasLightLayer() {
-        return RenderSystem.getShaderTexture(2) != 0;
     }
 
     public static void turnOnLightLayer() {

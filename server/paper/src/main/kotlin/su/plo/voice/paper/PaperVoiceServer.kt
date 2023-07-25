@@ -73,8 +73,6 @@ class PaperVoiceServer(
         super.onShutdown()
     }
 
-    override fun getVersion() = plugin.description.version
-
     override fun getConfigFolder() = plugin.dataFolder
 
     override fun getConfigsFolder() = File("plugins")

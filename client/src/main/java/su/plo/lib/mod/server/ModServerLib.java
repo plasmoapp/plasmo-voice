@@ -99,13 +99,14 @@ public final class ModServerLib implements MinecraftServerLib {
 
         return StreamSupport.stream(server.getAllLevels().spliterator(), false)
                 .map(this::getWorld)
-                .toList();
+                .collect(Collectors.toList());
     }
 
     @Override
     public @NotNull MinecraftServerPlayerEntity getPlayerByInstance(@NotNull Object instance) {
-        if (!(instance instanceof ServerPlayer serverInstance))
+        if (!(instance instanceof ServerPlayer))
             throw new IllegalArgumentException("instance is not " + ServerPlayer.class);
+        ServerPlayer serverInstance = (ServerPlayer) instance;
 
         MinecraftServerPlayerEntity serverPlayer = playerById.get(serverInstance.getUUID());
         if (serverPlayer == null) {
@@ -145,14 +146,24 @@ public final class ModServerLib implements MinecraftServerLib {
 
     @Override
     public Optional<MinecraftGameProfile> getGameProfile(@NotNull UUID playerId) {
+        //#if MC>=11701
         return server.getProfileCache().get(playerId)
                 .map(this::getGameProfile);
+        //#else
+        //$$ return Optional.ofNullable(server.getProfileCache().get(playerId))
+        //$$         .map(this::getGameProfile);
+        //#endif
     }
 
     @Override
     public Optional<MinecraftGameProfile> getGameProfile(@NotNull String name) {
+        //#if MC>=11701
         return server.getProfileCache().get(name)
                 .map(this::getGameProfile);
+        //#else
+        //$$ return Optional.ofNullable(server.getProfileCache().get(name))
+        //$$         .map(this::getGameProfile);
+        //#endif
     }
 
     private MinecraftGameProfile getGameProfile(@NotNull GameProfile gameProfile) {

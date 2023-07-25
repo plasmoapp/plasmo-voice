@@ -5,6 +5,7 @@ import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
+import su.plo.lib.mod.extensions.eyePosition
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
@@ -32,7 +33,7 @@ class ClientPlayerSource(
     }
 
     override fun getPosition(): Vec3 =
-        sourcePlayer?.eyePosition ?: Vec3.ZERO
+        sourcePlayer?.eyePosition() ?: Vec3.ZERO
 
     override fun getLookAngle(): Vec3 =
         sourcePlayer?.lookAngle ?: Vec3.ZERO

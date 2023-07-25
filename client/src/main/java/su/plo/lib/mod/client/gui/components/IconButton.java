@@ -10,6 +10,12 @@ import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
 
+//#if MC>=11701
+import com.mojang.blaze3d.systems.RenderSystem;
+//#else
+//$$ import com.mojang.blaze3d.platform.GlStateManager;
+//#endif
+
 public final class IconButton extends Button {
 
     private final boolean shadow;
@@ -56,10 +62,16 @@ public final class IconButton extends Button {
         UGraphics.enableDepth();
 
         if (hasShadow()) {
+            //#if MC>=11701
+            int textureId = RenderSystem.getShaderTexture(0);
+            //#else
+            //$$ int textureId = GlStateManager.getActiveTextureName();
+            //#endif
+
             int shadowColor = active ? this.shadowColor : -6250336;
 
             try {
-                SolidColorShader.bind();
+                SolidColorShader.bind(textureId);
 
                 RenderUtil.blitWithActiveShader(
                         stack,

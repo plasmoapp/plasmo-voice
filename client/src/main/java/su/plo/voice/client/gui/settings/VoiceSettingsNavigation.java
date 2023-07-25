@@ -1,9 +1,6 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UKeyboard;
-import su.plo.voice.universal.UMatrixStack;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -20,7 +17,9 @@ import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
 import su.plo.voice.client.gui.settings.widget.TabButton;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UKeyboard;
+import su.plo.voice.universal.UMatrixStack;
 
 import java.util.List;
 import java.util.Optional;
@@ -298,6 +297,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 0, // ZERO
                 1 // ONE
         );
+        UGraphics.shadeModel(7425);
 //        render.disableTexture();
 
         RenderUtil.fillGradient(
@@ -305,13 +305,13 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 width, height + 4, 0, height,
                 0, 0, 0, 0,
                 0, 0, 0, 255,
-                0,
-                false
+                0
         );
 
 //        render.enableTexture();
-        UGraphics.enableBlend();
         RenderUtil.defaultBlendFunc();
+        UGraphics.enableDepth();
+        UGraphics.shadeModel(7424);
     }
 
     public void openTab(int index) {

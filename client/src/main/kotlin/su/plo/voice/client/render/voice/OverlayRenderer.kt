@@ -2,10 +2,6 @@ package su.plo.voice.client.render.voice
 
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
-import su.plo.voice.universal.UGraphics
-import su.plo.voice.universal.UMatrixStack
-import su.plo.voice.universal.UResolution.scaledHeight
-import su.plo.voice.universal.UResolution.scaledWidth
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.api.chat.MinecraftTextComponent
@@ -22,6 +18,10 @@ import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.data.player.MinecraftGameProfile
+import su.plo.voice.universal.UGraphics
+import su.plo.voice.universal.UMatrixStack
+import su.plo.voice.universal.UResolution.scaledHeight
+import su.plo.voice.universal.UResolution.scaledWidth
 import java.util.*
 
 class OverlayRenderer(
@@ -198,7 +198,10 @@ class OverlayRenderer(
             RenderUtil.fill(stack, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
             UGraphics.bindTexture(0, ResourceLocation(sourceLine.icon))
             UGraphics.color4f(1f, 1f, 1f, 1f)
+
+            UGraphics.enableBlend()
             RenderUtil.blit(stack, x, y, 0, 0f, 0f, 16, 16, 16, 16)
+            UGraphics.disableBlend()
         }
 
         stack.pop()

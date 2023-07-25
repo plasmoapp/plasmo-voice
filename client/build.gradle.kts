@@ -64,6 +64,7 @@ fun uStatsVersion() = rootProject.libs.versions.ustats.map {
 
 fun universalCraftVersion() = rootProject.libs.versions.universalcraft.map {
     val minecraftVersion = when (platform.mcVersion) {
+        11605 -> "1.16.2"
         11802 -> "1.18.1"
         else -> platform.mcVersionStr
     }
@@ -81,6 +82,7 @@ dependencies {
 
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
+            11605 -> "0.42.0+1.16"
             11701 -> "0.46.1+1.17"
             11802 -> "0.76.0+1.18.2"
             11902 -> "0.73.2+1.19.2"
@@ -92,6 +94,10 @@ dependencies {
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
+
+        if (platform.mcVersion < 11700) {
+            "include"(libs.slf4j)
+        }
     }
 
     universalCraft("gg.essential:universalcraft-${universalCraftVersion()}") {
@@ -101,7 +107,9 @@ dependencies {
     shadowCommon(prebundleNow(universalCraft))
 
     "su.plo.ustats:${uStatsVersion()}".also {
-        modApi(it)
+        modApi(it) {
+            isTransitive = false
+        }
         shadowCommon(it) {
             isTransitive = false
         }
@@ -138,7 +146,7 @@ dependencies {
         isTransitive = false
     }
 
-    if (platform.isForge) {
+    if (platform.isForge && platform.mcVersion < 11802) {
         shadowCommon(rootProject.libs.guice) {
             exclude("com.google.guava")
         }

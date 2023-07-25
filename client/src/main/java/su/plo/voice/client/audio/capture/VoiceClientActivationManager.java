@@ -30,7 +30,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
     private ClientActivation parentActivation;
 
-    private final List<ClientActivation> activations = new CopyOnWriteArrayList<>() {
+    private final List<ClientActivation> activations = new CopyOnWriteArrayList<ClientActivation>() {
 
         @Override
         public boolean add(ClientActivation activation) {
@@ -115,7 +115,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             ));
 
             voiceClient.getServerConnection().ifPresent((connection) -> connection.sendPacket(
-                    new PlayerActivationDistancesPacket(new HashMap<>() {{
+                    new PlayerActivationDistancesPacket(new HashMap<UUID, Integer>() {{
                         put(activation.getId(), activation.getDistance());
                     }})
             ));

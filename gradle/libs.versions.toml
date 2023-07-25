@@ -12,6 +12,7 @@ guava        = { module = "com.google.guava:guava", version = "31.1-jre" }
 gson         = { module = "com.google.code.gson:gson", version = "2.9.0" }
 
 slf4j        = { module = "org.slf4j:slf4j-api", version = "1.7.30" }
+slf4j-log4j  = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version = "2.8.1" }
 junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 opus         = { module = "su.plo.opus:opus", version = "2.0.1" }

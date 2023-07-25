@@ -8,7 +8,7 @@ import su.plo.lib.api.server.world.MinecraftServerWorld;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.lib.mod.entity.ModEntity;
 
-import static su.plo.lib.mod.server.extensions.EntityKt.level;
+import static su.plo.lib.mod.extensions.EntityKt.*;
 
 public final class ModServerEntity extends ModEntity<Entity> implements MinecraftServerEntity {
 
@@ -28,8 +28,8 @@ public final class ModServerEntity extends ModEntity<Entity> implements Minecraf
                 instance.position().x(),
                 instance.position().y(),
                 instance.position().z(),
-                instance.getXRot(),
-                instance.getYRot()
+                xRot(instance),
+                yRot(instance)
         );
     }
 
@@ -41,8 +41,8 @@ public final class ModServerEntity extends ModEntity<Entity> implements Minecraf
         position.setY(instance.position().y());
         position.setZ(instance.position().z());
 
-        position.setYaw(instance.getXRot());
-        position.setPitch(instance.getYRot());
+        position.setYaw(xRot(instance));
+        position.setPitch(yRot(instance));
 
         return position;
     }

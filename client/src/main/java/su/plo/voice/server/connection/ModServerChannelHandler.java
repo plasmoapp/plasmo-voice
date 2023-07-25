@@ -24,9 +24,12 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 //#if MC>=11802
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraftforge.network.NetworkEvent;
-//#else
+//#elseif MC>=11701
 //$$ import net.minecraftforge.fmllegacy.network.NetworkDirection;
 //$$ import net.minecraftforge.fmllegacy.network.NetworkEvent;
+//#else
+//$$ import net.minecraftforge.fml.network.NetworkDirection;
+//$$ import net.minecraftforge.fml.network.NetworkEvent;
 //#endif
 
 //$$ import net.minecraft.ResourceLocationException;
@@ -90,7 +93,7 @@ public final class ModServerChannelHandler
 
     @Override
     public void onChannelRegister(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server, List<ResourceLocation> channels) {
-        voiceServer.getPlayerManager().getPlayerById(handler.getPlayer().getUUID()).ifPresent(player ->
+        voiceServer.getPlayerManager().getPlayerById(handler.player.getUUID()).ifPresent(player ->
                 handleRegisterChannels(
                         channels.stream().map(ResourceLocation::toString).collect(Collectors.toList()),
                         player
@@ -99,7 +102,11 @@ public final class ModServerChannelHandler
     }
     //#else
     //$$ public void onChannelRegister(@NotNull ServerPlayer serverPlayer, @NotNull ServerboundCustomPayloadPacket packet) {
+    //#if MC>=11701
     //$$     FriendlyByteBuf buf = packet.getData();
+    //#else
+    //$$     FriendlyByteBuf buf = packet.getInternalData();
+    //#endif
     //$$
     //$$     List<ResourceLocation> channels = new ArrayList<>();
     //$$     StringBuilder active = new StringBuilder();

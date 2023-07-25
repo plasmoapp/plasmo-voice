@@ -90,11 +90,6 @@ public final class VelocityVoiceProxy extends BaseVoiceProxy {
     }
 
     @Override
-    public @NotNull String getVersion() {
-        return BuildConstants.VERSION;
-    }
-
-    @Override
     public @NotNull File getConfigFolder() {
         return dataDirectory.toFile();
     }

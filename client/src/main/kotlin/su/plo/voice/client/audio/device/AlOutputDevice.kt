@@ -13,6 +13,7 @@ import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
 import org.lwjgl.openal.*
+import su.plo.lib.mod.extensions.eyePosition
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.*
 import su.plo.voice.api.client.audio.device.source.AlSource
@@ -352,7 +353,7 @@ class AlOutputDevice
                 upVector = camera.upVector
             } else {
                 val player = Minecraft.getInstance().player ?: return
-                position = player.eyePosition
+                position = player.eyePosition()
 
                 rotation[0.0f, 0.0f, 0.0f] = 1.0f
 
@@ -363,8 +364,8 @@ class AlOutputDevice
                 rotation.rotateAxis(-player.yRot, YP)
                 rotation.rotateAxis(player.xRot, XP)
                 //#else
-                //$$ rotation.mul(YP.rotationDegrees(-player.getYRot()));
-                //$$ rotation.mul(XP.rotationDegrees(player.getXRot()));
+                //$$ rotation.mul(YP.rotationDegrees(-player.yRot));
+                //$$ rotation.mul(XP.rotationDegrees(player.xRot));
                 //#endif
 
                 forwards[0.0f, 0.0f] = 1.0f

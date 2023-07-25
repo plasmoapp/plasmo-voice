@@ -22,7 +22,12 @@ package su.plo.voice.client.mixin;
 //$$
 //$$     @Inject(method = "handleCustomPayload", at = @At("HEAD"))
 //$$     public void handleCustomPayload(ServerboundCustomPayloadPacket packet, CallbackInfo ci) {
-//$$         if (packet.getIdentifier().equals(REGISTER) && ModServerChannelHandler.INSTANCE != null) {
+//#if MC>=11701
+//$$         ResourceLocation packetId = packet.getIdentifier();
+//#else
+//$$         ResourceLocation packetId = packet.getName();
+//#endif
+//$$         if (packetId.equals(REGISTER) && ModServerChannelHandler.INSTANCE != null) {
 //$$             ModServerChannelHandler.INSTANCE.onChannelRegister(getPlayer(), packet);
 //$$         }
 //$$     }

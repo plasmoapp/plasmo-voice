@@ -20,7 +20,7 @@ public abstract class MixinEntityRenderer {
 
     @Inject(method = "render", at = @At(value = "RETURN"))
     public void render(LivingEntity entity, float f, float g, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, CallbackInfo ci) {
-        if (ModVoiceClient.INSTANCE.getServerInfo().isEmpty()) return;
+        if (!ModVoiceClient.INSTANCE.getServerInfo().isPresent()) return;
 
         ModVoiceClient.INSTANCE.getEntityRenderer().render(
                 poseStack,

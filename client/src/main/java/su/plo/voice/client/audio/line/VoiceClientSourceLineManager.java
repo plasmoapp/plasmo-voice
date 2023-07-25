@@ -24,7 +24,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
     private final VoiceClientConfig config;
 
-    private final List<ClientSourceLine> lines = new CopyOnWriteArrayList<>() {
+    private final List<ClientSourceLine> lines = new CopyOnWriteArrayList<ClientSourceLine>() {
 
         @Override
         public boolean add(ClientSourceLine sourceLine) {

@@ -60,6 +60,11 @@ public abstract class BaseVoice implements PlasmoVoice {
     }
 
     @Override
+    public @NotNull String getVersion() {
+        return BuildConstants.VERSION;
+    }
+
+    @Override
     public @NotNull AddonManager getAddonManager() {
         return addons;
     }

@@ -19,9 +19,12 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 //#elseif MC>=11802
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraftforge.network.NetworkEvent;
-//#else
+//#elseif MC>=11701
 //$$ import net.minecraftforge.fmllegacy.network.NetworkDirection;
 //$$ import net.minecraftforge.fmllegacy.network.NetworkEvent;
+//#else
+//$$ import net.minecraftforge.fml.network.NetworkDirection;
+//$$ import net.minecraftforge.fml.network.NetworkEvent;
 //#endif
 
 import java.io.IOException;

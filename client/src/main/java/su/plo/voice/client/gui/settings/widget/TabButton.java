@@ -9,6 +9,12 @@ import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
 
+//#if MC>=11701
+import com.mojang.blaze3d.systems.RenderSystem;
+//#else
+//$$ import com.mojang.blaze3d.platform.GlStateManager;
+//#endif
+
 public final class TabButton extends Button {
 
     private final boolean shadow;
@@ -53,12 +59,18 @@ public final class TabButton extends Button {
 
     @Override
     protected void renderText(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
-        UGraphics.bindTexture(0, getIconLocation());
+        UGraphics.bindTexture(0, iconLocation);
 
         if (shadow) {
+            //#if MC>=11701
+            int textureId = RenderSystem.getShaderTexture(0);
+            //#else
+            //$$ int textureId = GlStateManager.getActiveTextureName();
+            //#endif
+
             int shadowColor = active ? this.shadowColor : -6250336;
 
-            SolidColorShader.bind();
+            SolidColorShader.bind(textureId);
 
             RenderUtil.blitWithActiveShader(
                     stack,

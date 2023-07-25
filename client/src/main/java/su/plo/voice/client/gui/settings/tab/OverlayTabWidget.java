@@ -285,7 +285,10 @@ public final class OverlayTabWidget extends TabWidget {
         protected void renderText(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             UGraphics.bindTexture(0, iconLocation);
             UGraphics.color4f(1F, 1F, 1F, 1F);
+
+            UGraphics.enableBlend();
             RenderUtil.blit(stack, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
+            UGraphics.disableBlend();
 
             RenderUtil.drawString(
                     stack,

@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui;
 
+import su.plo.lib.mod.extensions.AABBKt;
 import su.plo.voice.universal.UMinecraft;
 import su.plo.voice.universal.UScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -20,6 +21,7 @@ import su.plo.voice.client.event.key.MouseScrollEvent;
 
 import java.util.Optional;
 
+import static su.plo.lib.mod.extensions.EntityKt.eyePosition;
 import static su.plo.voice.client.extensions.OptionsKt.renderDistanceValue;
 
 public final class PlayerVolumeAction {
@@ -81,7 +83,7 @@ public final class PlayerVolumeAction {
         LocalPlayer player = UMinecraft.getPlayer();
         if (level == null || player == null) return Optional.empty();
 
-        Vec3 playerPos = player.getEyePosition();
+        Vec3 playerPos = eyePosition(player);
         Vec3 rotVector = player.getLookAngle();
 
 //        points.clear();
@@ -105,7 +107,7 @@ public final class PlayerVolumeAction {
                 break;
             }
 
-            AABB box = AABB.ofSize(playerPos.subtract(0, 1, 0), 1, 2, 1);
+            AABB box = AABBKt.ofSize(playerPos.subtract(0, 1, 0), 1, 2, 1);
 
 //            points.add(new Vec3(box.minX, box.minY, box.minZ));
 //            points.add(new Vec3(box.maxX, box.maxY, box.maxZ));

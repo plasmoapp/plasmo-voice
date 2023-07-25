@@ -26,6 +26,9 @@ preprocess {
     val forge11701 = createNode("1.17.1-forge", 11701, "official")
     val fabric11701 = createNode("1.17.1-fabric", 11701, "official")
 
+    val forge11605 = createNode("1.16.5-forge", 11605, "official")
+    val fabric11605 = createNode("1.16.5-fabric", 11605, "official")
+
     fabric12001.link(fabric11904)
     forge12001.link(fabric12001)
 
@@ -42,4 +45,7 @@ preprocess {
 
     fabric11701.link(fabric11802, file("1.17.1-1.18.2.txt"))
     forge11701.link(fabric11701)
+
+    fabric11605.link(fabric11701)
+    forge11605.link(fabric11605)
 }

@@ -149,7 +149,9 @@ public final class AboutTabWidget extends TabWidget {
             UGraphics.color4f(1F, 1F, 1F, 1F);
 
             RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
+            UGraphics.enableBlend();
             RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
+            UGraphics.disableBlend();
 
             RenderUtil.drawString(stack, developer.getName(), x + 40, y + 11, 16777215);
             RenderUtil.drawString(stack, developer.getRole().getTranslatable(), x + 40, y + 21, -5592406);

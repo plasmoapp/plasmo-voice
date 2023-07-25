@@ -13,6 +13,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.lib.mod.server.ModServerLib;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
 
+//#if MC<11701
+//$$ import java.lang.reflect.Field;
+//#endif
+
 //#if MC>=11900
 //#if MC<11903
 //$$ import net.minecraft.world.entity.player.ProfilePublicKey;
@@ -41,9 +45,25 @@ public abstract class MixinServerPlayer extends Player {
     @Inject(method = "updateOptions", at = @At("HEAD"))
     public void updateOptions(ServerboundClientInformationPacket serverboundClientInformationPacket, CallbackInfo ci) {
         ModServerLib.INSTANCE.getPlayerById(getUUID()).ifPresent((player) -> {
-            ((ModServerPlayer) player).setLanguage(
-                    serverboundClientInformationPacket.language()
-            );
+            
+            String language = "en_us";
+
+            //#if MC>=11701
+            language = serverboundClientInformationPacket.language();
+            //#else
+            //$$ Class<?> packetClass = serverboundClientInformationPacket.getClass();
+            //$$ for (Field field : packetClass.getFields()) {
+            //$$     if (field.getType() == String.class) {
+            //$$         try {
+            //$$             language = (String) field.get(serverboundClientInformationPacket);
+            //$$         } catch (IllegalAccessException e) {
+            //$$             throw new RuntimeException(e);
+            //$$         }
+            //$$     }
+            //$$ }
+            //#endif
+            
+            ((ModServerPlayer) player).setLanguage(language);
         });
     }
 }
