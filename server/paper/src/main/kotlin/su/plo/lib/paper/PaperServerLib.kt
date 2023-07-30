@@ -9,6 +9,7 @@ import org.bukkit.entity.LivingEntity
 import org.bukkit.entity.Player
 import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
+import org.bukkit.event.world.WorldUnloadEvent
 import org.bukkit.plugin.java.JavaPlugin
 import su.plo.lib.api.server.MinecraftServerLib
 import su.plo.lib.api.server.entity.MinecraftServerEntity
@@ -38,14 +39,9 @@ class PaperServerLib(
     private val worldByInstance: MutableMap<World, MinecraftServerWorld> = Maps.newConcurrentMap()
     private val playerById: MutableMap<UUID, MinecraftServerPlayerEntity> = Maps.newConcurrentMap()
 
-    private val textConverter: BaseComponentTextConverter
-    private val commandManager: PaperCommandManager
+    private val textConverter = BaseComponentTextConverter(languagesSupplier)
+    private val commandManager= PaperCommandManager(this, textConverter)
     private val permissionsManager = PermissionsManager()
-
-    init {
-        textConverter = BaseComponentTextConverter(languagesSupplier)
-        commandManager = PaperCommandManager(this, textConverter)
-    }
 
     override fun onShutdown() {
         permissions = null
@@ -72,11 +68,7 @@ class PaperServerLib(
     }
 
     override fun getWorlds(): Collection<MinecraftServerWorld> =
-        if (Bukkit.getWorlds().size == worldByInstance.size) {
-            worldByInstance.values
-        } else {
-            Bukkit.getWorlds().map(::getWorld)
-        }
+        Bukkit.getWorlds().map(::getWorld)
 
     override fun getPlayerByInstance(instance: Any): MinecraftServerPlayerEntity {
         require(instance is Player) { "instance is not ${Player::class.java}" }
@@ -143,6 +135,11 @@ class PaperServerLib(
 
     override fun getVersion() =
         Bukkit.getVersion().substringAfter("MC: ").substringBefore(")")
+
+    @EventHandler(ignoreCancelled = true)
+    fun onWorldUnload(event: WorldUnloadEvent) {
+        worldByInstance.remove(event.world)
+    }
 
     @EventHandler(ignoreCancelled = true)
     fun onPlayerJoin(event: org.bukkit.event.player.PlayerJoinEvent) {
