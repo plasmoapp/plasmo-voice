@@ -49,14 +49,14 @@
 
     "gui.plasmovoice.activation": "激活",
 
-    "gui.plasmovoice.activation.type": "Activation Type",
-    "gui.plasmovoice.activation.type_ptt": "Push-To-Talk",
-    "gui.plasmovoice.activation.type_voice": "Voice",
-    "gui.plasmovoice.activation.type_inherit": "Inherit",
-    "gui.plasmovoice.activation.ptt_button": "Push-To-Talk Button",
-    "gui.plasmovoice.activation.toggle_button": "Toggle Button",
-    "gui.plasmovoice.activation.toggle": "Toggle \"%s\"\n%s",
-    "gui.plasmovoice.activation.distance": "%s Distance",
+    "gui.plasmovoice.activation.type": "激活类型",
+    "gui.plasmovoice.activation.type_ptt": "按键通话",
+    "gui.plasmovoice.activation.type_voice": "语音",
+    "gui.plasmovoice.activation.type_inherit": "继承",
+    "gui.plasmovoice.activation.ptt_button": "通话按钮",
+    "gui.plasmovoice.activation.toggle_button": "切换按钮",
+    "gui.plasmovoice.activation.toggle": "切换 \"%s\"\n%s",
+    "gui.plasmovoice.activation.distance": "%s 距离",
 
 
     "gui.plasmovoice.advanced": "高级",
@@ -67,9 +67,9 @@
 
     "gui.plasmovoice.advanced.audio_engine": "音频引擎",
     "gui.plasmovoice.advanced.directional_sources_angle": "方向来源角度",
-    "gui.plasmovoice.advanced.directional_sources_angle.tooltip": "An angle in which you will hear the source at 100% if directional sources option is enabled.\n\n360 is like if the option is disabled.",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip": "如果启用了定向声源选项，您将听到100%声音来源的角度。\n\n360与禁用该选项类似",
     "gui.plasmovoice.advanced.stereo_sources_to_mono": "单声道立体声源",
-    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "Addons use stereo sources for better audio quality. The quality is much better, but facing doesn't affect the panning. Sound only fades out with distance.\n\nWhen this option is enabled, stereo sources are converted to the usual mono sources. Quality is worse, but they will now have panning.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "插件使用立体声以获得更好的音频质量，但正面不会影响摄像机平移。声音只会随着距离而减弱。\n\n如果启用此选项，立体声源将转换为常用的单声道源。质量更差，但是不会影响摄像机平移.",
     "gui.plasmovoice.advanced.panning": "立体声定位",
 
     "gui.plasmovoice.advanced.exponential_volume": "指数音量",
