@@ -33,7 +33,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
             encoder = null;
         } catch (Exception | LinkageError e) {
             encoder = null;
-            BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+            BaseVoice.DEBUG_LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
         }
 
         if (encoder == null) {
@@ -46,7 +46,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
         }
 
         encoder.setBitrate(opusEncoderInfo.getBitrate());
-        BaseVoice.LOGGER.info("Opus encoder bitrate is {}", encoder.getBitrate());
+        BaseVoice.DEBUG_LOGGER.log("Opus encoder bitrate is {}", encoder.getBitrate());
 
         return encoder;
     }
@@ -66,7 +66,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
             return decoder;
         } catch (ClassNotFoundException ignored) {
         } catch (Exception | LinkageError e) {
-            BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+            BaseVoice.DEBUG_LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
         }
 
         try {
