@@ -91,7 +91,9 @@ dependencies {
     shadowCommon(prebundleNow(universalCraft))
 
     "su.plo.ustats:${uStatsVersion()}".also {
-        modApi(it)
+        modApi(it) {
+            isTransitive = false
+        }
         shadowCommon(it) {
             isTransitive = false
         }
