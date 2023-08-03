@@ -16,7 +16,7 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @NoArgsConstructor
-@ToString
+@ToString(callSuper = true)
 public final class SourceAudioPacket extends BaseAudioPacket<ClientPacketUdpHandler> {
 
     @Getter
