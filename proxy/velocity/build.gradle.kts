@@ -37,6 +37,10 @@ dependencies {
     shadow(rootProject.libs.kotlinx.coroutines.jdk8)
     shadow(rootProject.libs.kotlinx.json)
 
+    shadow(rootProject.libs.guice) {
+        exclude("com.google.guava")
+    }
+
     shadow(rootProject.libs.opus)
     shadow(rootProject.libs.config)
     shadow(rootProject.libs.crowdin.lib) {
@@ -55,6 +59,10 @@ tasks {
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
         relocate("org.bstats", "su.plo.voice.bstats")
+
+        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
+        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
+        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))

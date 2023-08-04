@@ -94,10 +94,6 @@ dependencies {
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
-
-        if (platform.mcVersion < 11700) {
-            "include"(libs.slf4j)
-        }
     }
 
     universalCraft("gg.essential:universalcraft-${universalCraftVersion()}") {
@@ -146,14 +142,12 @@ dependencies {
         isTransitive = false
     }
 
-    if (platform.isForge && platform.mcVersion < 11802) {
-        shadowCommon(rootProject.libs.guice) {
-            exclude("com.google.guava")
-        }
-    } else {
-        "include"(rootProject.libs.guice)
-        "include"(rootProject.libs.aopalliance)
-        "include"(rootProject.libs.javax.inject)
+    shadowCommon(rootProject.libs.guice) {
+        exclude("com.google.guava")
+    }
+
+    if (platform.mcVersion < 11700) {
+        shadowCommon(libs.slf4j)
     }
 }
 
@@ -196,16 +190,25 @@ tasks {
         configurations = listOf(shadowCommon)
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+        relocate("su.plo.ustats", "su.plo.voice.libs.ustats")
 
-        relocate("su.plo.ustats", "su.plo.voice.ustats")
+        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
+        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
+        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
-            exclude(dependency("org.slf4j:slf4j-api"))
             exclude(dependency("org.jetbrains:annotations"))
             exclude(dependency("com.google.guava:.*"))
 
             exclude("README.md")
+            exclude("DebugProbesKt.bin")
+
+            if (platform.mcVersion >= 11700) {
+                exclude(dependency("org.slf4j:slf4j-api"))
+            } else {
+                relocate("org.slf4j", "su.plo.voice.libs.org.slf4j")
+            }
 
             if (platform.isForge) {
                 exclude("fabric.mod.json")
@@ -213,7 +216,6 @@ tasks {
                 exclude("plasmovoice-forge.mixins.json")
                 exclude("pack.mcmeta")
                 exclude("META-INF/mods.toml")
-                exclude("DebugProbesKt.bin")
             }
         }
     }

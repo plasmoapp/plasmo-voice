@@ -3,8 +3,11 @@ package su.plo.voice.addon
 import com.google.common.base.Strings
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
+import com.google.inject.AbstractModule
 import com.google.inject.Guice
+import com.google.inject.matcher.Matchers
 import su.plo.voice.BaseVoice
+import su.plo.voice.addon.inject.PlasmoVoiceTypeListener
 import su.plo.voice.api.addon.*
 import su.plo.voice.api.addon.annotation.Addon
 import java.util.*
@@ -118,7 +121,15 @@ class VoiceAddonManager(
         val addonInstance = addon.instance.get()
 
         // inject guice module
-        val injector = Guice.createInjector(voice.createInjectModule())
+        val injectModule = object : AbstractModule() {
+            override fun configure() {
+                voice.createInjectModule().forEach { (type, instance) ->
+                    bindListener(Matchers.any(), PlasmoVoiceTypeListener(type, instance))
+                }
+            }
+        }
+
+        val injector = Guice.createInjector(injectModule)
         injector.injectMembers(addonInstance)
 
         addonById[addon.id] = addon

@@ -1,5 +1,6 @@
 package su.plo.voice.server;
 
+import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import com.google.inject.AbstractModule;
@@ -58,6 +59,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -355,14 +357,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     }
 
     @Override
-    public Module createInjectModule() {
-        return new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(PlasmoVoiceServer.class).toInstance(BaseVoiceServer.this);
-                bind(PlasmoBaseVoiceServer.class).toInstance(BaseVoiceServer.this);
-            }
-        };
+    public Map<Class<?>, Object> createInjectModule() {
+        Map<Class<?>, Object> injectModule = Maps.newHashMap();
+        injectModule.put(PlasmoVoiceServer.class, BaseVoiceServer.this);
+        injectModule.put(PlasmoBaseVoiceServer.class, BaseVoiceServer.this);
+        return injectModule;
     }
 
     @Override

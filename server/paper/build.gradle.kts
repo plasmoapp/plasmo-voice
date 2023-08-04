@@ -76,6 +76,10 @@ tasks {
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
         relocate("su.plo.ustats", "su.plo.voice.libs.ustats")
 
+        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
+        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
+        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
+
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))

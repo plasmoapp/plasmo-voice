@@ -1,8 +1,6 @@
 package su.plo.voice.client;
 
 import com.google.common.collect.Maps;
-import com.google.inject.AbstractModule;
-import com.google.inject.Module;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +22,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
-import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.config.addon.AddonConfig;
@@ -62,7 +59,6 @@ import su.plo.voice.util.version.ModrinthVersion;
 import su.plo.voice.util.version.SemanticVersion;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 
@@ -237,13 +233,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     @Override
-    public Module createInjectModule() {
-        return new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(PlasmoVoiceClient.class).toInstance(BaseVoiceClient.this);
-            }
-        };
+    public Map<Class<?>, Object> createInjectModule() {
+        Map<Class<?>, Object> injectModule = Maps.newHashMap();
+        injectModule.put(PlasmoVoiceClient.class, BaseVoiceClient.this);
+        return injectModule;
     }
 
     @Override

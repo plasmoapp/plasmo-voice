@@ -1,6 +1,5 @@
 subprojects {
     dependencies {
-        api(rootProject.libs.guice)
         api(rootProject.libs.guava)
         api(rootProject.libs.gson)
         api(rootProject.libs.config)

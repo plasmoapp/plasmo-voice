@@ -1,7 +1,5 @@
 package su.plo.voice;
 
-import com.google.inject.Module;
-import kotlinx.coroutines.Dispatchers;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -21,6 +19,7 @@ import su.plo.voice.event.VoiceEventBus;
 import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.InputStream;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -88,5 +87,5 @@ public abstract class BaseVoice implements PlasmoVoice {
         return getClass().getClassLoader().getResourceAsStream(name);
     }
 
-    public abstract Module createInjectModule();
+    public abstract Map<Class<?>, Object> createInjectModule();
 }

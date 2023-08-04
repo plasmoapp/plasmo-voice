@@ -1,9 +1,8 @@
 package su.plo.voice.proxy;
 
+import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import com.google.inject.AbstractModule;
-import com.google.inject.Module;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
@@ -250,14 +249,11 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     }
 
     @Override
-    public Module createInjectModule() {
-        return new AbstractModule() {
-            @Override
-            protected void configure() {
-                bind(PlasmoVoiceProxy.class).toInstance(BaseVoiceProxy.this);
-                bind(PlasmoBaseVoiceServer.class).toInstance(BaseVoiceProxy.this);
-            }
-        };
+    public Map<Class<?>, Object> createInjectModule() {
+        Map<Class<?>, Object> injectModule = Maps.newHashMap();
+        injectModule.put(PlasmoVoiceProxy.class, BaseVoiceProxy.this);
+        injectModule.put(PlasmoBaseVoiceServer.class, BaseVoiceProxy.this);
+        return injectModule;
     }
 
     protected abstract PermissionSupplier createPermissionSupplier();
