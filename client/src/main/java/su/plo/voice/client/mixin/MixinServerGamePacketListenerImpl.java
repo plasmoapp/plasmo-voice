@@ -15,8 +15,7 @@ package su.plo.voice.client.mixin;
 //$$ @Mixin(ServerGamePacketListenerImpl.class)
 //$$ public abstract class MixinServerGamePacketListenerImpl {
 //$$
-//$$     @Shadow
-//$$     public abstract ServerPlayer getPlayer();
+//$$     @Shadow public ServerPlayer player;
 //$$
 //$$     private static final ResourceLocation REGISTER = new ResourceLocation("minecraft:register");
 //$$
@@ -28,7 +27,7 @@ package su.plo.voice.client.mixin;
 //$$         ResourceLocation packetId = packet.getName();
 //#endif
 //$$         if (packetId.equals(REGISTER) && ModServerChannelHandler.INSTANCE != null) {
-//$$             ModServerChannelHandler.INSTANCE.onChannelRegister(getPlayer(), packet);
+//$$             ModServerChannelHandler.INSTANCE.onChannelRegister(player, packet);
 //$$         }
 //$$     }
 //$$ }
