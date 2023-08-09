@@ -6,6 +6,8 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.rnnoise.Denoiser;
 
+import static su.plo.voice.util.NativesKt.isNativesSupported;
+
 public final class NoiseSuppressionFilter extends LimiterFilter {
 
     private final ConfigEntry<Boolean> activeEntry;
@@ -16,7 +18,12 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
         super(sampleRate, -6.0F);
 
         this.activeEntry = activeEntry;
-        if (activeEntry.value()) toggle(true);
+
+        if (!isNativesSupported()) {
+            activeEntry.set(false);
+            activeEntry.setDisabled(true);
+        } else if (activeEntry.value()) toggle(true);
+
         activeEntry.clearChangeListeners();
         activeEntry.addChangeListener(this::toggle);
     }
