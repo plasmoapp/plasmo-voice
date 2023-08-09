@@ -33,7 +33,7 @@ import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.api.util.Params
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.audio.SoundOcclusion
-import su.plo.voice.client.audio.codec.AudioDecoderPlc
+import su.plo.voice.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.utils.level
 import su.plo.voice.client.utils.toFloatArray

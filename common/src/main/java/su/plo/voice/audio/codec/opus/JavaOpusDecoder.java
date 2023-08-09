@@ -1,4 +1,4 @@
-package su.plo.voice.client.audio.codec.opus;
+package su.plo.voice.audio.codec.opus;
 
 import su.plo.opus.concentus.OpusDecoder;
 import su.plo.opus.concentus.OpusException;

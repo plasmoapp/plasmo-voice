@@ -1,4 +1,4 @@
-package su.plo.voice.client.audio.codec.opus;
+package su.plo.voice.audio.codec.opus;
 
 import com.sun.jna.ptr.PointerByReference;
 import su.plo.opus.Opus;
