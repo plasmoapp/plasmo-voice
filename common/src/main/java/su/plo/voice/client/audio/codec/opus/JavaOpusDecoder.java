@@ -36,8 +36,14 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
             throw new CodecException("Failed to decode audio", e);
         }
 
-        short[] decoded = new short[result];
-        System.arraycopy(buffer, 0, decoded, 0, result);
+        short[] decoded;
+        if (encoded == null || encoded.length == 0) {
+            decoded = new short[result];
+        } else {
+            decoded = new short[result * channels];
+        }
+
+        System.arraycopy(buffer, 0, decoded, 0, decoded.length);
 
         return decoded;
     }
@@ -46,7 +52,7 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     public void open() throws CodecException {
         try {
             this.decoder = new OpusDecoder(sampleRate, channels);
-            this.buffer = new short[mtuSize * channels];
+            this.buffer = new short[bufferSize * channels];
         } catch (OpusException e) {
             throw new CodecException("Failed to open opus decoder", e);
         }
