@@ -339,9 +339,9 @@ abstract class BaseClientAudioSource<T> constructor(
                 write(decoded)
             }
         } catch (e: EncryptionException) {
-            LOGGER.warn("Failed to decrypt source audio", e)
+            BaseVoice.DEBUG_LOGGER.warn("Failed to decrypt source audio", e)
         } catch (e: CodecException) {
-            LOGGER.warn("Failed to decode source audio", e)
+            BaseVoice.DEBUG_LOGGER.warn("Failed to decode source audio", e)
         }
 
         lastSequenceNumbers[sourceInfo.lineId] = packet.sequenceNumber

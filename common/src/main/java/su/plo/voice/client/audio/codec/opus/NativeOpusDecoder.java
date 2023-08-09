@@ -31,12 +31,13 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
         buffer.clear();
         int result;
         if (encoded == null || encoded.length == 0) {
-            result = Opus.INSTANCE.opus_decode(decoder, null, 0, buffer, bufferSize * channels, 0);
+            result = Opus.INSTANCE.opus_decode(decoder, null, 0, buffer, bufferSize, 0);
         } else {
-            result = Opus.INSTANCE.opus_decode(decoder, encoded, encoded.length, buffer, bufferSize * channels, 0);
+            result = Opus.INSTANCE.opus_decode(decoder, encoded, encoded.length, buffer, bufferSize, 0);
         }
 
-        if (result < 0) throw new CodecException("Failed to decode audio: " + result);
+        if (result != bufferSize) throw new CodecException("Audio was decoded with invalid frame size");
+        if (result < 0) throw new CodecException("Failed to decode audio: " + Opus.INSTANCE.opus_strerror(result));
 
         short[] decoded;
         if (encoded == null || encoded.length == 0) {
@@ -56,10 +57,10 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
     public void open() throws CodecException {
         IntBuffer error = IntBuffer.allocate(1);
         this.decoder = Opus.INSTANCE.opus_decoder_create(sampleRate, channels, error);
-        this.buffer = ShortBuffer.allocate(mtuSize * channels);
+        this.buffer = ShortBuffer.allocate(bufferSize * channels);
 
         if (error.get() != Opus.OPUS_OK && decoder == null) {
-            throw new CodecException("Failed to open opus decoder:" + error.get());
+            throw new CodecException("Failed to open opus decoder:" + Opus.INSTANCE.opus_strerror(error.get()));
         }
     }
 
