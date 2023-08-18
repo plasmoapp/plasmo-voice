@@ -1,0 +1,160 @@
+{
+    "key.plasmovoice.settings": "Налады голаса",
+
+    "key.plasmovoice.general": "Агульнае",
+    "key.plasmovoice.general.mute_microphone": "Заглушыць мікрафон",
+    "key.plasmovoice.general.disable_voice": "Адключыць галасавы чат",
+    "key.plasmovoice.general.action": "Кнопка дзеяння",
+
+    "key.plasmovoice.distance": "%s Дыстанцыя голасу",
+    "key.plasmovoice.distance.increase": "Павялічыць дыстанцыя голасу",
+    "key.plasmovoice.distance.decrease": "Паменьшыць дыстанцыю голасу",
+
+    "key.plasmovoice.occlusion": "Аклюзія гуку",
+    "key.plasmovoice.occlusion.toggle": "Уключыць аклюзію гуку",
+
+
+    "gui.plasmovoice.title": "Налады %1$s %2$s ",
+    "gui.plasmovoice.toggle.microphone": "Уключыць мікрафон\n%s",
+    "gui.plasmovoice.toggle.voice": "Уключыць галасавы чат\n%s",
+    "gui.plasmovoice.toggle.currently": "Зараз: %s",
+    "gui.plasmovoice.toggle.enabled": "УКЛЮЧАНА",
+    "gui.plasmovoice.toggle.disabled": "АДКЛЮЧАНА",
+
+
+    "gui.plasmovoice.devices": "Прылады",
+
+    "gui.plasmovoice.devices.microphone": "Мікрафон",
+    "gui.plasmovoice.devices.activation_threshold": "Парог актывацыі",
+    "gui.plasmovoice.devices.activation_threshold.tooltip": "Мае ўплыў, калі тып актывацыі стаіць на “Гук”.\n\nПерадвінце паўзунок на кропку, дзе гук толькі пераўзыходзіць яго, калі вы размаўляеце.\n\nТаксама вы можаце націснуць на іконку каб уключыць мікрафон і пачуць свой голас",
+    "gui.plasmovoice.devices.not_available": "Недаступна",
+    "gui.plasmovoice.devices.default": "Сістэмна",
+    "gui.plasmovoice.devices.microphone_volume": "Гучнасць мікрафона",
+    "gui.plasmovoice.devices.noise_suppression": "Падаўленне шуму",
+    "gui.plasmovoice.devices.noise_suppression.tooltip": "RNNoise падаўленне шуму.\n\nВыкарыстоўвае ШІ. ШЫкоўна працуе, але можа моцна грузіць ЦП.\n\nУплывае на ваш мікрафон.",
+    "gui.plasmovoice.devices.stereo_capture": "Захоп у стэрэа",
+    "gui.plasmovoice.devices.stereo_capture.tooltip": "Захоплівае гук у стэрэа, потым канвертыруе яго ў мона.\nМожа палепшыць якасць, але робіць гук цішэй.",
+    "gui.plasmovoice.devices.output": "Вывад",
+
+    "gui.plasmovoice.devices.output_device": "Прылада вываду",
+    "gui.plasmovoice.devices.volume": "Гучнасць",
+    "gui.plasmovoice.devices.volume.tooltip": "Гучнасць больш за 100% можа выклікаць праблемы.",
+    "gui.plasmovoice.devices.occlusion": "Аклюзія гуку",
+    "gui.plasmovoice.devices.occlusion.tooltip": "Пракідвае прамень ад гульца да кожнай крыніцы гуку і прыглушае гук, калі на шляху стаяць блокі.\n\nКарысна, калі вы не хочаце чуць людзей з іншых пакояў, але часам не працуе належным чынам, таму лепш трымаць яго адключаным, калі ён вам не патрэбны.",
+    "gui.plasmovoice.devices.directional_sources": "Накіраваныя крыніцы",
+    "gui.plasmovoice.devices.directional_sources.tooltip": "Робіць гук крыху цішэй, калі ягоная крыніцане перад вамі, ці пад вуглом.\n\nПаўплывае на гульцоў, якіх вы чуеце.",
+    "gui.plasmovoice.devices.hrtf": "HRTF",
+    "gui.plasmovoice.devices.hrtf.tooltip": "Паляпшае пазіцыянаванне гуку, паляпшаючы разуменне напрамку крыніцы гуку ў 3D.\n\nМожа крыху пагоршыць якасць аўдыё.\n\nПаўплывае на гульцоў, якіх вы чуеце.",
+
+
+    "gui.plasmovoice.activation": "Актывацыя",
+
+    "gui.plasmovoice.activation.type": "Тып актывацыі",
+    "gui.plasmovoice.activation.type_ptt": "Націснуць-каб-гаварыць",
+    "gui.plasmovoice.activation.type_voice": "Гук",
+    "gui.plasmovoice.activation.type_inherit": "Наследванне",
+    "gui.plasmovoice.activation.ptt_button": "Кнопка Націснуць-каб-гаварыць",
+    "gui.plasmovoice.activation.toggle_button": "Уключыць кнопку",
+    "gui.plasmovoice.activation.toggle": "Уключыць \"%s\"\n%s",
+    "gui.plasmovoice.activation.distance": "Дыстанцыя %s",
+
+
+    "gui.plasmovoice.advanced": "Пашыранае",
+
+    "gui.plasmovoice.advanced.visual": "Візуал і UI",
+    "gui.plasmovoice.advanced.visualize_voice_distance": "Візуалізацыя дыстанцыі гуку",
+    "gui.plasmovoice.advanced.visualize_voice_distance_on_join": "Візуалізацыя далучэння",
+
+    "gui.plasmovoice.advanced.audio_engine": "Аўдыё рухавік",
+    "gui.plasmovoice.advanced.directional_sources_angle": "Вугал накіраваных крыніц",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip": "Вугал у якім вы будзеце чуць крыніцу 100%, калі накіраваныя крыніцы уключаны.\n\n360 як опцыя адключана.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono": "Мона стэрэа крыніцы",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "Аддон, яківыкарыстоўвае стэрэа крыніцы для больш якасці гуку. Якасць значна лепей, але пагаршаецца пазіцыянаванне. Гук знікае толькі на адлегласці.\n\nКалі ўключана, стэрэа крыніцы пераўтворацца ў звычайныя мона крыніцы. Якасць горшая, але ў іх цяпер будзе панарамаванне.",
+    "gui.plasmovoice.advanced.panning": "Стэрэа пазіцыянаванне",
+
+    "gui.plasmovoice.advanced.exponential_volume": "Экспанентны гук",
+    "gui.plasmovoice.advanced.exponential_volume.volume_slider": "Паўзунок гуку",
+    "gui.plasmovoice.advanced.exponential_volume.distance_gain": "Прырост дыстанцыі",
+
+
+    "gui.plasmovoice.hotkeys": "Гарачыя клавішы",
+
+
+    "gui.plasmovoice.volume": "Гучнасць",
+
+    "gui.plasmovoice.volume.sources": "Sources Volume",
+    "gui.plasmovoice.volume.players": "Гучнасць гульцоў",
+    "gui.plasmovoice.volume.players_search": "Пошук...",
+
+
+    "gui.plasmovoice.about.made_by": "%s зроблен",
+    "gui.plasmovoice.about.huix": "Канцэпт і Дызайн",
+    "gui.plasmovoice.about.programming": "Праграміраванне",
+    "gui.plasmovoice.about.artist": "Мастак",
+
+    "gui.plasmovoice.about.support": "Дзякуй за падтрымку",
+
+    "gui.plasmovoice.about.links": "%s уключан",
+    "gui.plasmovoice.about.copyright": "Калі ласка, выкарыстоўвайце толькі афіцыйныя крыніцы і не змяняйце гэты мод без нашага дазволу. Вы можаце звязацца з намі праз Discord па любых пытаннях, дапамозе, ці прапановах.",
+
+
+    "gui.plasmovoice.overlay": "Оверлэй",
+
+    "gui.plasmovoice.overlay.activation_icon": "Іконкі Hud",
+    "gui.plasmovoice.overlay.activation_icon_show": "Паказваць іконкі Hud",
+    "gui.plasmovoice.overlay.activation_icon_position": "Пазіцыя іконак Hud",
+    "gui.plasmovoice.overlay.activation_icon_position.choose": "Выберыце пазіцыю іконак",
+    "gui.plasmovoice.overlay.hud_position.top_left": "Зверху злева",
+    "gui.plasmovoice.overlay.hud_position.top_center": "Зверху",
+    "gui.plasmovoice.overlay.hud_position.top_right": "Зверху справа",
+    "gui.plasmovoice.overlay.hud_position.bottom_left": "Унізе злева",
+    "gui.plasmovoice.overlay.hud_position.bottom_center": "Унізе",
+    "gui.plasmovoice.overlay.hud_position.bottom_right": "Унізе справа",
+
+    "gui.plasmovoice.overlay.source_icons": "Іконкі істот",
+    "gui.plasmovoice.overlay.show_source_icons": "Паказваць іконкі істот",
+    "gui.plasmovoice.overlay.show_source_icons.hud": "Толькі GUI",
+    "gui.plasmovoice.overlay.show_source_icons.always": "Заўсёды",
+    "gui.plasmovoice.overlay.show_source_icons.hidden": "Схавана",
+    "gui.plasmovoice.overlay.show_static_source_icons": "Паказваць на статычных крыніцах",
+
+    "gui.plasmovoice.overlay.enable": "Уключыць оверлэй",
+    "gui.plasmovoice.overlay.position": "Пазіцыя оверлэю",
+    "gui.plasmovoice.overlay.position.choose": "Выберыце пазіцыю оверлэю",
+    "gui.plasmovoice.overlay.style": "Стыль оверлэю",
+    "gui.plasmovoice.overlay.style.name_skin": "Імя і скін",
+    "gui.plasmovoice.overlay.style.skin": "Толькі скін",
+    "gui.plasmovoice.overlay.style.name": "Толькі імя",
+
+    "gui.plasmovoice.overlay.sources": "Крыніцы оверлэю",
+    "gui.plasmovoice.overlay.sources.when_talking": "Калі гавару",
+    "gui.plasmovoice.overlay.sources.always": "Заўсёды",
+    "gui.plasmovoice.overlay.sources.never": "Ніколі",
+
+
+    "gui.plasmovoice.addons": "Аддоны",
+
+
+    "gui.plasmovoice.not_available": "Plasmo Voice не ўстаноўлены на гэтым серверы",
+    "gui.plasmovoice.connecting": "Далучэнне да UDP сервера...",
+    "gui.plasmovoice.cannot_connect_to_udp": "Немагчыма далучыцца да UDP сервера,\nЗдаецца, UDP порт закрыт. Падрабязней у вікі:\n%s",
+
+
+    "pv.activation.parent": "Бацькоўскі",
+
+
+    "message.plasmovoice.close": "Закрыць",
+    "message.plasmovoice.on": "Укл",
+    "message.plasmovoice.off": "Выкл",
+
+    "message.plasmovoice.occlusion_changed": "Аклюзія гуку: %s",
+    "message.plasmovoice.distance_changed": "%s Дыстанцыя голасу: %d",
+
+    "message.plasmovoice.activation.toggle": "%s: %s",
+
+    "message.plasmovoice.macos_incompatible_launcher": "Вы не можаце выкарыстоўваць мікрафон, бо ваш Minecraft Launcher не падтрымлівае дазволы мікрафону на MacOS. Вы павінны перключыцца на %s.",
+
+    "message.plasmovoice.update_available": "Новая версія %1$s Plasmo Voice даступна: %2$s",
+    "message.plasmovoice.update_available.click": "Спампаваць",
+    "message.plasmovoice.update_available.hover": "%s"
+}
