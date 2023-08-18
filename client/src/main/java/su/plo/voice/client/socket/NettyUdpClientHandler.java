@@ -85,12 +85,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         voiceClient.getSourceManager().getSourceById(packet.getSourceId())
                 .ifPresent(source -> {
                     if (source.getSourceInfo().getState() != packet.getSourceState()) {
-                        BaseVoice.DEBUG_LOGGER.log(
-                                "Drop audio packet with bad source state: packet source state={}, source={}",
-                                packet.getSourceState(), source.getSourceInfo()
-                        );
                         voiceClient.getSourceManager().sendSourceInfoRequest(packet.getSourceId(), true);
-                        return;
                     }
 
                     source.process(packet);
