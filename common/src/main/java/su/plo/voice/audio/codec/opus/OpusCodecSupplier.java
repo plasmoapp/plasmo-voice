@@ -76,7 +76,6 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
         }
 
         try {
-            System.out.println("java decoder");
             decoder = new JavaOpusDecoder(sampleRate, stereo, bufferSize, mtuSize);
             decoder.open();
             return decoder;
