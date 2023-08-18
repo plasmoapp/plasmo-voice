@@ -130,15 +130,9 @@ dependencies {
         isTransitive = false
     }
 
-    if (platform.isForge) {
-        shadowCommon(rootProject.libs.guice) {
-            exclude("com.google.guava")
-        }
-    } else {
-        "include"(rootProject.libs.guice)
-        "include"(rootProject.libs.aopalliance)
-        "include"(rootProject.libs.javax.inject)
-    }
+    "include"(rootProject.libs.guice)
+    "include"(rootProject.libs.aopalliance)
+    "include"(rootProject.libs.javax.inject)
 }
 
 tasks {
