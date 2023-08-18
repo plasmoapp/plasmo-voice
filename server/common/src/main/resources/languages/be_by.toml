@@ -1,0 +1,57 @@
+[server.pv.error]
+no_permissions = "&cПрабачце, але вы не маеце дазволу на выкананне гэтай каманды. Калі ласка, звяжыцеся з адміністратарам , калі вы лічыце, што гэта памылка."
+player_only_command = "Толькі гулец можа выконваць гэту каманду"
+player_not_found = "Гулец не знойдзены"
+mod_missing_kick_message = """
+Sorry, you need to install the Plasmo Voice mod to play on this server.
+Download here: https://modrinth.com/plugin/plasmo-voice"""
+version_not_supported = "Прабачце, ваша версія Plasmo Voice не падтрымліваецца гэтым серверам. %s"
+version_not_supported_click = "Спампаваць падтрымліваемую версію"
+version_not_supported_hover = "%s"
+
+[server.pv.mutes]
+empty_reason = "не ўдакладнена"
+temporarily_muted = "Вы заглушаны на %1$s. Прычына: %2$s"
+permanently_muted = "Вы заглушаны назаўсёды. Прычына: %s"
+unmuted = "Вы больш не заглушаны"
+
+  [server.pv.mutes.durations]
+  seconds = "на %s сек"
+  minutes = "на %s хвл"
+  hours = "на %s гдз"
+  days = "на %s дзн"
+  weeks = "на %s тыд"
+
+[server.pv.command.mute]
+usage = "Выкарыстанне: /vmute <гулец> [тэрмін] [прычына]"
+already_muted = "%s ужо заглушаны"
+temporarily_muted = "%1$s заглушан на %2$s. Прычына: %3$s"
+permanently_muted = "%1$s назаўсёды заглушаны. Прычына: %2$s"
+
+[server.pv.command.unmute]
+usage = "Выкарыстанне: /vunmute <player>"
+not_muted = "%s не заглушаны"
+unmuted = "Уключыць гук %s"
+
+[server.pv.command.mute_list]
+header = "Заглушаныя гульцы:"
+entry = "%1$s, мінае: %2$s. Прычына: %3$s"
+entry_muted_by = "%1$s заглушаны %2$s, мінае: %3$s. Прычына: %4$s"
+empty = "Няма заглушаных гульцоў"
+expire_at = "%1$s у %2$s"
+never_expires = "ніколі"
+expiration_date = "гггг.ММ.дд"
+expiration_time = "ГГ:хх:сс"
+
+[server.pv.command.list]
+message = "Кліенты (%1$s/%2$s): %3$s"
+empty = "Няма гульцоў з Plasmo Voice"
+
+[server.pv.command.reconnect]
+message = "Пакеты перападлучэння адпраўлены"
+
+[server.pv.command.reload]
+message = "Налады перазагружаны"
+
+[client.pv.activation]
+proximity = "Блізкасць"
