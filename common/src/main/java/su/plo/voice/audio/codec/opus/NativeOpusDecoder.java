@@ -42,13 +42,11 @@ public final class NativeOpusDecoder implements BaseOpusDecoder {
         short[] decoded;
         if (encoded == null || encoded.length == 0) {
             decoded = new short[result];
-            buffer.get(decoded, 0, result);
         } else {
             decoded = new short[result * channels];
-            for (int channel = 0; channel < channels; channel++) {
-                buffer.get(decoded, result * channel, result);
-            }
         }
+
+        buffer.get(decoded, 0, decoded.length);
 
         return decoded;
     }
