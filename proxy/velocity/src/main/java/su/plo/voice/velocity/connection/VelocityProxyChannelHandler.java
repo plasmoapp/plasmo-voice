@@ -141,6 +141,8 @@ public class VelocityProxyChannelHandler {
 
     @Subscribe
     public void onPlayerQuit(@NotNull DisconnectEvent event) {
+        if (event.getLoginStatus() != DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN) return;
+
         Player player = event.getPlayer();
         playerToServerChannels.remove(player.getUniqueId());
         serverToPlayerChannels.remove(player.getUniqueId());
