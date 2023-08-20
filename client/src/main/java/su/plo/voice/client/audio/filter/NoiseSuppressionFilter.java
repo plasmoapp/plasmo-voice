@@ -32,9 +32,10 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
         if (value) {
             try {
                 instance = new Denoiser();
-            } catch (Exception e) {
+            } catch (Exception | LinkageError e) {
                 BaseVoice.LOGGER.error("RNNoise is not available on this platform");
                 activeEntry.set(false);
+                activeEntry.setDisabled(true);
             }
         } else if (instance != null) {
             instance.close();
