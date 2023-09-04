@@ -2,4 +2,5 @@
 - Fixed crash on Mac OS versions lower than 11
 - Fixed crash on source buffer overflow
 - Fixed crash when opus was trying to decode bad frames
-- guice is now bundled with JIJ in forge to fix compatibility with other mods 
+- guice is now bundled with JIJ in forge to fix compatibility with other mods
+- Fixed crash with EssentialAddons using "reloadFakePlayers"

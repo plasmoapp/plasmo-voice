@@ -45,6 +45,7 @@ public final class ModServerLib implements MinecraftServerLib {
     @Setter
     private MinecraftServer server;
     @Setter
+    @Getter
     private PermissionSupplier permissions;
 
     @Getter
@@ -123,7 +124,6 @@ public final class ModServerLib implements MinecraftServerLib {
             serverPlayer = new ModServerPlayer(
                     this,
                     textConverter,
-                    permissions,
                     resources,
                     serverInstance
             );
