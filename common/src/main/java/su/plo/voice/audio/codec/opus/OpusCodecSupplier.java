@@ -41,7 +41,6 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
 
         if (encoder == null) {
             try {
-                System.out.println("java encoder");
                 encoder = new JavaOpusEncoder(sampleRate, stereo, bufferSize, opusEncoderInfo.getMode(), mtuSize);
                 encoder.open();
             } catch (Exception e) {
