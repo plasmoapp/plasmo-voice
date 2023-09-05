@@ -73,7 +73,7 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
 
     private void resetServerAesState(@NotNull MinecraftProxyServerInfo server) {
         if (server.getPlayerCount() > 0) return;
-        getServer(server.getName())
+        Optional.ofNullable(servers.get(server.getName()))
                 .filter(RemoteServer::isAesEncryptionKeySet)
                 .ifPresent(remoteServer -> {
                     BaseVoice.DEBUG_LOGGER.log("Reset AES encryption state for {}", remoteServer);
