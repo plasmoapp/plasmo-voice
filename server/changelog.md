@@ -1,2 +1,2 @@
-- Fix vanish support [#358](this was causing memory leak when unloading worlds)
+- Fix vanish support [#358](https://github.com/plasmoapp/plasmo-voice/issues/358)
 - Fix memory leak when unloading worlds
