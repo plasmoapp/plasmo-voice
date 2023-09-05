@@ -12,6 +12,8 @@ import com.velocitypowered.api.proxy.ServerConnection;
 import com.velocitypowered.api.proxy.messages.ChannelIdentifier;
 import com.velocitypowered.api.proxy.messages.MinecraftChannelIdentifier;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.lib.api.server.player.MinecraftServerPlayer;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.proto.packets.PacketHandler;
@@ -46,6 +48,8 @@ public class VelocityProxyChannelHandler {
     public VelocityProxyChannelHandler(@NotNull ProxyServer server,
                                        @NotNull BaseVoiceProxy voiceProxy) {
         this.voiceProxy = voiceProxy;
+
+        PlayerQuitEvent.INSTANCE.registerListener(this::onPlayerQuit);
 
         server.getChannelRegistrar().register(VOICE_CHANNEL, VOICE_SERVICE_CHANNEL);
     }
@@ -139,12 +143,8 @@ public class VelocityProxyChannelHandler {
         }
     }
 
-    @Subscribe
-    public void onPlayerQuit(@NotNull DisconnectEvent event) {
-        if (event.getLoginStatus() != DisconnectEvent.LoginStatus.SUCCESSFUL_LOGIN) return;
-
-        Player player = event.getPlayer();
-        playerToServerChannels.remove(player.getUniqueId());
-        serverToPlayerChannels.remove(player.getUniqueId());
+    public void onPlayerQuit(@NotNull MinecraftServerPlayer player) {
+        playerToServerChannels.remove(player.getUUID());
+        serverToPlayerChannels.remove(player.getUUID());
     }
 }
