@@ -254,6 +254,9 @@ public final class VoiceClientConfig implements ClientConfig {
         private ConfigEntry<String> outputDevice = new ConfigEntry<>("");
 
         @ConfigField
+        private BooleanConfigEntry disableInputDevice = new BooleanConfigEntry(false);
+
+        @ConfigField
         private BooleanConfigEntry useJavaxInput = new BooleanConfigEntry(false);
 
         @ConfigField
