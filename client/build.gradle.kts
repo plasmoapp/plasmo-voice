@@ -91,7 +91,9 @@ dependencies {
     shadowCommon(prebundleNow(universalCraft))
 
     "su.plo.ustats:${uStatsVersion()}".also {
-        modApi(it)
+        modApi(it) {
+            isTransitive = false
+        }
         shadowCommon(it) {
             isTransitive = false
         }
@@ -128,15 +130,9 @@ dependencies {
         isTransitive = false
     }
 
-    if (platform.isForge) {
-        shadowCommon(rootProject.libs.guice) {
-            exclude("com.google.guava")
-        }
-    } else {
-        "include"(rootProject.libs.guice)
-        "include"(rootProject.libs.aopalliance)
-        "include"(rootProject.libs.javax.inject)
-    }
+    "include"(rootProject.libs.guice)
+    "include"(rootProject.libs.aopalliance)
+    "include"(rootProject.libs.javax.inject)
 }
 
 tasks {

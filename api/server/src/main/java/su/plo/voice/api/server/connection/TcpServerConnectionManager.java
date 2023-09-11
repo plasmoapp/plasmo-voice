@@ -42,4 +42,11 @@ public interface TcpServerConnectionManager extends ConnectionManager<ClientPack
      * @param player the player
      */
     void broadcastPlayerInfoUpdate(@NotNull VoiceServerPlayer player);
+
+    /**
+     * Sends {@link su.plo.voice.proto.packets.tcp.clientbound.PlayerDisconnectPacket} to all connected players
+     *
+     * @param player the player
+     */
+    void broadcastPlayerDisconnect(@NotNull VoiceServerPlayer player);
 }

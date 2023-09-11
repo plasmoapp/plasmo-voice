@@ -61,7 +61,11 @@ public class PacketUdpCodec {
     }
 
     public static Optional<PacketUdp> decode(ByteArrayDataInput in) throws IOException {
-        if (in.readInt() != MAGIC_NUMBER) return Optional.empty(); // bad packet
+        try {
+            if (in.readInt() != MAGIC_NUMBER) return Optional.empty(); // bad packet
+        } catch (Exception e) {
+            return Optional.empty();
+        }
 
         Packet<?> packet = PACKETS.byType(in.readByte());
         if (packet != null) {

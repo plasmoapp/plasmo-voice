@@ -2,7 +2,9 @@ package su.plo.voice.bungee
 
 import net.md_5.bungee.api.ProxyServer
 import net.md_5.bungee.api.connection.ProxiedPlayer
+import net.md_5.bungee.api.event.ProxyReloadEvent
 import net.md_5.bungee.api.plugin.Plugin
+import net.md_5.bungee.event.EventHandler
 import org.bstats.bungeecord.Metrics
 import su.plo.lib.api.proxy.event.command.ProxyCommandsRegisterEvent
 import su.plo.lib.api.server.permission.PermissionTristate
@@ -42,6 +44,11 @@ class BungeeVoiceProxy(
     fun onDisable() {
         super.onShutdown()
         metrics.shutdown()
+    }
+
+    @EventHandler
+    fun onProxyConfigReload(event: ProxyReloadEvent) {
+        super.onProxyConfigReload()
     }
 
     override fun getVersion(): String = plugin.description.version

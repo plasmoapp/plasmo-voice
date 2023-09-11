@@ -11,7 +11,6 @@ import net.minecraft.network.protocol.game.ClientboundSetActionBarTextPacket;
 import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.server.MinecraftServerLib;
 import su.plo.lib.api.server.chat.ServerTextConverter;
 import su.plo.lib.api.server.entity.MinecraftServerEntity;
 import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
@@ -20,8 +19,8 @@ import su.plo.lib.api.server.world.MinecraftServerWorld;
 import su.plo.lib.api.server.world.ServerPos3d;
 import su.plo.lib.mod.client.texture.ResourceCache;
 import su.plo.lib.mod.entity.ModPlayer;
+import su.plo.lib.mod.server.ModServerLib;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
-import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -33,9 +32,8 @@ public final class ModServerPlayer
         extends ModPlayer<ServerPlayer>
         implements MinecraftServerPlayerEntity {
 
-    private final MinecraftServerLib minecraftServer;
+    private final ModServerLib minecraftServer;
     private final ServerTextConverter<Component> textConverter;
-    private final PermissionSupplier permissions;
     private final ResourceCache resources;
     private final Set<String> registeredChannels = Sets.newCopyOnWriteArraySet();
 
@@ -44,16 +42,14 @@ public final class ModServerPlayer
     private String language = "en_us";
     private MinecraftServerEntity spectatorTarget;
 
-    public ModServerPlayer(@NotNull MinecraftServerLib minecraftServer,
+    public ModServerPlayer(@NotNull ModServerLib minecraftServer,
                            @NotNull ServerTextConverter<Component> textConverter,
-                           @NotNull PermissionSupplier permissions,
                            @NotNull ResourceCache resources,
                            @NotNull ServerPlayer player) {
         super(player);
 
         this.minecraftServer = minecraftServer;
         this.textConverter = textConverter;
-        this.permissions = permissions;
         this.resources = resources;
     }
 
@@ -153,12 +149,16 @@ public final class ModServerPlayer
 
     @Override
     public boolean hasPermission(@NotNull String permission) {
-        return permissions.hasPermission(instance, permission);
+        if (minecraftServer.getPermissions() == null) return false;
+
+        return minecraftServer.getPermissions().hasPermission(instance, permission);
     }
 
     @Override
     public @NotNull PermissionTristate getPermission(@NotNull String permission) {
-        return permissions.getPermission(instance, permission);
+        if (minecraftServer.getPermissions() == null) return PermissionTristate.UNDEFINED;
+
+        return minecraftServer.getPermissions().getPermission(instance, permission);
     }
 
     public void addChannel(@NotNull String channel) {

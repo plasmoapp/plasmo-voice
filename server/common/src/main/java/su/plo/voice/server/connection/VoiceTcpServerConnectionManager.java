@@ -152,10 +152,19 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
     @Override
     public void broadcastPlayerInfoUpdate(@NotNull VoiceServerPlayer player) {
         synchronized (playerStateLock) {
-            broadcast(new PlayerInfoUpdatePacket(
-                    player.createPlayerInfo()
-            ), (player1) -> player1.getInstance().canSee(player.getInstance()));
+            broadcast(new PlayerInfoUpdatePacket(player.createPlayerInfo()), this.createVanishFilter(player));
         }
+    }
+
+    @Override
+    public void broadcastPlayerDisconnect(@NotNull VoiceServerPlayer player) {
+        synchronized (playerStateLock) {
+            broadcast(new PlayerDisconnectPacket(player.getInstance().getUUID()), this.createVanishFilter(player));
+        }
+    }
+
+    private Predicate<VoiceServerPlayer> createVanishFilter(@NotNull VoiceServerPlayer player) {
+        return (player1) -> player1.getInstance().canSee(player.getInstance());
     }
 
     private Map<String, Boolean> getPlayerPermissions(@NotNull VoiceServerPlayer player) {

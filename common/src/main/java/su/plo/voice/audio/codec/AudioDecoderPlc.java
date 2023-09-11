@@ -1,4 +1,4 @@
-package su.plo.voice.client.audio.codec;
+package su.plo.voice.audio.codec;
 
 import su.plo.voice.api.audio.codec.CodecException;
 

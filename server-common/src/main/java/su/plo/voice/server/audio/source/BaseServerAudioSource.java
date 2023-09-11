@@ -66,7 +66,9 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
         if (this.stereo != stereo) {
             this.stereo = stereo;
             setDirty();
-            increaseSourceState();
+            // increase source state by 10, so client can detect that
+            // it was a major change and drop all packets with source state diff more than 10
+            increaseSourceState(10);
         }
     }
 
@@ -75,7 +77,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
         if (this.iconVisible != visible) {
             this.iconVisible = visible;
             setDirty();
-            increaseSourceState();
+            increaseSourceState(1);
         }
     }
 
@@ -84,7 +86,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
         if (!Objects.equals(this.name, name)) {
             this.name = name;
             setDirty();
-            increaseSourceState();
+            increaseSourceState(1);
         }
     }
 
@@ -123,10 +125,16 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
         return true;
     }
 
-    protected void increaseSourceState() {
+    protected void increaseSourceState(int addition) {
         state.updateAndGet((operand) -> {
-            int value = operand + 1;
-            return value > Byte.MAX_VALUE ? Byte.MIN_VALUE : value;
+            int value = operand + addition;
+
+            if (value > Byte.MAX_VALUE) {
+                int remainder = value % Byte.MIN_VALUE;
+                return Byte.MIN_VALUE + remainder;
+            } else {
+                return value;
+            }
         });
     }
 }

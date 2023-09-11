@@ -3,7 +3,8 @@
     "minVersion": "0.7",
     "package": "su.plo.voice.client.mixin",
     "mixins": [
-        "MixinServerPlayer"
+        "MixinServerPlayer",
+        "MixinPlayerList"
     ],
     "client": [
         "MixinEntityRenderer",

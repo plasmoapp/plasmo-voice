@@ -90,6 +90,11 @@ class StreamAlSource private constructor(
             return
         }
 
+        if (queue.size > 100) {
+            BaseVoice.DEBUG_LOGGER.log("Queue overflow, dropping samples")
+            return
+        }
+
         val buffer = MemoryUtil.memAlloc(samples.size)
         buffer.put(samples)
         (buffer as Buffer).flip()
@@ -100,11 +105,6 @@ class StreamAlSource private constructor(
         if (samples != emptyBuffer) {
             emptyFilled.set(false)
             lastBufferTime = System.currentTimeMillis()
-        }
-
-        if (queue.size > 1000) {
-            LOGGER.warn("Queue overflow, stopping stream")
-            stop()
         }
     }
 

@@ -163,6 +163,8 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
 
     @Subscribe
     public void onPlayerQuit(@NotNull DisconnectEvent event) {
+        if (event.getLoginStatus() == DisconnectEvent.LoginStatus.CONFLICTING_LOGIN) return;
+
         PlayerQuitEvent.INSTANCE.getInvoker().onPlayerQuit(
                 getPlayerByInstance(event.getPlayer())
         );

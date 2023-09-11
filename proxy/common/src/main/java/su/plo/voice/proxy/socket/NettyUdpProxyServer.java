@@ -63,7 +63,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
 
     @Override
     public void stop() {
-        channel.close();
+        if (channel != null) channel.close();
         loopGroup.shutdownGracefully();
         BaseVoice.LOGGER.info("UDP proxy server is stopped");
 

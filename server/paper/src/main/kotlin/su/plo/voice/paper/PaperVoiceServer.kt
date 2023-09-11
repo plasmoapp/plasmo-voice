@@ -34,6 +34,7 @@ class PaperVoiceServer(
         plugin.server.pluginManager.registerEvents(minecraftServerLib, plugin)
 
         minecraftServerLib.permissions = createPermissionSupplier()
+        minecraftServerLib.onInitialize()
         super.onInitialize()
 
         handler = PaperServerChannelHandler(this)
@@ -71,6 +72,7 @@ class PaperVoiceServer(
     public override fun onShutdown() {
         uStats.close()
         super.onShutdown()
+        minecraftServerLib.onShutdown()
     }
 
     override fun getVersion() = plugin.description.version

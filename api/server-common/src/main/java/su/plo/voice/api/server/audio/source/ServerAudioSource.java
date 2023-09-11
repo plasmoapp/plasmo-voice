@@ -35,7 +35,7 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
 
     /**
      * Marks source as dirty.
-     * On next received packet, source will send SourceInfoPacket to all listeners
+     * On next UDP packet sent, source will send SourceInfoPacket to all listeners
      */
     void setDirty();
 

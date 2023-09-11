@@ -1,7 +1,6 @@
 package su.plo.voice;
 
 import com.google.inject.Module;
-import kotlinx.coroutines.Dispatchers;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -13,8 +12,8 @@ import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
 import su.plo.voice.api.logging.DebugLogger;
-import su.plo.voice.client.audio.codec.VoiceCodecManager;
-import su.plo.voice.client.audio.codec.opus.OpusCodecSupplier;
+import su.plo.voice.audio.codec.VoiceCodecManager;
+import su.plo.voice.audio.codec.opus.OpusCodecSupplier;
 import su.plo.voice.encryption.VoiceEncryptionManager;
 import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;

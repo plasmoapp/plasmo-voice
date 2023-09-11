@@ -257,7 +257,7 @@ public final class VoiceDeviceManager implements DeviceManager {
         }
 
         if (inputDevices.isEmpty()) {
-            if (inputFactory.getDeviceNames().size() > 0) {
+            if (inputFactory.getDeviceNames().size() > 0 && !config.getVoice().getDisableInputDevice().value()) {
                 try {
                     replace(null, voiceClient.getDeviceManager().openInputDevice(null, Params.EMPTY));
                 } catch (Exception e) {

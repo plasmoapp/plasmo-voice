@@ -26,10 +26,11 @@ import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.player.PermissionSupplier;
 
-import java.util.Collection;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ScheduledFuture;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
@@ -44,6 +45,7 @@ public final class ModServerLib implements MinecraftServerLib {
     @Setter
     private MinecraftServer server;
     @Setter
+    @Getter
     private PermissionSupplier permissions;
 
     @Getter
@@ -55,6 +57,9 @@ public final class ModServerLib implements MinecraftServerLib {
     @Getter
     private final PermissionsManager permissionsManager = new PermissionsManager();
 
+    private ScheduledExecutorService backgroundExecutor;
+    private ScheduledFuture<?> worldCleanupTask;
+
     public ModServerLib(@NotNull Supplier<ServerLanguages> languagesSupplier) {
         this.textConverter = new ServerComponentTextConverter(new ComponentTextConverter(), languagesSupplier);
         this.commandManager = new ModCommandManager(this, textConverter);
@@ -65,6 +70,14 @@ public final class ModServerLib implements MinecraftServerLib {
     @Override
     public void onInitialize() {
         INSTANCE = this;
+
+        this.backgroundExecutor = Executors.newSingleThreadScheduledExecutor();
+        this.worldCleanupTask = backgroundExecutor.scheduleAtFixedRate(
+                this::worldsCleanupTick,
+                0L,
+                30L,
+                TimeUnit.SECONDS
+        );
     }
 
     @Override
@@ -73,6 +86,9 @@ public final class ModServerLib implements MinecraftServerLib {
         this.permissions = null;
         commandManager.clear();
         permissionsManager.clear();
+
+        worldCleanupTask.cancel(false);
+        backgroundExecutor.shutdown();
     }
 
     @Override
@@ -93,10 +109,6 @@ public final class ModServerLib implements MinecraftServerLib {
 
     @Override
     public Collection<MinecraftServerWorld> getWorlds() {
-        if (server.levelKeys().size() == worldByInstance.size()) {
-            return worldByInstance.values();
-        }
-
         return StreamSupport.stream(server.getAllLevels().spliterator(), false)
                 .map(this::getWorld)
                 .toList();
@@ -108,15 +120,16 @@ public final class ModServerLib implements MinecraftServerLib {
             throw new IllegalArgumentException("instance is not " + ServerPlayer.class);
 
         MinecraftServerPlayerEntity serverPlayer = playerById.get(serverInstance.getUUID());
-        if (serverPlayer == null || ((ServerPlayer) serverPlayer.getInstance()).getId() != serverInstance.getId()) {
+        if (serverPlayer == null) {
             serverPlayer = new ModServerPlayer(
                     this,
                     textConverter,
-                    permissions,
                     resources,
                     serverInstance
             );
             playerById.put(serverInstance.getUUID(), serverPlayer);
+        } else if (serverPlayer.getInstance() != serverInstance) {
+            ((ModServerPlayer) serverPlayer).setInstance(serverInstance);
         }
 
         return serverPlayer;
@@ -191,5 +204,15 @@ public final class ModServerLib implements MinecraftServerLib {
     @Override
     public @NotNull String getVersion() {
         return server.getServerVersion();
+    }
+
+    private void worldsCleanupTick() {
+        Set<ServerLevel> worlds = StreamSupport.stream(server.getAllLevels().spliterator(), false)
+                .collect(Collectors.toSet());
+
+        worldByInstance.keySet()
+                .stream()
+                .filter(world -> !worlds.contains(world))
+                .forEach(worldByInstance::remove);
     }
 }

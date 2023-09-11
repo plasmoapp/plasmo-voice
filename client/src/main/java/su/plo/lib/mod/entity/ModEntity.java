@@ -1,10 +1,10 @@
 package su.plo.lib.mod.entity;
 
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import net.minecraft.world.entity.Entity;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.entity.MinecraftEntity;
-import su.plo.lib.api.entity.MinecraftPlayerEntity;
 import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.UUID;
@@ -12,7 +12,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ModEntity<E extends Entity> implements MinecraftEntity {
 
-    protected final E instance;
+    @Setter
+    protected @NotNull E instance;
 
     private final Pos3d position = new Pos3d();
     private final Pos3d lookAngle = new Pos3d();

@@ -31,10 +31,11 @@ import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.api.util.Params
+import su.plo.voice.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.audio.SoundOcclusion
-import su.plo.voice.client.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.config.VoiceClientConfig
+import su.plo.voice.client.utils.diff
 import su.plo.voice.client.utils.level
 import su.plo.voice.client.utils.toFloatArray
 import su.plo.voice.proto.data.audio.codec.CodecInfo
@@ -229,8 +230,9 @@ abstract class BaseClientAudioSource<T> constructor(
     }
 
     private suspend fun processAudioPacket(packet: SourceAudioPacket) = mutex.withLock {
-        if (packet.sourceState != sourceInfo.state) {
-            LOGGER.warn("Drop packet with bad source state {}", sourceInfo)
+        // drop packets if source state diff by more than 10
+        if (sourceInfo.state.diff(packet.sourceState) >= 10) {
+            BaseVoice.DEBUG_LOGGER.warn("Drop packet with bad source state {}", sourceInfo)
             return
         }
 
@@ -339,9 +341,9 @@ abstract class BaseClientAudioSource<T> constructor(
                 write(decoded)
             }
         } catch (e: EncryptionException) {
-            LOGGER.warn("Failed to decrypt source audio", e)
+            BaseVoice.DEBUG_LOGGER.warn("Failed to decrypt source audio", e)
         } catch (e: CodecException) {
-            LOGGER.warn("Failed to decode source audio", e)
+            BaseVoice.DEBUG_LOGGER.warn("Failed to decode source audio", e)
         }
 
         lastSequenceNumbers[sourceInfo.lineId] = packet.sequenceNumber

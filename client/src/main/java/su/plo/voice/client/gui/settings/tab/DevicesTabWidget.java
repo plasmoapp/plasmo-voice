@@ -140,7 +140,10 @@ public final class DevicesTabWidget extends TabWidget {
 
         ImmutableList<String> inputDeviceNames = deviceFactory.get().getDeviceNames();
         Collection<AudioDevice> inputDevices = this.devices.getDevices(DeviceType.INPUT);
-        Optional<AudioDevice> inputDevice = inputDevices.stream().findFirst();
+        Optional<AudioDevice> inputDevice = Optional.empty();
+        if (!config.getVoice().getDisableInputDevice().value()) {
+            inputDevice = inputDevices.stream().findFirst();
+        }
 
         DropDownWidget dropdown = new DropDownWidget(
                 parent,
@@ -164,7 +167,7 @@ public final class DevicesTabWidget extends TabWidget {
                 }
         );
 
-        dropdown.setActive(!inputDeviceNames.isEmpty());
+        dropdown.setActive(!inputDeviceNames.isEmpty() && !config.getVoice().getDisableInputDevice().value());
 
         return new OptionEntry<>(
                 MinecraftTextComponent.translatable("gui.plasmovoice.devices.microphone"),
@@ -288,6 +291,8 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private void reloadInputDevice() {
+        if (config.getVoice().getDisableInputDevice().value()) return;
+
         try {
             InputDevice device = devices.openInputDevice(null, Params.EMPTY);
 
