@@ -35,6 +35,7 @@ public final class ToggleButton extends GuiAbstractWidget {
 
         this.entry = entry;
         this.action = action;
+        this.active = !entry.isDisabled();
     }
 
     @Override
