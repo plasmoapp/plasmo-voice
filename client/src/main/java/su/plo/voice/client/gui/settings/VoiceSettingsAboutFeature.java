@@ -19,8 +19,6 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class VoiceSettingsAboutFeature {
 
-    private static final ResourceLocation LOCATION_BLOCKS = new ResourceLocation("textures/atlas/blocks.png");
-
     private final VoiceSettingsScreen parent;
 
     private final List<BlockDustParticle2D> particles = Lists.newArrayList();
@@ -90,7 +88,11 @@ public final class VoiceSettingsAboutFeature {
             UGraphics.enableBlend();
             RenderUtil.defaultBlendFunc();
             UGraphics.depthMask(true);
-            UGraphics.bindTexture(0, LOCATION_BLOCKS);
+            //#if MC>=11903
+            UGraphics.bindTexture(0, particle.getSprite().atlasLocation());
+            //#else
+            //$$ UGraphics.bindTexture(0, particle.getSprite().atlas().location());
+            //#endif
 
             buffer.beginWithDefaultShader(
                     UGraphics.DrawMode.QUADS,

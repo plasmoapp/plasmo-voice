@@ -28,6 +28,11 @@ import java.util.Set;
 
 import static su.plo.lib.mod.server.utils.ServerPlayerKt.serverLevel;
 
+//#if MC>=12002
+//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+//$$ import net.minecraft.resources.ResourceLocation;
+//#endif
+
 public final class ModServerPlayer
         extends ModPlayer<ServerPlayer>
         implements MinecraftServerPlayerEntity {
@@ -97,10 +102,11 @@ public final class ModServerPlayer
 
     @Override
     public void sendPacket(@NotNull String channel, byte[] data) {
-        instance.connection.send(new ClientboundCustomPayloadPacket(
-                resources.getLocation(channel),
-                new FriendlyByteBuf(Unpooled.wrappedBuffer(data))
-        ));
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        buf.writeResourceLocation(resources.getLocation(channel));
+        buf.writeBytes(data);
+
+        instance.connection.send(new ClientboundCustomPayloadPacket(buf));
     }
 
     @Override

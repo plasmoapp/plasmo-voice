@@ -1,9 +1,10 @@
 package su.plo.voice.client.render.cape
 
+import com.google.common.base.Suppliers
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import com.google.common.hash.Hashing
 import com.mojang.authlib.minecraft.MinecraftProfileTexture
-import com.mojang.blaze3d.systems.RenderSystem
-import net.minecraft.Util
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.HttpTexture
 import net.minecraft.resources.ResourceLocation
@@ -11,25 +12,73 @@ import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.voice.client.meta.PlasmoVoiceMeta
 import java.io.File
 import java.net.URL
+import java.time.Duration
 import java.util.*
-import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CompletableFuture
+import java.util.function.Supplier
+
+//#if MC>=12002
+//$$ import net.minecraft.client.resources.PlayerSkin
+//#endif
 
 object DeveloperCapeManager {
 
-    private val loadedCapes: MutableMap<String, ResourceLocation> = ConcurrentHashMap()
+    private val loadedCapes: Cache<String, Supplier<Supplier<ResourceLocation?>>> = CacheBuilder.newBuilder()
+        .expireAfterAccess(Duration.ofMinutes(10))
+        .build()
+
+    //#if MC>=12002
+    //$$ private val convertedSkins: Cache<String, PlayerSkin> = CacheBuilder.newBuilder()
+    //$$     .expireAfterAccess(Duration.ofMinutes(10))
+    //$$     .build()
+    //$$
+    //$$ fun addCapeToSkin(playerName: String, capeTexture: ResourceLocation, skin: PlayerSkin): PlayerSkin {
+    //$$     var newSkin = convertedSkins.getIfPresent(playerName)
+    //$$
+    //$$     if (newSkin == null || skin.texture != newSkin.texture) {
+    //$$         newSkin = PlayerSkin(
+    //$$             skin.texture(),
+    //$$             skin.textureUrl(),
+    //$$             capeTexture,
+    //$$             capeTexture,
+    //$$             skin.model(),
+    //$$             skin.secure()
+    //$$         )
+    //$$         convertedSkins.put(playerName, newSkin)
+    //$$     }
+    //$$
+    //$$     return newSkin
+    //$$ }
+    //#endif
 
     fun clearLoadedCapes() {
-        loadedCapes.clear()
+        loadedCapes.invalidateAll()
+        loadedCapes.cleanUp()
     }
 
-    fun registerTextures(playerName: String) {
-        if (PlasmoVoiceMeta.META.developers.none { developer ->
-                developer.name == playerName || developer.aliases.contains(playerName)
-            }) return
+    fun hasCape(playerName: String) =
+        PlasmoVoiceMeta.META.developers.any { developer ->
+            developer.name == playerName || developer.aliases.contains(playerName)
+        }
 
-        val capeLocation = ResourceLocation("plasmovoice", "developer_capes/${playerName.lowercase()}")
+    fun getCapeLocation(playerName: String): ResourceLocation? {
+        return loadedCapes.get(playerName) {
+            Suppliers.memoize {
+                if (!hasCape(playerName))
+                    return@memoize Supplier { null }
 
-        Util.backgroundExecutor().execute {
+                val capeLocation = getCapeLocationAsync(playerName)
+                Supplier {
+                    capeLocation.getNow(null)
+                }
+            }
+        }.get().get()
+    }
+
+    private fun getCapeLocationAsync(playerName: String): CompletableFuture<ResourceLocation?> =
+        CompletableFuture.supplyAsync {
+            val capeLocation = ResourceLocation("plasmovoice", "developer_capes/${playerName.lowercase()}")
+
             val url = URL("https://plasmovoice.com/capes/$playerName.png")
 
             val texture = MinecraftProfileTexture(url.toString(), HashMap())
@@ -43,16 +92,11 @@ object DeveloperCapeManager {
                 capeFile.delete()
             }
 
-            RenderSystem.recordRenderCall {
-                Minecraft.getInstance().textureManager.register(
-                    capeLocation,
-                    HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
-                )
-                loadedCapes[playerName] = capeLocation
-            }
-        }
-    }
+            Minecraft.getInstance().textureManager.register(
+                capeLocation,
+                HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
+            )
 
-    fun getCapeLocation(playerName: String): ResourceLocation? =
-        loadedCapes[playerName]
+            capeLocation
+        }
 }

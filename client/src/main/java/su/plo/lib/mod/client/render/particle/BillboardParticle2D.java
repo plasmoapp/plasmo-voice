@@ -52,7 +52,7 @@ public abstract class BillboardParticle2D extends Particle2D {
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
                 .endVertex();
 
-        buffer.pos((double)vec3fs[3].x(), (double)vec3fs[3].y(), (double)vec3fs[3].z())
+        buffer.pos(stack, (double)vec3fs[3].x(), (double)vec3fs[3].y(), (double)vec3fs[3].z())
                 .tex(l, o)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
                 .endVertex();

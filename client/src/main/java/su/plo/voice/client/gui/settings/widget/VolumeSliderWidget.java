@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
@@ -53,12 +54,19 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
 
     @Override
     protected void renderTrack(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
-        UGraphics.bindTexture(0, WIDGETS_LOCATION);
-        UGraphics.color4f(1F, 1F, 1F, 1F);
-        int k = (isHoveredOrFocused() ? 2 : 1) * 20;
+        GuiWidgetTexture sprite;
+        if (isHoveredOrFocused()) {
+            sprite = GuiWidgetTexture.BUTTON_ACTIVE;
+        } else {
+            sprite = GuiWidgetTexture.BUTTON_DEFAULT;
+        }
 
-        RenderUtil.blit(stack, x + (int) (value * (double) (getSliderWidth() - 8)), y, 0, 46 + k, 4, 20);
-        RenderUtil.blit(stack, x + (int) (value * (double) (getSliderWidth() - 8)) + 4, y, 196, 46 + k, 4, 20);
+        UGraphics.bindTexture(0, sprite.getLocation());
+        UGraphics.color4f(1F, 1F, 1F, 1F);
+
+        int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
+        RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
+        RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
     }
 
     private double calculateValue(double value) {

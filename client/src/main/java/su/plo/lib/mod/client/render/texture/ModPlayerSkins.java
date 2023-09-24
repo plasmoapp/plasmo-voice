@@ -55,6 +55,10 @@ public final class ModPlayerSkins {
 
         SkinManager skinManager = UMinecraft.getMinecraft().getSkinManager();
 
+        //#if MC>=12002
+        //$$ skinLocation = skinManager.getInsecureSkin(profile).texture();
+        //$$ skins.put(profile.getName(), skinLocation);
+        //#else
         Map<MinecraftProfileTexture.Type, MinecraftProfileTexture> textures = skinManager
                 .getInsecureSkinInformation(profile);
         if (textures.isEmpty()) {
@@ -71,6 +75,7 @@ public final class ModPlayerSkins {
             ResourceLocation identifier = new ResourceLocation("skins/" + hash);
             skins.put(profile.getName(), identifier);
         }
+        //#endif
     }
 
     public static synchronized void loadSkin(@NotNull MinecraftGameProfile gameProfile) {
@@ -92,14 +97,22 @@ public final class ModPlayerSkins {
             ));
         });
 
+        //#if MC>=12002
+        //$$ skinLocation = UMinecraft.getMinecraft().getSkinManager().getInsecureSkin(profile).texture();
+        //#else
         skinLocation = UMinecraft.getMinecraft().getSkinManager().getInsecureSkinLocation(profile);
+        //#endif
         skins.put(gameProfile.getName(), skinLocation);
     }
 
     public static synchronized @NotNull ResourceLocation getSkin(@NotNull UUID playerId, @NotNull String nick) {
         PlayerInfo playerInfo = UMinecraft.getNetHandler().getPlayerInfo(playerId);
         if (playerInfo != null) {
+            //#if MC>=12002
+            //$$ return playerInfo.getSkin().texture();
+            //#else
             return playerInfo.getSkinLocation();
+            //#endif
         }
 
         ResourceLocation skinLocation = skins.getIfPresent(nick);
@@ -109,7 +122,11 @@ public final class ModPlayerSkins {
     }
 
     public static @NotNull ResourceLocation getDefaultSkin(@NotNull UUID playerId) {
+        //#if MC>=12002
+        //$$ return DefaultPlayerSkin.get(playerId).texture();
+        //#else
         return DefaultPlayerSkin.getDefaultSkin(playerId);
+        //#endif
     }
 
     private ModPlayerSkins() {

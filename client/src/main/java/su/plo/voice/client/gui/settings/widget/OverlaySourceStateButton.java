@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
@@ -49,20 +50,27 @@ public final class OverlaySourceStateButton extends GuiAbstractWidget {
     }
 
     @Override
-    protected int getYImage(boolean hovered) {
-        return 0;
+    protected @NotNull GuiWidgetTexture getButtonTexture(boolean hovered) {
+        return GuiWidgetTexture.BUTTON_DISABLED;
     }
 
     @Override
     protected void renderBackground(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
-        UGraphics.bindTexture(0, WIDGETS_LOCATION);
-        int i = (isHoveredOrFocused() && active ? 2 : 1) * 20;
-        if (entry.value() == OverlaySourceState.ON) {
-            RenderUtil.blit(stack, x + (int) ((double) (width - 8)), y, 0, 46 + i, 4, 20);
-            RenderUtil.blit(stack, x + (int) ((double) (width - 8)) + 4, y, 196, 46 + i, 4, 20);
+        GuiWidgetTexture sprite;
+        if (isHoveredOrFocused() && active) {
+            sprite = GuiWidgetTexture.BUTTON_ACTIVE;
         } else {
-            RenderUtil.blit(stack, x, y, 0, 46 + i, 4, 20);
-            RenderUtil.blit(stack, x + 4, y, 196, 46 + i, 4, 20);
+            sprite = GuiWidgetTexture.BUTTON_DEFAULT;
+        }
+
+        UGraphics.bindTexture(0, sprite.getLocation());
+        if (entry.value() == OverlaySourceState.ON) {
+            int x0 = x + (int) ((double) (width - 8));
+            RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
+            RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
+        } else {
+            RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, 4, 20);
+            RenderUtil.blitSprite(stack, sprite, x + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
         }
     }
 
