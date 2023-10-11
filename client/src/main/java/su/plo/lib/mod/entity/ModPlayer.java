@@ -5,6 +5,10 @@ import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.entity.MinecraftPlayerEntity;
 
+//#if MC>=12002
+//$$ import net.minecraft.world.scores.DisplaySlot;
+//#endif
+
 @ToString
 public class ModPlayer<P extends Player> extends ModEntity<P> implements MinecraftPlayerEntity {
 
@@ -29,6 +33,10 @@ public class ModPlayer<P extends Player> extends ModEntity<P> implements Minecra
 
     @Override
     public boolean hasLabelScoreboard() {
+        //#if MC>=12002
+        //$$ return instance.getScoreboard().getDisplayObjective(DisplaySlot.BELOW_NAME) != null;
+        //#else
         return instance.getScoreboard().getDisplayObjective(2) != null;
+        //#endif
     }
 }

@@ -145,17 +145,17 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
 
     // Class methods
     public void renderButton(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
-        UGraphics.bindTexture(0, WIDGETS_LOCATION);
+        GuiWidgetTexture sprite = getButtonTexture(hovered);
+
+        UGraphics.bindTexture(0, sprite.getLocation());
         UGraphics.color4f(1F, 1F, 1F, alpha);
 
         UGraphics.enableBlend();
         RenderUtil.defaultBlendFunc();
         UGraphics.enableDepth();
 
-        int textureV = getYImage(hovered);
-
-        RenderUtil.blit(stack, x, y, 0, 46 + textureV * 20, width / 2, height);
-        RenderUtil.blit(stack, x + width / 2, y, 200 - width / 2, 46 + textureV * 20, width / 2, height);
+        RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
+        RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
 
         renderBackground(stack, mouseX, mouseY);
 
@@ -218,15 +218,14 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
         return wrapDefaultNarrationMessage(getText());
     }
 
-    protected int getYImage(boolean hovered) {
-        int i = 1;
+    protected @NotNull GuiWidgetTexture getButtonTexture(boolean hovered) {
         if (!this.active) {
-            i = 0;
+            return GuiWidgetTexture.BUTTON_DISABLED;
         } else if (hovered) {
-            i = 2;
+            return GuiWidgetTexture.BUTTON_ACTIVE;
         }
 
-        return i;
+        return GuiWidgetTexture.BUTTON_DEFAULT;
     }
 
     protected boolean isValidClickButton(int button) {

@@ -2,7 +2,6 @@ package su.plo.voice.client.mixin;
 
 import com.mojang.authlib.GameProfile;
 import net.minecraft.core.BlockPos;
-import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -19,6 +18,12 @@ import su.plo.lib.mod.server.entity.ModServerPlayer;
 //$$ import org.jetbrains.annotations.Nullable;
 //#endif
 
+//#if MC>=12002
+//$$ import net.minecraft.server.level.ClientInformation;
+//#else
+import net.minecraft.network.protocol.game.ServerboundClientInformationPacket;
+//#endif
+
 @Mixin(ServerPlayer.class)
 public abstract class MixinServerPlayer extends Player {
 
@@ -32,6 +37,16 @@ public abstract class MixinServerPlayer extends Player {
     //$$ }
     //#endif
 
+    //#if MC>=12002
+    //$$ @Inject(method = "updateOptions", at = @At("HEAD"))
+    //$$ public void updateOptions(ClientInformation clientInformation, CallbackInfo ci) {
+    //$$     ModServerLib.INSTANCE.getPlayerById(getUUID()).ifPresent((player) -> {
+    //$$         ((ModServerPlayer) player).setLanguage(
+    //$$                 clientInformation.language()
+    //$$         );
+    //$$     });
+    //$$ }
+    //#else
     @Inject(method = "updateOptions", at = @At("HEAD"))
     public void updateOptions(ServerboundClientInformationPacket serverboundClientInformationPacket, CallbackInfo ci) {
         ModServerLib.INSTANCE.getPlayerById(getUUID()).ifPresent((player) -> {
@@ -40,4 +55,5 @@ public abstract class MixinServerPlayer extends Player {
             );
         });
     }
+    //#endif
 }

@@ -1,9 +1,11 @@
 package su.plo.lib.mod.client.render.particle;
 
+import lombok.Getter;
 import net.minecraft.client.particle.SpriteSet;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 
 public abstract class SpriteBillboardParticle2D extends BillboardParticle2D {
+    @Getter
     protected TextureAtlasSprite sprite;
 
     protected SpriteBillboardParticle2D(double x, double y) {

@@ -1,6 +1,7 @@
 package su.plo.voice.client.render.voice;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.world.scores.Objective;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -33,6 +34,10 @@ import su.plo.voice.proto.data.pos.Pos3d;
 import java.util.Collection;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+//#if MC>=12002
+//$$ import net.minecraft.world.scores.DisplaySlot;
+//#endif
 
 public final class SourceIconRenderer {
 
@@ -300,7 +305,13 @@ public final class SourceIconRenderer {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
 
-                if (player.getScoreboard().getDisplayObjective(2) != null && distance < 100D) {
+                //#if MC>=12002
+                //$$ Objective belowNameObjective = player.getScoreboard().getDisplayObjective(DisplaySlot.BELOW_NAME);
+                //#else
+                Objective belowNameObjective = player.getScoreboard().getDisplayObjective(2);
+                //#endif
+
+                if (belowNameObjective != null && distance < 100D) {
                     stack.translate(0D, 0.3D, 0D);
                 }
             }

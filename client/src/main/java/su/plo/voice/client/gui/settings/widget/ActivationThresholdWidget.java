@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
@@ -131,8 +132,9 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
             UGraphics.color4f(0F, 1F, 0F, alpha);
         }
 
-        UGraphics.bindTexture(0, WIDGETS_LOCATION);
-        RenderUtil.blit(stack, x + 1, y + 1, 1, 47, (int) ((sliderWidth - 2) * controller.getMicrophoneValue()), height - 2);
+        GuiWidgetTexture sprite = GuiWidgetTexture.BUTTON_DISABLED;
+        UGraphics.bindTexture(0, sprite.getLocation());
+        RenderUtil.blitSprite(stack, sprite, x + 1, y + 1, 1, 1, (int) ((sliderWidth - 2) * controller.getMicrophoneValue()), height - 2);
         UGraphics.color4f(1F, 1F, 1F, 1F);
     }
 

@@ -13,6 +13,8 @@ import com.mojang.blaze3d.platform.GlStateManager;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.Tesselator;
+import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -150,6 +152,19 @@ public class RenderUtil {
         buffer.pos(stack, (float) endX, (float) endY, (float) z)
                 .color(endRed, endGreen, endBlue, endAlpha)
                 .endVertex();
+    }
+
+    public static void blitSprite(
+            @NotNull UMatrixStack stack,
+            @NotNull GuiWidgetTexture sprite,
+            int x,
+            int y,
+            int u,
+            int v,
+            int width,
+            int height
+    ) {
+        blit(stack, x, y, u + sprite.getU(), v + sprite.getV(), width, height, sprite.getTextureWidth(), sprite.getTextureHeight());
     }
 
     public static void blit(UMatrixStack stack, int x, int y, int u, int v, int width, int height) {

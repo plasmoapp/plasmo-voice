@@ -57,6 +57,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+//#if MC>=12002
+//$$ import net.minecraft.resources.ResourceLocation;
+//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+//#endif
+
 public final class ModServerConnection implements ServerConnection, ClientPacketTcpHandler {
 
     private static final Logger LOGGER = LogManager.getLogger(ModServerConnection.class);
@@ -103,10 +108,11 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         byte[] encoded = PacketTcpCodec.encode(packet);
         if (encoded == null) return;
 
-        connection.send(new ServerboundCustomPayloadPacket(
-                ModVoiceServer.CHANNEL,
-                new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded))
-        ));
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
+        buf.writeResourceLocation(ModVoiceServer.CHANNEL);
+        buf.writeBytes(encoded);
+
+        connection.send(new ServerboundCustomPayloadPacket(buf));
     }
 
     @Override

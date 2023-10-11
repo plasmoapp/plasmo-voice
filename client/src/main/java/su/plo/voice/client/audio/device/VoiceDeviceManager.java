@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.device;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
+import com.sun.jna.Platform;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -141,6 +142,19 @@ public final class VoiceDeviceManager implements DeviceManager {
 
     @Override
     public InputDevice openInputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception {
+        // Use javax for mac by default
+        if (Platform.isMac() && !config.getVoice().getUseJavaxInput().value()) {
+            config.getVoice().getUseJavaxInput().set(true);
+            config.save(true);
+        }
+
+        // todo: javax stereo
+        if (config.getVoice().getUseJavaxInput().value() && config.getVoice().getStereoCapture().value()) {
+            config.getVoice().getStereoCapture().set(false);
+            config.getVoice().getStereoCapture().setDisabled(true);
+            config.save(true);
+        }
+
         if (format == null) {
             if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
 
