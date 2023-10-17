@@ -1,7 +1,11 @@
 package su.plo.voice.api.event;
 
 /**
- * Represents an event's priority in execution
+ * Represents an event's priority in execution.
+ *
+ * <p>
+ *     Lower priorities executes first.
+ * </p>
  */
 public enum EventPriority {
     LOWEST,

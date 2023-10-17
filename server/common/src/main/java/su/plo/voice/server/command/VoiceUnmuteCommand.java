@@ -3,67 +3,64 @@ package su.plo.voice.server.command;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.server.MinecraftServerLib;
-import su.plo.lib.api.server.command.MinecraftCommand;
-import su.plo.lib.api.server.command.MinecraftCommandSource;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.command.McCommand;
+import su.plo.slib.api.command.McCommandSource;
+import su.plo.slib.api.entity.player.McGameProfile;
+import su.plo.slib.api.server.McServerLib;
 import su.plo.voice.api.server.mute.MuteManager;
-import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.server.BaseVoiceServer;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
-public final class VoiceUnmuteCommand implements MinecraftCommand {
+public final class VoiceUnmuteCommand implements McCommand {
 
     private final BaseVoiceServer voiceServer;
-    private final MinecraftServerLib minecraftServer;
+    private final McServerLib minecraftServer;
 
     @Override
-    public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+    public void execute(@NotNull McCommandSource source, @NotNull String[] arguments) {
         if (arguments.length == 0) {
-            source.sendMessage(MinecraftTextComponent.translatable("pv.command.unmute.usage"));
+            source.sendMessage(McTextComponent.translatable("pv.command.unmute.usage"));
             return;
         }
 
-        Optional<MinecraftGameProfile> player;
+        McGameProfile player;
         try {
             player = minecraftServer.getGameProfile(UUID.fromString(arguments[0]));
         } catch (Exception e) {
             player = minecraftServer.getGameProfile(arguments[0]);
         }
 
-        if (!player.isPresent()) {
-            source.sendMessage(MinecraftTextComponent.translatable("pv.error.player_not_found"));
+        if (player == null) {
+            source.sendMessage(McTextComponent.translatable("pv.error.player_not_found"));
             return;
         }
 
         MuteManager muteManager = voiceServer.getMuteManager();
 
-        if (!muteManager.unmute(player.get().getId(), false).isPresent()) {
-            source.sendMessage(MinecraftTextComponent.translatable(
-                    "pv.command.unmute.not_muted",
-                    player.get().getName()
-            ));
+        if (!muteManager.unmute(player.getId(), false).isPresent()) {
+            source.sendMessage(
+                    McTextComponent.translatable("pv.command.unmute.not_muted", player.getName())
+            );
             return;
         }
 
-        source.sendMessage(MinecraftTextComponent.translatable(
-                "pv.command.unmute.unmuted",
-                player.get().getName()
-        ));
+        source.sendMessage(
+                McTextComponent.translatable("pv.command.unmute.unmuted", player.getName())
+        );
     }
 
     @Override
-    public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
+    public boolean hasPermission(@NotNull McCommandSource source, @Nullable String[] arguments) {
         return source.hasPermission("pv.unmute");
     }
 
     @Override
-    public List<String> suggest(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+    public @NotNull List<String> suggest(@NotNull McCommandSource source, @NotNull String[] arguments) {
         if (arguments.length <= 1) {
             String argument = arguments.length > 0 ? arguments[0] : "";
 
@@ -72,14 +69,14 @@ public final class VoiceUnmuteCommand implements MinecraftCommand {
                     .getMutedPlayers()
                     .stream()
                     .map((muteInfo) -> {
-                        Optional<MinecraftGameProfile> player = minecraftServer.getGameProfile(muteInfo.getPlayerUUID());
-                        if (!player.isPresent()) return muteInfo.getPlayerUUID().toString();
-                        return player.get().getName();
+                        McGameProfile player = minecraftServer.getGameProfile(muteInfo.getPlayerUUID());
+                        if (player == null) return muteInfo.getPlayerUUID().toString();
+                        return player.getName();
                     })
                     .filter((player) -> player.regionMatches(true, 0, argument, 0, argument.length()))
                     .collect(Collectors.toList());
         }
 
-        return MinecraftCommand.super.suggest(source, arguments);
+        return McCommand.super.suggest(source, arguments);
     }
 }

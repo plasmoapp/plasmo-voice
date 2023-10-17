@@ -8,7 +8,7 @@ import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.Packet;
 
 /**
- * This event is fired when the server is about to send {@link su.plo.voice.proto.packets.Packet} to the player
+ * This event is fired when the server is about to send a {@link Packet} to the player.
  */
 @RequiredArgsConstructor
 public final class TcpPacketSendEvent extends EventCancellableBase {

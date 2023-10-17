@@ -8,11 +8,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextClickEvent;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextHoverEvent;
-import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.chat.ClientChatUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextClickEvent;
+import su.plo.slib.api.chat.style.McTextHoverEvent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -28,14 +28,12 @@ import su.plo.voice.api.client.event.audio.capture.*;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.mac.AVAuthorizationStatus;
 import su.plo.voice.client.mac.AVCaptureDevice;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
-import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
@@ -94,7 +92,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     @Override
     public void initialize(@NotNull ServerInfo serverInfo) {
         AudioCaptureInitializeEvent event = new AudioCaptureInitializeEvent(this);
-        voiceClient.getEventBus().call(event);
+        voiceClient.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         // check macos permissions
@@ -102,25 +100,25 @@ public final class VoiceAudioCapture implements AudioCapture {
             AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
             if (authorizationStatus == AVAuthorizationStatus.RESTRICTED) {
                 ClientChatUtil.sendChatMessage(
-                        MinecraftTextComponent.translatable(
+                        McTextComponent.translatable(
                                 "message.plasmovoice.macos_incompatible_launcher",
-                                MinecraftTextComponent.literal("Prism Launcher")
-                                        .withStyle(MinecraftTextStyle.YELLOW)
-                                        .clickEvent(MinecraftTextClickEvent.clickEvent(MinecraftTextClickEvent.Action.OPEN_URL, "https://prismlauncher.org"))
-                                        .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.literal("https://prismlauncher.org")))
+                                McTextComponent.literal("Prism Launcher")
+                                        .withStyle(McTextStyle.YELLOW)
+                                        .clickEvent(McTextClickEvent.clickEvent(McTextClickEvent.Action.OPEN_URL, "https://prismlauncher.org"))
+                                        .hoverEvent(McTextHoverEvent.showText(McTextComponent.literal("https://prismlauncher.org")))
                         )
                 );
             }
         }
 
         // initialize input device
-        AudioFormat format = serverInfo.getVoiceInfo().getFormat(
+        AudioFormat format = serverInfo.getVoiceInfo().createFormat(
                 config.getVoice().getStereoCapture().value()
         );
 
         if (!getDevice().isPresent()) {
             try {
-                InputDevice device = voiceClient.getDeviceManager().openInputDevice(format, Params.EMPTY);
+                InputDevice device = voiceClient.getDeviceManager().openInputDevice(format);
                 devices.replace(null, device);
             } catch (Exception e) {
                 LOGGER.error("Failed to open input device", e);
@@ -130,11 +128,6 @@ public final class VoiceAudioCapture implements AudioCapture {
         // initialize encoder
         CaptureInfo capture = serverInfo.getVoiceInfo().getCaptureInfo();
         if (capture.getEncoderInfo() != null) {
-            CodecInfo codec = capture.getEncoderInfo();
-
-            Params.Builder params = Params.builder();
-            codec.getParams().forEach(params::set);
-
             this.monoEncoder = serverInfo.createOpusEncoder(false);
             this.stereoEncoder = serverInfo.createOpusEncoder(true);
         }
@@ -150,7 +143,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     @Override
     public void start() {
         AudioCaptureStartEvent event = new AudioCaptureStartEvent(this);
-        voiceClient.getEventBus().call(event);
+        voiceClient.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         if (thread != null) {
@@ -170,7 +163,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     @Override
     public void stop() {
         AudioCaptureStopEvent event = new AudioCaptureStopEvent(this);
-        voiceClient.getEventBus().call(event);
+        voiceClient.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         if (thread != null) thread.interrupt();
@@ -184,7 +177,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     @Override
     public boolean isServerMuted() {
         return voiceClient.getServerConnection()
-                .map(connection -> connection.getClientPlayer()
+                .map(connection -> connection.getLocalPlayer()
                         .map(VoicePlayerInfo::isMuted)
                         .orElse(false))
                 .orElse(false);
@@ -219,11 +212,11 @@ public final class VoiceAudioCapture implements AudioCapture {
                 }
 
                 AudioCaptureEvent captureEvent = new AudioCaptureEvent(this, device.get(), samples);
-                if (!voiceClient.getEventBus().call(captureEvent)) continue;
+                if (!voiceClient.getEventBus().fire(captureEvent)) continue;
 
                 ClientActivation parentActivation = activations.getParentActivation().get();
 
-                if (captureEvent.isSendEnd()
+                if (captureEvent.isFlushActivations()
                         || config.getVoice().getMicrophoneDisabled().value()
                         || config.getVoice().getDisabled().value()
                         || isServerMuted()
@@ -240,12 +233,12 @@ public final class VoiceAudioCapture implements AudioCapture {
                         }
                     });
 
-                    voiceClient.getEventBus().call(new AudioCaptureProcessedEvent(
-                            this,
-                            device.get(),
-                            samples,
-                            null
-                    ));
+//                    voiceClient.getEventBus().fire(new AudioCaptureProcessedEvent(
+//                            this,
+//                            device.get(),
+//                            samples,
+//                            null
+//                    ));
                     continue;
                 }
 
@@ -287,12 +280,17 @@ public final class VoiceAudioCapture implements AudioCapture {
                     }
                 }
 
-                voiceClient.getEventBus().call(new AudioCaptureProcessedEvent(
-                        this,
-                        device.get(),
-                        samples,
-                        encoded.monoProcessed
-                ));
+//                voiceClient.getEventBus().fire(new AudioCaptureProcessedEvent(
+//                        this,
+//                        device.get(),
+//                        samples,
+//                        new AudioCaptureProcessedEvent.CaptureProcessed(
+//                                encoded.monoProcessed,
+//                                encoded.mono,
+//                                encoded.stereoProcessed,
+//                                encoded.stereo
+//                        )
+//                ));
             } catch (InterruptedException ignored) {
                 break;
             } catch (Exception e) {

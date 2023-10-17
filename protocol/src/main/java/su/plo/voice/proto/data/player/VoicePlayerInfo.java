@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import su.plo.slib.api.entity.player.McGameProfile;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
@@ -43,8 +44,8 @@ public class VoicePlayerInfo implements PacketSerializable {
         out.writeBoolean(microphoneMuted);
     }
 
-    public @NotNull MinecraftGameProfile toGameProfile() {
-        return new MinecraftGameProfile(
+    public @NotNull McGameProfile toGameProfile() {
+        return new McGameProfile(
                 playerId,
                 playerNick,
                 Collections.emptyList()

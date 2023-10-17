@@ -3,10 +3,10 @@ package su.plo.voice.client.audio.line;
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.api.MathLib;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.config.overlay.OverlaySourceState;
@@ -116,7 +116,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
         DoubleConfigEntry volumeEntry = config.getVoice()
                 .getVolumes()
                 .getVolume(line.getName());
-        volumeEntry.setDefault(MathLib.clamp(line.getDefaultVolume(), 0D, 1D));
+        volumeEntry.setDefault(Mth.clamp(line.getDefaultVolume(), 0D, 1D));
         ClientSourceLine clientLine = new VoiceClientSourceLine(volumeEntry, line, icon);
 
         return register(clientLine);

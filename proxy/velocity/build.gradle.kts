@@ -5,14 +5,16 @@ val velocityVersion: String by project
 
 plugins {
     id("su.plo.voice.relocate")
+    id("kotlin-kapt")
 }
 
 group = "$mavenGroup.velocity"
 
 dependencies {
     compileOnly("com.velocitypowered:velocity-api:$velocityVersion")
-    annotationProcessor("com.velocitypowered:velocity-api:$velocityVersion")
+    kapt("com.velocitypowered:velocity-api:$velocityVersion")
     compileOnly(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
+    compileOnly("su.plo.slib:velocity:${rootProject.libs.versions.crosslib.get()}")
 
     compileOnly(project(":proxy:common"))
     compileOnly(rootProject.libs.netty)
@@ -37,16 +39,15 @@ dependencies {
     shadow(rootProject.libs.kotlinx.coroutines.jdk8)
     shadow(rootProject.libs.kotlinx.json)
 
-    shadow(rootProject.libs.guice) {
-        exclude("com.google.guava")
-    }
-
     shadow(rootProject.libs.opus)
     shadow(rootProject.libs.config)
     shadow(rootProject.libs.crowdin.lib) {
         isTransitive = false
     }
     shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
+    shadow("su.plo.slib:velocity:${rootProject.libs.versions.crosslib.get()}") {
+        isTransitive = false
+    }
 }
 
 tasks {
@@ -58,11 +59,11 @@ tasks {
         archiveClassifier.set("")
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
-        relocate("org.bstats", "su.plo.voice.bstats")
+        relocate("org.bstats", "su.plo.voice.libs.bstats")
 
-        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
-        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
-        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
+//        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
+//        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
+//        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
@@ -73,6 +74,7 @@ tasks {
             exclude("natives/opus/**/*")
 
             exclude("DebugProbesKt.bin")
+            exclude("_COROUTINE/**")
             exclude("META-INF/**")
         }
     }

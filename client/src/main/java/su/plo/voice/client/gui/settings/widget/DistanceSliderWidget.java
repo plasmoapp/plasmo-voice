@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.api.MathLib;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 
 import java.util.Comparator;
@@ -14,12 +14,14 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
     private final ClientActivation activation;
     private final IntConfigEntry entry;
 
-    public DistanceSliderWidget(@NotNull ClientActivation activation,
-                                @NotNull IntConfigEntry entry,
-                                int x,
-                                int y,
-                                int width,
-                                int height) {
+    public DistanceSliderWidget(
+            @NotNull ClientActivation activation,
+            @NotNull IntConfigEntry entry,
+            int x,
+            int y,
+            int width,
+            int height
+    ) {
         super(x, y, width, height);
 
         this.activation = activation;
@@ -30,7 +32,7 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
 
     @Override
     protected void updateText() {
-        this.text = MinecraftTextComponent.literal(String.valueOf(calculateValue(value)));
+        this.text = McTextComponent.literal(String.valueOf(calculateValue(value)));
     }
 
     @Override
@@ -46,8 +48,8 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
     }
 
     private int calculateValue(double ratio) {
-        double value = adjust(MathLib.lerp(
-                MathLib.clamp(ratio, 0.0D, 1.0D),
+        double value = adjust(Mth.lerp(
+                Mth.clamp(ratio, 0.0D, 1.0D),
                 activation.getMinDistance(),
                 activation.getMaxDistance()
         ));
@@ -58,7 +60,7 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
     }
 
     private double adjust(double value) {
-        return MathLib.clamp(value, activation.getMinDistance(), activation.getMaxDistance());
+        return Mth.clamp(value, activation.getMinDistance(), activation.getMaxDistance());
     }
 
 }

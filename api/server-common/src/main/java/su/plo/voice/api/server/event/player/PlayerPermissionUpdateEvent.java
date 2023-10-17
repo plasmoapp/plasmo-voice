@@ -8,7 +8,7 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fires when the player's synchronized permission updates
+ * This event is fires when a player's synchronized permission updates.
  */
 public final class PlayerPermissionUpdateEvent implements Event {
 

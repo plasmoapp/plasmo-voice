@@ -44,7 +44,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
             LOGGER.info("Device {} closed", getName());
         }
 
-        getVoiceClient().getEventBus().call(new DeviceClosedEvent(this));
+        getVoiceClient().getEventBus().fire(new DeviceClosedEvent(this));
     }
 
     @Override
@@ -111,7 +111,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         if (isOpen()) throw new DeviceException("Device is already open");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this);
-        getVoiceClient().getEventBus().call(preOpenEvent);
+        getVoiceClient().getEventBus().fire(preOpenEvent);
 
         if (preOpenEvent.isCancelled()) {
             throw new DeviceException("Device opening has been canceled");
@@ -123,7 +123,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         this.hasDisconnectEXT = ALC10.alcIsExtensionPresent(devicePointer, "ALC_EXT_disconnect");
 
         LOGGER.info("Device {} initialized", getName());
-        getVoiceClient().getEventBus().call(new DeviceOpenEvent(this));
+        getVoiceClient().getEventBus().fire(new DeviceOpenEvent(this));
     }
 
     private long openDevice() throws DeviceException {
@@ -132,7 +132,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
         int alFormat = format.getChannels() == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
 
-        long devicePointer = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getBufferSize());
+        long devicePointer = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getFrameSize());
 
         if (devicePointer == 0L || AlUtil.checkAlcErrors(devicePointer, "Open device")) {
             throw new DeviceException("Failed to open OpenAL device");

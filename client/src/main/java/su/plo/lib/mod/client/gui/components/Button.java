@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.gui.components;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 
 import java.util.function.Consumer;
@@ -17,13 +17,15 @@ public class Button extends AbstractButton {
     protected final OnPress pressAction;
     protected final OnTooltip tooltipAction;
 
-    public Button(int x,
-                  int y,
-                  int width,
-                  int height,
-                  @NotNull MinecraftTextComponent text,
-                  @NotNull OnPress pressAction,
-                  @NotNull OnTooltip tooltipAction) {
+    public Button(
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull McTextComponent text,
+            @NotNull OnPress pressAction,
+            @NotNull OnTooltip tooltipAction
+    ) {
         super(x, y, width, height, text);
 
         this.pressAction = pressAction;
@@ -62,7 +64,7 @@ public class Button extends AbstractButton {
 
         void onTooltip(Button button, UMatrixStack stack, int mouseX, int mouseY);
 
-        default void narrateTooltip(Consumer<MinecraftTextComponent> consumer) {
+        default void narrateTooltip(Consumer<McTextComponent> consumer) {
         }
     }
 

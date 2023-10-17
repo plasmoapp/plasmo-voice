@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
@@ -23,15 +23,17 @@ public final class TabButton extends Button {
     private final ResourceLocation iconLocation;
     private final ResourceLocation disabledIconLocation;
 
-    public TabButton(int x,
-                     int y,
-                     int width,
-                     int height,
-                     @NotNull MinecraftTextComponent text,
-                     @NotNull ResourceLocation iconLocation,
-                     @NotNull OnPress pressAction,
-                     @NotNull OnTooltip tooltipAction,
-                     boolean shadow) {
+    public TabButton(
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull McTextComponent text,
+            @NotNull ResourceLocation iconLocation,
+            @NotNull OnPress pressAction,
+            @NotNull OnTooltip tooltipAction,
+            boolean shadow
+    ) {
         this(x, y, width, height, text, iconLocation, pressAction, tooltipAction, shadow, -0x1);
     }
 
@@ -39,7 +41,7 @@ public final class TabButton extends Button {
                      int y,
                      int width,
                      int height,
-                     @NotNull MinecraftTextComponent text,
+                     @NotNull McTextComponent text,
                      @NotNull ResourceLocation iconLocation,
                      @NotNull OnPress pressAction,
                      @NotNull OnTooltip tooltipAction,

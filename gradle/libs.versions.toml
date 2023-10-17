@@ -1,9 +1,14 @@
 [versions]
+kotlin = "1.8.22"
+kotlinx-json = "1.5.1"
+kotlinx-coroutines = "1.7.3"
+
 junit5 = "5.8.2"
 crowdin = "1.0.2"
 ustats = "1.0.2"
 universalcraft = "277"
 bstats = "3.0.2"
+crosslib = "1.0.0-SNAPSHOT"
 
 [libraries]
 lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }
@@ -12,7 +17,7 @@ guava        = { module = "com.google.guava:guava", version = "31.1-jre" }
 gson         = { module = "com.google.code.gson:gson", version = "2.9.0" }
 
 slf4j        = { module = "org.slf4j:slf4j-api", version = "1.7.30" }
-slf4j-log4j  = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version = "2.8.1" }
+slf4j-simple = { module = "org.slf4j:slf4j-simple", version = "1.7.30" }
 junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
 opus         = { module = "su.plo.opus:opus", version = "2.0.1" }
@@ -25,9 +30,9 @@ guice        = { module = "com.google.inject:guice", version = "5.0.1" }
 javax-inject = { module = "javax.inject:javax.inject", version = "1" }
 aopalliance  = { module = "aopalliance:aopalliance", version = "1.0" }
 
-kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version = "1.3.2" }
-kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version = "1.6.1" }
-kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version = "1.6.1" }
+kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
+kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
 
 crowdin-lib = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
 

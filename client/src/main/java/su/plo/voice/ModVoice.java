@@ -61,6 +61,7 @@ public final class ModVoice
     //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
     //$$     );
     //$$
+    // todo: register forge channels in slib
     //$$     NetworkRegistry.newEventChannel(
     //$$             ModVoiceServer.FLAG_CHANNEL,
     //$$             () -> NetworkRegistry.ACCEPTVANILLA,
@@ -75,7 +76,7 @@ public final class ModVoice
     //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
     //$$     );
     //$$
-    //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE, channel, serviceChannel);
+    //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE);
     //$$     MinecraftForge.EVENT_BUS.register(voiceServer);
     //$$ }
     //#endif

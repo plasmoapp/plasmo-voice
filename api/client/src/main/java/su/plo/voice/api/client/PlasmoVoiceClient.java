@@ -12,124 +12,135 @@ import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.config.ClientConfig;
 import su.plo.voice.api.client.config.addon.AddonConfig;
-import su.plo.voice.api.client.config.keybind.KeyBindings;
+import su.plo.voice.api.client.config.hotkey.Hotkeys;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.render.DistanceVisualizer;
+import su.plo.voice.api.client.socket.UdpClient;
 
 import java.util.Optional;
 
 /**
- * The Plasmo Client Voice API
+ * The Plasmo Voice Client API.
  */
 public interface PlasmoVoiceClient extends PlasmoVoice {
 
     /**
-     * Gets the server's addons loaders
+     * Gets the client's addons loaders.
      *
-     * <p>Use this method to get the addons loader for loading client addons</p>
+     * <p>
+     *     Use this method to get the addons loader for loading client addons.
+     * </p>
      *
-     * @return the addons loader
+     * @return The {@link AddonsLoader}.
      */
     static AddonsLoader getAddonsLoader() {
         return ClientAddonsLoader.INSTANCE;
     }
 
     /**
-     * Gets the {@link DeviceFactoryManager}
+     * Gets the {@link DeviceFactoryManager}.
      *
-     * Device factories are used to create new devices
+     * <p>
+     *     Device factories are used to create new devices.
+     * </p>
      *
-     * @return {@link DeviceFactoryManager}
+     * @return The {@link DeviceFactoryManager}.
      */
     @NotNull DeviceFactoryManager getDeviceFactoryManager();
 
     /**
-     * Gets the {@link DeviceManager}
+     * Gets the {@link DeviceManager}.
      *
-     * This manager can be used to set primary devices
+     * <p>
+     *     This manager can be used to set primary devices.
+     * </p>
      *
-     * @return {@link DeviceManager}
+     * @return The {@link DeviceManager}.
      */
     @NotNull DeviceManager getDeviceManager();
 
     /**
-     * Gets the {@link AudioCapture}
+     * Gets the {@link AudioCapture}.
      *
-     * @return {@link AudioCapture}
+     * @return The {@link AudioCapture}.
      */
     @NotNull AudioCapture getAudioCapture();
 
     /**
-     * Gets the {@link ClientActivationManager}
+     * Gets the {@link ClientActivationManager}.
      *
-     * @return {@link ClientActivationManager}
+     * @return The {@link ClientActivationManager}.
      */
     @NotNull ClientActivationManager getActivationManager();
 
     /**
-     * Gets the {@link ClientSourceLineManager}
+     * Gets the {@link ClientSourceLineManager}.
      *
-     * @return {@link ClientSourceLineManager}
+     * @return The {@link ClientSourceLineManager}.
      */
     @NotNull ClientSourceLineManager getSourceLineManager();
 
     /**
-     * Gets the {@link UdpClientManager}
+     * Gets the {@link UdpClientManager}.
      *
-     * This manager used to manage current {@link su.plo.voice.api.client.socket.UdpClient}
+     * <p>
+     *     This manager is used to manage the current {@link UdpClient}.
+     * </p>
      *
-     * @return {@link UdpClientManager}
+     * @return The {@link UdpClientManager}.
      */
     @NotNull UdpClientManager getUdpClientManager();
 
     /**
-     * Gets the current {@link ServerInfo}
+     * Gets the current {@link ServerInfo}.
      *
-     * @return {@link ServerInfo}
+     * @return An optional {@link ServerInfo}.
      */
     Optional<ServerInfo> getServerInfo();
 
     /**
-     * Gets the current {@link ServerConnection}
+     * Gets the current {@link ServerConnection}.
      *
-     * @return {@link ServerConnection}
+     * @return An optional {@link ServerConnection}.
      */
     Optional<ServerConnection> getServerConnection();
 
     /**
-     * Gets the {@link KeyBindings}
+     * Gets the {@link Hotkeys}.
      *
-     * @return {@link KeyBindings}
+     * @return The {@link Hotkeys}.
      */
-    @NotNull KeyBindings getKeyBindings();
+    @NotNull Hotkeys getHotkeys();
 
     /**
-     * Gets the {@link DistanceVisualizer}
+     * Gets the {@link DistanceVisualizer}.
      *
-     * @return {@link DistanceVisualizer}
+     * @return The {@link DistanceVisualizer}.
      */
     @NotNull DistanceVisualizer getDistanceVisualizer();
 
     /**
-     * Gets the {@link ClientSourceManager}
+     * Gets the {@link ClientSourceManager}.
      *
-     * @return {@link ClientSourceManager}
+     * @return The {@link ClientSourceManager}.
      */
     @NotNull ClientSourceManager getSourceManager();
 
     /**
-     * Gets the {@link AddonConfig} for the specified addon
+     * Gets the {@link AddonConfig} for the specified addon.
      *
-     * @param addon the addon
+     * @param addon The addon.
      *
-     * @return {@link AddonConfig}
+     * @return The {@link AddonConfig}.
      */
     @NotNull AddonConfig getAddonConfig(@NotNull Object addon);
 
     /**
-     * @returns {@link ClientConfig}
+     * Returns the {@link ClientConfig}.
+     *
+     * @return The {@link ClientConfig}.
      */
     @NotNull ClientConfig getConfig();
 }

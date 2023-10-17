@@ -8,8 +8,7 @@ import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.Packet;
 
 /**
- * This event is fired once the {@link su.plo.voice.api.server.socket.UdpServer}
- * is received the packet, but not handled yet
+ * This event is fired once the UDP server has received a packet from the player but has not yet handled it.
  */
 @RequiredArgsConstructor
 public final class UdpPacketReceivedEvent extends EventCancellableBase {

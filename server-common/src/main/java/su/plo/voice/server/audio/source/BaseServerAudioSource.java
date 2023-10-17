@@ -35,8 +35,6 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     protected @Nullable String name;
     @Getter
     protected boolean iconVisible = true;
-    @Setter
-    protected int angle;
     protected boolean stereo;
 
     protected final AtomicBoolean dirty = new AtomicBoolean(true);
@@ -89,13 +87,13 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     }
 
     @Override
-    public void addFilter(Predicate<VoicePlayer> filter) {
+    public void addFilter(@NotNull Predicate<VoicePlayer> filter) {
         if (filters.contains(filter)) throw new IllegalArgumentException("Filter already exist");
         filters.add(filter);
     }
 
     @Override
-    public void removeFilter(Predicate<VoicePlayer> filter) {
+    public void removeFilter(@NotNull Predicate<VoicePlayer> filter) {
         filters.remove(filter);
     }
 

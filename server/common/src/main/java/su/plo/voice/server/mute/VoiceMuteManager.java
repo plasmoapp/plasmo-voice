@@ -2,7 +2,7 @@ package su.plo.voice.server.mute;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.server.event.mute.PlayerVoiceMutedEvent;
 import su.plo.voice.api.server.event.mute.PlayerVoiceUnmutedEvent;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
@@ -11,10 +11,9 @@ import su.plo.voice.api.server.mute.ServerMuteInfo;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.player.VoiceServerPlayerManager;
+import su.plo.voice.server.player.VoiceServerPlayerManagerImpl;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ScheduledExecutorService;
@@ -27,7 +26,7 @@ public final class VoiceMuteManager implements MuteManager {
     }
 
     private final BaseVoiceServer voiceServer;
-    private final VoiceServerPlayerManager playerManager;
+    private final VoiceServerPlayerManagerImpl playerManager;
 
     @Getter
     private MuteStorage muteStorage;
@@ -61,8 +60,8 @@ public final class VoiceMuteManager implements MuteManager {
             throw new IllegalArgumentException("TIMESTAMP duration should be in the future");
         }
 
-        MinecraftTextComponent durationMessage = durationUnit == null
-                ? MinecraftTextComponent.empty()
+        McTextComponent durationMessage = durationUnit == null
+                ? McTextComponent.empty()
                 : durationUnit.translate(duration);
         if (duration > 0) {
             duration = durationUnit.multiply(duration);
@@ -74,23 +73,24 @@ public final class VoiceMuteManager implements MuteManager {
 
         ServerMuteInfo muteInfo = new ServerMuteInfo(playerId, mutedById, System.currentTimeMillis(), duration, reason);
 
-        muteStorage.putPlayerMute(player.getInstance().getUUID(), muteInfo);
+        muteStorage.putPlayerMute(player.getInstance().getUuid(), muteInfo);
 
-        voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
+        voiceServer.getTcpPacketManager().broadcastPlayerInfoUpdate(player);
         if (duration > 0) {
-            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
-                    "pv.mutes.temporarily_muted",
-                    durationMessage,
-                    formatMuteReason(reason)
-            ));
+            player.getInstance().sendMessage(
+                    McTextComponent.translatable(
+                            "pv.mutes.temporarily_muted",
+                            durationMessage,
+                            formatMuteReason(reason)
+                    )
+            );
         } else {
-            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
-                    "pv.mutes.permanently_muted",
-                    formatMuteReason(reason)
-            ));
+            player.getInstance().sendMessage(
+                    McTextComponent.translatable("pv.mutes.permanently_muted", formatMuteReason(reason))
+            );
         }
 
-        voiceServer.getEventBus().call(new PlayerVoiceMutedEvent(this, muteInfo));
+        voiceServer.getEventBus().fire(new PlayerVoiceMutedEvent(this, muteInfo));
 
         return Optional.of(muteInfo);
     }
@@ -101,11 +101,11 @@ public final class VoiceMuteManager implements MuteManager {
                 .map(muteInfo -> {
                     playerManager.getPlayerById(playerId)
                             .ifPresent(player -> {
-                                voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player);
-                                player.getInstance().sendMessage(MinecraftTextComponent.translatable("pv.mutes.unmuted"));
+                                voiceServer.getTcpPacketManager().broadcastPlayerInfoUpdate(player);
+                                player.getInstance().sendMessage(McTextComponent.translatable("pv.mutes.unmuted"));
                             });
 
-                    voiceServer.getEventBus().call(new PlayerVoiceUnmutedEvent(this, muteInfo));
+                    voiceServer.getEventBus().fire(new PlayerVoiceUnmutedEvent(this, muteInfo));
 
                     return muteInfo;
                 });
@@ -121,10 +121,10 @@ public final class VoiceMuteManager implements MuteManager {
         this.muteStorage = muteStorage;
     }
 
-    public MinecraftTextComponent formatMuteReason(@Nullable String reason) {
+    public McTextComponent formatMuteReason(@Nullable String reason) {
         return reason == null
-                ? MinecraftTextComponent.translatable("pv.mutes.empty_reason")
-                : MinecraftTextComponent.literal(reason);
+                ? McTextComponent.translatable("pv.mutes.empty_reason")
+                : McTextComponent.literal(reason);
     }
 
     private void tick() {

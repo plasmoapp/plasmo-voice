@@ -8,7 +8,7 @@ import su.plo.voice.api.event.EventCancellableBase;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired on {@link AudioCapture} start
+ * This event is fired when {@link AudioCapture} is about to start a new capture thread.
  */
 public final class AudioCaptureStartEvent extends EventCancellableBase {
 

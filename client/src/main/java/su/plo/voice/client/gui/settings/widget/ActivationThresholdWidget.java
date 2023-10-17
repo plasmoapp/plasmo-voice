@@ -1,12 +1,12 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
@@ -28,7 +28,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
 
     private static final ResourceLocation STOP_ICON = new ResourceLocation("plasmovoice:textures/icons/speaker_menu.png");
     private static final ResourceLocation START_ICON = new ResourceLocation("plasmovoice:textures/icons/speaker_menu_disabled.png");
-    private static final MinecraftTextComponent NOT_AVAILABLE = MinecraftTextComponent.translatable("gui.plasmovoice.devices.not_available");
+    private static final McTextComponent NOT_AVAILABLE = McTextComponent.translatable("gui.plasmovoice.devices.not_available");
 
     private final DoubleConfigEntry entry;
     private final MicrophoneTestController controller;
@@ -90,7 +90,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
 
     @Override
     protected void updateText() {
-        this.text = MinecraftTextComponent.literal(String.format("%.0f dB", AudioUtil.doubleRangeToAudioLevel(value)));
+        this.text = McTextComponent.literal(String.format("%.0f dB", AudioUtil.doubleRangeToAudioLevel(value)));
     }
 
     @Override

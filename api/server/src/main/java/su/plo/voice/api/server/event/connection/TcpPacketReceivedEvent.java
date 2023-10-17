@@ -8,8 +8,7 @@ import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.Packet;
 
 /**
- * This event is fired once the PlayerChannelHandler
- * is received the packet, but not handled yet
+ * This event is fired once the server has received a packet from the player but has not yet handled it.
  */
 @RequiredArgsConstructor
 public final class TcpPacketReceivedEvent extends EventCancellableBase {

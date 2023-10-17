@@ -8,7 +8,7 @@ import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the server config is reloaded by /vreload
+ * This event is fired once the proxy config is reloaded via /vreload.
  */
 public final class VoiceProxyConfigReloadedEvent implements Event {
 

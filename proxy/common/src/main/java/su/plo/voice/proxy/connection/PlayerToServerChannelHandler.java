@@ -51,7 +51,7 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
 
     @Override
     public void handle(@NotNull PlayerAudioEndPacket packet) {
-        if (!voiceProxy.getEventBus().call(new PlayerSpeakEndEvent(player, packet))) {
+        if (!voiceProxy.getEventBus().fire(new PlayerSpeakEndEvent(player, packet))) {
             throw new CancelForwardingException();
         }
     }

@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 
@@ -24,10 +24,10 @@ public abstract class MixinKeyboardHandler {
         if (window != this.minecraft.getWindow().getWindow() || ModVoiceClient.INSTANCE == null) return;
 
         KeyPressedEvent event = new KeyPressedEvent(
-                KeyBinding.Type.KEYSYM.getOrCreate(key),
-                KeyBinding.Action.fromInt(action)
+                Hotkey.Type.KEYSYM.getOrCreate(key),
+                Hotkey.Action.fromInt(action)
         );
 
-        ModVoiceClient.INSTANCE.getEventBus().call(event);
+        ModVoiceClient.INSTANCE.getEventBus().fire(event);
     }
 }

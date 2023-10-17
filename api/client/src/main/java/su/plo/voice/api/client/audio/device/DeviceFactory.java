@@ -3,42 +3,42 @@ package su.plo.voice.api.client.audio.device;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 
-// todo: doc
+/**
+ * This factory is used to open new audio devices.
+ */
 public interface DeviceFactory {
 
     /**
-     * Opens a new device
+     * Opens a new audio device with the specified audio format and optional device name.
      *
-     * @param deviceName the device name
-     *
-     * @return a new device
-     *
-     * @throws DeviceException if device cannot be open
+     * @param format     The audio format to use for the device.
+     * @param deviceName The optional name of the specific audio device to open, or null to use the default device.
+     * @return A new audio device instance.
+     * @throws DeviceException If the audio device cannot be opened.
      */
-    AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException;
+    @NotNull AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException;
 
     /**
-     * Gets the default device name
+     * Retrieves the default audio device name.
      *
-     * @return the default device name
+     * @return The default audio device name.
      */
-    String getDefaultDeviceName();
+    @NotNull String getDefaultDeviceName();
 
     /**
-     * Gets all device names
+     * Retrieves a list of all available audio device names.
      *
-     * @return device names
+     * @return A list of available audio device names.
      */
-    ImmutableList<String> getDeviceNames();
+    @NotNull ImmutableList<String> getDeviceNames();
 
     /**
-     * Gets the device's factory type, should be unique
+     * Retrieves the unique factory type of the audio devices produced by this factory.
      *
-     * @return the device's factory type
+     * @return The factory's unique type identifier.
      */
-    String getType();
+    @NotNull String getType();
 }

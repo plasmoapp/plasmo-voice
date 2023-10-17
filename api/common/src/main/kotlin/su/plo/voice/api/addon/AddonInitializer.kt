@@ -3,12 +3,12 @@ package su.plo.voice.api.addon
 interface AddonInitializer {
 
     /**
-     * Method will be invoked on addon initialization
+     * This method will be invoked when the addon is initialized.
      */
     fun onAddonInitialize()
 
     /**
-     * Method will be invoked on addon shutdown
+     * This method will be invoked when the addon is being shut down.
      */
     fun onAddonShutdown() {}
 }

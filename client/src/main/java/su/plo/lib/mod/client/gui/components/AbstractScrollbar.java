@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
 import com.google.common.collect.Lists;
+import net.minecraft.util.Mth;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import lombok.AllArgsConstructor;
@@ -8,7 +9,6 @@ import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.MathLib;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.widget.GuiWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
@@ -72,7 +72,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             UGraphics.color4f(1F, 1F, 1F, 1F);
 
             int trackBottom = (int) ((float) ((y1 - y0) * (y1 - y0)) / (float) scrollHeight);
-            trackBottom = MathLib.clamp(trackBottom, 32, y1 - y0 - 8);
+            trackBottom = Mth.clamp(trackBottom, 32, y1 - y0 - 8);
             int trackTop = (int) scrollTop * (y1 - y0 - trackBottom) / maxScroll + y0;
             if (trackTop < y0) {
                 trackTop = y0;
@@ -147,7 +147,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             } else {
                 double maxScroll = Math.max(1, getMaxScroll());
                 int diff = y1 - y0;
-                int scrollStep = MathLib.clamp((int)((float)(diff * diff) / (float)scrollHeight), 32, diff);
+                int scrollStep = Mth.clamp((int)((float)(diff * diff) / (float)scrollHeight), 32, diff);
                 double multiplier = Math.max(1, maxScroll / (double)(diff - scrollStep));
 
                 setScrollTop(scrollTop + deltaY * multiplier);
@@ -199,7 +199,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     // ???
     public void setScrollTop(double scrollTop) {
-        this.scrollTop = MathLib.clamp(scrollTop, 0D, getMaxScroll());
+        this.scrollTop = Mth.clamp(scrollTop, 0D, getMaxScroll());
     }
 
     protected void renderList(@NotNull UMatrixStack stack, int x, int y, int mouseX, int mouseY, float delta) {

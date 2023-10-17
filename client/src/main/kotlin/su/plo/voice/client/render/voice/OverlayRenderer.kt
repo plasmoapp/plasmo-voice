@@ -4,9 +4,10 @@ import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
-import su.plo.lib.api.chat.MinecraftTextComponent
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
+import su.plo.slib.api.chat.component.McTextComponent
+import su.plo.slib.api.entity.player.McGameProfile
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.line.ClientSourceLine
 import su.plo.voice.api.client.config.overlay.OverlayPosition
@@ -17,7 +18,6 @@ import su.plo.voice.client.event.render.HudRenderEvent
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
-import su.plo.voice.proto.data.player.MinecraftGameProfile
 import su.plo.voice.universal.UGraphics
 import su.plo.voice.universal.UMatrixStack
 import su.plo.voice.universal.UResolution.scaledHeight
@@ -52,7 +52,7 @@ class OverlayRenderer(
                 for (player in sourceLine.players!!.sortedBy { it.name }) {
                     val renderSourceInfo = RenderSourceInfo(
                         player.id,
-                        MinecraftTextComponent.literal(player.name),
+                        McTextComponent.literal(player.name),
                         player,
                         false
                     )
@@ -66,7 +66,7 @@ class OverlayRenderer(
                     )
                 }
 
-                for (selfSource in voiceClient.sourceManager.selfSourceInfos) {
+                for (selfSource in voiceClient.sourceManager.allSelfSourceInfos) {
                     val selfSourceInfo = selfSource.selfSourceInfo
                     if (selfSourceInfo.sourceInfo.lineId != sourceLine.id) continue
 
@@ -210,26 +210,26 @@ class OverlayRenderer(
     private fun getSourceSenderName(
         sourceInfo: SourceInfo,
         sourceLine: ClientSourceLine
-    ): MinecraftTextComponent {
+    ): McTextComponent {
         if (sourceInfo.name != null) {
             var sourceName = sourceInfo.name!!
             if (sourceName.length > MAX_TEXT_WIDTH) {
                 sourceName = sourceName.substring(0, MAX_TEXT_WIDTH) + "..."
             }
 
-            return MinecraftTextComponent.literal(sourceName)
+            return McTextComponent.literal(sourceName)
         }
 
         return when (sourceInfo) {
             is DirectSourceInfo -> {
                 sourceInfo.sender?.let {
-                    MinecraftTextComponent.literal(it.name)
+                    McTextComponent.literal(it.name)
                 } ?: sourceLine.translationComponent
             }
 
             is PlayerSourceInfo -> {
                 Minecraft.getInstance().connection?.getPlayerInfo(sourceInfo.playerInfo.playerId)?.let {
-                    MinecraftTextComponent.literal(it.profile.name)
+                    McTextComponent.literal(it.profile.name)
                 } ?: sourceLine.translationComponent
             }
 
@@ -250,13 +250,13 @@ class OverlayRenderer(
             else -> sourceInfo.id
         }
 
-    private fun getSourcePlayer(sourceInfo: SourceInfo): MinecraftGameProfile? =
+    private fun getSourcePlayer(sourceInfo: SourceInfo): McGameProfile? =
         when (sourceInfo) {
             is DirectSourceInfo ->
                 sourceInfo.sender
 
             is PlayerSourceInfo ->
-                MinecraftGameProfile(
+                McGameProfile(
                     sourceInfo.playerInfo.playerId,
                     sourceInfo.playerInfo.playerNick,
                     Collections.emptyList()
@@ -279,7 +279,7 @@ class OverlayRenderer(
 //            else -> ModPlayerSkins.getDefaultSkin(sourceInfo.id)
 //        }
 
-    private fun loadSkin(gameProfile: MinecraftGameProfile): ResourceLocation {
+    private fun loadSkin(gameProfile: McGameProfile): ResourceLocation {
         ModPlayerSkins.loadSkin(gameProfile)
         return ModPlayerSkins.getSkin(gameProfile.id, gameProfile.name)
     }
@@ -317,7 +317,7 @@ class OverlayRenderer(
 
 private data class RenderSourceInfo(
     val sourceId: UUID,
-    val sourceName: MinecraftTextComponent,
-    val player: MinecraftGameProfile?,
+    val sourceName: McTextComponent,
+    val player: McGameProfile?,
     var activated: Boolean
 )

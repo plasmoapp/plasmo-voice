@@ -1,5 +1,8 @@
 package su.plo.voice.api.client.config
 
+/**
+ * Activation (microphone) icon position.
+ */
 enum class IconPosition(
     val x: Int?,
     val y: Int?,

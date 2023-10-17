@@ -1,5 +1,8 @@
 package su.plo.voice.api.client.audio.device;
 
+/**
+ * Exception indicates issues related to audio devices.
+ */
 public class DeviceException extends Exception {
 
     public DeviceException() {

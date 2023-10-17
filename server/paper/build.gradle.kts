@@ -19,7 +19,8 @@ dependencies {
     compileOnly("io.papermc.paper:paper-api:${paperVersion}")
     compileOnly("me.clip:placeholderapi:${placeholderApiVersion}")
 
-    compileOnly(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
+    compileOnly("su.plo.ustats:paper:${rootProject.libs.versions.ustats.get()}")
+    compileOnly("su.plo.slib:spigot:${rootProject.libs.versions.crosslib.get()}")
 
     compileOnly(project(":server:common"))
 
@@ -52,7 +53,10 @@ dependencies {
     shadow(rootProject.libs.crowdin.lib) {
         isTransitive = false
     }
-    shadow(rootProject.libs.versions.ustats.map { "su.plo.ustats:paper:$it" })
+    shadow("su.plo.ustats:paper:${rootProject.libs.versions.ustats.get()}")
+    shadow("su.plo.slib:spigot:${rootProject.libs.versions.crosslib.get()}") {
+        isTransitive = false
+    }
 }
 
 tasks {

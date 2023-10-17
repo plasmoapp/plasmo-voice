@@ -4,7 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
@@ -17,9 +17,11 @@ public final class AddonsTabWidget extends TabWidget {
 
     private final BaseVoiceClient voiceClient;
 
-    public AddonsTabWidget(@NotNull VoiceSettingsScreen parent,
-                           @NotNull BaseVoiceClient voiceClient,
-                           @NotNull VoiceClientConfig config) {
+    public AddonsTabWidget(
+            @NotNull VoiceSettingsScreen parent,
+            @NotNull BaseVoiceClient voiceClient,
+            @NotNull VoiceClientConfig config
+    ) {
         super(parent, voiceClient, config);
 
         this.voiceClient = voiceClient;
@@ -34,15 +36,15 @@ public final class AddonsTabWidget extends TabWidget {
     }
 
     private void createAddonEntry(@NotNull VoiceAddonConfig addonConfig) {
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable(addonConfig.getAddon().getName())));
+        addEntry(new CategoryEntry(McTextComponent.translatable(addonConfig.getAddon().getName())));
 
         addonConfig.getWidgets().forEach((widget) -> {
             switch (widget.getType()) {
                 case INT_SLIDER:
                     addEntry(createIntSliderWidget(
-                            MinecraftTextComponent.translatable(widget.getTranslatable()),
+                            McTextComponent.translatable(widget.getTranslatable()),
                             widget.getTooltipTranslatable() != null
-                                    ? MinecraftTextComponent.translatable(widget.getTooltipTranslatable())
+                                    ? McTextComponent.translatable(widget.getTooltipTranslatable())
                                     : null,
                             (IntConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
@@ -50,9 +52,9 @@ public final class AddonsTabWidget extends TabWidget {
                     break;
                 case VOLUME_SLIDER:
                     addEntry(createVolumeSlider(
-                            MinecraftTextComponent.translatable(widget.getTranslatable()),
+                            McTextComponent.translatable(widget.getTranslatable()),
                             widget.getTooltipTranslatable() != null
-                                    ? MinecraftTextComponent.translatable(widget.getTooltipTranslatable())
+                                    ? McTextComponent.translatable(widget.getTooltipTranslatable())
                                     : null,
                             (DoubleConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
@@ -60,9 +62,9 @@ public final class AddonsTabWidget extends TabWidget {
                     break;
                 case TOGGLE:
                     addEntry(createToggleEntry(
-                            MinecraftTextComponent.translatable(widget.getTranslatable()),
+                            McTextComponent.translatable(widget.getTranslatable()),
                             widget.getTooltipTranslatable() != null
-                                    ? MinecraftTextComponent.translatable(widget.getTooltipTranslatable())
+                                    ? McTextComponent.translatable(widget.getTooltipTranslatable())
                                     : null,
                             (BooleanConfigEntry) widget.getConfigEntry()
                     ));
@@ -83,20 +85,20 @@ public final class AddonsTabWidget extends TabWidget {
                 0,
                 ELEMENT_WIDTH,
                 20,
-                MinecraftTextComponent.translatable(widget.getElements().get(configEntry.value())),
+                McTextComponent.translatable(widget.getElements().get(configEntry.value())),
                 widget.getElements()
                         .stream()
-                        .map(MinecraftTextComponent::translatable)
+                        .map(McTextComponent::translatable)
                         .collect(Collectors.toList()),
                 widget.isElementTooltip(),
                 configEntry::set
         );
 
         return new OptionEntry<>(
-                MinecraftTextComponent.translatable(widget.getTranslatable()),
+                McTextComponent.translatable(widget.getTranslatable()),
                 dropdown,
                 configEntry,
-                (button, element) -> element.setText(MinecraftTextComponent.translatable(widget.getElements().get(configEntry.value())))
+                (button, element) -> element.setText(McTextComponent.translatable(widget.getElements().get(configEntry.value())))
         );
     }
 }

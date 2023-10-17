@@ -7,7 +7,7 @@ import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.socket.UdpServer;
 
 /**
- * This event is fired once the udp server is stopped
+ * This event is fired once the UDP server is stopped.
  */
 @RequiredArgsConstructor
 public class UdpServerStoppedEvent implements Event {

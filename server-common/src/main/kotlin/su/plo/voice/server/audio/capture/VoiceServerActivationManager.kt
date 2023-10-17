@@ -3,15 +3,15 @@ package su.plo.voice.server.audio.capture
 import com.google.common.base.Preconditions
 import com.google.common.collect.Maps
 import com.google.common.collect.Sets
-import su.plo.lib.api.server.permission.PermissionDefault
-import su.plo.lib.api.server.permission.PermissionTristate
+import su.plo.slib.api.permission.PermissionDefault
+import su.plo.slib.api.permission.PermissionTristate
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoBaseVoiceServer
 import su.plo.voice.api.server.audio.capture.ServerActivation
 import su.plo.voice.api.server.audio.capture.ServerActivationManager
-import su.plo.voice.api.server.connection.ConnectionManager
+import su.plo.voice.api.server.connection.PacketManager
 import su.plo.voice.api.server.event.audio.capture.ServerActivationRegisterEvent
 import su.plo.voice.api.server.event.audio.capture.ServerActivationUnregisterEvent
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent
@@ -29,7 +29,7 @@ import java.util.function.Consumer
 
 class VoiceServerActivationManager(
     private val voiceServer: PlasmoBaseVoiceServer,
-    private val tcpConnections: ConnectionManager<ClientPacketTcpHandler, out VoicePlayer>,
+    private val tcpConnections: PacketManager<ClientPacketTcpHandler, out VoicePlayer>,
     private val weightSupplier: ((activationName: String) -> Optional<Int>)?
 ) : ServerActivationManager {
 
@@ -73,12 +73,12 @@ class VoiceServerActivationManager(
         val activation = activationById[id] ?: return false
 
         ServerActivationUnregisterEvent(activation).also { event ->
-            if (!voiceServer.eventBus.call(event)) return false
+            if (!voiceServer.eventBus.fire(event)) return false
         }
 
         activation.permissions.forEach { permission ->
             voiceServer.minecraftServer
-                .permissionsManager
+                .permissionManager
                 .unregister(permission)
         }
 
@@ -275,14 +275,14 @@ class VoiceServerActivationManager(
                 permissions.forEach(
                     Consumer { permission: String? ->
                         voiceServer.minecraftServer
-                            .permissionsManager
+                            .permissionManager
                             .register(permission!!, permissionDefault!!)
                     }
                 )
             }
 
             ServerActivationRegisterEvent(activation).also { event ->
-                check(voiceServer.eventBus.call(event)) { "Activation registration was cancelled" }
+                check(voiceServer.eventBus.fire(event)) { "Activation registration was cancelled" }
             }
 
             activationById[activation.id] = activation

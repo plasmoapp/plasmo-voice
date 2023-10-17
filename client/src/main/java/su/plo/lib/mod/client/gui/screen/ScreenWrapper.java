@@ -1,5 +1,6 @@
 package su.plo.lib.mod.client.gui.screen;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.*;
 import lombok.Getter;
 import lombok.ToString;
@@ -7,9 +8,8 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.render.RenderUtil;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.key.KeyPressedEvent;
@@ -185,10 +185,10 @@ public final class ScreenWrapper
     // WAYTOODANK because I can't return true in onKeyPressed
     @EventSubscribe
     public void onWindowKeyPressed(@NotNull KeyPressedEvent event) {
-        if (!event.getAction().equals(KeyBinding.Action.UP)) return;
+        if (!event.getAction().equals(Hotkey.Action.UP)) return;
 
         if (shouldCloseOnEsc() &&
-                event.getKey().equals(KeyBinding.Type.KEYSYM.getOrCreate(UKeyboard.KEY_ESCAPE))
+                event.getKey().equals(Hotkey.Type.KEYSYM.getOrCreate(UKeyboard.KEY_ESCAPE))
         ) {
             onClose();
         }
@@ -218,7 +218,7 @@ public final class ScreenWrapper
         super.onDrawBackground(stack, 0);
     }
 
-    public void renderTooltip(UMatrixStack stack, List<MinecraftTextComponent> tooltip, int mouseX, int mouseY) {
+    public void renderTooltip(UMatrixStack stack, List<McTextComponent> tooltip, int mouseX, int mouseY) {
         // todo: legacy?
 
         //#if MC>=12000

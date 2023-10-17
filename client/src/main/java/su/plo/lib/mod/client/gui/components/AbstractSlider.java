@@ -1,11 +1,11 @@
 package su.plo.lib.mod.client.gui.components;
 
+import net.minecraft.util.Mth;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UKeyboard;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.MathLib;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
 
@@ -125,7 +125,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
     private void setValue(double value) {
         double oldValue = this.value;
-        this.value = MathLib.clamp(value, 0.0, 1.0);
+        this.value = Mth.clamp(value, 0.0, 1.0);
         if (oldValue != this.value) applyValue();
 
         updateText();

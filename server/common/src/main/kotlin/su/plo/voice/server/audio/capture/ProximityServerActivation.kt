@@ -1,6 +1,6 @@
 package su.plo.voice.server.audio.capture
 
-import su.plo.lib.api.server.permission.PermissionDefault
+import su.plo.slib.api.permission.PermissionDefault
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.capture.ProximityServerActivationHelper

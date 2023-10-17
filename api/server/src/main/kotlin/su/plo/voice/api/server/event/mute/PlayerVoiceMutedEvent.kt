@@ -5,7 +5,7 @@ import su.plo.voice.api.server.mute.MuteManager
 import su.plo.voice.api.server.mute.ServerMuteInfo
 
 /**
- * This event is fired once player was muted in [MuteManager]
+ * This event is fired when a player is muted in the [MuteManager].
  */
 class PlayerVoiceMutedEvent(
     val muteManager: MuteManager,

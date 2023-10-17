@@ -18,7 +18,16 @@ import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket
 import java.util.*
 
 /**
- * Helper class for proximity activations
+ * Helper class for proximity activations.
+ *
+ * This class will handle sources and activation manipulations for proximity activations.
+ * You just need to create an instance of this class and register it in Plasmo Voice eventbus.
+ *
+ * Example usage:
+ * ```java
+ * ProximityServerActivationHelper proximityHelper = new ProximityServerActivationHelper(voiceServer, activation, sourceLine);
+ * voiceServer.eventBus.register(voiceServer, proximityHelper);
+ * ```
  */
 class ProximityServerActivationHelper(
     voiceServer: PlasmoVoiceServer,

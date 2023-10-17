@@ -8,7 +8,7 @@ import su.plo.voice.api.event.Event;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the udp client is closed
+ * This event is fired once the UDP client is closed.
  */
 public final class UdpClientClosedEvent implements Event {
 

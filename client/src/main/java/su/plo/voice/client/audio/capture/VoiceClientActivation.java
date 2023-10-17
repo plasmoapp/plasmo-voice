@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UChat;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
@@ -10,18 +11,17 @@ import su.plo.config.Config;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
-import su.plo.voice.client.config.keybind.ConfigKeyBindings;
-import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
+import su.plo.voice.client.config.hotkey.ConfigHotkeys;
+import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
@@ -42,11 +42,11 @@ public final class VoiceClientActivation
     private final ConfigEntry<ClientActivation.Type> configType;
     private final BooleanConfigEntry configToggle;
 
-    private final KeyBindingConfigEntry pttKey;
-    private final KeyBindingConfigEntry toggleKey;
+    private final HotkeyConfigEntry pttKey;
+    private final HotkeyConfigEntry toggleKey;
 
-    private final KeyBindingConfigEntry distanceIncreaseKey;
-    private final KeyBindingConfigEntry distanceDecreaseKey;
+    private final HotkeyConfigEntry distanceIncreaseKey;
+    private final HotkeyConfigEntry distanceDecreaseKey;
 
     private final AtomicBoolean disabled = new AtomicBoolean(false);
 
@@ -79,7 +79,7 @@ public final class VoiceClientActivation
 
         this.voiceClient = voiceClient;
         this.config = config;
-        ConfigKeyBindings hotKeys = config.getKeyBindings();
+        ConfigHotkeys hotKeys = config.getKeyBindings();
 
         // load values from config
         this.configDistance = activationDistance;
@@ -135,30 +135,30 @@ public final class VoiceClientActivation
     }
 
     @Override
-    public KeyBinding getPttKey() {
+    public Hotkey getPttKey() {
         return pttKey.value();
     }
 
-    public KeyBindingConfigEntry getPttConfigEntry() {
+    public HotkeyConfigEntry getPttConfigEntry() {
         return pttKey;
     }
 
     @Override
-    public KeyBinding getToggleKey() {
+    public Hotkey getToggleKey() {
         return toggleKey.value();
     }
 
     @Override
-    public KeyBinding getDistanceIncreaseKey() {
+    public Hotkey getDistanceIncreaseKey() {
         return distanceIncreaseKey.value();
     }
 
-    public KeyBindingConfigEntry getDistanceIncreaseConfigEntry() {
+    public HotkeyConfigEntry getDistanceIncreaseConfigEntry() {
         return distanceIncreaseKey;
     }
 
     @Override
-    public KeyBinding getDistanceDecreaseKey() {
+    public Hotkey getDistanceDecreaseKey() {
         return distanceDecreaseKey.value();
     }
 
@@ -172,11 +172,11 @@ public final class VoiceClientActivation
         return Optional.ofNullable(stereoEncoder);
     }
 
-    public KeyBindingConfigEntry getDistanceDecreaseConfigEntry() {
+    public HotkeyConfigEntry getDistanceDecreaseConfigEntry() {
         return distanceDecreaseKey;
     }
 
-    public KeyBindingConfigEntry getToggleConfigEntry() {
+    public HotkeyConfigEntry getToggleConfigEntry() {
         return toggleKey;
     }
 
@@ -308,23 +308,23 @@ public final class VoiceClientActivation
         return result;
     }
 
-    private void onToggle(@NotNull KeyBinding.Action action) {
-        if (action != KeyBinding.Action.DOWN || getType() == Type.PUSH_TO_TALK) return;
+    private void onToggle(@NotNull Hotkey.Action action) {
+        if (action != Hotkey.Action.DOWN || getType() == Type.PUSH_TO_TALK) return;
         configToggle.invert();
 
         UChat.actionBar(RenderUtil.getTextConverter().convert(
-                MinecraftTextComponent.translatable(
+                McTextComponent.translatable(
                         "message.plasmovoice.activation.toggle",
-                        MinecraftTextComponent.translatable(translation),
+                        McTextComponent.translatable(translation),
                         !configToggle.value()
-                                ? MinecraftTextComponent.translatable("message.plasmovoice.on")
-                                : MinecraftTextComponent.translatable("message.plasmovoice.off")
+                                ? McTextComponent.translatable("message.plasmovoice.on")
+                                : McTextComponent.translatable("message.plasmovoice.off")
                 )
         ));
     }
 
-    private void onDistanceIncrease(@NotNull KeyBinding.Action action) {
-        if (action != KeyBinding.Action.DOWN) return;
+    private void onDistanceIncrease(@NotNull Hotkey.Action action) {
+        if (action != Hotkey.Action.DOWN) return;
 
         int index = (distances.indexOf(getDistance()) + 1) % distances.size();
         configDistance.set(distances.get(index));
@@ -332,8 +332,8 @@ public final class VoiceClientActivation
         sendDistanceChangedMessage();
     }
 
-    private void onDistanceDecrease(@NotNull KeyBinding.Action action) {
-        if (action != KeyBinding.Action.DOWN) return;
+    private void onDistanceDecrease(@NotNull Hotkey.Action action) {
+        if (action != Hotkey.Action.DOWN) return;
 
         int index = distances.indexOf(getDistance()) - 1;
         if (index < 0) {
@@ -356,23 +356,23 @@ public final class VoiceClientActivation
 
     private void sendDistanceChangedMessage() {
         UChat.actionBar(RenderUtil.getTextConverter().convert(
-                MinecraftTextComponent.translatable(
+                McTextComponent.translatable(
                         "message.plasmovoice.distance_changed",
-                        MinecraftTextComponent.translatable(translation),
+                        McTextComponent.translatable(translation),
                         getDistance()
                 )
         ));
     }
 
-    private KeyBindingConfigEntry createHotKey(@NotNull ConfigKeyBindings hotKeys,
-                                               @NotNull Activation activation,
-                                               @NotNull String suffix,
-                                               boolean anyContext) {
+    private HotkeyConfigEntry createHotKey(@NotNull ConfigHotkeys hotKeys,
+                                           @NotNull Activation activation,
+                                           @NotNull String suffix,
+                                           boolean anyContext) {
         String keyName = "key.plasmovoice." + activation.getName() + "." + suffix;
-        Optional<KeyBindingConfigEntry> key = hotKeys.getConfigKeyBinding(keyName);
+        Optional<HotkeyConfigEntry> key = hotKeys.getConfigHotkey(keyName);
         if (!key.isPresent()) {
             hotKeys.register(keyName, ImmutableList.of(), "hidden", anyContext);
-            key = hotKeys.getConfigKeyBinding(keyName);
+            key = hotKeys.getConfigHotkey(keyName);
         }
 
         if (!key.isPresent())

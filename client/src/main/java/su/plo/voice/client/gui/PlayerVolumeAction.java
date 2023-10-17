@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
@@ -22,7 +22,7 @@ import su.plo.voice.client.event.key.MouseScrollEvent;
 import java.util.Optional;
 
 import static su.plo.lib.mod.extensions.EntityKt.eyePosition;
-import static su.plo.voice.client.extensions.OptionsKt.renderDistanceValue;
+import static su.plo.voice.client.extension.OptionsKt.renderDistanceValue;
 
 public final class PlayerVolumeAction {
 
@@ -37,7 +37,7 @@ public final class PlayerVolumeAction {
         this.voiceClient = voiceClient;
         this.config = config;
 
-        voiceClient.getKeyBindings().getKeyBinding("key.plasmovoice.general.action")
+        voiceClient.getHotkeys().getHotkey("key.plasmovoice.general.action")
                 .ifPresent((key) -> key.addPressListener(this::onButton));
     }
 
@@ -63,16 +63,16 @@ public final class PlayerVolumeAction {
         }
     }
 
-    private void onButton(@NotNull KeyBinding.Action action) {
+    private void onButton(@NotNull Hotkey.Action action) {
         if (!voiceClient.getServerConnection().isPresent()) return;
 
-        if (action == KeyBinding.Action.DOWN) {
+        if (action == Hotkey.Action.DOWN) {
             ServerConnection serverConnection = voiceClient.getServerConnection().get();
 
             getPlayerBySight()
                     .filter((player) -> serverConnection.getPlayerById(player.getUUID()).isPresent())
                     .ifPresent((player) -> this.focusedPlayer = player);
-        } else if (action == KeyBinding.Action.UP) {
+        } else if (action == Hotkey.Action.UP) {
             this.focusedPlayer = null;
             this.lastScroll = 0L;
         }

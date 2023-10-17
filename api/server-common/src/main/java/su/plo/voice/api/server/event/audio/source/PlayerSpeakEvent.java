@@ -9,7 +9,7 @@ import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
 /**
- * This event is fired when the {@link PlayerAudioPacket} is received
+ * This event is fired when the {@link PlayerAudioPacket} is received.
  */
 public final class PlayerSpeakEvent extends EventCancellableBase {
 

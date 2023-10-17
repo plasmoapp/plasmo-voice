@@ -67,7 +67,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
         loopGroup.shutdownGracefully();
         BaseVoice.LOGGER.info("UDP proxy server is stopped");
 
-        voiceProxy.getEventBus().call(new UdpProxyServerStoppedEvent(this));
+        voiceProxy.getEventBus().fire(new UdpProxyServerStoppedEvent(this));
     }
 
     @Override

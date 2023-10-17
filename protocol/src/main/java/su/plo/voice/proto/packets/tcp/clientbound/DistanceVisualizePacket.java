@@ -7,8 +7,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.proto.data.pos.Pos3d;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketUtil;
+import su.plo.voice.proto.serializer.Pos3dSerializer;
 
 import java.io.IOException;
 
@@ -29,10 +31,7 @@ public final class DistanceVisualizePacket implements Packet<ClientPacketTcpHand
         this.radius = in.readInt();
         this.hexColor = in.readInt();
 
-        if (in.readBoolean()) {
-            this.position = new Pos3d();
-            position.deserialize(in);
-        }
+        this.position = PacketUtil.readNullable(in, Pos3dSerializer.INSTANCE);
     }
 
     @Override
@@ -40,8 +39,7 @@ public final class DistanceVisualizePacket implements Packet<ClientPacketTcpHand
         out.writeInt(radius);
         out.writeInt(hexColor);
 
-        out.writeBoolean(position != null);
-        if (position != null) position.serialize(out);
+        PacketUtil.writeNullable(out, Pos3dSerializer.INSTANCE, position);
     }
 
     @Override

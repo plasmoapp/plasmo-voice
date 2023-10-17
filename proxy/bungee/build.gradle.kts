@@ -15,8 +15,8 @@ repositories {
 
 dependencies {
     compileOnly("net.md-5:bungeecord-api:$bungeeVersion")
-    compileOnly("net.md-5:bungeecord-proxy:$bungeeVersion")
-    compileOnly(rootProject.libs.versions.bstats.map { "org.bstats:bstats-bungeecord:$it" })
+    compileOnly("org.bstats:bstats-bungeecord:${rootProject.libs.versions.bstats.get()}")
+    compileOnly("su.plo.slib:bungee:${rootProject.libs.versions.crosslib.get()}")
 
     compileOnly(project(":proxy:common"))
     compileOnly(rootProject.libs.netty)
@@ -50,7 +50,10 @@ dependencies {
     shadow(rootProject.libs.crowdin.lib) {
         isTransitive = false
     }
-    shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-bungeecord:$it" })
+    shadow("org.bstats:bstats-bungeecord:${rootProject.libs.versions.bstats.get()}")
+    shadow("su.plo.slib:bungee:${rootProject.libs.versions.crosslib.get()}") {
+        isTransitive = false
+    }
 }
 
 tasks {

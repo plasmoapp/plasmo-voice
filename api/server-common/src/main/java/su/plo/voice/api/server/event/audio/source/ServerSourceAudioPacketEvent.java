@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * This event is fired when the {@link SourceAudioPacket} is about to send to source listeners
+ * This event is fired when the {@link SourceAudioPacket} is about to send to the players.
  */
 public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
 
@@ -25,16 +25,20 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
     private short distance;
     private UUID activationId;
 
-    public ServerSourceAudioPacketEvent(@NotNull ServerAudioSource source,
-                                        @NotNull SourceAudioPacket packet,
-                                        @Nullable UUID activationId) {
+    public ServerSourceAudioPacketEvent(
+            @NotNull ServerAudioSource source,
+            @NotNull SourceAudioPacket packet,
+            @Nullable UUID activationId
+    ) {
         this(source, packet, (short) -1, activationId);
     }
 
-    public ServerSourceAudioPacketEvent(@NotNull ServerAudioSource source,
-                                        @NotNull SourceAudioPacket packet,
-                                        short distance,
-                                        @Nullable UUID activationId) {
+    public ServerSourceAudioPacketEvent(
+            @NotNull ServerAudioSource source,
+            @NotNull SourceAudioPacket packet,
+            short distance,
+            @Nullable UUID activationId
+    ) {
         this.source = source;
         this.packet = packet;
         this.distance = distance;

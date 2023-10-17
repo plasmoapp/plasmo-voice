@@ -5,7 +5,7 @@ import org.apache.logging.log4j.Logger;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.EXTThreadLocalContext;
-import su.plo.voice.api.client.audio.device.AlAudioDevice;
+import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
@@ -31,13 +31,13 @@ public final class AlUtil {
         }
     }
 
-    public static void checkDeviceContext(AlAudioDevice device) {
+    public static void checkDeviceContext(AlContextAudioDevice device) {
         if (!sameDeviceContext(device)) {
             throw new IllegalStateException("This function should be called in the device context thread! Use AlAudioDevice::runInContext to run this function");
         }
     }
 
-    public static boolean sameDeviceContext(AlAudioDevice device) {
+    public static boolean sameDeviceContext(AlContextAudioDevice device) {
         return EXTThreadLocalContext.alcGetThreadContext() == device.getContextPointer();
     }
 

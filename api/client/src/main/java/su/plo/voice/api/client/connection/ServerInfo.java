@@ -1,6 +1,7 @@
 package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.proto.data.audio.capture.Activation;
@@ -14,114 +15,129 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Represents a server info of the connected server
+ * Represents server information of the connected server.
  */
 public interface ServerInfo {
 
     /**
-     * Gets the server's id
+     * Gets the server's unique identifier.
+     *
+     * @return The server's unique identifier.
      */
     @NotNull UUID getServerId();
 
     /**
-     * Gets the server's secret
+     * Gets the server's secret.
      *
-     * @return the secret
+     * <p>
+     *     This secret is used to identify client in UDP connection.
+     * </p>
+     *
+     * @return The server's secret.
      */
     @NotNull UUID getSecret();
 
     /**
-     * Gets the server's remote address
+     * Gets the server's remote address.
      *
-     * @return {@link InetSocketAddress}
+     * @return The remote address of the server.
      */
     @NotNull InetSocketAddress getRemoteAddress();
 
     /**
-     * Gets the server's {@link VoiceInfo}
+     * Gets the server's voice information.
      *
-     * @return {@link VoiceInfo}
+     * @return The {@link VoiceInfo} associated with the server.
      */
     @NotNull VoiceInfo getVoiceInfo();
 
     /**
-     * Gets the {@link PlayerInfo}
+     * Gets the player-related information received from the server.
      *
-     * @return {@link PlayerInfo}
+     * @return The {@link PlayerInfo} associated with the server.
      */
     @NotNull PlayerInfo getPlayerInfo();
 
     /**
-     * Gets the server's {@link Encryption}
+     * Gets the server's encryption details if available.
      *
-     * @return {@link Encryption}
+     * @return An optional containing the server's encryption information, or empty if server has disabled encryption.
      */
     Optional<Encryption> getEncryption();
 
     /**
-     * Creates a new opus encoder
-     * <br/>
-     * params will be created from {@link VoiceInfo}
+     * Creates a new Opus encoder based on server {@link VoiceInfo}.
+     *
+     * @param stereo Whether the encoder should be stereo.
+     * @return An opus {@link AudioEncoder}.
      */
     @NotNull AudioEncoder createOpusEncoder(boolean stereo);
 
     /**
-     * Creates a new opus decoder
-     * <br/>
-     * params will be created from {@link VoiceInfo}
+     * Creates a new Opus decoder based on server {@link VoiceInfo}.
+     *
+     * @param stereo Whether the decoder should be stereo.
+     * @return An opus {@link AudioEncoder}.
      */
-    @NotNull AudioEncoder createOpusDecoder(boolean stereo);
+    @NotNull AudioDecoder createOpusDecoder(boolean stereo);
 
     /**
-     * Represents a voice info of the connected server
+     * Represents voice-related information of the connected server.
      */
     interface VoiceInfo {
 
         /**
-         * Gets the audio format based on sample rate
+         * Creates an audio format with a fixed sample size of 16 bits.
          *
-         * sampleSizeInBits is 16
-         *
-         * @return {@link AudioFormat}
+         * @param stereo Whether the audio is in stereo or mono.
+         * @return An {@link AudioFormat}.
          */
-        @NotNull AudioFormat getFormat(boolean stereo);
+        @NotNull AudioFormat createFormat(boolean stereo);
 
         /**
-         * Gets the buffer size (for shorts) based on sample rate
+         * Gets the 20ms frame size (in shorts) based on sample rate.
          *
-         * @return the buffer size
+         * @return The frame size.
          */
-        int getBufferSize();
+        int getFrameSize();
 
         /**
-         * Gets the voice capture info
+         * Gets the voice capture information.
          *
-         * @return the capture info
+         * @return The CaptureInfo for voice capture.
          */
         @NotNull CaptureInfo getCaptureInfo();
 
         /**
-         * Gets the voice source lines
+         * Gets the voice source lines.
+         *
+         * @return A collection of {@link SourceLine} objects.
          */
         Collection<SourceLine> getSourceLines();
 
         /**
-         * Gets the voice activations
+         * Gets the voice activations.
+         *
+         * @return A collection of {@link Activation} objects.
          */
         Collection<Activation> getActivations();
     }
 
     /**
-     * Represents a player-based info of the connected server
+     * Represents player-related information of the connected server.
      */
     interface PlayerInfo {
 
         /**
-         * Gets the player's voice permission
+         * Gets the player's permission.
+         * <p>
+         *     Permissions are synced from the server.
+         *     Which permissions will be synchronized is changed in the server Plasmo Voice API.
+         *     By default, there is only one permission: {@code pv.allow_freecam}
+         * </p>
          *
-         * @param key permission key
-         *
-         * @return the voice permission
+         * @param key The permission key to check.
+         * @return An optional containing the permission, or empty if not present.
          */
         Optional<Boolean> get(@NotNull String key);
     }

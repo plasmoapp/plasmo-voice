@@ -24,7 +24,8 @@
         ]
     },
     "mixins": [
-        "plasmovoice.mixins.json"
+        "plasmovoice.mixins.json",
+        "slib.mixins.json"
     ],
     "depends": {
         "fabric": "*",

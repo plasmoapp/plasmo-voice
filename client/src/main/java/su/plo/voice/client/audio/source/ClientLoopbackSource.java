@@ -1,5 +1,6 @@
 package su.plo.voice.client.audio.source;
 
+import su.plo.voice.api.client.audio.device.source.AlSourceParams;
 import su.plo.voice.universal.UMinecraft;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -7,7 +8,7 @@ import lombok.Setter;
 import net.minecraft.client.player.LocalPlayer;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.device.AlAudioDevice;
+import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -15,9 +16,7 @@ import su.plo.voice.api.client.audio.device.source.DeviceSource;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.client.config.VoiceClientConfig;
-import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Optional;
 
@@ -45,13 +44,13 @@ public final class ClientLoopbackSource implements LoopbackSource {
     public void initialize(boolean stereo) throws DeviceException {
         this.stereo = stereo;
         this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup(DeviceType.OUTPUT);
-        sourceGroup.create(stereo, Params.EMPTY);
+        sourceGroup.create(stereo, AlSourceParams.DEFAULT);
 
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
                 alSource.setCloseTimeoutMs(0L);
-                AlAudioDevice device = alSource.getDevice();
+                AlContextAudioDevice device = alSource.getDevice();
 
                 device.runInContextBlocking(() -> {
                     alSource.setFloat(0x100E, 4F); // AL_MAX_GAIN
@@ -102,7 +101,7 @@ public final class ClientLoopbackSource implements LoopbackSource {
         for (DeviceSource source : sourceGroup.getSources()) {
             if (source instanceof AlSource) {
                 AlSource alSource = (AlSource) source;
-                AlAudioDevice device = alSource.getDevice();
+                AlContextAudioDevice device = alSource.getDevice();
 
                 device.runInContextBlocking(() -> {
                     alSource.setVolume(volume);

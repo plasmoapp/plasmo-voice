@@ -1,7 +1,8 @@
 package su.plo.voice.server.audio.source
 
-import su.plo.lib.api.server.entity.MinecraftServerEntity
-import su.plo.lib.api.server.world.ServerPos3d
+
+import su.plo.slib.api.server.entity.McServerEntity
+import su.plo.slib.api.server.position.ServerPos3d
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.line.ServerSourceLine
@@ -16,14 +17,14 @@ class VoiceServerEntitySource(
     line: ServerSourceLine,
     decoderInfo: CodecInfo?,
     stereo: Boolean,
-    override val entity: MinecraftServerEntity
+    override val entity: McServerEntity
 ) : VoiceServerPositionalSource<EntitySourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerEntitySource {
 
-    private val entityPosition = ServerPos3d()
-
-    override val position: ServerPos3d
-        get() = entity.getServerPosition(entityPosition)
+    override val position: ServerPos3d = entity.getServerPosition()
+        get() {
+            return entity.getServerPosition(field)
+        }
 
     override val sourceInfo: EntitySourceInfo
         get() = EntitySourceInfo(

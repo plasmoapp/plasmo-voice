@@ -6,15 +6,15 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.lib.api.chat.MinecraftTextClickEvent;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextHoverEvent;
-import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.chat.ClientChatUtil;
 import su.plo.lib.mod.client.chat.ClientLanguageSupplier;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextClickEvent;
+import su.plo.slib.api.chat.style.McTextHoverEvent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.addon.ClientAddonsLoader;
@@ -25,7 +25,7 @@ import su.plo.voice.api.client.audio.device.DeviceFactoryManager;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.config.addon.AddonConfig;
-import su.plo.voice.api.client.config.keybind.KeyBindings;
+import su.plo.voice.api.client.config.hotkey.Hotkeys;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
@@ -43,7 +43,7 @@ import su.plo.voice.client.audio.line.VoiceClientSourceLineManager;
 import su.plo.voice.client.audio.source.VoiceClientSourceManager;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
-import su.plo.voice.client.config.keybind.HotkeyActions;
+import su.plo.voice.client.config.hotkey.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
 import su.plo.voice.client.gui.PlayerVolumeAction;
@@ -62,7 +62,6 @@ import java.io.File;
 import java.util.Map;
 import java.util.Optional;
 
-// todo: merge with ModVoiceClient
 public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceClient {
 
     protected static final ConfigurationProvider toml = ConfigurationProvider.getProvider(TomlConfiguration.class);
@@ -116,13 +115,13 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
                 ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
                         .ifPresent(version -> {
                             ClientChatUtil.sendChatMessage(RenderUtil.getTextConverter().convert(
-                                    MinecraftTextComponent.translatable(
+                                    McTextComponent.translatable(
                                             "message.plasmovoice.update_available",
                                             version.version(),
-                                            MinecraftTextComponent.translatable("message.plasmovoice.update_available.click")
-                                                    .withStyle(MinecraftTextStyle.YELLOW)
-                                                    .clickEvent(MinecraftTextClickEvent.openUrl(version.downloadLink()))
-                                                    .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.translatable(
+                                            McTextComponent.translatable("message.plasmovoice.update_available.click")
+                                                    .withStyle(McTextStyle.YELLOW)
+                                                    .clickEvent(McTextClickEvent.openUrl(version.downloadLink()))
+                                                    .hoverEvent(McTextHoverEvent.showText(McTextComponent.translatable(
                                                             "message.plasmovoice.update_available.hover",
                                                             version.downloadLink()
                                                     )))
@@ -198,7 +197,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         eventBus.register(this, sourceManager);
 
         // hotkey actions
-        new HotkeyActions(this, getKeyBindings(), config).register();
+        new HotkeyActions(this, getHotkeys(), config).register();
         PlayerVolumeAction volumeAction = new PlayerVolumeAction(this, config);
         eventBus.register(this, volumeAction);
 
@@ -220,7 +219,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         super.onShutdown();
 
-        getEventBus().call(new VoiceClientShutdownEvent(this));
+        getEventBus().fire(new VoiceClientShutdownEvent(this));
     }
 
     protected void onServerDisconnect() {
@@ -245,7 +244,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     @Override
-    public @NotNull KeyBindings getKeyBindings() {
+    public @NotNull Hotkeys getHotkeys() {
         return config.getKeyBindings();
     }
 

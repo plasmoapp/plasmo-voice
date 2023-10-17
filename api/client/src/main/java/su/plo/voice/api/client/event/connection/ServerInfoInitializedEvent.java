@@ -11,18 +11,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This event is fired once the {@link ConfigPacket} is received
- * and {@link ServerInfo} is available in {@link PlasmoVoiceClient#getServerInfo()}
+ * and {@link ServerInfo} is available in {@link PlasmoVoiceClient#getServerInfo()}.
  */
 public final class ServerInfoInitializedEvent implements Event {
 
     @Getter
-    private final ServerInfo currentServerInfo;
+    private final ServerInfo serverInfo;
     @Getter
     private final ConfigPacket packet;
 
-    public ServerInfoInitializedEvent(@NotNull ServerInfo currentServerInfo,
+    public ServerInfoInitializedEvent(@NotNull ServerInfo serverInfo,
                                       @NotNull ConfigPacket packet) {
-        this.currentServerInfo = checkNotNull(currentServerInfo, "currentServerInfo cannot be null");
+        this.serverInfo = checkNotNull(serverInfo, "serverInfo cannot be null");
         this.packet = checkNotNull(packet, "packet cannot be null");
     }
 }

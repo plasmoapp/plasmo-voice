@@ -37,7 +37,7 @@ public final class VoiceProxyConfig implements ProxyConfig {
     private boolean debug = false;
 
     @ConfigField
-    private boolean disableCrowdin = false;
+    private boolean useCrowdinTranslations = true;
 
     @ConfigField
     private boolean checkForUpdates = true;

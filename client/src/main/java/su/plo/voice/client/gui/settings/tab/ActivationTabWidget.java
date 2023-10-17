@@ -2,6 +2,8 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.universal.UMinecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -9,8 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -22,7 +22,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.capture.VoiceClientActivation;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
-import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
+import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.DistanceSliderWidget;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
@@ -36,14 +36,14 @@ import java.util.Optional;
 
 public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
-    private static final List<MinecraftTextComponent> TYPES = ImmutableList.of(
-            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
-            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_voice"),
-            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_inherit")
+    private static final List<McTextComponent> TYPES = ImmutableList.of(
+            McTextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
+            McTextComponent.translatable("gui.plasmovoice.activation.type_voice"),
+            McTextComponent.translatable("gui.plasmovoice.activation.type_inherit")
     );
-    private static final List<MinecraftTextComponent> NO_INHERIT_TYPES = ImmutableList.of(
-            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
-            MinecraftTextComponent.translatable("gui.plasmovoice.activation.type_voice")
+    private static final List<McTextComponent> NO_INHERIT_TYPES = ImmutableList.of(
+            McTextComponent.translatable("gui.plasmovoice.activation.type_ptt"),
+            McTextComponent.translatable("gui.plasmovoice.activation.type_voice")
     );
 
     private final ClientActivationManager activations;
@@ -94,7 +94,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         Optional<IntConfigEntry> activationDistance = serverConfig.get().getActivationDistance(activation.getId());
         if (!activationDistance.isPresent()) throw new IllegalStateException("Activation distance config is empty");
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable(activation.getTranslation())));
+        addEntry(new CategoryEntry(McTextComponent.translatable(activation.getTranslation())));
         addEntry(createActivationType(activation, activationConfig.get(), canInherit));
         addEntry(createActivationButton((VoiceClientActivation) activation));
         if (activation.getDistances().size() > 0)
@@ -124,9 +124,9 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
 
         return new ActivationToggleStateEntry(
-                MinecraftTextComponent.translatable("gui.plasmovoice.activation.type"),
+                McTextComponent.translatable("gui.plasmovoice.activation.type"),
                 dropdown,
-                MinecraftTextComponent.translatable(activation.getTranslation()),
+                McTextComponent.translatable(activation.getTranslation()),
                 activationConfig.getConfigType(),
                 activationConfig.getConfigToggle(),
                 null,
@@ -139,7 +139,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
     private OptionEntry<HotKeyWidget> createActivationButton(VoiceClientActivation activation) {
         String translatable = "gui.plasmovoice.activation.toggle_button";
-        KeyBindingConfigEntry entry = activation.getToggleConfigEntry();
+        HotkeyConfigEntry entry = activation.getToggleConfigEntry();
 
         if (activation.getType() == ClientActivation.Type.PUSH_TO_TALK) {
             translatable = "gui.plasmovoice.activation.ptt_button";
@@ -178,7 +178,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
 
         return new OptionEntry<>(
-                MinecraftTextComponent.translatable("gui.plasmovoice.activation.distance", MinecraftTextComponent.translatable(activation.getTranslation())),
+                McTextComponent.translatable("gui.plasmovoice.activation.distance", McTextComponent.translatable(activation.getTranslation())),
                 sliderWidget,
                 activationDistance
         );
@@ -196,7 +196,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
 
         return new OptionEntry<>(
-                MinecraftTextComponent.translatable("gui.plasmovoice.activation.distance", MinecraftTextComponent.translatable(activation.getTranslation())),
+                McTextComponent.translatable("gui.plasmovoice.activation.distance", McTextComponent.translatable(activation.getTranslation())),
                 textField,
                 activationDistance
         );
@@ -204,12 +204,12 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
     private class ActivationToggleStateEntry extends ButtonOptionEntry<DropDownWidget> {
 
-        public ActivationToggleStateEntry(@NotNull MinecraftTextComponent text,
+        public ActivationToggleStateEntry(@NotNull McTextComponent text,
                                           @NotNull DropDownWidget widget,
-                                          @NotNull MinecraftTextComponent activationName,
+                                          @NotNull McTextComponent activationName,
                                           @NotNull EnumConfigEntry<ClientActivation.Type> entry,
                                           @NotNull BooleanConfigEntry stateEntry,
-                                          @Nullable MinecraftTextComponent tooltip,
+                                          @Nullable McTextComponent tooltip,
                                           @Nullable OptionResetAction<DropDownWidget> resetAction) {
             super(text, widget, Lists.newArrayList(), entry, tooltip, resetAction);
 
@@ -227,12 +227,12 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                         stateEntry.set(true);
                     },
                     (button, render, mouseX, mouseY) -> {
-                        parent.setTooltip(MinecraftTextComponent.translatable(
+                        parent.setTooltip(McTextComponent.translatable(
                                 "gui.plasmovoice.activation.toggle",
                                 activationName,
-                                MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                        MinecraftTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(MinecraftTextStyle.GREEN)
-                                ).withStyle(MinecraftTextStyle.GRAY)
+                                McTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                        McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN)
+                                ).withStyle(McTextStyle.GRAY)
                         ));
                     },
                     new ResourceLocation("plasmovoice:textures/icons/microphone_menu.png"),
@@ -250,12 +250,12 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                         stateEntry.set(false);
                     },
                     (button, render, mouseX, mouseY) -> {
-                        parent.setTooltip(MinecraftTextComponent.translatable(
+                        parent.setTooltip(McTextComponent.translatable(
                                 "gui.plasmovoice.activation.toggle",
                                 activationName,
-                                MinecraftTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                        MinecraftTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(MinecraftTextStyle.RED)
-                                ).withStyle(MinecraftTextStyle.GRAY)
+                                McTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                        McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
+                                ).withStyle(McTextStyle.GRAY)
                         ));
                     },
                     new ResourceLocation("plasmovoice:textures/icons/microphone_menu_disabled.png"),

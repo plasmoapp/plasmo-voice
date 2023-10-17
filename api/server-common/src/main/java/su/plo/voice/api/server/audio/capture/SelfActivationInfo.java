@@ -37,12 +37,12 @@ public final class SelfActivationInfo {
                               @NotNull UUID activationId,
                               @NotNull SourceAudioPacket packet,
                               boolean dataChanged) {
-        UUID lastActivationId = lastPlayerActivationIds.put(player.getInstance().getUUID(), activationId);
+        UUID lastActivationId = lastPlayerActivationIds.put(player.getInstance().getUuid(), activationId);
         if (lastActivationId == null || !lastActivationId.equals(activationId)) {
             updateSelfSourceInfo(player, source, null);
         }
 
-        udpConnections.getConnectionByPlayerId(player.getInstance().getUUID()).ifPresent((connection) -> {
+        udpConnections.getConnectionByPlayerId(player.getInstance().getUuid()).ifPresent((connection) -> {
             connection.sendPacket(new SelfAudioInfoPacket(
                     source.getId(),
                     packet.getSequenceNumber(),
@@ -55,14 +55,14 @@ public final class SelfActivationInfo {
     public void updateSelfSourceInfo(@NotNull VoicePlayer player,
                                      @NotNull ServerAudioSource<?> source,
                                      @Nullable SourceInfo sourceInfo) {
-        UUID lastActivationId = lastPlayerActivationIds.get(player.getInstance().getUUID());
+        UUID lastActivationId = lastPlayerActivationIds.get(player.getInstance().getUuid());
         if (lastActivationId == null) return;
 
         if (sourceInfo == null) sourceInfo = source.getSourceInfo();
 
         player.sendPacket(new SelfSourceInfoPacket(new SelfSourceInfo(
                 sourceInfo,
-                player.getInstance().getUUID(),
+                player.getInstance().getUuid(),
                 lastActivationId,
                 -1L
         )));

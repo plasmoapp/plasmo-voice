@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.NonNull;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.slib.api.event.player.McPlayerQuitEvent;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
 import su.plo.voice.api.server.event.connection.UdpClientConnectEvent;
@@ -36,8 +36,8 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     public VoiceUdpServerConnectionManager(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
 
-        PlayerQuitEvent.INSTANCE.registerListener(player ->
-                getConnectionByPlayerId(player.getUUID()).ifPresent(this::removeConnection)
+        McPlayerQuitEvent.INSTANCE.registerListener(player ->
+                getConnectionByPlayerId(player.getUuid()).ifPresent(this::removeConnection)
         );
     }
 
@@ -47,7 +47,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     }
 
     @Override
-    public UUID getSecretByPlayerId(@NonNull UUID playerUUID) {
+    public @NotNull UUID getSecretByPlayerId(@NonNull UUID playerUUID) {
         if (secretByPlayerId.containsKey(playerUUID)) {
             return secretByPlayerId.get(playerUUID);
         }
@@ -62,22 +62,22 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     @Override
     public void addConnection(@NonNull UdpServerConnection connection) {
         UdpClientConnectEvent connectEvent = new UdpClientConnectEvent(connection);
-        if (!voiceServer.getEventBus().call(connectEvent)) return;
+        if (!voiceServer.getEventBus().fire(connectEvent)) return;
 
         UdpServerConnection bySecret = connectionBySecret.put(connection.getSecret(), connection);
-        UdpServerConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getInstance().getUUID(), connection);
+        UdpServerConnection byPlayer = connectionByPlayerId.put(connection.getPlayer().getInstance().getUuid(), connection);
 
         if (bySecret != null) bySecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
         BaseVoice.DEBUG_LOGGER.log("{} ({}) connected", connection.getPlayer().getInstance().getName(), connection.getRemoteAddress());
-        voiceServer.getEventBus().call(new UdpClientConnectedEvent(connection));
+        voiceServer.getEventBus().fire(new UdpClientConnectedEvent(connection));
     }
 
     @Override
     public boolean removeConnection(@NonNull UdpServerConnection connection) {
         UdpServerConnection bySecret = connectionBySecret.remove(connection.getSecret());
-        UdpServerConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getInstance().getUUID());
+        UdpServerConnection byPlayer = connectionByPlayerId.remove(connection.getPlayer().getInstance().getUuid());
 
         if (bySecret != null) disconnect(bySecret);
         if (byPlayer != null && !byPlayer.equals(bySecret)) disconnect(byPlayer);
@@ -86,8 +86,8 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
     }
 
     @Override
-    public boolean removeConnection(VoiceServerPlayer player) {
-        UdpServerConnection connection = connectionByPlayerId.remove(player.getInstance().getUUID());
+    public boolean removeConnection(@NotNull VoiceServerPlayer player) {
+        UdpServerConnection connection = connectionByPlayerId.remove(player.getInstance().getUuid());
         if (connection != null) disconnect(connection);
 
         return connection != null;
@@ -127,14 +127,14 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
 
         VoicePlayer player = connection.getPlayer();
 
-        secretByPlayerId.remove(player.getInstance().getUUID());
+        secretByPlayerId.remove(player.getInstance().getUuid());
         playerIdBySecret.remove(connection.getSecret());
 
-        connectionByPlayerId.remove(player.getInstance().getUUID());
+        connectionByPlayerId.remove(player.getInstance().getUuid());
         connectionBySecret.remove(connection.getSecret());
 
         BaseVoice.DEBUG_LOGGER.log("{} disconnected", connection.getPlayer().getInstance().getName());
-        voiceServer.getEventBus().call(new UdpClientDisconnectedEvent(connection));
+        voiceServer.getEventBus().fire(new UdpClientDisconnectedEvent(connection));
     }
 
     @Override

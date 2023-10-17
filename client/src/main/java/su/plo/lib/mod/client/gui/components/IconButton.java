@@ -1,12 +1,12 @@
 package su.plo.lib.mod.client.gui.components;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
 
@@ -27,27 +27,31 @@ public final class IconButton extends Button {
     @Setter
     private int iconColor;
 
-    public IconButton(int x,
-                      int y,
-                      int width,
-                      int height,
-                      @NotNull OnPress pressAction,
-                      @NotNull OnTooltip tooltipAction,
-                      @NotNull ResourceLocation iconLocation,
-                      boolean shadow) {
+    public IconButton(
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull OnPress pressAction,
+            @NotNull OnTooltip tooltipAction,
+            @NotNull ResourceLocation iconLocation,
+            boolean shadow
+    ) {
         this(x, y, width, height, pressAction, tooltipAction, iconLocation, shadow, -0x1);
     }
 
-    public IconButton(int x,
-                      int y,
-                      int width,
-                      int height,
-                      @NotNull OnPress pressAction,
-                      @NotNull OnTooltip tooltipAction,
-                      @NotNull ResourceLocation iconLocation,
-                      boolean shadow,
-                      int shadowColor) {
-        super(x, y, width, height, MinecraftTextComponent.empty(), pressAction, tooltipAction);
+    public IconButton(
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull OnPress pressAction,
+            @NotNull OnTooltip tooltipAction,
+            @NotNull ResourceLocation iconLocation,
+            boolean shadow,
+            int shadowColor
+    ) {
+        super(x, y, width, height, McTextComponent.empty(), pressAction, tooltipAction);
 
         this.iconLocation = iconLocation;
         this.shadow = shadow;

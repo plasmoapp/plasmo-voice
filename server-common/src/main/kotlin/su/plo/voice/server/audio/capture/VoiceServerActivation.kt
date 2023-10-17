@@ -2,7 +2,7 @@ package su.plo.voice.server.audio.capture
 
 import com.google.common.base.Preconditions
 import com.google.common.collect.Sets
-import su.plo.lib.api.server.player.MinecraftServerPlayer
+import su.plo.slib.api.entity.player.McPlayer
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.audio.capture.ServerActivation
 import su.plo.voice.api.server.audio.capture.ServerActivation.Requirements
@@ -62,7 +62,7 @@ class VoiceServerActivation(
     override fun clearPermissions() =
         permissions.clear()
 
-    override fun checkPermissions(serverPlayer: MinecraftServerPlayer) =
+    override fun checkPermissions(serverPlayer: McPlayer) =
         permissions.any { serverPlayer.hasPermission(it) }
 
     override fun setDistances(distances: List<Int>) {

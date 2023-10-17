@@ -74,13 +74,13 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
 
         UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
-        voiceServer.getEventBus().call(event);
+        voiceServer.getEventBus().fire(event);
     }
 
     @Override
     public void handlePacket(Packet<ServerPacketUdpHandler> packet) {
         UdpPacketReceivedEvent event = new UdpPacketReceivedEvent(this, packet);
-        if (!voiceServer.getEventBus().call(event)) return;
+        if (!voiceServer.getEventBus().fire(event)) return;
 
         packet.handle(this);
     }
@@ -90,7 +90,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         channel.disconnect();
         connected = false;
 
-        voiceServer.getTcpConnectionManager().broadcastPlayerDisconnect(player);
+        voiceServer.getTcpPacketManager().broadcastPlayerDisconnect(player);
     }
 
     @Override
@@ -104,7 +104,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
 
     @Override
     public void handle(@NotNull PlayerAudioPacket packet) {
-        if (voiceServer.getMuteManager().getMute(player.getInstance().getUUID()).isPresent()) return;
-        voiceServer.getEventBus().call(new PlayerSpeakEvent(player, packet));
+        if (voiceServer.getMuteManager().getMute(player.getInstance().getUuid()).isPresent()) return;
+        voiceServer.getEventBus().fire(new PlayerSpeakEvent(player, packet));
     }
 }

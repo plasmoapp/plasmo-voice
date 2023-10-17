@@ -8,7 +8,7 @@ import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.config.ServerConfig;
 
 /**
- * This event is fired once the server config is reloaded by /vreload
+ * This event is fired once the server config is reloaded via /vreload.
  */
 @RequiredArgsConstructor
 public final class VoiceServerConfigReloadedEvent implements Event {

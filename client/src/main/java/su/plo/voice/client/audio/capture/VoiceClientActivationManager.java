@@ -83,7 +83,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             }
         }
 
-        voiceClient.getEventBus().call(new ClientActivationRegisteredEvent(activation));
+        voiceClient.getEventBus().fire(new ClientActivationRegisteredEvent(activation));
         return activation;
     }
 
@@ -155,7 +155,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             }
 
             boolean removed = activations.remove(activation);
-            voiceClient.getEventBus().call(new ClientActivationUnregisteredEvent(activation));
+            voiceClient.getEventBus().fire(new ClientActivationUnregisteredEvent(activation));
             return removed;
         }
 

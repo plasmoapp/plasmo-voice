@@ -1,21 +1,21 @@
 package su.plo.lib.mod.client.chat;
 
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.component.McTranslatableText;
+import su.plo.slib.api.chat.converter.McTextConverter;
+import su.plo.slib.api.chat.converter.TranslatableTextConverter;
+import su.plo.slib.mod.chat.ComponentTextConverter;
 import su.plo.voice.universal.wrappers.message.UTextComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextConverter;
-import su.plo.lib.api.chat.MinecraftTranslatableText;
-import su.plo.lib.api.chat.TranslatableTextConverter;
-import su.plo.lib.mod.chat.ComponentTextConverter;
 import su.plo.lib.mod.client.language.LanguageUtil;
 
 @RequiredArgsConstructor
 public final class ClientTextConverter extends TranslatableTextConverter<Component> {
 
-    private final MinecraftTextConverter<Component> textConverter = new ComponentTextConverter();
+    private final McTextConverter<Component> textConverter = new ComponentTextConverter();
     @Setter
     private ClientLanguageSupplier languageSupplier;
 
@@ -30,18 +30,18 @@ public final class ClientTextConverter extends TranslatableTextConverter<Compone
     }
 
     @Override
-    public Component convert(@NotNull MinecraftTextComponent text) {
-        if (!(text instanceof MinecraftTranslatableText) || languageSupplier == null)
+    public Component convert(@NotNull McTextComponent text) {
+        if (!(text instanceof McTranslatableText) || languageSupplier == null)
             return textConverter.convert(text);
 
         return languageSupplier.get()
                 .map((language) -> {
-                    MinecraftTextComponent translatedText = translateInner(language, text);
+                    McTextComponent translatedText = translateInner(language, text);
 
-                    if (!(translatedText instanceof MinecraftTranslatableText))
+                    if (!(translatedText instanceof McTranslatableText))
                         return textConverter.convert(translatedText);
 
-                    MinecraftTranslatableText translatable = (MinecraftTranslatableText) translatedText;
+                    McTranslatableText translatable = (McTranslatableText) translatedText;
 
                     if (!language.containsKey(translatable.getKey()))
                         return textConverter.convert(translatable);
@@ -54,7 +54,7 @@ public final class ClientTextConverter extends TranslatableTextConverter<Compone
                 .orElseGet(() -> textConverter.convert(text));
     }
 
-    public UTextComponent convertToUniversal(@NotNull MinecraftTextComponent text) {
+    public UTextComponent convertToUniversal(@NotNull McTextComponent text) {
         return new UTextComponent(convert(text));
     }
 }

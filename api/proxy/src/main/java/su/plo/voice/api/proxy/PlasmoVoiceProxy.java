@@ -1,7 +1,8 @@
 package su.plo.voice.api.proxy;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.proxy.MinecraftProxyLib;
+import org.jetbrains.annotations.Nullable;
+import su.plo.slib.api.proxy.McProxyLib;
 import su.plo.voice.api.addon.AddonsLoader;
 import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.proxy.config.ProxyConfig;
@@ -14,66 +15,66 @@ import su.plo.voice.api.server.player.VoiceProxyPlayerManager;
 import java.util.Optional;
 
 /**
- * The Plasmo Server Proxy API
+ * The Plasmo Voice Proxy API.
  */
 public interface PlasmoVoiceProxy extends PlasmoBaseVoiceServer {
 
     /**
-     * Gets the server's addons loader
+     * Gets the proxy's addons loader.
      *
-     * <p>Use this method to get the addons loader for loading server/proxy addons from Spigot/Forge/Fabric</p>
+     * <p>Use this method to get the addons loader for loading proxy addons from BungeeCord/Velocity.</p>
      *
-     * @return the addons loader
+     * @return The addons loader.
      */
     static AddonsLoader getAddonsLoader() {
         return ServerAddonsLoader.INSTANCE;
     }
 
     /**
-     * Gets the {@link MinecraftProxyLib}
+     * Gets the {@link McProxyLib}.
      *
-     * @return {@link MinecraftProxyLib}
+     * @return The {@link McProxyLib}.
      */
-    @NotNull MinecraftProxyLib getMinecraftServer();
+    @NotNull McProxyLib getMinecraftServer();
 
     /**
-     * Gets the {@link UdpProxyConnectionManager}
+     * Gets the {@link UdpProxyConnectionManager}.
      * <p>
-     * This manager can be used to broadcast or manage udp connections
+     *     This manager can be used to broadcast or manage UDP connections.
+     * </p>
      *
-     * @return {@link UdpProxyConnectionManager}
+     * @return The {@link UdpProxyConnectionManager}.
      */
     @NotNull UdpProxyConnectionManager getUdpConnectionManager();
 
     /**
-     * Gets the {@link VoiceProxyPlayerManager}
+     * Gets the {@link VoiceProxyPlayerManager}.
      * <p>
-     * This manager can be used to get voice players
+     *     This manager can be used to get voice players.
+     * </p>
      *
-     * @return {@link VoiceProxyPlayerManager}
+     * @return The {@link VoiceProxyPlayerManager}.
      */
     @NotNull VoiceProxyPlayerManager getPlayerManager();
 
     /**
-     * Gets the {@link UdpProxyServer}
-     * <p>
-     * This server can be used to broadcast or manage udp connections
+     * Gets the {@link RemoteServerManager}.
      *
-     * @return {@link UdpProxyServer}
+     * @return The {@link RemoteServerManager}.
      */
     @NotNull RemoteServerManager getRemoteServerManager();
 
     /**
-     * Gets the {@link UdpProxyServer}
+     * Gets the {@link UdpProxyServer}.
      *
-     * @return {@link UdpProxyServer}
+     * @return The {@link UdpProxyServer}.
      */
     Optional<UdpProxyServer> getUdpProxyServer();
 
     /**
-     * Gets the {@link ProxyConfig}
+     * Gets the {@link ProxyConfig}.
      *
-     * @return {@link ProxyConfig}
+     * @return The {@link ProxyConfig} or null if proxy is not initialized yet.
      */
-    ProxyConfig getConfig();
+    @Nullable ProxyConfig getConfig();
 }

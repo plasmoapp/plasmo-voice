@@ -6,7 +6,7 @@ import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoBaseVoiceServer
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine
 import su.plo.voice.api.server.audio.line.BaseServerSourceLineManager
-import su.plo.voice.api.server.connection.ConnectionManager
+import su.plo.voice.api.server.connection.PacketManager
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
@@ -17,7 +17,7 @@ import java.util.*
 
 abstract class VoiceBaseServerSourceLineManager<T : BaseServerSourceLine>(
     private val voiceServer: PlasmoBaseVoiceServer,
-    private val tcpConnections: ConnectionManager<ClientPacketTcpHandler, out VoicePlayer>
+    private val tcpConnections: PacketManager<ClientPacketTcpHandler, out VoicePlayer>
 ) : BaseServerSourceLineManager<T> {
 
     protected val lineById: MutableMap<UUID, T> = Maps.newConcurrentMap()
@@ -34,7 +34,7 @@ abstract class VoiceBaseServerSourceLineManager<T : BaseServerSourceLine>(
     override fun unregister(id: UUID): Boolean {
         lineById.remove(id)?.let { line ->
             line.clear()
-            line.playersSets?.let { voiceServer.eventBus.unregister(voiceServer, it) }
+            line.playerSetManager?.let { voiceServer.eventBus.unregister(voiceServer, it) }
             tcpConnections.broadcast(SourceLineUnregisterPacket(id))
             return true
         }
@@ -110,7 +110,7 @@ abstract class VoiceBaseServerSourceLineManager<T : BaseServerSourceLine>(
                 withPlayers,
                 defaultVolume
             ).also { line ->
-                line.playersSets?.let { voiceServer.eventBus.register(voiceServer, it) }
+                line.playerSetManager?.let { voiceServer.eventBus.register(voiceServer, it) }
                 lineById[line.id] = line
             }
         }

@@ -12,7 +12,7 @@ import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import java.util.Optional;
 
 /**
- * Manages audio capture thread
+ * Manages audio capture thread.
  *
  * <p>
  *     On each thread iteration, iterates all {@link ClientActivation}s ordered by {@link ClientActivation#getWeight()}
@@ -24,58 +24,70 @@ import java.util.Optional;
  *     will be used to encode audio data, otherwise - mono encoder
  * </p>
  * <p>
- *     By default, default encoders from {@link AudioCapture} will be used.
- *     But if {@link ClientActivation#getMonoEncoder()} or {@link ClientActivation#getStereoEncoder()}
- *     is not null, then they will be used instead
+ *     By default, the default encoders from {@link AudioCapture} will be used.
+ *     However if {@link ClientActivation#getMonoEncoder()} or {@link ClientActivation#getStereoEncoder()}
+ *     is not null, then they will be used instead.
  * </p>
  */
 public interface AudioCapture {
 
     /**
-     * @return default mono encoder if {@link ServerInfo}'s {@link CaptureInfo} is not null
+     * Gets the default mono encoder if {@link ServerInfo}'s {@link CaptureInfo} is not null.
+     *
+     * @return An optional containing the default mono encoder, if available; otherwise, an empty optional.
      */
     Optional<AudioEncoder> getDefaultMonoEncoder();
 
     /**
-     * @return default stereo encoder if {@link ServerInfo}'s {@link CaptureInfo} is not null
+     * Gets the default stereo encoder if {@link ServerInfo}'s {@link CaptureInfo} is not null.
+     *
+     * @return An optional containing the default stereo encoder, if available; otherwise, an empty optional.
      */
     Optional<AudioEncoder> getDefaultStereoEncoder();
 
     /**
-     * @return default stereo encoder if {@link ServerInfo}'s {@link Encryption} is not null
+     * Gets the default encryption method if {@link ServerInfo}'s {@link Encryption} is not null.
+     *
+     * @return An optional containing the default encryption method, if available; otherwise, an empty optional.
      */
     Optional<Encryption> getEncryption();
 
     /**
-     * @return current input device if it was initialized in {@link #initialize(ServerInfo)}
+     * Gets the current input device if it was initialized in {@link #initialize(ServerInfo)}.
+     *
+     * @return An optional containing the current input device, if available; otherwise, an empty optional.
      */
     Optional<InputDevice> getDevice();
 
     /**
-     * Initializes {@link AudioCapture} and starts a new thread that captures audio data from opened microphone.
-     * After audio data capture, {@link AudioCapture} iterates all {@link ClientActivation}s by
+     * Initializes {@link AudioCapture} and starts a new thread that captures audio data from the opened input device.
+     * After audio data capture, {@link AudioCapture} iterates all {@link ClientActivation}s.
      *
-     * @param serverInfo
+     * @param serverInfo The server information to initialize audio capture.
      */
     void initialize(@NotNull ServerInfo serverInfo);
 
     /**
-     * Starts a new thread that reads audio data from {@link InputDevice}.
+     * Starts a new thread that reads audio data from the {@link InputDevice}.
      */
     void start();
 
     /**
-     * Stops the thread if {@link #isActive()}, otherwise doing nothing
+     * Stops the thread if {@link #isActive()} is true; otherwise, it does nothing.
      */
     void stop();
 
     /**
-     * @return true if capture thread is alive
+     * Checks if the capture thread is active.
+     *
+     * @return true if the capture thread is alive; otherwise, false.
      */
     boolean isActive();
 
     /**
-     * @return true if client muted on the server
+     * Checks if the client is muted on the server.
+     *
+     * @return true if the client is muted on the server; otherwise, false.
      */
     boolean isServerMuted();
 }

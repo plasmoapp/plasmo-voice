@@ -10,7 +10,7 @@ import su.plo.voice.api.event.EventCancellableBase;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once a samples was captured by {@link AudioCapture}
+ * This event is fired once audio samples are captured by {@link AudioCapture}.
  */
 public final class AudioCaptureEvent extends EventCancellableBase {
 
@@ -22,11 +22,13 @@ public final class AudioCaptureEvent extends EventCancellableBase {
     private final short[] samples;
     @Getter
     @Setter
-    private boolean sendEnd;
+    private boolean flushActivations;
 
-    public AudioCaptureEvent(@NotNull AudioCapture capture,
-                             @NotNull InputDevice device,
-                             short[] samples) {
+    public AudioCaptureEvent(
+            @NotNull AudioCapture capture,
+            @NotNull InputDevice device,
+            short[] samples
+    ) {
         this.capture = checkNotNull(capture, "capture");
         this.device = checkNotNull(device, "device");
         this.samples = checkNotNull(samples, "samples");

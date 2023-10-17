@@ -1,6 +1,5 @@
 package su.plo.voice.proto.data.audio.codec.opus
 
-import com.google.common.io.ByteArrayDataOutput
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import java.io.IOException
 import kotlin.properties.Delegates
@@ -17,6 +16,10 @@ class OpusEncoderInfo : CodecInfo {
     constructor(mode: OpusMode, bitrate: Int) : super() {
         this.mode = mode
         this.bitrate = validateBitrate(bitrate)
+        params = hashMapOf(
+            "mode" to mode.toString(),
+            "bitrate" to bitrate.toString()
+        )
     }
 
     /**
@@ -30,6 +33,7 @@ class OpusEncoderInfo : CodecInfo {
         mode = codecInfo.params["mode"]?.let { OpusMode.valueOf(it) } ?: throw IOException("mode not found in params")
         bitrate =
             codecInfo.params["bitrate"]?.let { validateStringBitrate(it) } ?: throw IOException("bad opus bitrate")
+        params = codecInfo.params
     }
 
     var mode: OpusMode
@@ -37,18 +41,6 @@ class OpusEncoderInfo : CodecInfo {
 
     init {
         name = "opus"
-    }
-
-    override fun serialize(out: ByteArrayDataOutput) {
-        out.writeUTF("opus")
-
-        out.writeInt(2)
-
-        out.writeUTF("mode")
-        out.writeUTF(mode.toString())
-
-        out.writeUTF("bitrate")
-        out.writeUTF(bitrate.toString())
     }
 
     private fun validateStringBitrate(rawBitrate: String): Int {

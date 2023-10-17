@@ -5,7 +5,7 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
-import su.plo.voice.api.server.connection.TcpServerConnectionManager;
+import su.plo.voice.api.server.connection.TcpServerPacketManager;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent;
 import su.plo.voice.api.server.event.connection.TcpPacketReceivedEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
@@ -27,13 +27,13 @@ import java.util.Optional;
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     private final PlasmoVoiceServer voiceServer;
-    private final TcpServerConnectionManager tcpConnections;
+    private final TcpServerPacketManager tcpConnections;
     private final VoiceServerPlayer player;
 
     public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
                                 @NotNull VoiceServerPlayer player) {
         this.voiceServer = voiceServer;
-        this.tcpConnections = voiceServer.getTcpConnectionManager();
+        this.tcpConnections = voiceServer.getTcpPacketManager();
         this.player = player;
     }
 
@@ -41,7 +41,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         if (!voiceServer.getUdpServer().isPresent()) return;
 
         TcpPacketReceivedEvent event = new TcpPacketReceivedEvent(player, packet);
-        voiceServer.getEventBus().call(event);
+        voiceServer.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         try {
@@ -108,8 +108,8 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     public void handle(@NotNull PlayerAudioEndPacket packet) {
         if (!player.hasVoiceChat()) return;
 
-        if (voiceServer.getMuteManager().getMute(player.getInstance().getUUID()).isPresent()) return;
-        voiceServer.getEventBus().call(new PlayerSpeakEndEvent(player, packet));
+        if (voiceServer.getMuteManager().getMute(player.getInstance().getUuid()).isPresent()) return;
+        voiceServer.getEventBus().fire(new PlayerSpeakEndEvent(player, packet));
     }
 
     @Override
@@ -139,7 +139,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     public void handle(@NotNull LanguageRequestPacket packet) {
         player.sendPacket(new LanguagePacket(
                 packet.getLanguage(),
-                voiceServer.getLanguages().getClientLanguage(packet.getLanguage())
+                voiceServer.getMinecraftServer().getLanguages().getClientLanguage(packet.getLanguage())
         ));
     }
 }

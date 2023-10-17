@@ -1,11 +1,11 @@
 package su.plo.lib.mod.client.gui.narration;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.slib.api.chat.component.McTextComponent;
 
 public interface NarrationOutput {
 
-    void add(@NotNull Type narratedElementType, @NotNull MinecraftTextComponent component);
+    void add(@NotNull Type narratedElementType, @NotNull McTextComponent component);
 
     NarrationOutput nest();
 

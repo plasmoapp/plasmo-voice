@@ -1,5 +1,8 @@
 package su.plo.voice.api.encryption;
 
+/**
+ * Exception indicates issues related to encryption.
+ */
 public class EncryptionException extends Exception {
 
     public EncryptionException() {

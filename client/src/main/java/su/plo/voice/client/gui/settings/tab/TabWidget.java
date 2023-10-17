@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
@@ -10,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.AbstractScrollbar;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
@@ -138,7 +138,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         super.render(stack, mouseX, mouseY, delta);
     }
 
-    public void setTooltip(@Nullable MinecraftTextComponent tooltip) {
+    public void setTooltip(@Nullable McTextComponent tooltip) {
         parent.setTooltip(tooltip);
     }
 
@@ -156,9 +156,11 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
     }
 
-    protected OptionEntry<ToggleButton> createToggleEntry(@NotNull MinecraftTextComponent text,
-                                                          @Nullable MinecraftTextComponent tooltip,
-                                                          @NotNull ConfigEntry<Boolean> entry) {
+    protected OptionEntry<ToggleButton> createToggleEntry(
+            @NotNull McTextComponent text,
+            @Nullable McTextComponent tooltip,
+            @NotNull ConfigEntry<Boolean> entry
+    ) {
         ToggleButton toggleButton = new ToggleButton(
                 entry,
                 0,
@@ -176,12 +178,14 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         );
     }
 
-    protected OptionEntry<VolumeSliderWidget> createVolumeSlider(@NotNull MinecraftTextComponent text,
-                                                                 @Nullable MinecraftTextComponent tooltip,
-                                                                 @NotNull DoubleConfigEntry entry,
-                                                                 @NotNull String suffix) {
+    protected OptionEntry<VolumeSliderWidget> createVolumeSlider(
+            @NotNull McTextComponent text,
+            @Nullable McTextComponent tooltip,
+            @NotNull DoubleConfigEntry entry,
+            @NotNull String suffix
+    ) {
         VolumeSliderWidget volumeSlider = new VolumeSliderWidget(
-                voiceClient.getKeyBindings(),
+                voiceClient.getHotkeys(),
                 entry,
                 suffix,
                 0,
@@ -198,10 +202,12 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         );
     }
 
-    protected OptionEntry<IntSliderWidget> createIntSliderWidget(@NotNull MinecraftTextComponent text,
-                                                                 @Nullable MinecraftTextComponent tooltip,
-                                                                 @NotNull IntConfigEntry entry,
-                                                                 @NotNull String suffix) {
+    protected OptionEntry<IntSliderWidget> createIntSliderWidget(
+            @NotNull McTextComponent text,
+            @Nullable McTextComponent tooltip,
+            @NotNull IntConfigEntry entry,
+            @NotNull String suffix
+    ) {
         IntSliderWidget volumeSlider = new IntSliderWidget(
                 entry,
                 suffix,
@@ -224,17 +230,17 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
         private static final int COLOR = 0xFFFFFF;
 
-        private final MinecraftTextComponent text;
+        private final McTextComponent text;
         private final int textWidth;
 
-        public CategoryEntry(@NotNull MinecraftTextComponent text) {
+        public CategoryEntry(@NotNull McTextComponent text) {
             super(24);
 
             this.text = text;
             this.textWidth = RenderUtil.getTextWidth(text);
         }
 
-        public CategoryEntry(@NotNull MinecraftTextComponent text, int height) {
+        public CategoryEntry(@NotNull McTextComponent text, int height) {
             super(height);
 
             this.text = text;
@@ -283,8 +289,8 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
     public class OptionEntry<W extends GuiAbstractWidget> extends Entry {
 
-        protected final MinecraftTextComponent text;
-        protected final MinecraftTextComponent tooltip;
+        protected final McTextComponent text;
+        protected final McTextComponent tooltip;
         protected final W element;
         protected final IconButton resetButton;
         protected final @Nullable TabWidget.OptionResetAction<W> resetAction;
@@ -292,39 +298,39 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
         private final List<? extends GuiWidgetListener> widgets;
 
-        public OptionEntry(@NotNull MinecraftTextComponent text,
+        public OptionEntry(@NotNull McTextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry,
                            @NotNull TabWidget.OptionResetAction<W> action) {
             this(text, widget, entry, null, action, 24);
         }
 
-        public OptionEntry(@NotNull MinecraftTextComponent text,
+        public OptionEntry(@NotNull McTextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry,
-                           @Nullable MinecraftTextComponent tooltip) {
+                           @Nullable McTextComponent tooltip) {
             this(text, widget, entry, tooltip, null, 24);
         }
 
-        public OptionEntry(@NotNull MinecraftTextComponent text,
+        public OptionEntry(@NotNull McTextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry) {
             this(text, widget, entry, null, null, 24);
         }
 
 
-        public OptionEntry(@NotNull MinecraftTextComponent text,
+        public OptionEntry(@NotNull McTextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry,
-                           @Nullable MinecraftTextComponent tooltip,
+                           @Nullable McTextComponent tooltip,
                            @Nullable TabWidget.OptionResetAction<W> resetAction) {
             this(text, widget, entry, tooltip, resetAction, 24);
         }
 
-        public OptionEntry(@NotNull MinecraftTextComponent text,
+        public OptionEntry(@NotNull McTextComponent text,
                            @NotNull W widget,
                            @NotNull ConfigEntry<?> entry,
-                           @Nullable MinecraftTextComponent tooltip,
+                           @Nullable McTextComponent tooltip,
                            @Nullable TabWidget.OptionResetAction<W> resetAction,
                            int height) {
             super(height);
@@ -425,20 +431,20 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
         protected final List<Button> buttons;
 
-        public ButtonOptionEntry(@NotNull MinecraftTextComponent text,
+        public ButtonOptionEntry(@NotNull McTextComponent text,
                                  @NotNull W widget,
                                  @NotNull List<Button> buttons,
                                  @NotNull ConfigEntry<?> entry,
-                                 @Nullable MinecraftTextComponent tooltip,
+                                 @Nullable McTextComponent tooltip,
                                  @Nullable OptionResetAction<W> resetAction) {
             this(text, widget, buttons, entry, tooltip, resetAction, 24);
         }
 
-        public ButtonOptionEntry(@NotNull MinecraftTextComponent text,
+        public ButtonOptionEntry(@NotNull McTextComponent text,
                                  @NotNull W widget,
                                  @NotNull List<Button> buttons,
                                  @NotNull ConfigEntry<?> entry,
-                                 @Nullable MinecraftTextComponent tooltip,
+                                 @Nullable McTextComponent tooltip,
                                  @Nullable OptionResetAction<W> resetAction,
                                  int height) {
             super(text, widget, entry, tooltip, resetAction, height);

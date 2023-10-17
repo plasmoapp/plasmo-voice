@@ -22,6 +22,7 @@ import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 import su.plo.voice.proxy.connection.CancelForwardingException;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 import java.util.UUID;
 
 @RequiredArgsConstructor
@@ -39,10 +40,15 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     private UUID remoteSecret;
     @Getter @Setter
     private InetSocketAddress remoteAddress;
-    @Getter @Setter
+    @Setter
     private RemoteServer remoteServer;
     @Getter
     private boolean connected = true;
+
+    @Override
+    public Optional<RemoteServer> getRemoteServer() {
+        return Optional.ofNullable(remoteServer);
+    }
 
     @Override
     public void sendPacket(Packet<?> packet) {
@@ -74,7 +80,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
 
     @Override
     public void handle(@NotNull PlayerAudioPacket packet) {
-        if (!voiceProxy.getEventBus().call(new PlayerSpeakEvent(player, packet))) {
+        if (!voiceProxy.getEventBus().fire(new PlayerSpeakEvent(player, packet))) {
             throw new CancelForwardingException();
         }
     }

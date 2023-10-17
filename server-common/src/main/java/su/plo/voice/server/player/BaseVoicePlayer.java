@@ -7,14 +7,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.server.player.MinecraftServerPlayer;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.entity.player.McPlayer;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.proto.packets.tcp.clientbound.AnimatedActionBarPacket;
@@ -28,7 +28,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @ToString(doNotUseGetters = true, exclude = "publicKey")
-public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer>
+public abstract class BaseVoicePlayer<P extends McPlayer>
         implements VoicePlayer {
 
     private final PlasmoBaseVoiceServer voiceServer;
@@ -87,7 +87,7 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer>
     }
 
     @Override
-    public void sendAnimatedActionBar(@NotNull MinecraftTextComponent text) {
+    public void sendAnimatedActionBar(@NotNull McTextComponent text) {
         if (!hasVoiceChat()) {
             instance.sendActionBar(text);
             return;
@@ -104,7 +104,7 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer>
 
     public void setActivationDistance(@NotNull ServerActivation activation, int distance) {
         Integer oldDistance = distanceByActivationId.put(activation.getId(), distance);
-        voiceServer.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
+        voiceServer.getEventBus().fire(new PlayerActivationDistanceUpdateEvent(
                 this,
                 activation,
                 distance,
@@ -114,7 +114,7 @@ public abstract class BaseVoicePlayer<P extends MinecraftServerPlayer>
 
     public void removeActivationDistance(@NotNull ServerActivation activation) {
         Integer oldDistance = distanceByActivationId.remove(activation.getId());
-        voiceServer.getEventBus().call(new PlayerActivationDistanceUpdateEvent(
+        voiceServer.getEventBus().fire(new PlayerActivationDistanceUpdateEvent(
                 this,
                 activation,
                 -1,

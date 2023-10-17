@@ -61,7 +61,7 @@ public final class NettyUdpClient implements UdpClient {
     }
 
     @Override
-    public void connect(String ip, int port) {
+    public void connect(@NotNull String ip, int port) {
         if (isClosed()) throw new IllegalStateException("Client is closed and cannot be reused");
 
         Bootstrap bootstrap = new Bootstrap();
@@ -104,7 +104,7 @@ public final class NettyUdpClient implements UdpClient {
 
         voiceClient.getEventBus().unregister(voiceClient, this);
 
-        voiceClient.getEventBus().call(new UdpClientClosedEvent(this, reason));
+        voiceClient.getEventBus().fire(new UdpClientClosedEvent(this, reason));
     }
 
     @Override
@@ -117,7 +117,7 @@ public final class NettyUdpClient implements UdpClient {
         BaseVoice.LOGGER.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
 
         UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
-        if (!voiceClient.getEventBus().call(event)) return;
+        if (!voiceClient.getEventBus().fire(event)) return;
 
         channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()));
     }
@@ -131,7 +131,7 @@ public final class NettyUdpClient implements UdpClient {
 
     public void setTimedOut(boolean timedOut) {
         if (timedOut != this.timedOut) {
-            voiceClient.getEventBus().call(new UdpClientTimedOutEvent(this, timedOut));
+            voiceClient.getEventBus().fire(new UdpClientTimedOutEvent(this, timedOut));
         }
 
         this.timedOut = timedOut;
@@ -144,6 +144,6 @@ public final class NettyUdpClient implements UdpClient {
         BaseVoice.LOGGER.info("Connected to {}", channel.remoteAddress());
         this.connected = true;
 
-        voiceClient.getEventBus().call(new UdpClientConnectedEvent(this));
+        voiceClient.getEventBus().fire(new UdpClientConnectedEvent(this));
     }
 }

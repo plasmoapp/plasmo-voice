@@ -5,7 +5,7 @@ import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.event.Event;
 
 /**
- * This event is fired once the {@link ClientAudioSource} has been initialized
+ * This event is fired once the {@link ClientAudioSource} has been initialized.
  */
 public class AudioSourceInitializedEvent implements Event {
 

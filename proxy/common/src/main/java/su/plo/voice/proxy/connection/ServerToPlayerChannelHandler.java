@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.proxy.connection.MinecraftProxyServerConnection;
+import su.plo.slib.api.proxy.connection.McProxyServerConnection;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServer;
@@ -49,7 +49,8 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
         if (!remoteServer.isPresent()) return;
 
         if (!remoteServer.get().isAesEncryptionKeySet()) {
-            player.getInstance().getServer().ifPresent((connection) -> {
+            McProxyServerConnection connection = player.getInstance().getServer();
+            if (connection != null) {
                 try {
                     byte[] aesEncryptionKey = voiceProxy.getConfig().aesEncryptionKey();
 
@@ -72,11 +73,11 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
                 } catch (InvalidKeyException e) {
                     e.printStackTrace();
                 }
-            });
+            }
         }
 
-        UUID secret = voiceProxy.getUdpConnectionManager().setPlayerSecret(
-                player.getInstance().getUUID(),
+        UUID secret = voiceProxy.getUdpConnectionManager().setPlayerRemoteSecret(
+                player.getInstance().getUuid(),
                 packet.getSecret()
         );
 
@@ -87,7 +88,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
         );
 
         voiceProxy.getUdpConnectionManager()
-                .getConnectionByPlayerId(player.getInstance().getUUID())
+                .getConnectionByPlayerId(player.getInstance().getUuid())
                 .ifPresent((connection) -> connection.setRemoteServer(remoteServer.get()));
 
         sendConnectionPacket(secret);
@@ -105,7 +106,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
     @Override
     public void handle(@NotNull LanguagePacket packet) {
         Map<String, String> language = Maps.newHashMap(packet.getLanguage());
-        language.putAll(voiceProxy.getLanguages().getClientLanguage(packet.getLanguageName()));
+        language.putAll(voiceProxy.getMinecraftServer().getLanguages().getClientLanguage(packet.getLanguageName()));
 
         player.sendPacket(new LanguagePacket(packet.getLanguageName(), language));
         throw new CancelForwardingException();
@@ -260,10 +261,10 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
     }
 
     private Optional<RemoteServer> getCurrentRemoteServer() {
-        Optional<MinecraftProxyServerConnection> server = player.getInstance().getServer();
-        if (!server.isPresent()) return Optional.empty();
+        McProxyServerConnection server = player.getInstance().getServer();
+        if (server == null) return Optional.empty();
 
-        return voiceProxy.getRemoteServerManager().getServer(server.get().getServerInfo().getName());
+        return voiceProxy.getRemoteServerManager().getServer(server.getServerInfo().getName());
     }
 
     private void sendConnectionPacket(@NotNull UUID secret) {

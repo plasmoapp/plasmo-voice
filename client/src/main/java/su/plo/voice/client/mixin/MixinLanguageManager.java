@@ -35,7 +35,7 @@ public abstract class MixinLanguageManager {
     //$$     if (ModVoiceClient.INSTANCE == null) return;
     //$$
     //$$     PlasmoVoiceMeta.Companion.fetch(languageCode);
-    //$$     ModVoiceClient.INSTANCE.getEventBus().call(
+    //$$     ModVoiceClient.INSTANCE.getEventBus().fire(
     //$$             new LanguageChangedEvent(languageCode)
     //$$     );
     //$$ }
@@ -45,7 +45,7 @@ public abstract class MixinLanguageManager {
         if (ModVoiceClient.INSTANCE == null) return;
 
         PlasmoVoiceMeta.Companion.fetch(languageInfo.getCode());
-        ModVoiceClient.INSTANCE.getEventBus().call(
+        ModVoiceClient.INSTANCE.getEventBus().fire(
                 new LanguageChangedEvent(languageInfo.getCode())
         );
     }

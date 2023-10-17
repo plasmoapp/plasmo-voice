@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import lombok.*;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.connection.ServerInfo;
@@ -89,7 +90,7 @@ public final class VoiceServerInfo implements ServerInfo {
     }
 
     @Override
-    public @NotNull AudioEncoder createOpusDecoder(boolean stereo) {
+    public @NotNull AudioDecoder createOpusDecoder(boolean stereo) {
         if (voiceInfo.getCaptureInfo().getEncoderInfo() == null)
             throw new IllegalStateException("server codec info is empty");
 
@@ -114,7 +115,7 @@ public final class VoiceServerInfo implements ServerInfo {
         private List<Activation> activations;
 
         @Override
-        public @NotNull AudioFormat getFormat(boolean stereo) {
+        public @NotNull AudioFormat createFormat(boolean stereo) {
             return new AudioFormat(
                     (float) captureInfo.getSampleRate(),
                     16,
@@ -125,7 +126,7 @@ public final class VoiceServerInfo implements ServerInfo {
         }
 
         @Override
-        public int getBufferSize() {
+        public int getFrameSize() {
             return (captureInfo.getSampleRate() / 1_000) * 20;
         }
     }

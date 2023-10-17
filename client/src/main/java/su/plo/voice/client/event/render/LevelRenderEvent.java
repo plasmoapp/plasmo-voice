@@ -1,14 +1,13 @@
 package su.plo.voice.client.event.render;
 
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.NonNull;
 import net.minecraft.client.multiplayer.ClientLevel;
-import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.Event;
 import su.plo.voice.client.render.ModCamera;
-import su.plo.voice.proto.data.pos.Pos3d;
 
 public final class LevelRenderEvent implements Event {
 

@@ -24,7 +24,7 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
+    public @NotNull AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
         checkNotNull(format, "format cannot be null");
 
         if (Strings.emptyToNull(deviceName) == null) {
@@ -35,12 +35,12 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public String getDefaultDeviceName() {
+    public @NotNull String getDefaultDeviceName() {
         return getDeviceNames().iterator().next();
     }
 
     @Override
-    public ImmutableList<String> getDeviceNames() {
+    public @NotNull ImmutableList<String> getDeviceNames() {
         List<String> devices = new ArrayList<>();
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
 
@@ -57,7 +57,7 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public String getType() {
+    public @NotNull String getType() {
         return "JAVAX_INPUT";
     }
 }

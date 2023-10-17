@@ -23,7 +23,7 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
     private final PlasmoVoiceClient voiceClient;
 
     @Override
-    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
+    public @NotNull AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
         checkNotNull(format, "format cannot be null");
 
         if (Strings.isNullOrEmpty(deviceName)) {
@@ -34,18 +34,18 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public String getDefaultDeviceName() {
+    public @NotNull String getDefaultDeviceName() {
         return ALC11.alcGetString(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
     }
 
     @Override
-    public ImmutableList<String> getDeviceNames() {
+    public @NotNull ImmutableList<String> getDeviceNames() {
         List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_ALL_DEVICES_SPECIFIER);
         return devices == null ? ImmutableList.of() : ImmutableList.copyOf(devices);
     }
 
     @Override
-    public String getType() {
+    public @NotNull String getType() {
         return "AL_OUTPUT";
     }
 }

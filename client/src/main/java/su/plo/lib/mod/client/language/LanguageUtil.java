@@ -9,8 +9,8 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 
 @UtilityClass
 public class LanguageUtil {
@@ -31,40 +31,39 @@ public class LanguageUtil {
         //#endif
     }
 
-    // todo: legacy
-    public @NotNull MinecraftTextComponent getKeyDisplayName(@NonNull KeyBinding.Key key) {
+    public @NotNull McTextComponent getKeyDisplayName(@NonNull Hotkey.Key key) {
         InputConstants.Key inputKey;
 
-        if (key.getType() == KeyBinding.Type.KEYSYM) {
+        if (key.getType() == Hotkey.Type.KEYSYM) {
             inputKey = InputConstants.Type.KEYSYM.getOrCreate(key.getCode());
-        } else if (key.getType() == KeyBinding.Type.MOUSE) {
+        } else if (key.getType() == Hotkey.Type.MOUSE) {
             inputKey = InputConstants.Type.MOUSE.getOrCreate(key.getCode());
-        } else if (key.getType() == KeyBinding.Type.SCANCODE) {
+        } else if (key.getType() == Hotkey.Type.SCANCODE) {
             inputKey = InputConstants.Type.SCANCODE.getOrCreate(key.getCode());
         } else {
-            return MinecraftTextComponent.translatable("gui.none");
+            return McTextComponent.translatable("gui.none");
         }
 
         Component displayName = inputKey.getDisplayName();
         //#if MC>=11900
         if (displayName.getContents() instanceof TranslatableContents) {
             TranslatableContents translatable = (TranslatableContents) displayName.getContents();
-            return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
+            return McTextComponent.translatable(translatable.getKey(), translatable.getArgs());
         } else if (displayName.getContents() instanceof LiteralContents) {
             LiteralContents literal = (LiteralContents) displayName.getContents();
-            return MinecraftTextComponent.translatable(literal.text());
+            return McTextComponent.translatable(literal.text());
         } else {
-            return MinecraftTextComponent.translatable("gui.none");
+            return McTextComponent.translatable("gui.none");
         }
         //#else
         //$$ if (displayName instanceof TranslatableComponent) {
         //$$     TranslatableComponent translatable = (TranslatableComponent) displayName;
-        //$$     return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
+        //$$     return McTextComponent.translatable(translatable.getKey(), translatable.getArgs());
         //$$ } else if (displayName instanceof TextComponent) {
         //$$     TextComponent literal = (TextComponent) displayName;
-        //$$     return MinecraftTextComponent.translatable(literal.getText());
+        //$$     return McTextComponent.translatable(literal.getText());
         //$$ } else {
-        //$$     return MinecraftTextComponent.translatable("gui.none");
+        //$$     return McTextComponent.translatable("gui.none");
         //$$ }
         //#endif
     }

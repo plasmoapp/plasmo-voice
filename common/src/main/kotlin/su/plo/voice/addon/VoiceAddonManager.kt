@@ -39,6 +39,10 @@ class VoiceAddonManager(
             Addon::class.java
         )
 
+        require(AddonContainer.ID_PATTERN.matcher(addon.id).matches()) {
+            "An addon ID must start with a lowercase letter and may contain only lowercase letters, digits, hyphens, and underscores. It should be between 4 and 32 characters long."
+        }
+
         val addonContainer = VoiceAddon(
             addon.id,
             if (Strings.emptyToNull(addon.name) == null) addon.id else addon.name,
@@ -46,12 +50,12 @@ class VoiceAddonManager(
             addon.version,
             Lists.newArrayList(*addon.authors),
             addon.dependencies.map { dependency ->
-                AddonDependency(dependency.id, dependency.optional, dependency.mod)
+                AddonDependency(dependency.id, dependency.optional)
             },
             addonClass
         )
 
-        addonContainer.dependencies.filter { !it.isOptional && !it.isMod }.forEach { dependency ->
+        addonContainer.dependencies.filter { !it.isOptional }.forEach { dependency ->
             if (!addonById.containsKey(dependency.id)) {
                 BaseVoice.LOGGER.error("Addon \"{}\" is missing dependency \"{}\"", addonContainer.id, dependency.id)
                 return

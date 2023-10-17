@@ -9,49 +9,67 @@ import java.net.InetSocketAddress;
 import java.util.UUID;
 
 /**
- * Identified UDP connection
+ * Identified UDP connection.
  */
 public interface UdpConnection {
 
     /**
-     * @return connection's secret
+     * Gets the connection's secret.
+     *
+     * @return The connection's secret.
      */
     @NotNull UUID getSecret();
 
     /**
-     * @return connection's {@link VoicePlayer}
+     * Gets the {@link VoicePlayer} associated with this connection.
+     *
+     * @return The associated {@link VoicePlayer}.
      */
     @NotNull VoicePlayer getPlayer();
 
+
     /**
-     * Gets the connection's remote address
-     * <br/>
-     * Can be changed by UDP packet handler once player's remote address was changed
+     * Gets the connection's remote address.
+     * <p>
+     *     Note:
+     *     The remote address can be changed by the UDP packet handler
+     *     once the player's remote address has been changed.
+     * </p>
+     *
+     * @return The remote address of the connection as an {@link InetSocketAddress}.
      */
     @NotNull InetSocketAddress getRemoteAddress();
 
     /**
-     * Sets the connection's remote address
+     * Sets the connection's remote address.
+     *
+     * @param remoteAddress The new remote address to set.
      */
     void setRemoteAddress(@NotNull InetSocketAddress remoteAddress);
 
     /**
-     * Sends the packet to UDP connection
+     * Sends a packet to the UDP connection.
+     *
+     * @param packet The packet to send.
      */
     void sendPacket(Packet<?> packet);
 
     /**
-     * Handles UDP packet received from the player
+     * Handles a UDP packet received from the player.
+     *
+     * @param packet The UDP packet to handle.
      */
     void handlePacket(Packet<ServerPacketUdpHandler> packet);
 
     /**
-     * Disconnects the UDP connection and set connected state to false
+     * Disconnects the UDP connection and sets its connected state to false.
      */
     void disconnect();
 
     /**
-     * @return true if connection is alive
+     * Checks if the connection is alive.
+     *
+     * @return {@code true} if the connection is alive, otherwise {@code false}.
      */
     boolean isConnected();
 }

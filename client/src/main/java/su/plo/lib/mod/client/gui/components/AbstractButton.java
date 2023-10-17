@@ -1,18 +1,20 @@
 package su.plo.lib.mod.client.gui.components;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UKeyboard;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 
 public abstract class AbstractButton extends GuiAbstractWidget {
 
-    public AbstractButton(int x,
-                          int y,
-                          int width,
-                          int height,
-                          @NotNull MinecraftTextComponent text) {
+    public AbstractButton(
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull McTextComponent text
+    ) {
         super(x, y, width, height, text);
     }
 

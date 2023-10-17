@@ -8,13 +8,14 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
-import su.plo.voice.api.client.event.audio.capture.AudioCaptureProcessedEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
+
+import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 public final class MicrophoneTestController {
@@ -53,57 +54,54 @@ public final class MicrophoneTestController {
             return;
         }
 
-        voiceClient.getEventBus().call(new MicrophoneTestStartedEvent(this));
+        voiceClient.getEventBus().fire(new MicrophoneTestStartedEvent(this));
     }
 
     public void stop() {
         if (source != null) source.close();
         this.source = null;
 
-        voiceClient.getEventBus().call(new MicrophoneTestStoppedEvent(this));
+        voiceClient.getEventBus().fire(new MicrophoneTestStoppedEvent(this));
     }
 
     @EventSubscribe
     public void onAudioCapture(@NotNull AudioCaptureEvent event) {
         if (source != null) {
-            event.setSendEnd(true);
+            event.setFlushActivations(true);
         }
     }
 
     @EventSubscribe
-    public void onAudioCaptureProcessed(@NotNull AudioCaptureProcessedEvent event) {
-        short[] samples;
-        if (event.getMonoSamplesProcessed() != null) {
-            samples = event.getMonoSamplesProcessed();
-        } else {
-            samples = new short[event.getSamples().length];
+    public void onAudioCaptureProcessed(@NotNull AudioCaptureEvent event) {
+        CompletableFuture.runAsync(() -> {
+            short[] samples = new short[event.getSamples().length];
             System.arraycopy(event.getSamples(), 0, samples, 0, event.getSamples().length);
 
             samples = event.getDevice().processFilters(
                     samples,
                     (filter) -> isStereoSupported() && (filter instanceof StereoToMonoFilter)
             );
-        }
 
-        this.microphoneDB = AudioUtil.calculateHighestAudioLevel(samples);
-        if (microphoneDB > highestDB) {
-            this.highestDB = microphoneDB;
-            this.lastUpdate = System.currentTimeMillis();
-        } else if (System.currentTimeMillis() - lastUpdate > 1000L) {
-            this.highestDB = microphoneDB;
-        }
-        double value = 1 - (microphoneDB / -60);
+            this.microphoneDB = AudioUtil.calculateHighestAudioLevel(samples);
+            if (microphoneDB > highestDB) {
+                this.highestDB = microphoneDB;
+                this.lastUpdate = System.currentTimeMillis();
+            } else if (System.currentTimeMillis() - lastUpdate > 1000L) {
+                this.highestDB = microphoneDB;
+            }
+            double value = 1 - (microphoneDB / -60);
 
-        if (microphoneDB > -60 && value > microphoneValue) {
-            this.microphoneValue = AudioUtil.audioLevelToDoubleRange(microphoneDB);
-        } else {
-            // todo: move to "delta" tick
-            this.microphoneValue = Math.max(microphoneValue - 0.02D, 0.0F);
-        }
+            if (microphoneDB > -60 && value > microphoneValue) {
+                this.microphoneValue = AudioUtil.audioLevelToDoubleRange(microphoneDB);
+            } else {
+                // todo: move to "delta" tick
+                this.microphoneValue = Math.max(microphoneValue - 0.02D, 0.0F);
+            }
 
-        if (source != null) {
-            source.write(samples);
-        }
+            if (source != null) {
+                source.write(samples);
+            }
+        });
     }
 
     private void initializeLoopbackSource() throws DeviceException {

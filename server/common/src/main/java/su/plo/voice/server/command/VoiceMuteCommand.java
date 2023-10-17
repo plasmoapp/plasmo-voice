@@ -5,48 +5,50 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.server.MinecraftServerLib;
-import su.plo.lib.api.server.command.MinecraftCommand;
-import su.plo.lib.api.server.command.MinecraftCommandSource;
-import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.command.McCommand;
+import su.plo.slib.api.command.McCommandSource;
+import su.plo.slib.api.server.McServerLib;
+import su.plo.slib.api.server.entity.player.McServerPlayer;
 import su.plo.voice.api.server.mute.MuteDurationUnit;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.server.mute.VoiceMuteManager;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @RequiredArgsConstructor
-public final class VoiceMuteCommand implements MinecraftCommand {
+public final class VoiceMuteCommand implements McCommand {
 
     private static final Pattern DURATION_PATTERN = Pattern.compile("^([0-9]*)([mhdwsu]|permanent)?$");
     private static final Pattern INTEGER_PATTERN = Pattern.compile("^([0-9]*)$");
 
     private final BaseVoiceServer voiceServer;
-    private final MinecraftServerLib minecraftServer;
+    private final McServerLib minecraftServer;
 
     @Override
-    public void execute(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+    public void execute(@NotNull McCommandSource source, @NotNull String[] arguments) {
         if (arguments.length == 0) {
-            source.sendMessage(MinecraftTextComponent.translatable("pv.error.no_permissions"));
+            source.sendMessage(McTextComponent.translatable("pv.error.no_permissions"));
             return;
         }
 
-        Optional<MinecraftServerPlayerEntity> player = minecraftServer.getPlayerByName(arguments[0]);
-        if (!player.isPresent()) {
-            source.sendMessage(MinecraftTextComponent.translatable("pv.error.player_not_found"));
+        McServerPlayer player = minecraftServer.getPlayerByName(arguments[0]);
+        if (player == null) {
+            source.sendMessage(McTextComponent.translatable("pv.error.player_not_found"));
             return;
         }
 
         VoiceMuteManager muteManager = (VoiceMuteManager) voiceServer.getMuteManager();
 
-        if (muteManager.getMute(player.get().getUUID()).isPresent()) {
-            source.sendMessage(MinecraftTextComponent.translatable(
-                    "pv.command.mute.already_muted",
-                    player.get().getName()
-            ));
+        if (muteManager.getMute(player.getUuid()).isPresent()) {
+            source.sendMessage(
+                    McTextComponent.translatable("pv.command.mute.already_muted", player.getName())
+            );
             return;
         }
 
@@ -75,31 +77,35 @@ public final class VoiceMuteCommand implements MinecraftCommand {
         }
 
         if (durationUnit == null) {
-            source.sendMessage(MinecraftTextComponent.translatable(
-                    "pv.command.mute.permanently_muted",
-                    player.get().getName(),
-                    muteManager.formatMuteReason(reason)
-            ));
+            source.sendMessage(
+                    McTextComponent.translatable(
+                            "pv.command.mute.permanently_muted",
+                            player.getName(),
+                            muteManager.formatMuteReason(reason)
+                    )
+            );
         } else {
             try {
-                source.sendMessage(MinecraftTextComponent.translatable(
-                        "pv.command.mute.temporarily_muted",
-                        player.get().getName(),
-                        durationUnit.translate(duration),
-                        muteManager.formatMuteReason(reason)
-                ));
+                source.sendMessage(
+                        McTextComponent.translatable(
+                                "pv.command.mute.temporarily_muted",
+                                player.getName(),
+                                durationUnit.translate(duration),
+                                muteManager.formatMuteReason(reason)
+                        )
+                );
             } catch (IllegalArgumentException e) {
-                source.sendMessage(MinecraftTextComponent.literal(e.getMessage()));
+                source.sendMessage(McTextComponent.literal(e.getMessage()));
             }
         }
 
         UUID mutedBy = null;
-        if (source instanceof MinecraftServerPlayerEntity) {
-            mutedBy = ((MinecraftServerPlayerEntity) source).getUUID();
+        if (source instanceof McServerPlayer) {
+            mutedBy = ((McServerPlayer) source).getUuid();
         }
 
         muteManager.mute(
-                player.get().getUUID(),
+                player.getUuid(),
                 mutedBy,
                 duration,
                 durationUnit,
@@ -109,12 +115,12 @@ public final class VoiceMuteCommand implements MinecraftCommand {
     }
 
     @Override
-    public boolean hasPermission(@NotNull MinecraftCommandSource source, @Nullable String[] arguments) {
+    public boolean hasPermission(@NotNull McCommandSource source, @Nullable String[] arguments) {
         return source.hasPermission("pv.mute");
     }
 
     @Override
-    public List<String> suggest(@NotNull MinecraftCommandSource source, @NotNull String[] arguments) {
+    public @NotNull List<String> suggest(@NotNull McCommandSource source, @NotNull String[] arguments) {
         if (arguments.length <= 1) {
             return Suggestions.players(minecraftServer, source, arguments.length > 0 ? arguments[0] : "");
         } else if (arguments.length == 2) {
@@ -136,7 +142,7 @@ public final class VoiceMuteCommand implements MinecraftCommand {
             }
         }
 
-        return MinecraftCommand.super.suggest(source, arguments);
+        return McCommand.super.suggest(source, arguments);
     }
 
     private long parseDuration(@NotNull String durationString, @Nullable MuteDurationUnit durationUnit) {

@@ -1,12 +1,12 @@
 package su.plo.voice.api.server.player;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
+import su.plo.slib.api.server.entity.player.McServerPlayer;
 
+/**
+ * Represents a voice API for the server player.
+ */
 public interface VoiceServerPlayer extends VoicePlayer {
 
-    /**
-     * @return wrapped Minecraft's player object
-     */
-    @NotNull MinecraftServerPlayerEntity getInstance();
+    @NotNull McServerPlayer getInstance();
 }

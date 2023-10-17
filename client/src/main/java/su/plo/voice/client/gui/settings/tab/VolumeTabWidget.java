@@ -2,6 +2,9 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextStyle;
+import su.plo.slib.api.entity.player.McGameProfile;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -10,8 +13,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.components.TextFieldWidget;
@@ -30,7 +31,6 @@ import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 import su.plo.voice.client.gui.settings.widget.VolumeSliderWidget;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
-import su.plo.voice.proto.data.player.MinecraftGameProfile;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.util.*;
@@ -56,13 +56,13 @@ public final class VolumeTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.volume.sources"), 24));
+        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.volume.sources"), 24));
 
         List<ClientSourceLine> sourceLines = Lists.newArrayList(this.sourceLines.getLines());
         Collections.reverse(sourceLines);
         sourceLines.forEach(this::createSourceLineVolume);
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.volume.players"), 24));
+        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.volume.players"), 24));
         createPlayersSearch();
         refreshPlayerEntries();
     }
@@ -85,7 +85,7 @@ public final class VolumeTabWidget extends TabWidget {
         Runnable updateButtons = createMuteButtonAction(buttons, muteEntry);
 
         addEntry(new SourceLineVolumeEntry<>(
-                MinecraftTextComponent.translatable(sourceLine.getTranslation()),
+                McTextComponent.translatable(sourceLine.getTranslation()),
                 createVolumeSlider(volumeEntry),
                 createMuteButton(buttons, updateButtons, muteEntry),
                 volumeEntry,
@@ -102,7 +102,7 @@ public final class VolumeTabWidget extends TabWidget {
                 0,
                 0,
                 20,
-                MinecraftTextComponent.translatable("gui.plasmovoice.volume.players_search").withStyle(MinecraftTextStyle.GRAY)
+                McTextComponent.translatable("gui.plasmovoice.volume.players_search").withStyle(McTextStyle.GRAY)
         );
 
         textField.setResponder((value) -> {
@@ -126,7 +126,7 @@ public final class VolumeTabWidget extends TabWidget {
 
         voiceClient.getServerConnection()
                 .ifPresent((connection) -> {
-                    Map<UUID, MinecraftGameProfile> players = Maps.newHashMap();
+                    Map<UUID, McGameProfile> players = Maps.newHashMap();
 
                     joinMap(players, connection.getPlayers()
                             .stream()
@@ -155,14 +155,14 @@ public final class VolumeTabWidget extends TabWidget {
                     players.values()
                             .stream()
                             .filter(player -> !UMinecraft.getPlayer().getUUID().equals(player.getId()))
-                            .sorted(Comparator.comparing(MinecraftGameProfile::getName))
+                            .sorted(Comparator.comparing(McGameProfile::getName))
                             .forEach(this::createPlayerVolume);
                 });
     }
 
-    private void joinMap(Map<UUID, MinecraftGameProfile> map, Collection<MinecraftGameProfile> joinCollection) {
+    private void joinMap(Map<UUID, McGameProfile> map, Collection<McGameProfile> joinCollection) {
         joinCollection.forEach(gameProfile -> {
-            MinecraftGameProfile mapGameProfile = map.get(gameProfile.getId());
+            McGameProfile mapGameProfile = map.get(gameProfile.getId());
 
             if (Objects.equals(gameProfile, mapGameProfile) &&
                     gameProfile.getProperties().size() > mapGameProfile.getProperties().size()
@@ -175,7 +175,7 @@ public final class VolumeTabWidget extends TabWidget {
         });
     }
 
-    private void createPlayerVolume(@NotNull MinecraftGameProfile player) {
+    private void createPlayerVolume(@NotNull McGameProfile player) {
         DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume("source_" + player.getId().toString());
         ConfigEntry<Boolean> muteEntry = config.getVoice().getVolumes().getMute("source_" + player.getId().toString());
 
@@ -195,7 +195,7 @@ public final class VolumeTabWidget extends TabWidget {
 
     private VolumeSliderWidget createVolumeSlider(DoubleConfigEntry volumeEntry) {
         return new VolumeSliderWidget(
-                voiceClient.getKeyBindings(),
+                voiceClient.getHotkeys(),
                 volumeEntry,
                 "%",
                 0,
@@ -257,12 +257,12 @@ public final class VolumeTabWidget extends TabWidget {
         private final ResourceLocation iconLocation;
         private final ConfigEntry<Boolean> muteEntry;
 
-        public SourceLineVolumeEntry(@NotNull MinecraftTextComponent text,
+        public SourceLineVolumeEntry(@NotNull McTextComponent text,
                                      @NotNull W widget,
                                      @NotNull List<Button> buttons,
                                      @NotNull ConfigEntry<?> entry,
                                      @NotNull ConfigEntry<Boolean> muteEntry,
-                                     @Nullable MinecraftTextComponent tooltip,
+                                     @Nullable McTextComponent tooltip,
                                      @NotNull ResourceLocation iconLocation,
                                      @NotNull OptionResetAction<W> resetAction) {
             super(text, widget, buttons, entry, tooltip, resetAction);
@@ -309,17 +309,17 @@ public final class VolumeTabWidget extends TabWidget {
 
     class PlayerVolumeEntry<W extends GuiAbstractWidget> extends ButtonOptionEntry<W> {
 
-        private final MinecraftGameProfile player;
+        private final McGameProfile player;
         private final ConfigEntry<Boolean> muteEntry;
 
         public PlayerVolumeEntry(@NotNull W widget,
                                  @NotNull List<Button> buttons,
                                  @NotNull ConfigEntry<?> entry,
                                  @NotNull ConfigEntry<Boolean> muteEntry,
-                                 @Nullable MinecraftTextComponent tooltip,
-                                 @NotNull MinecraftGameProfile player,
+                                 @Nullable McTextComponent tooltip,
+                                 @NotNull McGameProfile player,
                                  @NotNull OptionResetAction<W> resetAction) {
-            super(MinecraftTextComponent.literal(player.getName()), widget, buttons, entry, tooltip, resetAction, 30);
+            super(McTextComponent.literal(player.getName()), widget, buttons, entry, tooltip, resetAction, 30);
 
             this.muteEntry = muteEntry;
             this.player = player;

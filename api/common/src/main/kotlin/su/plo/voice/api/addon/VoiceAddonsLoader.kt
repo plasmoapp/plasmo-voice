@@ -2,6 +2,9 @@ package su.plo.voice.api.addon
 
 import org.jetbrains.annotations.ApiStatus.Internal
 
+/**
+ * Base class for loading addons.
+ */
 abstract class VoiceAddonsLoader : AddonsLoader {
 
     private var addonManager: AddonManager? = null

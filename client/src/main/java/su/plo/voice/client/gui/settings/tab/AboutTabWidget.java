@@ -1,11 +1,11 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UDesktop;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
@@ -43,63 +43,63 @@ public final class AboutTabWidget extends TabWidget {
 
         addEntry(new CategoryEntry(links(), 24));
         addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Github"), button -> {
+                new Button(0, 0, 0, 20, McTextComponent.literal("Github"), button -> {
                     openLink("https://github.com/plasmoapp/plasmo-voice");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(MinecraftTextComponent.literal("https://github.com/plasmoapp/plasmo-voice"));
+                    setTooltip(McTextComponent.literal("https://github.com/plasmoapp/plasmo-voice"));
                 }),
-                new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Discord"), button -> {
+                new Button(0, 0, 0, 20, McTextComponent.literal("Discord"), button -> {
                     openLink("https://discord.com/invite/uueEqzwCJJ");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(MinecraftTextComponent.literal("https://discord.com/invite/uueEqzwCJJ"));
+                    setTooltip(McTextComponent.literal("https://discord.com/invite/uueEqzwCJJ"));
                 })
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Modrinth"), button -> {
+                new Button(0, 0, 0, 20, McTextComponent.literal("Modrinth"), button -> {
                     openLink("https://modrinth.com/mod/plasmo-voice");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(MinecraftTextComponent.literal("https://modrinth.com/mod/plasmo-voice"));
+                    setTooltip(McTextComponent.literal("https://modrinth.com/mod/plasmo-voice"));
                 }),
-                new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Spigot"), button -> {
+                new Button(0, 0, 0, 20, McTextComponent.literal("Spigot"), button -> {
                     openLink("https://www.spigotmc.org/resources/plasmo-voice-server.91064/");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(MinecraftTextComponent.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/"));
+                    setTooltip(McTextComponent.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/"));
                 })
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Patreon"), button -> {
+                new Button(0, 0, 0, 20, McTextComponent.literal("Patreon"), button -> {
                     openLink("https://www.patreon.com/plasmomc");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(MinecraftTextComponent.literal("https://www.patreon.com/plasmomc"));
+                    setTooltip(McTextComponent.literal("https://www.patreon.com/plasmomc"));
                 }),
-                new Button(0, 0, 0, 20, MinecraftTextComponent.literal("Boosty"), button -> {
+                new Button(0, 0, 0, 20, McTextComponent.literal("Boosty"), button -> {
                     openLink("https://boosty.to/plasmo");
                 }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(MinecraftTextComponent.literal("https://boosty.to/plasmo"));
+                    setTooltip(McTextComponent.literal("https://boosty.to/plasmo"));
                 })
         )));
-        this.addEntry(new TextEntry(MinecraftTextComponent.translatable("gui.plasmovoice.about.copyright")));
+        this.addEntry(new TextEntry(McTextComponent.translatable("gui.plasmovoice.about.copyright")));
 
         if (PlasmoVoiceMeta.Companion.getMETA().getPatrons().size() > 0) {
-            addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.about.support"), 24));
+            addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.about.support"), 24));
             PlasmoVoiceMeta.Companion.getMETA().getPatrons()
                     .forEach(patron -> addEntry(new PatronEntry(patron)));
         }
     }
 
-    private MinecraftTextComponent madeBy() {
-        MinecraftTextComponent madeBy = MinecraftTextComponent.translatable("gui.plasmovoice.about.made_by", "Plasmo Voice");
+    private McTextComponent madeBy() {
+        McTextComponent madeBy = McTextComponent.translatable("gui.plasmovoice.about.made_by", "Plasmo Voice");
         if (!LanguageUtil.getOrDefault("gui.plasmovoice.about.made_by").contains("%s")) {
-            madeBy = MinecraftTextComponent.literal("Plasmo Voice is made by");
+            madeBy = McTextComponent.literal("Plasmo Voice is made by");
         }
 
         return madeBy;
     }
 
-    private MinecraftTextComponent links() {
-        MinecraftTextComponent links = MinecraftTextComponent.translatable("gui.plasmovoice.about.links", "Plasmo Voice");
+    private McTextComponent links() {
+        McTextComponent links = McTextComponent.translatable("gui.plasmovoice.about.links", "Plasmo Voice");
         if (!LanguageUtil.getOrDefault("gui.plasmovoice.about.links").contains("%s")) {
-            links = MinecraftTextComponent.literal("Plasmo Voice on");
+            links = McTextComponent.literal("Plasmo Voice on");
         }
 
         return links;
@@ -134,10 +134,10 @@ public final class AboutTabWidget extends TabWidget {
                     0,
                     56,
                     20,
-                    MinecraftTextComponent.literal(developer.getSocialLinkName()),
+                    McTextComponent.literal(developer.getSocialLinkName()),
                     (button) -> openLink(developer.getSocialLinkUrl()),
                     (button, matrices, mouseX, mouseY) -> {
-                        setTooltip(MinecraftTextComponent.literal(developer.getSocialLinkUrl()));
+                        setTooltip(McTextComponent.literal(developer.getSocialLinkUrl()));
                     });
         }
 
@@ -208,7 +208,7 @@ public final class AboutTabWidget extends TabWidget {
 
             RenderUtil.drawString(stack, patron.getName(), x + 26, y + 6, 16777215);
 
-            MinecraftTextComponent tier = MinecraftTextComponent.literal(patron.getTier());
+            McTextComponent tier = McTextComponent.literal(patron.getTier());
             RenderUtil.drawString(
                     stack,
                     tier,
@@ -281,9 +281,9 @@ public final class AboutTabWidget extends TabWidget {
 
     class TextEntry extends Entry {
 
-        private final MinecraftTextComponent text;
+        private final McTextComponent text;
 
-        public TextEntry(@NotNull MinecraftTextComponent text) {
+        public TextEntry(@NotNull McTextComponent text) {
             super(28);
 
             this.text = text;

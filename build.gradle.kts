@@ -14,9 +14,9 @@ plugins {
     alias(libs.plugins.idea.ext)
     alias(libs.plugins.crowdin.plugin) apply(false)
 
-    kotlin("jvm") version("1.6.10")
-    kotlin("plugin.lombok") version("1.6.10")
-    kotlin("kapt") version("1.6.10")
+    kotlin("jvm") version(libs.versions.kotlin.get())
+    kotlin("plugin.lombok") version(libs.versions.kotlin.get())
+    kotlin("kapt") version(libs.versions.kotlin.get())
 
     id("gg.essential.multi-version.root") apply(false)
     id("su.plo.voice.relocate") version("1.0.1") apply(false)
@@ -28,7 +28,6 @@ subprojects {
     apply(plugin = "java")
     apply(plugin = "idea")
     apply(plugin = "maven-publish")
-    apply(plugin = "com.github.johnrengelman.shadow")
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-lombok")
 

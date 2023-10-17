@@ -7,10 +7,10 @@ import su.plo.voice.api.event.Event;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
 
 /**
- * This event is fired once the udp proxy server is created, but not started yet
+ * This event is fired when the UDP proxy server is created but has not started yet.
  * <p>
- * You can replace a server with yours
- * Default server is a netty udp server
+ * You can replace the default server with your custom implementation.
+ * The default server implementation is netty.
  */
 @AllArgsConstructor
 public final class UdpProxyServerCreateEvent implements Event {

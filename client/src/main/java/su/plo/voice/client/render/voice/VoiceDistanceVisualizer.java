@@ -1,6 +1,7 @@
 package su.plo.voice.client.render.voice;
 
 import com.google.common.collect.Maps;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -19,12 +20,11 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.render.ModCamera;
-import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Map;
 import java.util.UUID;
 
-import static su.plo.voice.client.extensions.OptionsKt.renderDistanceValue;
+import static su.plo.voice.client.extension.OptionsKt.renderDistanceValue;
 
 @RequiredArgsConstructor
 public final class VoiceDistanceVisualizer implements DistanceVisualizer {
@@ -49,7 +49,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
         if (radius < 2 || radius > renderDistanceValue(UMinecraft.getSettings()) * 16) return;
 
         VoiceDistanceRenderEvent event = new VoiceDistanceRenderEvent(this, radius, color);
-        if (!voiceClient.getEventBus().call(event)) return;
+        if (!voiceClient.getEventBus().fire(event)) return;
 
         UUID key;
         if (position == null) {

@@ -9,8 +9,6 @@ val javadocProjects = listOf(
 
 dependencies {
     api(project(":api:common"))
-
-    shadow(project(":api:common"))
 }
 
 tasks {

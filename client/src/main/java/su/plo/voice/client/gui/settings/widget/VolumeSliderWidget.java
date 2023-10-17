@@ -1,28 +1,30 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
 import su.plo.lib.mod.client.render.RenderUtil;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
-import su.plo.voice.api.client.config.keybind.KeyBindings;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
+import su.plo.voice.api.client.config.hotkey.Hotkeys;
 
 public final class VolumeSliderWidget extends AbstractSlider implements UpdatableWidget {
 
-    private final KeyBindings keyBindings;
+    private final Hotkeys keyBindings;
     private final DoubleConfigEntry entry;
     private final String suffix;
 
-    public VolumeSliderWidget(@NotNull KeyBindings keyBindings,
-                              @NotNull DoubleConfigEntry entry,
-                              @NotNull String suffix,
-                              int x,
-                              int y,
-                              int width,
-                              int height) {
+    public VolumeSliderWidget(
+            @NotNull Hotkeys keyBindings,
+            @NotNull DoubleConfigEntry entry,
+            @NotNull String suffix,
+            int x,
+            int y,
+            int width,
+            int height
+    ) {
         super(x, y, width, height);
 
         this.keyBindings = keyBindings;
@@ -34,12 +36,12 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
 
     @Override
     protected void updateText() {
-        this.text = MinecraftTextComponent.literal(Math.round(value * (entry.getMax() * 100D)) + suffix);
+        this.text = McTextComponent.literal(Math.round(value * (entry.getMax() * 100D)) + suffix);
     }
 
     @Override
     protected void applyValue() {
-        if (!keyBindings.getPressedKeys().contains(KeyBinding.Type.KEYSYM.getOrCreate(340))) { // GLFW_KEY_LEFT_SHIFT
+        if (!keyBindings.getPressedKeys().contains(Hotkey.Type.KEYSYM.getOrCreate(340))) { // GLFW_KEY_LEFT_SHIFT
             this.value = calculateValue(value);
         }
         entry.set(value * entry.getMax());

@@ -3,7 +3,7 @@ package su.plo.voice.api.proxy.config;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Plasmo Voice Proxy config
+ * Proxy configuration for Plasmo Voice.
  */
 public interface ProxyConfig {
 
@@ -13,7 +13,7 @@ public interface ProxyConfig {
 
     boolean debug();
 
-    boolean disableCrowdin();
+    boolean useCrowdinTranslations();
 
     boolean checkForUpdates();
 

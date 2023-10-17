@@ -11,7 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 
-// todo: doc
+// todo: docs & textfields
+/**
+ * Adds a custom config widget under the addon's block to the Plasmo Voice menu in addons tab.
+ */
 public interface AddonConfig {
 
     @NotNull IntConfigEntry addIntSlider(@NotNull String translatable,
@@ -34,7 +37,6 @@ public interface AddonConfig {
                                         boolean elementTooltip,
                                         int defaultValue);
 
-    // todo: textfields
 //    void addTextField(@NotNull String translatable,
 //                      @Nullable String tooltipTranslatable,
 //                      @NotNull String defaultValue);

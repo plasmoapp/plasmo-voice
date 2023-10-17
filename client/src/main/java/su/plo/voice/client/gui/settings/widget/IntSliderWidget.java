@@ -2,20 +2,22 @@ package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
+import su.plo.slib.api.chat.component.McTextComponent;
 
 public final class IntSliderWidget extends AbstractSlider implements UpdatableWidget {
 
     private final IntConfigEntry entry;
     private final String suffix;
 
-    public IntSliderWidget(@NotNull IntConfigEntry entry,
-                           @NotNull String suffix,
-                           int x,
-                           int y,
-                           int width,
-                           int height) {
+    public IntSliderWidget(
+            @NotNull IntConfigEntry entry,
+            @NotNull String suffix,
+            int x,
+            int y,
+            int width,
+            int height
+    ) {
         super(x, y, width, height);
 
         this.entry = entry;
@@ -28,11 +30,11 @@ public final class IntSliderWidget extends AbstractSlider implements UpdatableWi
     protected void updateText() {
         if (suffix != null) {
             setText(
-                    MinecraftTextComponent.literal(String.valueOf(calculateValue(value)))
-                            .append(MinecraftTextComponent.literal(" " + suffix))
+                    McTextComponent.literal(String.valueOf(calculateValue(value)))
+                            .append(McTextComponent.literal(" " + suffix))
             );
         } else {
-            setText(MinecraftTextComponent.literal(String.valueOf(calculateValue(value))));
+            setText(McTextComponent.literal(String.valueOf(calculateValue(value))));
         }
     }
 

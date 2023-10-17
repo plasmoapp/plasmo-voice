@@ -1,5 +1,8 @@
 package su.plo.voice.api.audio.codec;
 
+/**
+ * Exception indicates issues related to codecs.
+ */
 public class CodecException extends Exception {
 
     public CodecException() {

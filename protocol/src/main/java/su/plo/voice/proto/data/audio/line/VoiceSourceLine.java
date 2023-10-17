@@ -9,8 +9,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.proto.data.player.MinecraftGameProfile;
+import su.plo.slib.api.entity.player.McGameProfile;
 import su.plo.voice.proto.packets.PacketSerializable;
+import su.plo.voice.proto.serializer.McGameProfileSerializer;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -45,14 +46,14 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     protected double defaultVolume;
     @Getter
     protected int weight;
-    protected Set<MinecraftGameProfile> players = null;
+    protected Set<McGameProfile> players = null;
 
     public VoiceSourceLine(@NotNull String name,
                            @NotNull String translation,
                            @NotNull String icon,
                            double defaultVolume,
                            int weight,
-                           @Nullable Set<MinecraftGameProfile> players) {
+                           @Nullable Set<McGameProfile> players) {
         this.id = generateId(name);
         this.name = checkNotNull(name);
         this.translation = translation;
@@ -74,9 +75,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
             this.players = new HashSet<>();
             int size = in.readInt();
             for (int i = 0; i < size; i++) {
-                MinecraftGameProfile player = new MinecraftGameProfile();
-                player.deserialize(in);
-                players.add(player);
+                players.add(McGameProfileSerializer.INSTANCE.deserialize(in));
             }
         }
     }
@@ -91,8 +90,9 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
         out.writeBoolean(hasPlayers());
         if (hasPlayers()) {
             out.writeInt(players.size());
-            for (MinecraftGameProfile player : players) {
-                player.serialize(out);
+
+            for (McGameProfile player : players) {
+                McGameProfileSerializer.INSTANCE.serialize(player, out);
             }
         }
     }
@@ -103,7 +103,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
     }
 
     @Override
-    public @Nullable Collection<MinecraftGameProfile> getPlayers() {
+    public @Nullable Collection<McGameProfile> getPlayers() {
         return players;
     }
 }

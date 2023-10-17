@@ -2,60 +2,77 @@ package su.plo.voice.proto.data.audio.line;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.proto.data.player.MinecraftGameProfile;
+import su.plo.slib.api.entity.player.McGameProfile;
 
 import java.util.Collection;
 import java.util.UUID;
 
+/**
+ * Represents a base source line.
+ */
 public interface SourceLine {
 
     /**
-     * @return the source line id
+     * Gets the source line's unique identifier.
+     *
+     * @return The source line unique identifier.
      */
     @NotNull UUID getId();
 
     /**
-     * @return the source line name
+     * Gets the name of the source line.
+     *
+     * @return The source line name.
      */
     @NotNull String getName();
 
     /**
-     * @return the source line translation string
+     * Gets the translation key associated with the source line.
+     *
+     * @return The translation key.
      */
     @NotNull String getTranslation();
 
     /**
-     * Gets the source line icon
+     * Gets the icon associated with the source line.
      *
-     * @return minecraft's ResourceLocation or base64 in format: "base64;base64_string
+     * @return The source line icon, represented as a Minecraft ResourceLocation or a base64-encoded string.
      */
     @NotNull String getIcon();
 
     /**
-     * @return the source line default volume
+     * Gets the default volume level for the source line.
+     *
+     * @return The default volume level.
      */
     double getDefaultVolume();
 
     /**
-     * Gets the line's weight
-     * <p>
-     * todo: doc
+     * Gets the weight of the source line.
      *
-     * @return the weight
+     * <p>
+     *     The weight determines the order of source lines in a client-side menu and overlay.
+     *     A lower weight indicates a higher priority.
+     * </p>
+     *
+     * @return The source line weight
      */
     default int getWeight() {
         return 0;
     }
 
     /**
-     * Check if line can contain players
+     * Checks if the source line can contain players.
+     *
+     * @return {@code true} if the source line can contain players, {@code false} otherwise.
      */
     boolean hasPlayers();
 
     /**
-     * Gets the line's players
+     * Gets the players associated with the source line.
      *
-     * @return the line's players
+     * @return A collection of {@link McGameProfile} representing the players in the source line,
+     * or null if {@link #hasPlayers()} is {@code false}.
      */
-    @Nullable Collection<MinecraftGameProfile> getPlayers();
+    @Nullable Collection<McGameProfile> getPlayers();
 }

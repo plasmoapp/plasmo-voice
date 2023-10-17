@@ -17,6 +17,7 @@ import net.minecraft.client.renderer.texture.AbstractTexture;
 import net.minecraft.client.renderer.texture.SimpleTexture;
 import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -24,7 +25,6 @@ import su.plo.voice.universal.UResolution;
 import su.plo.voice.universal.wrappers.message.UTextComponent;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.renderer.MultiBufferSource;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.chat.ClientTextConverter;
 
 import java.util.Iterator;
@@ -260,12 +260,12 @@ public class RenderUtil {
         return getStringX(string, (int) centeredX, true);
     }
 
-    public static int drawCenteredString(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color) {
+    public static int drawCenteredString(UMatrixStack stack, McTextComponent text, int x, int y, int color) {
         UTextComponent component = getTextConverter().convertToUniversal(text);
         return drawCenteredString(stack, component.getFormattedText(), x, y, color);
     }
 
-    public static void drawCenteredOrderedString(UMatrixStack stack, MinecraftTextComponent text, int width, int x, int y, int color) {
+    public static void drawCenteredOrderedString(UMatrixStack stack, McTextComponent text, int width, int x, int y, int color) {
         color = adjustColor(color);
 
         String orderedText = getOrderedString(text, width);
@@ -279,7 +279,7 @@ public class RenderUtil {
         );
     }
 
-    public static void drawOrderedString(UMatrixStack stack, MinecraftTextComponent text, int width, int x, int y, int color) {
+    public static void drawOrderedString(UMatrixStack stack, McTextComponent text, int width, int x, int y, int color) {
         color = adjustColor(color);
 
         UGraphics.drawString(
@@ -299,11 +299,11 @@ public class RenderUtil {
         return getStringX(string, x, false);
     }
 
-    public static int drawString(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color) {
+    public static int drawString(UMatrixStack stack, McTextComponent text, int x, int y, int color) {
         return drawString(stack, text, x, y, color, true);
     }
 
-    public static int drawString(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color, boolean dropShadow) {
+    public static int drawString(UMatrixStack stack, McTextComponent text, int x, int y, int color, boolean dropShadow) {
         color = adjustColor(color);
 
         UTextComponent component = getTextConverter().convertToUniversal(text);
@@ -314,7 +314,7 @@ public class RenderUtil {
     }
 
 
-    public static int drawStringLight(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color, int light,
+    public static int drawStringLight(UMatrixStack stack, McTextComponent text, int x, int y, int color, int light,
                                       boolean seeThrough, // only used in 1.16.2+
                                       boolean dropShadow) {
         color = adjustColor(color);
@@ -351,12 +351,12 @@ public class RenderUtil {
         return getStringX(formattedText, x, dropShadow);
     }
 
-    public static int drawStringMultiLine(UMatrixStack stack, MinecraftTextComponent text, int x, int y, int color, int width) {
+    public static int drawStringMultiLine(UMatrixStack stack, McTextComponent text, int x, int y, int color, int width) {
         color = adjustColor(color);
 
         String string = getFormattedString(text);
 
-        List<String> lines = su.plo.voice.client.extensions.TextKt.getStringSplitToWidth(string, width, true, true);
+        List<String> lines = su.plo.voice.client.extension.TextKt.getStringSplitToWidth(string, width, true, true);
         int lineHeight = UGraphics.getFontHeight();
 
         for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight) {
@@ -367,12 +367,12 @@ public class RenderUtil {
         return lines.size();
     }
 
-    public static int drawStringMultiLineCentered(UMatrixStack stack, MinecraftTextComponent text, int width, int y, int yGap, int color) {
+    public static int drawStringMultiLineCentered(UMatrixStack stack, McTextComponent text, int width, int y, int yGap, int color) {
         color = adjustColor(color);
 
         String string = getFormattedString(text);
 
-        List<String> lines = su.plo.voice.client.extensions.TextKt.getStringSplitToWidth(string, width, true, true);
+        List<String> lines = su.plo.voice.client.extension.TextKt.getStringSplitToWidth(string, width, true, true);
         int lineHeight = UGraphics.getFontHeight();
 
         for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight + yGap) {
@@ -399,7 +399,7 @@ public class RenderUtil {
     }
 
     public static String stringToWidth(String string, int width, boolean tail) {
-        List<String> lines = su.plo.voice.client.extensions.TextKt.splitStringToWidthTruncated(
+        List<String> lines = su.plo.voice.client.extension.TextKt.splitStringToWidthTruncated(
                 string,
                 width,
                 1,
@@ -415,16 +415,16 @@ public class RenderUtil {
         return stringToWidth(string, width, false);
     }
 
-    public static int getTextWidth(MinecraftTextComponent text) {
+    public static int getTextWidth(McTextComponent text) {
         UTextComponent component = getTextConverter().convertToUniversal(text);
         return UGraphics.getStringWidth(component.getFormattedText());
     }
 
-    public static String getOrderedString(MinecraftTextComponent text, int width) {
-        return su.plo.voice.client.extensions.TextKt.getTruncatedString(getFormattedString(text), width, "...");
+    public static String getOrderedString(McTextComponent text, int width) {
+        return su.plo.voice.client.extension.TextKt.getTruncatedString(getFormattedString(text), width, "...");
     }
 
-    public static String getFormattedString(MinecraftTextComponent text) {
+    public static String getFormattedString(McTextComponent text) {
         return getTextConverter().convertToUniversal(text).getFormattedText();
     }
 

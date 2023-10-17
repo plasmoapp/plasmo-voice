@@ -1,11 +1,11 @@
 package su.plo.voice.client.meta.developer
 
-import su.plo.lib.api.chat.MinecraftTextComponent
-import su.plo.lib.api.chat.MinecraftTranslatableText
+import su.plo.slib.api.chat.component.McTextComponent
+import su.plo.slib.api.chat.component.McTranslatableText
 
-enum class DeveloperRole(val translatable: MinecraftTranslatableText) {
+enum class DeveloperRole(val translatable: McTranslatableText) {
 
-    HUIX(MinecraftTextComponent.translatable("gui.plasmovoice.about.huix")),
-    PROGRAMMING(MinecraftTextComponent.translatable("gui.plasmovoice.about.programming")),
-    ARTIST(MinecraftTextComponent.translatable("gui.plasmovoice.about.artist"))
+    HUIX(McTextComponent.translatable("gui.plasmovoice.about.huix")),
+    PROGRAMMING(McTextComponent.translatable("gui.plasmovoice.about.programming")),
+    ARTIST(McTextComponent.translatable("gui.plasmovoice.about.artist"))
 }

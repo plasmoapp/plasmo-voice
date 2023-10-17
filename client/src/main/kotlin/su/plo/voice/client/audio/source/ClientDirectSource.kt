@@ -6,12 +6,12 @@ import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
-import su.plo.voice.api.client.audio.device.AlAudioDevice
+import su.plo.voice.api.client.audio.device.AlContextAudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
-import su.plo.voice.client.extensions.toVec3
+import su.plo.voice.client.extension.toVec3
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
@@ -114,7 +114,7 @@ class ClientDirectSource(
         for (source in sourceGroup.sources) {
             if (source !is AlSource) continue
 
-            val device = source.device as AlAudioDevice
+            val device = source.device as AlContextAudioDevice
             device.runInContext {
                 source.setInt(
                     0x202,  // AL_SOURCE_RELATIVE

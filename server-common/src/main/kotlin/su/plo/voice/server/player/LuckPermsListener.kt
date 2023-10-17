@@ -8,7 +8,6 @@ import net.luckperms.api.event.node.NodeAddEvent
 import net.luckperms.api.event.node.NodeClearEvent
 import net.luckperms.api.event.node.NodeMutateEvent
 import net.luckperms.api.event.node.NodeRemoveEvent
-import net.luckperms.api.event.user.UserDataRecalculateEvent
 import net.luckperms.api.model.group.Group
 import net.luckperms.api.model.user.User
 import net.luckperms.api.node.Node
@@ -99,7 +98,7 @@ class LuckPermsListener(
     }
 
     private fun onPermissionChange(player: VoicePlayer, permission: String) {
-        voiceServer.eventBus.call(PlayerPermissionUpdateEvent(player, permission))
+        voiceServer.eventBus.fire(PlayerPermissionUpdateEvent(player, permission))
         permissionChanges.remove(player.instance.uuid.toString() + "_" + permission)
     }
 

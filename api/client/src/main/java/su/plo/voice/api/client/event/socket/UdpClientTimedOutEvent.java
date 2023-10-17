@@ -8,7 +8,7 @@ import su.plo.voice.api.event.Event;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the udp client change timed out state
+ * This event is fired once the UDP client changes its timed-out state.
  */
 public final class UdpClientTimedOutEvent implements Event {
 

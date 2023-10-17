@@ -1,14 +1,14 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
-import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.client.audio.capture.VoiceClientActivation;
 import su.plo.voice.client.config.VoiceClientConfig;
-import su.plo.voice.client.config.keybind.ConfigKeyBindings;
-import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
+import su.plo.voice.client.config.hotkey.ConfigHotkeys;
+import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
     public void init() {
         super.init();
 
-        ((ConfigKeyBindings) hotKeys)
+        ((ConfigHotkeys) hotKeys)
                 .getCategoryEntries()
                 .asMap()
                 .forEach(this::createCategory);
@@ -45,7 +45,7 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
         if (activation.getDistances().size() == 0 || activation.getDistances().get(0) == -1)
             return;
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("key.plasmovoice.distance", MinecraftTextComponent.translatable(activation.getTranslation()))));
+        addEntry(new CategoryEntry(McTextComponent.translatable("key.plasmovoice.distance", McTextComponent.translatable(activation.getTranslation()))));
 
         VoiceClientActivation clientActivation = (VoiceClientActivation) activation;
 
@@ -61,10 +61,10 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
         ));
     }
 
-    private void createCategory(String category, Collection<KeyBindingConfigEntry> list) {
+    private void createCategory(String category, Collection<HotkeyConfigEntry> list) {
         if (category.equals("hidden")) return;
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable(category)));
+        addEntry(new CategoryEntry(McTextComponent.translatable(category)));
 
         list.forEach(entry ->
                 addEntry(createHotKey(

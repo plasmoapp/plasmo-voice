@@ -7,6 +7,8 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
+import su.plo.slib.api.language.ServerLanguages;
+import su.plo.slib.api.proxy.channel.McProxyChannelManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
@@ -20,6 +22,8 @@ import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ProxySourceLineManager;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
+import su.plo.voice.proxy.connection.ProxyChannelHandler;
+import su.plo.voice.proxy.connection.ProxyServiceChannelHandler;
 import su.plo.voice.proxy.connection.VoiceUdpProxyConnectionManager;
 import su.plo.voice.proxy.player.VoiceProxyPlayerManager;
 import su.plo.voice.proxy.server.VoiceRemoteServer;
@@ -28,9 +32,7 @@ import su.plo.voice.proxy.socket.NettyUdpProxyServer;
 import su.plo.voice.proxy.util.AddressUtil;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceProxySourceLineManager;
-import su.plo.voice.server.config.VoiceServerLanguages;
 import su.plo.voice.server.player.LuckPermsListener;
-import su.plo.voice.server.player.PermissionSupplier;
 import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 
@@ -63,8 +65,6 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     protected ProxySourceLineManager sourceLineManager;
     @Getter
     protected ServerActivationManager activationManager;
-    @Getter
-    protected VoiceServerLanguages languages;
 
     protected LuckPermsListener luckPermsListener;
 
@@ -92,6 +92,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         eventBus.register(this, playerManager);
         eventBus.register(this, getMinecraftServer());
 
+        McProxyChannelManager channelManager = getMinecraftServer().getChannelManager();
+        channelManager.registerChannelHandler(CHANNEL_STRING, new ProxyChannelHandler(this));
+        channelManager.registerChannelHandler(SERVICE_CHANNEL_STRING, new ProxyServiceChannelHandler(this));
+
         if (LuckPermsListener.Companion.hasLuckPerms()) {
             this.luckPermsListener = new LuckPermsListener(this, backgroundExecutor);
             luckPermsListener.subscribe();
@@ -105,7 +109,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     @Override
     protected void onShutdown() {
-        eventBus.call(new VoiceProxyShutdownEvent(this));
+        eventBus.fire(new VoiceProxyShutdownEvent(this));
 
         if (luckPermsListener != null) {
             luckPermsListener.unsubscribe();
@@ -139,7 +143,9 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceServerLanguages(config.defaultLanguage(), config.disableCrowdin());
+            ServerLanguages languages = getMinecraftServer().getLanguages();
+            languages.setDefaultLanguage(config.defaultLanguage());
+            languages.setCrowdinEnabled(config.useCrowdinTranslations());
 //            languages.register(
 //                    this::getResource,
 //                    new File(getConfigFolder(), "languages"),
@@ -178,7 +184,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         }
 
         DEBUG_LOGGER.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
-        if (reload) eventBus.call(new VoiceProxyConfigReloadedEvent(this));
+        if (reload) eventBus.fire(new VoiceProxyConfigReloadedEvent(this));
         else addons.initializeLoadedAddons();
 
         if (restartUdpServer) startUdpServer();
@@ -208,7 +214,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             String name = entry.getKey();
             String address = entry.getValue();
 
-            if (!getMinecraftServer().getServerByName(name).isPresent()) {
+            if (getMinecraftServer().getServerInfoByName(name) == null) {
                 LOGGER.warn("Server {} not found", name);
                 continue;
             }
@@ -225,7 +231,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         UdpProxyServer server = new NettyUdpProxyServer(this);
 
         UdpProxyServerCreateEvent createUdpServerEvent = new UdpProxyServerCreateEvent(server);
-        eventBus.call(createUdpServerEvent);
+        eventBus.fire(createUdpServerEvent);
 
         server = createUdpServerEvent.getServer();
 
@@ -255,6 +261,4 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         injectModule.put(PlasmoBaseVoiceServer.class, BaseVoiceProxy.this);
         return injectModule;
     }
-
-    protected abstract PermissionSupplier createPermissionSupplier();
 }

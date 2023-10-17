@@ -7,109 +7,128 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Base interface for activations.
+ */
 public interface Activation {
 
     /**
-     * @return the activation id
+     * Gets the unique identifier of the activation.
+     *
+     * @return The activation id.
      */
     @NotNull UUID getId();
 
     /**
-     * @return the activation name
+     * Gets the name of the activation.
+     *
+     * @return The activation name.
      */
     @NotNull String getName();
 
     /**
-     * @return the activation's translation string
+     * Gets the translation key associated with the activation.
+     *
+     * @return The activation's key string.
      */
     @NotNull String getTranslation();
 
     /**
-     * Gets the activation's icon
+     * Gets the icon of the activation, which can be a Minecraft ResourceLocation or base64-encoded data.
      *
-     * @return minecraft's ResourceLocation or base64 in format: "base64;base64_string
+     * @return The activation's icon.
      */
     @NotNull String getIcon();
 
     /**
-     * @return collection of activation's distances
+     * Gets a collection of distances associated with the activation.
+     *
+     * @return A list of activation distances.
      */
     List<Integer> getDistances();
 
     /**
-     * @return the default distance
+     * Gets the default distance for the activation.
+     *
+     * @return The default activation distance.
      */
     int getDefaultDistance();
 
     /**
-     * Gets the min distance from the distances collection
+     * Gets the minimum distance from the list of distances.
      *
-     * @return the min distance
+     * @return The minimum activation distance.
      */
     int getMinDistance();
 
     /**
-     * Gets the max distance from the distances collection
+     * Gets the maximum distance from the list of distances.
      *
-     * @return the max distance
+     * @return The maximum activation distance.
      */
     int getMaxDistance();
 
     /**
-     * Checks if activation has proximity output
+     * Checks if the activation has proximity output.
      *
      * <p>
-     *     This can be used by addons to create unique behavior
+     *     This can be used by addons to create unique behavior.
      * </p>
      *
      * <p>
      *     For example in <a href="https://github.com/plasmoapp/pv-addon-soundphysics">pv-addon-soundphysics</a>
-     *     it's used to create reverb from your capture only for activations with proximity output
+     *     it's used to create reverb from your capture only for activations with proximity output.
      * </p>
      *
-     * @return true if activation has proximity output
+     * @return {@code true} if the activation has proximity output, {@code false} otherwise.
      */
     boolean isProximity();
 
     /**
-     * Checks if activation is transitive
+     * Checks if the activation is transitive.
      *
      * <p>
-     *     If activation is NOT transitive, then all subsequent activations will NOT be activated
+     *     If an activation is NOT transitive, subsequent activations will NOT be triggered.
      * </p>
      *
-     * @return true if activation is transitive
+     * @return {@code true} if the activation is transitive, {@code false} otherwise.
      */
     boolean isTransitive();
 
     /**
-     * Checks if stereo is supported
+     /**
+     * Checks if stereo audio is supported by the activation.
      *
      * <p>
-     *     Client will send a stereo audio if it's enabled in the client settings
+     *     If enabled, the client will send stereo audio if it's configured in the client settings.
      * </p>
      *
-     * @return true if stereo is supported
+     * @return {@code true} if stereo audio is supported by the activation, {@code false} otherwise.
      */
     default boolean isStereoSupported() {
         return false;
     }
 
     /**
-     * Gets encoder info
+     * Gets encoder information for the activation.
      *
      * <p>
-     *     If encoder info is not null, client will use this info to encode audio data
+     *     If not null, the client will use this information to encode audio data.
      * </p>
+     *
+     * @return An optional containing the encoder information, if available.
      */
     Optional<CodecInfo> getEncoderInfo();
 
     /**
-     * Gets the activation's weight
-     * <p>
-     * todo: doc
+     * Gets the weight of the activation.
      *
-     * @return the weight
+     * <p>
+     *     The weight determines the order of source lines in a client-side menu and overlay.
+     *     A lower weight indicates a higher priority.
+     * </p>
+     *
+     * @return The weight of the activation.
      */
     default int getWeight() {
         return 0;

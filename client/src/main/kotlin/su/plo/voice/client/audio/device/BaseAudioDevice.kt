@@ -17,7 +17,7 @@ abstract class BaseAudioDevice(
     override val format: AudioFormat
 ) : AudioDevice {
 
-    override val bufferSize = format.sampleRate.toInt() / 1000 * 20
+    override val frameSize = format.sampleRate.toInt() / 1000 * 20
 
     private val filters: ListMultimap<AudioFilter.Priority, AudioFilter> = Multimaps.synchronizedListMultimap(
         Multimaps.newListMultimap(HashMap<AudioFilter.Priority, Collection<AudioFilter>>()) { ArrayList() }

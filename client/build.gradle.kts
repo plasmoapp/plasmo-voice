@@ -3,6 +3,7 @@ import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
 import gg.essential.util.prebundleNow
+import net.fabricmc.loom.extension.MixinExtension
 import su.plo.config.toml.Toml
 
 val mavenGroup: String by rootProject
@@ -25,16 +26,23 @@ if (platform.isForge) {
     loom.forge.apply {
         mixinConfig(
             "plasmovoice.mixins.json",
-            "plasmovoice-forge.mixins.json"
+            "slib.mixins.json",
+            "slib-forge.mixins.json"
         )
     }
 }
 
-loom.runs {
-    getByName("client") {
-        programArgs("--username", "GNOME__")
-        property("plasmovoice.alpha.disableversioncheck", "true")
-        property("universalcraft.shader.legacy.debug", "true")
+loom {
+    mixin {
+        useLegacyMixinAp.set(true)
+    }
+
+    runs {
+        getByName("client") {
+            programArgs("--username", "GNOME__")
+            property("plasmovoice.alpha.disableversioncheck", "true")
+            property("universalcraft.shader.legacy.debug", "true")
+        }
     }
 }
 
@@ -72,6 +80,16 @@ fun universalCraftVersion() = rootProject.libs.versions.universalcraft.map {
     "${minecraftVersion}-${platform.loaderStr}:$it"
 }.get()
 
+fun slibVersion() = rootProject.libs.versions.crosslib.map {
+    val minecraftVersion = when (platform.mcVersion) {
+        11802 -> "1.17.1"
+        11902, 11904, 12001 -> "1.19.3"
+        else -> platform.mcVersionStr
+    }
+
+    "${minecraftVersion}-${platform.loaderStr}:$it"
+}.get()
+
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
 }
@@ -87,13 +105,13 @@ dependencies {
             11802 -> "0.76.0+1.18.2"
             11902 -> "0.73.2+1.19.2"
             11903 -> "0.73.2+1.19.3"
-            11904 -> "0.76.0+1.19.4"
+            11904 -> "0.87.1+1.19.4"
             12001 -> "0.84.0+1.20.1"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-        "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
+        "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     }
 
     universalCraft("gg.essential:universalcraft-${universalCraftVersion()}") {
@@ -129,6 +147,14 @@ dependencies {
         }
     }
 
+    // slib
+    "su.plo.slib:${slibVersion()}".also {
+        modApi(it)
+        shadowCommon(it) {
+            isTransitive = false
+        }
+    }
+
     // kotlin
     shadowCommon(kotlin("stdlib-jdk8"))
     shadowCommon(rootProject.libs.kotlinx.coroutines)
@@ -148,6 +174,7 @@ dependencies {
 
     if (platform.mcVersion < 11700) {
         shadowCommon(libs.slf4j)
+        shadowCommon(libs.slf4j.simple)
     }
 }
 
@@ -180,10 +207,7 @@ tasks {
 
     jar {
         mergePlatformSpecifics()
-
-        if (platform.mcVersion >= 11400) {
-            excludeKotlinDefaultImpls()
-        }
+        excludeKotlinDefaultImpls()
     }
 
     shadowJar {
@@ -203,6 +227,8 @@ tasks {
 
             exclude("README.md")
             exclude("DebugProbesKt.bin")
+            exclude("META-INF/*.kotlin_module")
+            exclude("_COROUTINE/**")
 
             if (platform.mcVersion >= 11700) {
                 exclude(dependency("org.slf4j:slf4j-api"))
@@ -213,7 +239,6 @@ tasks {
             if (platform.isForge) {
                 exclude("fabric.mod.json")
             } else {
-                exclude("plasmovoice-forge.mixins.json")
                 exclude("pack.mcmeta")
                 exclude("META-INF/mods.toml")
             }
@@ -222,7 +247,7 @@ tasks {
 
     remapJar {
         dependsOn(shadowJar)
-        input.set(shadowJar.get().archiveFile)
+        inputFile.set(shadowJar.get().archiveFile)
     }
 
     build {

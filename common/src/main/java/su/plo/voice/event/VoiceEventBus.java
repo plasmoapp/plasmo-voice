@@ -40,7 +40,7 @@ public final class VoiceEventBus implements EventBus {
     }
 
     @Override
-    public <E extends Event> boolean call(@NotNull E event) {
+    public <E extends Event> boolean fire(@NotNull E event) {
         if (!this.handlers.containsKey(event.getClass())) return true;
 
         for (Map.Entry<EventPriority, List<EventHandler<?>>> entry :
@@ -64,7 +64,7 @@ public final class VoiceEventBus implements EventBus {
         CompletableFuture<E> future = new CompletableFuture<>();
 
         asyncExecutor.execute(() -> {
-            call(event);
+            fire(event);
             future.complete(event);
         });
 

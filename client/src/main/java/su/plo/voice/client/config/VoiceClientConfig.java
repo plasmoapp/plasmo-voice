@@ -17,7 +17,7 @@ import su.plo.voice.api.client.config.overlay.OverlayPosition;
 import su.plo.voice.api.client.config.overlay.OverlaySourceState;
 import su.plo.voice.api.client.config.overlay.OverlayStyle;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
-import su.plo.voice.client.config.keybind.ConfigKeyBindings;
+import su.plo.voice.client.config.hotkey.ConfigHotkeys;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 
@@ -58,7 +58,7 @@ public final class VoiceClientConfig implements ClientConfig {
     private Overlay overlay = new Overlay();
 
     @ConfigField
-    private ConfigKeyBindings keyBindings = new ConfigKeyBindings();
+    private ConfigHotkeys keyBindings = new ConfigHotkeys();
 
     @ConfigField
     private Servers servers = new Servers();

@@ -5,7 +5,7 @@ import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.event.Event;
 
 /**
- * This event is fired once the {@link ClientAudioSource} has been closed
+ * This event is fired once the {@link ClientAudioSource} has been closed.
  */
 public class AudioSourceClosedEvent implements Event {
 

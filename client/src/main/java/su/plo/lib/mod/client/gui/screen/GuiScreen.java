@@ -1,15 +1,14 @@
 package su.plo.lib.mod.client.gui.screen;
 
 import com.google.common.collect.Lists;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
-import su.plo.voice.universal.UResolution;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.widget.GuiNarrationWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
@@ -169,8 +168,8 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
         return ((Screen) screen).height;
     }
 
-    public MinecraftTextComponent getTitle() {
-        return MinecraftTextComponent.empty();
+    public McTextComponent getTitle() {
+        return McTextComponent.empty();
     }
 
     public static class NarrationSearchResult {

@@ -1,6 +1,8 @@
 package su.plo.voice.client.render.voice;
 
 import net.minecraft.client.renderer.RenderType;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -12,7 +14,6 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
@@ -27,7 +28,6 @@ import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.ModCamera;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
-import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -244,7 +244,7 @@ public final class SourceIconRenderer {
         // render percents
         DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + entity.getUUID());
 
-        MinecraftTextComponent text = MinecraftTextComponent.literal((int) Math.round((volume.value() * 100D)) + "%");
+        McTextComponent text = McTextComponent.literal((int) Math.round((volume.value() * 100D)) + "%");
         int backgroundColor = (int) (0.25F * 255.0F) << 24;
         int xOffset = -RenderUtil.getTextWidth(text) / 2;
 
@@ -313,11 +313,13 @@ public final class SourceIconRenderer {
         stack.translate(-5D, -1D, 0D);
     }
 
-    private void renderStatic(@NonNull UMatrixStack stack,
-                              @NonNull ModCamera camera,
-                              int light,
-                              @NotNull ResourceLocation iconLocation,
-                              @NotNull Pos3d position) {
+    private void renderStatic(
+            @NonNull UMatrixStack stack,
+            @NonNull ModCamera camera,
+            int light,
+            @NotNull ResourceLocation iconLocation,
+            @NotNull Pos3d position
+    ) {
         if (camera.position().distanceToSqr(new Vec3(
                 position.getX(), position.getY(), position.getZ()
         )) > 4096D) return;

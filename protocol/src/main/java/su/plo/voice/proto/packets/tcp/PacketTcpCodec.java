@@ -12,6 +12,7 @@ import su.plo.voice.proto.packets.tcp.serverbound.*;
 import java.io.IOException;
 import java.util.Optional;
 
+@SuppressWarnings({"UnstableApiUsage", "unchecked"})
 public class PacketTcpCodec {
 
     private static final PacketRegistry PACKETS = new PacketRegistry();

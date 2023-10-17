@@ -1,11 +1,11 @@
 package su.plo.voice.api.server.player;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.server.player.MinecraftServerPlayer;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.entity.player.McPlayer;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
-import su.plo.voice.proto.data.pos.Pos3d;
 import su.plo.voice.proto.packets.Packet;
 
 import java.security.PublicKey;
@@ -13,103 +13,131 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Represents a voice API for the player.
+ */
 public interface VoicePlayer {
 
     /**
-     * Sends a packet to the player via plasmo voice minecraft channel
+     * Sends a packet to the player via the Plasmo Voice Minecraft channel.
+     *
+     * @param packet The packet to send.
      */
     void sendPacket(Packet<?> packet);
 
     /**
-     * @return true if player has a voice chat
+     * Checks if the player has a Plasmo Voice installed and connected to the UDP server.
+     *
+     * @return {@code true} if the player has a Plasmo Voice installed and connected to the UDP server,
+     * {@code false} otherwise.
      */
     boolean hasVoiceChat();
 
     /**
-     * @return detected player's mod loader
+     * Gets the mod loader used by the player.
+     *
+     * @return An optional containing the mod loader, or empty if the player is using a vanilla client or an undetected mod loader.
      */
     Optional<PlayerModLoader> getModLoader();
 
     /**
-     * @return true if player has disabled the voice chat
+     * Checks if the player has voice chat disabled.
+     *
+     * @return true if the player has disabled voice chat.
      */
     boolean isVoiceDisabled();
 
     /**
-     * @return true if player has muted the microphone in voice chat
+     * Checks if the player has muted the microphone in voice chat.
+     *
+     * @return true if the player has muted the microphone.
      */
     boolean isMicrophoneMuted();
 
     /**
-     * @return a new instance of {@link VoicePlayerInfo}
+     * Creates and returns a new instance of {@link VoicePlayerInfo} for this player.
+     *
+     * @return A new VoicePlayerInfo instance.
      */
     VoicePlayerInfo createPlayerInfo();
 
     /**
-     * Gets the activation's distance by its id
+     * Gets the activation's distance by its ID.
      *
-     * @param activationId activation id
-     * @return the activation's distance or -1 if client not sent the distances
+     * @param activationId The activation ID.
+     * @return The activation's distance or -1 if the client has not sent the distance for this activation.
      */
     int getActivationDistanceById(@NotNull UUID activationId);
 
     /**
-     * @return current player's active activations
+     * Retrieves the currently active activations for the player.
+     *
+     * <p>
+     *     <b>"Active"</b> means that activation is currently used by the player.
+     * </p>
+     *
+     * @return A collection of active activations.
      */
     Collection<ServerActivation> getActiveActivations();
 
     /**
-     * Visualizes sphere distance if client has enabled this feature
+     * Visualizes a sphere distance if the client has enabled this feature.
      *
-     * @param radius   sphere radius
-     * @param hexColor int hex color (e.g. 0x00a000)
+     * @param radius   The sphere radius.
+     * @param hexColor The hexadecimal color (e.g., 0x00a000).
      */
     void visualizeDistance(int radius, int hexColor);
 
     /**
-     * Visualizes sphere distance with color 0x00a000 if client has enabled this feature
+     * Visualizes a sphere distance with the default color (0x00a000) if the client has enabled this feature.
      *
-     * @param radius sphere radius
+     * @param radius The sphere radius.
      */
     default void visualizeDistance(int radius) {
         visualizeDistance(radius, 0x00a000);
     }
 
     /**
-     * Visualizes sphere distance on position if client has enabled this feature
+     * Visualizes a sphere distance at a specific position if the client has enabled this feature.
      *
-     * @param radius sphere radius
-     * @param hexColor int hex color (e.g. 0x00a000)
+     * @param position The position where the sphere should be visualized.
+     * @param radius   The sphere radius.
+     * @param hexColor The hexadecimal color (e.g., 0x00a000).
      */
     void visualizeDistance(@NotNull Pos3d position, int radius, int hexColor);
 
     /**
-     * Visualizes sphere distance on position with color 0x00a000 if client has enabled this feature
+     * Visualizes a sphere distance at a specific position with the default color (0x00a000)
+     * if the client has enabled this feature.
      *
-     * @param radius sphere radius
+     * @param position The position where the sphere should be visualized.
+     * @param radius   The sphere radius.
      */
     default void visualizeDistance(@NotNull Pos3d position, int radius) {
         visualizeDistance(position, radius, 0x00a000);
     }
 
     /**
-     * Sends animated actionbar (like when inserting music disc in jukebox)
-     * if player has Plasmo Voice installed,
-     * otherwise sends default actionbar
+     * Sends an animated actionbar message to the player.
+     * This is similar to the action when inserting a music disc in a jukebox.
+     * If the player has Plasmo Voice installed, the animated actionbar will be displayed;
+     * otherwise, a default actionbar will be sent.
      *
-     * @param text text to send
+     * @param text The text to send in the animated actionbar.
      */
-    void sendAnimatedActionBar(@NotNull MinecraftTextComponent text);
+    void sendAnimatedActionBar(@NotNull McTextComponent text);
 
     /**
-     * Gets the player's public key
-     * <br/>
-     * This key used for transfer AES key securely
+     * Gets the player's public key. This key is used for transferring AES keys securely.
+     *
+     * @return An optional containing the player's public key, or empty if not available.
      */
     Optional<PublicKey> getPublicKey();
 
     /**
-     * @return wrapped Minecraft's player object
+     * Gets the Minecraft player instance associated with this voice player.
+     *
+     * @return The Minecraft player instance.
      */
-    @NotNull MinecraftServerPlayer getInstance();
+    @NotNull McPlayer getInstance();
 }

@@ -3,7 +3,9 @@ package su.plo.voice.proto.packets;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.serializer.PacketSerializer;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -80,6 +82,44 @@ public class PacketUtil {
     public static @Nullable String readNullableString(ByteArrayDataInput in) {
         if (in.readBoolean()) return in.readUTF();
         return null;
+    }
+
+    public static <T> void writeNullable(
+            @NotNull ByteArrayDataOutput buffer,
+            @NotNull PacketSerializer<T> serializer,
+            @Nullable T obj
+    ) throws IOException {
+        buffer.writeBoolean(obj != null);
+        if (obj != null) serializer.serialize(obj, buffer);
+    }
+
+    public static <T> @Nullable T readNullable(
+            @NotNull ByteArrayDataInput buffer,
+            @NotNull PacketSerializer<T> serializer
+    ) throws IOException {
+        if (buffer.readBoolean()) return serializer.deserialize(buffer);
+        return null;
+    }
+
+    public static <T> void writeList(
+            @NotNull ByteArrayDataOutput buffer,
+            @NotNull PacketSerializer<T> serializer,
+            @NotNull List<T> list
+    ) throws IOException {
+        buffer.writeInt(list.size());
+        for (T obj : list) {
+            serializer.serialize(obj, buffer);
+        }
+    }
+
+    public static <T> List<T> readList(@NotNull ByteArrayDataInput buffer, @NotNull PacketSerializer<T> serializer) throws IOException {
+        int size = buffer.readInt();
+        List<T> list = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            list.add(serializer.deserialize(buffer));
+        }
+
+        return list;
     }
 
     private PacketUtil() {

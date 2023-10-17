@@ -2,9 +2,9 @@ package su.plo.voice.server.player;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.server.event.player.PlayerJoinEvent;
-import su.plo.lib.api.server.event.player.PlayerQuitEvent;
-import su.plo.lib.api.server.player.MinecraftServerPlayer;
+import su.plo.slib.api.entity.player.McPlayer;
+import su.plo.slib.api.event.player.McPlayerJoinEvent;
+import su.plo.slib.api.event.player.McPlayerQuitEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -24,8 +24,8 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
     protected final Set<String> synchronizedPermissions = new CopyOnWriteArraySet<>();
 
     public BaseVoicePlayerManager() {
-        PlayerJoinEvent.INSTANCE.registerListener(this::onPlayerJoin);
-        PlayerQuitEvent.INSTANCE.registerListener(this::onPlayerQuit);
+        McPlayerJoinEvent.INSTANCE.registerListener(this::onPlayerJoin);
+        McPlayerQuitEvent.INSTANCE.registerListener(this::onPlayerQuit);
     }
 
     @Override
@@ -56,8 +56,8 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
         playerByName.clear();
         synchronizedPermissions.clear();
 
-        PlayerJoinEvent.INSTANCE.unregisterListener(this::onPlayerJoin);
-        PlayerQuitEvent.INSTANCE.unregisterListener(this::onPlayerQuit);
+        McPlayerJoinEvent.INSTANCE.unregisterListener(this::onPlayerJoin);
+        McPlayerQuitEvent.INSTANCE.unregisterListener(this::onPlayerQuit);
     }
 
     @EventSubscribe
@@ -73,12 +73,12 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
         player.sendPacket(new ConfigPlayerInfoPacket(permissions));
     }
 
-    public void onPlayerJoin(@NotNull MinecraftServerPlayer player) {
-        wrap(player.getInstance());
+    public void onPlayerJoin(@NotNull McPlayer player) {
+        getPlayerByInstance(player.getInstance());
     }
 
-    public void onPlayerQuit(@NotNull MinecraftServerPlayer player) {
-        playerById.remove(player.getUUID());
+    public void onPlayerQuit(@NotNull McPlayer player) {
+        playerById.remove(player.getUuid());
         playerByName.remove(player.getName());
     }
 }

@@ -5,10 +5,10 @@ import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import su.plo.lib.api.chat.MinecraftTextClickEvent;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextHoverEvent;
-import su.plo.lib.api.chat.MinecraftTextStyle;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextClickEvent;
+import su.plo.slib.api.chat.style.McTextHoverEvent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.util.version.ModrinthLoader;
@@ -53,12 +53,12 @@ public final class ServerVersionUtil {
                     }
             );
 
-            player.getInstance().sendMessage(MinecraftTextComponent.translatable(
+            player.getInstance().sendMessage(McTextComponent.translatable(
                     "pv.error.version_not_supported",
-                    MinecraftTextComponent.translatable("pv.error.version_not_supported_click")
-                            .withStyle(MinecraftTextStyle.YELLOW)
-                            .clickEvent(MinecraftTextClickEvent.openUrl(downloadLink))
-                            .hoverEvent(MinecraftTextHoverEvent.showText(MinecraftTextComponent.translatable(
+                    McTextComponent.translatable("pv.error.version_not_supported_click")
+                            .withStyle(McTextStyle.YELLOW)
+                            .clickEvent(McTextClickEvent.openUrl(downloadLink))
+                            .hoverEvent(McTextHoverEvent.showText(McTextComponent.translatable(
                                     "pv.error.version_not_supported_hover", downloadLink
                             )))
             ));

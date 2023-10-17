@@ -9,26 +9,20 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Target(value = METHOD)
 @Retention(value = RUNTIME)
 public @interface EventSubscribe {
+
     /**
-     * Define the priority of the event.
-     * <p>
-     * First priority to the last priority executed:
-     * <ol>
-     * <li>LOWEST
-     * <li>LOW
-     * <li>NORMAL
-     * <li>HIGH
-     * <li>HIGHEST
-     * </ol>
+     * Defines the priority in execution of the event handler method.
      *
-     * @return the priority
+     * @return The priority in execution for the event handler method.
      */
     EventPriority priority() default EventPriority.NORMAL;
 
     /**
-     * If the event is cancelled, subscribers with ignoreCancelled = false will not be called.
+     * Specifies whether the event handler should ignore events that have been cancelled.
+     * If set to true, the event handler will not be called for cancelled events.
+     * If set to false, the event handler will be called regardless of the cancellation status of the event.
      *
-     * @return true if the subscriber should ignore cancelled events
+     * @return true if the event handler should ignore cancelled events, false otherwise.
      */
     boolean ignoreCancelled() default true;
 }

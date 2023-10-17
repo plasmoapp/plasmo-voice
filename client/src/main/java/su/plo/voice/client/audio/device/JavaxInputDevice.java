@@ -33,7 +33,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
             this.device = null;
         }
 
-        getVoiceClient().getEventBus().call(new DeviceClosedEvent(this));
+        getVoiceClient().getEventBus().fire(new DeviceClosedEvent(this));
     }
 
     @Override
@@ -83,7 +83,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
         if (isOpen()) throw new DeviceException("Device is already open");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this);
-        getVoiceClient().getEventBus().call(preOpenEvent);
+        getVoiceClient().getEventBus().fire(preOpenEvent);
 
         if (preOpenEvent.isCancelled()) {
             throw new DeviceException("Device opening has been canceled");
@@ -98,7 +98,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
 
         BaseVoice.LOGGER.info("Device {} initialized", getName());
 
-        getVoiceClient().getEventBus().call(new DeviceOpenEvent(this));
+        getVoiceClient().getEventBus().fire(new DeviceOpenEvent(this));
     }
 
     private TargetDataLine openDevice() throws DeviceException {

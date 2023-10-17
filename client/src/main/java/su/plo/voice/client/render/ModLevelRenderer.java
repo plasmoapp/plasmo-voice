@@ -1,6 +1,7 @@
 package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.universal.UMatrixStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
@@ -9,7 +10,6 @@ import net.minecraft.core.BlockPos;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Objects;
 
@@ -26,7 +26,7 @@ public final class ModLevelRenderer extends ModRenderer {
             this.level = level;
         }
 
-        voiceClient.getEventBus().call(new LevelRenderEvent(
+        voiceClient.getEventBus().fire(new LevelRenderEvent(
                 new UMatrixStack(poseStack),
                 level,
                 new ModCamera(camera.getPosition(), camera.getXRot(), camera.getYRot()),

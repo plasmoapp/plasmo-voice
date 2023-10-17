@@ -3,8 +3,9 @@ package su.plo.voice.api.client.audio.device;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.device.source.AlSource;
+import su.plo.voice.api.client.audio.device.source.DeviceSourceParams;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
-import su.plo.voice.api.util.Params;
+import su.plo.voice.api.client.connection.ServerInfo;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
@@ -15,74 +16,66 @@ import java.util.Collection;
 public interface DeviceManager {
 
     /**
-     * Adds new device
+     * Adds a new audio device to the manager.
      *
-     * @param device the device
+     * @param device The audio device to add.
      */
     void add(@NotNull AudioDevice device);
 
     /**
-     * Replaces old device with the new one
+     * Replaces an old audio device with a new one.
      *
-     * @param oldDevice old device
-     *                  if null first device will be replaced
-     * @param newDevice new device
+     * @param oldDevice The old audio device to replace (or null to replace the first device).
+     * @param newDevice The new audio device to use as a replacement.
      */
     void replace(@Nullable AudioDevice oldDevice, @NotNull AudioDevice newDevice);
 
     /**
-     * Removes the device
+     * Removes an audio device from the manager.
      *
-     * @param device the device
+     * @param device The audio device to remove.
      */
     void remove(@NotNull AudioDevice device);
 
     /**
-     * Removes all devices
+     * Removes all audio devices of the specified type (or all devices if the type is null).
      *
-     * @param type the device type (if type is empty then all devices will be removed)
+     * @param type The type of audio devices to remove (or null to remove all devices).
      */
     void clear(@Nullable DeviceType type);
 
     /**
-     * Returns immutable collection of devices by type (if type is empty then all devices will be returned)
-     **
-     * @param type the device type
+     * Retrieves an immutable collection of audio devices of the specified type (or all devices if the type is null).
+     *
+     * @param type The type of audio devices to retrieve (or null to retrieve all devices).
+     * @return A collection of audio devices.
      */
     <T extends AudioDevice> Collection<T> getDevices(@Nullable DeviceType type);
 
     /**
-     * Creates a new source group
+     * Creates a new source group for managing audio sources.
      *
-     * todo: doc
-     *
-     * @return the source group
+     * @see SourceGroup
+     * @param type The type of devices associated with the source group (or null for a generic source group).
+     * @return A source group for managing audio sources.
      */
-    SourceGroup createSourceGroup(@Nullable DeviceType type);
+    @NotNull SourceGroup createSourceGroup(@Nullable DeviceType type);
 
     /**
-     * Opens a new input device from config device name
+     * Opens a new input device with the specified audio format and device parameters.
      *
-     * @param format audio format
-     *               if null current ServerInfo voice format will be used
-     * @param params device params, may be different depending on DeviceFactory
-     *
-     * @return the input device
-     *
-     * @throws Exception if device cannot be open
+     * @param format The audio format (or null to use the current {@link ServerInfo} voice format).
+     * @return The input device.
+     * @throws DeviceException if the input device cannot be opened.
      */
-    InputDevice openInputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception;
+    @NotNull InputDevice openInputDevice(@Nullable AudioFormat format) throws DeviceException;
 
     /**
-     * Opens a new output device from config device name
+     * Opens a new output device with the specified audio format and device parameters.
      *
-     * @param format audio format
-     *               if null current ServerInfo voice format will be used
-     * @param params device params, may be different depending on DeviceFactory
-     *
-     * @return the output device
-     *
-     * @throws Exception if device cannot be open
+     * @param format The audio format (or null to use the current ServerInfo voice format).
+     * @return The output device.
+     * @throws DeviceException if the output device cannot be opened.
      */
-    OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception;
+    @NotNull OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format) throws DeviceException;
 }

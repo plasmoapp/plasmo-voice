@@ -1,5 +1,7 @@
 package su.plo.voice.client.gui.settings;
 
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import lombok.Getter;
@@ -7,8 +9,6 @@ import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.screen.TooltipScreen;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
@@ -23,14 +23,14 @@ import su.plo.voice.client.gui.settings.tab.*;
 
 import java.util.stream.Collectors;
 
-import static su.plo.voice.client.extensions.TextKt.getStringSplitToWidth;
+import static su.plo.voice.client.extension.TextKt.getStringSplitToWidth;
 
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
 
     private final BaseVoiceClient voiceClient;
     private final VoiceClientConfig config;
-    private final MinecraftTextComponent title;
+    private final McTextComponent title;
     @Getter
     private final VoiceSettingsNavigation navigation;
     private final VoiceSettingsAboutFeature aboutFeature;
@@ -40,7 +40,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Getter
     private int titleWidth;
     @Setter
-    private @Nullable MinecraftTextComponent tooltip;
+    private @Nullable McTextComponent tooltip;
 
     @Setter
     private boolean preventEscClose;
@@ -77,38 +77,38 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         clearWidgets();
 
         navigation.addTab(
-                MinecraftTextComponent.translatable("gui.plasmovoice.devices"),
+                McTextComponent.translatable("gui.plasmovoice.devices"),
                 new ResourceLocation("plasmovoice:textures/icons/tabs/devices.png"),
                 new DevicesTabWidget(this, voiceClient, config, testController)
         );
         navigation.addTab(
-                MinecraftTextComponent.translatable("gui.plasmovoice.volume"),
+                McTextComponent.translatable("gui.plasmovoice.volume"),
                 new ResourceLocation("plasmovoice:textures/icons/tabs/volume.png"),
                 new VolumeTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
-                MinecraftTextComponent.translatable("gui.plasmovoice.activation"),
+                McTextComponent.translatable("gui.plasmovoice.activation"),
                 new ResourceLocation("plasmovoice:textures/icons/tabs/activation.png"),
                 new ActivationTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
-                MinecraftTextComponent.translatable("gui.plasmovoice.overlay"),
+                McTextComponent.translatable("gui.plasmovoice.overlay"),
                 new ResourceLocation("plasmovoice:textures/icons/tabs/overlay.png"),
                 new OverlayTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced"),
+                McTextComponent.translatable("gui.plasmovoice.advanced"),
                 new ResourceLocation("plasmovoice:textures/icons/tabs/advanced.png"),
                 new AdvancedTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
-                MinecraftTextComponent.translatable("gui.plasmovoice.hotkeys"),
+                McTextComponent.translatable("gui.plasmovoice.hotkeys"),
                 new ResourceLocation("plasmovoice:textures/icons/tabs/hotkeys.png"),
                 new HotKeysTabWidget(this, voiceClient, config)
         );
         if (voiceClient.getAddonConfigs().size() > 0) {
             navigation.addTab(
-                    MinecraftTextComponent.translatable("gui.plasmovoice.addons"),
+                    McTextComponent.translatable("gui.plasmovoice.addons"),
                     new ResourceLocation("plasmovoice:textures/icons/tabs/addons.png"),
                     new AddonsTabWidget(this, voiceClient, config)
             );
@@ -138,7 +138,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     }
 
     @Override
-    public @NotNull MinecraftTextComponent getTitle() {
+    public @NotNull McTextComponent getTitle() {
         return title;
     }
 
@@ -179,7 +179,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
                             180,
                             true,
                             true
-                    ).stream().map(MinecraftTextComponent::literal).collect(Collectors.toList()),
+                    ).stream().map(McTextComponent::literal).collect(Collectors.toList()),
                     mouseX,
                     mouseY
             );
@@ -212,32 +212,32 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         voiceClient.openNotAvailable();
     }
 
-    private MinecraftTextComponent getSettingsTitle() {
+    private McTextComponent getSettingsTitle() {
         String[] versionSplit = voiceClient.getVersion().split("\\+");
 
         String version = versionSplit[0];
-        MinecraftTextStyle versionColor = MinecraftTextStyle.WHITE;
+        McTextStyle versionColor = McTextStyle.WHITE;
         if (versionSplit.length > 1) {
-            versionColor = MinecraftTextStyle.YELLOW;
+            versionColor = McTextStyle.YELLOW;
         }
 
-        MinecraftTextComponent title = MinecraftTextComponent.translatable(
+        McTextComponent title = McTextComponent.translatable(
                 "gui.plasmovoice.title",
-                MinecraftTextComponent.literal("Plasmo Voice"),
-                MinecraftTextComponent.literal(version).withStyle(versionColor)
+                McTextComponent.literal("Plasmo Voice"),
+                McTextComponent.literal(version).withStyle(versionColor)
         );
 
         if (LanguageUtil.getOrDefault("gui.plasmovoice.title").split("%").length != 3) {
-            return MinecraftTextComponent.literal(String.format("Plasmo Voice %s%s Settings", versionColor, version));
+            return McTextComponent.literal(String.format("Plasmo Voice %s%s Settings", versionColor, version));
         }
 
         return title;
     }
 
-    private MinecraftTextComponent getVersionTooltip() {
+    private McTextComponent getVersionTooltip() {
         String[] versionSplit = voiceClient.getVersion().split("\\+");
         if (versionSplit.length < 2) return null;
 
-        return MinecraftTextComponent.literal("build+" + versionSplit[1]);
+        return McTextComponent.literal("build+" + versionSplit[1]);
     }
 }

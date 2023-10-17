@@ -3,7 +3,7 @@ package su.plo.voice.proxy.player;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
+import su.plo.slib.api.proxy.player.McProxyPlayer;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
@@ -11,7 +11,7 @@ import su.plo.voice.server.player.BaseVoicePlayer;
 
 @ToString(doNotUseGetters = true, callSuper = true)
 public final class VoiceProxyPlayerConnection
-        extends BaseVoicePlayer<MinecraftProxyPlayer>
+        extends BaseVoicePlayer<McProxyPlayer>
         implements VoiceProxyPlayer {
 
     private final PlasmoVoiceProxy voiceProxy;
@@ -19,8 +19,10 @@ public final class VoiceProxyPlayerConnection
     @Setter
     private boolean muted;
 
-    public VoiceProxyPlayerConnection(@NotNull PlasmoVoiceProxy voiceProxy,
-                                      @NotNull MinecraftProxyPlayer instance) {
+    public VoiceProxyPlayerConnection(
+            @NotNull PlasmoVoiceProxy voiceProxy,
+            @NotNull McProxyPlayer instance
+    ) {
         super(voiceProxy, instance);
 
         this.voiceProxy = voiceProxy;
@@ -28,7 +30,7 @@ public final class VoiceProxyPlayerConnection
 
     public boolean hasVoiceChat() {
         return voiceProxy.getUdpConnectionManager()
-                .getConnectionByPlayerId(instance.getUUID())
+                .getConnectionByPlayerId(instance.getUuid())
                 .isPresent();
     }
 
@@ -36,7 +38,7 @@ public final class VoiceProxyPlayerConnection
         checkVoiceChat();
 
         return new VoicePlayerInfo(
-                instance.getUUID(),
+                instance.getUuid(),
                 instance.getName(),
                 muted,
                 isVoiceDisabled(),

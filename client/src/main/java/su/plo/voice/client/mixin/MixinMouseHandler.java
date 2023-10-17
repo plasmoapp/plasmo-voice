@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.event.key.MouseScrollEvent;
@@ -25,11 +25,11 @@ public abstract class MixinMouseHandler {
         if (window != this.minecraft.getWindow().getWindow() || ModVoiceClient.INSTANCE == null) return;
 
         KeyPressedEvent event = new KeyPressedEvent(
-                KeyBinding.Type.MOUSE.getOrCreate(button),
-                KeyBinding.Action.fromInt(action)
+                Hotkey.Type.MOUSE.getOrCreate(button),
+                Hotkey.Action.fromInt(action)
         );
 
-        ModVoiceClient.INSTANCE.getEventBus().call(event);
+        ModVoiceClient.INSTANCE.getEventBus().fire(event);
     }
 
     @Inject(at = @At("HEAD"), method = "onScroll", cancellable = true)
@@ -40,7 +40,7 @@ public abstract class MixinMouseHandler {
                 horizontal,
                 vertical
         );
-        ModVoiceClient.INSTANCE.getEventBus().call(event);
+        ModVoiceClient.INSTANCE.getEventBus().fire(event);
 
         if (event.isCancelled()) ci.cancel();
     }

@@ -3,27 +3,29 @@ package su.plo.voice.client.gui.settings.widget;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
+import su.plo.slib.api.chat.component.McTextComponent;
 
 import java.util.List;
 
 public final class CircularButton extends Button implements UpdatableWidget {
 
-    private final List<MinecraftTextComponent> values;
+    private final List<McTextComponent> values;
     private final @Nullable UpdateAction updateAction;
     @Setter
     private int index;
 
-    public CircularButton(@NotNull List<MinecraftTextComponent> values,
-                          int index,
-                          int x,
-                          int y,
-                          int width,
-                          int height,
-                          @Nullable UpdateAction updateAction,
-                          @NotNull OnTooltip tooltipAction) {
-        super(x, y, width, height, MinecraftTextComponent.empty(), NO_ACTION, tooltipAction);
+    public CircularButton(
+            @NotNull List<McTextComponent> values,
+            int index,
+            int x,
+            int y,
+            int width,
+            int height,
+            @Nullable UpdateAction updateAction,
+            @NotNull OnTooltip tooltipAction
+    ) {
+        super(x, y, width, height, McTextComponent.empty(), NO_ACTION, tooltipAction);
 
         this.values = values;
         this.index = index;

@@ -3,8 +3,8 @@ package su.plo.voice.client.audio.device.source;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.DeviceSource;
+import su.plo.voice.api.client.audio.device.source.DeviceSourceParams;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
-import su.plo.voice.api.util.Params;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,7 +21,7 @@ public final class VoiceOutputSourceGroup implements SourceGroup {
     }
 
     @Override
-    public void create(boolean stereo, @NotNull Params params) throws DeviceException {
+    public void create(boolean stereo, @NotNull DeviceSourceParams params) throws DeviceException {
         for (AudioDevice device : devices.getDevices(DeviceType.OUTPUT)) {
             OutputDevice<?> outputDevice = (OutputDevice<?>) device;
             sources.add(outputDevice.createSource(stereo, params));

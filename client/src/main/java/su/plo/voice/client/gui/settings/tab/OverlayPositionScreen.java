@@ -3,9 +3,9 @@ package su.plo.voice.client.gui.settings.tab;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.config.overlay.OverlayPosition;
 import su.plo.voice.client.gui.settings.HudPositionScreen;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -14,10 +14,12 @@ public final class OverlayPositionScreen extends HudPositionScreen<OverlayPositi
 
     private final OverlayPosition disabledPosition;
 
-    public OverlayPositionScreen(@NotNull VoiceSettingsScreen parent,
-                                 @NotNull EnumConfigEntry<OverlayPosition> entry,
-                                 @Nullable OverlayPosition disabledPosition) {
-        super(parent, entry, MinecraftTextComponent.translatable("gui.plasmovoice.overlay.position.choose"));
+    public OverlayPositionScreen(
+            @NotNull VoiceSettingsScreen parent,
+            @NotNull EnumConfigEntry<OverlayPosition> entry,
+            @Nullable OverlayPosition disabledPosition
+    ) {
+        super(parent, entry, McTextComponent.translatable("gui.plasmovoice.overlay.position.choose"));
 
         this.disabledPosition = disabledPosition;
     }
@@ -63,7 +65,7 @@ public final class OverlayPositionScreen extends HudPositionScreen<OverlayPositi
                 y,
                 BUTTON_WIDTH,
                 20,
-                MinecraftTextComponent.translatable(overlayPosition.getTranslation()),
+                McTextComponent.translatable(overlayPosition.getTranslation()),
                 (btn) -> {
                     entry.set(overlayPosition);
                     ScreenWrapper.openScreen(null);

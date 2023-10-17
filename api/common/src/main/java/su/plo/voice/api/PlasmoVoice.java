@@ -10,70 +10,67 @@ import java.io.File;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * The Plasmo Voice API
+ * The Plasmo Voice API.
  */
 public interface PlasmoVoice {
 
     /**
-     * Gets the {@link ScheduledExecutorService}
+     * Gets the {@link ScheduledExecutorService}.
+     * This executor is used for handling background tasks.
      *
-     * Executor used for background tasks
-     *
-     * @return the {@link ScheduledExecutorService}
+     * @return the {@link ScheduledExecutorService} for background tasks.
      */
     @NotNull ScheduledExecutorService getBackgroundExecutor();
 
     /**
-     * Gets the {@link AddonManager}
+     * Gets the {@link AddonManager}.
+     * The AddonManager is responsible for managing addons.
      *
-     * This manager can be used to get addons
-     *
-     * @return the addon manager
+     * @return the AddonManager instance.
      */
     @NotNull AddonManager getAddonManager();
 
     /**
-     * Gets the {@link EventBus}, used for subscribing to
-     * Plasmo Voice events
+     * Gets the {@link EventBus}, which allows subscribing to Plasmo Voice events.
      *
-     * @return the event bus
+     * @return the EventBus instance.
      */
     @NotNull EventBus getEventBus();
 
     /**
-     * Gets the {@link EncryptionManager}
+     * Gets the {@link EncryptionManager}.
+     * The EncryptionManager manages encryption algorithms.
      *
-     * This manager can be used to create an encryption or register a custom encryption
-     *
-     * @return the encryption manager
+     * @return the EncryptionManager instance.
      */
     @NotNull EncryptionManager getEncryptionManager();
 
     /**
-     * Gets the {@link CodecManager}
+     * Gets the {@link CodecManager}.
+     * The CodecManager is responsible for creating codec encoders/decoders and managing custom codec implementations.
      *
-     * This manager can be used to create a codec encoder/decoder or register a custom codec encoder/decoder
-     *
-     * @return the codec manager
+     * @return the CodecManager instance.
      */
     @NotNull CodecManager getCodecManager();
 
     /**
-     * Gets the Plasmo Voice version
+     * Gets the Plasmo Voice version.
      *
-     * @return the Plasmo Voice version
+     * @return the Plasmo Voice version.
      */
     @NotNull String getVersion();
 
     /**
-     * Gets the Plasmo Voice config folder
+     * Gets the Plasmo Voice config folder.
      *
-     * @return the config folder
+     * @return the folder where Plasmo Voice configurations are stored.
      */
     @NotNull File getConfigFolder();
 
     /**
-     * @return loader's config/plugins folder
+     * Gets the loader's config/plugins folder.
+     *
+     * @return the folder where loader-specific configurations and plugins are stored.
      */
     @NotNull File getConfigsFolder();
 }

@@ -6,6 +6,9 @@ import su.plo.voice.api.client.socket.UdpClient;
 
 import java.util.Optional;
 
+/**
+ * Manages the current UDP client.
+ */
 public interface UdpClientManager {
 
     /**
@@ -16,21 +19,23 @@ public interface UdpClientManager {
     void setClient(@NotNull UdpClient client);
 
     /**
-     * Disconnects and removes an udp client from the manager
+     * Disconnects and removes the UDP client from the manager.
      *
-     * @param reason disconnect reason
+     * @param reason The reason for disconnecting.
      */
     void removeClient(@NotNull UdpClientClosedEvent.Reason reason);
 
     /**
-     * Gets the {@link UdpClient}
+     * Gets the {@link UdpClient}, if available.
      *
-     * @return {@link UdpClient}
+     * @return An optional containing the {@link UdpClient}, or empty if not set.
      */
     Optional<UdpClient> getClient();
 
     /**
-     * Checks if {@link UdpClient} is present, connected and not timed out
+     * Checks if the UDP client is present, connected, and not timed out.
+     *
+     * @return {@code true} if the UDP client is connected and not timed out, {@code false} otherwise.
      */
     boolean isConnected();
 }

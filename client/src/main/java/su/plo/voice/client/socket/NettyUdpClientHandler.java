@@ -60,7 +60,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
         Packet<ClientPacketUdpHandler> packet = packetUdp.getPacketUdp().getPacket();
 
         UdpClientPacketReceivedEvent event = new UdpClientPacketReceivedEvent(client, packet);
-        voiceClient.getEventBus().call(event);
+        voiceClient.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         packet.handle(this);

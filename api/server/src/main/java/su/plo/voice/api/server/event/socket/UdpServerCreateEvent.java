@@ -8,10 +8,10 @@ import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.socket.UdpServer;
 
 /**
- * This event is fired once the udp server is created, but not started yet
- * <br/>
- * You can replace a server with yours
- * Default server is a netty udp server
+ * This event is fired when the UDP server is created but has not started yet.
+ * <p>
+ * You can replace the default server with your custom implementation.
+ * The default server implementation is netty.
  */
 @AllArgsConstructor
 public class UdpServerCreateEvent implements Event {

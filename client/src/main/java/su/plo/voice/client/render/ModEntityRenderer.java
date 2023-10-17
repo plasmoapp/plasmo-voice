@@ -29,7 +29,7 @@ public final class ModEntityRenderer extends ModRenderer {
             return;
         }
 
-        voiceClient.getEventBus().call(new EntityRenderEvent(
+        voiceClient.getEventBus().fire(new EntityRenderEvent(
                 new UMatrixStack(poseStack),
                 new ModCamera(camera.getPosition(), camera.getXRot(), camera.getYRot()),
                 entity,
@@ -49,7 +49,7 @@ public final class ModEntityRenderer extends ModRenderer {
             isFakePlayer = !Minecraft.getInstance().getConnection().getOnlinePlayerIds().contains(player.getUUID());
         }
 
-        voiceClient.getEventBus().call(new PlayerRenderEvent(
+        voiceClient.getEventBus().fire(new PlayerRenderEvent(
                 new UMatrixStack(poseStack),
                 new ModCamera(camera.getPosition(), camera.getXRot(), camera.getYRot()),
                 player,

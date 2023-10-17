@@ -1,5 +1,8 @@
 package su.plo.voice.api.client.config.overlay
 
+/**
+ * State of the overlay source.
+ */
 enum class OverlaySourceState {
 
     OFF,

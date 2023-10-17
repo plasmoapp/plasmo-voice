@@ -2,44 +2,51 @@ package su.plo.voice.api.client.audio.device;
 
 import org.jetbrains.annotations.NotNull;
 
-// todo: doc
+/**
+ * Represents an audio input device used for capturing audio data.
+ */
 public interface InputDevice extends AudioDevice {
 
     /**
-     * Start the device
+     * Starts the audio input device.
      */
     void start();
 
     /**
-     * Stop the device
+     * Stops the audio input device.
      */
     void stop();
 
     /**
-     * @return available samples
+     * Retrieves the number of available audio samples that can be read from the input device.
+     *
+     * @return The count of available audio samples.
      */
     int available();
 
     /**
-     * @return true if device was started
+     * Checks if the input device has been started.
+     *
+     * @return {@code true} if the device is started, {@code false} otherwise.
      */
     boolean isStarted();
 
     /**
-     * Read samples with the capacity of bufferSize
+     * Reads audio samples from the input device with the specified buffer size.
+     * The buffer size determines the number of audio samples to read.
      *
-     * @param bufferSize the frame size
-     * @return samples or null if bufferSize is greater than available samples
+     * @param bufferSize The size of the buffer (frame size) for reading samples.
+     * @return An array of audio samples read from the device, or {@code null} if the buffer size exceeds available samples.
      */
     short[] read(int bufferSize);
 
     /**
-     * Read samples with the capacity of bufferSize calculated from AudioFormat
+     * Reads audio samples from the input device using the buffer size calculated from the AudioFormat.
      *
-     * @return samples or null if bufferSize is greater than available samples
+     * @return An array of audio samples read from the device, or {@code null} if the buffer size exceeds available samples.
      */
     default short[] read() {
-        return read(getBufferSize());
+        return read(getFrameSize());
     }
 
     @Override

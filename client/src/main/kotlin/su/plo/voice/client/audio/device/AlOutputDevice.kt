@@ -17,13 +17,14 @@ import su.plo.lib.mod.extensions.eyePosition
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.*
 import su.plo.voice.api.client.audio.device.source.AlSource
+import su.plo.voice.api.client.audio.device.source.AlSourceParams
+import su.plo.voice.api.client.audio.device.source.DeviceSourceParams
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent
 import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
-import su.plo.voice.api.util.Params
 import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.source.StreamAlSource.Companion.create
 import java.nio.Buffer
@@ -39,7 +40,7 @@ class AlOutputDevice
     format: AudioFormat
 ) :
     BaseAudioDevice(voiceClient, name, format),
-    AlAudioDevice,
+    su.plo.voice.api.client.audio.device.AlContextAudioDevice,
     HrtfAudioDevice,
     OutputDevice<AlSource> {
 
@@ -104,17 +105,12 @@ class AlOutputDevice
     }
 
     @Throws(DeviceException::class)
-    override fun createSource(stereo: Boolean, params: Params): AlSource {
+    override fun createSource(stereo: Boolean, params: DeviceSourceParams): AlSource {
         Preconditions.checkNotNull(params, "params cannot be null")
         if (!isOpen()) throw DeviceException("Device is not open")
 
-        var numBuffers = 0
-        if (params.containsKey("numBuffers")) {
-            numBuffers = try {
-                params.get("numBuffers")
-            } catch (e: IllegalArgumentException) {
-                throw DeviceException(e)
-            }
+        val numBuffers = (params as? AlSourceParams)?.numBuffers ?: 0
+        if (numBuffers > 0) {
             if (numBuffers < 4) {
                 throw DeviceException("Min number of buffers is 4")
             } else if (numBuffers > 64) {
@@ -189,7 +185,7 @@ class AlOutputDevice
         if (isOpen()) throw DeviceException("Device is already open")
 
         DevicePreOpenEvent(this@AlOutputDevice).also {
-            if (!voiceClient.eventBus.call(it)) throw DeviceException("Device opening has been canceled")
+            if (!voiceClient.eventBus.fire(it)) throw DeviceException("Device opening has been canceled")
         }
 
         devicePointer = openDevice(name)
@@ -234,7 +230,7 @@ class AlOutputDevice
         )
         listener.start()
 
-        voiceClient.eventBus.call(DeviceOpenEvent(this@AlOutputDevice))
+        voiceClient.eventBus.fire(DeviceOpenEvent(this@AlOutputDevice))
     }
 
     private suspend fun closeSync() {
@@ -254,7 +250,7 @@ class AlOutputDevice
         devicePointer = 0L
 
         LOGGER.info("Device $name closed")
-        voiceClient.eventBus.call(DeviceClosedEvent(this@AlOutputDevice))
+        voiceClient.eventBus.fire(DeviceClosedEvent(this@AlOutputDevice))
     }
 
     @Throws(DeviceException::class)

@@ -1,19 +1,19 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableSet;
+import net.minecraft.util.Mth;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UKeyboard;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.MathLib;
-import su.plo.lib.api.chat.MinecraftTextComponent;
-import su.plo.lib.api.chat.MinecraftTextStyle;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.language.LanguageUtil;
 import su.plo.lib.mod.client.render.RenderUtil;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
-import su.plo.voice.client.config.keybind.KeyBindingConfigEntry;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
+import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 
 import java.util.*;
@@ -22,16 +22,16 @@ import java.util.stream.Collectors;
 public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     private final AbstractHotKeysTabWidget parent;
-    private final KeyBindingConfigEntry entry;
-    private final List<KeyBinding.Key> pressedKeys = new ArrayList<>();
+    private final HotkeyConfigEntry entry;
+    private final List<Hotkey.Key> pressedKeys = new ArrayList<>();
 
     public HotKeyWidget(@NotNull AbstractHotKeysTabWidget parent,
-                        @NotNull KeyBindingConfigEntry entry,
+                        @NotNull HotkeyConfigEntry entry,
                         int x,
                         int y,
                         int width,
                         int height) {
-        super(x, y, width, height, MinecraftTextComponent.empty(), NO_ACTION, NO_TOOLTIP);
+        super(x, y, width, height, McTextComponent.empty(), NO_ACTION, NO_TOOLTIP);
 
         this.parent = parent;
         this.entry = entry;
@@ -41,17 +41,17 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     @Override
     public void updateValue() {
-        MinecraftTextComponent text = MinecraftTextComponent.literal("");
+        McTextComponent text = McTextComponent.literal("");
         if (entry.value().getKeys().size() == 0) {
-            text.append(MinecraftTextComponent.translatable("gui.none"));
+            text.append(McTextComponent.translatable("gui.none"));
         } else {
             formatKeys(text, entry.value().getKeys());
         }
 
         if (isActive()) {
             if (pressedKeys.size() > 0) {
-                text = MinecraftTextComponent.literal("");
-                List<KeyBinding.Key> sorted = pressedKeys.stream()
+                text = McTextComponent.literal("");
+                List<Hotkey.Key> sorted = pressedKeys.stream()
                         .sorted(Comparator.comparingInt(key -> key.getType().ordinal()))
                         .collect(Collectors.toList());
 
@@ -59,9 +59,9 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
             }
 
             setText(
-                    MinecraftTextComponent.literal("> ").withStyle(MinecraftTextStyle.YELLOW)
-                            .append(text.withStyle(MinecraftTextStyle.YELLOW))
-                            .append(MinecraftTextComponent.literal(" <").withStyle(MinecraftTextStyle.YELLOW))
+                    McTextComponent.literal("> ").withStyle(McTextStyle.YELLOW)
+                            .append(text.withStyle(McTextStyle.YELLOW))
+                            .append(McTextComponent.literal(" <").withStyle(McTextStyle.YELLOW))
             );
         } else {
             setText(text);
@@ -72,7 +72,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (isActive()
                 && !(button == 0 && pressedKeys.size() == 0) // GLFW_MOUSE_BUTTON_1
-                && pressedKeys.stream().anyMatch(key -> key.getType() == KeyBinding.Type.MOUSE && key.getCode() == button)
+                && pressedKeys.stream().anyMatch(key -> key.getType() == Hotkey.Type.MOUSE && key.getCode() == button)
         ) {
             keysReleased();
             updateValue();
@@ -86,7 +86,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (isActive()) {
             if (pressedKeys.size() < 3) {
-                pressedKeys.add(KeyBinding.Type.MOUSE.getOrCreate(button));
+                pressedKeys.add(Hotkey.Type.MOUSE.getOrCreate(button));
             }
             updateValue();
             return true;
@@ -113,7 +113,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
                 return true;
             }
 
-            KeyBinding.Key key = KeyBinding.Type.KEYSYM.getOrCreate(keyCode);
+            Hotkey.Key key = Hotkey.Type.KEYSYM.getOrCreate(keyCode);
             if (pressedKeys.size() < 3 && !pressedKeys.contains(key)) {
                 pressedKeys.add(key);
             }
@@ -127,7 +127,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     @Override
     public boolean keyReleased(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
         if (isActive()
-                && pressedKeys.stream().anyMatch(key -> key.getType() == KeyBinding.Type.KEYSYM && key.getCode() == keyCode)
+                && pressedKeys.stream().anyMatch(key -> key.getType() == Hotkey.Type.KEYSYM && key.getCode() == keyCode)
         ) {
             keysReleased();
             updateValue();
@@ -147,7 +147,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
                     getText(),
                     x + width / 2,
                     y + height / 2 - UGraphics.getFontHeight() / 2,
-                    j | MathLib.ceil(alpha * 255.0F) << 24
+                    j | Mth.ceil(alpha * 255.0F) << 24
             );
         } else {
             RenderUtil.drawCenteredOrderedString(
@@ -156,7 +156,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
                     width - 16,
                     x + width / 2,
                     y + height / 2 - UGraphics.getFontHeight() / 2,
-                    j | MathLib.ceil(alpha * 255.0F) << 24
+                    j | Mth.ceil(alpha * 255.0F) << 24
             );
         }
     }
@@ -184,12 +184,12 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
         parent.setFocusedHotKey(null);
     }
 
-    private void formatKeys(MinecraftTextComponent text, Collection<KeyBinding.Key> keys) {
-        for (KeyBinding.Key key : keys) {
+    private void formatKeys(McTextComponent text, Collection<Hotkey.Key> keys) {
+        for (Hotkey.Key key : keys) {
             text.append(LanguageUtil.getKeyDisplayName(key));
-            text.append(MinecraftTextComponent.literal(" + "));
+            text.append(McTextComponent.literal(" + "));
         }
 
-        text.siblings().remove(text.siblings().size() - 1);
+        text.getSiblings().remove(text.getSiblings().size() - 1);
     }
 }

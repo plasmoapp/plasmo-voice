@@ -8,7 +8,7 @@ import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.proto.packets.Packet;
 
 /**
- * This event is fired when the tcp {@link Packet} is about to send to source listeners
+ * This event is fired when the tcp {@link Packet} is about to send to the players.
  */
 public final class ServerSourcePacketEvent extends EventCancellableBase {
 

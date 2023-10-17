@@ -2,10 +2,10 @@ package su.plo.voice.proxy.server;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.proxy.connection.MinecraftProxyServerConnection;
-import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
-import su.plo.lib.api.proxy.server.MinecraftProxyServerInfo;
-import su.plo.lib.api.server.event.player.PlayerQuitEvent;
+import su.plo.slib.api.event.player.McPlayerQuitEvent;
+import su.plo.slib.api.proxy.connection.McProxyServerConnection;
+import su.plo.slib.api.proxy.player.McProxyPlayer;
+import su.plo.slib.api.proxy.server.McProxyServerInfo;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
@@ -25,12 +25,12 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
     public VoiceRemoteServerManager(@NotNull BaseVoiceProxy voiceProxy) {
         this.voiceProxy = voiceProxy;
 
-        PlayerQuitEvent.INSTANCE.registerListener(player -> {
-            MinecraftProxyPlayer proxyPlayer = (MinecraftProxyPlayer) player;
-            Optional<MinecraftProxyServerConnection> playerServer = proxyPlayer.getServer();
+        McPlayerQuitEvent.INSTANCE.registerListener(player -> {
+            McProxyPlayer proxyPlayer = (McProxyPlayer) player;
+            McProxyServerConnection playerServer = proxyPlayer.getServer();
 
-            if (playerServer.isPresent()) {
-                resetServerAesState(playerServer.get().getServerInfo());
+            if (playerServer != null) {
+                resetServerAesState(playerServer.getServerInfo());
                 return;
             }
 
@@ -41,8 +41,7 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
     @Override
     public Optional<RemoteServer> getServer(@NotNull String name) {
         if (!servers.containsKey(name)) {
-            return voiceProxy.getMinecraftServer()
-                    .getServerByName(name)
+            return Optional.ofNullable(voiceProxy.getMinecraftServer().getServerInfoByName(name))
                     // only InetSocketAddress is supported
                     .filter(serverInfo -> serverInfo.getAddress() instanceof InetSocketAddress)
                     .map(this::registerByServerInfo);
@@ -71,7 +70,7 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
         servers.clear();
     }
 
-    private void resetServerAesState(@NotNull MinecraftProxyServerInfo server) {
+    private void resetServerAesState(@NotNull McProxyServerInfo server) {
         if (server.getPlayerCount() > 0) return;
         getServer(server.getName())
                 .filter(RemoteServer::isAesEncryptionKeySet)
@@ -81,14 +80,14 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
                 });
     }
 
-    private RemoteServer getByServerInfo(@NotNull MinecraftProxyServerInfo serverInfo) {
+    private RemoteServer getByServerInfo(@NotNull McProxyServerInfo serverInfo) {
         RemoteServer remoteServer = servers.get(serverInfo.getName());
         if (remoteServer != null) return remoteServer;
 
         return registerByServerInfo(serverInfo);
     }
 
-    private RemoteServer registerByServerInfo(@NotNull MinecraftProxyServerInfo serverInfo) {
+    private RemoteServer registerByServerInfo(@NotNull McProxyServerInfo serverInfo) {
         if (!(serverInfo.getAddress() instanceof InetSocketAddress))
             throw new IllegalArgumentException("only InetSocketAddress is supported");
 

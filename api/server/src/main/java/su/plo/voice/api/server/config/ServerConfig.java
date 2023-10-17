@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * Plasmo Voice Server config
+ * Server configuration for Plasmo Voice.
  */
 public interface ServerConfig {
 
@@ -17,7 +17,7 @@ public interface ServerConfig {
 
     boolean debug();
 
-    boolean disableCrowdin();
+    boolean useCrowdinTranslations();
 
     boolean checkForUpdates();
 

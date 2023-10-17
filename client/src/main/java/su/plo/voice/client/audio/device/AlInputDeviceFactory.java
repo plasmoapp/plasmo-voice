@@ -9,7 +9,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
-import su.plo.voice.api.util.Params;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.List;
@@ -25,25 +24,25 @@ public final class AlInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
+    public @NotNull AudioDevice openDevice(@NotNull AudioFormat format, @Nullable String deviceName) throws DeviceException {
         checkNotNull(format, "format cannot be null");
 
         return new AlInputDevice(client, deviceName, format);
     }
 
     @Override
-    public String getDefaultDeviceName() {
+    public @NotNull String getDefaultDeviceName() {
         return ALC11.alcGetString(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
     }
 
     @Override
-    public ImmutableList<String> getDeviceNames() {
+    public @NotNull ImmutableList<String> getDeviceNames() {
         List<String> devices = ALUtil.getStringList(0L, ALC11.ALC_CAPTURE_DEVICE_SPECIFIER);
         return devices == null ? ImmutableList.of() : ImmutableList.copyOf(devices);
     }
 
     @Override
-    public String getType() {
+    public @NotNull String getType() {
         return "AL_INPUT";
     }
 }

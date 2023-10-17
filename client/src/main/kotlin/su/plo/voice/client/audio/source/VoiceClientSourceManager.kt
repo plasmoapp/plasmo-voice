@@ -84,7 +84,7 @@ class VoiceClientSourceManager(
     override fun getSelfSourceInfo(sourceId: UUID): Optional<ClientSelfSourceInfo> =
         Optional.ofNullable(selfSourceInfoById[sourceId])
 
-    override fun getSelfSourceInfos(): Collection<ClientSelfSourceInfo> =
+    override fun getAllSelfSourceInfos(): Collection<ClientSelfSourceInfo> =
         selfSourceInfoById.values
 
     override fun clear() {
@@ -97,7 +97,7 @@ class VoiceClientSourceManager(
     }
 
     // todo: refactor somehow pepega
-    override fun update(sourceInfo: SourceInfo): Unit = runBlocking {
+    override fun createOrUpdateSource(sourceInfo: SourceInfo): Unit = runBlocking {
         try {
             if (sourceById.containsKey(sourceInfo.id)) {
                 val source = sourceById[sourceInfo.id]!!
@@ -110,24 +110,7 @@ class VoiceClientSourceManager(
                     sourcesByLineId.put(sourceInfo.lineId, source)
                 }
 
-                if (source.sourceInfo.javaClass != sourceInfo.javaClass)
-                    return@runBlocking
-
-                when (sourceInfo) {
-                    is StaticSourceInfo ->
-                        (source as ClientAudioSource<StaticSourceInfo>).update(sourceInfo)
-
-                    is PlayerSourceInfo ->
-                        (source as ClientAudioSource<PlayerSourceInfo>).update(sourceInfo)
-
-                    is EntitySourceInfo ->
-                        (source as ClientAudioSource<EntitySourceInfo>).update(sourceInfo)
-
-                    is DirectSourceInfo ->
-                        (source as ClientAudioSource<DirectSourceInfo>).update(sourceInfo)
-
-                    else -> throw IllegalArgumentException("Invalid source type")
-                }
+                source.updateUnchecked(sourceInfo)
                 return@runBlocking
             }
 
@@ -184,7 +167,7 @@ class VoiceClientSourceManager(
         }.selfSourceInfo = selfSourceInfo
 
         if (getSourceById(selfSourceInfo.sourceInfo.id, false).isPresent) {
-            update(selfSourceInfo.sourceInfo)
+            createOrUpdateSource(selfSourceInfo.sourceInfo)
         }
     }
 

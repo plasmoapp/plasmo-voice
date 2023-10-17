@@ -9,7 +9,7 @@ import java.nio.ByteBuffer;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the buffer has been queued to the source
+ * This event is fired once the byte buffer has been queued to the AL source.
  */
 public final class AlSourceBufferQueuedEvent extends AlSourceEvent {
 

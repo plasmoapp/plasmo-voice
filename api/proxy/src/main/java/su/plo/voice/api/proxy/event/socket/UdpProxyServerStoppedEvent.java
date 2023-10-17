@@ -7,7 +7,7 @@ import su.plo.voice.api.event.Event;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
 
 /**
- * This event is fired once the udp server is stopped
+ * This event is fired once the UDP proxy server is stopped.
  */
 @RequiredArgsConstructor
 public final class UdpProxyServerStoppedEvent implements Event {

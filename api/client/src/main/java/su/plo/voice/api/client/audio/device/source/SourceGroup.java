@@ -2,16 +2,32 @@ package su.plo.voice.api.client.audio.device.source;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.client.audio.device.DeviceException;
-import su.plo.voice.api.util.Params;
 
 import java.util.Collection;
 
-// todo: doc
+/**
+ * {@link SourceGroup} is responsible for creating audio sources for all opened output devices.
+ */
 public interface SourceGroup {
 
-    void create(boolean stereo, @NotNull Params params) throws DeviceException;
+    /**
+     * Creates audio sources for the opened output devices.
+     *
+     * @param stereo Indicates whether stereo sources should be created.
+     * @param params Additional parameters for source creation.
+     * @throws DeviceException If there is an issue with device-related operations.
+     */
+    void create(boolean stereo, @NotNull DeviceSourceParams params) throws DeviceException;
 
+    /**
+     * Closes and clears all existing audio sources in the group.
+     */
     void clear();
 
+    /**
+     * Retrieves a collection of audio sources created within the group.
+     *
+     * @return A collection of audio sources.
+     */
     Collection<DeviceSource> getSources();
 }

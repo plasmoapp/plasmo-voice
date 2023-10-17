@@ -2,25 +2,26 @@ package su.plo.voice.server.command;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.entity.MinecraftPlayerEntity;
-import su.plo.lib.api.server.MinecraftServerLib;
-import su.plo.lib.api.server.command.MinecraftCommandSource;
-import su.plo.lib.api.server.entity.MinecraftServerPlayerEntity;
+import su.plo.slib.api.command.McCommandSource;
+import su.plo.slib.api.server.McServerLib;
+import su.plo.slib.api.server.entity.player.McServerPlayer;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public final class Suggestions {
 
-    public static List<String> players(@NotNull MinecraftServerLib minecraftServer,
-                                       @Nullable MinecraftCommandSource source,
-                                       @NotNull String argument) {
+    public static List<String> players(
+            @NotNull McServerLib minecraftServer,
+            @Nullable McCommandSource source,
+            @NotNull String argument
+    ) {
         return minecraftServer.getPlayers()
                 .stream()
                 .filter(player -> source != null
-                        && (!(source instanceof MinecraftServerPlayerEntity) || ((MinecraftServerPlayerEntity) source).canSee(player))
+                        && (!(source instanceof McServerPlayer) || ((McServerPlayer) source).canSee(player))
                         && player.getName().regionMatches(true, 0, argument, 0, argument.length()))
-                .map(MinecraftPlayerEntity::getName)
+                .map(McServerPlayer::getName)
                 .collect(Collectors.toList());
     }
 

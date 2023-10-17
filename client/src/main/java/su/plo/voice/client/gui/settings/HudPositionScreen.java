@@ -1,12 +1,12 @@
 package su.plo.voice.client.gui.settings;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UKeyboard;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
@@ -19,11 +19,13 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
 
     protected final VoiceSettingsScreen parent;
     protected final EnumConfigEntry<E> entry;
-    protected final MinecraftTextComponent chooseText;
+    protected final McTextComponent chooseText;
 
-    public HudPositionScreen(@NotNull VoiceSettingsScreen parent,
-                             @NotNull EnumConfigEntry<E> entry,
-                             @NotNull MinecraftTextComponent chooseText) {
+    public HudPositionScreen(
+            @NotNull VoiceSettingsScreen parent,
+            @NotNull EnumConfigEntry<E> entry,
+            @NotNull McTextComponent chooseText
+    ) {
         this.parent = parent;
         this.entry = entry;
         this.chooseText = chooseText;

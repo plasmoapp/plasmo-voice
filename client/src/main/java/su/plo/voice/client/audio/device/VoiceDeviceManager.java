@@ -14,7 +14,6 @@ import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.api.client.connection.ServerInfo;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.client.audio.device.source.VoiceOutputSourceGroup;
 import su.plo.voice.client.audio.filter.GainFilter;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
@@ -134,18 +133,18 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     @Override
-    public SourceGroup createSourceGroup(@Nullable DeviceType type) {
+    public @NotNull SourceGroup createSourceGroup(@Nullable DeviceType type) {
         if (type == DeviceType.OUTPUT) return new VoiceOutputSourceGroup(this);
         throw new IllegalArgumentException(type + " not supported");
     }
 
     @Override
-    public InputDevice openInputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception {
+    public @NotNull InputDevice openInputDevice(@Nullable AudioFormat format) throws DeviceException {
         if (format == null) {
             if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
 
             ServerInfo serverInfo = voiceClient.getServerInfo().get();
-            format = serverInfo.getVoiceInfo().getFormat(
+            format = serverInfo.getVoiceInfo().createFormat(
                     config.getVoice().getStereoCapture().value()
             );
         }
@@ -172,7 +171,7 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     @Override
-    public OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format, @NotNull Params params) throws Exception {
+    public @NotNull OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format) throws DeviceException {
         DeviceFactory deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_OUTPUT")
                 .orElseThrow(() -> new DeviceException("OpenAL output device factory is not initialized"));
 
@@ -180,7 +179,7 @@ public final class VoiceDeviceManager implements DeviceManager {
             if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
 
             ServerInfo serverInfo = voiceClient.getServerInfo().get();
-            format = serverInfo.getVoiceInfo().getFormat(false);
+            format = serverInfo.getVoiceInfo().createFormat(false);
         }
 
         String deviceName = getDeviceName(deviceFactory, config.getVoice().getOutputDevice());
@@ -236,7 +235,7 @@ public final class VoiceDeviceManager implements DeviceManager {
         if (outputDevices.isEmpty()) {
             if (outputFactory.getDeviceNames().size() > 0) {
                 try {
-                    add(voiceClient.getDeviceManager().openOutputDevice(null, Params.EMPTY));
+                    add(openOutputDevice(null));
                 } catch (Exception e) {
                     LOGGER.error("Failed to open primary OpenAL output device", e);
                 }
@@ -259,7 +258,7 @@ public final class VoiceDeviceManager implements DeviceManager {
         if (inputDevices.isEmpty()) {
             if (inputFactory.getDeviceNames().size() > 0) {
                 try {
-                    replace(null, voiceClient.getDeviceManager().openInputDevice(null, Params.EMPTY));
+                    replace(null, openInputDevice(null));
                 } catch (Exception e) {
                     LOGGER.error("Failed to open input device", e);
                 }
@@ -290,7 +289,7 @@ public final class VoiceDeviceManager implements DeviceManager {
         );
     }
 
-    private InputDevice openJavaxInputDevice(@NotNull AudioFormat format) throws Exception {
+    private InputDevice openJavaxInputDevice(@NotNull AudioFormat format) throws DeviceException {
         DeviceFactory deviceFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("JAVAX_INPUT")
                 .orElseThrow(() -> new IllegalStateException("Javax input factory is not registered"));
 

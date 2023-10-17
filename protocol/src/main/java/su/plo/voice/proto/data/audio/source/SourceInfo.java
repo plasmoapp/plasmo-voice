@@ -13,6 +13,7 @@ import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -22,24 +23,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class SourceInfo implements PacketSerializable {
 
     public static SourceInfo of(ByteArrayDataInput in) throws IOException {
-        SourceInfo sourceInfo = null;
-        switch (Type.valueOf(in.readUTF())) {
-            case PLAYER:
-                sourceInfo = new PlayerSourceInfo();
-                break;
-            case ENTITY:
-                sourceInfo = new EntitySourceInfo();
-                break;
-            case STATIC:
-                sourceInfo = new StaticSourceInfo();
-                break;
-            case DIRECT:
-                sourceInfo = new DirectSourceInfo();
-                break;
-        }
-
-        if (sourceInfo == null) throw new IllegalArgumentException("Invalid source type");
-
+        Type type = Type.valueOf(in.readUTF());
+        SourceInfo sourceInfo = type.createSourceInfo();
         sourceInfo.deserialize(in);
         return sourceInfo;
     }
@@ -99,9 +84,19 @@ public abstract class SourceInfo implements PacketSerializable {
     public abstract Type getType();
 
     public enum Type {
-        PLAYER,
-        ENTITY,
-        STATIC,
-        DIRECT
+        PLAYER(PlayerSourceInfo::new),
+        ENTITY(EntitySourceInfo::new),
+        STATIC(StaticSourceInfo::new),
+        DIRECT(DirectSourceInfo::new);
+
+        private final Supplier<SourceInfo> sourceInfoSupplier;
+
+        Type(Supplier<SourceInfo> sourceInfoSupplier) {
+            this.sourceInfoSupplier = sourceInfoSupplier;
+        }
+
+        public SourceInfo createSourceInfo() {
+            return sourceInfoSupplier.get();
+        }
     }
 }

@@ -2,6 +2,7 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import su.plo.voice.api.client.audio.device.source.AlSourceParams;
 import su.plo.voice.universal.UMinecraft;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.local.LocalAddress;
@@ -30,7 +31,6 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.event.EventSubscribe;
-import su.plo.voice.api.util.Params;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.language.LanguageChangedEvent;
@@ -136,7 +136,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
     }
 
     @Override
-    public Optional<VoicePlayerInfo> getClientPlayer() {
+    public Optional<VoicePlayerInfo> getLocalPlayer() {
         return Optional.ofNullable(UMinecraft.getPlayer())
                 .flatMap(player -> getPlayerById(player.getUUID()));
     }
@@ -180,14 +180,14 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         KeyPair pair = generator.generateKeyPair();
 
         ConnectionKeyPairGenerateEvent event = new ConnectionKeyPairGenerateEvent(pair);
-        voiceClient.getEventBus().call(event);
+        voiceClient.getEventBus().fire(event);
 
         this.keyPair = event.getKeyPair();
     }
 
     public void handle(Packet<PacketHandler> packet) {
         TcpClientPacketReceivedEvent event = new TcpClientPacketReceivedEvent(this, packet);
-        voiceClient.getEventBus().call(event);
+        voiceClient.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         try {
@@ -205,7 +205,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         UdpClient client = new NettyUdpClient(voiceClient, config, packet.getSecret());
 
         UdpClientConnectEvent connectEvent = new UdpClientConnectEvent(client, packet);
-        voiceClient.getEventBus().call(connectEvent);
+        voiceClient.getEventBus().fire(connectEvent);
         if (connectEvent.isCancelled()) return;
 
         client = connectEvent.getClient();
@@ -298,7 +298,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         );
 
         try {
-            OutputDevice<AlSource> outputDevice = voiceClient.getDeviceManager().openOutputDevice(format, Params.EMPTY);
+            OutputDevice<AlSource> outputDevice = voiceClient.getDeviceManager().openOutputDevice(format);
             voiceClient.getDeviceManager().add(outputDevice);
         } catch (Exception e) {
             LOGGER.error("Failed to open primary OpenAL output device", e);
@@ -307,7 +307,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         voiceClient.getDeviceManager().startJob();
 
         ServerInfoInitializedEvent event = new ServerInfoInitializedEvent(serverInfo, packet);
-        voiceClient.getEventBus().call(event);
+        voiceClient.getEventBus().fire(event);
 
         // request language
         sendPacket(new LanguageRequestPacket(UMinecraft.getSettings().languageCode));
@@ -347,9 +347,9 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
     @Override
     public void handle(@NotNull PlayerInfoUpdatePacket packet) {
         if (playerById.put(packet.getPlayerInfo().getPlayerId(), packet.getPlayerInfo()) == null) {
-            voiceClient.getEventBus().call(new VoicePlayerConnectedEvent(packet.getPlayerInfo()));
+            voiceClient.getEventBus().fire(new VoicePlayerConnectedEvent(packet.getPlayerInfo()));
         } else {
-            voiceClient.getEventBus().call(new VoicePlayerUpdateEvent(packet.getPlayerInfo()));
+            voiceClient.getEventBus().fire(new VoicePlayerUpdateEvent(packet.getPlayerInfo()));
         }
     }
 
@@ -364,7 +364,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         }
 
         playerById.remove(packet.getPlayerId());
-        voiceClient.getEventBus().call(new VoicePlayerDisconnectedEvent(packet.getPlayerId()));
+        voiceClient.getEventBus().fire(new VoicePlayerDisconnectedEvent(packet.getPlayerId()));
     }
 
     @Override
@@ -384,7 +384,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
             playerById.put(sourceInfo.getPlayerInfo().getPlayerId(), sourceInfo.getPlayerInfo());
         }
 
-        sources.update(packet.getSourceInfo());
+        sources.createOrUpdateSource(packet.getSourceInfo());
     }
 
     @Override

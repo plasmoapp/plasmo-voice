@@ -1,64 +1,61 @@
 package su.plo.voice.api.server;
 
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.server.MinecraftCommonServerLib;
+import su.plo.slib.api.McLib;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
+import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLineManager;
-import su.plo.voice.api.server.config.ServerLanguages;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayerManager;
 
 /**
- * Server common Plasmo Voice API
- * <br/>
- * Base interface for proxy and server
+ * Represents a base API for proxy and server.
  */
 public interface PlasmoBaseVoiceServer extends PlasmoVoice {
 
     /**
-     * Gets the {@link MinecraftCommonServerLib}
+     * Gets the {@link McLib}.
      *
-     * @return {@link MinecraftCommonServerLib}
+     * @return The {@link McLib}.
      */
-    @NotNull MinecraftCommonServerLib getMinecraftServer();
+    @NotNull McLib getMinecraftServer();
 
     /**
-     * Gets the {@link VoicePlayerManager}
-     * <p>
-     * This manager can be used to get voice players
+     * Gets the {@link VoicePlayerManager}.
      *
-     * @return {@link VoicePlayerManager}
+     * <p>
+     *     This manager can be used to get voice players.
+     * </p>
+     *
+     * @return The {@link VoicePlayerManager}.
      */
     @NotNull VoicePlayerManager<?> getPlayerManager();
 
     /**
-     * Gets the {@link UdpConnectionManager}
-     * <p>
-     * This manager can be used to broadcast or manage udp connections
+     * Gets the {@link UdpConnectionManager}.
      *
-     * @return {@link UdpConnectionManager}
+     * @return The {@link UdpConnectionManager}.
      */
     @NotNull UdpConnectionManager<?, ?> getUdpConnectionManager();
 
     /**
-     * Gets the {@link BaseServerSourceLineManager}
+     * Gets the {@link BaseServerSourceLineManager}.
      *
-     * @return {@link BaseServerSourceLineManager}
+     * <p>
+     *     Source lines are used to create audio sources.
+     *     To create audio source, you need to create source line using {@link BaseServerSourceLineManager#createBuilder}
+     *     and then you can create audio sources using your {@link BaseServerSourceLine}.
+     * </p>
+     *
+     * @return {@link BaseServerSourceLineManager}.
      */
     @NotNull BaseServerSourceLineManager<?> getSourceLineManager();
 
     /**
-     * Gets the {@link ServerActivationManager}
+     * Gets the {@link ServerActivationManager}.
      *
-     * @return {@link ServerActivationManager}
+     * @return The {@link ServerActivationManager}.
      */
     @NotNull ServerActivationManager getActivationManager();
-
-    /**
-     * Get the {@link ServerLanguages}
-     *
-     * @return {@link ServerLanguages}
-     */
-    @NotNull ServerLanguages getLanguages();
 }

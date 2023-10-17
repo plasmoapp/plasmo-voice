@@ -9,7 +9,7 @@ import su.plo.voice.client.event.render.HudRenderEvent;
 //#if MC>=12000
 //$$ import net.minecraft.client.gui.GuiGraphics;
 //#else
-import com.mojang.blaze3d.vertex.PoseStack;
+
 //#endif
 
 public final class ModHudRenderer extends ModRenderer {
@@ -20,11 +20,11 @@ public final class ModHudRenderer extends ModRenderer {
 
     //#if MC>=12000
     //$$ public void render(@NotNull GuiGraphics graphics, float delta) {
-    //$$     voiceClient.getEventBus().call(new HudRenderEvent(new UMatrixStack(graphics.pose()), delta));
+    //$$     voiceClient.getEventBus().fire(new HudRenderEvent(new UMatrixStack(graphics.pose()), delta));
     //$$ }
     //#else
     public void render(@NotNull PoseStack poseStack, float delta) {
-        voiceClient.getEventBus().call(new HudRenderEvent(new UMatrixStack(poseStack), delta));
+        voiceClient.getEventBus().fire(new HudRenderEvent(new UMatrixStack(poseStack), delta));
     }
     //#endif
 }

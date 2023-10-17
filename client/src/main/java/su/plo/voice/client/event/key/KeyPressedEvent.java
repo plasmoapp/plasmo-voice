@@ -2,7 +2,7 @@ package su.plo.voice.client.event.key;
 
 import lombok.Getter;
 import lombok.NonNull;
-import su.plo.voice.api.client.config.keybind.KeyBinding;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.api.event.Event;
 
 /**
@@ -11,12 +11,12 @@ import su.plo.voice.api.event.Event;
 public final class KeyPressedEvent implements Event {
 
     @Getter
-    private final KeyBinding.Key key;
+    private final Hotkey.Key key;
     @Getter
-    private final KeyBinding.Action action;
+    private final Hotkey.Action action;
 
-    public KeyPressedEvent(@NonNull KeyBinding.Key key,
-                           @NonNull KeyBinding.Action action) {
+    public KeyPressedEvent(@NonNull Hotkey.Key key,
+                           @NonNull Hotkey.Action action) {
         this.key = key;
         this.action = action;
     }

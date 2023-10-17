@@ -10,8 +10,7 @@ import su.plo.voice.proto.packets.Packet;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the {@link UdpClient}
- * is about to send packet to UDP server
+ * This event is fired when the {@link UdpClient} is about to send a packet to the UDP server.
  */
 public final class UdpClientPacketSendEvent extends EventCancellableBase {
 

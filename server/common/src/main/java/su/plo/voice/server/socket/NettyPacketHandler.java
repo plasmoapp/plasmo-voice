@@ -6,7 +6,6 @@ import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
-import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.socket.NettyPacketUdp;
@@ -58,9 +57,9 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
         voiceServer.getUdpConnectionManager().addConnection(connection);
 
-        voiceServer.getTcpConnectionManager().sendConfigInfo(player.get());
-        voiceServer.getTcpConnectionManager().sendPlayerList(player.get());
+        voiceServer.getTcpPacketManager().sendConfigInfo(player.get());
+        voiceServer.getTcpPacketManager().sendPlayerList(player.get());
 
-        voiceServer.getTcpConnectionManager().broadcastPlayerInfoUpdate(player.get());
+        voiceServer.getTcpPacketManager().broadcastPlayerInfoUpdate(player.get());
     }
 }

@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
-import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.DeviceType;
@@ -14,10 +14,10 @@ import java.util.List;
 
 public final class AdvancedTabWidget extends TabWidget {
 
-    private static final List<MinecraftTextComponent> ICONS_LIST = ImmutableList.of(
-            MinecraftTextComponent.translatable("gui.plasmovoice.advanced.show_icons.hud"),
-            MinecraftTextComponent.translatable("gui.plasmovoice.advanced.show_icons.always"),
-            MinecraftTextComponent.translatable("gui.plasmovoice.advanced.show_icons.hidden")
+    private static final List<McTextComponent> ICONS_LIST = ImmutableList.of(
+            McTextComponent.translatable("gui.plasmovoice.advanced.show_icons.hud"),
+            McTextComponent.translatable("gui.plasmovoice.advanced.show_icons.always"),
+            McTextComponent.translatable("gui.plasmovoice.advanced.show_icons.hidden")
     );
 
     private final DeviceManager devices;
@@ -34,41 +34,41 @@ public final class AdvancedTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.visual")));
+        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.visual")));
         addEntry(createToggleEntry(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance"),
                 null,
                 config.getAdvanced().getVisualizeVoiceDistance()
         ));
         addEntry(createToggleEntry(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance_on_join"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance_on_join"),
                 null,
                 config.getAdvanced().getVisualizeVoiceDistanceOnJoin()
         ));
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.audio_engine")));
+        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.audio_engine")));
         addEntry(createIntSliderWidget(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle"),
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle.tooltip"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle.tooltip"),
                 config.getAdvanced().getDirectionalSourcesAngle(),
                 ""
         ));
         addEntry(createStereoToMonoSources());
         addEntry(createPanning());
 
-        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")));
+        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")));
         addEntry(createToggleEntry(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.volume_slider"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.volume_slider"),
                 null,
                 config.getAdvanced().getExponentialVolumeSlider()
         ));
         addEntry(createToggleEntry(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.distance_gain"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.distance_gain"),
                 null,
                 config.getAdvanced().getExponentialDistanceGain()
         ));
 
-//        addEntry(new CategoryEntry(MinecraftTextComponent.translatable("gui.plasmovoice.advanced.compressor")));
+//        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.compressor")));
 //        addEntry(createIntSliderWidget(
 //                "gui.plasmovoice.advanced.compressor_threshold",
 //                "gui.plasmovoice.advanced.compressor_threshold.tooltip",
@@ -99,10 +99,10 @@ public final class AdvancedTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono"),
                 toggleButton,
                 config.getAdvanced().getStereoSourcesToMono(),
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
                 (button, element) -> onUpdate.run()
         );
     }
@@ -117,7 +117,7 @@ public final class AdvancedTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                MinecraftTextComponent.translatable("gui.plasmovoice.advanced.panning"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.panning"),
                 toggleButton,
                 config.getAdvanced().getPanning()
         );

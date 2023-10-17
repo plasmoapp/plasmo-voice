@@ -7,52 +7,60 @@ import javax.annotation.Nullable;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Manages voice players mutes.
+ */
 public interface MuteManager {
 
     /**
-     * Mute the player
+     * Mutes a player.
      *
-     * @param playerId     Player UUID
-     * @param mutedById    Player UUID of the player who mutes the player
-     * @param duration     Duration of the mute in durationTime
-     * @param durationUnit DurationUnit, can be null, if duration is 0
-     *                     mute will be permanent
-     * @param reason       Reason for the mute
-     * @param silent       If true, the player won't see the message about the mute
-     * @return {@link ServerMuteInfo} if player was muted successfully
+     * @param playerId     The UUID of the player to be muted.
+     * @param mutedById    The UUID of the player who mutes the target player.
+     * @param duration     The duration of the mute in durationTime.
+     * @param durationUnit The unit of duration (e.g., seconds, minutes, hours).
+     *                     If null and duration is 0, the mute will be permanent.
+     * @param reason       The reason for the mute.
+     * @param silent       If {@code true}, the player won't receive a notification about the mute.
+     * @return An {@link Optional} containing {@link ServerMuteInfo} if the player was muted successfully, or empty otherwise.
      */
-    Optional<ServerMuteInfo> mute(@NotNull UUID playerId,
-                                  @Nullable UUID mutedById,
-                                  long duration,
-                                  @Nullable MuteDurationUnit durationUnit,
-                                  @Nullable String reason,
-                                  boolean silent);
+    Optional<ServerMuteInfo> mute(
+            @NotNull UUID playerId,
+            @Nullable UUID mutedById,
+            long duration,
+            @Nullable MuteDurationUnit durationUnit,
+            @Nullable String reason,
+            boolean silent
+    );
 
     /**
-     * Unmute the player
+     * Unmutes a player.
      *
-     * @param playerId Player UUID
-     * @param silent   if true, player won't see the message that they are no longer muted
-     * @return {@link ServerMuteInfo} if player was muted and now is no longer muted
+     * @param playerId The UUID of the player to be unmuted.
+     * @param silent   If {@code true}, the player won't receive a notification about being unmuted.
+     * @return An {@link Optional} containing {@link ServerMuteInfo} if the player was previously muted and is now unmuted, or empty otherwise.
      */
     Optional<ServerMuteInfo> unmute(@NotNull UUID playerId, boolean silent);
 
     /**
-     * Gets the player mute info
+     * Gets the mute information for a player.
      *
-     * @param playerId Player UUID
-     *
-     * @return {@link ServerMuteInfo} is player is muted
+     * @param playerId The UUID of the player.
+     * @return An {@link Optional} containing {@link ServerMuteInfo} if the player is muted, or empty otherwise.
      */
     Optional<ServerMuteInfo> getMute(@NotNull UUID playerId);
 
     /**
-     * @return collection of the muted players
+     * Gets the mute storage implementation used for storing mute information.
+     *
+     * @return The {@link MuteStorage} used for storing mute information.
      */
     @NotNull MuteStorage getMuteStorage();
 
     /**
-     * Sets mute storage implementation
+     * Sets the mute storage implementation to be used for storing mute information.
+     *
+     * @param muteStorage The {@link MuteStorage} implementation to be set.
      */
     void setMuteStorage(@NotNull MuteStorage muteStorage);
 }

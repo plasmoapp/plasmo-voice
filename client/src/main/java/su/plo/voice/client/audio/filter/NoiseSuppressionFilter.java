@@ -3,17 +3,18 @@ package su.plo.voice.client.audio.filter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.BaseVoice;
+import su.plo.voice.api.client.audio.filter.AudioFilter;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.rnnoise.Denoiser;
 
-public final class NoiseSuppressionFilter extends LimiterFilter {
+public final class NoiseSuppressionFilter implements AudioFilter {
 
     private final ConfigEntry<Boolean> activeEntry;
-
-    private Denoiser instance;
+    private final ThreadLocal<Denoiser> instance = new ThreadLocal<>();
+    private final ThreadLocal<LimiterFilter> limiter;
 
     public NoiseSuppressionFilter(int sampleRate, @NotNull ConfigEntry<Boolean> activeEntry) {
-        super(sampleRate, -6.0F);
+        this.limiter = ThreadLocal.withInitial(() -> new LimiterFilter(sampleRate, -6.0F));
 
         this.activeEntry = activeEntry;
         if (activeEntry.value()) toggle(true);
@@ -24,14 +25,14 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
     private void toggle(boolean value) {
         if (value) {
             try {
-                instance = new Denoiser();
+                instance.set(new Denoiser());
             } catch (Exception e) {
                 BaseVoice.LOGGER.error("RNNoise is not available on this platform");
                 activeEntry.set(false);
             }
-        } else if (instance != null) {
-            instance.close();
-            instance = null;
+        } else if (instance.get() != null) {
+            instance.get().close();
+            instance.set(null);
         }
     }
 
@@ -42,10 +43,10 @@ public final class NoiseSuppressionFilter extends LimiterFilter {
 
     @Override
     public short[] process(short[] samples) {
-        super.process(samples);
+        limiter.get().process(samples);
 
         float[] floats = AudioUtil.shortsToFloats(samples);
-        samples = AudioUtil.floatsToShorts(instance.process(floats));
+        samples = AudioUtil.floatsToShorts(instance.get().process(floats));
         return samples;
     }
 

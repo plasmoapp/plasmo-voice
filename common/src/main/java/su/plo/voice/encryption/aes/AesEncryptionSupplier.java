@@ -13,6 +13,6 @@ public final class AesEncryptionSupplier implements EncryptionSupplier {
 
     @Override
     public @NotNull String getName() {
-        return "AES/CBC/PKCS5Padding";
+        return AesEncryption.CIPHER;
     }
 }

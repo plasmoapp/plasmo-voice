@@ -1,5 +1,6 @@
 package su.plo.voice.api.addon.annotation;
 
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.addon.AddonLoaderScope;
 
 import java.lang.annotation.ElementType;
@@ -7,46 +8,56 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+
+/**
+ * Annotation is used to mark classes as addons.
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface Addon {
 
-    /***
-     * @return the addon id
-     */
-    String id();
-
     /**
-     * Can be translatable key
+     * Gets the ID of the addon.
      *
-     * @return the addon name
+     * @return The addon ID.
      */
-    String name() default "";
+    @NotNull String id();
 
     /**
-     * @return the addon scope
-     */
-    AddonLoaderScope scope();
-
-    /**
-     * @return the addon version
-     */
-    String version();
-
-    /**
-     * @return the addon license, default is MIT
-     */
-    String license() default "MIT";
-
-    /**
-     * @return the addon authors
-     */
-    String[] authors();
-
-    /**
-     * Returns the addon dependencies
+     * Gets the name of the addon. This name can be a translatable key.
      *
-     * @return the addon dependencies
+     * @return The addon name.
+     */
+    @NotNull String name() default "";
+
+
+    /**
+     * Gets the scope of the addon, indicating where it is loaded.
+     * <br>
+     * This is only used if you are using gradle plugin for generating addons' entrypoints.
+     *
+     * @return The addon scope.
+     */
+    @NotNull AddonLoaderScope scope();
+
+    /**
+     * Gets the version of the addon.
+     *
+     * @return The addon version.
+     */
+    @NotNull String version();
+
+    /**
+     * Gets the authors of the addon.
+     *
+     * @return The addon authors.
+     */
+    @NotNull String[] authors();
+
+    /**
+     * Gets the dependencies required or suggested by the addon.
+     *
+     * @return The addon dependencies.
      */
     Dependency[] dependencies() default {};
 }

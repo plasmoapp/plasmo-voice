@@ -1,6 +1,6 @@
 package su.plo.voice.api.server.mute;
 
-import su.plo.lib.api.chat.MinecraftTextComponent;
+import su.plo.slib.api.chat.component.McTextComponent;
 
 public enum MuteDurationUnit {
 
@@ -23,16 +23,16 @@ public enum MuteDurationUnit {
         return duration * msDuration;
     }
 
-    public MinecraftTextComponent translate(long duration) {
+    public McTextComponent translate(long duration) {
         if (this == TIMESTAMP) {
             long diff = duration - System.currentTimeMillis();
             if (diff <= 0L) {
                 throw new IllegalArgumentException("TIMESTAMP duration should be in the future");
             }
 
-            return MinecraftTextComponent.translatable(translationKey, diff / 1000L);
+            return McTextComponent.translatable(translationKey, diff / 1000L);
         }
 
-        return MinecraftTextComponent.translatable(translationKey, duration);
+        return McTextComponent.translatable(translationKey, duration);
     }
 }

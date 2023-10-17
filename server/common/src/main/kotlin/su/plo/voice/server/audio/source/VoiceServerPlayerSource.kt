@@ -1,6 +1,6 @@
 package su.plo.voice.server.audio.source
 
-import su.plo.lib.api.server.world.ServerPos3d
+import su.plo.slib.api.server.position.ServerPos3d
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.line.ServerSourceLine

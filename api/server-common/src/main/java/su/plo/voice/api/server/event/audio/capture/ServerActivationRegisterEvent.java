@@ -8,7 +8,7 @@ import su.plo.voice.api.server.audio.capture.ServerActivation;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired right before {@link ServerActivation} is registered
+ * This event is fired right before {@link ServerActivation} is registered.
  */
 public final class ServerActivationRegisterEvent extends EventCancellableBase {
 

@@ -8,53 +8,50 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Stores voice mutes
- * <br/>
- * Storage implementation can be replaced in server config,
- * by default Json mute storage will be used
+ * Stores voice mutes.
  */
 public interface MuteStorage {
 
     /**
-     * Called when server is starting
+     * Invoked when the server is starting.
      */
     default void init() throws Exception {
     }
 
     /**
-     * Called when server is stopping
+     * Invoked when the server is stopping.
      */
     default void close() throws Exception {
     }
 
     /**
-     * Puts the player mute to the storage
+     * Puts the player's mute information into the storage.
      *
-     * @param playerId player uuid
-     * @param muteInfo the player mute info
+     * @param playerId The UUID of the player.
+     * @param muteInfo The player's mute information.
      */
     void putPlayerMute(@NotNull UUID playerId, @NotNull ServerMuteInfo muteInfo);
 
     /**
-     * Gets the player mute from storage by his uuid
+     * Gets the player's mute information from storage by their UUID.
      *
-     * @param playerId player uuid
-     *
-     * @return {@link ServerMuteInfo} if player is muted
+     * @param playerId The UUID of the player.
+     * @return An {@link Optional} containing {@link ServerMuteInfo} if the player is muted, or empty otherwise.
      */
     Optional<ServerMuteInfo> getMuteByPlayerId(@NotNull UUID playerId);
 
     /**
-     * Removes the player mute from storage by his uuid
+     * Removes the player's mute information from storage by their UUID.
      *
-     * @param playerId player uuid
-     *
-     * @return {@link ServerMuteInfo} if player was muted
+     * @param playerId The UUID of the player.
+     * @return An {@link Optional} containing {@link ServerMuteInfo} if the player was muted and the mute information was removed, or empty otherwise.
      */
     Optional<ServerMuteInfo> removeMuteByPlayerId(@NotNull UUID playerId);
 
     /**
-     * Collection of the muted players
+     * Gets a collection of all muted players.
+     *
+     * @return A collection of {@link ServerMuteInfo} representing the muted players.
      */
     Collection<ServerMuteInfo> getMutedPlayers();
 }

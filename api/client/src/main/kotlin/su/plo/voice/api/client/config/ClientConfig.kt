@@ -5,6 +5,9 @@ import su.plo.voice.api.client.config.overlay.OverlayPosition
 import su.plo.voice.api.client.config.overlay.OverlaySourceState
 import su.plo.voice.api.client.config.overlay.OverlayStyle
 
+/**
+ * Client configuration for Plasmo Voice.
+ */
 interface ClientConfig {
 
     val debug: BooleanConfigEntry
@@ -38,7 +41,7 @@ interface ClientConfig {
         val volume: DoubleConfigEntry
 
         /**
-         * Can be disabled by [ConfigEntry.setDisabled]
+         * Can be disabled by [ConfigEntry.setDisabled].
          */
         val soundOcclusion: BooleanConfigEntry
 

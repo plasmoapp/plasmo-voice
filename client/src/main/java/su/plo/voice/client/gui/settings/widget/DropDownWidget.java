@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UResolution;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -17,21 +17,23 @@ public final class DropDownWidget extends GuiAbstractWidget {
     private static final int ELEMENT_HEIGHT = 16;
 
     private final VoiceSettingsScreen parent;
-    private final List<MinecraftTextComponent> elements;
+    private final List<McTextComponent> elements;
     private final boolean tooltip;
     private final Consumer<Integer> onSelect;
 
     private boolean open;
 
-    public DropDownWidget(@NotNull VoiceSettingsScreen parent,
-                          int x,
-                          int y,
-                          int width,
-                          int height,
-                          @NotNull MinecraftTextComponent message,
-                          @NotNull List<MinecraftTextComponent> elements,
-                          boolean tooltip,
-                          @NotNull Consumer<Integer> onSelect) {
+    public DropDownWidget(
+            @NotNull VoiceSettingsScreen parent,
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull McTextComponent message,
+            @NotNull List<McTextComponent> elements,
+            boolean tooltip,
+            @NotNull Consumer<Integer> onSelect
+    ) {
         super(x, y, width, height, message);
 
         this.parent = parent;
@@ -87,7 +89,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
             elementY = y + height;
         }
 
-        for (MinecraftTextComponent element : elements) {
+        for (McTextComponent element : elements) {
             UGraphics.enableDepth();
 
             stack.push();

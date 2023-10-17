@@ -7,7 +7,7 @@ import su.plo.voice.api.event.Event;
 import su.plo.voice.api.server.socket.UdpServer;
 
 /**
- * This event is fired once the udp server is started
+ * This event is fired once the UDP server is started.
  */
 @RequiredArgsConstructor
 public class UdpServerStartedEvent implements Event {

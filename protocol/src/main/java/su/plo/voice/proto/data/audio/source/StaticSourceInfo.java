@@ -7,8 +7,9 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
-import su.plo.voice.proto.data.pos.Pos3d;
+import su.plo.voice.proto.serializer.Pos3dSerializer;
 
 import java.io.IOException;
 import java.util.UUID;
@@ -45,18 +46,16 @@ public final class StaticSourceInfo extends SourceInfo {
     public void deserialize(ByteArrayDataInput in) throws IOException {
         super.deserialize(in);
 
-        this.position = new Pos3d();
-        position.deserialize(in);
-        this.lookAngle = new Pos3d();
-        lookAngle.deserialize(in);
+        this.position = Pos3dSerializer.INSTANCE.deserialize(in);
+        this.lookAngle = Pos3dSerializer.INSTANCE.deserialize(in);
     }
 
     @Override
     public void serialize(ByteArrayDataOutput out) throws IOException {
         super.serialize(out);
 
-        checkNotNull(position, "position").serialize(out);
-        checkNotNull(lookAngle, "lookAngle").serialize(out);
+        Pos3dSerializer.INSTANCE.serialize(checkNotNull(position), out);
+        Pos3dSerializer.INSTANCE.serialize(checkNotNull(lookAngle), out);
     }
 
     @Override

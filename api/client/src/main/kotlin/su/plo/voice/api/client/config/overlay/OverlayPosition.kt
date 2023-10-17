@@ -1,5 +1,8 @@
 package su.plo.voice.api.client.config.overlay
 
+/**
+ * Position of the voice overlay.
+ */
 enum class OverlayPosition(
     val x: Int,
     val y: Int,

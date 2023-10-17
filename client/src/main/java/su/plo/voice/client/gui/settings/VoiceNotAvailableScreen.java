@@ -1,19 +1,19 @@
 package su.plo.voice.client.gui.settings;
 
-import su.plo.voice.universal.UDesktop;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
+import su.plo.voice.universal.UDesktop;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
 
 import java.net.URI;
 
@@ -29,7 +29,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     private int x;
     private int y;
 
-    private MinecraftTextComponent message;
+    private McTextComponent message;
 
     public VoiceNotAvailableScreen(@NotNull BaseVoiceClient voiceClient) {
         setNotAvailable();
@@ -67,7 +67,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
                 0,
                 WIDTH - 20,
                 20,
-                MinecraftTextComponent.translatable("message.plasmovoice.close"),
+                McTextComponent.translatable("message.plasmovoice.close"),
                 (button) -> ScreenWrapper.openScreen(null),
                 Button.NO_TOOLTIP
         );
@@ -99,15 +99,15 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     }
 
     public void setNotAvailable() {
-        this.message = MinecraftTextComponent.translatable("gui.plasmovoice.not_available");
+        this.message = McTextComponent.translatable("gui.plasmovoice.not_available");
     }
 
     public void setConnecting() {
-        this.message = MinecraftTextComponent.translatable("gui.plasmovoice.connecting");
+        this.message = McTextComponent.translatable("gui.plasmovoice.connecting");
     }
 
     public void setCannotConnect() {
-        this.message = MinecraftTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp", WIKI_LINK);
+        this.message = McTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp", WIKI_LINK);
     }
 
     private void openLink(@NotNull String link) {

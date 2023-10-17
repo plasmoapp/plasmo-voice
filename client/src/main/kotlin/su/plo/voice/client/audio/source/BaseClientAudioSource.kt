@@ -19,6 +19,7 @@ import su.plo.voice.api.audio.codec.AudioDecoder
 import su.plo.voice.api.audio.codec.CodecException
 import su.plo.voice.api.client.audio.device.DeviceType
 import su.plo.voice.api.client.audio.device.source.AlSource
+import su.plo.voice.api.client.audio.device.source.AlSourceParams
 import su.plo.voice.api.client.audio.device.source.SourceGroup
 import su.plo.voice.api.client.audio.source.ClientAudioSource
 import su.plo.voice.api.client.connection.ServerInfo.VoiceInfo
@@ -31,13 +32,12 @@ import su.plo.voice.api.encryption.EncryptionException
 import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.util.AudioUtil
-import su.plo.voice.api.util.Params
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.audio.SoundOcclusion
 import su.plo.voice.client.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.config.VoiceClientConfig
-import su.plo.voice.client.extensions.level
-import su.plo.voice.client.extensions.toFloatArray
+import su.plo.voice.client.extension.level
+import su.plo.voice.client.extension.toFloatArray
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
@@ -105,7 +105,7 @@ abstract class BaseClientAudioSource<T> constructor(
             if (isStereo(sourceInfo)) "stereo" else "mono"
         )
 
-        voiceClient.eventBus.call(AudioSourceInitializedEvent(this))
+        voiceClient.eventBus.fire(AudioSourceInitializedEvent(this))
     }
 
     override fun update(sourceInfo: T): Unit = runBlocking {
@@ -154,7 +154,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
             this@BaseClientAudioSource.sourceInfo = sourceInfo
 
-            voiceClient.eventBus.call(AudioSourceInitializedEvent(this@BaseClientAudioSource))
+            voiceClient.eventBus.fire(AudioSourceInitializedEvent(this@BaseClientAudioSource))
         }
     }
 
@@ -186,7 +186,7 @@ abstract class BaseClientAudioSource<T> constructor(
         decoder?.close()
         sourceGroup.clear()
 
-        voiceClient.eventBus.call(AudioSourceClosedEvent(this@BaseClientAudioSource))
+        voiceClient.eventBus.fire(AudioSourceClosedEvent(this@BaseClientAudioSource))
         BaseVoice.DEBUG_LOGGER.log("Source {} closed", sourceInfo)
     }
 
@@ -459,7 +459,7 @@ abstract class BaseClientAudioSource<T> constructor(
 
     private suspend fun createSourceGroup(sourceInfo: T): SourceGroup {
         return voiceClient.deviceManager.createSourceGroup(DeviceType.OUTPUT).also {
-            it.create(isStereo(sourceInfo), Params.EMPTY)
+            it.create(isStereo(sourceInfo), AlSourceParams.DEFAULT)
 
             for (source in it.sources) {
                 if (source !is AlSource) continue
@@ -479,7 +479,7 @@ abstract class BaseClientAudioSource<T> constructor(
             decoderInfo,
             voiceInfo.captureInfo.sampleRate,
             sourceInfo.isStereo,
-            voiceInfo.bufferSize,
+            voiceInfo.frameSize,
             voiceInfo.captureInfo.mtuSize
         )
     }

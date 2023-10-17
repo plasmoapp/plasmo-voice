@@ -1,9 +1,11 @@
 package su.plo.voice.client.audio.device.source;
 
+import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.device.AlAudioDevice;
+import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.device.source.AlSourcePauseEvent;
 import su.plo.voice.api.client.event.audio.device.source.AlSourcePlayEvent;
@@ -11,7 +13,6 @@ import su.plo.voice.api.client.event.audio.device.source.AlSourceStopEvent;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceUpdateParamEvent;
 import su.plo.voice.client.audio.AlUtil;
 import su.plo.voice.client.audio.device.AlOutputDevice;
-import su.plo.voice.proto.data.pos.Pos3d;
 
 import java.util.Arrays;
 
@@ -37,7 +38,7 @@ public abstract class BaseAlSource implements AlSource {
     }
 
     @Override
-    public AlAudioDevice getDevice() {
+    public @NotNull AlContextAudioDevice getDevice() {
         return device;
     }
 
@@ -51,7 +52,7 @@ public abstract class BaseAlSource implements AlSource {
         AlUtil.checkDeviceContext(device);
 
         AlSourcePlayEvent event = new AlSourcePlayEvent(this);
-        client.getEventBus().call(event);
+        client.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         AL11.alSourcePlay(pointer);
@@ -63,7 +64,7 @@ public abstract class BaseAlSource implements AlSource {
         AlUtil.checkDeviceContext(device);
 
         AlSourceStopEvent event = new AlSourceStopEvent(this);
-        client.getEventBus().call(event);
+        client.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         AL11.alSourceStop(pointer);
@@ -75,7 +76,7 @@ public abstract class BaseAlSource implements AlSource {
         AlUtil.checkDeviceContext(device);
 
         AlSourcePauseEvent event = new AlSourcePauseEvent(this);
-        client.getEventBus().call(event);
+        client.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
         AL11.alSourcePause(pointer);
@@ -203,6 +204,6 @@ public abstract class BaseAlSource implements AlSource {
 
     private boolean callParamEvent(int param, Object value) {
         AlSourceUpdateParamEvent event = new AlSourceUpdateParamEvent(this, param, value);
-        return client.getEventBus().call(event);
+        return client.getEventBus().fire(event);
     }
 }

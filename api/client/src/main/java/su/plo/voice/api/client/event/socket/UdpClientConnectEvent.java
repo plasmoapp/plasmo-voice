@@ -10,10 +10,12 @@ import su.plo.voice.proto.packets.tcp.clientbound.ConnectionPacket;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the udp client is created, but not connected yet
+ * This event is fired once the UDP client is created but not connected yet.
  *
- * You can replace a client with yours
- * Default server is a netty udp client
+ * <p>
+ *     This event provides an opportunity to replace the default UDP client with a custom one.
+ *     The default implementation is a netty UDP client.
+ * </p>
  */
 public final class UdpClientConnectEvent extends EventCancellableBase {
 

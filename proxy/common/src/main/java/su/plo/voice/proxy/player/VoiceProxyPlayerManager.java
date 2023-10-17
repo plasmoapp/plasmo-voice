@@ -3,8 +3,8 @@ package su.plo.voice.proxy.player;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.api.proxy.MinecraftProxyLib;
-import su.plo.lib.api.proxy.player.MinecraftProxyPlayer;
+import su.plo.slib.api.proxy.McProxyLib;
+import su.plo.slib.api.proxy.player.McProxyPlayer;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.proto.packets.Packet;
@@ -15,16 +15,13 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Predicate;
 
-/**
- * This manager can be used to get voice players
- */
 @RequiredArgsConstructor
 public final class VoiceProxyPlayerManager
         extends BaseVoicePlayerManager<VoiceProxyPlayer>
         implements su.plo.voice.api.server.player.VoiceProxyPlayerManager {
 
     private final PlasmoVoiceProxy voiceProxy;
-    private final MinecraftProxyLib minecraftProxy;
+    private final McProxyLib minecraftProxy;
 
     @Override
     public Optional<VoiceProxyPlayer> getPlayerById(@NotNull UUID playerId, boolean useServerInstance) {
@@ -32,9 +29,9 @@ public final class VoiceProxyPlayerManager
         if (voicePlayer != null) return Optional.of(voicePlayer);
         else if (!useServerInstance) return Optional.empty();
 
-        return minecraftProxy.getPlayerById(playerId)
+        return Optional.ofNullable(minecraftProxy.getPlayerById(playerId))
                 .map((player) -> playerById.computeIfAbsent(
-                        player.getUUID(),
+                        player.getUuid(),
                         (pId) -> {
                             VoiceProxyPlayer newPlayer = new VoiceProxyPlayerConnection(voiceProxy, player);
 
@@ -50,24 +47,24 @@ public final class VoiceProxyPlayerManager
         if (voicePlayer != null) return Optional.of(voicePlayer);
         else if (!useServerInstance) return Optional.empty();
 
-        return minecraftProxy.getPlayerByName(playerName)
+        return Optional.ofNullable(minecraftProxy.getPlayerByName(playerName))
                 .map((player) -> playerByName.computeIfAbsent(
                         player.getName(),
                         (pId) -> {
                             VoiceProxyPlayer newPlayer = new VoiceProxyPlayerConnection(voiceProxy, player);
 
-                            playerById.put(newPlayer.getInstance().getUUID(), newPlayer);
+                            playerById.put(newPlayer.getInstance().getUuid(), newPlayer);
                             return newPlayer;
                         }
                 ));
     }
 
     @Override
-    public @NotNull VoiceProxyPlayer wrap(@NotNull Object instance) {
-        MinecraftProxyPlayer serverPlayer = minecraftProxy.getPlayerByInstance(instance);
+    public @NotNull VoiceProxyPlayer getPlayerByInstance(@NotNull Object instance) {
+        McProxyPlayer serverPlayer = minecraftProxy.getPlayerByInstance(instance);
 
         return playerById.computeIfAbsent(
-                serverPlayer.getUUID(),
+                serverPlayer.getUuid(),
                 (playerId) -> new VoiceProxyPlayerConnection(voiceProxy, serverPlayer)
         );
     }

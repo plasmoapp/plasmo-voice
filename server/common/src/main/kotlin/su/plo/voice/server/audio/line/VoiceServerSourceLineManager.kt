@@ -8,7 +8,7 @@ import su.plo.voice.api.server.audio.line.ServerSourceLineManager
 class VoiceServerSourceLineManager(
     private val voiceServer: PlasmoVoiceServer
 ) : ServerSourceLineManager,
-    VoiceBaseServerSourceLineManager<ServerSourceLine>(voiceServer, voiceServer.tcpConnectionManager) {
+    VoiceBaseServerSourceLineManager<ServerSourceLine>(voiceServer, voiceServer.tcpPacketManager) {
 
     override fun createSourceLine(
         addon: AddonContainer,
@@ -26,7 +26,7 @@ class VoiceServerSourceLineManager(
             translation,
             icon,
             defaultVolume,
-            voiceServer.config.voice().weights().getSourceLineWeight(name)
+            voiceServer.config!!.voice().weights().getSourceLineWeight(name)
                 .orElse(weight),
             withPlayers
         )

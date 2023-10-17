@@ -8,13 +8,11 @@ val javadocProjects = listOf(
     project(":protocol")
 )
 
-configurations.shadow {
-    isTransitive = false
-}
-
 dependencies {
-    implementation(shadow(project(":api:common"))!!)
-    implementation(shadow(project(":api:server-common"))!!)
+    api(project(":api:common"))
+    api(project(":api:server-common"))
+
+    api("su.plo.slib:api-server:${rootProject.libs.versions.crosslib.get()}")
 }
 
 tasks {

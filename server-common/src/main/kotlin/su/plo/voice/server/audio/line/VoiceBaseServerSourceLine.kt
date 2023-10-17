@@ -5,9 +5,9 @@ import com.google.common.collect.Sets
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoBaseVoiceServer
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine
-import su.plo.voice.api.server.audio.line.ServerSourceLinePlayersSets
+import su.plo.voice.api.server.audio.line.ServerPlayerSetManager
 import su.plo.voice.api.server.audio.source.ServerAudioSource
-import su.plo.voice.api.server.audio.source.ServerDirectSource
+import su.plo.voice.api.server.audio.source.BaseServerDirectSource
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
@@ -26,20 +26,21 @@ abstract class VoiceBaseServerSourceLine(
     withPlayers: Boolean
 ) : BaseServerSourceLine, VoiceSourceLine(name, translation, icon, defaultVolume, weight, null) {
 
-    override val playersSets: ServerSourceLinePlayersSets? =
-        if (withPlayers) VoiceServerSourceLinePlayersSets(this) else null
+    override val playerSetManager: ServerPlayerSetManager? =
+        if (withPlayers) VoiceServerPlayerSetManager(this) else null
 
     protected val sourceById: MutableMap<UUID, ServerAudioSource<*>> = Maps.newConcurrentMap()
 
     override fun getSourceLineForPlayer(player: VoicePlayer): VoiceSourceLine =
-        playersSets?.let {
+        playerSetManager?.let {
             VoiceSourceLine(
                 name,
                 translation,
                 icon,
                 defaultVolume,
                 weight,
-                it.getPlayersSet(player).getPlayers()
+                it.getPlayerSet(player)
+                    .players
                     .stream()
                     .map { linePlayer -> linePlayer.instance.gameProfile }
                     .collect(Collectors.toSet())
@@ -48,7 +49,7 @@ abstract class VoiceBaseServerSourceLine(
             }
         } ?: this
 
-    override fun createDirectSource(stereo: Boolean, decoderInfo: CodecInfo?): ServerDirectSource =
+    override fun createDirectSource(stereo: Boolean, decoderInfo: CodecInfo?): BaseServerDirectSource =
         VoiceServerDirectSource(
             voiceServer,
             voiceServer.udpConnectionManager,

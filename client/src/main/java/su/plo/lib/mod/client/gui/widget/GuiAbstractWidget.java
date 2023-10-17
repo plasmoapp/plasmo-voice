@@ -1,19 +1,19 @@
 package su.plo.lib.mod.client.gui.widget;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.USound;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 import su.plo.lib.mod.client.render.RenderUtil;
 
 public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget, GuiWidgetListener {
 
-    public static MinecraftTextComponent wrapDefaultNarrationMessage(MinecraftTextComponent component) {
-        return MinecraftTextComponent.translatable("gui.narrate.button", component);
+    public static McTextComponent wrapDefaultNarrationMessage(McTextComponent component) {
+        return McTextComponent.translatable("gui.narrate.button", component);
     }
 
     public static int COLOR_WHITE = 0xFFFFFF;
@@ -34,7 +34,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     protected int height;
 
     @Setter
-    protected MinecraftTextComponent text;
+    protected McTextComponent text;
     protected float alpha = 1F;
 
     @Getter
@@ -54,14 +54,14 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
                              int y,
                              int width,
                              int height) {
-        this(x, y, width, height, MinecraftTextComponent.empty());
+        this(x, y, width, height, McTextComponent.empty());
     }
 
     public GuiAbstractWidget(int x,
                              int y,
                              int width,
                              int height,
-                             @NotNull MinecraftTextComponent text) {
+                             @NotNull McTextComponent text) {
         this.x = x;
         this.y = y;
 
@@ -174,7 +174,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     public void onDrag(double mouseX, double mouseY, double deltaX, double deltaY) {
     }
 
-    public MinecraftTextComponent getText() {
+    public McTextComponent getText() {
         return text;
     }
 
@@ -207,14 +207,14 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
         narrationElementOutput.add(NarrationOutput.Type.TITLE, createNarrationMessage());
         if (active) {
             if (isFocused()) {
-                narrationElementOutput.add(NarrationOutput.Type.USAGE, MinecraftTextComponent.translatable("narration.button.usage.focused"));
+                narrationElementOutput.add(NarrationOutput.Type.USAGE, McTextComponent.translatable("narration.button.usage.focused"));
             } else {
-                narrationElementOutput.add(NarrationOutput.Type.USAGE, MinecraftTextComponent.translatable("narration.button.usage.hovered"));
+                narrationElementOutput.add(NarrationOutput.Type.USAGE, McTextComponent.translatable("narration.button.usage.hovered"));
             }
         }
     }
 
-    protected MinecraftTextComponent createNarrationMessage() {
+    protected McTextComponent createNarrationMessage() {
         return wrapDefaultNarrationMessage(getText());
     }
 

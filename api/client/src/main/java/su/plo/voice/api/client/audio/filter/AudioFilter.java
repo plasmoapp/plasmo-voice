@@ -3,37 +3,46 @@ package su.plo.voice.api.client.audio.filter;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Audio filters can modify audio before it will be played or sent
+ * Represents an audio filter that can modify audio data before it is played or transmitted.
  */
 public interface AudioFilter {
 
     /**
-     * Gets the filter name
+     * Retrieves the name of the audio filter.
      *
-     * @return the filter name
+     * @return The name of the filter.
      */
     @NotNull String getName();
 
     /**
-     * Process the audio filter
-     * (!) Can change an original array
+     * Processes the audio filter on the given audio samples.
+     * Implementations of this method may modify the original array of audio samples.
+     *
+     * @param samples The audio samples to process.
+     * @return The processed audio samples.
      */
     short[] process(short[] samples);
 
     /**
-     * @return true if the filter is enabled
+     * Checks if the audio filter is enabled.
+     *
+     * @return {@code true} if the filter is enabled, {@code false} otherwise.
      */
     boolean isEnabled();
 
     /**
-     * @return number of required device channels to process this filter. With "0" this will be ignored
+     * Retrieves the number of required device channels to process this filter.
+     * A value of "0" indicates that the number of channels is not required.
+     *
+     * @return The number of required device channels.
      */
     default int getSupportedChannels() {
         return 0;
     }
 
     /**
-     * Represents the filter priority in execution
+     * Represents the priority of the audio filter in execution.
+     * Filters with higher priorities are executed first.
      */
     enum Priority {
         LOW,

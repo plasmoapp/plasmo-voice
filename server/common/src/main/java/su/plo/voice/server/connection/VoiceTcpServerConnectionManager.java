@@ -5,7 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.config.ServerConfig;
-import su.plo.voice.api.server.connection.TcpServerConnectionManager;
+import su.plo.voice.api.server.connection.TcpServerPacketManager;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
@@ -22,7 +22,7 @@ import java.util.UUID;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public final class VoiceTcpServerConnectionManager implements TcpServerConnectionManager {
+public final class VoiceTcpServerConnectionManager implements TcpServerPacketManager {
 
     private final BaseVoiceServer voiceServer;
 
@@ -41,11 +41,11 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
     }
 
     @Override
-    public void connect(@NotNull VoiceServerPlayer player) {
+    public void connect(@NotNull VoiceServerPlayer receiver) {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
         UUID secret = voiceServer.getUdpConnectionManager()
-                .getSecretByPlayerId(player.getInstance().getUUID());
+                .getSecretByPlayerId(receiver.getInstance().getUuid());
 
         ServerConfig.Host host = voiceServer.getConfig().host();
         ServerConfig.Host.Public hostPublic = host.hostPublic();
@@ -63,20 +63,20 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
             }
         }
 
-        player.sendPacket(new ConnectionPacket(
+        receiver.sendPacket(new ConnectionPacket(
                 secret,
                 ip,
                 port
         ));
 
-        BaseVoice.DEBUG_LOGGER.log("Sent connection packet to {}", player.getInstance().getName());
+        BaseVoice.DEBUG_LOGGER.log("Sent connection packet to {}", receiver.getInstance().getName());
     }
 
     @Override
-    public void requestPlayerInfo(@NotNull VoiceServerPlayer player) {
-        player.sendPacket(new PlayerInfoRequestPacket());
+    public void requestPlayerInfo(@NotNull VoiceServerPlayer receiver) {
+        receiver.sendPacket(new PlayerInfoRequestPacket());
 
-        BaseVoice.DEBUG_LOGGER.log("Sent player info request packet to {}", player.getInstance().getName());
+        BaseVoice.DEBUG_LOGGER.log("Sent player info request packet to {}", receiver.getInstance().getName());
     }
 
     @Override
@@ -159,7 +159,7 @@ public final class VoiceTcpServerConnectionManager implements TcpServerConnectio
     @Override
     public void broadcastPlayerDisconnect(@NotNull VoiceServerPlayer player) {
         synchronized (playerStateLock) {
-            broadcast(new PlayerDisconnectPacket(player.getInstance().getUUID()), this.createVanishFilter(player));
+            broadcast(new PlayerDisconnectPacket(player.getInstance().getUuid()), this.createVanishFilter(player));
         }
     }
 

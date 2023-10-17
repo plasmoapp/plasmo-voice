@@ -1,11 +1,15 @@
 package su.plo.voice.api.util;
 
+/**
+ * Utility class for audio-related operations.
+ */
 public final class AudioUtil {
 
     /**
-     * Converts bytes to shorts
+     * Converts an array of bytes to an array of shorts.
      *
-     * @return short array
+     * @param bytes The byte array to convert.
+     * @return An array of shorts.
      */
     public static short[] bytesToShorts(byte[] bytes) {
         short[] shorts = new short[bytes.length / 2];
@@ -17,9 +21,10 @@ public final class AudioUtil {
     }
 
     /**
-     * Converts shorts to bytes
+     * Converts an array of shorts to an array of bytes.
      *
-     * @return byte array
+     * @param shorts The short array to convert.
+     * @return An array of bytes.
      */
     public static byte[] shortsToBytes(short[] shorts) {
         byte[] bytes = new byte[shorts.length * 2];
@@ -34,27 +39,31 @@ public final class AudioUtil {
     }
 
     /**
-     * Converts two bytes to one short
+     * Converts two bytes to one short.
      *
-     * @return short
+     * @param b1 The first byte.
+     * @param b2 The second byte.
+     * @return A short value.
      */
     public static short bytesToShort(byte b1, byte b2) {
         return (short) (((b2 & 0xFF) << 8) | (b1 & 0xFF));
     }
 
     /**
-     * Converts one short to two byte
+     * Converts a short to an array of two bytes.
      *
-     * @return byte array
+     * @param s The short value to convert.
+     * @return An array of two bytes.
      */
     public static byte[] shortToBytes(short s) {
         return new byte[]{(byte) (s & 0xFF), (byte) ((s >> 8) & 0xFF)};
     }
 
     /**
-     * Converts floats to shorts
+     * Converts an array of floats to an array of shorts.
      *
-     * @return the shorts
+     * @param floats The float array to convert.
+     * @return An array of shorts.
      */
     public static short[] floatsToShorts(float[] floats) {
         short[] shorts = new short[floats.length];
@@ -67,9 +76,10 @@ public final class AudioUtil {
     }
 
     /**
-     * Converts shorts to float
+     * Converts an array of shorts to an array of floats.
      *
-     * @return the floats
+     * @param input The short array to convert.
+     * @return An array of floats.
      */
     public static float[] shortsToFloats(short[] input) {
         float[] ret = new float[input.length];
@@ -87,10 +97,11 @@ public final class AudioUtil {
     }
 
     /**
-     * Checks if any sample audio level greater than the min audio level
+     * Checks if any sample audio level is greater than the specified minimum audio level.
      *
-     * @return return true if any sample audio level
-     * greater than the min audio level
+     * @param samples       The audio samples.
+     * @param minAudioLevel The minimum audio level to check against.
+     * @return {@code true} if any sample audio level is greater than or equal to the minimum audio level, {@code false} otherwise.
      */
     public static boolean containsMinAudioLevel(byte[] samples, double minAudioLevel) {
         for (int i = 0; i < samples.length; i += 100) {
@@ -103,10 +114,11 @@ public final class AudioUtil {
     }
 
     /**
-     * Checks if any sample audio level greater than the min audio level
+     * Checks if any sample audio level is greater than the specified minimum audio level.
      *
-     * @return return true if any sample audio level
-     * greater than the min audio level
+     * @param samples       The audio samples.
+     * @param minAudioLevel The minimum audio level to check against.
+     * @return {@code true} if any sample audio level is greater than or equal to the minimum audio level, {@code false} otherwise.
      */
     public static boolean containsMinAudioLevel(short[] samples, double minAudioLevel) {
         for (int i = 0; i < samples.length; i += 50) {
@@ -119,12 +131,12 @@ public final class AudioUtil {
     }
 
     /**
-     * Calculates the audio level
+     * Calculates the audio level of a range of bytes.
      *
-     * @param samples the samples
-     * @param offset  offset from the start of the samples array
-     * @param length  count of samples to process the calculation
-     * @return the audio level
+     * @param samples The audio samples.
+     * @param offset  The offset from the start of the samples array.
+     * @param length  The number of samples to process for the calculation.
+     * @return The calculated audio level.
      */
     public static double calculateAudioLevel(byte[] samples, int offset, int length) {
         double rms = 0D; // root mean square (RMS) amplitude
@@ -138,12 +150,12 @@ public final class AudioUtil {
     }
 
     /**
-     * Calculates the audio level
+     * Calculates the audio level of a range of shorts.
      *
-     * @param samples the samples
-     * @param offset  offset from the start of the samples array
-     * @param length  count of samples to process the calculation
-     * @return the audio level
+     * @param samples The audio samples.
+     * @param offset  The offset from the start of the samples array.
+     * @param length  The number of samples to process for the calculation.
+     * @return The calculated audio level.
      */
     public static double calculateAudioLevel(short[] samples, int offset, int length) {
         double rms = 0D; // root mean square (RMS) amplitude
@@ -157,11 +169,11 @@ public final class AudioUtil {
     }
 
     /**
-     * Calculates the audio level from RMS and samples count
+     * Converts RMS and sample count to an audio level.
      *
-     * @param rms         root mean square
-     * @param sampleCount count of samples
-     * @return the audio level
+     * @param rms          Root Mean Square (RMS) value.
+     * @param sampleCount  The count of samples.
+     * @return The audio level.
      */
     public static double calculateAudioLevelFromRMS(double rms, int sampleCount) {
         rms = (sampleCount == 0) ? 0 : Math.sqrt(rms / sampleCount);
@@ -178,10 +190,10 @@ public final class AudioUtil {
     }
 
     /**
-     * Gets the highest audio level in the samples
+     * Calculates the highest audio level in an array of shorts.
      *
-     * @param samples the samples
-     * @return the highest audio level
+     * @param samples The audio samples.
+     * @return The highest audio level.
      */
     public static double calculateHighestAudioLevel(short[] samples) {
         double highest = -127D;
@@ -195,25 +207,31 @@ public final class AudioUtil {
     }
 
     /**
-     * Converts the audio level to double in range [0, 1]
+     * Converts an audio level to a double in the range [0, 1].
      *
-     * @return the double in range [0, 1]
+     * @param audioLevel The audio level to convert.
+     * @return The converted double value.
      */
     public static double audioLevelToDoubleRange(double audioLevel) {
         return 1D - (Math.max(-60D, audioLevel) / -60D);
     }
 
+
     /**
-     * Converts the double in range [0, 1] to audio level
+     * Converts a double in the range [0, 1] to an audio level.
      *
-     * @return the audio level
+     * @param value The double value to convert.
+     * @return The converted audio level.
      */
     public static double doubleRangeToAudioLevel(double value) {
         return Math.round((1D - value) * -60D);
     }
 
     /**
-     * Converts stereo samples to mono bytes
+     * Converts stereo samples to mono bytes.
+     *
+     * @param samples The stereo samples to convert.
+     * @return Mono audio data as an array of bytes.
      */
     public static byte[] convertToMonoBytes(short[] samples) {
         byte[] mono = new byte[samples.length];
@@ -228,7 +246,10 @@ public final class AudioUtil {
     }
 
     /**
-     * Converts stereo samples to mono shorts
+     * Converts stereo samples to mono shorts.
+     *
+     * @param samples The stereo samples to convert.
+     * @return Mono audio data as an array of shorts.
      */
     public static short[] convertToMonoShorts(short[] samples) {
         short[] mono = new short[samples.length / 2];
@@ -241,22 +262,11 @@ public final class AudioUtil {
         return mono;
     }
 
-    public static short[] normalizeAudioLevel(short[] samples, double targetAudioLevel) {
-        double currentAudioLevel = calculateAudioLevel(samples, 0, samples.length);
-//        double currentAudioLevel = -14;
-        double targetGain = dbToMul(targetAudioLevel - currentAudioLevel);
-
-        System.out.println(currentAudioLevel + " " + targetGain);
-
-        for (int i = 0; i < samples.length; i++) {
-            samples[i] *= targetGain;
-        }
-
-        return samples;
-    }
-
     /**
-     * Gets the highest absolute sample
+     * Gets the highest absolute sample value in an array of shorts.
+     *
+     * @param samples The audio samples.
+     * @return The highest absolute sample value.
      */
     public static short getHighestAbsoluteSample(short[] samples) {
         short max = 0;
@@ -275,9 +285,10 @@ public final class AudioUtil {
     }
 
     /**
-     * Converts shorts to floats in range [-1;1]
+     * Converts shorts to floats in the range [-1, 1].
      *
-     * @return the floats in range [-1;1]
+     * @param input The short array to convert.
+     * @return The floats in the range [-1, 1].
      */
     public static float[] shortsToFloatsRange(short[] input) {
         float[] floats = new float[input.length];
@@ -290,9 +301,10 @@ public final class AudioUtil {
     }
 
     /**
-     * Converts floats in range [-1;1] to shorts
+     * Converts floats in the range [-1, 1] to shorts.
      *
-     * @return the shorts
+     * @param input The float array to convert.
+     * @return The shorts.
      */
     public static short[] floatsRangeToShort(float[] input) {
         short[] shorts = new short[input.length];
@@ -304,18 +316,43 @@ public final class AudioUtil {
         return shorts;
     }
 
+    /**
+     * Converts a multiplication factor to decibels (dB).
+     *
+     * @param mul The multiplication factor.
+     * @return The corresponding decibel value.
+     */
     public static float mulToDB(float mul) {
         return (mul == 0.0f) ? -Float.MAX_VALUE : (float) (20.0F * Math.log10(mul));
     }
 
+    /**
+     * Converts decibels (dB) to a multiplication factor.
+     *
+     * @param db The decibel value.
+     * @return The corresponding multiplication factor.
+     */
     public static float dbToMul(float db) {
         return Float.isFinite(db) ? (float) Math.pow(10.0F, db / 20.0F) : 0.0F;
     }
 
+    /**
+     * Converts decibels (dB) to a multiplication factor.
+     *
+     * @param db The decibel value.
+     * @return The corresponding multiplication factor.
+     */
     public static double dbToMul(double db) {
         return Double.isFinite(db) ? (float) Math.pow(10.0D, db / 20.0D) : 0.0D;
     }
 
+    /**
+     * Calculates the gain coefficient for a given sample rate and time.
+     *
+     * @param sampleRate The sample rate.
+     * @param time       The time value.
+     * @return The calculated gain coefficient.
+     */
     public static float gainCoefficient(int sampleRate, float time) {
         return (float) Math.exp(-1.0f / (sampleRate * time));
     }

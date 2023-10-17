@@ -7,13 +7,8 @@ val javadocProjects = listOf(
     project(":protocol")
 )
 
-configurations.shadow {
-    isTransitive = false
-}
-
 dependencies {
     api(project(":api:common"))
-    shadow(project(":api:common"))
 }
 
 tasks {

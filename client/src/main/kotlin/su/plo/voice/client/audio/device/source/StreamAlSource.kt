@@ -41,13 +41,13 @@ class StreamAlSource private constructor(
 
     init {
         this.numBuffers = if (numBuffers == 0) DEFAULT_NUM_BUFFERS else numBuffers
-        emptyBuffer = ByteArray(device.bufferSize)
+        emptyBuffer = ByteArray(device.frameSize)
     }
 
     override fun play() {
         AlUtil.checkDeviceContext(device)
 
-        if (!client.eventBus.call(AlSourcePlayEvent(this))) return
+        if (!client.eventBus.fire(AlSourcePlayEvent(this))) return
 
         val isStreaming = isStreaming.get()
         val state = state
@@ -69,7 +69,7 @@ class StreamAlSource private constructor(
         AlUtil.checkDeviceContext(device)
 
         AlSourceStopEvent(this).also {
-            if (!client.eventBus.call(it)) return
+            if (!client.eventBus.fire(it)) return
         }
 
         AL11.alSourceStop(pointer)
@@ -99,7 +99,7 @@ class StreamAlSource private constructor(
         buffer.put(samples)
         (buffer as Buffer).flip()
 
-        if (!client.eventBus.call(AlSourceWriteEvent(this, buffer))) return
+        if (!client.eventBus.fire(AlSourceWriteEvent(this, buffer))) return
 
         queue.offer(buffer)
         if (samples != emptyBuffer) {
@@ -127,7 +127,7 @@ class StreamAlSource private constructor(
     private fun closeSync() {
         stop()
 
-        client.eventBus.call(AlSourceClosedEvent(this@StreamAlSource))
+        client.eventBus.fire(AlSourceClosedEvent(this@StreamAlSource))
 
         removeProcessedBuffers()
 
@@ -176,7 +176,7 @@ class StreamAlSource private constructor(
 
                         if (availableBuffer[0] != -1) {
                             val unqueuedEvent = AlSourceBufferUnqueuedEvent(alSource, availableBuffer[0])
-                            client.eventBus.call(unqueuedEvent)
+                            client.eventBus.fire(unqueuedEvent)
                         }
                     }
 
@@ -195,7 +195,7 @@ class StreamAlSource private constructor(
                     queueWithEmptyBuffers()
                     fillQueue()
 
-                    client.eventBus.call(AlStreamSourceStoppedEvent(alSource))
+                    client.eventBus.fire(AlStreamSourceStoppedEvent(alSource))
                     play()
                     AL11.alSourcePlay(pointer)
                     AlUtil.checkErrors("Source play")
@@ -237,7 +237,7 @@ class StreamAlSource private constructor(
         AL11.alSourceQueueBuffers(pointer, intArrayOf(buffer))
         if (AlUtil.checkErrors("Queue buffer data")) return false
 
-        client.eventBus.call(AlSourceBufferQueuedEvent(this, byteBuffer, buffer))
+        client.eventBus.fire(AlSourceBufferQueuedEvent(this, byteBuffer, buffer))
 
         return true
     }
@@ -272,7 +272,7 @@ class StreamAlSource private constructor(
             }
 
             return StreamAlSource(client, device, stereo, numBuffers, pointer[0]).also { source ->
-                client.eventBus.call(AlSourceCreatedEvent(source))
+                client.eventBus.fire(AlSourceCreatedEvent(source))
             }
         }
     }

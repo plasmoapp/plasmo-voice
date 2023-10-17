@@ -4,10 +4,21 @@ import su.plo.voice.api.audio.capture.ActivationManager
 import java.io.InputStream
 import java.util.*
 
-// todo: doc
+/**
+ * Manages server activations.
+ */
 interface ServerActivationManager : ActivationManager<ServerActivation> {
+
     /**
-     * Creates a new activation builder
+     * Creates a new activation builder for building server activations.
+     *
+     * @param addonObject The addon associated with the activation.
+     * @param name The name of the activation.
+     * @param translation The translation key for the activation.
+     * @param icon The icon representation of the source line can be a Minecraft ResourceLocation or a base64-encoded string.
+     * @param permission The permission required for the activation.
+     * @param weight The weight of the activation.
+     * @return A new builder for server activations.
      */
     fun createBuilder(
         addonObject: Any,
@@ -19,7 +30,15 @@ interface ServerActivationManager : ActivationManager<ServerActivation> {
     ): ServerActivation.Builder
 
     /**
-     * Creates a new activation builder
+     * Creates a new activation builder for building server activations.
+     *
+     * @param addonObject The addon associated with the activation.
+     * @param name The name of the activation.
+     * @param translation The translation key for the activation.
+     * @param icon An InputStream representing the icon image.
+     * @param permission The permission required for the activation.
+     * @param weight The weight of the activation.
+     * @return A new builder for server activations.
      */
     fun createBuilder(
         addonObject: Any,

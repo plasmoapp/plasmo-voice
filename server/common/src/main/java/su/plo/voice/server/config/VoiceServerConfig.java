@@ -33,7 +33,7 @@ public final class VoiceServerConfig implements ServerConfig {
     private boolean debug = false;
 
     @ConfigField
-    private boolean disableCrowdin = false;
+    private boolean useCrowdinTranslations = true;
 
     @ConfigField
     private boolean checkForUpdates = true;

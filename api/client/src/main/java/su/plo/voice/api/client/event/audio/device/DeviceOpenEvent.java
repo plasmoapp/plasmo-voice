@@ -8,7 +8,7 @@ import su.plo.voice.api.event.Event;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the device has been open
+ * This event is fired once the device has been open.
  */
 public final class DeviceOpenEvent implements Event {
 

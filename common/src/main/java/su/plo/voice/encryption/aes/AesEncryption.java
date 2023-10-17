@@ -1,5 +1,6 @@
 package su.plo.voice.encryption.aes;
 
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 
@@ -10,13 +11,13 @@ import java.security.SecureRandom;
 
 public final class AesEncryption implements Encryption {
 
-    private static final String CIPHER = "AES/CBC/PKCS5Padding";
+    public static final String CIPHER = "AES/CBC/PKCS5Padding";
 
-    private final SecretKeySpec key;
+    private @NotNull SecretKeySpec key;
     private final SecureRandom random = new SecureRandom();
 
-    public AesEncryption(byte[] key) {
-        this.key = new SecretKeySpec(key, "AES");
+    public AesEncryption(byte[] keyData) {
+        this.key = new SecretKeySpec(keyData, "AES");
     }
 
     @Override
@@ -51,6 +52,16 @@ public final class AesEncryption implements Encryption {
         } catch (Exception e) {
             throw new EncryptionException("Failed to decrypt data", e);
         }
+    }
+
+    @Override
+    public void updateKeyData(byte[] keyData) {
+        this.key = new SecretKeySpec(keyData, "AES");
+    }
+
+    @Override
+    public @NotNull String getName() {
+        return CIPHER;
     }
 
     private IvParameterSpec generateIv() {

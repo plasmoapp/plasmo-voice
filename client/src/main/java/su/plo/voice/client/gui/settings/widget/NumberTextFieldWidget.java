@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.TextFieldWidget;
 
 import java.util.regex.Pattern;
@@ -15,12 +15,14 @@ public final class NumberTextFieldWidget extends TextFieldWidget implements Upda
 
     private final IntConfigEntry entry;
 
-    public NumberTextFieldWidget(@NotNull IntConfigEntry entry,
-                                 int x,
-                                 int y,
-                                 int width,
-                                 int height) {
-        super(x, y, width, height, MinecraftTextComponent.empty());
+    public NumberTextFieldWidget(
+            @NotNull IntConfigEntry entry,
+            int x,
+            int y,
+            int width,
+            int height
+    ) {
+        super(x, y, width, height, McTextComponent.empty());
 
         this.entry = entry;
 

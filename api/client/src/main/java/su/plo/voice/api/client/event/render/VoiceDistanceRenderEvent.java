@@ -9,8 +9,7 @@ import su.plo.voice.api.event.EventCancellableBase;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired when the {@link DistanceVisualizer} is about to render
- * the distance
+ * This event is fired when the {@link DistanceVisualizer} is about to render a voice distance sphere.
  */
 public final class VoiceDistanceRenderEvent extends EventCancellableBase {
 

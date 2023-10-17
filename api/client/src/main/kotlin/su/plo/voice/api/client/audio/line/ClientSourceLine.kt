@@ -1,12 +1,21 @@
 package su.plo.voice.api.client.audio.line
 
-import su.plo.lib.api.chat.MinecraftTextComponent
+import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.voice.proto.data.audio.line.SourceLine
 
-interface ClientSourceLine : SourceLine, ClientPlayersSet {
+/**
+ * Represents a client source line.
+ */
+interface ClientSourceLine : SourceLine, ClientPlayerSet {
 
+    /**
+     * Gets or sets the volume for this source line.
+     */
     var volume: Double
 
-    val translationComponent: MinecraftTextComponent
-        get() = MinecraftTextComponent.translatable(translation)
+    /**
+     * Gets the translation component associated with this source line.
+     */
+    val translationComponent: McTextComponent
+        get() = McTextComponent.translatable(translation)
 }

@@ -9,8 +9,7 @@ import su.plo.voice.proto.packets.Packet;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This event is fired once the {@link UdpClient}
- * is received the packet, but not handled yet
+ * This event is fired once the {@link UdpClient} has received the packet but has not yet handled it.
  */
 public final class UdpClientPacketReceivedEvent extends EventCancellableBase {
 
