@@ -1,33 +1,30 @@
 package su.plo.voice.client.audio.codec.opus;
 
-import com.sun.jna.ptr.PointerByReference;
-import su.plo.opus.Opus;
+import com.plasmoverse.opus.OpusEncoder;
+import com.plasmoverse.opus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
+import java.io.IOException;
+import java.util.Arrays;
 
 public final class NativeOpusEncoder implements BaseOpusEncoder {
 
     private final int sampleRate;
-    private final int bufferSize;
     private final int channels;
     private final OpusMode opusMode;
     private final int mtuSize;
 
-    private PointerByReference encoder;
-    private ByteBuffer buffer;
+    private OpusEncoder encoder;
 
-    public NativeOpusEncoder(int sampleRate,
-                             boolean stereo,
-                             int bufferSize,
-                             OpusMode opusMode,
-                             int mtuSize) {
+    public NativeOpusEncoder(
+            int sampleRate,
+            boolean stereo,
+            OpusMode opusMode,
+            int mtuSize
+    ) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
-        this.bufferSize = bufferSize;
         this.opusMode = opusMode;
         this.mtuSize = mtuSize;
     }
@@ -36,27 +33,24 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     public byte[] encode(short[] samples) throws CodecException {
         if (!isOpen()) throw new CodecException("Encoder is not open");
 
-        ShortBuffer shortSamples = ShortBuffer.wrap(samples);
-
-        buffer.clear();
-        int result = Opus.INSTANCE.opus_encode(encoder, shortSamples, bufferSize, buffer, mtuSize);
-
-        if (result < 0) throw new CodecException("Failed to encode audio: " + result);
-
-        byte[] encoded = new byte[result];
-        buffer.get(encoded);
-
-        return encoded;
+        try {
+            return encoder.encode(samples);
+        } catch (OpusException e) {
+            throw new CodecException("Failed to encode audio", e);
+        }
     }
 
     @Override
     public void open() throws CodecException {
-        IntBuffer error = IntBuffer.allocate(1);
-        this.encoder = Opus.INSTANCE.opus_encoder_create(sampleRate, channels, opusMode.getApplication(), error);
-        this.buffer = ByteBuffer.allocate(mtuSize);
+        try {
+            com.plasmoverse.opus.OpusMode mode = Arrays.stream(com.plasmoverse.opus.OpusMode.values())
+                    .filter((element) -> element.getApplication() == opusMode.getApplication())
+                    .findFirst()
+                    .orElseThrow(() -> new CodecException("Invalid opus application mode"));
 
-        if (error.get() != Opus.OPUS_OK && encoder == null) {
-            throw new CodecException("Failed to open opus encoder:" + error.get());
+            this.encoder = OpusEncoder.create(sampleRate, channels == 2, mtuSize, mode);
+        } catch (OpusException | IOException e) {
+            throw new CodecException("Failed to open opus encoder", e);
         }
     }
 
@@ -64,16 +58,15 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     public void reset() {
         if (!isOpen()) return;
 
-        Opus.INSTANCE.opus_encoder_ctl(encoder, Opus.INSTANCE.OPUS_RESET_STATE);
+        encoder.reset();
     }
 
     @Override
     public void close() {
         if (!isOpen()) return;
 
-        Opus.INSTANCE.opus_encoder_destroy(encoder);
+        encoder.close();
         this.encoder = null;
-        this.buffer = null;
     }
 
     @Override
@@ -85,14 +78,15 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     public void setBitrate(int bitrate) {
         if (!isOpen()) return;
 
-        Opus.INSTANCE.opus_encoder_ctl(encoder, Opus.OPUS_SET_BITRATE_REQUEST, bitrate);
+        encoder.setBitrate(bitrate);
     }
 
     @Override
     public int getBitrate() {
-        IntBuffer request = IntBuffer.allocate(1);
-        Opus.INSTANCE.opus_encoder_ctl(encoder, Opus.OPUS_GET_BITRATE_REQUEST, request);
-
-        return request.get();
+        try {
+            return encoder.getBitrate();
+        } catch (OpusException e) {
+            return 0;
+        }
     }
 }

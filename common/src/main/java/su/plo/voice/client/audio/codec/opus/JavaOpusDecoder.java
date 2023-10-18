@@ -1,24 +1,22 @@
 package su.plo.voice.client.audio.codec.opus;
 
-import su.plo.opus.concentus.OpusDecoder;
-import su.plo.opus.concentus.OpusException;
+import org.concentus.OpusDecoder;
+import org.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 
 public final class JavaOpusDecoder implements BaseOpusDecoder {
 
     private final int sampleRate;
     private final int channels;
-    private final int bufferSize;
-    private final int mtuSize;
+    private final int frameSize;
 
     private OpusDecoder decoder;
     private short[] buffer;
 
-    public JavaOpusDecoder(int sampleRate, boolean stereo, int bufferSize, int mtuSize) {
+    public JavaOpusDecoder(int sampleRate, boolean stereo, int frameSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
-        this.bufferSize = bufferSize;
-        this.mtuSize = mtuSize;
+        this.frameSize = frameSize;
     }
 
     @Override
@@ -28,9 +26,9 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
         int result;
         try {
             if (encoded == null || encoded.length == 0) {
-                result = decoder.decode(null, 0, 0, buffer, 0, bufferSize, false);
+                result = decoder.decode(null, 0, 0, buffer, 0, frameSize, false);
             } else {
-                result = decoder.decode(encoded, 0, encoded.length, buffer, 0, bufferSize, false);
+                result = decoder.decode(encoded, 0, encoded.length, buffer, 0, frameSize, false);
             }
         } catch (OpusException e) {
             throw new CodecException("Failed to decode audio", e);
@@ -46,7 +44,7 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     public void open() throws CodecException {
         try {
             this.decoder = new OpusDecoder(sampleRate, channels);
-            this.buffer = new short[mtuSize * channels];
+            this.buffer = new short[frameSize * channels];
         } catch (OpusException e) {
             throw new CodecException("Failed to open opus decoder", e);
         }

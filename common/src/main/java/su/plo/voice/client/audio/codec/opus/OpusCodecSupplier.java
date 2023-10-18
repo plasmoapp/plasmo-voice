@@ -11,11 +11,12 @@ import java.io.IOException;
 public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, BaseOpusDecoder> {
 
     @Override
-    public @NotNull BaseOpusEncoder createEncoder(int sampleRate,
-                                                  boolean stereo,
-                                                  int bufferSize,
-                                                  int mtuSize,
-                                                  @NotNull CodecInfo codecInfo) {
+    public @NotNull BaseOpusEncoder createEncoder(
+            @NotNull CodecInfo codecInfo,
+            int sampleRate,
+            boolean stereo,
+            int mtuSize
+    ) {
         OpusEncoderInfo opusEncoderInfo;
         try {
             opusEncoderInfo = new OpusEncoderInfo(codecInfo);
@@ -25,9 +26,9 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
 
         BaseOpusEncoder encoder;
         try {
-            Class.forName("su.plo.opus.Opus");
+            Class.forName("com.plasmoverse.opus.OpusEncoder");
 
-            encoder = new NativeOpusEncoder(sampleRate, stereo, bufferSize, opusEncoderInfo.getMode(), mtuSize);
+            encoder = new NativeOpusEncoder(sampleRate, stereo, opusEncoderInfo.getMode(), mtuSize);
             encoder.open();
         } catch (ClassNotFoundException ignored) {
             encoder = null;
@@ -38,7 +39,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
 
         if (encoder == null) {
             try {
-                encoder = new JavaOpusEncoder(sampleRate, stereo, bufferSize, opusEncoderInfo.getMode(), mtuSize);
+                encoder = new JavaOpusEncoder(sampleRate, stereo, opusEncoderInfo.getMode(), mtuSize);
                 encoder.open();
             } catch (Exception e) {
                 throw new IllegalStateException("Failed to open java opus encoder", e);
@@ -52,16 +53,17 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
     }
 
     @Override
-    public @NotNull BaseOpusDecoder createDecoder(int sampleRate,
-                                                  boolean stereo,
-                                                  int bufferSize,
-                                                  int mtuSize,
-                                                  @NotNull CodecInfo codecInfo) {
+    public @NotNull BaseOpusDecoder createDecoder(
+            @NotNull CodecInfo codecInfo,
+            int sampleRate,
+            boolean stereo,
+            int frameSize
+    ) {
         BaseOpusDecoder decoder;
         try {
-            Class.forName("su.plo.opus.Opus");
+            Class.forName("com.plasmoverse.opus.OpusDecoder");
 
-            decoder = new NativeOpusDecoder(sampleRate, stereo, bufferSize, mtuSize);
+            decoder = new NativeOpusDecoder(sampleRate, stereo, frameSize);
             decoder.open();
             return decoder;
         } catch (ClassNotFoundException ignored) {
@@ -70,7 +72,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
         }
 
         try {
-            decoder = new JavaOpusDecoder(sampleRate, stereo, bufferSize, mtuSize);
+            decoder = new JavaOpusDecoder(sampleRate, stereo, frameSize);
             decoder.open();
             return decoder;
         } catch (Exception e) {

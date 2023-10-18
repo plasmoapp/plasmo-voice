@@ -1,8 +1,8 @@
 package su.plo.voice.client.audio.codec.opus;
 
-import su.plo.opus.concentus.OpusApplication;
-import su.plo.opus.concentus.OpusEncoder;
-import su.plo.opus.concentus.OpusException;
+import org.concentus.OpusApplication;
+import org.concentus.OpusEncoder;
+import org.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 
@@ -10,21 +10,20 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
 
     private final int sampleRate;
     private final int channels;
-    private final int bufferSize;
     private final int mtuSize;
 
     private OpusApplication application;
     private OpusEncoder encoder;
     private byte[] buffer;
 
-    public JavaOpusEncoder(int sampleRate,
-                           boolean stereo,
-                           int bufferSize,
-                           OpusMode opusMode,
-                           int mtuSize) {
+    public JavaOpusEncoder(
+            int sampleRate,
+            boolean stereo,
+            OpusMode opusMode,
+            int mtuSize
+    ) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
-        this.bufferSize = bufferSize;
         this.mtuSize = mtuSize;
 
         setApplication(opusMode);
@@ -36,7 +35,7 @@ public final class JavaOpusEncoder implements BaseOpusEncoder {
 
         int result;
         try {
-            result = encoder.encode(samples, 0, bufferSize, buffer, 0, mtuSize);
+            result = encoder.encode(samples, 0, samples.length / channels, buffer, 0, mtuSize);
         } catch (OpusException e) {
             throw new CodecException("Failed to encode audio", e);
         }

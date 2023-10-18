@@ -161,8 +161,9 @@ dependencies {
     shadowCommon(rootProject.libs.kotlinx.coroutines.jdk8)
     shadowCommon(rootProject.libs.kotlinx.json)
 
-    shadowCommon(rootProject.libs.opus)
     shadowCommon(rootProject.libs.config)
+    shadowCommon(rootProject.libs.opus.jni)
+    shadowCommon(rootProject.libs.opus.concentus)
     shadowCommon(rootProject.libs.rnnoise)
     shadowCommon(rootProject.libs.crowdin.lib) {
         isTransitive = false
@@ -219,6 +220,8 @@ tasks {
         relocate("com.google.inject", "su.plo.voice.libs.google.inject")
         relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
         relocate("javax.inject", "su.plo.voice.libs.javax.inject")
+
+        relocate("org.concentus", "su.plo.voice.libs.concentus")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))

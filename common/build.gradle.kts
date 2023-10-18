@@ -14,7 +14,8 @@ dependencies {
     compileOnly(rootProject.libs.netty)
 
     api(rootProject.libs.config)
-    api(rootProject.libs.opus)
+    api(rootProject.libs.opus.jni)
+    api(rootProject.libs.opus.concentus)
 
     testImplementation(project(":api:common"))
 }

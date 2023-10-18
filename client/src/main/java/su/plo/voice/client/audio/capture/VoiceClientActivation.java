@@ -110,20 +110,16 @@ public final class VoiceClientActivation
                     .map(ServerInfo.VoiceInfo::getCaptureInfo)
                     .orElseThrow(() -> new IllegalStateException("not connected to voice server"));
 
-            int sampleRate = captureInfo.getSampleRate();
-
             this.monoEncoder = voiceClient.getCodecManager().createEncoder(
                     encoderInfo,
                     captureInfo.getSampleRate(),
                     false,
-                    (sampleRate / 1_000) * 20,
                     captureInfo.getMtuSize()
             );
             this.stereoEncoder = voiceClient.getCodecManager().createEncoder(
                     encoderInfo,
                     captureInfo.getSampleRate(),
                     true,
-                    (sampleRate / 1_000) * 20,
                     captureInfo.getMtuSize()
             );
         }

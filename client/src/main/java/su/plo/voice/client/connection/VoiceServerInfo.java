@@ -84,7 +84,6 @@ public final class VoiceServerInfo implements ServerInfo {
                 codecInfo,
                 sampleRate,
                 stereo,
-                (sampleRate / 1_000) * 20,
                 voiceInfo.getCaptureInfo().getMtuSize()
         );
     }
@@ -100,8 +99,7 @@ public final class VoiceServerInfo implements ServerInfo {
                 new OpusDecoderInfo(),
                 sampleRate,
                 stereo,
-                (sampleRate / 1_000) * 20,
-                voiceInfo.getCaptureInfo().getMtuSize()
+                (sampleRate / 1_000) * 20
         );
     }
 

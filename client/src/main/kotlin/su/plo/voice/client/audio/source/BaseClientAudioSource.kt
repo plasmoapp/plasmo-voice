@@ -479,8 +479,7 @@ abstract class BaseClientAudioSource<T> constructor(
             decoderInfo,
             voiceInfo.captureInfo.sampleRate,
             sourceInfo.isStereo,
-            voiceInfo.frameSize,
-            voiceInfo.captureInfo.mtuSize
+            voiceInfo.frameSize
         )
     }
 

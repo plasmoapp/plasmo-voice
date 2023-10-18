@@ -14,37 +14,33 @@ public interface CodecSupplier<Encoder extends AudioEncoder, Decoder extends Aud
     /**
      * Creates a new audio encoder with the specified parameters.
      *
+     * @param codecInfo  The codec information specifying the codec to be used.
      * @param sampleRate The sample rate of the audio data.
      * @param stereo     {@code true} if the audio is in stereo format, {@code false} for mono.
-     * @param bufferSize The size of the encoding buffer.
      * @param mtuSize    The maximum transmission unit (MTU) size for network communication.
-     * @param codecInfo  The codec information specifying the codec to be used.
      * @return An instance of the audio encoder with the specified parameters.
      */
     @NotNull Encoder createEncoder(
+            @NotNull CodecInfo codecInfo,
             int sampleRate,
             boolean stereo,
-            int bufferSize,
-            int mtuSize,
-            @NotNull CodecInfo codecInfo
+            int mtuSize
     );
 
     /**
      * Creates a new audio decoder with the specified parameters.
      *
+     * @param codecInfo  The codec information specifying the codec to be used.
      * @param sampleRate The sample rate of the audio data.
      * @param stereo     {@code true} if the audio is in stereo format, {@code false} for mono.
-     * @param bufferSize The size of the decoding buffer.
-     * @param mtuSize    The maximum transmission unit (MTU) size for network communication.
-     * @param codecInfo  The codec information specifying the codec to be used.
+     * @param frameSize  The size of the decoding frame.
      * @return An instance of the audio decoder with the specified parameters.
      */
     @NotNull Decoder createDecoder(
+            @NotNull CodecInfo codecInfo,
             int sampleRate,
             boolean stereo,
-            int bufferSize,
-            int mtuSize,
-            @NotNull CodecInfo codecInfo
+            int frameSize
     );
 
     /**

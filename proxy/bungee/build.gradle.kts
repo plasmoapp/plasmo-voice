@@ -45,7 +45,7 @@ dependencies {
         exclude("com.google.guava")
     }
 
-    shadow(rootProject.libs.opus)
+    shadow(rootProject.libs.opus.concentus)
     shadow(rootProject.libs.config)
     shadow(rootProject.libs.crowdin.lib) {
         isTransitive = false
@@ -76,6 +76,8 @@ tasks {
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
         relocate("org.bstats", "su.plo.voice.libs.bstats")
+
+        relocate("org.concentus", "su.plo.voice.libs.concentus")
 
         relocate("com.google.inject", "su.plo.voice.libs.google.inject")
         relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")

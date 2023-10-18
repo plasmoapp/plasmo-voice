@@ -13,36 +13,39 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+@SuppressWarnings("unchecked")
 public final class VoiceCodecManager implements CodecManager {
 
     private final Map<String, CodecSupplier<?, ?>> codecs = Maps.newHashMap();
 
     @Override
-    public synchronized @NotNull <T extends AudioEncoder> T createEncoder(@NotNull CodecInfo codecInfo,
-                                                                          int sampleRate,
-                                                                          boolean stereo,
-                                                                          int bufferSize,
-                                                                          int mtuSize) {
+    public synchronized @NotNull <T extends AudioEncoder> T createEncoder(
+            @NotNull CodecInfo codecInfo,
+            int sampleRate,
+            boolean stereo,
+            int mtuSize
+    ) {
         CodecSupplier<?, ?> supplier = codecs.get(codecInfo.getName());
         if (supplier == null) {
             throw new IllegalArgumentException("Codec encoder with name " + codecInfo.getName() + " is not registered");
         }
 
-        return (T) supplier.createEncoder(sampleRate, stereo, bufferSize, mtuSize, codecInfo);
+        return (T) supplier.createEncoder(codecInfo, sampleRate, stereo, mtuSize);
     }
 
     @Override
-    public synchronized @NotNull <T extends AudioDecoder> T createDecoder(@NotNull CodecInfo codecInfo,
-                                                                          int sampleRate,
-                                                                          boolean stereo,
-                                                                          int bufferSize,
-                                                                          int mtuSize) {
+    public synchronized @NotNull <T extends AudioDecoder> T createDecoder(
+            @NotNull CodecInfo codecInfo,
+            int sampleRate,
+            boolean stereo,
+            int frameSize
+    ) {
         CodecSupplier<?, ?> supplier = codecs.get(codecInfo.getName());
         if (supplier == null) {
             throw new IllegalArgumentException("Codec encoder with name " + codecInfo.getName() + " is not registered");
         }
 
-        return (T) supplier.createDecoder(sampleRate, stereo, bufferSize, mtuSize, codecInfo);
+        return (T) supplier.createDecoder(codecInfo, sampleRate, stereo, frameSize);
     }
 
     @Override

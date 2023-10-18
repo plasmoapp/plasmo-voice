@@ -383,7 +383,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 ),
                 sampleRate,
                 stereo,
-                (sampleRate / 1_000) * 20,
                 config.voice().mtuSize()
         );
     }
@@ -397,8 +396,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 new OpusDecoderInfo(),
                 sampleRate,
                 stereo,
-                (sampleRate / 1_000) * 20,
-                config.voice().mtuSize()
+                (sampleRate / 1_000) * 20
         );
     }
 }
