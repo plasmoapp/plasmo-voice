@@ -35,10 +35,10 @@ public interface InputDevice extends AudioDevice {
      * Reads audio samples from the input device with the specified buffer size.
      * The buffer size determines the number of audio samples to read.
      *
-     * @param bufferSize The size of the buffer (frame size) for reading samples.
+     * @param frameSize The size of the frame for reading samples.
      * @return An array of audio samples read from the device, or {@code null} if the buffer size exceeds available samples.
      */
-    short[] read(int bufferSize);
+    short[] read(int frameSize);
 
     /**
      * Reads audio samples from the input device using the buffer size calculated from the AudioFormat.

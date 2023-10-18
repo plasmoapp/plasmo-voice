@@ -66,11 +66,11 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
     }
 
     @Override
-    public short[] read(int bufferSize) {
+    public short[] read(int frameSize) {
         if (!isOpen()) throw new IllegalStateException("Device is not open");
 
-        byte[] samples = new byte[bufferSize];
-        int read = device.read(samples, 0, bufferSize);
+        byte[] samples = new byte[frameSize];
+        int read = device.read(samples, 0, frameSize);
         if (read == -1) {
             return null;
         }

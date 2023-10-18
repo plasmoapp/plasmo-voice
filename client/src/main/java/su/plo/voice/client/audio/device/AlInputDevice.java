@@ -96,11 +96,11 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     }
 
     @Override
-    public short[] read(int bufferSize) {
-        if (!isOpen() || bufferSize > available()) return null;
+    public short[] read(int frameSize) {
+        if (!isOpen() || frameSize > available()) return null;
 
-        short[] shorts = new short[bufferSize * getFormat().getChannels()];
-        ALC11.alcCaptureSamples(devicePointer, shorts, bufferSize);
+        short[] shorts = new short[frameSize * getFormat().getChannels()];
+        ALC11.alcCaptureSamples(devicePointer, shorts, frameSize);
         AlUtil.checkAlcErrors(devicePointer, "Capture samples");
 
         return shorts;
