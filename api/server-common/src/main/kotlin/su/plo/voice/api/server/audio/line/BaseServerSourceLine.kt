@@ -3,7 +3,8 @@ package su.plo.voice.api.server.audio.line
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.audio.source.AudioSourceManager
 import su.plo.voice.api.server.audio.source.ServerAudioSource
-import su.plo.voice.api.server.audio.source.BaseServerDirectSource
+import su.plo.voice.api.server.audio.source.ServerBroadcastSource
+import su.plo.voice.api.server.audio.source.ServerDirectSource
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo
@@ -50,15 +51,47 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
      *
      * Direct sources are used to send audio data directly to the players.
      *
+     * @param player The player attached to the direct source.
      * @param stereo Whether the source should be stereo (default is false).
      * @param decoderInfo Optional decoder information, default is [OpusDecoderInfo].
-     * @return A new [BaseServerDirectSource] instance.
+     * @return A new [ServerDirectSource] instance.
      */
     fun createDirectSource(
+        player: VoicePlayer,
         stereo: Boolean = false,
         decoderInfo: CodecInfo? = OpusDecoderInfo()
-    ): BaseServerDirectSource
+    ): ServerDirectSource
 
+    /**
+     * @see createDirectSource
+     */
+    fun createDirectSource(
+        player: VoicePlayer,
+        stereo: Boolean = false
+    ): ServerDirectSource = createDirectSource(player, stereo, OpusDecoderInfo())
+
+    /**
+     * Creates a new broadcast source.
+     *
+     * Broadcast sources are used to send audio data directly to the group of players.
+     * By default, it sends packets to all players with Plasmo Voice installed,
+     * but you can change a group of players using [ServerBroadcastSource.players]
+     *
+     * @param stereo Whether the source should be stereo (default is false).
+     * @param decoderInfo Optional decoder information, default is [OpusDecoderInfo].
+     * @return A new [ServerBroadcastSource] instance.
+     */
+    fun createBroadcastSource(
+        stereo: Boolean = false,
+        decoderInfo: CodecInfo? = OpusDecoderInfo()
+    ): ServerBroadcastSource
+
+    /**
+     * @see createBroadcastSource
+     */
+    fun createBroadcastSource(
+        stereo: Boolean = false
+    ): ServerBroadcastSource = createBroadcastSource(stereo, OpusDecoderInfo())
 
     /**
      * Removes a source from the source map by its unique identifier.

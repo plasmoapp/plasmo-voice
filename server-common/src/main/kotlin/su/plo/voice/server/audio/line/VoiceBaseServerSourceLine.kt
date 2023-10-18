@@ -7,10 +7,12 @@ import su.plo.voice.api.server.PlasmoBaseVoiceServer
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine
 import su.plo.voice.api.server.audio.line.ServerPlayerSetManager
 import su.plo.voice.api.server.audio.source.ServerAudioSource
-import su.plo.voice.api.server.audio.source.BaseServerDirectSource
+import su.plo.voice.api.server.audio.source.ServerBroadcastSource
+import su.plo.voice.api.server.audio.source.ServerDirectSource
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
+import su.plo.voice.server.audio.source.VoiceServerBroadcastSource
 import su.plo.voice.server.audio.source.VoiceServerDirectSource
 import java.util.*
 import java.util.stream.Collectors
@@ -49,14 +51,25 @@ abstract class VoiceBaseServerSourceLine(
             }
         } ?: this
 
-    override fun createDirectSource(stereo: Boolean, decoderInfo: CodecInfo?): BaseServerDirectSource =
-        VoiceServerDirectSource(
+    override fun createBroadcastSource(stereo: Boolean, decoderInfo: CodecInfo?): ServerBroadcastSource =
+        VoiceServerBroadcastSource(
             voiceServer,
             voiceServer.udpConnectionManager,
             addon,
             this,
             decoderInfo,
             stereo
+        ).also { sourceById[it.id] = it }
+
+    override fun createDirectSource(player: VoicePlayer, stereo: Boolean, decoderInfo: CodecInfo?): ServerDirectSource =
+        VoiceServerDirectSource(
+            voiceServer,
+            voiceServer.udpConnectionManager,
+            addon,
+            this,
+            decoderInfo,
+            stereo,
+            player
         ).also { sourceById[it.id] = it }
 
     override fun removeSource(sourceId: UUID) {
