@@ -1,17 +1,20 @@
 package su.plo.voice.client.audio.filter;
 
+import com.plasmoverse.rnnoise.Denoise;
+import com.plasmoverse.rnnoise.DenoiseException;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.rnnoise.Denoiser;
 
 public final class NoiseSuppressionFilter implements AudioFilter {
 
     private final ConfigEntry<Boolean> activeEntry;
-    private final ThreadLocal<Denoiser> instance = new ThreadLocal<>();
     private final ThreadLocal<LimiterFilter> limiter;
+
+    private @Nullable Denoise instance;
 
     public NoiseSuppressionFilter(int sampleRate, @NotNull ConfigEntry<Boolean> activeEntry) {
         this.limiter = ThreadLocal.withInitial(() -> new LimiterFilter(sampleRate, -6.0F));
@@ -25,14 +28,14 @@ public final class NoiseSuppressionFilter implements AudioFilter {
     private void toggle(boolean value) {
         if (value) {
             try {
-                instance.set(new Denoiser());
+                this.instance = Denoise.create();
             } catch (Exception e) {
                 BaseVoice.LOGGER.error("RNNoise is not available on this platform");
                 activeEntry.set(false);
             }
-        } else if (instance.get() != null) {
-            instance.get().close();
-            instance.set(null);
+        } else if (instance != null) {
+            instance.close();
+            this.instance = null;
         }
     }
 
@@ -43,11 +46,17 @@ public final class NoiseSuppressionFilter implements AudioFilter {
 
     @Override
     public short[] process(short[] samples) {
+        if (instance == null) return samples;
+
         limiter.get().process(samples);
 
-        float[] floats = AudioUtil.shortsToFloats(samples);
-        samples = AudioUtil.floatsToShorts(instance.get().process(floats));
-        return samples;
+        try {
+            float[] floats = AudioUtil.shortsToFloats(samples);
+            samples = AudioUtil.floatsToShorts(instance.process(floats));
+            return samples;
+        } catch (DenoiseException e) {
+            throw new RuntimeException("Failed to denoise audio samples", e);
+        }
     }
 
     @Override

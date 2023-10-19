@@ -96,7 +96,7 @@ repositories {
 
 dependencies {
     compileOnly(rootProject.libs.netty)
-    implementation(rootProject.libs.rnnoise)
+    implementation(rootProject.libs.rnnoise.jni)
 
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
@@ -164,7 +164,7 @@ dependencies {
     shadowCommon(rootProject.libs.config)
     shadowCommon(rootProject.libs.opus.jni)
     shadowCommon(rootProject.libs.opus.concentus)
-    shadowCommon(rootProject.libs.rnnoise)
+    shadowCommon(rootProject.libs.rnnoise.jni)
     shadowCommon(rootProject.libs.crowdin.lib) {
         isTransitive = false
     }
