@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
-import su.plo.crowdin.PlasmoCrowdinLib
+import su.plo.slib.libs.crowdin.CrowdinLib
 import java.io.File
 
 object PlasmoCrowdinMod {
@@ -21,7 +21,7 @@ object PlasmoCrowdinMod {
             logger.info("Downloading translations")
 
             val translations = try {
-                PlasmoCrowdinLib.downloadRawTranslations("plasmo-voice", "client.json").await()
+                CrowdinLib.downloadRawTranslations("plasmo-voice", "client.json").await()
             } catch (e: Exception) {
                 logger.warn("Failed to download translations: {}", e.message)
                 return@launch

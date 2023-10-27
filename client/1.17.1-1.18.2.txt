@@ -1,1 +1,13 @@
 net.minecraft.network.protocol.game.ServerboundClientInformationPacket getLanguage() net.minecraft.network.protocol.game.ServerboundClientInformationPacket language()
+
+net.minecraftforge.fmllegacy.network.NetworkDirection net.minecraftforge.network.NetworkDirection
+net.minecraftforge.fmllegacy.network.NetworkEvent net.minecraftforge.network.NetworkEvent
+net.minecraftforge.fmllegacy.network.NetworkRegistry net.minecraftforge.network.NetworkRegistry
+net.minecraftforge.fmllegacy.network.event.EventNetworkChannel net.minecraftforge.network.event.EventNetworkChannel
+
+net.minecraftforge.fmlclient.registry.ClientRegistry net.minecraftforge.client.ClientRegistry
+
+net.minecraftforge.client.event.RenderWorldLastEvent net.minecraftforge.client.event.RenderLevelLastEvent
+net.minecraftforge.client.event.RenderWorldLastEvent getMatrixStack() net.minecraftforge.client.event.RenderLevelLastEvent getPoseStack()
+net.minecraftforge.client.event.RenderWorldLastEvent getPartialTicks() net.minecraftforge.client.event.RenderLevelLastEvent getPartialTick()
+

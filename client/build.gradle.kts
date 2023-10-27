@@ -3,7 +3,6 @@ import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
 import gg.essential.util.prebundleNow
-import net.fabricmc.loom.extension.MixinExtension
 import su.plo.config.toml.Toml
 
 val mavenGroup: String by rootProject
@@ -33,10 +32,6 @@ if (platform.isForge) {
 }
 
 loom {
-    mixin {
-        useLegacyMixinAp.set(true)
-    }
-
     runs {
         getByName("client") {
             programArgs("--username", "GNOME__")
@@ -46,7 +41,7 @@ loom {
     }
 }
 
-plasmoCrowdin {
+crowdin {
     projectId = "plasmo-voice"
     sourceFileName = "client.json"
     resourceDir = "assets/plasmovoice/lang"
@@ -82,8 +77,7 @@ fun universalCraftVersion() = rootProject.libs.versions.universalcraft.map {
 
 fun slibVersion() = rootProject.libs.versions.crosslib.map {
     val minecraftVersion = when (platform.mcVersion) {
-        11802 -> "1.17.1"
-        11902, 11904, 12001 -> "1.19.3"
+        11802, 11902, 11904, 12001 -> "1.19.3"
         else -> platform.mcVersionStr
     }
 
@@ -165,9 +159,6 @@ dependencies {
     shadowCommon(rootProject.libs.opus.jni)
     shadowCommon(rootProject.libs.opus.concentus)
     shadowCommon(rootProject.libs.rnnoise.jni)
-    shadowCommon(rootProject.libs.crowdin.lib) {
-        isTransitive = false
-    }
 
     shadowCommon(rootProject.libs.guice) {
         exclude("com.google.guava")
@@ -203,7 +194,7 @@ tasks {
         }
 
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        dependsOn(plasmoCrowdinDownload)
+        dependsOn(crowdinDownload)
     }
 
     jar {

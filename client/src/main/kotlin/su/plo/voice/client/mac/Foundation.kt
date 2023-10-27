@@ -19,7 +19,11 @@ interface Foundation : Library {
 
     companion object {
         val INSTANCE: Foundation by lazy {
+            //#if MC>=11700
             Native.load("Foundation", Foundation::class.java)
+            //#else
+            //$$ Native.loadLibrary("Foundation", Foundation::class.java)
+            //#endif
         }
 
         fun getNSString(string: String): NativeLong {

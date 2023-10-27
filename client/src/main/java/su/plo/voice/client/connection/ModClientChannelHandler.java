@@ -16,15 +16,9 @@ import net.minecraft.client.multiplayer.ClientPacketListener;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
-//#elseif MC>=11802
+//#else
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraftforge.network.NetworkEvent;
-//#elseif MC>=11701
-//$$ import net.minecraftforge.fmllegacy.network.NetworkDirection;
-//$$ import net.minecraftforge.fmllegacy.network.NetworkEvent;
-//#else
-//$$ import net.minecraftforge.fml.network.NetworkDirection;
-//$$ import net.minecraftforge.fml.network.NetworkEvent;
 //#endif
 
 import java.io.IOException;

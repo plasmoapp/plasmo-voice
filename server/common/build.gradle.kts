@@ -13,7 +13,7 @@ dependencies {
     compileOnly(rootProject.libs.netty)
 }
 
-plasmoCrowdin {
+crowdin {
     projectId = "plasmo-voice"
     sourceFileName = "server/server.toml"
     createList = true
@@ -21,6 +21,6 @@ plasmoCrowdin {
 
 tasks {
     processResources {
-        dependsOn(plasmoCrowdinDownload)
+        dependsOn(crowdinDownload)
     }
 }

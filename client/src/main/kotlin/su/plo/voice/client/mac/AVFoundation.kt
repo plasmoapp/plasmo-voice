@@ -22,7 +22,11 @@ interface AVFoundation : Library {
 
     companion object {
         val INSTANCE: AVFoundation by lazy {
+            //#if MC>=11700
             Native.load("AVFoundation", AVFoundation::class.java)
+            //#else
+            //$$ Native.loadLibrary("AVFoundation", AVFoundation::class.java)
+            //#endif
         }
     }
 }

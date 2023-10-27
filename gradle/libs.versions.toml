@@ -4,7 +4,7 @@ kotlinx-json = "1.5.1"
 kotlinx-coroutines = "1.7.3"
 
 junit5 = "5.8.2"
-crowdin = "1.0.2"
+crowdin = "1.0.2-SNAPSHOT"
 ustats = "1.0.2"
 universalcraft = "277"
 bstats = "3.0.2"

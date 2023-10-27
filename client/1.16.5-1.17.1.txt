@@ -1,0 +1,9 @@
+net.minecraftforge.fml.network.NetworkDirection net.minecraftforge.fmllegacy.network.NetworkDirection
+net.minecraftforge.fml.network.NetworkEvent net.minecraftforge.fmllegacy.network.NetworkEvent
+net.minecraftforge.fml.network.NetworkRegistry net.minecraftforge.fmllegacy.network.NetworkRegistry
+net.minecraftforge.fml.network.event.EventNetworkChannel net.minecraftforge.fmllegacy.network.event.EventNetworkChannel
+
+net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData getClassType() net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData clazz()
+net.minecraftforge.fml.event.IModBusEvent net.minecraftforge.fml.event.IModBusEvent net.minecraftforge.fml.event.lifecycle.IModBusEvent
+
+net.minecraftforge.fml.client.registry.ClientRegistry net.minecraftforge.fmlclient.registry.ClientRegistry

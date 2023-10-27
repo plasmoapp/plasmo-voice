@@ -33,40 +33,19 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 //#else
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
-
-//#if MC>=11802
+//$$
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
-//#elseif MC>=11701
-//$$ import net.minecraftforge.fmllegacy.network.event.EventNetworkChannel;
-//#else
-//$$ import net.minecraftforge.fml.network.event.EventNetworkChannel;
-//#endif
-
+//$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
+//$$
 //#if MC>=11900
 //$$ import net.minecraftforge.fml.common.Mod;
 //$$ import net.minecraftforge.api.distmarker.Dist;
-//$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 //$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
 //$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 //$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
 //#else
-//$$import net.minecraftforge.client.event.RenderGameOverlayEvent;
-
-//#if MC>=11802
 //$$ import net.minecraftforge.client.ClientRegistry;
 //$$ import net.minecraftforge.client.event.RenderLevelLastEvent;
-//#else
-
-//#if MC>=11701
-//$$ import net.minecraftforge.fmlclient.registry.ClientRegistry;
-//#else
-//$$ import net.minecraftforge.fml.client.registry.ClientRegistry;
-//#endif
-
-//$$ import net.minecraftforge.client.event.RenderWorldLastEvent;
-
-//#endif
-
 //#endif
 
 //#endif
@@ -170,6 +149,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     }
 
     //#else
+
     //$$ public void onInitialize(EventNetworkChannel channel) {
     //$$     channel.addListener(handler::receive);
              //#if MC<11900
@@ -178,28 +158,29 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     super.onInitialize();
     //$$ }
     //$$ // todo: onShutdown mixin?
-    //#if MC>=11900
     //$$ @SubscribeEvent
     //$$ public void onOverlayRender(RenderGuiOverlayEvent.Post event) {
+    //#if MC>=11900
     //$$     if (!event.getOverlay().id().equals(VanillaGuiOverlay.CHAT_PANEL.id())) return;
-             //#if MC>=12000
-             //$$ hudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
-             //#else
-             //$$ hudRenderer.render(event.getPoseStack(), event.getPartialTick());
-             //#endif
+    //#else
+    //$$     if (event.getType() != RenderGameOverlayEvent.ElementType.CHAT) return;
+    //#endif
+    //$$
+    //$$     hudRenderer.render(event.getPoseStack(), event.getPartialTick());
     //$$ }
     //$$
+    //$$ @SubscribeEvent
+    //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+    //$$     onServerDisconnect();
+    //$$ }
+    //$$
+    //#if MC>=11900
     //$$ @SubscribeEvent
     //$$ public void onWorldRender(RenderLevelStageEvent event) {
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
     //$$             UMinecraft.getWorld() == null
     //$$     ) return;
     //$$     levelRenderer.render(UMinecraft.getWorld(), event.getPoseStack(), event.getCamera(), event.getPartialTick());
-    //$$ }
-    //$$
-    //$$ @SubscribeEvent
-    //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-    //$$     onServerDisconnect();
     //$$ }
     //$$
     //$$ @Mod.EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -212,13 +193,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ }
     //#else
     //$$ @SubscribeEvent
-    //$$ public void onOverlayRender(RenderGameOverlayEvent.Post event) {
-    //$$     if (event.getType() != RenderGameOverlayEvent.ElementType.CHAT) return;
-    //$$     hudRenderer.render(event.getMatrixStack(), event.getPartialTicks());
-    //$$ }
-    //$$
-    //$$ @SubscribeEvent
-    //#if MC>=11802
     //$$ public void onWorldRender(RenderLevelLastEvent event) {
     //$$     levelRenderer.render(
     //$$             UMinecraft.getWorld(),
@@ -227,21 +201,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$             event.getPartialTick()
     //$$     );
     //$$ }
-    //#else
-    //$$ public void onWorldRender(RenderWorldLastEvent event) {
-    //$$     levelRenderer.render(
-    //$$             UMinecraft.getWorld(),
-    //$$             event.getMatrixStack(),
-    //$$             UMinecraft.getMinecraft().gameRenderer.getMainCamera(),
-    //$$             event.getPartialTicks()
-    //$$     );
-    //$$ }
     //#endif
-    //$$
-    //$$ @SubscribeEvent
-    //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggedOutEvent event) {
-    //$$     onServerDisconnect();
-    //$$ }
-    //#endif
+
     //#endif
 }

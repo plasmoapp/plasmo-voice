@@ -1,0 +1,8 @@
+net.minecraft.network.chat.TextComponent net.minecraft.network.chat.contents.LiteralContents
+net.minecraft.network.chat.TranslatableComponent net.minecraft.network.chat.contents.TranslatableContents
+
+net.minecraftforge.client.event.RenderGameOverlayEvent net.minecraftforge.client.event.RenderGuiOverlayEvent
+net.minecraftforge.client.event.RenderGameOverlayEvent getMatrixStack() net.minecraftforge.client.event.RenderGuiOverlayEvent getPoseStack()
+net.minecraftforge.client.event.RenderGameOverlayEvent getPartialTicks() net.minecraftforge.client.event.RenderGuiOverlayEvent getPartialTick()
+
+net.minecraftforge.client.event.ClientPlayerNetworkEvent$LoggedOutEvent net.minecraftforge.client.event.ClientPlayerNetworkEvent$LoggingOut
