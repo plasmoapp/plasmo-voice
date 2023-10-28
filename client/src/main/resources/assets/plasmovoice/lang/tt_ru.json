@@ -1,0 +1,162 @@
+{
+    "modmenu.descriptionTranslation.plasmovoice": "Аудио-шуыштыру һәм күп функцияләр белән тавышлы чат моды",
+
+    "key.plasmovoice.settings": "Тавышлы чат көйләүләре",
+
+    "key.plasmovoice.general": "Гомуми",
+    "key.plasmovoice.general.mute_microphone": "Микрофон тавышын сүндерү",
+    "key.plasmovoice.general.disable_voice": "Тавышлы чатны сүндерү",
+    "key.plasmovoice.general.action": "Гамәл төймәсе",
+
+    "key.plasmovoice.distance": "%s тавыш арасы",
+    "key.plasmovoice.distance.increase": "Тавыш арасын күтәрү",
+    "key.plasmovoice.distance.decrease": "Тавыш арасын киметү",
+
+    "key.plasmovoice.occlusion": "Тавыш окклюзиясе",
+    "key.plasmovoice.occlusion.toggle": "Тавыш окклюзиясен күчерү",
+
+
+    "gui.plasmovoice.title": "%1$s %2$s көйләүләре",
+    "gui.plasmovoice.toggle.microphone": "Микрофон күчерү\n%s",
+    "gui.plasmovoice.toggle.voice": "Тавышлы чат күчерү\n%s",
+    "gui.plasmovoice.toggle.currently": "Хәзерге: %s",
+    "gui.plasmovoice.toggle.enabled": "Кушык",
+    "gui.plasmovoice.toggle.disabled": "Сүнек",
+
+
+    "gui.plasmovoice.devices": "Җайланмалар",
+
+    "gui.plasmovoice.devices.microphone": "Микрофон",
+    "gui.plasmovoice.devices.activation_threshold": "Активация чик кыйммәте",
+    "gui.plasmovoice.devices.activation_threshold.tooltip": "Көнүзәк, әгәр хәзерге активация төре — «тавыш буенча активлаштыру» булса гына.\n\nШудыргычны сөйләшү вакытында гына активация чик кыйммәтеннән артып киткән урынга күчерегез.\n\nМикрофон тикшерүне кушу һәм Сезнең тавышны ишетү өчен Сез тамгачыкны баса ала",
+    "gui.plasmovoice.devices.not_available": "Ирешерлек түгел",
+    "gui.plasmovoice.devices.default": "Беренчел",
+    "gui.plasmovoice.devices.microphone_volume": "Микрофон катылыгы",
+    "gui.plasmovoice.devices.noise_suppression": "Шау тыю",
+    "gui.plasmovoice.devices.noise_suppression.tooltip": "RNNoise шау тыю.\n\nНейрон челтәрләрне кулланыла. Яхшы эшли, ләкин ресурсларга таләп итә ала.\n\nСезнең микрофонга кулланыла.",
+    "gui.plasmovoice.devices.stereo_capture": "Стерео-яздыру",
+    "gui.plasmovoice.devices.stereo_capture.tooltip": "Тавышны стереода яздыра, аннары аны монога әвелдерә.\nСыйфатны яхшырта ала, ләкин тавышны акрынайта.",
+    "gui.plasmovoice.devices.output": "Чыгыш җайланмасы",
+
+    "gui.plasmovoice.devices.output_device": "Чыгыш җайланмасы",
+    "gui.plasmovoice.devices.volume": "Катылык",
+    "gui.plasmovoice.devices.volume.tooltip": "Кычкыруның 100%-тан артыгы артуы бозуларга китерергә мөмкин.",
+    "gui.plasmovoice.devices.occlusion": "Тавыш окклюзиясе",
+    "gui.plasmovoice.devices.occlusion.tooltip": "Уенчыдан һәр тавыш чыганагына нурны юнәлдерә һәм, юлда блоклар булса, тавышны акрыная.\n\nӘгәр Сез башка бүлмәләрдән кешеләрне ишетергә теләмәсәгез, ләкин кайвакыт дөрес эшләми, шуңа күрә аны Сезгә кирәк булмаган вакытта сүндерергә кирәк.",
+    "gui.plasmovoice.devices.directional_sources": "Юнәлешле чыганаклар",
+    "gui.plasmovoice.devices.directional_sources.tooltip": "Тавыш чыганагы турыдан-туры Сезгә карамый һәм күрсәтелгән почмактан читтә урнашкан булса, тавыш бераз акрынрак булачак.\n\nСез ишетә торган уенчыларга кулланыла.",
+    "gui.plasmovoice.devices.hrtf": "HRTF",
+    "gui.plasmovoice.devices.hrtf.tooltip": "Аудио-шуыштыру төгәллеген 3D-киңлектә тавышның кайдан чыкканын аңлауны җиңеләйтүдә яхшырта.\n\nТавыш сыйфатын бераз начарайта ала.\n\nСез ишетә торган уенчыларга кулланыла.",
+
+
+    "gui.plasmovoice.activation": "Тавыш активациясе",
+
+    "gui.plasmovoice.activation.type": "Активация төре:",
+    "gui.plasmovoice.activation.type_ptt": "Төймә буенча",
+    "gui.plasmovoice.activation.type_voice": "Тавыш буенча",
+    "gui.plasmovoice.activation.type_inherit": "Варислык",
+    "gui.plasmovoice.activation.ptt_button": "Әйтү өчен төймә",
+    "gui.plasmovoice.activation.toggle_button": "Микрофон тавышын күчерү",
+    "gui.plasmovoice.activation.toggle": "«%s» күчерү\n%s",
+    "gui.plasmovoice.activation.distance": "%s арасы",
+
+
+    "gui.plasmovoice.advanced": "Киңәйтелгән",
+
+    "gui.plasmovoice.advanced.visual": "Күрсәтмә һәм интерфейс",
+    "gui.plasmovoice.advanced.visualize_voice_distance": "Тавыш арасын күрсәтү",
+    "gui.plasmovoice.advanced.visualize_voice_distance_on_join": "Кушылганда күрсәтү",
+
+    "gui.plasmovoice.advanced.audio_engine": "Аудио-эшкәрткеч",
+    "gui.plasmovoice.advanced.directional_sources_angle": "Юнәлешле чыганаклар почмагы",
+    "gui.plasmovoice.advanced.directional_sources_angle.tooltip": "Юнәлешле чыганакларның көйләүләр кушылган очракта, Сез чыганакны 100%-ка ишетәчәк почмак.\n\n360 градус — бу әгәр көйләү сүндерелгән булса.",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono": "Моно стерео-чыганаклар",
+    "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "Яхшырак аудио сыйфаты өчен өстәмәләр стерео чыганакларын куллана. Сыйфат күпкә яхшырак, ләкин борылыш шуыштыруга йогынты ясамый. Тавыш ерактан гына сүнә.\n\nКөйләү кушылганда, стерео чыганаклары гади моно чыганакларына әверелдереләчәк. Сыйфат начаррак, ләкин аларның шуыштыру бар булачак.",
+    "gui.plasmovoice.advanced.panning": "Стерео-шуыштыру",
+
+    "gui.plasmovoice.advanced.exponential_volume": "Экспоненциаль катылык",
+    "gui.plasmovoice.advanced.exponential_volume.volume_slider": "Катылык шудыргычы",
+    "gui.plasmovoice.advanced.exponential_volume.distance_gain": "Араны көчәйтү",
+
+
+    "gui.plasmovoice.hotkeys": "Төймәләр",
+
+
+    "gui.plasmovoice.volume": "Катылык",
+
+    "gui.plasmovoice.volume.sources": "Чыганаклар катылыгы",
+    "gui.plasmovoice.volume.players": "Уенчылар катылыгы",
+    "gui.plasmovoice.volume.players_search": "Эзләү...",
+
+
+    "gui.plasmovoice.about.made_by": "%s авторлары",
+    "gui.plasmovoice.about.huix": "Концепт һәм дизайн",
+    "gui.plasmovoice.about.programming": "Программалау",
+    "gui.plasmovoice.about.artist": "Рәссам",
+
+    "gui.plasmovoice.about.support": "Ярдәм өчен рәхмәт",
+
+    "gui.plasmovoice.about.links": "%s күрсәтелгән сайтларында бар",
+    "gui.plasmovoice.about.copyright": "Зинһар, рәсми чыганакларны гына кулланыгыз һәм безнең рөхсәтсез модны таратмагыз. Теләгән сораулар, ярдәм, киңәшләр яки тәкъдимнәр өчен Сез Discord-та бәйләнә аласыз.",
+
+
+    "gui.plasmovoice.overlay": "Каплау",
+
+    "gui.plasmovoice.overlay.activation_icon": "Активация тамгачыгы",
+    "gui.plasmovoice.overlay.activation_icon_show": "Тамгачыкларны күрсәтү",
+    "gui.plasmovoice.overlay.activation_icon_position": "Тамгачыклар урыны",
+    "gui.plasmovoice.overlay.activation_icon_position.choose": "Тамгачыклар урынын сайлагыз",
+    "gui.plasmovoice.overlay.hud_position.top_left": "Өске сул",
+    "gui.plasmovoice.overlay.hud_position.top_center": "Өске урта",
+    "gui.plasmovoice.overlay.hud_position.top_right": "Өске уң",
+    "gui.plasmovoice.overlay.hud_position.bottom_left": "Аскы сул",
+    "gui.plasmovoice.overlay.hud_position.bottom_center": "Аскы урта",
+    "gui.plasmovoice.overlay.hud_position.bottom_right": "Аскы уң",
+
+    "gui.plasmovoice.overlay.source_icons": "Асыл тамгачыклары",
+    "gui.plasmovoice.overlay.show_source_icons": "Тамгачыкларны күрсәтү",
+    "gui.plasmovoice.overlay.show_source_icons.hud": "Интерфейс гына",
+    "gui.plasmovoice.overlay.show_source_icons.always": "Һәрвакыт",
+    "gui.plasmovoice.overlay.show_source_icons.hidden": "Яшерен",
+    "gui.plasmovoice.overlay.show_static_source_icons": "Статик чыганакларны күрсәтү",
+
+    "gui.plasmovoice.overlay.enable": "Каплау",
+    "gui.plasmovoice.overlay.position": "Каплау урыны",
+    "gui.plasmovoice.overlay.position.choose": "Каплау урынын сайлагыз",
+    "gui.plasmovoice.overlay.style": "Каплау стиле",
+    "gui.plasmovoice.overlay.style.name_skin": "Исем һәм кыяфәт",
+    "gui.plasmovoice.overlay.style.skin": "Кыяфәт генә",
+    "gui.plasmovoice.overlay.style.name": "Исем генә",
+
+    "gui.plasmovoice.overlay.sources": "Чыганаклар каплавы",
+    "gui.plasmovoice.overlay.sources.when_talking": "Сөйләнгәндә",
+    "gui.plasmovoice.overlay.sources.always": "Һәрвакыт",
+    "gui.plasmovoice.overlay.sources.never": "Һичвакыт",
+
+
+    "gui.plasmovoice.addons": "Өстәлмәләр",
+
+
+    "gui.plasmovoice.not_available": "Plasmo Voice бу серверында утыртылмады",
+    "gui.plasmovoice.connecting": "UDP серверына тоташу...",
+    "gui.plasmovoice.cannot_connect_to_udp": "UPD серверына тоташылып булмый,\nUDP порты ябык булса кирәк. Викине укыгыз:\n%s",
+
+
+    "pv.activation.parent": "Баба",
+
+
+    "message.plasmovoice.close": "Ябу",
+    "message.plasmovoice.on": "Кушык",
+    "message.plasmovoice.off": "Сүнек",
+
+    "message.plasmovoice.occlusion_changed": "Тавыш окклюзиясе: %s",
+    "message.plasmovoice.distance_changed": "%s тавыш арасы: %d",
+
+    "message.plasmovoice.activation.toggle": "%s: %s",
+
+    "message.plasmovoice.macos_incompatible_launcher": "Сез микрофонны куллана алмыйсыз, чөнки Сезнең Minecraft лаунчеры MacOS-ендә микрофон хокукын хупламый. Сезгә %s күчерергә кирәк.",
+
+    "message.plasmovoice.update_available": "Plasmo Voice модының %1$s яңа версия бар: %2$s",
+    "message.plasmovoice.update_available.click": "Йөкләнү",
+    "message.plasmovoice.update_available.hover": "%s"
+}
