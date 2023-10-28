@@ -7,8 +7,8 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
     permissions:
       contents: write
       packages: write
@@ -27,6 +27,16 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
+
+    - name: Build Dokka with Gradle
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: dokkaHtmlCollector
+
+    - name: Upload artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ./build/dokka/htmlCollector
 
     - name: Publish Paper to Modrinth
       uses: Apehum/mc-publish@v1.1
@@ -88,3 +98,20 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: false
+
+  deploy-dokka:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages-release
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
