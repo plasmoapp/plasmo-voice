@@ -1,0 +1,57 @@
+[server.pv.error]
+no_permissions = "&cМине гафу итегез, ләкин бу боерыкны өчен кабызу Сезнең хокук юк. Зинһар, сервер администраторлары белән бәйләнегез, әгәр Сез моның хата булуына ышанасыз икән."
+player_only_command = "Уенчы гына бу боерыкны кабыза ала"
+player_not_found = "Уенчы табылмады"
+mod_missing_kick_message = """
+Гафу итегез, бу серверда уйнау өчен Сезгә Plasmo Voice модын утыртырга кирәк.
+Монда йөкләнегез: https://modrinth.com/plugin/plasmo-voice"""
+version_not_supported = "Гафу итегез, Сезнең Plasmo Voice версиясе бу серверда хупланмый. %s"
+version_not_supported_click = "Хуплана торган версияне йөкләнегез"
+version_not_supported_hover = "%s"
+
+[server.pv.mutes]
+empty_reason = "билгеләнмәгән"
+temporarily_muted = "Сезнең тавыш %1$s сүндерелде. Сәбәп: %2$s"
+permanently_muted = "Сезнең тавыш бөтенләйгә сүндерелде. Сәбәп: %s"
+unmuted = "Сезнең тавыш кушылды"
+
+  [server.pv.mutes.durations]
+  seconds = "%s секундка"
+  minutes = "%s минутка"
+  hours = "%s сәгатькә"
+  days = "%s көнгә"
+  weeks = "%s атнага"
+
+[server.pv.command.mute]
+usage = "Кулланылу: /vmute <уенчы> [озынлык] [сәбәп]"
+already_muted = "%s уенчының тавыш сүндерелде инде"
+temporarily_muted = "%1$s уенчының тавышы %2$s сүндерелде. Сәбәп: %3$s"
+permanently_muted = "%1$s уенчының тавышы бөтенләйгә сүндерелде. Сәбәп: %2$s"
+
+[server.pv.command.unmute]
+usage = "Кулланылу: /vunmute <уенчы>"
+not_muted = "%s уенчының тавышы сүндерелмәде"
+unmuted = "%s кушылды"
+
+[server.pv.command.mute_list]
+header = "Тавышсыз уенчылар:"
+entry = "%1$s. Тәмамлану вакыты: %2$s. Сәбәп: %3$s"
+entry_muted_by = "%2$s %1$s уенчыны сүндерде. Тәмамлану вакыты: %3$s. Сәбәп: %4$s"
+empty = "Тавышсыз уенчылар юк"
+expire_at = "%1$s, %2$s"
+never_expires = "беркайчан"
+expiration_date = "dd.MM.yyyy"
+expiration_time = "HH:mm:ss"
+
+[server.pv.command.list]
+message = "Клиент (%1$s/%2$s): %3$s"
+empty = "Plasmo Voice модын утыртылган уенчылар юк"
+
+[server.pv.command.reconnect]
+message = "Яңадан тоташылу җыелма җибәрелде"
+
+[server.pv.command.reload]
+message = "Көйләүләр яңадан йөкләнде"
+
+[client.pv.activation]
+proximity = "Янәшәлек"
