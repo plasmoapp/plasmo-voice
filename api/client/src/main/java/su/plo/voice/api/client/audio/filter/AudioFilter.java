@@ -8,7 +8,7 @@ import org.jetbrains.annotations.NotNull;
 public interface AudioFilter {
 
     /**
-     * Retrieves the name of the audio filter.
+     * Gets the name of the audio filter.
      *
      * @return The name of the filter.
      */
@@ -16,6 +16,7 @@ public interface AudioFilter {
 
     /**
      * Processes the audio filter on the given audio samples.
+     * <br/>
      * Implementations of this method may modify the original array of audio samples.
      *
      * @param samples The audio samples to process.
@@ -31,8 +32,8 @@ public interface AudioFilter {
     boolean isEnabled();
 
     /**
-     * Retrieves the number of required device channels to process this filter.
-     * A value of "0" indicates that the number of channels is not required.
+     * Gets the number of required device channels to process this filter.
+     * A value of "0" indicates that the number of channels is not required, so it will work always.
      *
      * @return The number of required device channels.
      */
@@ -42,7 +43,10 @@ public interface AudioFilter {
 
     /**
      * Represents the priority of the audio filter in execution.
-     * Filters with higher priorities are executed first.
+     *
+     * <p>
+     *     Lower priorities executes first.
+     * </p>
      */
     enum Priority {
         LOW,

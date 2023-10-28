@@ -17,11 +17,15 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
     /**
      * Gets or sets the timeout duration in milliseconds for closing this audio source.
      * If the source remains inactive for this duration, it will be automatically closed.
+     *
+     * @return The close timeout in ms.
      */
     var closeTimeoutMs: Long
 
     /**
      * Gets or sets the source group to which this audio source belongs.
+     *
+     * @return The source group.
      */
     val sourceGroup: SourceGroup
 

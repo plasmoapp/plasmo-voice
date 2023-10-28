@@ -10,11 +10,15 @@ interface ClientSourceLine : SourceLine, ClientPlayerSet {
 
     /**
      * Gets or sets the volume for this source line.
+     *
+     * @return The volume of this source line.
      */
     var volume: Double
 
     /**
      * Gets the translation component associated with this source line.
+     *
+     * @return The translation component.
      */
     val translationComponent: McTextComponent
         get() = McTextComponent.translatable(translation)

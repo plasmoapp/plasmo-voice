@@ -41,7 +41,7 @@ public interface Hotkey {
     /**
      * Checks if the hotkey is active in any context.
      * <br>
-     * For example the hotkey can be active in any menu.
+     * For example, the hotkey can be active in any menu.
      *
      * @return {@code true} if the hotkey is active in any context, {@code false} otherwise.
      */

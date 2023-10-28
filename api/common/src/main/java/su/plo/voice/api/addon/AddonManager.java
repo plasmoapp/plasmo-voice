@@ -33,15 +33,15 @@ public interface AddonManager {
     boolean isLoaded(@NotNull String id);
 
     /**
-     * Retrieves an {@link AddonContainer} associated with the addon ID.
+     * Gets an {@link AddonContainer} associated with the addon id.
      *
-     * @param id The unique ID of the addon to retrieve.
+     * @param id The id of the addon to get.
      * @return An optional containing the addon container if available, or an empty optional if the addon is not loaded.
      */
     Optional<AddonContainer> getAddon(@NotNull String id);
 
     /**
-     * Retrieves an {@link AddonContainer} associated with the instance of an addon.
+     * Gets an {@link AddonContainer} associated with the instance of an addon.
      *
      * @param instance The instance of the addon to retrieve.
      * @return An optional containing the addon container if available, or an empty optional if the addon is not loaded.

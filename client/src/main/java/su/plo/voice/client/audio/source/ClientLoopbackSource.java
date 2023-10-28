@@ -43,7 +43,7 @@ public final class ClientLoopbackSource implements LoopbackSource {
     @Override
     public void initialize(boolean stereo) throws DeviceException {
         this.stereo = stereo;
-        this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup(DeviceType.OUTPUT);
+        this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup();
         sourceGroup.create(stereo, AlSourceParams.DEFAULT);
 
         for (DeviceSource source : sourceGroup.getSources()) {

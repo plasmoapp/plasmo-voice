@@ -1,10 +1,13 @@
 package su.plo.voice.api.client.audio.device;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Collection;
 import java.util.Optional;
 
 /**
  * Manages device factories.
+ * <br/>
  * Device factories are used to create new audio devices.
  */
 public interface DeviceFactoryManager {
@@ -33,7 +36,7 @@ public interface DeviceFactoryManager {
     boolean unregisterDeviceFactory(String type);
 
     /**
-     * Retrieves a device factory by its unique type identifier.
+     * Gets a device factory by its unique type identifier.
      *
      * @param type The unique type identifier of the factory to retrieve.
      * @return An optional containing the device factory if found, or an empty optional if not found.
@@ -41,9 +44,9 @@ public interface DeviceFactoryManager {
     Optional<DeviceFactory> getDeviceFactory(String type);
 
     /**
-     * Retrieves a collection of all registered device factories.
+     * Gets a collection of all registered device factories.
      *
      * @return A collection of registered device factories.
      */
-    Collection<DeviceFactory> getDeviceFactories();
+    @NotNull Collection<DeviceFactory> getDeviceFactories();
 }

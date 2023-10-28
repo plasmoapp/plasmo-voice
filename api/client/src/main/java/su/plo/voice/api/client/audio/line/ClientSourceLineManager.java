@@ -33,6 +33,5 @@ public interface ClientSourceLineManager extends SourceLineManager<ClientSourceL
      * @param lines The collection of source lines to register as client source lines.
      * @return A collection of the registered client source lines.
      */
-    @NotNull
-    Collection<ClientSourceLine> register(@NotNull Collection<SourceLine> lines);
+    @NotNull Collection<ClientSourceLine> register(@NotNull Collection<SourceLine> lines);
 }

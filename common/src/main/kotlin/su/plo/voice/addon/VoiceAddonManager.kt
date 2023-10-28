@@ -40,7 +40,7 @@ class VoiceAddonManager(
         )
 
         require(AddonContainer.ID_PATTERN.matcher(addon.id).matches()) {
-            "An addon ID must start with a lowercase letter and may contain only lowercase letters, digits, hyphens, and underscores. It should be between 4 and 32 characters long."
+            "An addon id must start with a lowercase letter and may contain only lowercase letters, digits, hyphens, and underscores. It should be between 4 and 32 characters long."
         }
 
         val addonContainer = VoiceAddon(

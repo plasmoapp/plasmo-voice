@@ -12,6 +12,7 @@ plugins {
     idea
     alias(libs.plugins.shadow)
     alias(libs.plugins.idea.ext)
+    alias(libs.plugins.dokka)
     alias(libs.plugins.crowdin.plugin) apply(false)
 
     kotlin("jvm") version(libs.versions.kotlin.get())

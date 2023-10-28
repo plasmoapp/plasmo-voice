@@ -35,7 +35,7 @@ public final class VoiceOutputSourceGroup implements SourceGroup {
     }
 
     @Override
-    public Collection<DeviceSource> getSources() {
+    public @NotNull Collection<DeviceSource> getSources() {
         return sources;
     }
 }

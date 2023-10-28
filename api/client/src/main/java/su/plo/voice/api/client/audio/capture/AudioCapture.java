@@ -17,11 +17,11 @@ import java.util.Optional;
  * <p>
  *     On each thread iteration, iterates all {@link ClientActivation}s ordered by {@link ClientActivation#getWeight()}
  *     and if {@link ClientActivation} is activated - encodes, encrypts and sends {@link PlayerAudioPacket}
- *     to the UDP server using {@link UdpClient}
+ *     to the UDP server using {@link UdpClient}.
  * </p>
  * <p>
  *     If {@link ClientActivation} supports stereo and stereo capture is enabled in config - stereo encoder
- *     will be used to encode audio data, otherwise - mono encoder
+ *     will be used to encode audio data, otherwise - mono encoder.
  * </p>
  * <p>
  *     By default, the default encoders from {@link AudioCapture} will be used.
@@ -73,21 +73,21 @@ public interface AudioCapture {
     void start();
 
     /**
-     * Stops the thread if {@link #isActive()} is true; otherwise, it does nothing.
+     * Stops the thread if {@link #isActive()} is {@code true}; otherwise, it does nothing.
      */
     void stop();
 
     /**
      * Checks if the capture thread is active.
      *
-     * @return true if the capture thread is alive; otherwise, false.
+     * @return {@code true} if the capture thread is alive; otherwise, {@code false}.
      */
     boolean isActive();
 
     /**
      * Checks if the client is muted on the server.
      *
-     * @return true if the client is muted on the server; otherwise, false.
+     * @return {@code true} if the client is muted on the server; otherwise, {@code false}.
      */
     boolean isServerMuted();
 }

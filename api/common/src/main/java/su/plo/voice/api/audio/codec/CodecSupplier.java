@@ -44,7 +44,7 @@ public interface CodecSupplier<Encoder extends AudioEncoder, Decoder extends Aud
     );
 
     /**
-     * Retrieves the name of the codec.
+     * Gets the name of the codec.
      *
      * @return The name of the codec.
      */

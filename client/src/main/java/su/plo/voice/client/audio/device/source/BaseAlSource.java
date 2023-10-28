@@ -84,7 +84,7 @@ public abstract class BaseAlSource implements AlSource {
     }
 
     @Override
-    public State getState() {
+    public @NotNull State getState() {
         return State.fromInt(getInt(AL11.AL_SOURCE_STATE));
     }
 

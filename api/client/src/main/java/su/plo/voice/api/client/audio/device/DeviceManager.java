@@ -11,7 +11,7 @@ import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
 
 /**
- * This manager can be used to add or remove devices
+ * Manages audio devices.
  */
 public interface DeviceManager {
 
@@ -45,7 +45,7 @@ public interface DeviceManager {
     void clear(@Nullable DeviceType type);
 
     /**
-     * Retrieves an immutable collection of audio devices of the specified type (or all devices if the type is null).
+     * Gets an audio devices collection of the specified type (or all devices if the type is null).
      *
      * @param type The type of audio devices to retrieve (or null to retrieve all devices).
      * @return A collection of audio devices.
@@ -56,26 +56,25 @@ public interface DeviceManager {
      * Creates a new source group for managing audio sources.
      *
      * @see SourceGroup
-     * @param type The type of devices associated with the source group (or null for a generic source group).
      * @return A source group for managing audio sources.
      */
-    @NotNull SourceGroup createSourceGroup(@Nullable DeviceType type);
+    @NotNull SourceGroup createSourceGroup();
 
     /**
      * Opens a new input device with the specified audio format and device parameters.
      *
      * @param format The audio format (or null to use the current {@link ServerInfo} voice format).
      * @return The input device.
-     * @throws DeviceException if the input device cannot be opened.
+     * @throws DeviceException If there is an issue with opening an input device.
      */
     @NotNull InputDevice openInputDevice(@Nullable AudioFormat format) throws DeviceException;
 
     /**
      * Opens a new output device with the specified audio format and device parameters.
      *
-     * @param format The audio format (or null to use the current ServerInfo voice format).
+     * @param format The audio format (or null to use the current {@link ServerInfo} voice format).
      * @return The output device.
-     * @throws DeviceException if the output device cannot be opened.
+     * @throws DeviceException If there is an issue with opening an output device.
      */
     @NotNull OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format) throws DeviceException;
 }

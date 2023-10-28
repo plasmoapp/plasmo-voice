@@ -41,7 +41,7 @@ interface AudioDevice {
     /**
      * Reloads (closes and opens) the audio device.
      *
-     * @throws DeviceException if there is an issue reloading the device.
+     * @throws DeviceException If there is an issue reloading the device.
      */
     @Throws(DeviceException::class)
     fun reload()
@@ -90,7 +90,7 @@ interface AudioDevice {
     fun getFilters(): Collection<AudioFilter>
 
     /**
-     * Processes the provided audio samples through all applicable filters.
+     * Processes a provided audio samples through all applicable filters.
      *
      * @param samples       The input audio samples to process.
      * @param excludeFilter A filter predicate to exclude specific filters from processing.
@@ -99,7 +99,7 @@ interface AudioDevice {
     fun processFilters(samples: ShortArray, excludeFilter: Predicate<AudioFilter>?): ShortArray
 
     /**
-     * Processes the provided audio samples through all applicable filters.
+     * Processes a provided audio samples through all applicable filters.
      *
      * @param samples The input audio samples to process.
      * @return The processed audio samples.

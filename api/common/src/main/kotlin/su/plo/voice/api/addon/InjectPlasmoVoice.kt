@@ -7,6 +7,8 @@ package su.plo.voice.api.addon
  * [PlasmoVoiceServer], [PlasmoVoiceProxy] or [PlasmoVoiceClient] instance.
  *
  * Example usage:
+ *
+ * kotlin:
  * ```kotlin
  * class MyAddon {
  *     @InjectPlasmoVoice
@@ -14,6 +16,7 @@ package su.plo.voice.api.addon
  * }
  * ```
  *
+ * java:
  * ```java
  * class MyAddon {
  *     @InjectPlasmoVoice

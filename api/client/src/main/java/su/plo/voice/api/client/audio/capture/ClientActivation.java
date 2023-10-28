@@ -18,37 +18,37 @@ public interface ClientActivation extends Activation {
      *
      * @return The type of client activation.
      */
-    Type getType();
+    @NotNull Type getType();
 
     /**
-     * Gets the key binding for Push-to-Talk activation.
+     * Gets the key binding for Push-to-Talk.
      *
      * @return The key binding for Push-to-Talk.
      */
-    Hotkey getPttKey();
+    @NotNull Hotkey getPttKey();
 
     /**
      * Gets the key binding for toggling activation.
      * <br>
-     * Toggle works only if {@link #getType()} is Voice or Inherit
+     * Toggle works only if {@link #getType()} is Voice or Inherit.
      *
      * @return The key binding for toggling activation.
      */
-    Hotkey getToggleKey();
+    @NotNull Hotkey getToggleKey();
 
     /**
      * Gets the key binding for increasing activation distance.
      *
      * @return The key binding for increasing distance.
      */
-    Hotkey getDistanceIncreaseKey();
+    @NotNull Hotkey getDistanceIncreaseKey();
 
     /**
      * Gets the key binding for decreasing activation distance.
      *
      * @return The key binding for decreasing distance.
      */
-    Hotkey getDistanceDecreaseKey();
+    @NotNull Hotkey getDistanceDecreaseKey();
 
     /**
      * Gets the mono audio encoder associated with this activation.
@@ -70,21 +70,21 @@ public interface ClientActivation extends Activation {
      * If activation is disabled, it always returns {@link Result#NOT_ACTIVATED} in the
      * {@link ClientActivation#process(short[], Result)} method.
      *
-     * @param disabled true to disable the activation; false to enable it.
+     * @param disabled Whether the activation is disabled.
      */
     void setDisabled(boolean disabled);
 
     /**
      * Checks if activation is disabled by toggle or manually using {@link ClientActivation#setDisabled(boolean)}.
      *
-     * @return true if activation is disabled.
+     * @return {@code true} if activation is disabled, {@code false} otherwise.
      */
     boolean isDisabled();
 
     /**
      * Checks if activation is currently active.
      *
-     * @return true if activation is active.
+     * @return {@code true} if activation is active, {@code false} otherwise.
      */
     boolean isActive();
 

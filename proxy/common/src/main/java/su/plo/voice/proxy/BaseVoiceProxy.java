@@ -184,7 +184,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         }
 
         DEBUG_LOGGER.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
-        if (reload) eventBus.fire(new VoiceProxyConfigReloadedEvent(this));
+        if (reload) eventBus.fire(new VoiceProxyConfigReloadedEvent(this, config));
         else addons.initializeLoadedAddons();
 
         if (restartUdpServer) startUdpServer();

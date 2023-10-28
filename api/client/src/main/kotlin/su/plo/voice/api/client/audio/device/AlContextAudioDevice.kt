@@ -11,11 +11,15 @@ interface AlContextAudioDevice : AudioDevice {
 
     /**
      * Gets the pointer to the OpenAL audio device.
+     *
+     * @return The device pointer.
      */
     val devicePointer: Long
 
     /**
      * Gets the pointer to the OpenAL context associated with this device.
+     *
+     * @return The context pointer.
      */
     val contextPointer: Long
 
@@ -28,7 +32,7 @@ interface AlContextAudioDevice : AudioDevice {
     suspend fun runInContext(runnable: suspend () -> Unit)
 
     /**
-     * Runs a runnable in the context of the OpenAL audio device.
+     * Runs the runnable in the context of the OpenAL audio device.
      *
      * @param runnable The runnable to run in the device's context.
      * @return A [CompletableFuture] that completes when the operation is done.
@@ -36,7 +40,7 @@ interface AlContextAudioDevice : AudioDevice {
     fun runInContextAsync(runnable: Runnable): CompletableFuture<Void?>
 
     /**
-     * Runs a runnable in the context of the OpenAL audio device, blocking the current thread until it completes.
+     * Runs the runnable in the context of the OpenAL audio device, blocking the current thread until it completes.
      *
      * @param runnable The runnable to run in the device's context.
      */

@@ -18,7 +18,7 @@ public interface InputDevice extends AudioDevice {
     void stop();
 
     /**
-     * Retrieves the number of available audio samples that can be read from the input device.
+     * Retrieves the number of available shorts audio samples that can be read from the input device.
      *
      * @return The count of available audio samples.
      */
@@ -32,7 +32,7 @@ public interface InputDevice extends AudioDevice {
     boolean isStarted();
 
     /**
-     * Reads audio samples from the input device with the specified buffer size.
+     * Reads shorts audio samples from the input device with the specified buffer size.
      * The buffer size determines the number of audio samples to read.
      *
      * @param frameSize The size of the frame for reading samples.
@@ -41,7 +41,7 @@ public interface InputDevice extends AudioDevice {
     short[] read(int frameSize);
 
     /**
-     * Reads audio samples from the input device using the buffer size calculated from the AudioFormat.
+     * Reads short audio samples from the input device using the buffer size calculated from the AudioFormat.
      *
      * @return An array of audio samples read from the device, or {@code null} if the buffer size exceeds available samples.
      */

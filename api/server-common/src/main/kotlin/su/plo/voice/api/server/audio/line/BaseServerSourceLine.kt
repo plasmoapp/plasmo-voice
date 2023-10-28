@@ -22,7 +22,7 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
     /**
      * Gets the source line's addon.
      *
-     * @return the source line's addon
+     * @return The source line's addon.
      */
     val addon: AddonContainer
 
@@ -30,7 +30,7 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
      * Gets the [ServerPlayerSetManager] if the source line was created with "withPlayers" argument;
      * otherwise, returns null.
      *
-     * @return [ServerPlayerSetManager] if source line includes players; otherwise, null
+     * @return [ServerPlayerSetManager] if source line includes players, `null` otherwise.
      */
     val playerSetManager: ServerPlayerSetManager?
 

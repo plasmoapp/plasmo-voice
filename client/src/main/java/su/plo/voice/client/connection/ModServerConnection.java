@@ -126,7 +126,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
     }
 
     @Override
-    public Collection<VoicePlayerInfo> getPlayers() {
+    public @NotNull Collection<VoicePlayerInfo> getPlayers() {
         return playerById.values();
     }
 

@@ -57,7 +57,7 @@ public final class JavaxInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public @NotNull String getType() {
+    public @NotNull String getName() {
         return "JAVAX_INPUT";
     }
 }

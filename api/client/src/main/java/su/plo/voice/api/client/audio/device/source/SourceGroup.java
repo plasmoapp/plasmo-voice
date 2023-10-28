@@ -15,7 +15,7 @@ public interface SourceGroup {
      *
      * @param stereo Indicates whether stereo sources should be created.
      * @param params Additional parameters for source creation.
-     * @throws DeviceException If there is an issue with device-related operations.
+     * @throws DeviceException If there is an issue with opening an audio source.
      */
     void create(boolean stereo, @NotNull DeviceSourceParams params) throws DeviceException;
 
@@ -25,9 +25,9 @@ public interface SourceGroup {
     void clear();
 
     /**
-     * Retrieves a collection of audio sources created within the group.
+     * Gets a collection of audio sources created within the group.
      *
      * @return A collection of audio sources.
      */
-    Collection<DeviceSource> getSources();
+    @NotNull Collection<DeviceSource> getSources();
 }

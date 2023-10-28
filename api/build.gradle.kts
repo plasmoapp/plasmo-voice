@@ -1,4 +1,6 @@
 subprojects {
+    apply(plugin = "org.jetbrains.dokka")
+
     dependencies {
         api(rootProject.libs.guava)
         api(rootProject.libs.gson)

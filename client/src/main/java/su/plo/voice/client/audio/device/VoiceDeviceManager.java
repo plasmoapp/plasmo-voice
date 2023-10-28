@@ -133,9 +133,8 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     @Override
-    public @NotNull SourceGroup createSourceGroup(@Nullable DeviceType type) {
-        if (type == DeviceType.OUTPUT) return new VoiceOutputSourceGroup(this);
-        throw new IllegalArgumentException(type + " not supported");
+    public @NotNull SourceGroup createSourceGroup() {
+        return new VoiceOutputSourceGroup(this);
     }
 
     @Override

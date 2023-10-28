@@ -13,8 +13,6 @@ import java.util.UUID;
 @ToString(exclude = {"packet", "input", "read"})
 public class PacketUdp {
 
-    public static final int TTL = 2_000;
-
     @Getter
     private final UUID secret;
     @Getter

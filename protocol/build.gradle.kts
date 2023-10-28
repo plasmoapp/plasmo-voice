@@ -1,3 +1,7 @@
+plugins {
+    id("org.jetbrains.dokka")
+}
+
 val mavenGroup: String by rootProject
 group = "$mavenGroup"
 

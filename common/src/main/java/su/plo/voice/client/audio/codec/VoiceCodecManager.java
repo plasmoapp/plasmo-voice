@@ -76,7 +76,7 @@ public final class VoiceCodecManager implements CodecManager {
     }
 
     @Override
-    public synchronized Collection<CodecSupplier<?, ?>> getCodecs() {
+    public synchronized @NotNull Collection<CodecSupplier<?, ?>> getCodecs() {
         return codecs.values();
     }
 }

@@ -26,7 +26,7 @@ public interface ServerConnection {
      *
      * @return A map containing language.
      */
-    Map<String, String> getLanguage();
+    @NotNull Map<String, String> getLanguage();
 
     /**
      * Gets the remote socket address of the server.
@@ -47,7 +47,7 @@ public interface ServerConnection {
      *
      * @return A collection of voice player information.
      */
-    Collection<VoicePlayerInfo> getPlayers();
+    @NotNull Collection<VoicePlayerInfo> getPlayers();
 
     /**
      * Gets voice player information by player unique identifier.
@@ -58,7 +58,7 @@ public interface ServerConnection {
     Optional<VoicePlayerInfo> getPlayerById(@NotNull UUID playerId);
 
     /**
-     * Gets the voice player information for the local player if player is connected to Plasmo Voice.
+     * Gets the voice player information for the local player if the player is connected to Plasmo Voice.
      *
      * @return An optional containing the voice player information for the local player, or empty if Plasmo Voice is not connected.
      */

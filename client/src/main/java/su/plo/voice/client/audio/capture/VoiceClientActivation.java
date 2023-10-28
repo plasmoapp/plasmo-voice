@@ -126,12 +126,12 @@ public final class VoiceClientActivation
     }
 
     @Override
-    public Type getType() {
+    public @NotNull Type getType() {
         return configType.value();
     }
 
     @Override
-    public Hotkey getPttKey() {
+    public @NotNull Hotkey getPttKey() {
         return pttKey.value();
     }
 
@@ -140,12 +140,12 @@ public final class VoiceClientActivation
     }
 
     @Override
-    public Hotkey getToggleKey() {
+    public @NotNull Hotkey getToggleKey() {
         return toggleKey.value();
     }
 
     @Override
-    public Hotkey getDistanceIncreaseKey() {
+    public @NotNull Hotkey getDistanceIncreaseKey() {
         return distanceIncreaseKey.value();
     }
 
@@ -154,7 +154,7 @@ public final class VoiceClientActivation
     }
 
     @Override
-    public Hotkey getDistanceDecreaseKey() {
+    public @NotNull Hotkey getDistanceDecreaseKey() {
         return distanceDecreaseKey.value();
     }
 

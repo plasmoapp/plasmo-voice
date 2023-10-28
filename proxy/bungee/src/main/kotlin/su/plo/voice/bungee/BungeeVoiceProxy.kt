@@ -19,8 +19,6 @@ class BungeeVoiceProxy(
 
     override fun getConfigFolder(): File = plugin.dataFolder
 
-    override fun getConfigsFolder() = File("plugins")
-
     override fun getMinecraftServer() = minecraftServer
 
     fun onEnable() {

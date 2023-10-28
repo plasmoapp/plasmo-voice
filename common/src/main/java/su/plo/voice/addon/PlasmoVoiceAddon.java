@@ -20,12 +20,12 @@ public final class PlasmoVoiceAddon implements AddonContainer {
     private final @NotNull AddonLoaderScope scope;
 
     @Override
-    public String getId() {
+    public @NotNull String getId() {
         return "plasmovoice";
     }
 
     @Override
-    public String getName() {
+    public @NotNull String getName() {
         return "PlasmoVoice";
     }
 
@@ -35,22 +35,22 @@ public final class PlasmoVoiceAddon implements AddonContainer {
     }
 
     @Override
-    public String getVersion() {
+    public @NotNull String getVersion() {
         return object.getVersion();
     }
 
     @Override
-    public Collection<String> getAuthors() {
+    public @NotNull Collection<String> getAuthors() {
         return Lists.newArrayList("Apehum");
     }
 
     @Override
-    public Collection<AddonDependency> getDependencies() {
+    public @NotNull Collection<AddonDependency> getDependencies() {
         return Collections.emptyList();
     }
 
     @Override
-    public Class<?> getMainClass() {
+    public @NotNull Class<?> getMainClass() {
         return BaseVoice.class;
     }
 

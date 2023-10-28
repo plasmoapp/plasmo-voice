@@ -94,7 +94,7 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
     void setName(@Nullable String name);
 
     /**
-     * Marks the source as "dirty."
+     * Marks the source as "dirty".
      */
     void setDirty();
 

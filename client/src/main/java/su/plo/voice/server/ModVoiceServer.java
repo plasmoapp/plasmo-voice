@@ -35,11 +35,6 @@ public final class ModVoiceServer extends BaseVoiceServer {
     }
 
     @Override
-    public @NotNull File getConfigsFolder() {
-        return new File("config");
-    }
-
-    @Override
     public @NotNull McServerLib getMinecraftServer() {
         return ModServerLib.INSTANCE;
     }

@@ -25,7 +25,7 @@ public interface ClientSourceManager extends AudioSourceManager<ClientAudioSourc
     @NotNull LoopbackSource createLoopbackSource(boolean relative);
 
     /**
-     * Retrieves a client audio source by its unique identifier.
+     * Gets a client audio source by its unique identifier.
      *
      * @param sourceId     The unique identifier of the source.
      * @param request      {@code true} to send a request if the source doesn't exist, {@code false} otherwise.
@@ -34,28 +34,28 @@ public interface ClientSourceManager extends AudioSourceManager<ClientAudioSourc
     Optional<ClientAudioSource<?>> getSourceById(@NotNull UUID sourceId, boolean request);
 
     /**
-     * Retrieves all client audio sources associated with a specified line identifier.
+     * Gets all client audio sources associated with a specified line identifier.
      *
      * @param lineId The unique identifier of the source line.
      * @return A collection of client audio sources associated with the specified source line.
      */
-    Collection<ClientAudioSource<?>> getSourcesByLineId(@NotNull UUID lineId);
+    @NotNull Collection<ClientAudioSource<?>> getSourcesByLineId(@NotNull UUID lineId);
 
     /**
-     * Retrieves all client audio sources associated with a specific entity.
+     * Gets all client audio sources associated with a specific entity.
      *
      * @param entityId The id of the entity.
      * @return A collection of client audio sources associated with the specified entity.
      */
-    Collection<ClientAudioSource<EntitySourceInfo>> getEntitySources(int entityId);
+    @NotNull Collection<ClientAudioSource<EntitySourceInfo>> getEntitySources(int entityId);
 
     /**
-     * Retrieves all client audio sources associated with a specific player.
+     * Gets all client audio sources associated with a specific player.
      *
      * @param playerId The unique identifier of the player.
      * @return A collection of client audio sources associated with the specified player.
      */
-    Collection<ClientAudioSource<PlayerSourceInfo>> getPlayerSources(@NotNull UUID playerId);
+    @NotNull Collection<ClientAudioSource<PlayerSourceInfo>> getPlayerSources(@NotNull UUID playerId);
 
     /**
      * Creates or updates a client audio source based on the provided source information.
@@ -91,7 +91,7 @@ public interface ClientSourceManager extends AudioSourceManager<ClientAudioSourc
     void updateSelfSourceInfo(@NotNull SelfSourceInfo selfSourceInfo);
 
     /**
-     * Retrieves the client self source information for the specified source identifier.
+     * Gets the client self source information for the specified source identifier.
      *
      * @param sourceId The unique identifier of the source.
      * @return An optional containing the client self source information if found, or empty if not found.
@@ -99,9 +99,9 @@ public interface ClientSourceManager extends AudioSourceManager<ClientAudioSourc
     Optional<ClientSelfSourceInfo> getSelfSourceInfo(@NotNull UUID sourceId);
 
     /**
-     * Retrieves a collection of {@link ClientSelfSourceInfo}.
+     * Gets a collection of {@link ClientSelfSourceInfo}.
      *
      * @return A collection of {@link ClientSelfSourceInfo}.
      */
-    Collection<? extends ClientSelfSourceInfo> getAllSelfSourceInfos();
+    @NotNull Collection<? extends ClientSelfSourceInfo> getAllSelfSourceInfos();
 }

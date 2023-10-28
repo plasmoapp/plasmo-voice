@@ -61,7 +61,7 @@ public interface ServerInfo {
     /**
      * Gets the server's encryption details if available.
      *
-     * @return An optional containing the server's encryption information, or empty if server has disabled encryption.
+     * @return An optional containing the server's encryption information, or empty if the server has disabled encryption.
      */
     Optional<Encryption> getEncryption();
 
@@ -113,14 +113,14 @@ public interface ServerInfo {
          *
          * @return A collection of {@link SourceLine} objects.
          */
-        Collection<SourceLine> getSourceLines();
+        @NotNull Collection<SourceLine> getSourceLines();
 
         /**
          * Gets the voice activations.
          *
          * @return A collection of {@link Activation} objects.
          */
-        Collection<Activation> getActivations();
+        @NotNull Collection<Activation> getActivations();
     }
 
     /**

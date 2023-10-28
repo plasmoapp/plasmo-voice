@@ -9,14 +9,14 @@ import java.util.*
 interface SourceLineManager<T : SourceLine> {
 
     /**
-     * Retrieves a collection of all source lines.
+     * Gets a collection of all source lines.
      *
      * @return A collection of source lines.
      */
     val lines: Collection<T>
 
     /**
-     * Retrieves a source line by its unique identifier.
+     * Gets a source line by its unique identifier.
      *
      * @param id The unique identifier of the source line.
      * @return An optional containing the source line if found, or empty if not found.
@@ -24,7 +24,7 @@ interface SourceLineManager<T : SourceLine> {
     fun getLineById(id: UUID): Optional<T>
 
     /**
-     * Retrieves a source line by its name.
+     * Gets a source line by its name.
      *
      * @param name The name of the source line.
      * @return An optional containing the source line if found, or empty if not found.

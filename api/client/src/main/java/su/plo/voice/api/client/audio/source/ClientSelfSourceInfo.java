@@ -22,14 +22,12 @@ public interface ClientSelfSourceInfo {
      */
     long getSequenceNumber();
 
-
     /**
      * Gets the current distance of the source.
      *
      * @return The distance.
      */
     short getDistance();
-
 
     /**
      * Gets the timestamp of the last update.

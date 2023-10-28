@@ -13,16 +13,16 @@ public final class VoiceDeviceFactoryManager implements DeviceFactoryManager {
 
     @Override
     public void registerDeviceFactory(DeviceFactory factory) {
-        if (deviceFactories.containsKey(factory.getType())) {
+        if (deviceFactories.containsKey(factory.getName())) {
             throw new IllegalArgumentException("Device factory with the same type already exist");
         }
 
-        deviceFactories.put(factory.getType(), factory);
+        deviceFactories.put(factory.getName(), factory);
     }
 
     @Override
     public boolean unregisterDeviceFactory(DeviceFactory factory) {
-        return unregisterDeviceFactory(factory.getType());
+        return unregisterDeviceFactory(factory.getName());
     }
 
     @Override

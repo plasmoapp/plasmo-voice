@@ -32,9 +32,9 @@ public interface ClientPlayerSet {
     void clearPlayers();
 
     /**
-     * Retrieves a collection of game profiles representing the players in the set.
+     * Gets a collection of game profiles representing the players in the set.
      *
      * @return A collection of player game profiles.
      */
-    Collection<McGameProfile> getPlayers();
+    @NotNull Collection<McGameProfile> getPlayers();
 }

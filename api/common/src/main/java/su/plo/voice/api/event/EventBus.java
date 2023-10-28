@@ -25,7 +25,7 @@ public interface EventBus {
      * @param <E>   The type of the event.
      * @return A {@link CompletableFuture} representing the posted event.
      */
-    <E extends Event> CompletableFuture<E> callAsync(@NotNull E event);
+    <E extends Event> CompletableFuture<E> fireAsync(@NotNull E event);
 
     /**
      * Registers all methods annotated with {@link EventSubscribe} as event handlers in the specified listener

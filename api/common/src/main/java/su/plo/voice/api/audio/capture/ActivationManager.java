@@ -9,28 +9,28 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Manages activations.
+ * Base interface for managing activations.
  */
 public interface ActivationManager<T extends Activation> {
 
     /**
-     * Retrieves an activation by its unique identifier.
+     * Gets an activation by its unique identifier.
      *
-     * @param id The unique ID of the activation to retrieve.
+     * @param id The unique identifier of the activation.
      * @return An optional containing the activation if found, or an empty optional if not found.
      */
     Optional<T> getActivationById(@NotNull UUID id);
 
     /**
-     * Retrieves an activation by its name.
+     * Gets an activation by its name.
      *
-     * @param name The name of the activation to retrieve.
+     * @param name The name of the activation.
      * @return An optional containing the activation if found, or an empty optional if not found.
      */
     Optional<T> getActivationByName(@NotNull String name);
 
     /**
-     * Retrieves a collection of all activations managed by this manager.
+     * Gets a collection of all activations managed by this manager.
      *
      * @return A collection of activations.
      */
@@ -39,7 +39,7 @@ public interface ActivationManager<T extends Activation> {
     /**
      * Unregisters an activation specified by its unique identifier.
      *
-     * @param id The unique ID of the activation to unregister.
+     * @param id The unique identifier of the activation.
      * @return {@code true} if the activation was successfully unregistered, {@code false} if the activation was not found.
      */
     boolean unregister(@NotNull UUID id);

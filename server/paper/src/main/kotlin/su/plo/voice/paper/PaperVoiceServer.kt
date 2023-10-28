@@ -54,7 +54,5 @@ class PaperVoiceServer(
 
     override fun getConfigFolder() = plugin.dataFolder
 
-    override fun getConfigsFolder() = File("plugins")
-
     override fun getMinecraftServer() = minecraftServerLib
 }

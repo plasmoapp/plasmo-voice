@@ -17,7 +17,7 @@ public interface Hotkeys {
      *
      * @return A collection of currently pressed keys.
      */
-    Collection<Hotkey.Key> getPressedKeys();
+    @NotNull Collection<Hotkey.Key> getPressedKeys();
 
     /**
      * Retrieves a hotkey by its name.
@@ -25,7 +25,7 @@ public interface Hotkeys {
      * @param name The name of the hotkey to retrieve.
      * @return An optional containing the hotkey if found, or empty if not.
      */
-    Optional<Hotkey> getHotkey(@NotNull String name);
+    @NotNull Optional<Hotkey> getHotkey(@NotNull String name);
 
     /**
      * Registers a new hotkey.

@@ -66,9 +66,9 @@ public interface CodecManager {
     boolean unregister(@NotNull CodecSupplier<?, ?> supplier);
 
     /**
-     * Retrieves a collection of all registered codec suppliers.
+     * Gets a collection of all registered codec suppliers.
      *
      * @return A collection of registered codec suppliers.
      */
-    Collection<CodecSupplier<?, ?>> getCodecs();
+    @NotNull Collection<CodecSupplier<?, ?>> getCodecs();
 }

@@ -1,22 +1,24 @@
 package su.plo.voice.api.addon.annotation;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation is used to specify dependencies required by an addon.
+ * Annotation used to specify dependencies required by an addon.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({})
 public @interface Dependency {
 
     /**
-     * Gets the ID of the dependency.
+     * Gets the id of the dependency.
      *
-     * @return The dependency ID.
+     * @return The dependency id.
      */
-    String id();
+    @NotNull String id();
 
     /**
      * Checks whether this dependency is optional. Optional dependencies are not strictly required for the addon to

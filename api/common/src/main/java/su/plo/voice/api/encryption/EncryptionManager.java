@@ -42,7 +42,7 @@ public interface EncryptionManager {
     boolean unregister(@NotNull EncryptionSupplier supplier);
 
     /**
-     * Retrieves a collection of registered encryption algorithms.
+     * Gets a collection of registered encryption algorithms.
      *
      * @return A collection of encryption algorithms.
      */

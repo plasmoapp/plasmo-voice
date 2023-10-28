@@ -38,9 +38,6 @@ class VelocityVoiceProxy @Inject constructor(
     override fun getConfigFolder(): File =
         dataDirectory.toFile()
 
-    override fun getConfigsFolder() =
-        File("plugins")
-
     override fun getMinecraftServer() =
         minecraftProxy
 

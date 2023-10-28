@@ -10,16 +10,16 @@ import java.lang.annotation.Target;
 
 
 /**
- * Annotation is used to mark classes as addons.
+ * Annotation used to describe a Plasmo Voice addon.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
 public @interface Addon {
 
     /**
-     * Gets the ID of the addon.
+     * Gets the id of the addon.
      *
-     * @return The addon ID.
+     * @return The addon id.
      */
     @NotNull String id();
 
@@ -32,13 +32,13 @@ public @interface Addon {
 
 
     /**
-     * Gets the scope of the addon, indicating where it is loaded.
+     * Gets the scope of the addon, indicating where it should be loaded.
      * <br>
      * This is only used if you are using gradle plugin for generating addons' entrypoints.
      *
      * @return The addon scope.
      */
-    @NotNull AddonLoaderScope scope();
+    @NotNull AddonLoaderScope scope() default AddonLoaderScope.ANY;
 
     /**
      * Gets the version of the addon.

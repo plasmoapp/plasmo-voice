@@ -19,7 +19,9 @@ public @interface EventSubscribe {
 
     /**
      * Specifies whether the event handler should ignore events that have been cancelled.
+     * <br/>
      * If set to true, the event handler will not be called for cancelled events.
+     * <br/>
      * If set to false, the event handler will be called regardless of the cancellation status of the event.
      *
      * @return true if the event handler should ignore cancelled events, false otherwise.

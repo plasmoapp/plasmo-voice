@@ -138,7 +138,7 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
     @NotNull AddonConfig getAddonConfig(@NotNull Object addon);
 
     /**
-     * Returns the {@link ClientConfig}.
+     * Gets the {@link ClientConfig}.
      *
      * @return The {@link ClientConfig}.
      */

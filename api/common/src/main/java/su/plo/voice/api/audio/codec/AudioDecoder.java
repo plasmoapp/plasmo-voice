@@ -9,6 +9,7 @@ public interface AudioDecoder {
      * Decodes the given encoded audio data into an array of audio samples.
      *
      * @param encoded The encoded audio data to decode.
+     *                Provide a null or empty array to decode with PLC.
      * @return An array of audio samples represented as shorts.
      * @throws CodecException If there's an error during the decoding process.
      */

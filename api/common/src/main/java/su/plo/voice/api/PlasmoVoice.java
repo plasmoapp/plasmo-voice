@@ -10,7 +10,7 @@ import java.io.File;
 import java.util.concurrent.ScheduledExecutorService;
 
 /**
- * The Plasmo Voice API.
+ * Base interface for Plasmo Voice API.
  */
 public interface PlasmoVoice {
 
@@ -66,11 +66,4 @@ public interface PlasmoVoice {
      * @return the folder where Plasmo Voice configurations are stored.
      */
     @NotNull File getConfigFolder();
-
-    /**
-     * Gets the loader's config/plugins folder.
-     *
-     * @return the folder where loader-specific configurations and plugins are stored.
-     */
-    @NotNull File getConfigsFolder();
 }

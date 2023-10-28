@@ -45,7 +45,7 @@ public final class AlOutputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public @NotNull String getType() {
+    public @NotNull String getName() {
         return "AL_OUTPUT";
     }
 }

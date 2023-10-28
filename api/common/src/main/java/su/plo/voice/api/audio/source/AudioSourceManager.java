@@ -14,7 +14,7 @@ import java.util.UUID;
 public interface AudioSourceManager<T extends AudioSource<?>> {
 
     /**
-     * Retrieves an audio source by its unique identifier.
+     * Gets an audio source by its unique identifier.
      *
      * @param sourceId The unique identifier of the audio source.
      * @return An optional containing the audio source if found, or an empty optional if not found.
@@ -22,7 +22,7 @@ public interface AudioSourceManager<T extends AudioSource<?>> {
     Optional<T> getSourceById(@NotNull UUID sourceId);
 
     /**
-     * Retrieves a collection of all registered audio sources.
+     * Gets a collection of all registered audio sources.
      *
      * @return A collection of registered audio sources.
      */

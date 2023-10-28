@@ -8,7 +8,7 @@ import su.plo.voice.proto.data.audio.source.SourceInfo
 interface AudioSource<S : SourceInfo> {
 
     /**
-     * Retrieves the source information.
+     * Gets the source information.
      *
      * @return The source information.
      */

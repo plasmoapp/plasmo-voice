@@ -16,7 +16,7 @@ public interface EncryptionSupplier {
     @NotNull Encryption create(byte[] data);
 
     /**
-     * Retrieves the name of the encryption algorithm provided by this supplier.
+     * Gets the name of the encryption algorithm provided by this supplier.
      *
      * @return The name of the encryption algorithm.
      */

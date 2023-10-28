@@ -13,17 +13,23 @@ public interface UdpConnectionManager<P extends VoicePlayer, C extends UdpConnec
         extends PacketManager<ClientPacketUdpHandler, P> {
 
     /**
-     * @return connection by player uuid
+     * Gets the UDP connection by player unique identifier.
+     *
+     * @return An optional containing the UDP connection if found, otherwise empty.
      */
     Optional<C> getConnectionByPlayerId(@NotNull UUID playerId);
 
     /**
-     * @return connection by secret
+     * Gets the UDP connection by secret.
+     *
+     * @return An optional containing the UDP connection if found, otherwise empty.
      */
     Optional<C> getConnectionBySecret(@NotNull UUID secret);
 
     /**
-     * @return collection of all connections
+     * Gets the collection of all UDP connections.
+     *
+     * @return A collection of UDP connections.
      */
     Collection<C> getConnections();
 }

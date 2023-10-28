@@ -42,7 +42,7 @@ public final class AlInputDeviceFactory implements DeviceFactory {
     }
 
     @Override
-    public @NotNull String getType() {
+    public @NotNull String getName() {
         return "AL_INPUT";
     }
 }

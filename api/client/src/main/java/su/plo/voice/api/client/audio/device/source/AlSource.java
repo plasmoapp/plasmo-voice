@@ -16,9 +16,9 @@ public interface AlSource extends DeviceSource {
     @NotNull AlContextAudioDevice getDevice();
 
     /**
-     * Gets the pointer value associated with this audio source.
+     * Gets the pointer of OpenAL audio source.
      *
-     * @return The pointer value.
+     * @return The pointer.
      */
     long getPointer();
 
@@ -42,7 +42,7 @@ public interface AlSource extends DeviceSource {
      *
      * @return The state of the audio source.
      */
-    State getState();
+    @NotNull State getState();
 
     /**
      * Gets the pitch of the audio source.
@@ -103,7 +103,7 @@ public interface AlSource extends DeviceSource {
     void setInt(int param, int value);
 
     /**
-     * Gets an array of integer parameters of the audio source.
+     * Gets an integer array parameters of the audio source.
      *
      * @param param  The parameter to query.
      * @param values An array to store the values.
@@ -111,7 +111,7 @@ public interface AlSource extends DeviceSource {
     void getIntArray(int param, int[] values);
 
     /**
-     * Sets an array of integer parameters of the audio source.
+     * Sets an integer array parameters of the audio source.
      *
      * @param param  The parameter to set.
      * @param values An array containing the values to set.
@@ -135,7 +135,7 @@ public interface AlSource extends DeviceSource {
     void setFloat(int param, float value);
 
     /**
-     * Gets an array of float parameters of the audio source.
+     * Gets a float array parameters of the audio source.
      *
      * @param param  The parameter to query.
      * @param values An array to store the values.
@@ -143,7 +143,7 @@ public interface AlSource extends DeviceSource {
     void getFloatArray(int param, float[] values);
 
     /**
-     * Sets an array of float parameters of the audio source.
+     * Sets a float array parameters of the audio source.
      *
      * @param param  The parameter to set.
      * @param values An array containing the values to set.

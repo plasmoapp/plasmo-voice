@@ -122,11 +122,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     }
 
     @Override
-    public @NotNull File getConfigsFolder() {
-        return new File("config");
-    }
-
-    @Override
     public Optional<ServerConnection> getServerConnection() {
         return handler.getConnection();
     }
