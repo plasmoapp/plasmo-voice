@@ -29,7 +29,6 @@ import su.plo.voice.api.client.config.hotkey.Hotkeys;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
-import su.plo.voice.api.client.event.VoiceClientShutdownEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
@@ -218,8 +217,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         eventBus.unregister(this);
 
         super.onShutdown();
-
-        getEventBus().fire(new VoiceClientShutdownEvent(this));
     }
 
     protected void onServerDisconnect() {

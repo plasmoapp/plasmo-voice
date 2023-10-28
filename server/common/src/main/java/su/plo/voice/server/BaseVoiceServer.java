@@ -26,7 +26,6 @@ import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
 import su.plo.voice.api.server.connection.TcpServerPacketManager;
 import su.plo.voice.api.server.connection.UdpServerConnectionManager;
-import su.plo.voice.api.server.event.VoiceServerShutdownEvent;
 import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
@@ -164,8 +163,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     @Override
     protected void onShutdown() {
-        eventBus.fire(new VoiceServerShutdownEvent(this));
-
         if (luckPermsListener != null) {
             luckPermsListener.unsubscribe();
             this.luckPermsListener = null;

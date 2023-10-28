@@ -13,7 +13,6 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
-import su.plo.voice.api.proxy.event.VoiceProxyShutdownEvent;
 import su.plo.voice.api.proxy.event.config.VoiceProxyConfigReloadedEvent;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerCreateEvent;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
@@ -109,8 +108,6 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     @Override
     protected void onShutdown() {
-        eventBus.fire(new VoiceProxyShutdownEvent(this));
-
         if (luckPermsListener != null) {
             luckPermsListener.unsubscribe();
             this.luckPermsListener = null;
