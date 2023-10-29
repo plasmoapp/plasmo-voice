@@ -25,6 +25,7 @@ if (platform.isForge) {
     loom.forge.apply {
         mixinConfig(
             "plasmovoice.mixins.json",
+            "plasmovoice-forge.mixins.json",
             "slib.mixins.json",
             "slib-forge.mixins.json"
         )

@@ -153,7 +153,12 @@ public final class ModVoiceClient extends BaseVoiceClient
              //#endif
     //$$     super.onInitialize();
     //$$ }
-    //$$ // todo: onShutdown mixin?
+    //$$
+    //$$ @Override
+    //$$ public void onShutdown() {
+    //$$     super.onShutdown();
+    //$$ }
+    //$$
     //$$ @SubscribeEvent
     //$$ public void onOverlayRender(RenderGuiOverlayEvent.Post event) {
     //#if MC>=11900
