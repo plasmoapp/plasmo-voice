@@ -3,6 +3,9 @@ package su.plo.voice.client.render.voice;
 import net.minecraft.client.renderer.RenderType;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.position.Pos3d;
+import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
+import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UMatrixStack;
 import su.plo.voice.universal.UMinecraft;
@@ -104,11 +107,8 @@ public final class SourceIconRenderer {
         } else if (playerInfo.get().isVoiceDisabled()) { // client disabled voicechat
             iconLocation = "plasmovoice:textures/icons/headset_disabled.png";
         } else {
-            Collection<ClientAudioSource<?>> sources = voiceClient.getSourceManager()
-                    .getPlayerSources(player.getUUID())
-                    .stream()
-                    .map(source -> (ClientAudioSource<?>) source) // todo: waytoodank
-                    .collect(Collectors.toList());;
+            Collection<ClientAudioSource<PlayerSourceInfo>> sources = voiceClient.getSourceManager()
+                    .getPlayerSources(player.getUUID());
 
             hasPercent = volumeAction.isShown(player);
             if (hasPercent) {
@@ -153,11 +153,8 @@ public final class SourceIconRenderer {
 
         if (isIconHidden() || entity.isInvisibleTo(clientPlayer)) return;
 
-        Collection<ClientAudioSource<?>> sources = voiceClient.getSourceManager()
-                .getEntitySources(entity.getId())
-                .stream()
-                .map(source -> (ClientAudioSource<?>) source) // todo: waytoodank
-                .collect(Collectors.toList());
+        Collection<ClientAudioSource<EntitySourceInfo>> sources = voiceClient.getSourceManager()
+                .getEntitySources(entity.getId());
 
         ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(sources);
         if (highestSourceLine == null) return;
@@ -305,7 +302,6 @@ public final class SourceIconRenderer {
             }
         }
 
-        // todo: legacy getBbHeight?
         stack.translate(0D, entity.getBbHeight() + 0.5D, 0D);
         stack.rotate(-camera.pitch(), 0.0F, 1.0F, 0.0F);
         stack.rotate(camera.yaw(), 1.0F, 0.0F, 0.0F);
@@ -430,7 +426,7 @@ public final class SourceIconRenderer {
         return showIcons == 2 || (UMinecraft.getSettings().hideGui && showIcons == 0);
     }
 
-    private ClientSourceLine getHighestActivatedSourceLine(@NotNull Collection<ClientAudioSource<?>> sources) {
+    private <T extends SourceInfo> ClientSourceLine getHighestActivatedSourceLine(@NotNull Collection<ClientAudioSource<T>> sources) {
         ClientSourceLine highestSourceLine = null;
         for (ClientAudioSource<?> source : sources) {
             if (!source.isActivated() || !source.getSourceInfo().isIconVisible()) continue;
