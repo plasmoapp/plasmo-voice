@@ -1,6 +1,7 @@
 package su.plo.voice.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import su.plo.voice.client.gui.settings.VoiceScreens;
 import su.plo.voice.universal.UKeyboard;
 import su.plo.voice.universal.UMinecraft;
 import lombok.Getter;
@@ -113,7 +114,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     @EventSubscribe
     public void onKeyPressed(@NotNull KeyPressedEvent event) {
         if (UMinecraft.getPlayer() == null) return;
-        if (MENU_KEY.consumeClick()) openSettings();
+        if (MENU_KEY.consumeClick()) VoiceScreens.INSTANCE.openSettings(this);
     }
 
     @Override

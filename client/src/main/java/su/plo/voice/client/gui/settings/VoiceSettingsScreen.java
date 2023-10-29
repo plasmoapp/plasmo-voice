@@ -45,10 +45,9 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Setter
     private boolean preventEscClose;
 
-    public VoiceSettingsScreen(@NotNull BaseVoiceClient voiceClient,
-                               @NotNull VoiceClientConfig config) {
+    public VoiceSettingsScreen(@NotNull BaseVoiceClient voiceClient) {
         this.voiceClient = voiceClient;
-        this.config = config;
+        this.config = voiceClient.getConfig();
         this.title = getSettingsTitle();
         this.navigation = new VoiceSettingsNavigation(
                 voiceClient,
@@ -204,12 +203,12 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     @EventSubscribe
     public void onTimedOut(@NotNull UdpClientTimedOutEvent event) {
-        if (event.isTimedOut()) voiceClient.openNotAvailable();
+        if (event.isTimedOut()) VoiceScreens.INSTANCE.openNotAvailable(voiceClient);
     }
 
     @EventSubscribe
     public void onClosed(@NotNull UdpClientClosedEvent event) {
-        voiceClient.openNotAvailable();
+        VoiceScreens.INSTANCE.openNotAvailable(voiceClient);
     }
 
     private McTextComponent getSettingsTitle() {

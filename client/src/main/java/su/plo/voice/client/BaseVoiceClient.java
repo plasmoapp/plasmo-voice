@@ -9,7 +9,6 @@ import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.chat.ClientChatUtil;
 import su.plo.lib.mod.client.chat.ClientLanguageSupplier;
-import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextClickEvent;
@@ -32,7 +31,6 @@ import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
-import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
@@ -46,8 +44,6 @@ import su.plo.voice.client.config.hotkey.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
 import su.plo.voice.client.gui.PlayerVolumeAction;
-import su.plo.voice.client.gui.settings.VoiceNotAvailableScreen;
-import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.render.cape.DeveloperCapeManager;
 import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
@@ -91,8 +87,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     protected final Map<String, AddonConfig> addonConfigs = Maps.newHashMap();
 
-    protected VoiceSettingsScreen settingsScreen;
-
     private boolean updatesChecked;
 
     protected BaseVoiceClient(@NotNull ModrinthLoader loader) {
@@ -131,46 +125,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
                 LOGGER.warn("Failed to check for updates", e);
             }
         });
-    }
-
-    // todo: why is this here?
-    public void openSettings() {
-        Optional<ScreenWrapper> wrappedScreen = ScreenWrapper.getCurrentWrappedScreen();
-        if (wrappedScreen.map(screen -> screen.getScreen() instanceof VoiceSettingsScreen)
-                .orElse(false)
-        ) {
-            ScreenWrapper.openScreen(null);
-            return;
-        }
-
-        if (!udpClientManager.isConnected()) {
-            openNotAvailable();
-            return;
-        }
-
-        if (settingsScreen == null) {
-            this.settingsScreen = new VoiceSettingsScreen(
-                    this,
-                    config
-            );
-        }
-        ScreenWrapper.openScreen(settingsScreen);
-    }
-
-    // todo: why is this here?
-    public void openNotAvailable() {
-        VoiceNotAvailableScreen notAvailableScreen = new VoiceNotAvailableScreen(this);
-
-        Optional<UdpClient> udpClient = udpClientManager.getClient();
-        if (udpClient.isPresent()) {
-            if (udpClient.get().isClosed()) {
-                notAvailableScreen.setCannotConnect();
-            } else {
-                notAvailableScreen.setConnecting();
-            }
-        }
-
-        ScreenWrapper.openScreen(notAvailableScreen);
     }
 
     @Override

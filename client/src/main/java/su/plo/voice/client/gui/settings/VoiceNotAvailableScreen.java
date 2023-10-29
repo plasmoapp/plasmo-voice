@@ -120,7 +120,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
 
     @EventSubscribe
     public void onConnect(@NotNull UdpClientConnectedEvent event) {
-        voiceClient.openSettings();
+        VoiceScreens.INSTANCE.openSettings(voiceClient);
     }
 
     @EventSubscribe
@@ -128,7 +128,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
         if (event.isTimedOut()) {
             setConnecting();
         } else {
-            voiceClient.openSettings();
+            VoiceScreens.INSTANCE.openNotAvailable(voiceClient);
         }
     }
 
