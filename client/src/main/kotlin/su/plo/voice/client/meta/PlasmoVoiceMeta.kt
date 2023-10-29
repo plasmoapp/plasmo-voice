@@ -1,8 +1,8 @@
 package su.plo.voice.client.meta
 
+import com.google.common.collect.Maps
 import com.google.gson.Gson
 import com.google.gson.JsonElement
-import com.google.gson.JsonParser
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -10,19 +10,23 @@ import kotlinx.coroutines.launch
 import su.plo.voice.BuildConstants
 import su.plo.voice.client.meta.developer.Developer
 import su.plo.voice.client.meta.developer.DeveloperRole
+import java.io.File
 import java.net.URL
 import java.util.*
+import kotlin.time.Duration
+import kotlin.time.DurationUnit
 
 data class PlasmoVoiceMeta(
     val developers: List<Developer>,
-    val patrons: List<Patron>
+    val patrons: List<Patron>,
+    val lastUpdateMs: Long
 ) {
     companion object {
 
         val META: PlasmoVoiceMeta
             get() = meta
 
-        private var meta = PlasmoVoiceMeta(
+        private val defaultMeta = PlasmoVoiceMeta(
             listOf(
                 Developer(
                     UUID.fromString("2714d55f-ffef-4655-a93e-d8ca13230e76"),
@@ -46,19 +50,41 @@ data class PlasmoVoiceMeta(
                     DeveloperRole.ARTIST,
                     "Telegram",
                     "https://t.me/venterrok"
-                )
-            ), listOf()
+                ),
+            ),
+            listOf(),
+            0L
         )
 
+        private var meta = defaultMeta
+
+        private val metaByLanguage: MutableMap<String, PlasmoVoiceMeta> = Maps.newConcurrentMap()
+        private val cacheFile = File("config/plasmovoice/meta_cache.json")
+
         private val gson = Gson()
+        private val cacheType = object : TypeToken<Map<String, PlasmoVoiceMeta>>() {}.type
 
         fun fetch(languageName: String) {
-            CoroutineScope(Dispatchers.Default).launch { fetchSync(languageName) }
+            CoroutineScope(Dispatchers.Default).launch { fetchOrLoadSync(languageName) }
         }
 
-        private fun fetchSync(languageName: String) {
-            // todo: cache?
+        private fun fetchOrLoadSync(languageName: String) {
+            if (metaByLanguage.isEmpty()) {
+                loadCache()
+            }
 
+            var meta = metaByLanguage[languageName]
+
+            if (meta == null || System.currentTimeMillis() - meta.lastUpdateMs > Duration.parse("1d").inWholeMilliseconds) {
+                meta = fetchSync(languageName)
+                metaByLanguage[languageName] = meta
+                saveCache()
+            }
+
+            this.meta = meta
+        }
+
+        private fun fetchSync(languageName: String): PlasmoVoiceMeta {
             val url = URL("https://plasmovoice.com/meta.json?language=${languageName}")
 
             val metaJson = try {
@@ -72,7 +98,7 @@ data class PlasmoVoiceMeta(
                 ).asJsonObject
             } catch (e: Exception) {
                 e.printStackTrace()
-                return
+                return defaultMeta
             }
 
             val developers: List<Developer> = gson.fromJson(
@@ -85,7 +111,27 @@ data class PlasmoVoiceMeta(
                 object : TypeToken<List<Patron>>() {}.type
             )
 
-            this.meta = PlasmoVoiceMeta(developers, patrons)
+            return PlasmoVoiceMeta(developers, patrons, System.currentTimeMillis())
+        }
+
+        @Synchronized
+        private fun loadCache() {
+            if (!cacheFile.exists()) return
+
+            val cache = try {
+                gson.fromJson<Map<String, PlasmoVoiceMeta>>(cacheFile.bufferedReader(), cacheType) ?: return
+            } catch (_: Exception) {
+                return
+            }
+
+            metaByLanguage.putAll(cache)
+        }
+
+        @Synchronized
+        private fun saveCache() {
+            cacheFile.writer().use {
+                gson.toJson(metaByLanguage, it)
+            }
         }
     }
 }
