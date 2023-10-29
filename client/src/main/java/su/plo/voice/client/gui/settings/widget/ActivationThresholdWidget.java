@@ -113,7 +113,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     public void renderButton(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack, mouseX, mouseY);
 
-        renderMicrophoneValue(stack, getSliderWidth());
+        renderMicrophoneValue(stack, getSliderWidth(), delta);
         renderTrack(stack, mouseX, mouseY);
         renderText(stack, mouseX, mouseY);
     }
@@ -122,7 +122,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
         return microphoneTest;
     }
 
-    private void renderMicrophoneValue(@NotNull UMatrixStack stack, int sliderWidth) {
+    private void renderMicrophoneValue(@NotNull UMatrixStack stack, int sliderWidth, float delta) {
         if (controller.getMicrophoneValue() > 0.95D) {
             UGraphics.color4f(1F, 0F, 0F, alpha);
         } else if (controller.getMicrophoneValue() > 0.7D) {
@@ -134,6 +134,8 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
         UGraphics.bindTexture(0, WIDGETS_LOCATION);
         RenderUtil.blit(stack, x + 1, y + 1, 1, 47, (int) ((sliderWidth - 2) * controller.getMicrophoneValue()), height - 2);
         UGraphics.color4f(1F, 1F, 1F, 1F);
+
+        controller.tick(delta);
     }
 
     @EventSubscribe

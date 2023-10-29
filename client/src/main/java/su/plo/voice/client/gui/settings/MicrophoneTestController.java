@@ -33,6 +33,10 @@ public final class MicrophoneTestController {
 
     private LoopbackSource source;
 
+    public void tick(double delta) {
+        this.microphoneValue = Math.max(microphoneValue - (0.04D * delta), 0.0D);
+    }
+
     public void restart() {
         if (source == null) return;
         source.close();
@@ -93,9 +97,6 @@ public final class MicrophoneTestController {
 
             if (microphoneDB > -60 && value > microphoneValue) {
                 this.microphoneValue = AudioUtil.audioLevelToDoubleRange(microphoneDB);
-            } else {
-                // todo: move to "delta" tick
-                this.microphoneValue = Math.max(microphoneValue - 0.02D, 0.0F);
             }
 
             if (source != null) {
