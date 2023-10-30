@@ -55,13 +55,6 @@ class VoiceAddonManager(
             addonClass
         )
 
-        addonContainer.dependencies.filter { !it.isOptional }.forEach { dependency ->
-            if (!addonById.containsKey(dependency.id)) {
-                BaseVoice.LOGGER.error("Addon \"{}\" is missing dependency \"{}\"", addonContainer.id, dependency.id)
-                return
-            }
-        }
-
         addonContainer.setInstance(addonObject)
         loadAddon(addonContainer)
     }
