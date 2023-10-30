@@ -7,3 +7,5 @@ net.minecraftforge.forgespi.language.ModFileScanData.AnnotationData getClassType
 net.minecraftforge.fml.event.IModBusEvent net.minecraftforge.fml.event.IModBusEvent net.minecraftforge.fml.event.lifecycle.IModBusEvent
 
 net.minecraftforge.fml.client.registry.ClientRegistry net.minecraftforge.fmlclient.registry.ClientRegistry
+
+net.minecraft.server.packs.resources.SimpleReloadableResourceManager createFullReload() createReload()

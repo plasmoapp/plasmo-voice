@@ -167,7 +167,7 @@ dependencies {
 
     if (platform.mcVersion < 11700) {
         shadowCommon(libs.slf4j)
-        shadowCommon(libs.slf4j.simple)
+        shadowCommon(libs.slf4j.log4j)
     }
 }
 
@@ -228,9 +228,13 @@ tasks {
             if (platform.mcVersion >= 11700) {
                 exclude(dependency("org.slf4j:slf4j-api"))
             } else {
+                exclude(dependency("org.apache.logging.log4j:log4j-api"))
+                exclude(dependency("org.apache.logging.log4j:log4j-core"))
+
+                relocate("org.apache.logging.slf4j", "su.plo.voice.libs.org.apache.logging.slf4j")
                 relocate("org.slf4j", "su.plo.voice.libs.org.slf4j")
             }
-
+a
             if (platform.isForge) {
                 exclude("fabric.mod.json")
             } else {

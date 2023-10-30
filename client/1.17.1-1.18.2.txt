@@ -11,3 +11,4 @@ net.minecraftforge.client.event.RenderWorldLastEvent net.minecraftforge.client.e
 net.minecraftforge.client.event.RenderWorldLastEvent getMatrixStack() net.minecraftforge.client.event.RenderLevelLastEvent getPoseStack()
 net.minecraftforge.client.event.RenderWorldLastEvent getPartialTicks() net.minecraftforge.client.event.RenderLevelLastEvent getPartialTick()
 
+net.minecraft.server.packs.resources.SimpleReloadableResourceManager net.minecraft.server.packs.resources.ReloadableResourceManager
