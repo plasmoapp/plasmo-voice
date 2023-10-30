@@ -5,7 +5,6 @@ import gg.essential.gradle.util.noServerRunConfigs
 import gg.essential.util.prebundleNow
 import su.plo.config.toml.Toml
 
-val mavenGroup: String by rootProject
 val isMainProject = project.name == file("../mainProject").readText().trim()
 
 plugins {
@@ -16,7 +15,7 @@ plugins {
     id("su.plo.voice.relocate")
 }
 
-group = "$mavenGroup.client"
+group = "$group.client"
 base.archivesName.set("plasmovoice-${platform.loaderStr}-${platform.mcVersionStr}")
 
 loom.noServerRunConfigs()
@@ -57,7 +56,7 @@ val universalCraft by configurations.creating {
     attributes { attribute(relocatedUC, true) }
 }
 
-fun uStatsVersion() = rootProject.libs.versions.ustats.map {
+fun uStatsVersion() = libs.versions.ustats.map {
     val minecraftVersion = when (platform.mcVersion) {
         12001 -> "1.20"
         else -> platform.mcVersionStr
@@ -66,7 +65,7 @@ fun uStatsVersion() = rootProject.libs.versions.ustats.map {
     "${minecraftVersion}-${platform.loaderStr}:$it"
 }.get()
 
-fun universalCraftVersion() = rootProject.libs.versions.universalcraft.map {
+fun universalCraftVersion() = libs.versions.universalcraft.map {
     val minecraftVersion = when (platform.mcVersion) {
         11605 -> "1.16.2"
         11802 -> "1.18.1"
@@ -76,7 +75,7 @@ fun universalCraftVersion() = rootProject.libs.versions.universalcraft.map {
     "${minecraftVersion}-${platform.loaderStr}:$it"
 }.get()
 
-fun slibVersion() = rootProject.libs.versions.crosslib.map {
+fun slibVersion() = libs.versions.slib.map {
     val minecraftVersion = when (platform.mcVersion) {
         11802, 11902, 11904, 12001 -> "1.19.3"
         else -> platform.mcVersionStr
@@ -90,8 +89,8 @@ repositories {
 }
 
 dependencies {
-    compileOnly(rootProject.libs.netty)
-    implementation(rootProject.libs.rnnoise.jni)
+    compileOnly(libs.netty)
+    implementation(libs.rnnoise.jni)
 
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
@@ -152,16 +151,16 @@ dependencies {
 
     // kotlin
     shadowCommon(kotlin("stdlib-jdk8"))
-    shadowCommon(rootProject.libs.kotlinx.coroutines)
-    shadowCommon(rootProject.libs.kotlinx.coroutines.jdk8)
-    shadowCommon(rootProject.libs.kotlinx.json)
+    shadowCommon(libs.kotlinx.coroutines)
+    shadowCommon(libs.kotlinx.coroutines.jdk8)
+    shadowCommon(libs.kotlinx.json)
 
-    shadowCommon(rootProject.libs.config)
-    shadowCommon(rootProject.libs.opus.jni)
-    shadowCommon(rootProject.libs.opus.concentus)
-    shadowCommon(rootProject.libs.rnnoise.jni)
+    shadowCommon(libs.config)
+    shadowCommon(libs.opus.jni)
+    shadowCommon(libs.opus.concentus)
+    shadowCommon(libs.rnnoise.jni)
 
-    shadowCommon(rootProject.libs.guice) {
+    shadowCommon(libs.guice) {
         exclude("com.google.guava")
     }
 
@@ -234,7 +233,7 @@ tasks {
                 relocate("org.apache.logging.slf4j", "su.plo.voice.libs.org.apache.logging.slf4j")
                 relocate("org.slf4j", "su.plo.voice.libs.org.slf4j")
             }
-a
+
             if (platform.isForge) {
                 exclude("fabric.mod.json")
             } else {

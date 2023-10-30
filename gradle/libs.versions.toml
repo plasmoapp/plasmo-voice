@@ -5,47 +5,70 @@ kotlinx-json = "1.5.1"
 kotlinx-coroutines = "1.7.3"
 
 junit5 = "5.8.2"
+
+slf4j = "1.7.30"
+slf4j-log4j = "2.15.0"
+
+lombok = "1.18.24"
+annotations = "23.0.0"
+guava = "31.1-jre"
+gson = "2.9.0"
+guice = "5.0.1"
+netty = "4.1.77.Final"
 crowdin = "1.0.2-SNAPSHOT"
-ustats = "1.0.2"
+config = "1.0.1"
 universalcraft = "277"
+slib = "1.0.0-SNAPSHOT"
+ustats = "1.0.2"
 bstats = "3.0.2"
-crosslib = "1.0.0-SNAPSHOT"
+luckperms = "5.4"
+papi = "2.11.2"
+
+bungeecord = "1.19-R0.1-SNAPSHOT"
+velocity = "3.1.1"
+paper = "1.19.4-R0.1-SNAPSHOT"
 
 opus-jni = "1.0.0"
 opus-concentus = "acaadf2075"
 rnnoise-jni = "1.0.0"
 
+shadow = "7.1.0"
+idea-ext = "1.1.7"
+
 [libraries]
-lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }
-annotations  = { module = "org.jetbrains:annotations", version = "23.0.0" }
-guava        = { module = "com.google.guava:guava", version = "31.1-jre" }
-gson         = { module = "com.google.code.gson:gson", version = "2.9.0" }
-
-slf4j        = { module = "org.slf4j:slf4j-api", version = "1.7.30" }
-slf4j-log4j  = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version = "2.15.0" }
-junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
-junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
-opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-jni" }
-opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }
-rnnoise-jni  = { module = "com.plasmoverse:rnnoise-jni-rust", version.ref = "rnnoise-jni" }
-netty        = { module = "io.netty:netty-all", version = "4.1.77.Final"}
-config       = { module = "su.plo.config:config", version = "1.0.1" }
-luckperms    = { module = "net.luckperms:api", version = "5.4" }
-
-guice        = { module = "com.google.inject:guice", version = "5.0.1" }
-javax-inject = { module = "javax.inject:javax.inject", version = "1" }
-aopalliance  = { module = "aopalliance:aopalliance", version = "1.0" }
-
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
 
-crowdin-lib = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
+junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
+
+slf4j        = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+slf4j-log4j  = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "slf4j-log4j" }
+
+lombok       = { module = "org.projectlombok:lombok", version.ref = "lombok" }
+annotations  = { module = "org.jetbrains:annotations", version.ref = "annotations" }
+guava        = { module = "com.google.guava:guava", version.ref = "guava" }
+gson         = { module = "com.google.code.gson:gson", version.ref = "gson" }
+guice        = { module = "com.google.inject:guice", version.ref = "guice" }
+javax-inject = { module = "javax.inject:javax.inject", version = "1" }
+aopalliance  = { module = "aopalliance:aopalliance", version = "1.0" }
+netty        = { module = "io.netty:netty-all", version.ref = "netty"}
+crowdin      = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
+config       = { module = "su.plo.config:config", version.ref = "config" }
+luckperms    = { module = "net.luckperms:api", version.ref = "luckperms" }
+papi         = { module = "me.clip:placeholderapi", version.ref = "papi" }
+
+bungeecord   = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord"}
+velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+paper        = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+
+opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-jni" }
+opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }
+rnnoise-jni  = { module = "com.plasmoverse:rnnoise-jni-rust", version.ref = "rnnoise-jni" }
 
 [plugins]
-architectury-plugin = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
-architectury-loom   = { id = "dev.architectury.loom", version = "0.12.0-SNAPSHOT" }
-shadow              = { id = "com.github.johnrengelman.shadow", version = "7.1.0" }
-idea-ext            = { id = "org.jetbrains.gradle.plugin.idea-ext", version = "1.1.7"}
-crowdin-plugin      = { id = "su.plo.crowdin.plugin", version.ref = "crowdin" }
+shadow              = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
+idea-ext            = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ext"}
+crowdin             = { id = "su.plo.crowdin.plugin", version.ref = "crowdin" }
 dokka               = { id = "org.jetbrains.dokka", version.ref = "dokka" }

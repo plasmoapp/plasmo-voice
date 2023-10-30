@@ -2,11 +2,8 @@ plugins {
     id("org.jetbrains.dokka")
 }
 
-val mavenGroup: String by rootProject
-group = "$mavenGroup"
-
 dependencies {
-    implementation("su.plo.slib:api-common:${rootProject.libs.versions.crosslib.get()}")
+    implementation("su.plo.slib:api-common:${libs.versions.slib.get()}")
 }
 
 tasks {

@@ -1,16 +1,14 @@
-val mavenGroup: String by rootProject
-
 plugins {
     id("su.plo.crowdin.plugin")
 }
 
-group = "$mavenGroup.server"
+group = "$group.server"
 
 dependencies {
     api(project(":api:server"))
     api(project(":server-common"))
 
-    compileOnly(rootProject.libs.netty)
+    compileOnly(libs.netty)
 }
 
 crowdin {

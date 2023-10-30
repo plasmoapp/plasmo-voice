@@ -1,6 +1,3 @@
-val mavenGroup: String by rootProject
-val buildVersion: String by rootProject
-
 val velocityVersion: String by project
 
 plugins {
@@ -8,16 +5,16 @@ plugins {
     id("kotlin-kapt")
 }
 
-group = "$mavenGroup.velocity"
+group = "$group.velocity"
 
 dependencies {
-    compileOnly("com.velocitypowered:velocity-api:$velocityVersion")
-    kapt("com.velocitypowered:velocity-api:$velocityVersion")
-    compileOnly(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
-    compileOnly("su.plo.slib:velocity:${rootProject.libs.versions.crosslib.get()}")
+    compileOnly(libs.velocity)
+    kapt(libs.velocity)
+    compileOnly(libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
+    compileOnly("su.plo.slib:velocity:${libs.versions.slib.get()}")
 
     compileOnly(project(":proxy:common"))
-    compileOnly(rootProject.libs.netty)
+    compileOnly(libs.netty)
 
     // shadow projects
     listOf(
@@ -35,17 +32,17 @@ dependencies {
     }
     // shadow external deps
     shadow(kotlin("stdlib-jdk8"))
-    shadow(rootProject.libs.kotlinx.coroutines)
-    shadow(rootProject.libs.kotlinx.coroutines.jdk8)
-    shadow(rootProject.libs.kotlinx.json)
+    shadow(libs.kotlinx.coroutines)
+    shadow(libs.kotlinx.coroutines.jdk8)
+    shadow(libs.kotlinx.json)
 
-    shadow(rootProject.libs.opus.concentus)
-    shadow(rootProject.libs.config)
-    shadow(rootProject.libs.crowdin.lib) {
+    shadow(libs.opus.concentus)
+    shadow(libs.config)
+    shadow(libs.crowdin) {
         isTransitive = false
     }
-    shadow(rootProject.libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
-    shadow("su.plo.slib:velocity:${rootProject.libs.versions.crosslib.get()}") {
+    shadow(libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
+    shadow("su.plo.slib:velocity:${libs.versions.slib.get()}") {
         isTransitive = false
     }
 }
@@ -62,10 +59,6 @@ tasks {
         relocate("org.bstats", "su.plo.voice.libs.bstats")
 
         relocate("org.concentus", "su.plo.voice.libs.concentus")
-
-//        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
-//        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
-//        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))
@@ -91,8 +84,7 @@ tasks {
     }
 
     jar {
-        archiveClassifier.set("dev")
-        dependsOn.add(shadowJar)
+        enabled = false
     }
 
     java {

@@ -1,11 +1,8 @@
 import gg.essential.gradle.util.setJvmDefault
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
-import java.io.ByteArrayOutputStream
 
 // Version
 val targetJavaVersion: String by rootProject
-val mavenGroup: String by rootProject
-val buildVersion: String by rootProject
 
 plugins {
     java
@@ -13,7 +10,7 @@ plugins {
     alias(libs.plugins.shadow)
     alias(libs.plugins.idea.ext)
     alias(libs.plugins.dokka)
-    alias(libs.plugins.crowdin.plugin) apply(false)
+    alias(libs.plugins.crowdin) apply(false)
 
     kotlin("jvm") version(libs.versions.kotlin.get())
     kotlin("plugin.lombok") version(libs.versions.kotlin.get())
@@ -31,22 +28,6 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-lombok")
-
-    group = mavenGroup
-
-    if (buildVersion.contains("+") && !project.parent?.name.equals("api")) {
-        val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
-            rootProject.exec {
-                commandLine("git")
-                    .args("rev-parse", "--verify", "--short", "HEAD")
-                standardOutput = outputStream
-            }
-            outputStream.toString().trim()
-        }.substring(0, 7) // windows moment?
-        version = "${buildVersion.split("+")[0]}+$gitCommitHash"
-    } else {
-        version = buildVersion
-    }
 
     dependencies {
         implementation(kotlin("stdlib-jdk8"))
@@ -105,21 +86,6 @@ subprojects {
         compileKotlin {
             setJvmDefault("all")
         }
-
-//        compileKotlin.setJvmDefault("all")
-
-//        jar {
-//            archiveClassifier.set("dev")
-//        }
-//
-//        shadowJar {
-//            configurations = listOf(project.configurations.shadow.get())
-//            archiveClassifier.set("dev-shadow")
-//        }
-//
-//        build {
-//            dependsOn.add(shadowJar)
-//        }
     }
 }
 
@@ -138,9 +104,7 @@ allprojects {
 }
 
 tasks {
-    build {
-        doLast {
-            jar.get().archiveFile.get().asFile.delete()
-        }
+    jar {
+        enabled = false
     }
 }

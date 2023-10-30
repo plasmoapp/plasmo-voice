@@ -1,4 +1,6 @@
 subprojects {
+    group = "$group.api"
+
     apply(plugin = "org.jetbrains.dokka")
 
     dependencies {
@@ -35,4 +37,8 @@ subprojects {
             }
         }
     }
+}
+
+tasks.jar {
+    enabled = false
 }

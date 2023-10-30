@@ -1,10 +1,8 @@
-val mavenGroup: String by rootProject
-
 plugins {
     id("gg.essential.multi-version.root")
 }
 
-group = "$mavenGroup.client-root"
+group = "$group.client-root"
 
 preprocess {
 
