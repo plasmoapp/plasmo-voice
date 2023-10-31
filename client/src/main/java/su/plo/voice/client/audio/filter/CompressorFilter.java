@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
+import su.plo.voice.api.client.audio.filter.AudioFilterContext;
 import su.plo.voice.api.util.AudioUtil;
 
 @RequiredArgsConstructor
@@ -28,7 +29,7 @@ public final class CompressorFilter implements AudioFilter {
     }
 
     @Override
-    public short[] process(short[] samples) {
+    public short[] process(@NotNull AudioFilterContext context, short[] samples) {
         float[] floatSamples = AudioUtil.shortsToFloatsRange(samples);
 
         analyzeEnvelope(floatSamples);

@@ -3,7 +3,9 @@ package su.plo.voice.client.audio.capture;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.sun.jna.Platform;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.Synchronized;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -233,18 +235,18 @@ public final class VoiceAudioCapture implements AudioCapture {
                         }
                     });
 
-//                    voiceClient.getEventBus().fire(new AudioCaptureProcessedEvent(
-//                            this,
-//                            device.get(),
-//                            samples,
-//                            null
-//                    ));
+                    voiceClient.getEventBus().fire(new AudioCaptureProcessedEvent(
+                            this,
+                            device.get(),
+                            samples,
+                            new EncodedCapture(device.get(), samples)
+                    ));
                     continue;
                 }
 
                 ClientActivation.Result parentResult = parentActivation.process(samples, null);
 
-                EncodedCapture encoded = new EncodedCapture();
+                EncodedCapture encoded = new EncodedCapture(device.get(), samples);
                 boolean transitiveReached = false;
 
                 for (ClientActivation activation : activations.getActivations()) {
@@ -280,17 +282,12 @@ public final class VoiceAudioCapture implements AudioCapture {
                     }
                 }
 
-//                voiceClient.getEventBus().fire(new AudioCaptureProcessedEvent(
-//                        this,
-//                        device.get(),
-//                        samples,
-//                        new AudioCaptureProcessedEvent.CaptureProcessed(
-//                                encoded.monoProcessed,
-//                                encoded.mono,
-//                                encoded.stereoProcessed,
-//                                encoded.stereo
-//                        )
-//                ));
+                voiceClient.getEventBus().fire(new AudioCaptureProcessedEvent(
+                        this,
+                        device.get(),
+                        samples,
+                        encoded
+                ));
             } catch (InterruptedException ignored) {
                 break;
             } catch (Exception e) {
@@ -316,34 +313,25 @@ public final class VoiceAudioCapture implements AudioCapture {
         this.thread = null;
     }
 
-    private void processActivation(@NotNull InputDevice device,
-                                   @NotNull ClientActivation activation,
-                                   @NotNull ClientActivation.Result result,
-                                   short[] samples,
-                                   @NotNull EncodedCapture encoded) {
+    private void processActivation(
+            @NotNull InputDevice device,
+            @NotNull ClientActivation activation,
+            @NotNull ClientActivation.Result result,
+            short[] samples,
+            @NotNull EncodedCapture encoded
+    ) {
         boolean isStereo = config.getVoice().getStereoCapture().value() && activation.isStereoSupported();
 
         if (result.isActivated() && samples != null) {
             if (isStereo && encoded.stereo == null) {
-                short[] processedSamples = new short[samples.length];
-                System.arraycopy(samples, 0, processedSamples, 0, samples.length);
-
                 AudioEncoder stereoEncoder = activation.getStereoEncoder().orElse(this.stereoEncoder);
 
-                processedSamples = device.processFilters(
-                        processedSamples,
-                        (filter) -> (filter instanceof StereoToMonoFilter)
-                );
-                encoded.stereoProcessed = processedSamples;
+                short[] processedSamples = encoded.getStereo();
                 encoded.stereo = encode(stereoEncoder, processedSamples);
             } else if (!isStereo && encoded.mono == null) {
-                short[] processedSamples = new short[samples.length];
-                System.arraycopy(samples, 0, processedSamples, 0, samples.length);
-
                 AudioEncoder monoEncoder = activation.getMonoEncoder().orElse(this.monoEncoder);
 
-                processedSamples = device.processFilters(processedSamples);
-                encoded.monoProcessed = processedSamples;
+                short[] processedSamples = encoded.getMono();
                 encoded.mono = encode(monoEncoder, processedSamples);
             }
         }
@@ -424,11 +412,44 @@ public final class VoiceAudioCapture implements AudioCapture {
         return sequenceNumber;
     }
 
-    static class EncodedCapture {
+    @RequiredArgsConstructor
+    static class EncodedCapture implements AudioCaptureProcessedEvent.ProcessedSamples {
+
+        private final InputDevice device;
+        private final short[] samples;
 
         private byte[] mono;
         private short[] monoProcessed;
         private byte[] stereo;
         private short[] stereoProcessed;
+
+        @Override
+        @Synchronized
+        public short[] getMono() {
+            if (monoProcessed != null) return monoProcessed;
+
+            this.monoProcessed = new short[samples.length];
+            System.arraycopy(samples, 0, monoProcessed, 0, samples.length);
+
+            this.monoProcessed = device.processFilters(monoProcessed);
+
+            return monoProcessed;
+        }
+
+        @Override
+        @Synchronized
+        public short[] getStereo() {
+            if (stereoProcessed != null) return stereoProcessed;
+
+            this.stereoProcessed = new short[samples.length];
+            System.arraycopy(samples, 0, stereoProcessed, 0, samples.length);
+
+            this.stereoProcessed = device.processFilters(
+                    stereoProcessed,
+                    (filter) -> (filter instanceof StereoToMonoFilter)
+            );
+
+            return stereoProcessed;
+        }
     }
 }

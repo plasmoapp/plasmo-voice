@@ -5,6 +5,7 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.audio.filter.AudioFilter;
+import su.plo.voice.api.client.audio.filter.AudioFilterContext;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.api.util.CircularBuffer;
 
@@ -24,7 +25,7 @@ public final class GainFilter implements AudioFilter {
     }
 
     @Override
-    public short[] process(short[] samples) {
+    public short[] process(@NotNull AudioFilterContext context, short[] samples) {
         this.volume = entry.value().floatValue();
 
         short highestValue = AudioUtil.getHighestAbsoluteSample(samples);

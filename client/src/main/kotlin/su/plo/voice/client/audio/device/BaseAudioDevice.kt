@@ -7,6 +7,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.filter.AudioFilter
+import su.plo.voice.api.client.audio.filter.AudioFilterContext
 import java.util.function.Predicate
 import javax.sound.sampled.AudioFormat
 
@@ -51,15 +52,15 @@ abstract class BaseAudioDevice(
         filters.values()
 
     override fun processFilters(samples: ShortArray, excludeFilter: Predicate<AudioFilter>?): ShortArray {
-        val channels = format.channels
+        val context = AudioFilterContext(this)
 
         var samples = samples
         for (filter in filters.values()) {
             if (!filter.isEnabled) continue
-            if (filter.supportedChannels > 0 && filter.supportedChannels != channels) continue
+            if (filter.supportedChannels > 0 && filter.supportedChannels != context.channels) continue
             if (excludeFilter?.test(filter) == true) continue
 
-            samples = filter.process(samples)
+            samples = filter.process(context, samples)
         }
         return samples
     }

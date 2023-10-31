@@ -22,7 +22,7 @@ public interface AudioFilter {
      * @param samples The audio samples to process.
      * @return The processed audio samples.
      */
-    short[] process(short[] samples);
+    short[] process(@NotNull AudioFilterContext context, short[] samples);
 
     /**
      * Checks if the audio filter is enabled.

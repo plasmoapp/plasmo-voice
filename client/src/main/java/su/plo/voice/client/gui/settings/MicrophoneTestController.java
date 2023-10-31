@@ -8,14 +8,12 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureProcessedEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
 import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
-
-import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
 public final class MicrophoneTestController {
@@ -76,33 +74,25 @@ public final class MicrophoneTestController {
     }
 
     @EventSubscribe
-    public void onAudioCaptureProcessed(@NotNull AudioCaptureEvent event) {
-        CompletableFuture.runAsync(() -> {
-            short[] samples = new short[event.getSamples().length];
-            System.arraycopy(event.getSamples(), 0, samples, 0, event.getSamples().length);
+    public void onAudioCaptureProcessed(@NotNull AudioCaptureProcessedEvent event) {
+        short[] samples = event.getProcessed().getSamples(isStereoSupported());
 
-            samples = event.getDevice().processFilters(
-                    samples,
-                    (filter) -> isStereoSupported() && (filter instanceof StereoToMonoFilter)
-            );
+        this.microphoneDB = AudioUtil.calculateHighestAudioLevel(samples);
+        if (microphoneDB > highestDB) {
+            this.highestDB = microphoneDB;
+            this.lastUpdate = System.currentTimeMillis();
+        } else if (System.currentTimeMillis() - lastUpdate > 1000L) {
+            this.highestDB = microphoneDB;
+        }
+        double value = 1 - (microphoneDB / -60);
 
-            this.microphoneDB = AudioUtil.calculateHighestAudioLevel(samples);
-            if (microphoneDB > highestDB) {
-                this.highestDB = microphoneDB;
-                this.lastUpdate = System.currentTimeMillis();
-            } else if (System.currentTimeMillis() - lastUpdate > 1000L) {
-                this.highestDB = microphoneDB;
-            }
-            double value = 1 - (microphoneDB / -60);
+        if (microphoneDB > -60 && value > microphoneValue) {
+            this.microphoneValue = AudioUtil.audioLevelToDoubleRange(microphoneDB);
+        }
 
-            if (microphoneDB > -60 && value > microphoneValue) {
-                this.microphoneValue = AudioUtil.audioLevelToDoubleRange(microphoneDB);
-            }
-
-            if (source != null) {
-                source.write(samples);
-            }
-        });
+        if (source != null) {
+            source.write(samples);
+        }
     }
 
     private void initializeLoopbackSource() throws DeviceException {
