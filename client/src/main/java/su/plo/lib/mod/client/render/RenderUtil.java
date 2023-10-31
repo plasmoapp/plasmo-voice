@@ -445,7 +445,6 @@ public class RenderUtil {
     }
 
     public static void logicOp(String opcode) {
-        // todo: legacy
         RenderSystem.logicOp(GlStateManager.LogicOp.valueOf(opcode));
     }
 
@@ -496,16 +495,6 @@ public class RenderUtil {
         RenderSystem.lineWidth(width);
         //#endif
     }
-
-    public static void turnOnLightLayer() {
-        // todo: (legacy support) since when?
-        UMinecraft.getMinecraft().gameRenderer.lightTexture().turnOnLightLayer();
-    }
-
-    public static void turnOffLightLayer() {
-        UMinecraft.getMinecraft().gameRenderer.lightTexture().turnOffLightLayer();
-    }
-
 
     public static ClientTextConverter getTextConverter() {
         return TEXT_CONVERTER;

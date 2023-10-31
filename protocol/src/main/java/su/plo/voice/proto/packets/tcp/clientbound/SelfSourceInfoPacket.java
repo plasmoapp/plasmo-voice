@@ -15,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString // todo: rename?
+@ToString
 public final class SelfSourceInfoPacket implements Packet<ClientPacketTcpHandler> {
 
     @Getter

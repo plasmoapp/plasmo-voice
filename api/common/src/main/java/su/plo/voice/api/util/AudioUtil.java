@@ -254,7 +254,6 @@ public final class AudioUtil {
     public static short[] convertToMonoShorts(short[] samples) {
         short[] mono = new short[samples.length / 2];
 
-        // todo: better stereo -> mono conversation
         for (int i = 0; i < samples.length; i += 2) {
             mono[i / 2] = (short) ((samples[i] + samples[i + 1]) / 2);
         }

@@ -96,7 +96,6 @@ class VoiceClientSourceManager(
         selfSourceInfoById.clear()
     }
 
-    // todo: refactor somehow pepega
     override fun createOrUpdateSource(sourceInfo: SourceInfo): Unit = runBlocking {
         try {
             if (sourceById.containsKey(sourceInfo.id)) {

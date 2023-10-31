@@ -31,9 +31,6 @@ public final class VoiceEventBus implements EventBus {
     // class -> handlers
     private final Map<Class<?>, EnumMap<EventPriority, List<EventHandler<?>>>> handlers = Maps.newConcurrentMap();
 
-    // todo: this executor is not closed, maybe use default background executor (?)
-    private final Executor asyncExecutor = Executors.newSingleThreadExecutor();
-
     private final PlasmoVoice voice;
 
     public VoiceEventBus(@NotNull PlasmoVoice voice) {
@@ -64,7 +61,7 @@ public final class VoiceEventBus implements EventBus {
     public <E extends Event> CompletableFuture<E> fireAsync(@NotNull E event) {
         CompletableFuture<E> future = new CompletableFuture<>();
 
-        asyncExecutor.execute(() -> {
+        voice.getBackgroundExecutor().execute(() -> {
             fire(event);
             future.complete(event);
         });

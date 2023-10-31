@@ -443,7 +443,6 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
     @Override
     public void handle(@NotNull AnimatedActionBarPacket packet) {
-        // todo: legacy?
         UMinecraft.getMinecraft().gui.setOverlayMessage(
                 RenderUtil.getTextConverter().convertFromJson(packet.getJsonComponent()),
                 true

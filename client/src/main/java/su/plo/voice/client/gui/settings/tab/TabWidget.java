@@ -78,7 +78,6 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
         Optional<Entry> entry = getEntryAtPosition(mouseX, mouseY);
 
-        // todo: use something like predicate in updateOptionEntries
         for (Entry e : entries) {
             if (!entry.isPresent() || entry.get() != e) {
                 if (e.widgets().size() < 1) continue;
@@ -117,7 +116,6 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         Optional<Entry> entry = getEntryAtPosition(mouseX, mouseY);
 
-        // todo: use something like predicate in updateOptionEntries
         for (Entry e : entries) {
             if ((!entry.isPresent() || entry.get() != e) && e instanceof OptionEntry) {
                 if (e.widgets().get(0) instanceof HotKeyWidget) {

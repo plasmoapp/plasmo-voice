@@ -42,30 +42,24 @@ public final class AddonsTabWidget extends TabWidget {
             switch (widget.getType()) {
                 case INT_SLIDER:
                     addEntry(createIntSliderWidget(
-                            McTextComponent.translatable(widget.getTranslatable()),
-                            widget.getTooltipTranslatable() != null
-                                    ? McTextComponent.translatable(widget.getTooltipTranslatable())
-                                    : null,
+                            widget.getLabel(),
+                            widget.getTooltip(),
                             (IntConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
                     ));
                     break;
                 case VOLUME_SLIDER:
                     addEntry(createVolumeSlider(
-                            McTextComponent.translatable(widget.getTranslatable()),
-                            widget.getTooltipTranslatable() != null
-                                    ? McTextComponent.translatable(widget.getTooltipTranslatable())
-                                    : null,
+                            widget.getLabel(),
+                            widget.getTooltip(),
                             (DoubleConfigEntry) widget.getConfigEntry(),
                             ((VoiceAddonConfig.ConfigSliderWidget) widget).getSuffix()
                     ));
                     break;
                 case TOGGLE:
                     addEntry(createToggleEntry(
-                            McTextComponent.translatable(widget.getTranslatable()),
-                            widget.getTooltipTranslatable() != null
-                                    ? McTextComponent.translatable(widget.getTooltipTranslatable())
-                                    : null,
+                            widget.getLabel(),
+                            widget.getTooltip(),
                             (BooleanConfigEntry) widget.getConfigEntry()
                     ));
                     break;
@@ -95,7 +89,7 @@ public final class AddonsTabWidget extends TabWidget {
         );
 
         return new OptionEntry<>(
-                McTextComponent.translatable(widget.getTranslatable()),
+                widget.getLabel(),
                 dropdown,
                 configEntry,
                 (button, element) -> element.setText(McTextComponent.translatable(widget.getElements().get(configEntry.value())))

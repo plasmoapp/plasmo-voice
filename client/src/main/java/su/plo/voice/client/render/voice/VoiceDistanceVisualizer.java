@@ -45,7 +45,6 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     @Override
     public synchronized void render(int radius, int color, @Nullable Pos3d position) {
         if (!config.getAdvanced().getVisualizeVoiceDistance().value()) return;
-        // todo: legacy render distance
         if (radius < 2 || radius > renderDistanceValue(UMinecraft.getSettings()) * 16) return;
 
         VoiceDistanceRenderEvent event = new VoiceDistanceRenderEvent(this, radius, color);

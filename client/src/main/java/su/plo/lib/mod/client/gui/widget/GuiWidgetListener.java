@@ -5,9 +5,6 @@ import org.jetbrains.annotations.Nullable;
 
 public interface GuiWidgetListener {
 
-    default void mouseMoved(double mouseX, double mouseY) {
-    }
-
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
         return false;
     }

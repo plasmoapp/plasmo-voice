@@ -169,6 +169,9 @@ abstract class BaseClientAudioSource<T> constructor(
 
         SCOPE.launch { processAudioEndPacket(packet) }
         endRequest?.cancel()
+
+        // because SourceAudioEndPacket can be received BEFORE the end of the stream,
+        // we need to wait for some time to actually end the stream
         endRequest = SCOPE.launch {
             try {
                 delay(100L)
@@ -246,7 +249,6 @@ abstract class BaseClientAudioSource<T> constructor(
             lastSequenceNumbers.remove(sourceInfo.lineId)
         }
 
-        // todo: waytoodank
         endRequest?.let {
             it.cancel()
             endRequest = null
@@ -458,7 +460,7 @@ abstract class BaseClientAudioSource<T> constructor(
     }
 
     private suspend fun createSourceGroup(sourceInfo: T): SourceGroup {
-        return voiceClient.deviceManager.createSourceGroup(DeviceType.OUTPUT).also {
+        return voiceClient.deviceManager.createSourceGroup().also {
             it.create(isStereo(sourceInfo), AlSourceParams.DEFAULT)
 
             for (source in it.sources) {

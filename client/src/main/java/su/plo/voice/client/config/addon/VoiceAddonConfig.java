@@ -10,6 +10,7 @@ import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.client.config.addon.AddonConfig;
 import su.plo.voice.client.config.VoiceClientConfig;
@@ -26,27 +27,33 @@ public final class VoiceAddonConfig implements AddonConfig {
     private final AddonContainer addon;
     private final VoiceClientConfig.Addons.Addon config;
 
-    private final Map<String, ConfigWidget> widgetsByTranslatable = Maps.newConcurrentMap();
+    private final Map<String, ConfigWidget> widgetsById = Maps.newConcurrentMap();
     @Getter
     private final List<ConfigWidget> widgets = Lists.newCopyOnWriteArrayList();
 
     @Override
-    public @NotNull IntConfigEntry addIntSlider(@NotNull String translatable,
-                                                @Nullable String tooltipTranslatable,
-                                                @NotNull String suffix,
-                                                int defaultValue, int min, int max) {
-        checkWidgetExists(translatable);
+    public @NotNull IntConfigEntry addIntSlider(
+            @NotNull String widgetId,
+            @NotNull McTextComponent label,
+            @Nullable McTextComponent tooltip,
+            @NotNull String suffix,
+            int defaultValue,
+            int min,
+            int max
+    ) {
+        checkWidgetExists(widgetId);
 
-        IntConfigEntry configEntry = config.getEntry(translatable)
+        IntConfigEntry configEntry = config.getEntry(widgetId)
                 .map(IntConfigEntry.class::cast)
-                .orElseGet(createEntry(translatable, () -> new IntConfigEntry(defaultValue, min, max)));
+                .orElseGet(createEntry(widgetId, () -> new IntConfigEntry(defaultValue, min, max)));
         configEntry.setDefault(defaultValue, min, max);
 
         addWidget(
+                widgetId,
                 new ConfigSliderWidget(
                         ConfigWidget.Type.INT_SLIDER,
-                        translatable,
-                        tooltipTranslatable,
+                        label,
+                        tooltip,
                         configEntry,
                         suffix
                 )
@@ -56,22 +63,28 @@ public final class VoiceAddonConfig implements AddonConfig {
     }
 
     @Override
-    public @NotNull DoubleConfigEntry addVolumeSlider(@NotNull String translatable,
-                                                      @Nullable String tooltipTranslatable,
-                                                      @NotNull String suffix,
-                                                      double defaultValue, double min, double max) {
-        checkWidgetExists(translatable);
+    public @NotNull DoubleConfigEntry addVolumeSlider(
+            @NotNull String widgetId,
+            @NotNull McTextComponent label,
+            @Nullable McTextComponent tooltip,
+            @NotNull String suffix,
+            double defaultValue,
+            double min,
+            double max
+    ) {
+        checkWidgetExists(widgetId);
 
-        DoubleConfigEntry configEntry = config.getEntry(translatable)
+        DoubleConfigEntry configEntry = config.getEntry(widgetId)
                 .map(DoubleConfigEntry.class::cast)
-                .orElseGet(createEntry(translatable, () -> new DoubleConfigEntry(defaultValue, min, max)));
+                .orElseGet(createEntry(widgetId, () -> new DoubleConfigEntry(defaultValue, min, max)));
         configEntry.setDefault(defaultValue, min, max);
 
         addWidget(
+                widgetId,
                 new ConfigSliderWidget(
                         ConfigWidget.Type.VOLUME_SLIDER,
-                        translatable,
-                        tooltipTranslatable,
+                        label,
+                        tooltip,
                         configEntry,
                         suffix
                 )
@@ -81,21 +94,25 @@ public final class VoiceAddonConfig implements AddonConfig {
     }
 
     @Override
-    public @NotNull BooleanConfigEntry addToggle(@NotNull String translatable,
-                                                 @Nullable String tooltipTranslatable,
-                                                 boolean defaultValue) {
-        checkWidgetExists(translatable);
+    public @NotNull BooleanConfigEntry addToggle(
+            @NotNull String widgetId,
+            @NotNull McTextComponent label,
+            @Nullable McTextComponent tooltip,
+            boolean defaultValue
+    ) {
+        checkWidgetExists(widgetId);
 
-        BooleanConfigEntry configEntry = config.getEntry(translatable)
+        BooleanConfigEntry configEntry = config.getEntry(widgetId)
                 .map(BooleanConfigEntry.class::cast)
-                .orElseGet(createEntry(translatable, () -> new BooleanConfigEntry(defaultValue)));
+                .orElseGet(createEntry(widgetId, () -> new BooleanConfigEntry(defaultValue)));
         configEntry.setDefault(defaultValue);
 
         addWidget(
+                widgetId,
                 new ConfigWidget(
                         ConfigWidget.Type.TOGGLE,
-                        translatable,
-                        tooltipTranslatable,
+                        label,
+                        tooltip,
                         configEntry
                 )
         );
@@ -104,22 +121,26 @@ public final class VoiceAddonConfig implements AddonConfig {
     }
 
     @Override
-    public @NotNull IntConfigEntry addDropDown(@NotNull String translatable,
-                                      @Nullable String tooltipTranslatable,
-                                      @NotNull List<String> elements,
-                                      boolean elementTooltip,
-                                      int defaultValue) {
-        checkWidgetExists(translatable);
+    public @NotNull IntConfigEntry addDropDown(
+            @NotNull String widgetId,
+            @NotNull McTextComponent label,
+            @Nullable McTextComponent tooltip,
+            @NotNull List<String> elements,
+            boolean elementTooltip,
+            int defaultValueIndex
+    ) {
+        checkWidgetExists(widgetId);
 
-        IntConfigEntry configEntry = config.getEntry(translatable)
+        IntConfigEntry configEntry = config.getEntry(widgetId)
                 .map(IntConfigEntry.class::cast)
-                .orElseGet(createEntry(translatable, () -> new IntConfigEntry(defaultValue, 0, 0)));
-        configEntry.setDefault(defaultValue);
+                .orElseGet(createEntry(widgetId, () -> new IntConfigEntry(defaultValueIndex, 0, 0)));
+        configEntry.setDefault(defaultValueIndex);
 
         addWidget(
+                widgetId,
                 new ConfigDropDownWidget(
-                        translatable,
-                        tooltipTranslatable,
+                        label,
+                        tooltip,
                         configEntry,
                         elements,
                         elementTooltip
@@ -131,14 +152,14 @@ public final class VoiceAddonConfig implements AddonConfig {
 
     @Override
     public boolean removeWidget(@NotNull String translatable) {
-        return Optional.ofNullable(widgetsByTranslatable.remove(translatable))
+        return Optional.ofNullable(widgetsById.remove(translatable))
                 .filter(widgets::remove)
                 .isPresent();
     }
 
     @Override
-    public <T extends ConfigEntry<?>> Optional<T> getValue(@NotNull String translatable) {
-        ConfigWidget widget = widgetsByTranslatable.get(translatable);
+    public <T extends ConfigEntry<?>> Optional<T> getWidgetConfigEntry(@NotNull String translatable) {
+        ConfigWidget widget = widgetsById.get(translatable);
         if (widget == null) return Optional.empty();
 
         return Optional.of((T) widget.getConfigEntry());
@@ -149,21 +170,21 @@ public final class VoiceAddonConfig implements AddonConfig {
         widgets.clear();
     }
 
-    private void addWidget(@NotNull ConfigWidget widget) {
+    private void addWidget(@NotNull String id, @NotNull ConfigWidget widget) {
         widgets.add(widget);
-        widgetsByTranslatable.put(widget.getTranslatable(), widget);
+        widgetsById.put(id, widget);
     }
 
-    private <T extends ConfigEntry<?>> Supplier<T> createEntry(@NotNull String translatable, @NotNull Supplier<T> supplier) {
+    private <T extends ConfigEntry<?>> Supplier<T> createEntry(@NotNull String widgetId, @NotNull Supplier<T> supplier) {
         return () -> {
             T entry = supplier.get();
-            config.setEntry(translatable, entry);
+            config.setEntry(widgetId, entry);
             return entry;
         };
     }
 
     private void checkWidgetExists(@NotNull String translatable) {
-        if (widgetsByTranslatable.containsKey(translatable))
+        if (widgetsById.containsKey(translatable))
             throw new IllegalArgumentException("Widget " + translatable + " already exist");
     }
 
@@ -173,9 +194,9 @@ public final class VoiceAddonConfig implements AddonConfig {
         @Getter
         private final @NotNull Type type;
         @Getter
-        private final @NotNull String translatable;
+        private final @NotNull McTextComponent label;
         @Getter
-        private final @Nullable String tooltipTranslatable;
+        private final @Nullable McTextComponent tooltip;
         @Getter
         private final @NotNull ConfigEntry<?> configEntry;
 
@@ -192,12 +213,14 @@ public final class VoiceAddonConfig implements AddonConfig {
         @Getter
         private final @NotNull String suffix;
 
-        public ConfigSliderWidget(@NotNull Type type,
-                                  @NotNull String translatable,
-                                  @Nullable String tooltipTranslatable,
-                                  @NotNull ConfigEntry<?> configEntry,
-                                  @NotNull String suffix) {
-            super(type, translatable, tooltipTranslatable, configEntry);
+        public ConfigSliderWidget(
+                @NotNull Type type,
+                @NotNull McTextComponent label,
+                @Nullable McTextComponent tooltip,
+                @NotNull ConfigEntry<?> configEntry,
+                @NotNull String suffix
+        ) {
+            super(type, label, tooltip, configEntry);
 
             this.suffix = suffix;
         }
@@ -210,12 +233,14 @@ public final class VoiceAddonConfig implements AddonConfig {
         @Getter
         private final boolean elementTooltip;
 
-        public ConfigDropDownWidget(@NotNull String translatable,
-                                    @Nullable String tooltipTranslatable,
-                                    @NotNull ConfigEntry<?> configEntry,
-                                    @NotNull List<String> elements,
-                                    boolean elementTooltip) {
-            super(Type.DROPDOWN, translatable, tooltipTranslatable, configEntry);
+        public ConfigDropDownWidget(
+                @NotNull McTextComponent label,
+                @Nullable McTextComponent tooltip,
+                @NotNull ConfigEntry<?> configEntry,
+                @NotNull List<String> elements,
+                boolean elementTooltip
+        ) {
+            super(Type.DROPDOWN, label, tooltip, configEntry);
 
             this.elements = elements;
             this.elementTooltip = elementTooltip;

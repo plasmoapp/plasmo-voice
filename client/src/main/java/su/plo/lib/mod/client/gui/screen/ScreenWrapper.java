@@ -194,12 +194,6 @@ public final class ScreenWrapper
         }
     }
 
-    // todo: legacy?
-//    @Override
-//    public void mouseMoved(double mouseX, double mouseY) {
-//        screen.mouseMoved(mouseX, mouseY);
-//    }
-
     // MinecraftScreen impl
     @Override
     public void onDrawBackground(@NotNull UMatrixStack matrixStack, int tint) {
@@ -219,8 +213,6 @@ public final class ScreenWrapper
     }
 
     public void renderTooltip(UMatrixStack stack, List<McTextComponent> tooltip, int mouseX, int mouseY) {
-        // todo: legacy?
-
         //#if MC>=12000
         //$$ ((Screen) this).setTooltipForNextRenderPass(
         //$$         Language.getInstance().getVisualOrder(
