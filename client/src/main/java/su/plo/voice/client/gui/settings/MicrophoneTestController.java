@@ -48,6 +48,8 @@ public final class MicrophoneTestController {
     }
 
     public void start() {
+        if (source != null) return;
+
         try {
             initializeLoopbackSource();
         } catch (DeviceException e) {
@@ -64,6 +66,10 @@ public final class MicrophoneTestController {
         this.source = null;
 
         voiceClient.getEventBus().fire(new MicrophoneTestStoppedEvent(this));
+    }
+
+    public boolean isActive() {
+        return source != null;
     }
 
     @EventSubscribe
@@ -91,7 +97,7 @@ public final class MicrophoneTestController {
         }
 
         if (source != null) {
-            source.write(samples);
+//            source.write(samples);
         }
     }
 

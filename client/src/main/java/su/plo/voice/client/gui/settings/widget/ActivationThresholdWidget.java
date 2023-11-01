@@ -76,7 +76,8 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
         );
 
 
-        testStop.setVisible(false);
+        testStop.setVisible(controller.isActive());
+        testStart.setVisible(!controller.isActive());
         testStart.setActive(
                 audioCapture.getDevice()
                         .map(InputDevice::isOpen)
