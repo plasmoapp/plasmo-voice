@@ -23,6 +23,7 @@ interface DeviceSource {
     /**
      * Closes the audio source.
      */
+    @JvmSynthetic
     suspend fun close()
 
     /**

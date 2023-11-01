@@ -1,7 +1,9 @@
 package su.plo.voice.client.audio.device.source
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.future
+import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import org.lwjgl.openal.AL11
 import org.lwjgl.system.MemoryUtil
@@ -58,8 +60,6 @@ class StreamAlSource private constructor(
             return
         } else if (isStreaming) {
             return
-        } else if (job?.isActive == false) {
-            stop()
         }
 
         startStreamThread()
@@ -77,6 +77,17 @@ class StreamAlSource private constructor(
         isStreaming.set(false)
 
         queue.clear()
+    }
+
+    override fun pause() {
+        AlUtil.checkDeviceContext(device)
+
+        AlSourcePauseEvent(this).also {
+            if (!client.eventBus.fire(it)) return
+        }
+
+        AL11.alSourcePause(pointer)
+        AlUtil.checkErrors("Source pause")
     }
 
     override fun setCloseTimeoutMs(timeoutMs: Long) {
@@ -124,8 +135,15 @@ class StreamAlSource private constructor(
         }
     }
 
-    private fun closeSync() {
+    private suspend fun closeSync() {
         stop()
+        job?.join()
+
+        // play a source if its state is initial, so a source can be deleted properly
+        if (state == AlSource.State.INITIAL) {
+            AL11.alSourcePlay(pointer)
+            AlUtil.checkErrors("Source play")
+        }
 
         client.eventBus.fire(AlSourceClosedEvent(this@StreamAlSource))
 
@@ -144,7 +162,7 @@ class StreamAlSource private constructor(
         isStreaming.set(true)
         val alSource = this
 
-        device.coroutineScope.launch {
+        job = device.coroutineScope.launch {
             buffers = IntArray(numBuffers)
             AL11.alGenBuffers(buffers)
             AlUtil.checkErrors("Source gen buffers")

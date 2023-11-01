@@ -27,6 +27,7 @@ interface OutputDevice<S : DeviceSource> : AudioDevice {
     /**
      * Closes all audio sources associated with this output device.
      */
+    @JvmSynthetic
     suspend fun closeSources()
 
     /**

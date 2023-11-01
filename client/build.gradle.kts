@@ -36,6 +36,7 @@ loom {
         getByName("client") {
             programArgs("--username", "GNOME__")
             property("plasmovoice.alpha.disableversioncheck", "true")
+            property("plasmovoice.debug", "true")
             property("universalcraft.shader.legacy.debug", "true")
         }
     }

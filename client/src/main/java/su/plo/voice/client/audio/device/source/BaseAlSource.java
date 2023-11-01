@@ -7,9 +7,6 @@ import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
-import su.plo.voice.api.client.event.audio.device.source.AlSourcePauseEvent;
-import su.plo.voice.api.client.event.audio.device.source.AlSourcePlayEvent;
-import su.plo.voice.api.client.event.audio.device.source.AlSourceStopEvent;
 import su.plo.voice.api.client.event.audio.device.source.AlSourceUpdateParamEvent;
 import su.plo.voice.client.audio.AlUtil;
 import su.plo.voice.client.audio.device.AlOutputDevice;
@@ -45,42 +42,6 @@ public abstract class BaseAlSource implements AlSource {
     @Override
     public long getPointer() {
         return pointer;
-    }
-
-    @Override
-    public void play() {
-        AlUtil.checkDeviceContext(device);
-
-        AlSourcePlayEvent event = new AlSourcePlayEvent(this);
-        client.getEventBus().fire(event);
-        if (event.isCancelled()) return;
-
-        AL11.alSourcePlay(pointer);
-        AlUtil.checkErrors("Source pause");
-    }
-
-    @Override
-    public void stop() {
-        AlUtil.checkDeviceContext(device);
-
-        AlSourceStopEvent event = new AlSourceStopEvent(this);
-        client.getEventBus().fire(event);
-        if (event.isCancelled()) return;
-
-        AL11.alSourceStop(pointer);
-        AlUtil.checkErrors("Source pause");
-    }
-
-    @Override
-    public void pause() {
-        AlUtil.checkDeviceContext(device);
-
-        AlSourcePauseEvent event = new AlSourcePauseEvent(this);
-        client.getEventBus().fire(event);
-        if (event.isCancelled()) return;
-
-        AL11.alSourcePause(pointer);
-        AlUtil.checkErrors("Source pause");
     }
 
     @Override
