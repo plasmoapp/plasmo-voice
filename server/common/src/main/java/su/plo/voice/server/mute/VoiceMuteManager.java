@@ -42,12 +42,14 @@ public final class VoiceMuteManager implements MuteManager {
     }
 
     @Override
-    public Optional<ServerMuteInfo> mute(@NotNull UUID playerId,
-                                         @Nullable UUID mutedById,
-                                         long duration,
-                                         @Nullable MuteDurationUnit durationUnit,
-                                         @Nullable String reason,
-                                         boolean silent) {
+    public Optional<ServerMuteInfo> mute(
+            @NotNull UUID playerId,
+            @Nullable UUID mutedById,
+            long duration,
+            @Nullable MuteDurationUnit durationUnit,
+            @Nullable String reason,
+            boolean silent
+    ) {
         VoiceServerPlayer player = playerManager.getPlayerById(playerId)
                 .orElseThrow(() -> new IllegalArgumentException("Player not found"));
 
@@ -76,18 +78,21 @@ public final class VoiceMuteManager implements MuteManager {
         muteStorage.putPlayerMute(player.getInstance().getUuid(), muteInfo);
 
         voiceServer.getTcpPacketManager().broadcastPlayerInfoUpdate(player);
-        if (duration > 0) {
-            player.getInstance().sendMessage(
-                    McTextComponent.translatable(
-                            "pv.mutes.temporarily_muted",
-                            durationMessage,
-                            formatMuteReason(reason)
-                    )
-            );
-        } else {
-            player.getInstance().sendMessage(
-                    McTextComponent.translatable("pv.mutes.permanently_muted", formatMuteReason(reason))
-            );
+
+        if (!silent) {
+            if (duration > 0) {
+                player.getInstance().sendMessage(
+                        McTextComponent.translatable(
+                                "pv.mutes.temporarily_muted",
+                                durationMessage,
+                                formatMuteReason(reason)
+                        )
+                );
+            } else {
+                player.getInstance().sendMessage(
+                        McTextComponent.translatable("pv.mutes.permanently_muted", formatMuteReason(reason))
+                );
+            }
         }
 
         voiceServer.getEventBus().fire(new PlayerVoiceMutedEvent(this, muteInfo));
@@ -102,7 +107,10 @@ public final class VoiceMuteManager implements MuteManager {
                     playerManager.getPlayerById(playerId)
                             .ifPresent(player -> {
                                 voiceServer.getTcpPacketManager().broadcastPlayerInfoUpdate(player);
-                                player.getInstance().sendMessage(McTextComponent.translatable("pv.mutes.unmuted"));
+
+                                if (!silent) {
+                                    player.getInstance().sendMessage(McTextComponent.translatable("pv.mutes.unmuted"));
+                                }
                             });
 
                     voiceServer.getEventBus().fire(new PlayerVoiceUnmutedEvent(this, muteInfo));
