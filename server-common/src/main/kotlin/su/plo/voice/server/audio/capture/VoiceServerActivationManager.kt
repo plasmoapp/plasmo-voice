@@ -117,7 +117,10 @@ class VoiceServerActivationManager(
         if (!activation.checkDistance(packet.distance.toInt())) return
         if (activation.requirements?.checkRequirements(player, packet) == false) return
 
-        if (!player.activeActivations.contains(activation)) {
+        val lastActivationSequenceNumber = player.lastActivationSequenceNumber.getOrDefault(activation.id, 0)
+        if (activation !in player.activeActivations &&
+            packet.sequenceNumber > lastActivationSequenceNumber
+        ) {
             player.activeActivations.add(activation)
             activation.activationStartListeners.forEach { it.onActivationStart(player) }
         }
@@ -147,6 +150,7 @@ class VoiceServerActivationManager(
         if (activation.requirements?.checkRequirements(player, packet) == false) return
 
         player.activeActivations.remove(activation)
+        player.lastActivationSequenceNumber[activation.id] = packet.sequenceNumber
 
         for (listener in activation.activationEndListeners) {
             val result = listener.onActivationEnd(player, packet)

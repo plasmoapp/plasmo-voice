@@ -48,6 +48,8 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     private final Map<UUID, Integer> distanceByActivationId = Maps.newConcurrentMap();
     @Getter
     private final Set<ServerActivation> activeActivations = Sets.newConcurrentHashSet();
+    @Getter
+    private final Map<UUID, Long> lastActivationSequenceNumber = Maps.newConcurrentMap();
 
     @Override
     public void sendPacket(@NotNull Packet<?> packet) {
