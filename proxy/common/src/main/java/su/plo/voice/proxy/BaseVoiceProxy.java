@@ -11,6 +11,9 @@ import su.plo.slib.api.language.ServerTranslator;
 import su.plo.slib.api.proxy.channel.McProxyChannelManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.ServerAddonsLoader;
+import su.plo.voice.api.audio.codec.AudioDecoder;
+import su.plo.voice.api.audio.codec.AudioEncoder;
+import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.event.config.VoiceProxyConfigReloadedEvent;
@@ -20,6 +23,9 @@ import su.plo.voice.api.proxy.socket.UdpProxyServer;
 import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ProxySourceLineManager;
+import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo;
+import su.plo.voice.proto.data.audio.codec.opus.OpusEncoderInfo;
+import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
 import su.plo.voice.proxy.connection.ProxyChannelHandler;
 import su.plo.voice.proxy.connection.ProxyServiceChannelHandler;
@@ -69,6 +75,9 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     protected ServerActivationManager activationManager;
 
     protected LuckPermsListener luckPermsListener;
+
+    @Getter
+    private Encryption defaultEncryption;
 
     protected BaseVoiceProxy(@NotNull ModrinthLoader loader) {
         super(loader);
@@ -168,16 +177,19 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             config.forwardingSecret(forwardingSecret);
 
             // load AES key
+            byte[] aesKey;
             if (oldConfig != null && oldConfig.aesEncryptionKey() != null) {
-                config.aesEncryptionKey(oldConfig.aesEncryptionKey());
+                aesKey = oldConfig.aesEncryptionKey();
             } else {
                 UUID aesEncryptionKey = UUID.randomUUID();
                 ByteArrayDataOutput out = ByteStreams.newDataOutput();
                 out.writeLong(aesEncryptionKey.getMostSignificantBits());
                 out.writeLong(aesEncryptionKey.getLeastSignificantBits());
 
-                config.aesEncryptionKey(out.toByteArray());
+                aesKey = out.toByteArray();
             }
+
+            updateAesEncryptionKey(aesKey);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to load config", e);
         }
@@ -248,6 +260,16 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         }
     }
 
+    private synchronized void updateAesEncryptionKey(byte[] aesKey) {
+        config.aesEncryptionKey(aesKey);
+
+        if (this.defaultEncryption == null) {
+            this.defaultEncryption = encryption.create("AES/CBC/PKCS5Padding", aesKey);
+        } else if (defaultEncryption.getName().equals("AES/CBC/PKCS5Padding")) {
+            defaultEncryption.updateKeyData(aesKey);
+        }
+    }
+
     @Override
     public Optional<UdpProxyServer> getUdpProxyServer() {
         return Optional.ofNullable(udpProxyServer);
@@ -259,5 +281,32 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         injectModule.put(PlasmoVoiceProxy.class, BaseVoiceProxy.this);
         injectModule.put(PlasmoBaseVoiceServer.class, BaseVoiceProxy.this);
         return injectModule;
+    }
+
+    @Override
+    public @NotNull AudioEncoder createOpusEncoder(boolean stereo) {
+        if (config == null) throw new IllegalStateException("proxy is not initialized yet");
+
+        return codecs.createEncoder(
+                new OpusEncoderInfo(
+                        OpusMode.VOIP,
+                        -1000
+                ),
+                config.sampleRate(),
+                stereo,
+                config.mtuSize()
+        );
+    }
+
+    @Override
+    public @NotNull AudioDecoder createOpusDecoder(boolean stereo) {
+        if (config == null) throw new IllegalStateException("proxy is not initialized yet");
+
+        return codecs.createDecoder(
+                new OpusDecoderInfo(),
+                config.sampleRate(),
+                stereo,
+                (config.sampleRate() / 1_000) * 20
+        );
     }
 }

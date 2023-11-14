@@ -17,6 +17,8 @@ public interface ProxyConfig {
 
     boolean checkForUpdates();
 
+    int mtuSize();
+
     @NotNull Host host();
 
     interface Host {

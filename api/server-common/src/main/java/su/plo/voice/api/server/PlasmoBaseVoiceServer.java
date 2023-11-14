@@ -3,6 +3,9 @@ package su.plo.voice.api.server;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.McLib;
 import su.plo.voice.api.PlasmoVoice;
+import su.plo.voice.api.audio.codec.AudioDecoder;
+import su.plo.voice.api.audio.codec.AudioEncoder;
+import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLineManager;
@@ -66,4 +69,29 @@ public interface PlasmoBaseVoiceServer extends PlasmoVoice {
      * @return The {@link ServerActivationManager}.
      */
     @NotNull ServerActivationManager getActivationManager();
+
+    /**
+     * Gets the default encryption instance.
+     * <br/>
+     * AES/CBC/PKCS5Padding is used by default.
+     *
+     * @return The {@link Encryption} instance.
+     */
+    @NotNull Encryption getDefaultEncryption();
+
+    /**
+     * Creates a new opus encoder using default params.
+     *
+     * @param stereo {@code true} if the encoder should be initialized in stereo mode.
+     * @return {@link AudioEncoder} instance.
+     */
+    @NotNull AudioEncoder createOpusEncoder(boolean stereo);
+
+    /**
+     Creates a new opus encoder using default params.
+     *
+     * @param stereo {@code true if the decoder should be initialized in stereo mode.
+     * @return {@link AudioDecoder } instance.
+     */
+    @NotNull AudioDecoder createOpusDecoder(boolean stereo);
 }

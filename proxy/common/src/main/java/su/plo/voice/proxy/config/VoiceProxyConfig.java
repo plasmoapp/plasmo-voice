@@ -2,6 +2,7 @@ package su.plo.voice.proxy.config;
 
 import com.google.common.collect.Maps;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 import org.jetbrains.annotations.NotNull;
@@ -30,6 +31,10 @@ public final class VoiceProxyConfig implements ProxyConfig {
     private byte[] aesEncryptionKey = null;
     private UUID forwardingSecret = null;
 
+    // default sample rate for API
+    @Getter
+    private final int sampleRate = 48_000;
+
     @ConfigField
     private String defaultLanguage = "en_us";
 
@@ -42,6 +47,13 @@ public final class VoiceProxyConfig implements ProxyConfig {
     @ConfigField
     private boolean checkForUpdates = true;
 
+    @ConfigField(comment = "The MTU size on the proxy only needs to create Opus encoders using the API")
+    @ConfigValidator(
+            value = MtuSizeValidator.class,
+            allowed = "128-5000"
+    )
+    private int mtuSize = 1024;
+
     @ConfigField
     private VoiceHost host = new VoiceHost();
 
@@ -49,6 +61,17 @@ public final class VoiceProxyConfig implements ProxyConfig {
             "farmworld = \"127.0.0.1:25565\"\n" +
             "overworld = \"127.0.0.1:25566\"")
     private Servers servers = new Servers();
+
+    @NoArgsConstructor
+    public static class MtuSizeValidator implements Predicate<Object> {
+
+        @Override
+        public boolean test(Object o) {
+            if (!(o instanceof Long)) return false;
+            long mtuSize = (long) o;
+            return mtuSize >= 128 && mtuSize <= 5000;
+        }
+    }
 
     @Data
     @Accessors(fluent = true)

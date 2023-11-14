@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.slib.api.proxy.McProxyLib;
 import su.plo.voice.api.addon.AddonsLoader;
 import su.plo.voice.api.addon.ServerAddonsLoader;
+import su.plo.voice.api.audio.codec.AudioDecoder;
+import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.proxy.config.ProxyConfig;
 import su.plo.voice.api.proxy.connection.UdpProxyConnectionManager;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
@@ -77,4 +79,28 @@ public interface PlasmoVoiceProxy extends PlasmoBaseVoiceServer {
      * @return The {@link ProxyConfig} or null if proxy is not initialized yet.
      */
     @Nullable ProxyConfig getConfig();
+
+    /**
+     * Creates a new opus encoder using params created from {@link ProxyConfig}.
+     *
+     * <p>
+     *     Sample rate: {@code 48_000}
+     *     <br/>
+     *     Opus mode: {@code VOIP}
+     *     <br/>
+     *     Opus bitrate: {@code -1000 (auto)}
+     * </p>
+     *
+     * @param stereo {@code true} if the encoder should be initialized in stereo mode.
+     * @return {@link AudioEncoder} instance.
+     */
+    @NotNull AudioEncoder createOpusEncoder(boolean stereo);
+
+    /**
+     * Creates a new opus decoder using params created from {@link ProxyConfig}.
+     *
+     * @param stereo {@code true if the decoder should be initialized in stereo mode.
+     * @return {@link AudioDecoder} instance.
+     */
+    @NotNull AudioDecoder createOpusDecoder(boolean stereo);
 }

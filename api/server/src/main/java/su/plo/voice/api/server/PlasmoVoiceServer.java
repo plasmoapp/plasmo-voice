@@ -108,15 +108,6 @@ public interface PlasmoVoiceServer extends PlasmoBaseVoiceServer {
     @Nullable ServerConfig getConfig();
 
     /**
-     * Gets the default encryption instance.
-     * <br/>
-     * AES/CBC/PKCS5Padding is used by default.
-     *
-     * @return The {@link Encryption} instance.
-     */
-    @NotNull Encryption getDefaultEncryption();
-
-    /**
      * Creates a new opus encoder using params created from {@link ServerConfig}.
      *
      * @param stereo {@code true} if the encoder should be initialized in stereo mode.
