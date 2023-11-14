@@ -6,7 +6,7 @@ import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 /**
  * Represents a player audio source.
  */
-interface ServerPlayerSource : ServerPositionalSource<PlayerSourceInfo> {
+interface ServerPlayerSource : ServerProximitySource<PlayerSourceInfo> {
 
     /**
      * Gets the player associated with this audio source.

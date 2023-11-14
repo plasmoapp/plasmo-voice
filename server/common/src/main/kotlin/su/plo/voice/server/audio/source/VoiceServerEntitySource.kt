@@ -18,7 +18,7 @@ class VoiceServerEntitySource(
     decoderInfo: CodecInfo?,
     stereo: Boolean,
     override val entity: McServerEntity
-) : VoiceServerPositionalSource<EntitySourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
+) : VoiceServerProximitySource<EntitySourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerEntitySource {
 
     override val position: ServerPos3d = entity.getServerPosition()

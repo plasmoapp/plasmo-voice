@@ -289,6 +289,10 @@ public interface ServerActivation extends Activation {
          * Sets whether the activation is transitive.
          *
          * <p>
+         *     If an activation is NOT transitive, subsequent activations will NOT be triggered.
+         * </p>
+         *
+         * <p>
          *     Default: {@code true}
          * </p>
          *
@@ -302,6 +306,15 @@ public interface ServerActivation extends Activation {
          * Sets whether the activation has proximity output.
          *
          * <p>
+         *     This can be used by addons to create unique behavior.
+         * </p>
+         *
+         * <p>
+         *     For example in <a href="https://github.com/plasmoapp/pv-addon-soundphysics">pv-addon-soundphysics</a>
+         *     it's used to create reverb from your capture only for activations with proximity output.
+         * </p>
+         *
+         * <p>
          *     Default: {@code true}
          * </p>
          *
@@ -313,6 +326,10 @@ public interface ServerActivation extends Activation {
 
         /**
          * Sets whether the activation supports stereo audio.
+         *
+         * <p>
+         *     If enabled, the client will send stereo audio if it's configured in the client settings.
+         * </p>
          *
          * <p>
          *     Default: {@code false}

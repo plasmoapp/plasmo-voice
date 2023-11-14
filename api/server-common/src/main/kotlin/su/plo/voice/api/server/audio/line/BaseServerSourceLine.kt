@@ -63,7 +63,13 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
     ): ServerDirectSource
 
     /**
-     * @see createDirectSource
+     * Creates a new direct source.
+     *
+     * Direct sources are used to send audio data directly to the players.
+     *
+     * @param player The player attached to the direct source.
+     * @param stereo Whether the source should be stereo (default is false).
+     * @return A new [ServerDirectSource] instance.
      */
     fun createDirectSource(
         player: VoicePlayer,
@@ -87,7 +93,14 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
     ): ServerBroadcastSource
 
     /**
-     * @see createBroadcastSource
+     * Creates a new broadcast source.
+     *
+     * Broadcast sources are used to send audio data directly to the group of players.
+     * By default, it sends packets to all players with Plasmo Voice installed,
+     * but you can change a group of players using [ServerBroadcastSource.players]
+     *
+     * @param stereo Whether the source should be stereo (default is false).
+     * @return A new [ServerBroadcastSource] instance.
      */
     fun createBroadcastSource(
         stereo: Boolean = false

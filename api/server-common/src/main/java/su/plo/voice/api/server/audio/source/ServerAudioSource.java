@@ -5,6 +5,7 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.audio.source.AudioSource;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
+import su.plo.voice.api.server.audio.provider.AudioFrameProvider;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 
@@ -110,21 +111,21 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
      *
      * @param filter Return {@code true} if you want to send source packets to the player.
      */
-    void addFilter(@NotNull Predicate<VoicePlayer> filter);
+    void addFilter(@NotNull Predicate<? super VoicePlayer> filter);
 
     /**
      * Removes a player filter from the source.
      *
      * @param filter The player predicate to remove.
      */
-    void removeFilter(@NotNull Predicate<VoicePlayer> filter);
+    void removeFilter(@NotNull Predicate<? super VoicePlayer> filter);
 
     /**
      * Gets the collection of player filters associated with this source.
      *
      * @return The collection of player filters.
      */
-    @NotNull Collection<Predicate<VoicePlayer>> getFilters();
+    @NotNull Collection<Predicate<? super VoicePlayer>> getFilters();
 
     /**
      * Clears all filters from the source.

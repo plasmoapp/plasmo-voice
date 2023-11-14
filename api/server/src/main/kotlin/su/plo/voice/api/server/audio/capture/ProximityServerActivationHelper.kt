@@ -29,7 +29,7 @@ import java.util.*
  * voiceServer.eventBus.register(voiceServer, proximityHelper);
  * ```
  */
-class ProximityServerActivationHelper(
+class ProximityServerActivationHelper @JvmOverloads constructor(
     voiceServer: PlasmoVoiceServer,
     val activation: ServerActivation,
     val sourceLine: ServerSourceLine,

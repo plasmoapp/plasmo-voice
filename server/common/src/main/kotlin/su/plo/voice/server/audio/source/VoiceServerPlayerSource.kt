@@ -18,7 +18,7 @@ class VoiceServerPlayerSource(
     decoderInfo: CodecInfo?,
     stereo: Boolean,
     override val player: VoiceServerPlayer
-) : VoiceServerPositionalSource<PlayerSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
+) : VoiceServerProximitySource<PlayerSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerPlayerSource {
 
     private val playerPosition = ServerPos3d()

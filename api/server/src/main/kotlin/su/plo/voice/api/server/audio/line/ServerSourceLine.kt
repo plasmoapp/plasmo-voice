@@ -33,6 +33,21 @@ interface ServerSourceLine : BaseServerSourceLine {
     ): ServerPlayerSource
 
     /**
+     * Creates a new player source.
+     *
+     * Player source is a proximity source attached to the specified player.
+     *
+     * @param player The target player.
+     * @param stereo Whether the source should be stereo (default is false).
+     *
+     * @return A new [ServerPlayerSource] instance.
+     */
+    fun createPlayerSource(
+        player: VoiceServerPlayer,
+        stereo: Boolean = false
+    ) = createPlayerSource(player, stereo, OpusDecoderInfo())
+
+    /**
      * Creates a new entity source.
      *
      * Entity source is a proximity source attached to the specified entity.
@@ -50,6 +65,21 @@ interface ServerSourceLine : BaseServerSourceLine {
     ): ServerEntitySource
 
     /**
+     * Creates a new entity source.
+     *
+     * Entity source is a proximity source attached to the specified entity.
+     *
+     * @param entity The target entity.
+     * @param stereo Whether the source should be stereo (default is false).
+     * @throws IllegalArgumentException when trying to create an entity source for a player. Use [createPlayerSource] instead.
+     * @return A new [ServerEntitySource] instance.
+     */
+    fun createEntitySource(
+        entity: McServerEntity,
+        stereo: Boolean = false
+    ) = createEntitySource(entity, stereo, OpusDecoderInfo())
+
+    /**
      * Creates a new static source.
      *
      * Static source is a proximity source attached to the specified world position.
@@ -64,4 +94,18 @@ interface ServerSourceLine : BaseServerSourceLine {
         stereo: Boolean = false,
         decoderInfo: CodecInfo? = OpusDecoderInfo()
     ): ServerStaticSource
+
+    /**
+     * Creates a new static source.
+     *
+     * Static source is a proximity source attached to the specified world position.
+     *
+     * @param position The world position.
+     * @param stereo Whether the source should be stereo (default is false).
+     * @return A new [ServerStaticSource] instance.
+     */
+    fun createStaticSource(
+        position: ServerPos3d,
+        stereo: Boolean = false
+    ) = createStaticSource(position, stereo, OpusDecoderInfo())
 }

@@ -6,7 +6,7 @@ import su.plo.voice.proto.data.audio.source.StaticSourceInfo
 /**
  * Represents a static audio source.
  */
-interface ServerStaticSource : ServerPositionalSource<StaticSourceInfo> {
+interface ServerStaticSource : ServerProximitySource<StaticSourceInfo> {
 
     /**
      * Gets or sets the position of this audio source.

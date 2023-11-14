@@ -16,7 +16,7 @@ class VoiceServerStaticSource(
     decoderInfo: CodecInfo?,
     stereo: Boolean,
     defaultPosition: ServerPos3d
-) : VoiceServerPositionalSource<StaticSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
+) : VoiceServerProximitySource<StaticSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerStaticSource {
 
     private var sourcePosition: ServerPos3d = defaultPosition

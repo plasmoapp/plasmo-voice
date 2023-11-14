@@ -6,7 +6,7 @@ import su.plo.voice.proto.data.audio.source.EntitySourceInfo
 /**
  * Represents an entity audio source.
  */
-interface ServerEntitySource : ServerPositionalSource<EntitySourceInfo> {
+interface ServerEntitySource : ServerProximitySource<EntitySourceInfo> {
 
     /**
      * Gets the entity associated with this audio source.

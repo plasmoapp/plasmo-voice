@@ -17,5 +17,5 @@ interface ServerBroadcastSource : BaseServerDirectSource {
      *
      * @return The supplier of players.
      */
-    var players: Supplier<Iterable<VoicePlayer>>?
+    var players: Supplier<Iterable<@JvmWildcard VoicePlayer>>?
 }

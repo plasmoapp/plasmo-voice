@@ -1,7 +1,6 @@
 package su.plo.voice.server.audio.source;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.addon.AddonContainer;
@@ -40,7 +39,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     protected final AtomicBoolean dirty = new AtomicBoolean(true);
     protected final AtomicInteger state = new AtomicInteger(1);
 
-    protected final List<Predicate<VoicePlayer>> filters = new CopyOnWriteArrayList<>();
+    protected final List<Predicate<? super VoicePlayer>> filters = new CopyOnWriteArrayList<>();
 
     protected BaseServerAudioSource(@NotNull AddonContainer addon,
                                     @NotNull UUID id,
@@ -87,18 +86,18 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     }
 
     @Override
-    public void addFilter(@NotNull Predicate<VoicePlayer> filter) {
+    public void addFilter(@NotNull Predicate<? super VoicePlayer> filter) {
         if (filters.contains(filter)) throw new IllegalArgumentException("Filter already exist");
         filters.add(filter);
     }
 
     @Override
-    public void removeFilter(@NotNull Predicate<VoicePlayer> filter) {
+    public void removeFilter(@NotNull Predicate<? super VoicePlayer> filter) {
         filters.remove(filter);
     }
 
     @Override
-    public @NotNull Collection<Predicate<VoicePlayer>> getFilters() {
+    public @NotNull Collection<Predicate<? super VoicePlayer>> getFilters() {
         return filters;
     }
 
@@ -114,7 +113,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
 
     @Override
     public boolean matchFilters(@NotNull VoicePlayer player) {
-        for (Predicate<VoicePlayer> filter : filters) {
+        for (Predicate<? super VoicePlayer> filter : filters) {
             if (!filter.test(player)) return false;
         }
 

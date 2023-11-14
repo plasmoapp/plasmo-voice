@@ -4,7 +4,9 @@ import su.plo.slib.api.server.position.ServerPos3d
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.line.ServerSourceLine
-import su.plo.voice.api.server.audio.source.ServerPositionalSource
+import su.plo.voice.api.server.audio.provider.AudioFrameProvider
+import su.plo.voice.api.server.audio.source.AudioSender
+import su.plo.voice.api.server.audio.source.ServerProximitySource
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent
 import su.plo.voice.proto.data.audio.codec.CodecInfo
@@ -13,15 +15,16 @@ import su.plo.voice.proto.packets.Packet
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import java.util.*
+import java.util.function.Supplier
 
-abstract class VoiceServerPositionalSource<S : SourceInfo>(
+abstract class VoiceServerProximitySource<S : SourceInfo>(
     private val voiceServer: PlasmoVoiceServer,
     addon: AddonContainer,
     id: UUID,
     private val serverSourceLine: ServerSourceLine,
     decoderInfo: CodecInfo?,
     stereo: Boolean
-) : BaseServerAudioSource<S>(addon, id, serverSourceLine, decoderInfo, stereo), ServerPositionalSource<S> {
+) : BaseServerAudioSource<S>(addon, id, serverSourceLine, decoderInfo, stereo), ServerProximitySource<S> {
 
     private val playerPosition = ServerPos3d()
 
@@ -86,6 +89,13 @@ abstract class VoiceServerPositionalSource<S : SourceInfo>(
 
     override fun getLine(): ServerSourceLine =
         serverSourceLine
+
+    override fun createAudioSender(frameProvider: AudioFrameProvider, distanceProvider: Supplier<Short>): AudioSender =
+        AudioSender(
+            frameProvider,
+            { frame, sequenceNumber -> sendAudioFrame(frame, sequenceNumber, distanceProvider.get()) },
+            { sequenceNumber -> sendAudioEnd(sequenceNumber, distanceProvider.get()) }
+        )
 
     companion object {
 
