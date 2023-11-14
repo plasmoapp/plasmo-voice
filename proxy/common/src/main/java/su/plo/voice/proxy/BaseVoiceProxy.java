@@ -7,7 +7,7 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.slib.api.language.ServerLanguages;
+import su.plo.slib.api.language.ServerTranslator;
 import su.plo.slib.api.proxy.channel.McProxyChannelManager;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.addon.ServerAddonsLoader;
@@ -31,6 +31,7 @@ import su.plo.voice.proxy.socket.NettyUdpProxyServer;
 import su.plo.voice.proxy.util.AddressUtil;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceProxySourceLineManager;
+import su.plo.voice.server.language.VoiceServerLanguages;
 import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.util.version.ModrinthVersion;
@@ -57,6 +58,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     @Getter
     private VoiceProxyConfig config;
+    @Getter
+    private VoiceServerLanguages languages;
     private UdpProxyServer udpProxyServer;
     @Getter
     protected VoiceProxyPlayerManager playerManager;
@@ -140,9 +143,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            ServerLanguages languages = getMinecraftServer().getLanguages();
-            languages.setDefaultLanguage(config.defaultLanguage());
-            languages.setCrowdinEnabled(config.useCrowdinTranslations());
+            this.languages = new VoiceServerLanguages(config.useCrowdinTranslations());
+            ServerTranslator.INSTANCE.setDefaultLanguage(config.defaultLanguage());
 //            languages.register(
 //                    this::getResource,
 //                    new File(getConfigFolder(), "languages"),

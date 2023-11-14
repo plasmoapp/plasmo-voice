@@ -139,7 +139,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     public void handle(@NotNull LanguageRequestPacket packet) {
         player.sendPacket(new LanguagePacket(
                 packet.getLanguage(),
-                voiceServer.getMinecraftServer().getLanguages().getClientLanguage(packet.getLanguage())
+                voiceServer.getLanguages().getClientLanguage(packet.getLanguage())
         ));
     }
 }

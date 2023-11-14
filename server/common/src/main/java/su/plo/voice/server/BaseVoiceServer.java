@@ -9,7 +9,7 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.slib.api.command.McCommand;
 import su.plo.slib.api.command.McCommandManager;
-import su.plo.slib.api.language.ServerLanguages;
+import su.plo.slib.api.language.ServerTranslator;
 import su.plo.slib.api.permission.PermissionDefault;
 import su.plo.slib.api.permission.PermissionManager;
 import su.plo.slib.api.server.McServerLib;
@@ -47,6 +47,7 @@ import su.plo.voice.server.connection.ServerChannelHandler;
 import su.plo.voice.server.connection.ServerServiceChannelHandler;
 import su.plo.voice.server.connection.VoiceTcpServerConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpServerConnectionManager;
+import su.plo.voice.server.language.VoiceServerLanguages;
 import su.plo.voice.server.mute.VoiceMuteManager;
 import su.plo.voice.server.mute.storage.MuteStorageFactory;
 import su.plo.voice.server.player.LuckPermsListener;
@@ -97,6 +98,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     @Getter
     protected VoiceServerConfig config;
+    @Getter
+    protected VoiceServerLanguages languages;
 
     @Getter
     private Encryption defaultEncryption;
@@ -205,15 +208,14 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            ServerLanguages languages = getMinecraftServer().getLanguages();
+            this.languages = new VoiceServerLanguages(config.useCrowdinTranslations());
             languages.register(
                     "plasmo-voice",
                     "server.toml",
                     this::getResource,
                     new File(getConfigFolder(), "languages")
             );
-            languages.setDefaultLanguage(config.defaultLanguage());
-            languages.setCrowdinEnabled(config.useCrowdinTranslations());
+            ServerTranslator.INSTANCE.setDefaultLanguage(config.defaultLanguage());
 
             // load forwarding secret
             File forwardingSecretFile = System.getenv().containsKey("PLASMO_VOICE_FORWARDING_SECRET_FILE")

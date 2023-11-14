@@ -160,6 +160,9 @@ dependencies {
     shadowCommon(libs.opus.jni)
     shadowCommon(libs.opus.concentus)
     shadowCommon(libs.rnnoise.jni)
+    shadowCommon(libs.crowdin) {
+        isTransitive = false
+    }
 
     shadowCommon(libs.guice) {
         exclude("com.google.guava")

@@ -7,12 +7,20 @@ import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLineManager;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
+import su.plo.voice.api.server.language.ServerLanguages;
 import su.plo.voice.api.server.player.VoicePlayerManager;
 
 /**
  * Represents a base API for proxy and server.
  */
 public interface PlasmoBaseVoiceServer extends PlasmoVoice {
+
+    /**
+     * Gets the server languages.
+     *
+     * @return The server languages.
+     */
+    @NotNull ServerLanguages getLanguages();
 
     /**
      * Gets the {@link McLib}.

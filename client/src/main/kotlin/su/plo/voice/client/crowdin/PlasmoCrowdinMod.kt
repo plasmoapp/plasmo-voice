@@ -5,7 +5,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
-import su.plo.slib.libs.crowdin.CrowdinLib
+import su.plo.crowdin.CrowdinLib
 import java.io.File
 
 object PlasmoCrowdinMod {

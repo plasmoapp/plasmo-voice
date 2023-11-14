@@ -43,7 +43,7 @@ public final class VoiceMuteListCommand implements McCommand {
             }
             if (player == null) return;
 
-            Map<String, String> language = minecraftServer.getLanguages().getServerLanguage(source);
+            Map<String, String> language = voiceServer.getLanguages().getServerLanguage(source);
 
             Date date = new Date(muteInfo.getMutedToTime());
             SimpleDateFormat expirationFormatDate = new SimpleDateFormat(
