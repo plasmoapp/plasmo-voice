@@ -21,8 +21,7 @@ public final class VoiceListCommand implements McCommand {
     @Override
     public void execute(@NotNull McCommandSource source, @NotNull String[] arguments) {
         List<String> players;
-        int totalPlayerCount = 0;
-
+        int totalPlayerCount;
         if (source instanceof McServerPlayer) {
             McServerPlayer sourcePlayer = (McServerPlayer) source;
 

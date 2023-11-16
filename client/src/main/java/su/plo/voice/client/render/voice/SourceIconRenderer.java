@@ -1,5 +1,6 @@
 package su.plo.voice.client.render.voice;
 
+import net.minecraft.world.scores.Objective;
 import net.minecraft.client.renderer.RenderType;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.position.Pos3d;
@@ -34,7 +35,8 @@ import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static su.plo.slib.mod.extension.ScoreboardKt.getObjectiveBelowName;
 
 public final class SourceIconRenderer {
 
@@ -296,7 +298,8 @@ public final class SourceIconRenderer {
             if (entity instanceof Player) {
                 Player player = (Player) entity;
 
-                if (player.getScoreboard().getDisplayObjective(2) != null && distance < 100D) {
+                Objective belowNameObjective = getObjectiveBelowName(player.getScoreboard());
+                if (belowNameObjective != null && distance < 100D) {
                     stack.translate(0D, 0.3D, 0D);
                 }
             }

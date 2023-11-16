@@ -1,4 +1,4 @@
-package su.plo.voice.client.audio.codec;
+package su.plo.voice.audio.codec;
 
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;

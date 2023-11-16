@@ -1,2 +1,0 @@
-- Fix vanish support [#358](this was causing memory leak when unloading worlds)
-- Fix memory leak when unloading worlds

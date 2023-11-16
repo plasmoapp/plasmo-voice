@@ -9,15 +9,21 @@ import net.fabricmc.api.ModInitializer;
 //$$ import su.plo.voice.client.ModVoiceClient;
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
 //$$
+//$$ import net.minecraft.resources.ResourceLocation;
 //$$ import net.minecraftforge.common.MinecraftForge;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //$$ import net.minecraftforge.fml.common.Mod;
 //$$ import net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent;
 //$$ import net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent;
 //$$ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-
-//$$ import net.minecraftforge.network.NetworkRegistry;
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
+
+//#if MC>=12002
+//$$ import net.minecraftforge.network.ChannelBuilder;
+//#else
+//$$ import net.minecraftforge.network.NetworkRegistry;
+//$$ import net.minecraftforge.network.NetworkRegistry.ChannelBuilder;
+//#endif
 
 //#endif
 
@@ -46,32 +52,29 @@ public final class ModVoice
     //$$
     //$$ @SubscribeEvent
     //$$ public void onCommonSetup(FMLCommonSetupEvent event) {
-    //$$     this.channel = NetworkRegistry.newEventChannel(
-    //$$             ModVoiceServer.CHANNEL,
-    //$$             () -> NetworkRegistry.ACCEPTVANILLA,
-    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA),
-    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
-    //$$     );
+    //$$     this.channel = createChannel(ModVoiceServer.CHANNEL);
     //$$
-    //$$     NetworkRegistry.newEventChannel(
-    //$$             ModVoiceServer.FLAG_CHANNEL,
-    //$$             () -> NetworkRegistry.ACCEPTVANILLA,
-    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA),
-    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
-    //$$     );
+    //$$     createChannel(ModVoiceServer.FLAG_CHANNEL);
     //$$
-    //$$     EventNetworkChannel serviceChannel = NetworkRegistry.newEventChannel(
-    //$$             ModVoiceServer.SERVICE_CHANNEL,
-    //$$             () -> NetworkRegistry.ACCEPTVANILLA,
-    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA),
-    //$$             NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA)
-    //$$     );
+    //$$     EventNetworkChannel serviceChannel = createChannel(ModVoiceServer.SERVICE_CHANNEL);
     //$$
     //$$     ModChannelManager.addForgeChannel(ModVoiceServer.CHANNEL, channel);
     //$$     ModChannelManager.addForgeChannel(ModVoiceServer.SERVICE_CHANNEL, serviceChannel);
     //$$
     //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE);
     //$$     voiceServer.onInitialize();
+    //$$ }
+    //$$
+    //$$ private EventNetworkChannel createChannel(ResourceLocation resourceLocation) {
+    //$$     return ChannelBuilder.named(resourceLocation)
+    //#if MC>=12002
+    //$$             .optional()
+    //#else
+    //$$             .networkProtocolVersion(() -> NetworkRegistry.ACCEPTVANILLA)
+    //$$             .clientAcceptedVersions(NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA))
+    //$$             .serverAcceptedVersions(NetworkRegistry.acceptMissingOr(NetworkRegistry.ACCEPTVANILLA))
+    //#endif
+    //$$             .eventNetworkChannel();
     //$$ }
     //#endif
 

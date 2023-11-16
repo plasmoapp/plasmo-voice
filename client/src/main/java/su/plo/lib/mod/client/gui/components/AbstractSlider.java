@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
 import net.minecraft.util.Mth;
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.voice.universal.UGraphics;
 import su.plo.voice.universal.UKeyboard;
 import su.plo.voice.universal.UMatrixStack;
@@ -19,8 +20,8 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     @Override
-    protected int getYImage(boolean hovered) {
-        return 0;
+    protected @NotNull GuiWidgetTexture getButtonTexture(boolean hovered) {
+        return GuiWidgetTexture.BUTTON_DISABLED;
     }
 
     @Override
@@ -33,18 +34,17 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     @Override
     protected void renderBackground(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
         int width = getSliderWidth();
+        GuiWidgetTexture sprite = getButtonTexture(hovered);
 
-        UGraphics.bindTexture(0, WIDGETS_LOCATION);
+        UGraphics.bindTexture(0, sprite.getLocation());
         UGraphics.color4f(1F, 1F, 1F, alpha);
 
         UGraphics.enableBlend();
         RenderUtil.defaultBlendFunc();
         UGraphics.enableDepth();
 
-        int textureV = getYImage(hovered);
-
-        RenderUtil.blit(stack, x, y, 0, 46 + textureV * 20, width / 2, height);
-        RenderUtil.blit(stack, x + width / 2, y, 200 - width / 2, 46 + textureV * 20, width / 2, height);
+        RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
+        RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
         UGraphics.color4f(1F, 1F, 1F, 1F);
     }
 
@@ -96,11 +96,19 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     protected void renderTrack(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
-        UGraphics.bindTexture(0, WIDGETS_LOCATION);
+        GuiWidgetTexture sprite;
+        if (isHoveredOrFocused()) {
+            sprite = GuiWidgetTexture.BUTTON_ACTIVE;
+        } else {
+            sprite = GuiWidgetTexture.BUTTON_DEFAULT;
+        }
+
+        UGraphics.bindTexture(0, sprite.getLocation());
         UGraphics.color4f(1F, 1F, 1F, 1F);
-        int k = (isHoveredOrFocused() ? 2 : 1) * 20;
-        RenderUtil.blit(stack, x + (int) (value * (double) (getSliderWidth() - 8)), y, 0, 46 + k, 4, 20);
-        RenderUtil.blit(stack, x + (int) (value * (double) (getSliderWidth() - 8)) + 4, y, 196, 46 + k, 4, 20);
+
+        int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
+        RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
+        RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
     }
 
     @Override

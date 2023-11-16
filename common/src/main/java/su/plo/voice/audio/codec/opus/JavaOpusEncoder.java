@@ -1,23 +1,22 @@
-package su.plo.voice.client.audio.codec.opus;
+package su.plo.voice.audio.codec.opus;
 
-import com.plasmoverse.opus.OpusEncoder;
-import com.plasmoverse.opus.OpusException;
+import org.concentus.OpusApplication;
+import org.concentus.OpusEncoder;
+import org.concentus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-public final class NativeOpusEncoder implements BaseOpusEncoder {
+public final class JavaOpusEncoder implements BaseOpusEncoder {
 
     private final int sampleRate;
     private final int channels;
-    private final OpusMode opusMode;
     private final int mtuSize;
 
+    private OpusApplication application;
     private OpusEncoder encoder;
+    private byte[] buffer;
 
-    public NativeOpusEncoder(
+    public JavaOpusEncoder(
             int sampleRate,
             boolean stereo,
             OpusMode opusMode,
@@ -25,31 +24,34 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     ) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
-        this.opusMode = opusMode;
         this.mtuSize = mtuSize;
+
+        setApplication(opusMode);
     }
 
     @Override
     public byte[] encode(short[] samples) throws CodecException {
         if (!isOpen()) throw new CodecException("Encoder is not open");
 
+        int result;
         try {
-            return encoder.encode(samples);
+            result = encoder.encode(samples, 0, samples.length / channels, buffer, 0, mtuSize);
         } catch (OpusException e) {
             throw new CodecException("Failed to encode audio", e);
         }
+
+        byte[] encoded = new byte[result];
+        System.arraycopy(buffer, 0, encoded, 0, result);
+
+        return encoded;
     }
 
     @Override
     public void open() throws CodecException {
         try {
-            com.plasmoverse.opus.OpusMode mode = Arrays.stream(com.plasmoverse.opus.OpusMode.values())
-                    .filter((element) -> element.getApplication() == opusMode.getApplication())
-                    .findFirst()
-                    .orElseThrow(() -> new CodecException("Invalid opus application mode"));
-
-            this.encoder = OpusEncoder.create(sampleRate, channels == 2, mtuSize, mode);
-        } catch (OpusException | IOException e) {
+            this.encoder = new OpusEncoder(sampleRate, channels, application);
+            this.buffer = new byte[mtuSize];
+        } catch (OpusException e) {
             throw new CodecException("Failed to open opus encoder", e);
         }
     }
@@ -58,20 +60,30 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
     public void reset() {
         if (!isOpen()) return;
 
-        encoder.reset();
+        encoder.resetState();
     }
 
     @Override
     public void close() {
         if (!isOpen()) return;
 
-        encoder.close();
         this.encoder = null;
+        this.buffer = null;
     }
 
     @Override
     public boolean isOpen() {
         return encoder != null;
+    }
+
+    private void setApplication(OpusMode opusMode) {
+        if (opusMode == OpusMode.VOIP) {
+            this.application = OpusApplication.OPUS_APPLICATION_VOIP;
+        } else if (opusMode == OpusMode.AUDIO) {
+            this.application = OpusApplication.OPUS_APPLICATION_AUDIO;
+        } else if (opusMode == OpusMode.RESTRICTED_LOWDELAY) {
+            this.application = OpusApplication.OPUS_APPLICATION_RESTRICTED_LOWDELAY;
+        }
     }
 
     @Override
@@ -83,10 +95,8 @@ public final class NativeOpusEncoder implements BaseOpusEncoder {
 
     @Override
     public int getBitrate() {
-        try {
-            return encoder.getBitrate();
-        } catch (OpusException e) {
-            return 0;
-        }
+        if (!isOpen()) return -1;
+
+        return encoder.getBitrate();
     }
 }

@@ -3,6 +3,9 @@ package su.plo.voice.server.language
 import com.google.common.base.Charsets
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Maps
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.future.future
 import org.slf4j.LoggerFactory
 import su.plo.config.toml.Toml
 import su.plo.config.toml.TomlWriter
@@ -50,8 +53,9 @@ class VoiceServerLanguages(
         fileName: String?,
         resourceLoader: ResourceLoader,
         languagesFolder: File
-    ): CompletableFuture<Void> = CompletableFuture.runAsync {
+    ): CompletableFuture<Void?> = CoroutineScope(Dispatchers.Default).future {
         registerSync(crowdinProjectId, fileName, resourceLoader, languagesFolder)
+        null
     }
 
     override fun getServerLanguage(languageName: String?) =

@@ -1,4 +1,4 @@
-package su.plo.voice.client.audio.codec.opus;
+package su.plo.voice.audio.codec.opus;
 
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -7,6 +7,8 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.codec.opus.OpusEncoderInfo;
 
 import java.io.IOException;
+
+import static su.plo.voice.util.NativesKt.isNativesSupported;
 
 public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, BaseOpusDecoder> {
 
@@ -24,17 +26,19 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
             throw new IllegalStateException("Bad codec info received", e);
         }
 
-        BaseOpusEncoder encoder;
-        try {
-            Class.forName("com.plasmoverse.opus.OpusEncoder");
+        BaseOpusEncoder encoder = null;
+        if (isNativesSupported()) {
+            try {
+                Class.forName("com.plasmoverse.opus.OpusEncoder");
 
-            encoder = new NativeOpusEncoder(sampleRate, stereo, opusEncoderInfo.getMode(), mtuSize);
-            encoder.open();
-        } catch (ClassNotFoundException ignored) {
-            encoder = null;
-        } catch (Exception | LinkageError e) {
-            encoder = null;
-            BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+                encoder = new NativeOpusEncoder(sampleRate, stereo, opusEncoderInfo.getMode(), mtuSize);
+                encoder.open();
+            } catch (ClassNotFoundException ignored) {
+                encoder = null;
+            } catch (Exception | LinkageError e) {
+                encoder = null;
+                BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+            }
         }
 
         if (encoder == null) {
@@ -47,7 +51,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
         }
 
         encoder.setBitrate(opusEncoderInfo.getBitrate());
-        BaseVoice.LOGGER.info("Opus encoder bitrate is {}", encoder.getBitrate());
+        BaseVoice.DEBUG_LOGGER.log("Opus encoder bitrate is {}", encoder.getBitrate());
 
         return encoder;
     }
@@ -59,16 +63,18 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
             boolean stereo,
             int frameSize
     ) {
-        BaseOpusDecoder decoder;
-        try {
-            Class.forName("com.plasmoverse.opus.OpusDecoder");
+        BaseOpusDecoder decoder = null;
+        if (isNativesSupported()) {
+            try {
+                Class.forName("com.plasmoverse.opus.OpusDecoder");
 
-            decoder = new NativeOpusDecoder(sampleRate, stereo, frameSize);
-            decoder.open();
-            return decoder;
-        } catch (ClassNotFoundException ignored) {
-        } catch (Exception | LinkageError e) {
-            BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+                decoder = new NativeOpusDecoder(sampleRate, stereo, frameSize);
+                decoder.open();
+                return decoder;
+            } catch (ClassNotFoundException ignored) {
+            } catch (Exception | LinkageError e) {
+                BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+            }
         }
 
         try {

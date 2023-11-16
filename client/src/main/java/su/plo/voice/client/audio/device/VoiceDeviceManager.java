@@ -28,6 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static su.plo.voice.universal.UDesktop.isMac;
 
 @RequiredArgsConstructor
 public final class VoiceDeviceManager implements DeviceManager {
@@ -139,6 +140,19 @@ public final class VoiceDeviceManager implements DeviceManager {
 
     @Override
     public @NotNull InputDevice openInputDevice(@Nullable AudioFormat format) throws DeviceException {
+        // Use javax for mac by default
+        if (isMac() && !config.getVoice().getUseJavaxInput().value()) {
+            config.getVoice().getUseJavaxInput().set(true);
+            config.save(true);
+        }
+
+        // todo: javax stereo
+        if (config.getVoice().getUseJavaxInput().value() && config.getVoice().getStereoCapture().value()) {
+            config.getVoice().getStereoCapture().set(false);
+            config.getVoice().getStereoCapture().setDisabled(true);
+            config.save(true);
+        }
+
         if (format == null) {
             if (!voiceClient.getServerInfo().isPresent()) throw new IllegalStateException("Not connected");
 
@@ -255,7 +269,7 @@ public final class VoiceDeviceManager implements DeviceManager {
         }
 
         if (inputDevices.isEmpty()) {
-            if (inputFactory.getDeviceNames().size() > 0) {
+            if (inputFactory.getDeviceNames().size() > 0 && !config.getVoice().getDisableInputDevice().value()) {
                 try {
                     replace(null, openInputDevice(null));
                 } catch (Exception e) {

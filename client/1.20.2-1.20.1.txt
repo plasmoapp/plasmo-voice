@@ -1,0 +1,8 @@
+com.mojang.authlib.properties.Property name() getName()
+com.mojang.authlib.properties.Property value() getValue()
+com.mojang.authlib.properties.Property signature() getSignature()
+
+net.minecraftforge.event.network.CustomPayloadEvent net.minecraftforge.network.NetworkEvent
+net.minecraftforge.network.EventNetworkChannel net.minecraftforge.network.event.EventNetworkChannel
+
+net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket

@@ -19,4 +19,9 @@ public final class DebugLogger {
         if (!enabled) return;
         logger.info(message, params);
     }
+
+    public void warn(String message, Object... params) {
+        if (!enabled) return;
+        logger.warn(message, params);
+    }
 }

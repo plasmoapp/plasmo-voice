@@ -10,18 +10,25 @@ import su.plo.voice.api.client.audio.filter.AudioFilter;
 import su.plo.voice.api.client.audio.filter.AudioFilterContext;
 import su.plo.voice.api.util.AudioUtil;
 
+import static su.plo.voice.util.NativesKt.isNativesSupported;
+
 public final class NoiseSuppressionFilter implements AudioFilter {
 
     private final ConfigEntry<Boolean> activeEntry;
-    private final ThreadLocal<LimiterFilter> limiter;
+    private final LimiterFilter limiter;
 
     private @Nullable Denoise instance;
 
     public NoiseSuppressionFilter(int sampleRate, @NotNull ConfigEntry<Boolean> activeEntry) {
-        this.limiter = ThreadLocal.withInitial(() -> new LimiterFilter(sampleRate, -6.0F));
+        this.limiter = new LimiterFilter(sampleRate, -6.0F);
 
         this.activeEntry = activeEntry;
-        if (activeEntry.value()) toggle(true);
+
+        if (!isNativesSupported()) {
+            activeEntry.set(false);
+            activeEntry.setDisabled(true);
+        } else if (activeEntry.value()) toggle(true);
+
         activeEntry.clearChangeListeners();
         activeEntry.addChangeListener(this::toggle);
     }
@@ -30,9 +37,10 @@ public final class NoiseSuppressionFilter implements AudioFilter {
         if (value) {
             try {
                 this.instance = Denoise.create();
-            } catch (Exception e) {
+            } catch (Exception | LinkageError e) {
                 BaseVoice.LOGGER.error("RNNoise is not available on this platform");
                 activeEntry.set(false);
+                activeEntry.setDisabled(true);
             }
         } else if (instance != null) {
             instance.close();
@@ -49,7 +57,7 @@ public final class NoiseSuppressionFilter implements AudioFilter {
     public short[] process(@NotNull AudioFilterContext context, short[] samples) {
         if (instance == null) return samples;
 
-        limiter.get().process(context, samples);
+        limiter.process(context, samples);
 
         try {
             float[] floats = AudioUtil.shortsToFloats(samples);

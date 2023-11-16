@@ -57,7 +57,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
 
     @Override
     public int available() {
-        return device.available();
+        return device.available() / 2;
     }
 
     @Override
@@ -67,13 +67,11 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
 
     @Override
     public short[] read(int frameSize) {
-        if (!isOpen()) throw new IllegalStateException("Device is not open");
+        if (!isOpen() || frameSize > available()) return null;
 
-        byte[] samples = new byte[frameSize];
-        int read = device.read(samples, 0, frameSize);
-        if (read == -1) {
-            return null;
-        }
+        byte[] samples = new byte[frameSize * 2];
+        int read = device.read(samples, 0, samples.length);
+        if (read == -1) return null;
 
         return AudioUtil.bytesToShorts(samples);
     }
@@ -107,17 +105,15 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
 
         Mixer.Info[] mixers = AudioSystem.getMixerInfo();
         for (Mixer.Info mixerInfo : mixers) {
+            if (!mixerInfo.getName().equals(deviceName)) continue;
+
             Mixer mixer = AudioSystem.getMixer(mixerInfo);
             DataLine.Info lineInfo = new DataLine.Info(TargetDataLine.class, format);
+            if (!mixer.isLineSupported(lineInfo)) continue;
 
-            if (mixer.isLineSupported(lineInfo)) {
-                String lineName = mixerInfo.getName();
-                if (lineName.equals(deviceName)) {
-                    try {
-                        return (TargetDataLine) mixer.getLine(lineInfo);
-                    } catch (Exception ignored) {
-                    }
-                }
+            try {
+                return (TargetDataLine) mixer.getLine(lineInfo);
+            } catch (Exception ignored) {
             }
         }
 

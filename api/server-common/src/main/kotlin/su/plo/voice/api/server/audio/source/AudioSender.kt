@@ -84,7 +84,6 @@ class AudioSender(
                     onStop?.run()
                 }
             }
-
         }
     }
 

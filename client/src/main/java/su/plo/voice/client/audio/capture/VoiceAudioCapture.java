@@ -118,7 +118,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 config.getVoice().getStereoCapture().value()
         );
 
-        if (!getDevice().isPresent()) {
+        if (!getDevice().isPresent() && !config.getVoice().getDisableInputDevice().value()) {
             try {
                 InputDevice device = voiceClient.getDeviceManager().openInputDevice(format);
                 devices.replace(null, device);

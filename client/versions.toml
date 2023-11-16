@@ -1,3 +1,7 @@
+[12002]
+forgeVersion = "[48,)"
+mcVersions = ["1.20.2"]
+
 [12001]
 forgeVersion = "[46,)"
 mcVersions = ["1.20", "1.20.1"]

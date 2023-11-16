@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
 
 // todo: need to rewrite this class, it's a mess
 @Config
@@ -72,12 +72,13 @@ public final class VoiceClientConfig implements ClientConfig {
 
     @Getter(AccessLevel.PRIVATE)
     @Setter
-    private Executor asyncExecutor;
+    private ExecutorService asyncExecutor;
 
     public void save(boolean async) {
         if (configFile == null) throw new IllegalStateException("configFile is null");
 
-        if (async) asyncExecutor.execute(this::save);
+        // save config sync if async executor is null or shut down
+        if (async && asyncExecutor != null && !asyncExecutor.isShutdown()) asyncExecutor.execute(this::save);
         else this.save();
     }
 
@@ -252,6 +253,9 @@ public final class VoiceClientConfig implements ClientConfig {
 
         @ConfigField
         private ConfigEntry<String> outputDevice = new ConfigEntry<>("");
+
+        @ConfigField
+        private BooleanConfigEntry disableInputDevice = new BooleanConfigEntry(false);
 
         @ConfigField
         private BooleanConfigEntry useJavaxInput = new BooleanConfigEntry(false);

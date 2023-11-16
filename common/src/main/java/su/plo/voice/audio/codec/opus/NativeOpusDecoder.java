@@ -1,19 +1,21 @@
-package su.plo.voice.client.audio.codec.opus;
+package su.plo.voice.audio.codec.opus;
 
-import org.concentus.OpusDecoder;
-import org.concentus.OpusException;
+import com.plasmoverse.opus.OpusDecoder;
+import com.plasmoverse.opus.OpusException;
 import su.plo.voice.api.audio.codec.CodecException;
 
-public final class JavaOpusDecoder implements BaseOpusDecoder {
+import java.io.IOException;
+import java.util.Arrays;
+
+public final class NativeOpusDecoder implements BaseOpusDecoder {
 
     private final int sampleRate;
     private final int channels;
     private final int frameSize;
 
     private OpusDecoder decoder;
-    private short[] buffer;
 
-    public JavaOpusDecoder(int sampleRate, boolean stereo, int frameSize) {
+    public NativeOpusDecoder(int sampleRate, boolean stereo, int frameSize) {
         this.sampleRate = sampleRate;
         this.channels = stereo ? 2 : 1;
         this.frameSize = frameSize;
@@ -23,29 +25,18 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     public short[] decode(byte[] encoded) throws CodecException {
         if (!isOpen()) throw new CodecException("Decoder is not open");
 
-        int result;
         try {
-            if (encoded == null || encoded.length == 0) {
-                result = decoder.decode(null, 0, 0, buffer, 0, frameSize, false);
-            } else {
-                result = decoder.decode(encoded, 0, encoded.length, buffer, 0, frameSize, false);
-            }
+            return decoder.decode(encoded);
         } catch (OpusException e) {
-            throw new CodecException("Failed to decode audio", e);
+            throw new CodecException("Failed to decode audio: " + e);
         }
-
-        short[] decoded = new short[result];
-        System.arraycopy(buffer, 0, decoded, 0, result);
-
-        return decoded;
     }
 
     @Override
     public void open() throws CodecException {
         try {
-            this.decoder = new OpusDecoder(sampleRate, channels);
-            this.buffer = new short[frameSize * channels];
-        } catch (OpusException e) {
+            this.decoder = OpusDecoder.create(sampleRate, channels == 2, frameSize);
+        } catch (OpusException | IOException e) {
             throw new CodecException("Failed to open opus decoder", e);
         }
     }
@@ -54,15 +45,15 @@ public final class JavaOpusDecoder implements BaseOpusDecoder {
     public void reset() {
         if (!isOpen()) return;
 
-        decoder.resetState();
+        decoder.reset();
     }
 
     @Override
     public void close() {
         if (!isOpen()) return;
 
+        decoder.close();
         this.decoder = null;
-        this.buffer = null;
     }
 
     @Override

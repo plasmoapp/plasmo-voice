@@ -25,9 +25,12 @@ if (platform.isForge) {
         mixinConfig(
             "plasmovoice.mixins.json",
             "plasmovoice-forge.mixins.json",
-            "slib.mixins.json",
-            "slib-forge.mixins.json"
+            "slib.mixins.json"
         )
+
+        if (platform.mcVersion < 12002) {
+            mixinConfig("slib-forge.mixins.json")
+        }
     }
 }
 
@@ -86,7 +89,7 @@ fun slibVersion() = libs.versions.slib.map {
 }.get()
 
 repositories {
-    maven("https://repo.essential.gg/repository/maven-public")
+    maven("https://repo.plasmoverse.com/snapshots")
 }
 
 dependencies {
@@ -102,6 +105,7 @@ dependencies {
             11903 -> "0.73.2+1.19.3"
             11904 -> "0.87.1+1.19.4"
             12001 -> "0.84.0+1.20.1"
+            12002 -> "0.89.1+1.20.2"
             else -> throw GradleException("Unsupported platform $platform")
         }
 

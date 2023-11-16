@@ -166,7 +166,6 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                 ELEMENT_WIDTH,
                 20
         );
-        toggleButton.setActive(!entry.isDisabled());
 
         return new OptionEntry<>(
                 text,

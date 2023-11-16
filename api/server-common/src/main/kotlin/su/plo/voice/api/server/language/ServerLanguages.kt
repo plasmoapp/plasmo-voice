@@ -57,7 +57,7 @@ interface ServerLanguages {
         fileName: String?,
         resourceLoader: ResourceLoader,
         languagesFolder: File
-    ): CompletableFuture<Void>
+    ): CompletableFuture<Void?>
 
     /**
      * Gets server language data by name or default language if not found.
