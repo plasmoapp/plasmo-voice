@@ -97,7 +97,7 @@ public final class MicrophoneTestController {
         }
 
         if (source != null) {
-//            source.write(samples);
+            source.write(samples);
         }
     }
 
