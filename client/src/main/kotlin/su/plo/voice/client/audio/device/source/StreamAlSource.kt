@@ -143,6 +143,9 @@ class StreamAlSource private constructor(
         if (state == AlSource.State.INITIAL) {
             AL11.alSourcePlay(pointer)
             AlUtil.checkErrors("Source play")
+
+            AL11.alSourceStop(pointer)
+            AlUtil.checkErrors("Source stop")
         }
 
         client.eventBus.fire(AlSourceClosedEvent(this@StreamAlSource))
