@@ -106,7 +106,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
     @Override
     public void handle(@NotNull LanguagePacket packet) {
         Map<String, String> language = Maps.newHashMap(packet.getLanguage());
-        language.putAll(voiceProxy.getMinecraftServer().getLanguages().getClientLanguage(packet.getLanguageName()));
+        language.putAll(voiceProxy.getLanguages().getClientLanguage(packet.getLanguageName()));
 
         player.sendPacket(new LanguagePacket(packet.getLanguageName(), language));
         throw new CancelForwardingException();
