@@ -81,7 +81,7 @@ fun universalCraftVersion() = libs.versions.universalcraft.map {
 
 fun slibVersion() = libs.versions.slib.map {
     val minecraftVersion = when (platform.mcVersion) {
-        11802, 11902, 11904, 12001 -> "1.19.3"
+        11904 -> "1.19.3"
         else -> platform.mcVersionStr
     }
 
