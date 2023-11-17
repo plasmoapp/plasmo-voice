@@ -135,9 +135,15 @@ class StreamAlSource private constructor(
         }
     }
 
-    private suspend fun closeSync() {
+    private fun closeSync() {
         stop()
-        job?.join()
+
+        // to my future self:
+        // don't join job coroutine here,
+        // because it can be invoked from the job itself
+        // and cause a deadlock
+        // (I've done it twice already pepega)
+        // job?.join()
 
         // play a source if its state is initial, so a source can be deleted properly
         if (state == AlSource.State.INITIAL) {
