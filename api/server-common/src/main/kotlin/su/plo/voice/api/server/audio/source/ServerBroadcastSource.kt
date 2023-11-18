@@ -11,11 +11,11 @@ import java.util.function.Supplier
 interface ServerBroadcastSource : BaseServerDirectSource {
 
     /**
-     * Gets or sets the supplier of players.
+     * Gets or sets the collection of players.
      *
      * If null, all players with Plasmo Voice will be used.
      *
-     * @return The supplier of players.
+     * @return The collection of players.
      */
-    var players: Supplier<Iterable<@JvmWildcard VoicePlayer>>?
+    var players: Collection<@JvmWildcard VoicePlayer>?
 }

@@ -26,7 +26,7 @@ class VoiceServerBroadcastSource(
 ) : VoiceBaseServerDirectSource(voiceServer, udpConnections, addon, line, decoderInfo, stereo),
     ServerBroadcastSource {
 
-    override var players: Supplier<Iterable<VoicePlayer>>? = null
+    override var players: Collection<VoicePlayer>? = null
 
     override fun sendAudioPacket(packet: SourceAudioPacket, activationId: UUID?): Boolean {
         val event = ServerSourceAudioPacketEvent(this, packet, activationId);
@@ -59,7 +59,7 @@ class VoiceServerBroadcastSource(
     }
 
     private fun getListeners(): Iterator<UdpConnection> {
-        val players = this.players?.get()?.iterator()
+        val players = this.players?.iterator()
             ?: return udpConnections.connections.iterator()
 
         return object : AbstractIterator<UdpConnection>() {
