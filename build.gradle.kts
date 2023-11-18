@@ -1,5 +1,6 @@
 import gg.essential.gradle.util.setJvmDefault
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
+import java.io.ByteArrayOutputStream
 
 // Version
 val targetJavaVersion: String by rootProject
@@ -28,6 +29,22 @@ subprojects {
     apply(plugin = "maven-publish")
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-lombok")
+
+    if (properties.containsKey("snapshot")) {
+        version = "$version-SNAPSHOT"
+
+        if (!project.parent?.name.equals("api")) {
+            val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
+                rootProject.exec {
+                    commandLine("git")
+                        .args("rev-parse", "--verify", "--short", "HEAD")
+                    standardOutput = outputStream
+                }
+                outputStream.toString().trim()
+            }.substring(0, 7) // windows moment?
+            version = "$version.$gitCommitHash"
+        }
+    }
 
     dependencies {
         implementation(kotlin("stdlib-jdk8"))

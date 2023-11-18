@@ -20,14 +20,22 @@ publishing {
     }
 
     repositories {
-        val mavenUser = project.findProperty("maven_user")
-        val mavenPassword = project.findProperty("maven_password")
+        if (properties.containsKey("snapshot")) {
+            maven("https://repo.plasmoverse.com/snapshots") {
+                name = "PlasmoVerseSnapshots"
 
-        if (mavenUser != null && mavenPassword != null) {
-            maven("https://repo.plo.su/public/") {
                 credentials {
-                    username = mavenUser.toString()
-                    password = mavenPassword.toString()
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
+                }
+            }
+        } else {
+            maven("https://repo.plasmoverse.com/releases") {
+                name = "PlasmoVerseReleases"
+
+                credentials {
+                    username = System.getenv("MAVEN_USERNAME")
+                    password = System.getenv("MAVEN_PASSWORD")
                 }
             }
         }

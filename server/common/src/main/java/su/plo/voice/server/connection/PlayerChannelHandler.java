@@ -56,10 +56,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         SemanticVersion serverVersion = SemanticVersion.parse(voiceServer.getVersion());
         SemanticVersion clientVersion = SemanticVersion.parse(packet.getVersion());
 
-        if (
-                (System.getProperty("plasmovoice.alpha.disableversioncheck") == null && !serverVersion.isRelease() && !serverVersion.string().equals(clientVersion.string())) || // alpha check
-                        clientVersion.major() != serverVersion.major()
-        ) {
+        if (clientVersion.major() != serverVersion.major()) {
             ServerVersionUtil.suggestSupportedVersion(player, serverVersion, packet.getMinecraftVersion());
             return;
         }

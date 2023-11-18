@@ -264,15 +264,6 @@ tasks {
     }
 }
 
-publishing {
-    publications {
-        create<MavenPublication>("maven") {
-            from(components["java"])
-            artifactId = "${platform.loaderStr}-${platform.mcVersionStr}"
-        }
-    }
-}
-
 data class VersionInfo(
     val forgeVersion: String,
     val mcVersions: List<String>

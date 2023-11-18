@@ -17,6 +17,8 @@ public final class SemanticVersion {
     // forge-1.19.3-2.0.0+ALPHA => 2.0.0 alpha
     // fabric-1.19.x-2.0.0 => 2.0.0
     // 2.0.0+ALPHA => 2.0.0 alpha
+    // 2.0.0-SNAPSHOT.build => 2.0.0 alpha
+    // 2.0.0-SNAPSHOT => 2.0.0 alpha
     // 2.0.0 => 2.0.0
     private static final Pattern VERSION_PATTERN = Pattern.compile(".*((-)?(\\d+)\\.(\\d+)\\.(\\d+).*)");
 
@@ -39,7 +41,7 @@ public final class SemanticVersion {
                 major,
                 minor,
                 patch,
-                strVersion.contains("+")
+                strVersion.contains("+") || strVersion.toLowerCase().contains("snapshot")
                         ? SemanticVersion.Branch.ALPHA
                         : SemanticVersion.Branch.RELEASE
         );
