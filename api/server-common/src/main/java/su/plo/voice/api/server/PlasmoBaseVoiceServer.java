@@ -90,7 +90,7 @@ public interface PlasmoBaseVoiceServer extends PlasmoVoice {
     /**
      Creates a new opus encoder using default params.
      *
-     * @param stereo {@code true if the decoder should be initialized in stereo mode.
+     * @param stereo {@code true} if the decoder should be initialized in stereo mode.
      * @return {@link AudioDecoder } instance.
      */
     @NotNull AudioDecoder createOpusDecoder(boolean stereo);
