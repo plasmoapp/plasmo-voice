@@ -11,7 +11,7 @@ import su.plo.config.toml.Toml
 import su.plo.config.toml.TomlWriter
 import su.plo.crowdin.CrowdinLib
 import su.plo.slib.api.language.ServerTranslator
-import su.plo.slib.api.resource.ResourceLoader
+import su.plo.voice.api.server.resource.ResourceLoader
 import su.plo.voice.api.server.language.ServerLanguages
 import java.io.*
 import java.nio.charset.StandardCharsets

@@ -3,7 +3,7 @@ package su.plo.voice.api.server.language
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.chat.component.McTranslatableText
 import su.plo.slib.api.command.McChatHolder
-import su.plo.slib.api.resource.ResourceLoader
+import su.plo.voice.api.server.resource.ResourceLoader
 import java.io.File
 import java.util.concurrent.CompletableFuture
 

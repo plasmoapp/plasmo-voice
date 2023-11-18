@@ -1,4 +1,4 @@
-package su.plo.slib.api.resource
+package su.plo.voice.api.server.resource
 
 import java.io.IOException
 import java.io.InputStream
@@ -6,7 +6,7 @@ import java.io.InputStream
 /**
  * Represents an interface for loading resources from a jar.
  */
-interface ResourceLoader {
+fun interface ResourceLoader {
 
     /**
      * Loads a resource from the specified resource path and returns it as an input stream.
