@@ -208,14 +208,15 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 restartUdpServer = !config.host().equals(oldConfig.host());
             }
 
-            this.languages = new VoiceServerLanguages(config.useCrowdinTranslations());
+            ServerTranslator serverTranslator = getMinecraftServer().getServerTranslator();
+            this.languages = new VoiceServerLanguages(serverTranslator, config.useCrowdinTranslations());
             languages.register(
                     "plasmo-voice",
                     "server.toml",
                     this::getResource,
                     new File(getConfigFolder(), "languages")
             );
-            ServerTranslator.INSTANCE.setDefaultLanguage(config.defaultLanguage());
+            serverTranslator.setDefaultLanguage(config.defaultLanguage());
 
             // load forwarding secret
             File forwardingSecretFile = System.getenv().containsKey("PLASMO_VOICE_FORWARDING_SECRET_FILE")

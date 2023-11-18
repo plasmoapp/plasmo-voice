@@ -20,6 +20,7 @@ import java.util.*
 import java.util.concurrent.CompletableFuture
 
 class VoiceServerLanguages(
+    private val serverTranslator: ServerTranslator,
     override var crowdinEnabled: Boolean = true
 ) : ServerLanguages {
 
@@ -177,7 +178,7 @@ class VoiceServerLanguages(
         if (languages.isEmpty()) return
 
         val defaultLanguage = languages.getOrDefault(
-            ServerTranslator.defaultLanguage,
+            serverTranslator.defaultLanguage,
             languages[languages.keys.first()]!!
         )
 
@@ -219,12 +220,12 @@ class VoiceServerLanguages(
         }
 
         this.languages.forEach { (languageName, language) ->
-            ServerTranslator.register(languageName, language.serverLanguage)
+            serverTranslator.register(languageName, language.serverLanguage)
         }
     }
 
     private fun getLanguage(languageName: String?, scope: LanguageScope): Map<String, String> {
-        val language = languages[languageName?.lowercase() ?: ServerTranslator.defaultLanguage]
+        val language = languages[languageName?.lowercase() ?: serverTranslator.defaultLanguage]
         if (languageName == null && language == null) return ImmutableMap.of()
         if (language == null) return getLanguage(null, scope)
 
