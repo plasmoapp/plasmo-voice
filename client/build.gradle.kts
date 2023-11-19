@@ -172,7 +172,7 @@ dependencies {
         exclude("com.google.guava")
     }
 
-    if (platform.mcVersion < 11700) {
+    if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {
         shadowCommon(libs.slf4j)
         shadowCommon(libs.slf4j.log4j)
     }
@@ -232,14 +232,14 @@ tasks {
             exclude("META-INF/*.kotlin_module")
             exclude("_COROUTINE/**")
 
-            if (platform.mcVersion >= 11700) {
-                exclude(dependency("org.slf4j:slf4j-api"))
-            } else {
+            if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {
                 exclude(dependency("org.apache.logging.log4j:log4j-api"))
                 exclude(dependency("org.apache.logging.log4j:log4j-core"))
 
                 relocate("org.apache.logging.slf4j", "su.plo.voice.libs.org.apache.logging.slf4j")
                 relocate("org.slf4j", "su.plo.voice.libs.org.slf4j")
+            } else {
+                exclude(dependency("org.slf4j:slf4j-api"))
             }
 
             if (platform.isForge) {
