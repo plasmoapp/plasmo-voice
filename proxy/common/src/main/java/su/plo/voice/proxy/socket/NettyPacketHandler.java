@@ -67,7 +67,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         if (!remoteServer.get().isAesEncryptionKeySet()) {
             BaseVoice.LOGGER.warn(
-                    "Aes encryption for server {} is not present. Dropping connection for {}",
+                    "AES encryption for server {} ({}) is not present. You need to set up the forwarding secret on backend servers: https://plasmovoice.com/docs/server/proxy/#specify-the-forwarding-secret",
                     remoteServer.get(),
                     player.get().getInstance().getName()
             );
