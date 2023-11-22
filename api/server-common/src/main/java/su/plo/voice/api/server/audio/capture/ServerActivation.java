@@ -117,7 +117,6 @@ public interface ServerActivation extends Activation {
      */
     void setProximity(boolean proximity);
 
-
     /**
      * Invoked when a player uses the activation and meets all requirements:
      * <ul>
@@ -129,7 +128,6 @@ public interface ServerActivation extends Activation {
      * @param activationListener The listener to handle the activation event.
      */
     void onPlayerActivation(@NotNull PlayerActivationListener activationListener);
-
 
     /**
      * Invoked when a player starts using the activation and meets all requirements:
