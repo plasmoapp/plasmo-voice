@@ -31,8 +31,6 @@ subprojects {
     apply(plugin = "kotlin-lombok")
 
     if (properties.containsKey("snapshot")) {
-        version = "$version-SNAPSHOT"
-
         if (!project.parent?.name.equals("api")) {
             val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
                 rootProject.exec {
@@ -42,7 +40,9 @@ subprojects {
                 }
                 outputStream.toString().trim()
             }.substring(0, 7) // windows moment?
-            version = "$version.$gitCommitHash"
+            version = "$version+$gitCommitHash-SNAPSHOT"
+        } else {
+            version = "$version-SNAPSHOT"
         }
     }
 
@@ -56,7 +56,8 @@ subprojects {
         compileOnly(rootProject.libs.gson)
         compileOnly(rootProject.libs.guice)
 
-        api(rootProject.libs.slf4j)
+        compileOnly(rootProject.libs.slf4j)
+
         api(rootProject.libs.annotations)
         api(rootProject.libs.lombok)
 
