@@ -69,7 +69,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.icon = checkNotNull(icon);
         this.id = generateId(name);
         this.distances = checkNotNull(distances);
-        this.defaultDistance = defaultDistance;
+        this.defaultDistance = validateDefaultDistance(distances, defaultDistance);
         this.proximity = proximity;
         this.stereoSupported = stereoSupported;
         this.transitive = transitive;
@@ -106,7 +106,7 @@ public class VoiceActivation implements Activation, PacketSerializable {
         this.icon = in.readUTF();
         this.id = VoiceActivation.generateId(name);
         this.distances = PacketUtil.readIntList(in);
-        this.defaultDistance = in.readInt();
+        this.defaultDistance = validateDefaultDistance(distances, in.readInt());
         this.proximity = in.readBoolean();
         this.transitive = in.readBoolean();
         this.stereoSupported = in.readBoolean();
@@ -130,5 +130,25 @@ public class VoiceActivation implements Activation, PacketSerializable {
         out.writeBoolean(encoderInfo != null);
         if (encoderInfo != null) encoderInfo.serialize(out);
         out.writeInt(weight);
+    }
+
+    protected static int validateDefaultDistance(@NotNull List<Integer> distances, int defaultDistance) {
+        if (distances.isEmpty()) {
+            return 0;
+        }
+
+        if (distances.size() == 2 && distances.get(0) == -1) {
+            if (defaultDistance >= 1 && defaultDistance <= distances.get(1)) {
+                return defaultDistance;
+            } else {
+                return distances.get(1) / 2;
+            }
+        }
+
+        if (distances.contains(defaultDistance)) {
+            return defaultDistance;
+        } else {
+            return distances.get((int) Math.floor(distances.size() / 2.0D));
+        }
     }
 }

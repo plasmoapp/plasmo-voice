@@ -2,9 +2,6 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.slib.api.chat.style.McTextStyle;
-import su.plo.voice.universal.UMinecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,6 +9,8 @@ import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.mod.client.gui.components.IconButton;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
@@ -24,15 +23,12 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.client.gui.settings.widget.DistanceSliderWidget;
-import su.plo.voice.client.gui.settings.widget.DropDownWidget;
-import su.plo.voice.client.gui.settings.widget.HotKeyWidget;
-import su.plo.voice.client.gui.settings.widget.NumberTextFieldWidget;
+import su.plo.voice.client.gui.settings.widget.*;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
+import su.plo.voice.universal.UMinecraft;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
@@ -82,28 +78,31 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
     }
 
     private void createActivation(ClientActivation activation, boolean canInherit) {
-        Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
-        if (!serverInfo.isPresent()) throw new IllegalStateException("Not connected");
+        ServerInfo serverInfo = voiceClient.getServerInfo()
+                .orElseThrow(() -> new IllegalStateException("Not connected"));
 
-        Optional<VoiceClientConfig.Server> serverConfig = config.getServers().getById(serverInfo.get().getServerId());
-        if (!serverConfig.isPresent()) throw new IllegalStateException("Not connected");
+        VoiceClientConfig.Server serverConfig = config.getServers().getById(serverInfo.getServerId())
+                .orElseThrow(() -> new IllegalStateException("Not connected"));
 
-        Optional<ConfigClientActivation> activationConfig = config.getActivations().getActivation(activation.getId());
-        if (!activationConfig.isPresent()) throw new IllegalStateException("Activation config is empty");
+        ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getId())
+                .orElseThrow(() -> new IllegalStateException("Activation config is empty"));
 
-        Optional<IntConfigEntry> activationDistance = serverConfig.get().getActivationDistance(activation.getId());
-        if (!activationDistance.isPresent()) throw new IllegalStateException("Activation distance config is empty");
+        IntConfigEntry activationDistance = serverConfig.getActivationDistance(activation.getId())
+                .orElseThrow(() -> new IllegalStateException("Activation distance config is empty"));
 
         addEntry(new CategoryEntry(McTextComponent.translatable(activation.getTranslation())));
-        addEntry(createActivationType(activation, activationConfig.get(), canInherit));
+        addEntry(createActivationType(activation, activationConfig, canInherit));
         addEntry(createActivationButton((VoiceClientActivation) activation));
-        if (activation.getDistances().size() > 0)
-            createDistance(activation, activationConfig.get(), activationDistance.get());
+        if (activation.getDistances().size() > 0) {
+            createDistance(activation, activationDistance);
+        }
     }
 
-    private OptionEntry<DropDownWidget> createActivationType(ClientActivation activation,
-                                                             ConfigClientActivation activationConfig,
-                                                             boolean canInherit) {
+    private OptionEntry<DropDownWidget> createActivationType(
+            @NotNull ClientActivation activation,
+            @NotNull ConfigClientActivation activationConfig,
+            boolean canInherit
+    ) {
         DropDownWidget dropdown = new DropDownWidget(
                 parent,
                 0,
@@ -137,7 +136,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
     }
 
-    private OptionEntry<HotKeyWidget> createActivationButton(VoiceClientActivation activation) {
+    private OptionEntry<HotKeyWidget> createActivationButton(@NotNull VoiceClientActivation activation) {
         String translatable = "gui.plasmovoice.activation.toggle_button";
         HotkeyConfigEntry entry = activation.getToggleConfigEntry();
 
@@ -153,21 +152,23 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
     }
 
-    private void createDistance(ClientActivation activation,
-                                ConfigClientActivation activationConfig,
-                                IntConfigEntry activationDistance) {
+    private void createDistance(
+            @NotNull ClientActivation activation,
+            @NotNull IntConfigEntry activationDistance
+    ) {
         if (activation.getDistances().size() == 0) return;
 
         if (activation.getMinDistance() == -1) {
-            addEntry(createDistanceText(activation, activationConfig, activationDistance));
+            addEntry(createDistanceText(activation, activationDistance));
         } else {
-            addEntry(createDistanceSlider(activation, activationConfig, activationDistance));
+            addEntry(createDistanceSlider(activation, activationDistance));
         }
     }
 
-    private OptionEntry<DistanceSliderWidget> createDistanceSlider(ClientActivation activation,
-                                                                   ConfigClientActivation activationConfig,
-                                                                   IntConfigEntry activationDistance) {
+    private OptionEntry<DistanceSliderWidget> createDistanceSlider(
+            @NotNull ClientActivation activation,
+            @NotNull IntConfigEntry activationDistance
+    ) {
         DistanceSliderWidget sliderWidget = new DistanceSliderWidget(
                 activation,
                 activationDistance,
@@ -184,9 +185,10 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
     }
 
-    private OptionEntry<NumberTextFieldWidget> createDistanceText(ClientActivation activation,
-                                                                  ConfigClientActivation activationConfig,
-                                                                  IntConfigEntry activationDistance) {
+    private OptionEntry<NumberTextFieldWidget> createDistanceText(
+            @NotNull ClientActivation activation,
+            @NotNull IntConfigEntry activationDistance
+    ) {
         NumberTextFieldWidget textField = new NumberTextFieldWidget(
                 activationDistance,
                 0,
@@ -204,13 +206,15 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
     private class ActivationToggleStateEntry extends ButtonOptionEntry<DropDownWidget> {
 
-        public ActivationToggleStateEntry(@NotNull McTextComponent text,
-                                          @NotNull DropDownWidget widget,
-                                          @NotNull McTextComponent activationName,
-                                          @NotNull EnumConfigEntry<ClientActivation.Type> entry,
-                                          @NotNull BooleanConfigEntry stateEntry,
-                                          @Nullable McTextComponent tooltip,
-                                          @Nullable OptionResetAction<DropDownWidget> resetAction) {
+        public ActivationToggleStateEntry(
+                @NotNull McTextComponent text,
+                @NotNull DropDownWidget widget,
+                @NotNull McTextComponent activationName,
+                @NotNull EnumConfigEntry<ClientActivation.Type> entry,
+                @NotNull BooleanConfigEntry stateEntry,
+                @Nullable McTextComponent tooltip,
+                @Nullable OptionResetAction<DropDownWidget> resetAction
+        ) {
             super(text, widget, Lists.newArrayList(), entry, tooltip, resetAction);
 
             if (entry.value() == ClientActivation.Type.PUSH_TO_TALK) return;

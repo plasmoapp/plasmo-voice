@@ -47,20 +47,20 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
         updateText();
     }
 
-    private int calculateValue(double ratio) {
-        double value = adjust(Mth.lerp(
-                Mth.clamp(ratio, 0.0D, 1.0D),
-                activation.getMinDistance(),
-                activation.getMaxDistance()
-        ));
+    private int calculateValue(double value) {
+        double index = Mth.lerp(
+                Mth.clamp(value, 0.0D, 1.0D),
+                0,
+                activation.getDistances().size() - 1
+        );
+        index = adjust(index);
+        index = Math.round(index);
 
-        return activation.getDistances().stream()
-                .min(Comparator.comparingInt(i -> Math.abs(i - (int) value)))
-                .orElseGet(activation::getMinDistance);
+        return activation.getDistances().get((int) index);
     }
 
     private double adjust(double value) {
-        return Mth.clamp(value, activation.getMinDistance(), activation.getMaxDistance());
+        return Mth.clamp(value, 0, activation.getDistances().size() - 1);
     }
 
 }

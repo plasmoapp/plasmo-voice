@@ -85,8 +85,9 @@ public interface ServerActivation extends Activation {
      * Sets the available distances for the activation.
      *
      * @param distances The list of distances.
+     * @param defaultDistance The default distance within specified distances.
      */
-    void setDistances(@NotNull List<Integer> distances);
+    void setDistances(@NotNull List<Integer> distances, int defaultDistance);
 
     /**
      * Checks if a specified distance is among the available distances for the activation.

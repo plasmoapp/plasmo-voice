@@ -1,6 +1,5 @@
 package su.plo.voice.server.audio.capture
 
-import com.google.common.base.Preconditions
 import com.google.common.collect.Sets
 import su.plo.slib.api.entity.player.McPlayer
 import su.plo.voice.api.addon.AddonContainer
@@ -65,12 +64,13 @@ class VoiceServerActivation(
     override fun checkPermissions(serverPlayer: McPlayer) =
         permissions.any { serverPlayer.hasPermission(it) }
 
-    override fun setDistances(distances: List<Int>) {
-        this.distances = Preconditions.checkNotNull(distances)
+    override fun setDistances(distances: List<Int>, defaultDistance: Int) {
+        this.distances = distances
+        this.defaultDistance = validateDefaultDistance(distances, defaultDistance)
     }
 
     override fun checkDistance(distance: Int): Boolean {
-        if (distances.size == 0)
+        if (distances.isEmpty())
             return true
 
         if (distances.size == 2 && distances[0] == -1)
@@ -106,8 +106,8 @@ class VoiceServerActivation(
         activationEndListeners.add(activationEndListener)
     }
 
-    override fun equals(o: Any?): Boolean {
-        return o === this || super.equals(o)
+    override fun equals(other: Any?): Boolean {
+        return other === this || super.equals(other)
     }
 
     override fun hashCode(): Int {
