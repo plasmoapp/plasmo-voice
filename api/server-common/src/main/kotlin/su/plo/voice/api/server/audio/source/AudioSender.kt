@@ -27,10 +27,10 @@ class AudioSender(
      *
      * This will also resume the sender if it was paused using [pause].
      */
-    fun start() {
+    fun start(): Job {
         resume()
 
-        this.job = CoroutineScope(Dispatchers.Default).launch {
+        val job = CoroutineScope(Dispatchers.Default).launch {
             var sequenceNumber = 0L
             val startTime = System.nanoTime()
 
@@ -85,6 +85,9 @@ class AudioSender(
                 }
             }
         }
+
+        this.job = job
+        return job
     }
 
     /**
@@ -115,13 +118,5 @@ class AudioSender(
      */
     fun onStop(onStop: Runnable?) {
         this.onStop = onStop
-    }
-
-    /**
-     * Joins the sender coroutine job if its active.
-     */
-    @JvmSynthetic
-    suspend fun join() {
-        job?.join()
     }
 }
