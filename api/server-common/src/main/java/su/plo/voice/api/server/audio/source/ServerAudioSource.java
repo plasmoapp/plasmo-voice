@@ -111,14 +111,14 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
      *
      * @param filter Return {@code true} if you want to send source packets to the player.
      */
-    void addFilter(@NotNull Predicate<? super VoicePlayer> filter);
+    <P extends VoicePlayer> void addFilter(@NotNull Predicate<? super P> filter);
 
     /**
      * Removes a player filter from the source.
      *
      * @param filter The player predicate to remove.
      */
-    void removeFilter(@NotNull Predicate<? super VoicePlayer> filter);
+    <P extends VoicePlayer> void removeFilter(@NotNull Predicate<? super P> filter);
 
     /**
      * Gets the collection of player filters associated with this source.
@@ -148,7 +148,7 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
      * @see ServerAudioSource#removeFilter(Predicate)
      * @see ServerAudioSource#getFilters()
      */
-    boolean matchFilters(@NotNull VoicePlayer player);
+    <P extends VoicePlayer> boolean matchFilters(@NotNull P player);
 
     /**
      * Checks if a player does not match any of the filters associated with this source.
@@ -159,7 +159,7 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
      * @see ServerAudioSource#removeFilter(Predicate)
      * @see ServerAudioSource#getFilters()
      */
-    default boolean notMatchFilters(@NotNull VoicePlayer player) {
+    default <P extends VoicePlayer> boolean notMatchFilters(@NotNull P player) {
         return !matchFilters(player);
     }
 }

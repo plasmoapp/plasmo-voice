@@ -11,7 +11,7 @@ import java.util.*
 /**
  * Base interface for a direct sources.
  */
-interface BaseServerDirectSource : ServerAudioSource<DirectSourceInfo?> {
+interface BaseServerDirectSource : ServerAudioSource<DirectSourceInfo> {
 
     /**
      * Gets or sets the direct source sender.

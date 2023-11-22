@@ -41,11 +41,13 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
 
     protected final List<Predicate<? super VoicePlayer>> filters = new CopyOnWriteArrayList<>();
 
-    protected BaseServerAudioSource(@NotNull AddonContainer addon,
-                                    @NotNull UUID id,
-                                    @NotNull BaseServerSourceLine line,
-                                    @Nullable CodecInfo decoderInfo,
-                                    boolean stereo) {
+    protected BaseServerAudioSource(
+            @NotNull AddonContainer addon,
+            @NotNull UUID id,
+            @NotNull BaseServerSourceLine line,
+            @Nullable CodecInfo decoderInfo,
+            boolean stereo
+    ) {
         this.addon = addon;
         this.id = id;
         this.line = line;
@@ -88,13 +90,13 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     }
 
     @Override
-    public void addFilter(@NotNull Predicate<? super VoicePlayer> filter) {
+    public <P extends VoicePlayer> void addFilter(@NotNull Predicate<? super P> filter) {
         if (filters.contains(filter)) throw new IllegalArgumentException("Filter already exist");
-        filters.add(filter);
+        filters.add((Predicate<? super VoicePlayer>) filter);
     }
 
     @Override
-    public void removeFilter(@NotNull Predicate<? super VoicePlayer> filter) {
+    public <P extends VoicePlayer> void removeFilter(@NotNull Predicate<? super P> filter) {
         filters.remove(filter);
     }
 
@@ -114,7 +116,7 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
     }
 
     @Override
-    public boolean matchFilters(@NotNull VoicePlayer player) {
+    public <P extends VoicePlayer> boolean matchFilters(@NotNull P player) {
         for (Predicate<? super VoicePlayer> filter : filters) {
             if (!filter.test(player)) return false;
         }
