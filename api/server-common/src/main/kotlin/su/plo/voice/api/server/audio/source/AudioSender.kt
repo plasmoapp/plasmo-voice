@@ -69,7 +69,7 @@ class AudioSender(
                         continue
                     }
 
-                    val frameTime = 20 * sequenceNumber
+                    val frameTime = 20_000_000 * sequenceNumber
                     val waitTime = startTime + frameTime - System.nanoTime()
 
                     delay(waitTime.nanoseconds)
