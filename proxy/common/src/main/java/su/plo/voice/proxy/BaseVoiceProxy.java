@@ -120,6 +120,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
     @Override
     protected void onShutdown() {
+        getMinecraftServer().getChannelManager().clear();
+
         if (luckPermsListener != null) {
             luckPermsListener.unsubscribe();
             this.luckPermsListener = null;

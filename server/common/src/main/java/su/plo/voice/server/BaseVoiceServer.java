@@ -183,6 +183,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         stopUdpServer();
 
         // cleanup
+        getMinecraftServer().getChannelManager().clear();
         sourceLineManager.clear();
         activationManager.clear();
         playerManager.clear();
