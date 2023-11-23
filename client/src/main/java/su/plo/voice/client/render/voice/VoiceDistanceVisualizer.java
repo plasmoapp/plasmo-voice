@@ -1,10 +1,6 @@
 package su.plo.voice.client.render.voice;
 
 import com.google.common.collect.Maps;
-import su.plo.slib.api.position.Pos3d;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -13,6 +9,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
@@ -20,6 +17,9 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.render.ModCamera;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.UMinecraft;
 
 import java.util.Map;
 import java.util.UUID;
@@ -82,15 +82,18 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 continue;
             }
 
-            renderEntry(value, event.getStack(), event.getCamera());
+            renderEntry(value, event.getStack(), event.getCamera(), event.getDelta());
         }
     }
 
-    private void renderEntry(@NotNull VisualizeEntry entry,
-                             @NotNull UMatrixStack stack,
-                             @NotNull ModCamera camera) {
+    private void renderEntry(
+            @NotNull VisualizeEntry entry,
+            @NotNull UMatrixStack stack,
+            @NotNull ModCamera camera,
+            float delta
+    ) {
         if (System.currentTimeMillis() - entry.lastChanged() > 2000L) {
-            entry.alpha(entry.alpha() - 5);
+            entry.alpha(Math.max(0, entry.alpha() - (int) (10 * delta)));
         }
 
         Vec3 center;
