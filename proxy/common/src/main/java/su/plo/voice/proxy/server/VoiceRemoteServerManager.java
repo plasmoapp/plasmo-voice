@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.event.player.McPlayerQuitEvent;
 import su.plo.slib.api.proxy.connection.McProxyServerConnection;
+import su.plo.slib.api.proxy.event.player.McProxyServerConnectedEvent;
 import su.plo.slib.api.proxy.player.McProxyPlayer;
 import su.plo.slib.api.proxy.server.McProxyServerInfo;
 import su.plo.voice.BaseVoice;
@@ -35,6 +36,11 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
             }
 
             voiceProxy.getMinecraftServer().getServers().forEach(this::resetServerAesState);
+        });
+
+        McProxyServerConnectedEvent.INSTANCE.registerListener((player, previousServer) -> {
+            if (previousServer == null) return;
+            resetServerAesState(previousServer);
         });
     }
 
