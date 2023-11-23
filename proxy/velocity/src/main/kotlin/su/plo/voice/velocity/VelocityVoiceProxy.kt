@@ -15,6 +15,7 @@ import su.plo.slib.velocity.VelocityProxyLib
 import su.plo.voice.BuildConstants
 import su.plo.voice.proxy.BaseVoiceProxy
 import su.plo.voice.util.version.ModrinthLoader
+import su.plo.voice.velocity.channel.ForgeRegisterChannelListener
 import java.io.File
 import java.nio.file.Path
 
@@ -48,6 +49,8 @@ class VelocityVoiceProxy @Inject constructor(
         super.onInitialize()
 
         metrics = metricsFactory.make(this, 18095)
+
+        proxyServer.eventManager.register(this, ForgeRegisterChannelListener())
     }
 
     @Subscribe
