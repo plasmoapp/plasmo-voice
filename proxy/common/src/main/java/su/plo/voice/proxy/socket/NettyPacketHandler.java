@@ -63,6 +63,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         Optional<RemoteServer> remoteServer = voiceProxy.getRemoteServerManager()
                 .getServer(playerServer.getServerInfo().getName());
         if (!remoteServer.isPresent()) return;
+
         BaseVoice.DEBUG_LOGGER.log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
 
         if (!remoteServer.get().isAesEncryptionKeySet()) {

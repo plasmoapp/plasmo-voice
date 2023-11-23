@@ -28,5 +28,15 @@ public interface RemoteServer {
      *
      * @return The address of the remote server.
      */
-    @NotNull InetSocketAddress getAddress();
+    default @NotNull InetSocketAddress getAddress() {
+        return getAddress(false);
+    }
+
+    /**
+     * Gets the address of the remote server.
+     *
+     * @param resolve Whether the address should be revolved.
+     * @return The address of the remote server.
+     */
+    @NotNull InetSocketAddress getAddress(boolean resolve);
 }

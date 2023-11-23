@@ -44,6 +44,7 @@ class ProxyServiceChannelHandler(
             voiceProxy.remoteServerManager.getServer(source.serverInfo.name)
                 .ifPresent {
                     (it as VoiceRemoteServer).isAesEncryptionKeySet = true
+                    it.getAddress(true)
                 }
         } catch (e: NoSuchAlgorithmException) {
             throw RuntimeException(e)

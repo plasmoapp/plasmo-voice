@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.server.RemoteServer;
+import su.plo.voice.proxy.util.AddressUtil;
 
 import java.net.InetSocketAddress;
 
@@ -12,7 +13,7 @@ import java.net.InetSocketAddress;
 public final class VoiceRemoteServer implements RemoteServer {
 
     private final String name;
-    private final InetSocketAddress address;
+    private @NotNull InetSocketAddress address;
     @Getter
     @Setter
     private boolean aesEncryptionKeySet;
@@ -28,7 +29,12 @@ public final class VoiceRemoteServer implements RemoteServer {
     }
 
     @Override
-    public @NotNull InetSocketAddress getAddress() {
+    public @NotNull InetSocketAddress getAddress(boolean resolve) {
+        if (!resolve) {
+            return address;
+        }
+
+        this.address = AddressUtil.resolveAddress(address);
         return address;
     }
 }

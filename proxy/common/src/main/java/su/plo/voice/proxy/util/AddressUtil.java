@@ -1,10 +1,8 @@
 package su.plo.voice.proxy.util;
 
 import com.google.common.base.Preconditions;
-import com.google.common.net.InetAddresses;
 import org.jetbrains.annotations.NotNull;
 
-import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.URI;
 
@@ -26,14 +24,12 @@ public class AddressUtil {
     }
 
     public static InetSocketAddress resolveAddress(@NotNull InetSocketAddress address) {
-        if (address.isUnresolved()) {
-            URI uri = URI.create("udp://" + address.getHostString());
-            if (uri.getHost() == null) {
-                throw new IllegalStateException("Invalid hostname/IP " + address.getHostString());
-            }
-
-            address = new InetSocketAddress(uri.getHost(), address.getPort());
+        URI uri = URI.create("udp://" + address.getHostString());
+        if (uri.getHost() == null) {
+            throw new IllegalStateException("Invalid hostname/IP " + address.getHostString());
         }
+
+        address = new InetSocketAddress(uri.getHost(), address.getPort());
 
         return address;
     }
