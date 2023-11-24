@@ -1,42 +1,45 @@
 package su.plo.voice.client.render.voice;
 
-import net.minecraft.world.scores.Objective;
-import net.minecraft.client.renderer.RenderType;
-import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.slib.api.position.Pos3d;
-import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
-import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
-import su.plo.voice.proto.data.audio.source.SourceInfo;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
 import lombok.NonNull;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.scores.Objective;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.client.audio.source.ClientStaticSource;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.EntityRenderEvent;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.event.render.PlayerRenderEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.ModCamera;
+import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
+import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
+import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
+import su.plo.voice.universal.UGraphics;
+import su.plo.voice.universal.UMatrixStack;
+import su.plo.voice.universal.UMinecraft;
 
 import java.util.Collection;
 import java.util.Optional;
 
 import static su.plo.slib.mod.extension.ScoreboardKt.getObjectiveBelowName;
+import static su.plo.voice.client.extension.MathKt.toVec3;
 
 public final class SourceIconRenderer {
 
@@ -44,9 +47,11 @@ public final class SourceIconRenderer {
     private final VoiceClientConfig config;
     private final PlayerVolumeAction volumeAction;
 
-    public SourceIconRenderer(@NotNull PlasmoVoiceClient voiceClient,
-                              @NotNull VoiceClientConfig config,
-                              @NotNull PlayerVolumeAction volumeAction) {
+    public SourceIconRenderer(
+            @NotNull PlasmoVoiceClient voiceClient,
+            @NotNull VoiceClientConfig config,
+            @NotNull PlayerVolumeAction volumeAction
+    ) {
         this.voiceClient = voiceClient;
         this.config = config;
         this.volumeAction = volumeAction;
@@ -68,14 +73,16 @@ public final class SourceIconRenderer {
                     .getLineById(source.getSourceInfo().getLineId());
             if (!sourceLine.isPresent()) return;
 
-            Pos3d sourcePosition = ((StaticSourceInfo) source.getSourceInfo()).getPosition();
+            ClientStaticSource staticSource = (ClientStaticSource) source;
+            Pos3d sourcePosition = staticSource.getSourceInfo().getPosition();
 
             renderStatic(
                     event.getStack(),
                     event.getCamera(),
                     event.getLightSupplier().getLight(sourcePosition),
                     new ResourceLocation(sourceLine.get().getIcon()),
-                    sourcePosition
+                    staticSource,
+                    event.getDelta()
             );
         }
     }
@@ -317,33 +324,32 @@ public final class SourceIconRenderer {
             @NonNull ModCamera camera,
             int light,
             @NotNull ResourceLocation iconLocation,
-            @NotNull Pos3d position
+            @NotNull ClientStaticSource staticSource,
+            double delta
     ) {
-        if (camera.position().distanceToSqr(new Vec3(
-                position.getX(), position.getY(), position.getZ()
-        )) > 4096D) return;
+        Pos3d position = staticSource.getSourceInfo().getPosition();
+        Pos3d lastPosition = staticSource.getLastRenderPosition();
 
-//        // TEXTURE
-//        UGraphics.bindTexture(0, iconLocation);
-//        UGraphics.color4f(1F, 1F, 1F, 1F);
-//        // TRANSLUCENT_TRANSPARENCY
-//        UGraphics.enableBlend();
-//        UGraphics.tryBlendFuncSeparate(
-//                770, // SourceFactor.SRC_ALPHA
-//                771, // DestFactor.ONE_MINUS_SRC_ALPHA
-//                1, // SourceFactor.ONE
-//                771 // DestFactor.ONE_MINUS_SRC_ALPHA
-//        );
-//        // LIGHT
-//        RenderUtil.turnOnLightLayer();
+        if (position.distanceSquared(lastPosition) > 1D) {
+            lastPosition.setX(position.getX());
+            lastPosition.setY(position.getY());
+            lastPosition.setZ(position.getZ());
+        } else {
+            lastPosition.setX(Mth.lerp(delta, lastPosition.getX(), position.getX()));
+            lastPosition.setY(Mth.lerp(delta, lastPosition.getY(), position.getY()));
+            lastPosition.setZ(Mth.lerp(delta, lastPosition.getZ(), position.getZ()));
+        }
+
+        double distanceToCamera = camera.position().distanceToSqr(toVec3(lastPosition));
+        if (distanceToCamera > 4096D) return;
 
         UGraphics buffer = UGraphics.getFromTessellator();
 
         stack.push();
         stack.translate(
-                position.getX() - camera.position().x,
-                position.getY() - camera.position().y,
-                position.getZ() - camera.position().z
+                lastPosition.getX() - camera.position().x,
+                lastPosition.getY() - camera.position().y,
+                lastPosition.getZ() - camera.position().z
         );
         stack.rotate(-camera.pitch(), 0.0F, 1.0F, 0.0F);
         stack.rotate(camera.yaw(), 1.0F, 0.0F, 0.0F);
@@ -355,17 +361,6 @@ public final class SourceIconRenderer {
         vertices(stack, buffer, 40, light, iconLocation, true);
 
         stack.pop();
-
-//        // TRANSLUCENT_TRANSPARENCY
-//        UGraphics.disableBlend();
-//        RenderUtil.defaultBlendFunc();
-//        UGraphics.depthMask(true);
-//
-//        // LIGHT
-////        RenderUtil.turnOffLightLayer();
-//
-//        UGraphics.enableDepth();
-//        UGraphics.depthFunc(515);
     }
 
     private void vertices(@NonNull UMatrixStack stack,

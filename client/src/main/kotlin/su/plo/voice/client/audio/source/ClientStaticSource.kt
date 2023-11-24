@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.source
 
 import net.minecraft.world.phys.Vec3
+import su.plo.slib.api.position.Pos3d
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.extension.toVec3
@@ -11,6 +12,8 @@ class ClientStaticSource(
     config: VoiceClientConfig,
     sourceInfo: StaticSourceInfo
 ) : BaseClientAudioSource<StaticSourceInfo>(voiceClient, config, sourceInfo) {
+
+    val lastRenderPosition: Pos3d = sourceInfo.position.copy()
 
     override fun getPosition(): Vec3 =
         sourceInfo.position.toVec3()
