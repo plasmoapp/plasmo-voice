@@ -1,5 +1,5 @@
 plugins {
-    id("su.plo.voice.relocate")
+    id("su.plo.voice.plugin.relocate-kotlin")
 }
 
 group = "$group.bungee"

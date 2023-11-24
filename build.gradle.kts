@@ -18,7 +18,7 @@ plugins {
     kotlin("kapt") version(libs.versions.kotlin.get())
 
     id("gg.essential.multi-version.root") apply(false)
-    id("su.plo.voice.relocate") version("1.0.1") apply(false)
+    id("su.plo.voice.plugin.relocate-kotlin") version("1.0.2-SNAPSHOT") apply(false)
 }
 
 subprojects {

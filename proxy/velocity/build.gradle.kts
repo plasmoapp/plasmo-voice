@@ -1,7 +1,7 @@
 val velocityVersion: String by project
 
 plugins {
-    id("su.plo.voice.relocate")
+    id("su.plo.voice.plugin.relocate-kotlin")
     id("kotlin-kapt")
 }
 

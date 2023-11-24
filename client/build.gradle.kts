@@ -12,7 +12,7 @@ plugins {
     id("gg.essential.multi-version")
     id("gg.essential.defaults")
     id("su.plo.crowdin.plugin")
-    id("su.plo.voice.relocate")
+    id("su.plo.voice.plugin.relocate-kotlin")
 }
 
 group = "$group.client"
