@@ -1,5 +1,8 @@
+import su.plo.voice.util.copyJarToRootProject
+
 plugins {
-    id("su.plo.voice.plugin.relocate-kotlin")
+    id("su.plo.voice.relocate")
+    id("su.plo.voice.relocate-guice")
 }
 
 group = "$group.paper"
@@ -42,6 +45,7 @@ dependencies {
         exclude("com.google.guava")
     }
 
+    shadow(libs.opus.jni)
     shadow(libs.opus.concentus)
     shadow(libs.config)
     shadow(libs.crowdin) {
@@ -71,24 +75,8 @@ tasks {
         archiveAppendix.set("")
         archiveClassifier.set("")
 
-        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
-        relocate("su.plo.ustats", "su.plo.voice.libs.ustats")
-
-        relocate("org.concentus", "su.plo.voice.libs.concentus")
-
-        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
-        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
-        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
-
         dependencies {
-            exclude(dependency("net.java.dev.jna:jna"))
             exclude(dependency("org.slf4j:slf4j-api"))
-            exclude(dependency("org.jetbrains:annotations"))
-
-            exclude("su/plo/opus/*")
-            exclude("natives/opus/**/*")
-
-            exclude("DebugProbesKt.bin")
             exclude("META-INF/**")
         }
     }
@@ -97,8 +85,7 @@ tasks {
         dependsOn.add(shadowJar)
 
         doLast {
-            shadowJar.get().archiveFile.get().asFile
-                .copyTo(rootProject.buildDir.resolve("libs/${shadowJar.get().archiveFile.get().asFile.name}"), true)
+            copyJarToRootProject(shadowJar.get())
         }
     }
 

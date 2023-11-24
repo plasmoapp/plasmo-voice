@@ -32,7 +32,7 @@ opus-jni = "1.0.1"
 opus-concentus = "acaadf2075"
 rnnoise-jni = "1.0.1"
 
-shadow = "7.1.0"
+shadow = "7.0.0"
 idea-ext = "1.1.7"
 
 [libraries]
@@ -67,8 +67,8 @@ opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-j
 opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }
 rnnoise-jni  = { module = "com.plasmoverse:rnnoise-jni-rust", version.ref = "rnnoise-jni" }
 
+shadow = { module = "gradle.plugin.com.github.jengelman.gradle.plugins:shadow", version.ref = "shadow" }
 [plugins]
-shadow              = { id = "com.github.johnrengelman.shadow", version.ref = "shadow" }
 idea-ext            = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ext"}
 crowdin             = { id = "su.plo.crowdin.plugin", version.ref = "crowdin" }
 dokka               = { id = "org.jetbrains.dokka", version.ref = "dokka" }

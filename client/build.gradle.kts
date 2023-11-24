@@ -4,6 +4,7 @@ import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocation
 import gg.essential.gradle.util.noServerRunConfigs
 import gg.essential.util.prebundleNow
 import su.plo.config.toml.Toml
+import su.plo.voice.util.copyJarToRootProject
 
 val isMainProject = project.name == file("../mainProject").readText().trim()
 
@@ -12,7 +13,8 @@ plugins {
     id("gg.essential.multi-version")
     id("gg.essential.defaults")
     id("su.plo.crowdin.plugin")
-    id("su.plo.voice.plugin.relocate-kotlin")
+    id("su.plo.voice.relocate")
+    id("su.plo.voice.relocate-guice")
 }
 
 group = "$group.client"
@@ -213,24 +215,11 @@ tasks {
     shadowJar {
         configurations = listOf(shadowCommon)
 
-        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
-        relocate("su.plo.ustats", "su.plo.voice.libs.ustats")
-
-        relocate("com.google.inject", "su.plo.voice.libs.google.inject")
-        relocate("org.aopalliance", "su.plo.voice.libs.aopalliance")
-        relocate("javax.inject", "su.plo.voice.libs.javax.inject")
-
-        relocate("org.concentus", "su.plo.voice.libs.concentus")
-
         dependencies {
-            exclude(dependency("net.java.dev.jna:jna"))
-            exclude(dependency("org.jetbrains:annotations"))
             exclude(dependency("com.google.guava:.*"))
 
             exclude("README.md")
-            exclude("DebugProbesKt.bin")
             exclude("META-INF/*.kotlin_module")
-            exclude("_COROUTINE/**")
 
             if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {
                 exclude(dependency("org.apache.logging.log4j:log4j-api"))
@@ -258,8 +247,7 @@ tasks {
 
     build {
         doLast {
-            remapJar.get().archiveFile.get().asFile
-                .copyTo(rootProject.buildDir.resolve("libs/${remapJar.get().archiveFile.get().asFile.name}"), true)
+            copyJarToRootProject(remapJar.get())
         }
     }
 }

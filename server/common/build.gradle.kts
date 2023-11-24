@@ -13,7 +13,7 @@ dependencies {
 
 crowdin {
     projectId = "plasmo-voice"
-    sourceFileName = "server/server.toml"
+    sourceFileName = "server.toml"
     createList = true
 }
 

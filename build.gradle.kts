@@ -8,7 +8,7 @@ val targetJavaVersion: String by rootProject
 plugins {
     java
     idea
-    alias(libs.plugins.shadow)
+    id("com.github.johnrengelman.shadow")
     alias(libs.plugins.idea.ext)
     alias(libs.plugins.dokka)
     alias(libs.plugins.crowdin) apply(false)
@@ -18,7 +18,6 @@ plugins {
     kotlin("kapt") version(libs.versions.kotlin.get())
 
     id("gg.essential.multi-version.root") apply(false)
-    id("su.plo.voice.plugin.relocate-kotlin") version("1.0.2-SNAPSHOT") apply(false)
 }
 
 subprojects {
