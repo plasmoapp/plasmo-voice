@@ -7,6 +7,7 @@ dependencies {
     implementation(libs.gson)
     implementation(libs.shadow)
     implementation(libs.config)
+    implementation(libs.asm)
 }
 
 repositories {

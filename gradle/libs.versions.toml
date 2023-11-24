@@ -35,6 +35,8 @@ rnnoise-jni = "1.0.1"
 shadow = "7.0.0"
 idea-ext = "1.1.7"
 
+asm = "9.3"
+
 [libraries]
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -68,6 +70,8 @@ opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.r
 rnnoise-jni  = { module = "com.plasmoverse:rnnoise-jni-rust", version.ref = "rnnoise-jni" }
 
 shadow = { module = "gradle.plugin.com.github.jengelman.gradle.plugins:shadow", version.ref = "shadow" }
+asm = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
+
 [plugins]
 idea-ext            = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ext"}
 crowdin             = { id = "su.plo.crowdin.plugin", version.ref = "crowdin" }
