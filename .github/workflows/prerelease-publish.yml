@@ -18,13 +18,16 @@ jobs:
     - name: Set up JDK 17
       uses: actions/setup-java@v3
       with:
+        distribution: zulu
         java-version: |
           8
           16
           17
-        distribution: 'temurin'
-        server-id: github
-        settings-path: ${{ github.workspace }}
+
+    - name: Print Java Toolchain
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: javaToolchains
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2

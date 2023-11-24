@@ -81,11 +81,6 @@ subprojects {
     tasks {
         java {
             toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
-
-            val os: OperatingSystem = DefaultNativePlatform.getCurrentOperatingSystem()
-            if (os.isMacOsX) {
-                toolchain.vendor.set(JvmVendorSpec.AZUL)
-            }
         }
 
         compileJava {
