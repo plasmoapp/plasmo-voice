@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     branches:
-      - v2.0.x-release
+      - v2.1.x-release
 
 jobs:
   build:
@@ -28,6 +28,11 @@ jobs:
       with:
         arguments: build
 
+    - name: Publish to releases maven repository
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: publish --stacktrace
+
     - name: Build Dokka with Gradle
       uses: gradle/gradle-build-action@v2
       with:
@@ -49,6 +54,9 @@ jobs:
         changelog-file: server/changelog.md
 
         game-versions: |
+          1.16.5
+          1.17.1
+          1.18.2
           1.19.2
           1.19.3
           1.19.4
@@ -71,6 +79,9 @@ jobs:
         changelog-file: proxy/changelog.md
 
         game-versions: |
+          1.16.5
+          1.17.1
+          1.18.2
           1.19.2
           1.19.3
           1.19.4

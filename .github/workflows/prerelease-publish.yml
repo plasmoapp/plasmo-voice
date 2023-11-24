@@ -3,7 +3,7 @@ name: Publish
 on:
   push:
     branches:
-      - v2.0.x
+      - v2.1.x
 
 jobs:
   build:
@@ -26,7 +26,12 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build --stacktrace
+        arguments: build --stacktrace -Psnapshot=true
+
+    - name: Publish to snapshots maven repository
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: publish --stacktrace -Psnapshot=true
 
     - name: Publish to GitHub
       uses: Apehum/mc-publish@v1.1
