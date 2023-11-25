@@ -38,7 +38,7 @@ object McGameProfileSerializer : PacketSerializer<McGameProfile> {
         for ((propertyName, propertyValue, propertySignature) in obj.properties) {
             buffer.writeUTF(propertyName)
             buffer.writeUTF(propertyValue)
-            buffer.writeUTF(propertySignature)
+            buffer.writeUTF(propertySignature ?: "")
         }
     }
 }
