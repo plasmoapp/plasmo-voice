@@ -26,7 +26,7 @@ papi = "2.11.2"
 
 bungeecord = "1.19-R0.1-SNAPSHOT"
 velocity = "3.1.1"
-paper = "1.19.4-R0.1-SNAPSHOT"
+paper = "1.16.5-R0.1-SNAPSHOT"
 
 opus-jni = "1.0.1"
 opus-concentus = "acaadf2075"
@@ -63,7 +63,7 @@ papi         = { module = "me.clip:placeholderapi", version.ref = "papi" }
 
 bungeecord   = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord"}
 velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
-paper        = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+paper        = { module = "com.destroystokyo.paper:paper-api", version.ref = "paper" }
 
 opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-jni" }
 opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }
