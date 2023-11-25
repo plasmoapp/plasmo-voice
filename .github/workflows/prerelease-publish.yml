@@ -36,6 +36,9 @@ jobs:
 
     - name: Publish to snapshots maven repository
       uses: gradle/gradle-build-action@v2
+      env:
+        MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
       with:
         arguments: publish --stacktrace -Psnapshot=true
 
