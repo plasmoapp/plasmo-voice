@@ -2,7 +2,6 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import su.plo.voice.api.client.audio.device.source.AlSourceParams;
 import su.plo.voice.universal.UMinecraft;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.local.LocalAddress;
@@ -10,7 +9,6 @@ import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -57,9 +55,11 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
-//#if MC>=12002
-//$$ import net.minecraft.resources.ResourceLocation;
-//$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+//#if FABRIC
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+//#else
+//$$ import net.minecraftforge.network.NetworkDirection;
+//$$ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 //#endif
 
 public final class ModServerConnection implements ServerConnection, ClientPacketTcpHandler {
@@ -108,19 +108,17 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         byte[] encoded = PacketTcpCodec.encode(packet);
         if (encoded == null) return;
 
-        //#if MC>=11701
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
-        buf.writeResourceLocation(ModVoiceServer.CHANNEL);
-        buf.writeBytes(encoded);
+        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded));
 
-        connection.send(new ServerboundCustomPayloadPacket(buf));
+        //#if FABRIC
+        ClientPlayNetworking.send(ModVoiceServer.CHANNEL, buf);
         //#else
-        //$$ connection.send(
-        //$$         new ServerboundCustomPayloadPacket(
-        //$$                 ModVoiceServer.CHANNEL,
-        //$$                 new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded))
-        //$$         )
-        //$$ );
+        //#if MC>=12002
+        //$$ ServerboundCustomPayloadPacket customPacket = NetworkDirection.PLAY_TO_SERVER.<ServerboundCustomPayloadPacket>buildPacket(buf, ModVoiceServer.CHANNEL).getThis();
+        //#else
+        //$$ ServerboundCustomPayloadPacket customPacket = new ServerboundCustomPayloadPacket(ModVoiceServer.CHANNEL, buf);
+        //#endif
+        //$$ connection.send(customPacket);
         //#endif
     }
 
