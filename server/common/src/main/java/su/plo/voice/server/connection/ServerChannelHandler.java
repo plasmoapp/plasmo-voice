@@ -70,7 +70,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
 
         ((BaseVoicePlayer<?>) voicePlayer).setModLoader(
-                channels.contains("fml:handshake")
+                channels.contains("fml:handshake") || channels.contains("forge:handshake")
                         ? PlayerModLoader.FORGE
                         : PlayerModLoader.FABRIC
         );

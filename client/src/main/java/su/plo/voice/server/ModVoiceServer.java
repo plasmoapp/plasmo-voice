@@ -4,7 +4,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.server.McServerLib;
-import su.plo.slib.api.server.event.player.McPlayerRegisterChannelsEvent;
 import su.plo.slib.mod.ModServerLib;
 import su.plo.slib.mod.event.ModServerEvents;
 import su.plo.slib.mod.event.server.ServerStartedEvent;
