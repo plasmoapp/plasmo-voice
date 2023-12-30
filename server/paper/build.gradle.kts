@@ -14,6 +14,7 @@ repositories {
 dependencies {
     compileOnly(libs.paper)
     compileOnly(libs.papi)
+    compileOnly(libs.supervanish)
 
     compileOnly("su.plo.ustats:paper:${libs.versions.ustats.get()}")
     compileOnly("su.plo.slib:spigot:${libs.versions.slib.get()}")

@@ -23,6 +23,7 @@ ustats = "1.0.3"
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.2"
+supervanish = "6.2.18-3"
 
 bungeecord = "1.19-R0.1-SNAPSHOT"
 velocity = "3.1.1"
@@ -60,6 +61,7 @@ crowdin      = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
 config       = { module = "su.plo.config:config", version.ref = "config" }
 luckperms    = { module = "net.luckperms:api", version.ref = "luckperms" }
 papi         = { module = "me.clip:placeholderapi", version.ref = "papi" }
+supervanish = { module = "com.github.LeonMangler:SuperVanish", version.ref = "supervanish" }
 
 bungeecord   = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord"}
 velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }

@@ -6,10 +6,10 @@ import org.bukkit.plugin.java.JavaPlugin
 import su.plo.slib.spigot.SpigotServerLib
 import su.plo.ustats.UStats
 import su.plo.ustats.paper.PaperUStatsPlatform
+import su.plo.voice.paper.integration.SuperVanishIntegration
 import su.plo.voice.paper.integration.VoicePlaceholder
 import su.plo.voice.server.BaseVoiceServer
 import su.plo.voice.util.version.ModrinthLoader
-import java.io.File
 
 class PaperVoiceServer(
     private val plugin: JavaPlugin
@@ -43,6 +43,13 @@ class PaperVoiceServer(
         // Initialize integrations
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             VoicePlaceholder(this).register()
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("SuperVanish") != null ||
+            Bukkit.getPluginManager().getPlugin("PremiumVanish") != null
+        ) {
+            plugin.server.pluginManager.registerEvents(SuperVanishIntegration(this), plugin)
+            LOGGER.info("SuperVanish event listener attached")
         }
     }
 
