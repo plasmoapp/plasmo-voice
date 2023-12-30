@@ -23,6 +23,8 @@ dependencies {
 
     compileOnly(project(":server:common"))
 
+    compileOnly(libs.supervanish)
+
     // shadow projects
     listOf(
         project(":api:common"),

@@ -10,6 +10,7 @@ import su.plo.ustats.UStats
 import su.plo.ustats.paper.PaperUStatsPlatform
 import su.plo.voice.paper.connection.PaperServerChannelHandler
 import su.plo.voice.paper.connection.PaperServerServiceChannelHandler
+import su.plo.voice.paper.integration.SuperVanishIntegration
 import su.plo.voice.paper.integration.VoicePlaceholder
 import su.plo.voice.server.BaseVoiceServer
 import su.plo.voice.server.player.PermissionSupplier
@@ -66,6 +67,13 @@ class PaperVoiceServer(
         // Initialize integrations
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             VoicePlaceholder(this).register()
+        }
+
+        if (Bukkit.getPluginManager().getPlugin("SuperVanish") != null ||
+            Bukkit.getPluginManager().getPlugin("PremiumVanish") != null
+        ) {
+            plugin.server.pluginManager.registerEvents(SuperVanishIntegration(this), plugin)
+            LOGGER.info("SuperVanish event listener attached")
         }
     }
 
