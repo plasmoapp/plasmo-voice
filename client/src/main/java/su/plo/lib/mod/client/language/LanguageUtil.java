@@ -6,11 +6,16 @@ import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.locale.Language;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.voice.api.client.config.keybind.KeyBinding;
+
+//#if MC>=12003
+//$$ import net.minecraft.network.chat.contents.PlainTextContents;
+//#else
+import net.minecraft.network.chat.contents.LiteralContents;
+//#endif
 
 @UtilityClass
 public class LanguageUtil {
@@ -48,7 +53,11 @@ public class LanguageUtil {
         Component displayName = inputKey.getDisplayName();
         if (displayName.getContents() instanceof TranslatableContents translatable) {
             return MinecraftTextComponent.translatable(translatable.getKey(), translatable.getArgs());
+        //#if MC>=12003
+        //$$ } else if (displayName.getContents() instanceof PlainTextContents.LiteralContents literal) {
+        //#else
         } else if (displayName.getContents() instanceof LiteralContents literal) {
+        //#endif
             return MinecraftTextComponent.translatable(literal.text());
         } else {
             return MinecraftTextComponent.translatable("gui.none");
