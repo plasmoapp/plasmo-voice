@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.player.ServerPostConnectEvent;
 import com.velocitypowered.api.proxy.Player;
 import com.velocitypowered.api.proxy.ProxyServer;
 import com.velocitypowered.api.proxy.server.RegisteredServer;
@@ -23,6 +24,7 @@ import su.plo.lib.velocity.player.VelocityProxyPlayer;
 import su.plo.lib.velocity.server.VelocityProxyServerInfo;
 import su.plo.voice.api.event.EventBus;
 import su.plo.voice.api.server.config.ServerLanguages;
+import su.plo.voice.proxy.event.player.McProxyServerConnectedEvent;
 import su.plo.voice.server.player.PermissionSupplier;
 
 import java.util.Collection;
@@ -169,5 +171,17 @@ public final class VelocityProxyLib implements MinecraftProxyLib {
                 getPlayerByInstance(event.getPlayer())
         );
         playerById.remove(event.getPlayer().getUniqueId());
+    }
+
+    @Subscribe
+    public void onServerPostConnect(@NotNull ServerPostConnectEvent event) {
+        MinecraftProxyPlayer player = getPlayerByInstance(event.getPlayer());
+
+        MinecraftProxyServerInfo previousServer = null;
+        if (event.getPreviousServer() != null) {
+            previousServer = getServerInfoByServerInstance(event.getPreviousServer());
+        }
+
+        McProxyServerConnectedEvent.INSTANCE.getInvoker().onServerConnected(player, previousServer);
     }
 }
