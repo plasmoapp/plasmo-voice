@@ -1,2 +1,1 @@
-- Fix vanish support [#358](https://github.com/plasmoapp/plasmo-voice/issues/358)
-- Fix memory leak when unloading worlds
+- [Paper] SuperVanish/PremiumVanish integration with show and hide events

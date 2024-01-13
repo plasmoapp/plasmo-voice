@@ -2,8 +2,10 @@
 junit5 = "5.8.2"
 crowdin = "1.0.1"
 ustats = "1.0.2"
-universalcraft = "312"
+universalcraft = "320"
 bstats = "3.0.2"
+
+supervanish = "6.2.18-3"
 
 [libraries]
 lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }
@@ -29,6 +31,8 @@ kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core",
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version = "1.6.1" }
 
 crowdin-lib = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
+
+supervanish = { module = "com.github.LeonMangler:SuperVanish", version.ref = "supervanish" }
 
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }

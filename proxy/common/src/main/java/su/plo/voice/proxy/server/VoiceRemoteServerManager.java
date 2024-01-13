@@ -10,6 +10,7 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.proxy.BaseVoiceProxy;
+import su.plo.voice.proxy.event.player.McProxyServerConnectedEvent;
 import su.plo.voice.proxy.util.AddressUtil;
 
 import java.net.InetSocketAddress;
@@ -35,6 +36,11 @@ public final class VoiceRemoteServerManager implements RemoteServerManager {
             }
 
             voiceProxy.getMinecraftServer().getServers().forEach(this::resetServerAesState);
+        });
+
+        McProxyServerConnectedEvent.INSTANCE.registerListener((player, previousServer) -> {
+            if (previousServer == null) return;
+            resetServerAesState(previousServer);
         });
     }
 

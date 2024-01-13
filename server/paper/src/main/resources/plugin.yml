@@ -7,6 +7,8 @@ authors: [ Apehum ]
 softdepend:
   - LuckPerms
   - PlaceholderAPI
+  - SuperVanish
+  - PremiumVanish
 #depend:
 #  - kotlin-stdlib
 
