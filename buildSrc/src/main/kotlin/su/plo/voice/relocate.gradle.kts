@@ -13,6 +13,7 @@ tasks {
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
         relocate("su.plo.ustats", "su.plo.voice.libs.ustats")
+        relocate("org.bstats", "su.plo.voice.libs.bstats")
 
         relocate("org.concentus", "su.plo.voice.libs.concentus")
 
