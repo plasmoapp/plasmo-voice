@@ -18,7 +18,7 @@ public interface AddonContainer {
      * contain only lowercase letters, digits, hyphens, and underscores.
      * It should be between 4 and 32 characters long.
      */
-    @NotNull Pattern ID_PATTERN = Pattern.compile("[a-z][a-z0-9-_]{4,31}");
+    @NotNull Pattern ID_PATTERN = Pattern.compile("[a-z][a-z0-9-_]{3,31}");
 
     /**
      * Gets the unique id of the addon. The addon id should match the pattern defined by {@link #ID_PATTERN}.

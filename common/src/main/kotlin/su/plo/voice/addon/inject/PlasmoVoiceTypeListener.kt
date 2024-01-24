@@ -15,7 +15,7 @@ class PlasmoVoiceTypeListener(
             clazz.declaredFields
                 .filter { it.type == type }
                 .filter { it.isAnnotationPresent(InjectPlasmoVoice::class.java) }
-                .forEach { typeEncounter.register(PlasmoVoiceMembersListener<T>(it, instance as T)) }
+                .forEach { typeEncounter.register(PlasmoVoiceAnnotationInjector<T>(it, instance as T)) }
 
             clazz = clazz.superclass
         }

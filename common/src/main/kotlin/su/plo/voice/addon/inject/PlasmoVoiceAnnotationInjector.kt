@@ -3,7 +3,7 @@ package su.plo.voice.addon.inject
 import com.google.inject.MembersInjector
 import java.lang.reflect.Field
 
-class PlasmoVoiceMembersListener<T>(
+class PlasmoVoiceAnnotationInjector<T>(
     private val field: Field,
     private val instance: T
 ) : MembersInjector<T> {
