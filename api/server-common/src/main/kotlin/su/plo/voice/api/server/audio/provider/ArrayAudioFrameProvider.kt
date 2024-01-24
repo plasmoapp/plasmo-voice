@@ -27,7 +27,7 @@ class ArrayAudioFrameProvider(
     private var index = 0
 
     override fun provide20ms(): AudioFrameResult =
-        if (frames.isEmpty() || (frames.size - 1 == index && !loop)) {
+        if (frames.isEmpty() || frames.size == index) {
             AudioFrameResult.Finished
         } else {
             AudioFrameResult.Provided(frames[index]).also {
