@@ -4,6 +4,7 @@ import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocation
 import gg.essential.gradle.util.noServerRunConfigs
 import gg.essential.util.prebundleNow
 import su.plo.config.toml.Toml
+import su.plo.voice.extension.slibPlatform
 import su.plo.voice.util.copyJarToRootProject
 
 val isMainProject = project.name == file("../mainProject").readText().trim()
@@ -81,14 +82,14 @@ fun universalCraftVersion() = libs.versions.universalcraft.map {
     "${minecraftVersion}-${platform.loaderStr}:$it"
 }.get()
 
-fun slibVersion() = libs.versions.slib.map {
+fun slibArtifact(): String {
     val minecraftVersion = when (platform.mcVersion) {
         11904 -> "1.19.3"
         else -> platform.mcVersionStr
     }
 
-    "${minecraftVersion}-${platform.loaderStr}:$it"
-}.get()
+    return "${minecraftVersion}-${platform.loaderStr}"
+}
 
 repositories {
     maven("https://repo.plasmoverse.com/snapshots")
@@ -133,10 +134,10 @@ dependencies {
     val includedProjects = listOf(
         ":api:common",
         ":api:client",
-        ":api:server-common",
+        ":api:server-proxy-common",
         ":api:server",
         ":server:common",
-        ":server-common",
+        ":server-proxy-common",
         ":common",
         ":protocol"
     )
@@ -149,12 +150,12 @@ dependencies {
     }
 
     // slib
-    "su.plo.slib:${slibVersion()}".also {
-        modApi(it)
-        shadowCommon(it) {
-            isTransitive = false
-        }
-    }
+    slibPlatform(
+        slibArtifact(),
+        "server",
+        libs.versions.slib.get(),
+        ::modApi
+    ) { name, action -> shadowCommon(name) { action.execute(this) } }
 
     // kotlin
     shadowCommon(kotlin("stdlib-jdk8"))

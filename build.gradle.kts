@@ -1,5 +1,4 @@
 import gg.essential.gradle.util.setJvmDefault
-import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 import java.io.ByteArrayOutputStream
 
 // Version
@@ -30,19 +29,15 @@ subprojects {
     apply(plugin = "kotlin-lombok")
 
     if (properties.containsKey("snapshot")) {
-        if (!project.parent?.name.equals("api")) {
-            val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
-                rootProject.exec {
-                    commandLine("git")
-                        .args("rev-parse", "--verify", "--short", "HEAD")
-                    standardOutput = outputStream
-                }
-                outputStream.toString().trim()
-            }.substring(0, 7) // windows moment?
-            version = "$version+$gitCommitHash-SNAPSHOT"
-        } else {
-            version = "$version-SNAPSHOT"
-        }
+        val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
+            rootProject.exec {
+                commandLine("git")
+                    .args("rev-parse", "--verify", "--short", "HEAD")
+                standardOutput = outputStream
+            }
+            outputStream.toString().trim()
+        }.substring(0, 7) // windows moment?
+        version = "$version+$gitCommitHash-SNAPSHOT"
     }
 
     dependencies {

@@ -53,14 +53,17 @@ file("client").listFilesOrdered {
     }
 }
 
-// Server Common (Module for common code between server and proxy implementations)
-include("server-common")
+// Server-Proxy Common (Module for common code between server and proxy implementations)
+include("server-proxy-common")
 
 // Server
 file("server").listFilesOrdered {
     return@listFilesOrdered it.isDirectory && it.name != "build"
-}.forEach {
-    include("server:${it.name}")
+}.forEach { file ->
+    include("server:${file.name}")
+
+    file.listFilesOrdered { it.isDirectory && it.name == "api" }
+        .forEach { _ -> include("server:${file.name}:api") }
 }
 
 // Proxy

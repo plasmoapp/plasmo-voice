@@ -4,6 +4,7 @@ import org.jetbrains.gradle.ext.*
 
 plugins {
     id("org.jetbrains.gradle.plugin.idea-ext")
+    id("su.plo.voice.maven-publish")
 }
 
 dependencies {

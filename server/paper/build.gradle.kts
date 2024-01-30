@@ -1,11 +1,13 @@
+import su.plo.voice.extension.slibPlatform
 import su.plo.voice.util.copyJarToRootProject
 
 plugins {
     id("su.plo.voice.relocate")
     id("su.plo.voice.relocate-guice")
+    id("su.plo.voice.maven-publish")
 }
 
-group = "$group.paper"
+group = "$group.server"
 
 repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -17,7 +19,6 @@ dependencies {
     compileOnly(libs.supervanish)
 
     compileOnly("su.plo.ustats:paper:${libs.versions.ustats.get()}")
-    compileOnly("su.plo.slib:spigot:${libs.versions.slib.get()}")
 
     compileOnly(project(":server:common"))
 
@@ -25,15 +26,13 @@ dependencies {
     listOf(
         project(":api:common"),
         project(":api:server"),
-        project(":api:server-common"),
+        project(":api:server-proxy-common"),
         project(":server:common"),
-        project(":server-common"),
+        project(":server-proxy-common"),
         project(":common"),
         project(":protocol")
     ).forEach {
-        shadow(it) {
-            isTransitive = false
-        }
+        shadow(it) { isTransitive = false }
     }
 
     // shadow external deps
@@ -42,20 +41,21 @@ dependencies {
     shadow(libs.kotlinx.coroutines.jdk8)
     shadow(libs.kotlinx.json)
 
-    shadow(libs.guice) {
-        exclude("com.google.guava")
-    }
+    shadow(libs.guice) { exclude("com.google.guava") }
 
     shadow(libs.opus.jni)
     shadow(libs.opus.concentus)
     shadow(libs.config)
-    shadow(libs.crowdin) {
-        isTransitive = false
-    }
+    shadow(libs.crowdin) { isTransitive = false }
     shadow("su.plo.ustats:paper:${libs.versions.ustats.get()}")
-    shadow("su.plo.slib:spigot:${libs.versions.slib.get()}") {
-        isTransitive = false
-    }
+
+    slibPlatform(
+        "spigot",
+        "server",
+        libs.versions.slib.get(),
+        implementation = ::compileOnly,
+        shadow = ::shadow
+    )
 }
 
 tasks {
@@ -74,7 +74,6 @@ tasks {
 
         archiveBaseName.set("PlasmoVoice-Paper")
         archiveAppendix.set("")
-        archiveClassifier.set("")
 
         dependencies {
             exclude(dependency("org.slf4j:slf4j-api"))
@@ -88,10 +87,6 @@ tasks {
         doLast {
             copyJarToRootProject(shadowJar.get())
         }
-    }
-
-    jar {
-        enabled = false
     }
 
     java {

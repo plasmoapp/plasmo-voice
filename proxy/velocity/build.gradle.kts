@@ -1,19 +1,20 @@
+import su.plo.voice.extension.slibPlatform
 import su.plo.voice.util.copyJarToRootProject
 
 val velocityVersion: String by project
 
 plugins {
     id("su.plo.voice.relocate")
+    id("su.plo.voice.maven-publish")
     id("kotlin-kapt")
 }
 
-group = "$group.velocity"
+group = "$group.proxy"
 
 dependencies {
     compileOnly(libs.velocity)
     kapt(libs.velocity)
     compileOnly(libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
-    compileOnly("su.plo.slib:velocity:${libs.versions.slib.get()}")
 
     compileOnly(project(":proxy:common"))
     compileOnly(libs.netty)
@@ -22,9 +23,9 @@ dependencies {
     listOf(
         project(":api:common"),
         project(":api:proxy"),
-        project(":api:server-common"),
+        project(":api:server-proxy-common"),
         project(":proxy:common"),
-        project(":server-common"),
+        project(":server-proxy-common"),
         project(":common"),
         project(":protocol")
     ).forEach {
@@ -45,9 +46,14 @@ dependencies {
         isTransitive = false
     }
     shadow(libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
-    shadow("su.plo.slib:velocity:${libs.versions.slib.get()}") {
-        isTransitive = false
-    }
+
+    slibPlatform(
+        "velocity",
+        "proxy",
+        libs.versions.slib.get(),
+        implementation = ::compileOnly,
+        shadow = ::shadow
+    )
 }
 
 tasks {
@@ -56,7 +62,6 @@ tasks {
 
         archiveBaseName.set("PlasmoVoice-Velocity")
         archiveAppendix.set("")
-        archiveClassifier.set("")
 
         dependencies {
             exclude(dependency("org.slf4j:slf4j-api"))
@@ -70,10 +75,6 @@ tasks {
         doLast {
             copyJarToRootProject(shadowJar.get())
         }
-    }
-
-    jar {
-        enabled = false
     }
 
     java {

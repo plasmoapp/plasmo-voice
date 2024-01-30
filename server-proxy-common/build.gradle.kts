@@ -1,7 +1,9 @@
-group = "$group.server-common"
+plugins {
+    id("su.plo.voice.maven-publish")
+}
 
 dependencies {
-    api(project(":api:server-common"))
+    api(project(":api:server-proxy-common"))
     api(project(":common"))
 
     api(libs.crowdin)
