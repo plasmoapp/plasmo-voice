@@ -30,7 +30,7 @@ import java.util.*
  * ```
  */
 class ProximityServerActivationHelper @JvmOverloads constructor(
-    voiceServer: PlasmoVoiceServer,
+    val voiceServer: PlasmoVoiceServer,
     val activation: ServerActivation,
     val sourceLine: ServerSourceLine,
     private val distanceSupplier: DistanceSupplier? = null
@@ -43,6 +43,14 @@ class ProximityServerActivationHelper @JvmOverloads constructor(
     init {
         activation.onPlayerActivation(this::onActivation)
         activation.onPlayerActivationEnd(this::onActivationEnd)
+    }
+
+    fun registerListeners(addon: Any) {
+        voiceServer.eventBus.register(addon, voiceServer)
+    }
+
+    fun unregisterListeners(addon: Any) {
+        voiceServer.eventBus.unregister(addon, voiceServer)
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)

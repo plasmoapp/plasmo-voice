@@ -14,9 +14,8 @@ class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
     private var proximityHelper: ProximityServerActivationHelper? = null
 
     fun register(config: VoiceServerConfig) {
-
         proximityHelper?.let {
-            voiceServer.eventBus.unregister(voiceServer, it)
+            it.unregisterListeners(voiceServer)
             voiceServer.activationManager.unregister(it.activation)
             voiceServer.sourceLineManager.unregister(it.sourceLine)
         }
@@ -47,7 +46,7 @@ class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
         ).build()
 
         proximityHelper = ProximityServerActivationHelper(voiceServer, activation, sourceLine)
-        voiceServer.eventBus.register(voiceServer, proximityHelper!!)
+        proximityHelper?.registerListeners(voiceServer)
     }
 
     @EventSubscribe
