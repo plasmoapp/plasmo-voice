@@ -13,6 +13,12 @@ class InjectPlasmoVoiceDelegate<T : PlasmoVoice> : ReadOnlyProperty<Any, T> {
         value ?: throw IllegalStateException("Plasmo Voice is not initialized yet")
 }
 
-
+/**
+ * Delegate for injecting Plasmo Voice.
+ *
+ * The [PlasmoVoice] instance will be automatically injected into the delegate when the addon is initialized.
+ **
+ * @throws IllegalStateException If [PlasmoVoice] is not initialized yet
+ */
 fun <T : PlasmoVoice> injectPlasmoVoice(): ReadOnlyProperty<Any, T> =
     InjectPlasmoVoiceDelegate()
