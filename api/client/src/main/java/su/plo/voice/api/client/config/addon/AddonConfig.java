@@ -23,7 +23,7 @@ public interface AddonConfig {
      * contain only lowercase letters, digits, hyphens, and underscores.
      * It should be between 4 and 32 characters long.
      */
-    @NotNull Pattern ID_PATTERN = Pattern.compile("[a-z][a-z0-9-_]{4,31}");
+    @NotNull Pattern ID_PATTERN = Pattern.compile("[a-z][a-z0-9-_]{3,31}");
 
 
     /**
