@@ -105,6 +105,8 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
     @Override
     public void handle(@NotNull PlayerAudioPacket packet) {
         if (voiceServer.getMuteManager().getMute(player.getInstance().getUuid()).isPresent()) return;
+        if (player.isMicrophoneMuted()) return;
+
         voiceServer.getEventBus().fire(new PlayerSpeakEvent(player, packet));
     }
 }

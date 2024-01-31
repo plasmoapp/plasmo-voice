@@ -117,6 +117,10 @@ public abstract class BaseServerAudioSource<S extends SourceInfo>
 
     @Override
     public <P extends VoicePlayer> boolean matchFilters(@NotNull P player) {
+        // Not sure about this because this check cannot be disabled,
+        // but I think it shouldn't be disabled anyway.
+        if (player.isVoiceDisabled()) return false;
+
         for (Predicate<? super VoicePlayer> filter : filters) {
             if (!filter.test(player)) return false;
         }

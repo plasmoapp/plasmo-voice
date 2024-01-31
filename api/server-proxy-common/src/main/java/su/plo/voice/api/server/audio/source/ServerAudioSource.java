@@ -141,6 +141,9 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
 
     /**
      * Checks if a player matches all filters associated with this source.
+     * <br/>
+     * Returns {@code false} if the player has disabled the voice chat.
+     * See {@link VoicePlayer#isVoiceDisabled()}.
      *
      * @param player The player to check.
      * @return {@code true} if the player matches all filters, {@code false} otherwise.
