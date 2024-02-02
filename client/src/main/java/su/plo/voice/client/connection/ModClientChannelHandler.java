@@ -51,10 +51,12 @@ public final class ModClientChannelHandler
 
     //#if FABRIC
     @Override
-    public void receive(Minecraft client,
-                        ClientPacketListener handler,
-                        FriendlyByteBuf buf,
-                        PacketSender responseSender) {
+    public void receive(
+            Minecraft client,
+            ClientPacketListener handler,
+            FriendlyByteBuf buf,
+            PacketSender responseSender
+    ) {
         receive(handler.getConnection(), buf);
     }
     //#else

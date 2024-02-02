@@ -111,7 +111,9 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded));
 
         //#if FABRIC
-        ClientPlayNetworking.send(ModVoiceServer.CHANNEL, buf);
+        // Use connection#send instead of ClientPlayNetworking#send,
+        // because Minecraft.getInstance().getConnection() can be null and a packet will not be sent
+        connection.send(ClientPlayNetworking.createC2SPacket(ModVoiceServer.CHANNEL, buf));
         //#else
         //#if MC>=12002
         //$$ ServerboundCustomPayloadPacket customPacket = NetworkDirection.PLAY_TO_SERVER.<ServerboundCustomPayloadPacket>buildPacket(buf, ModVoiceServer.CHANNEL).getThis();

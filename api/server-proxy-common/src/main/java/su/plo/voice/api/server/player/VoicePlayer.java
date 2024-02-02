@@ -34,13 +34,6 @@ public interface VoicePlayer {
     boolean hasVoiceChat();
 
     /**
-     * Gets the mod loader used by the player.
-     *
-     * @return An optional containing the mod loader, or empty if the player is using a vanilla client or an undetected mod loader.
-     */
-    Optional<PlayerModLoader> getModLoader();
-
-    /**
      * Checks if the player has voice chat disabled.
      *
      * @return true if the player has disabled voice chat.

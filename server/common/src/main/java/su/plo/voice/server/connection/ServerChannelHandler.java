@@ -9,17 +9,11 @@ import su.plo.slib.api.event.player.McPlayerJoinEvent;
 import su.plo.slib.api.event.player.McPlayerQuitEvent;
 import su.plo.slib.api.server.channel.McServerChannelHandler;
 import su.plo.slib.api.server.entity.player.McServerPlayer;
-import su.plo.slib.api.server.event.player.McPlayerRegisterChannelsEvent;
-import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
-import su.plo.voice.server.player.BaseVoicePlayer;
-import su.plo.voice.server.util.version.ServerVersionUtil;
-import su.plo.voice.util.version.SemanticVersion;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
@@ -38,7 +32,6 @@ public final class ServerChannelHandler implements McServerChannelHandler {
 
         McPlayerJoinEvent.INSTANCE.registerListener(this::onPlayerJoin);
         McPlayerQuitEvent.INSTANCE.registerListener(this::onPlayerQuit);
-        McPlayerRegisterChannelsEvent.INSTANCE.registerListener(this::handleRegisterChannels);
     }
 
     @Override
@@ -47,6 +40,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
             PacketTcpCodec.decode(ByteStreams.newDataInput(bytes))
                     .ifPresent(packet -> {
                         VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(serverPlayer.getInstance());
+                        cancelPlayerCheckFuture(voicePlayer.getInstance().getUuid());
 
                         PlayerChannelHandler channel = channels.computeIfAbsent(
                                 serverPlayer.getUuid(),
@@ -64,31 +58,17 @@ public final class ServerChannelHandler implements McServerChannelHandler {
         channels.clear();
     }
 
-    private void handleRegisterChannels(@NotNull McServerPlayer serverPlayer, @NotNull List<String> channels) {
-        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(serverPlayer.getInstance());
-
-        if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
-
-        ((BaseVoicePlayer<?>) voicePlayer).setModLoader(
-                channels.contains("fml:handshake") || channels.contains("forge:handshake")
-                        ? PlayerModLoader.FORGE
-                        : PlayerModLoader.FABRIC
-        );
-
-        if (channels.contains(BaseVoiceServer.FLAG_CHANNEL_STRING)) {
-            voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer);
-            cancelPlayerCheckFuture(serverPlayer.getUuid());
-        } else if (channels.contains("plasmo:voice")) {
-            ServerVersionUtil.suggestSupportedVersion(
-                    voicePlayer,
-                    SemanticVersion.parse(voiceServer.getVersion()),
-                    voiceServer.getMinecraftServer().getVersion()
-            );
-        }
-    }
-
     public void onPlayerJoin(@NotNull McPlayer player) {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
+
+        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(player.getInstance());
+
+        // just send info request when player joins the server,
+        // because old method of checking for exact channels was causing some unpredictable behavior and bugs
+        // this solution should be (hopefully) more consistent
+        voiceServer.getMinecraftServer().executeInMainThread(() ->
+                voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer)
+        );
 
         if (shouldKick(player)) {
             cancelPlayerCheckFuture(player.getUuid());

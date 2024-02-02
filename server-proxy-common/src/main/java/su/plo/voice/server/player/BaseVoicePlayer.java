@@ -13,7 +13,6 @@ import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
-import su.plo.voice.api.server.player.PlayerModLoader;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
@@ -41,8 +40,6 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     protected boolean microphoneMuted;
 
     @Setter
-    private PlayerModLoader modLoader;
-    @Setter
     private PublicKey publicKey;
 
     private final Map<UUID, Integer> distanceByActivationId = Maps.newConcurrentMap();
@@ -54,11 +51,6 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     @Override
     public void sendPacket(@NotNull Packet<?> packet) {
         instance.sendPacket("plasmo:voice/v2", PacketTcpCodec.encode(packet));
-    }
-
-    @Override
-    public Optional<PlayerModLoader> getModLoader() {
-        return Optional.ofNullable(modLoader);
     }
 
     @Override

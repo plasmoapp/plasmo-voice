@@ -9,8 +9,7 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextClickEvent;
 import su.plo.slib.api.chat.style.McTextHoverEvent;
 import su.plo.slib.api.chat.style.McTextStyle;
-import su.plo.voice.api.server.player.PlayerModLoader;
-import su.plo.voice.api.server.player.VoicePlayer;
+import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.util.version.ModrinthLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 import su.plo.voice.util.version.SemanticVersion;
@@ -27,14 +26,15 @@ public final class ServerVersionUtil {
             .expireAfterAccess(15L, TimeUnit.SECONDS)
             .build();
 
-    public static ModrinthLoader getPlayerModrinthLoader(@NonNull VoicePlayer player) {
-        return player.getModLoader()
-                .filter(loader -> loader.equals(PlayerModLoader.FORGE))
-                .map(loader -> ModrinthLoader.FORGE)
-                .orElse(ModrinthLoader.FABRIC);
+    public static ModrinthLoader getPlayerModrinthLoader(@NonNull VoiceServerPlayer player) {
+        boolean isForge = player.getInstance().getRegisteredChannels()
+                .stream()
+                .anyMatch(channel -> channel.equals("fml:handshake") || channel.equalsIgnoreCase("forge:handshake"));
+
+        return isForge ? ModrinthLoader.FORGE : ModrinthLoader.FABRIC;
     }
 
-    public static void suggestSupportedVersion(@NonNull VoicePlayer player,
+    public static void suggestSupportedVersion(@NonNull VoiceServerPlayer player,
                                                @NonNull SemanticVersion serverVersion,
                                                @NonNull String minecraftVersion) {
         try {
