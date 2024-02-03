@@ -66,6 +66,7 @@ val universalCraft by configurations.creating {
 fun uStatsVersion() = libs.versions.ustats.map {
     val minecraftVersion = when (platform.mcVersion) {
         12001 -> "1.20"
+        12004 -> "1.20.2"
         else -> platform.mcVersionStr
     }
 
@@ -109,6 +110,7 @@ dependencies {
             11904 -> "0.87.1+1.19.4"
             12001 -> "0.84.0+1.20.1"
             12002 -> "0.89.1+1.20.2"
+            12004 -> "0.95.4+1.20.4"
             else -> throw GradleException("Unsupported platform $platform")
         }
 

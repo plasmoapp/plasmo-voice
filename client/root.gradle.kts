@@ -6,6 +6,9 @@ group = "$group.client-root"
 
 preprocess {
 
+    val forge12004 = createNode("1.20.4-forge", 12004, "official")
+    val fabric12004 = createNode("1.20.4-fabric", 12004, "official")
+
     val forge12002 = createNode("1.20.2-forge", 12002, "official")
     val fabric12002 = createNode("1.20.2-fabric", 12002, "official")
 
@@ -29,6 +32,9 @@ preprocess {
 
     val forge11605 = createNode("1.16.5-forge", 11605, "official")
     val fabric11605 = createNode("1.16.5-fabric", 11605, "official")
+
+    fabric12004.link(fabric12002, file("1.20.4-1.20.2.txt"))
+    forge12004.link(forge12002, file("1.20.4-1.20.2.txt"))
 
     fabric12002.link(fabric12001, file("1.20.2-1.20.1.txt"))
     forge12002.link(forge12001, file("1.20.2-1.20.1.txt"))
