@@ -129,14 +129,19 @@ class VoiceAddonManager(
         val injector = Guice.createInjector(injectModule)
         injector.injectMembers(addonInstance)
 
-        addonInstance::class.java.declaredFields
-            .forEach {
-                it.isAccessible = true
-                val fieldValue = it.get(addonInstance)
-                if (fieldValue !is InjectPlasmoVoiceDelegate<*>) return@forEach
+        var clazz: Class<*>? = addonInstance::class.java
+        while (clazz != null) {
+            clazz.declaredFields
+                .forEach {
+                    it.isAccessible = true
+                    val fieldValue = it.get(addonInstance)
+                    if (fieldValue !is InjectPlasmoVoiceDelegate<*>) return@forEach
 
-                injector.injectMembers(fieldValue)
-            }
+                    injector.injectMembers(fieldValue)
+                }
+
+            clazz = clazz.superclass
+        }
 
         addonById[addon.id] = addon
         addonByInstance[addonInstance] = addon
