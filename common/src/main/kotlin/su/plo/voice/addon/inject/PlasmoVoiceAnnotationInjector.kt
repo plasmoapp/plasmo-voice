@@ -1,18 +1,46 @@
 package su.plo.voice.addon.inject
 
-import com.google.inject.MembersInjector
-import java.lang.reflect.Field
+import su.plo.voice.api.PlasmoVoice
+import su.plo.voice.api.addon.InjectPlasmoVoice
+import su.plo.voice.api.addon.InjectPlasmoVoiceDelegate
 
-class PlasmoVoiceAnnotationInjector<T>(
-    private val field: Field,
+class PlasmoVoiceAnnotationInjector<T : PlasmoVoice>(
     private val instance: T
-) : MembersInjector<T> {
+) {
 
-    init {
-        field.isAccessible = true
+    fun inject(obj: Any) {
+        injectAnnotation(obj)
+        injectDelegate(obj)
     }
 
-    override fun injectMembers(obj: T) {
-        field.set(obj, instance)
+    fun injectAnnotation(obj: Any) {
+        var clazz: Class<*>? = obj.javaClass
+        while (clazz != null) {
+            clazz.declaredFields
+                .filter { PlasmoVoice::class.java.isAssignableFrom(it.type) }
+                .filter { it.isAnnotationPresent(InjectPlasmoVoice::class.java) }
+                .forEach {
+                    it.isAccessible = true
+                    it.set(obj, instance)
+                }
+
+            clazz = clazz.superclass
+        }
+    }
+
+    fun injectDelegate(obj: Any) {
+        var clazz: Class<*>? = obj.javaClass
+        while (clazz != null) {
+            clazz.declaredFields
+                .forEach {
+                    it.isAccessible = true
+                    val fieldValue = it.get(obj)
+                    if (fieldValue !is InjectPlasmoVoiceDelegate<*>) return@forEach
+
+                    injectAnnotation(fieldValue)
+                }
+
+            clazz = clazz.superclass
+        }
     }
 }

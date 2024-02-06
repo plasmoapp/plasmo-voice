@@ -17,7 +17,6 @@ dependencies {
     api(libs.opus.concentus)
 
     testImplementation(project(":api:common"))
-    testImplementation(libs.guice)
 }
 
 val templateSource = file("src/main/java-templates")

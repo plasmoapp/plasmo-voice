@@ -1,6 +1,5 @@
 package su.plo.voice.server;
 
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
@@ -20,7 +19,6 @@ import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
-import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ServerSourceLineManager;
@@ -60,7 +58,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -361,14 +358,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Override
     public Optional<UdpServer> getUdpServer() {
         return Optional.ofNullable(udpServer);
-    }
-
-    @Override
-    public Map<Class<?>, Object> createInjectModule() {
-        Map<Class<?>, Object> injectModule = Maps.newHashMap();
-        injectModule.put(PlasmoVoiceServer.class, BaseVoiceServer.this);
-        injectModule.put(PlasmoBaseVoiceServer.class, BaseVoiceServer.this);
-        return injectModule;
     }
 
     @Override

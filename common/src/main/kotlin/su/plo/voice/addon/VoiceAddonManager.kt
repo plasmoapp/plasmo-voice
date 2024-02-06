@@ -3,11 +3,8 @@ package su.plo.voice.addon
 import com.google.common.base.Strings
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
-import com.google.inject.AbstractModule
-import com.google.inject.Guice
-import com.google.inject.matcher.Matchers
 import su.plo.voice.BaseVoice
-import su.plo.voice.addon.inject.PlasmoVoiceTypeListener
+import su.plo.voice.addon.inject.PlasmoVoiceAnnotationInjector
 import su.plo.voice.api.addon.*
 import su.plo.voice.api.addon.annotation.Addon
 import java.util.*
@@ -117,31 +114,8 @@ class VoiceAddonManager(
 
         val addonInstance = addon.instance.get()
 
-        // inject guice module
-        val injectModule = object : AbstractModule() {
-            override fun configure() {
-                voice.createInjectModule().forEach { (type, instance) ->
-                    bindListener(Matchers.any(), PlasmoVoiceTypeListener(type, instance))
-                }
-            }
-        }
-
-        val injector = Guice.createInjector(injectModule)
-        injector.injectMembers(addonInstance)
-
-        var clazz: Class<*>? = addonInstance::class.java
-        while (clazz != null) {
-            clazz.declaredFields
-                .forEach {
-                    it.isAccessible = true
-                    val fieldValue = it.get(addonInstance)
-                    if (fieldValue !is InjectPlasmoVoiceDelegate<*>) return@forEach
-
-                    injector.injectMembers(fieldValue)
-                }
-
-            clazz = clazz.superclass
-        }
+        val voiceInjector = PlasmoVoiceAnnotationInjector(voice)
+        voiceInjector.inject(addonInstance)
 
         addonById[addon.id] = addon
         addonByInstance[addonInstance] = addon

@@ -19,7 +19,6 @@ import su.plo.voice.event.VoiceEventBus;
 import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.InputStream;
-import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -86,6 +85,4 @@ public abstract class BaseVoice implements PlasmoVoice {
     public InputStream getResource(String name) {
         return getClass().getClassLoader().getResourceAsStream(name);
     }
-
-    public abstract Map<Class<?>, Object> createInjectModule();
 }

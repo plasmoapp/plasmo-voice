@@ -48,7 +48,6 @@ subprojects {
 
         compileOnly(rootProject.libs.guava)
         compileOnly(rootProject.libs.gson)
-        compileOnly(rootProject.libs.guice)
 
         compileOnly(rootProject.libs.slf4j)
 

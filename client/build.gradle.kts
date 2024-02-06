@@ -15,7 +15,6 @@ plugins {
     id("gg.essential.defaults")
     id("su.plo.crowdin.plugin")
     id("su.plo.voice.relocate")
-    id("su.plo.voice.relocate-guice")
 }
 
 group = "$group.client"
@@ -171,10 +170,6 @@ dependencies {
     shadowCommon(libs.rnnoise.jni)
     shadowCommon(libs.crowdin) {
         isTransitive = false
-    }
-
-    shadowCommon(libs.guice) {
-        exclude("com.google.guava")
     }
 
     if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {

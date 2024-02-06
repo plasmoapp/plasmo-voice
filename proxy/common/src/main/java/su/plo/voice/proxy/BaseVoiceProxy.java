@@ -1,6 +1,5 @@
 package su.plo.voice.proxy;
 
-import com.google.common.collect.Maps;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
@@ -20,7 +19,6 @@ import su.plo.voice.api.proxy.event.config.VoiceProxyConfigReloadedEvent;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerCreateEvent;
 import su.plo.voice.api.proxy.server.RemoteServerManager;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
-import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivationManager;
 import su.plo.voice.api.server.audio.line.ProxySourceLineManager;
 import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo;
@@ -276,14 +274,6 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     @Override
     public Optional<UdpProxyServer> getUdpProxyServer() {
         return Optional.ofNullable(udpProxyServer);
-    }
-
-    @Override
-    public Map<Class<?>, Object> createInjectModule() {
-        Map<Class<?>, Object> injectModule = Maps.newHashMap();
-        injectModule.put(PlasmoVoiceProxy.class, BaseVoiceProxy.this);
-        injectModule.put(PlasmoBaseVoiceServer.class, BaseVoiceProxy.this);
-        return injectModule;
     }
 
     @Override

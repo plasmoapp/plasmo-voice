@@ -3,7 +3,6 @@ import su.plo.voice.util.copyJarToRootProject
 
 plugins {
     id("su.plo.voice.relocate")
-    id("su.plo.voice.relocate-guice")
     id("su.plo.voice.maven-publish")
 }
 
@@ -39,10 +38,6 @@ dependencies {
     shadow(libs.kotlinx.coroutines)
     shadow(libs.kotlinx.coroutines.jdk8)
     shadow(libs.kotlinx.json)
-
-    shadow(libs.guice) {
-        exclude("com.google.guava")
-    }
 
     shadow(libs.opus.jni)
     shadow(libs.opus.concentus)

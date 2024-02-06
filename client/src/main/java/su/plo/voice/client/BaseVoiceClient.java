@@ -183,13 +183,6 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     }
 
     @Override
-    public Map<Class<?>, Object> createInjectModule() {
-        Map<Class<?>, Object> injectModule = Maps.newHashMap();
-        injectModule.put(PlasmoVoiceClient.class, BaseVoiceClient.this);
-        return injectModule;
-    }
-
-    @Override
     public Optional<ServerInfo> getServerInfo() {
         return Optional.ofNullable(serverInfo);
     }
