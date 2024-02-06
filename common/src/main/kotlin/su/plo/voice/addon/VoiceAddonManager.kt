@@ -152,7 +152,18 @@ class VoiceAddonManager(
     private fun initializeAddon(addon: AddonContainer) {
         val addonInstance = addon.instance.get()
         if (addonInstance is AddonInitializer) {
-            addonInstance.onAddonInitialize()
+            try {
+                addonInstance.onAddonInitialize()
+            } catch (e: Exception) {
+                BaseVoice.LOGGER.warn(
+                    "Failed to initialized addon {} v{} by {}",
+                    addon.id,
+                    addon.version,
+                    addon.authors.joinToString(", "),
+                    e
+                )
+                return
+            }
         }
 
         voice.eventBus.register(addonInstance, addonInstance)
@@ -162,7 +173,7 @@ class VoiceAddonManager(
             "{} v{} by {} loaded",
             addon.id,
             addon.version,
-            java.lang.String.join(", ", addon.authors)
+            addon.authors.joinToString(", ")
         )
     }
 
