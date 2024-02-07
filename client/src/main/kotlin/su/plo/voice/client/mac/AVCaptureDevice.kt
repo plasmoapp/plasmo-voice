@@ -10,12 +10,16 @@ object AVCaptureDevice {
             if (!checkMacOsVersion(10, 14))
                 return AVAuthorizationStatus.AUTHORIZED
 
-            return AVAuthorizationStatus.fromValue(
-                AVFoundation.INSTANCE.objc_msgSend(
-                    AVFoundation.INSTANCE.objc_getClass("AVCaptureDevice"),
-                    AVFoundation.INSTANCE.sel_registerName("authorizationStatusForMediaType:"),
-                    Foundation.getNSString("soun")
+            return try {
+                AVAuthorizationStatus.fromValue(
+                    AVFoundation.INSTANCE.objc_msgSend(
+                        AVFoundation.INSTANCE.objc_getClass("AVCaptureDevice"),
+                        AVFoundation.INSTANCE.sel_registerName("authorizationStatusForMediaType:"),
+                        Foundation.getNSString("soun")
+                    )
                 )
-            )
+            } catch (_: Exception) {
+                AVAuthorizationStatus.AUTHORIZED
+            }
         }
 }

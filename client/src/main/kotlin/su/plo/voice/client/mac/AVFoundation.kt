@@ -25,7 +25,7 @@ interface AVFoundation : Library {
             //#if MC>=11700
             Native.load("AVFoundation", AVFoundation::class.java)
             //#else
-            //$$ Native.loadLibrary("AVFoundation", AVFoundation::class.java)
+            //$$ throw IllegalStateException("AVFoundation not supported on this version of JNA")
             //#endif
         }
     }
