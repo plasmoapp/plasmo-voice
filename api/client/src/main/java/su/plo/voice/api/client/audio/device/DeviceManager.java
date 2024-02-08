@@ -3,7 +3,6 @@ package su.plo.voice.api.client.audio.device;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.client.audio.device.source.AlSource;
-import su.plo.voice.api.client.audio.device.source.DeviceSourceParams;
 import su.plo.voice.api.client.audio.device.source.SourceGroup;
 import su.plo.voice.api.client.connection.ServerInfo;
 
@@ -24,11 +23,18 @@ public interface DeviceManager {
 
     /**
      * Replaces an old audio device with a new one.
+     * <br>
+     * This method doesn't close the old audio device.
      *
      * @param oldDevice The old audio device to replace (or null to replace the first device).
-     * @param newDevice The new audio device to use as a replacement.
+     * @param deviceType The device type to replace.
+     * @param replacementSupplier The new audio device to use as a replacement.
      */
-    void replace(@Nullable AudioDevice oldDevice, @NotNull AudioDevice newDevice);
+    void replace(
+            @Nullable AudioDevice oldDevice,
+            @NotNull DeviceType deviceType,
+            @NotNull DeviceReplacementSupplier replacementSupplier
+    ) throws DeviceException;
 
     /**
      * Removes an audio device from the manager.
@@ -77,4 +83,16 @@ public interface DeviceManager {
      * @throws DeviceException If there is an issue with opening an output device.
      */
     @NotNull OutputDevice<AlSource> openOutputDevice(@Nullable AudioFormat format) throws DeviceException;
+
+    @FunctionalInterface
+    interface DeviceReplacementSupplier {
+
+        /**
+         * Creates an audio device replacement.
+         *
+         * @param device The old audio device.
+         * @return The new audio device.
+         */
+        @NotNull AudioDevice createReplacement(@Nullable AudioDevice device) throws DeviceException;
+    }
 }

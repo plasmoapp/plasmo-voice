@@ -18,11 +18,11 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
     private static final Logger LOGGER = LogManager.getLogger(AlInputDevice.class);
 
-    private long devicePointer;
+    private volatile long devicePointer;
     private boolean hasDisconnectEXT;
 
-    private boolean started = false;
-    private boolean disconnected = false;
+    private volatile boolean started = false;
+    private volatile boolean disconnected = false;
 
     public AlInputDevice(PlasmoVoiceClient client,
                          @NotNull String name,
@@ -32,12 +32,15 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     }
 
     @Override
-    public void close() {
+    public synchronized void close() {
         if (isOpen()) {
             stop();
+
+            long devicePointer = this.devicePointer;
+            this.devicePointer = 0L;
+
             ALC11.alcCaptureCloseDevice(devicePointer);
 
-            this.devicePointer = 0L;
             LOGGER.info("Device {} closed", getName());
         } else if (disconnected) {
             this.devicePointer = 0L;
@@ -107,7 +110,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     }
 
     @Override
-    protected void open() throws DeviceException {
+    protected synchronized void open() throws DeviceException {
         if (isOpen()) throw new DeviceException("Device is already open");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this);

@@ -120,8 +120,11 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         if (!getDevice().isPresent() && !config.getVoice().getDisableInputDevice().value()) {
             try {
-                InputDevice device = voiceClient.getDeviceManager().openInputDevice(format);
-                devices.replace(null, device);
+                devices.replace(null, DeviceType.INPUT, (oldDevice) -> {
+                    if (oldDevice != null) oldDevice.close();
+
+                    return devices.openInputDevice(format);
+                });
             } catch (Exception e) {
                 LOGGER.error("Failed to open input device", e);
             }

@@ -44,7 +44,7 @@ public final class VoiceDeviceManager implements DeviceManager {
     private ScheduledFuture<?> job;
 
     @Override
-    public void add(@NotNull AudioDevice device) {
+    public synchronized void add(@NotNull AudioDevice device) {
         checkNotNull(device, "device cannot be null");
 
         List<AudioDevice> devices = getDevicesList(device);
@@ -60,10 +60,15 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     @Override
-    public void replace(@Nullable AudioDevice oldDevice, @NotNull AudioDevice newDevice) {
-        checkNotNull(newDevice, "newDevice cannot be null");
+    public synchronized void replace(
+            @Nullable AudioDevice oldDevice,
+            @NotNull DeviceType deviceType,
+            @NotNull DeviceReplacementSupplier newDeviceSupplier
+    ) throws DeviceException {
+        checkNotNull(newDeviceSupplier, "newDeviceSupplier cannot be null");
 
-        List<AudioDevice> devices = getDevicesList(newDevice);
+        List<AudioDevice> devices = (List<AudioDevice>) getDevices(deviceType);
+        AudioDevice newDevice;
 
         if (oldDevice != null) {
             if (devices != getDevicesList(oldDevice)) {
@@ -75,15 +80,18 @@ public final class VoiceDeviceManager implements DeviceManager {
                 throw new IllegalArgumentException("oldDevice not found in device list");
             }
 
+            newDevice = newDeviceSupplier.createReplacement(oldDevice);
             devices.set(index, newDevice);
         } else {
             if (devices.size() > 0) {
                 oldDevice = devices.get(0);
 
+                newDevice = newDeviceSupplier.createReplacement(oldDevice);
                 devices.set(0, newDevice);
-
-                oldDevice.close();
-            } else devices.add(newDevice);
+            } else {
+                newDevice = newDeviceSupplier.createReplacement(null);
+                devices.add(newDevice);
+            }
         }
 
         if (oldDevice != null) voiceClient.getEventBus().unregister(voiceClient, oldDevice);
@@ -91,14 +99,14 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     @Override
-    public void remove(@NotNull AudioDevice device) {
+    public synchronized void remove(@NotNull AudioDevice device) {
         checkNotNull(device, "device cannot be null");
         getDevicesList(device).remove(device);
         voiceClient.getEventBus().unregister(voiceClient, device);
     }
 
     @Override
-    public void clear(@Nullable DeviceType type) {
+    public synchronized void clear(@Nullable DeviceType type) {
         if (type == DeviceType.INPUT) {
             inputDevices.forEach(device -> {
                 device.close();
@@ -233,7 +241,7 @@ public final class VoiceDeviceManager implements DeviceManager {
         if (job != null) job.cancel(false);
     }
 
-    private void tickJob() throws DeviceException {
+    private synchronized void tickJob() throws DeviceException {
         DeviceFactory outputFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_OUTPUT")
                 .orElseThrow(() -> new DeviceException("OpenAL output device factory is not registered"));
 
@@ -271,7 +279,14 @@ public final class VoiceDeviceManager implements DeviceManager {
         if (inputDevices.isEmpty()) {
             if (inputFactory.getDeviceNames().size() > 0 && !config.getVoice().getDisableInputDevice().value()) {
                 try {
-                    replace(null, openInputDevice(null));
+                    replace(
+                            null,
+                            DeviceType.INPUT,
+                            (oldDevice) -> {
+                                if (oldDevice != null) oldDevice.close();
+                                return openInputDevice(null);
+                            }
+                    );
                 } catch (Exception e) {
                     LOGGER.error("Failed to open input device", e);
                 }

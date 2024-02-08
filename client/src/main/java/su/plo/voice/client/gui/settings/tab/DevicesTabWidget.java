@@ -280,10 +280,13 @@ public final class DevicesTabWidget extends TabWidget {
 
     private void reloadOutputDevice() {
         try {
-            OutputDevice<AlSource> outputDevice = devices.openOutputDevice(null);
+            devices.replace(null, DeviceType.OUTPUT, (oldDevice) -> {
+                if (oldDevice != null) oldDevice.close();
 
-            voiceClient.getDeviceManager().replace(null, outputDevice);
+                return devices.openOutputDevice(null);
+            });
             testController.restart();
+            Minecraft.getInstance().execute(this::init);
         } catch (Exception e) {
             BaseVoice.LOGGER.error("Failed to open primary OpenAL output device", e);
         }
@@ -293,9 +296,12 @@ public final class DevicesTabWidget extends TabWidget {
         if (config.getVoice().getDisableInputDevice().value()) return;
 
         try {
-            InputDevice device = devices.openInputDevice(null);
+            devices.replace(null, DeviceType.INPUT, (oldDevice) -> {
+                if (oldDevice != null) oldDevice.close();
 
-            devices.replace(null, device);
+                return devices.openInputDevice(null);
+            });
+            Minecraft.getInstance().execute(this::init);
         } catch (Exception e) {
             BaseVoice.LOGGER.error("Failed to open input device", e);
         }
