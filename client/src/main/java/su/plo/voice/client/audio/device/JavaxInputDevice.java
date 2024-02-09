@@ -1,8 +1,9 @@
 package su.plo.voice.client.audio.device;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -15,7 +16,9 @@ import javax.sound.sampled.*;
 
 public final class JavaxInputDevice extends BaseAudioDevice implements InputDevice {
 
-    private TargetDataLine device;
+    private static final Logger LOGGER = LogManager.getLogger(JavaxInputDevice.class);
+
+    private volatile TargetDataLine device;
 
     public JavaxInputDevice(PlasmoVoiceClient client,
                             @Nullable String name,
@@ -26,14 +29,17 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
 
     @Override
     public synchronized void close() {
-        if (!isOpen()) {
+        if (isOpen()) {
+            TargetDataLine device = this.device;
+            this.device = null;
+
             device.stop();
             device.flush();
             device.close();
-            this.device = null;
-        }
 
-        getVoiceClient().getEventBus().fire(new DeviceClosedEvent(this));
+            LOGGER.info("Device {} closed", getName());
+            getVoiceClient().getEventBus().fire(new DeviceClosedEvent(this));
+        }
     }
 
     @Override
@@ -77,7 +83,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
     }
 
     @Override
-    protected void open() throws DeviceException {
+    protected synchronized void open() throws DeviceException {
         if (isOpen()) throw new DeviceException("Device is already open");
 
         DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this);
@@ -94,7 +100,7 @@ public final class JavaxInputDevice extends BaseAudioDevice implements InputDevi
             throw new DeviceException("Failed to open javax device", e);
         }
 
-        BaseVoice.LOGGER.info("Device {} initialized", getName());
+        LOGGER.info("Device {} initialized", getName());
 
         getVoiceClient().getEventBus().fire(new DeviceOpenEvent(this));
     }
