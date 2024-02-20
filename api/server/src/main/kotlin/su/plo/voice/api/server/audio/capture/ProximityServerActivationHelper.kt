@@ -46,11 +46,11 @@ class ProximityServerActivationHelper @JvmOverloads constructor(
     }
 
     fun registerListeners(addon: Any) {
-        voiceServer.eventBus.register(addon, voiceServer)
+        voiceServer.eventBus.register(addon, this)
     }
 
     fun unregisterListeners(addon: Any) {
-        voiceServer.eventBus.unregister(addon, voiceServer)
+        voiceServer.eventBus.unregister(addon, this)
     }
 
     @EventSubscribe(priority = EventPriority.HIGHEST)
