@@ -5,6 +5,7 @@ import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
 import su.plo.voice.api.event.EventBus;
+import su.plo.voice.api.logging.DebugLogger;
 
 import java.io.File;
 import java.util.concurrent.ScheduledExecutorService;
@@ -13,6 +14,15 @@ import java.util.concurrent.ScheduledExecutorService;
  * Base interface for Plasmo Voice API.
  */
 public interface PlasmoVoice {
+
+    /**
+     * Gets the {@link DebugLogger}.
+     * <br>
+     * Debug logger only works if it's enabled in config or through <b>plasmovoice.debug</b> system property.
+     *
+     * @return the debug logger.
+     */
+    @NotNull DebugLogger getDebugLogger();
 
     /**
      * Gets the {@link ScheduledExecutorService}.

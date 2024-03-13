@@ -4,13 +4,13 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.Accessors;
-import org.slf4j.Logger;
+import su.plo.slib.api.logging.McLogger;
 
 @RequiredArgsConstructor
 @Accessors(fluent = true)
 public final class DebugLogger {
 
-    private final Logger logger;
+    private final McLogger logger;
     @Setter
     @Getter
     private boolean enabled;

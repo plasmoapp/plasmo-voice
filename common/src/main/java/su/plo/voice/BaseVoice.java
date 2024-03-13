@@ -16,6 +16,7 @@ import su.plo.voice.audio.codec.opus.OpusCodecSupplier;
 import su.plo.voice.encryption.VoiceEncryptionManager;
 import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;
+import su.plo.voice.logging.Slf4jLogger;
 import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.InputStream;
@@ -25,7 +26,7 @@ import java.util.concurrent.ScheduledExecutorService;
 public abstract class BaseVoice implements PlasmoVoice {
 
     public static final Logger LOGGER = LoggerFactory.getLogger("PlasmoVoice");
-    public static final DebugLogger DEBUG_LOGGER = new DebugLogger(LOGGER);
+    public static final DebugLogger DEBUG_LOGGER = new DebugLogger(new Slf4jLogger("PlasmoVoice"));
 
     protected final ModrinthLoader loader;
 
@@ -55,6 +56,11 @@ public abstract class BaseVoice implements PlasmoVoice {
     protected void onShutdown() {
         backgroundExecutor.shutdown();
         addons.clear();
+    }
+
+    @Override
+    public @NotNull DebugLogger getDebugLogger() {
+        return DEBUG_LOGGER;
     }
 
     @Override
