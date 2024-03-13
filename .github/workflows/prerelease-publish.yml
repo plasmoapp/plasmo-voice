@@ -24,11 +24,6 @@ jobs:
           16
           17
 
-    - name: Print Java Toolchain
-      uses: gradle/gradle-build-action@v2
-      with:
-        arguments: javaToolchains
-
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
