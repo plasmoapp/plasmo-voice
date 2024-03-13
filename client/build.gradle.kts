@@ -62,16 +62,6 @@ val universalCraft by configurations.creating {
     attributes { attribute(relocatedUC, true) }
 }
 
-fun uStatsVersion() = libs.versions.ustats.map {
-    val minecraftVersion = when (platform.mcVersion) {
-        12001 -> "1.20"
-        12004 -> "1.20.2"
-        else -> platform.mcVersionStr
-    }
-
-    "${minecraftVersion}-${platform.loaderStr}:$it"
-}.get()
-
 fun universalCraftVersion() = libs.versions.universalcraft.map {
     val minecraftVersion = when (platform.mcVersion) {
         11605 -> "1.16.2"
@@ -122,15 +112,6 @@ dependencies {
     }
     modApi(prebundleNow(universalCraft))
     shadowCommon(prebundleNow(universalCraft))
-
-    "su.plo.ustats:${uStatsVersion()}".also {
-        modApi(it) {
-            isTransitive = false
-        }
-        shadowCommon(it) {
-            isTransitive = false
-        }
-    }
 
     val includedProjects = listOf(
         ":api:common",

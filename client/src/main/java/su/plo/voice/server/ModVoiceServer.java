@@ -8,8 +8,6 @@ import su.plo.slib.mod.ModServerLib;
 import su.plo.slib.mod.event.ModServerEvents;
 import su.plo.slib.mod.event.server.ServerStartedEvent;
 import su.plo.slib.mod.event.server.ServerStoppingEvent;
-import su.plo.ustats.UStats;
-import su.plo.ustats.mod.ModUStatsPlatform;
 import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.File;
@@ -21,8 +19,6 @@ public final class ModVoiceServer extends BaseVoiceServer {
     public static final ResourceLocation SERVICE_CHANNEL = new ResourceLocation(SERVICE_CHANNEL_STRING);
 
     private final String modId = "plasmovoice";
-
-    private UStats uStats;
 
     public ModVoiceServer(@NotNull ModrinthLoader loader) {
         super(loader);
@@ -48,18 +44,9 @@ public final class ModVoiceServer extends BaseVoiceServer {
 
     private void onMinecraftServerInitialize(@NotNull MinecraftServer server) {
         super.onInitialize();
-
-        this.uStats = new UStats(
-                USTATS_PROJECT_UUID,
-                getVersion(),
-                new ModUStatsPlatform(server),
-                getConfigFolder()
-        );
     }
 
     private void onMinecraftServerShutdown(MinecraftServer server) {
-        if (uStats != null) uStats.close();
-
         super.onShutdown();
     }
 }

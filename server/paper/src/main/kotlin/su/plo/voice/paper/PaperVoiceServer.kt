@@ -1,11 +1,10 @@
 package su.plo.voice.paper
 
+import org.bstats.bukkit.Metrics
 import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import su.plo.slib.spigot.SpigotServerLib
-import su.plo.ustats.UStats
-import su.plo.ustats.paper.PaperUStatsPlatform
 import su.plo.voice.paper.integration.SuperVanishIntegration
 import su.plo.voice.paper.integration.VoicePlaceholder
 import su.plo.voice.server.BaseVoiceServer
@@ -17,7 +16,7 @@ class PaperVoiceServer(
 
     private val minecraftServerLib = SpigotServerLib(plugin)
 
-    private lateinit var uStats: UStats
+    private lateinit var metrics: Metrics
 
     public override fun onInitialize() {
         minecraftServerLib.onInitialize()
@@ -33,12 +32,7 @@ class PaperVoiceServer(
                 }
         }
 
-        this.uStats = UStats(
-            USTATS_PROJECT_UUID,
-            version,
-            PaperUStatsPlatform,
-            configFolder
-        )
+        this.metrics = Metrics(plugin, BSTATS_PROJECT_ID)
 
         // Initialize integrations
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
@@ -54,7 +48,7 @@ class PaperVoiceServer(
     }
 
     public override fun onShutdown() {
-        uStats.close()
+        metrics.shutdown()
         super.onShutdown()
         minecraftServerLib.onShutdown()
     }

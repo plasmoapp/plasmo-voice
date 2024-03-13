@@ -17,7 +17,7 @@ dependencies {
     compileOnly(libs.papi)
     compileOnly(libs.supervanish)
 
-    compileOnly("su.plo.ustats:paper:${libs.versions.ustats.get()}")
+    compileOnly("org.bstats:bstats-bukkit:${libs.versions.bstats.get()}")
 
     compileOnly(project(":server:common"))
 
@@ -44,7 +44,7 @@ dependencies {
     shadow(libs.opus.concentus)
     shadow(libs.config)
     shadow(libs.crowdin) { isTransitive = false }
-    shadow("su.plo.ustats:paper:${libs.versions.ustats.get()}")
+    shadow("org.bstats:bstats-bukkit:${libs.versions.bstats.get()}")
 
     slibPlatform(
         "spigot",
