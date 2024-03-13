@@ -48,3 +48,30 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: true
         github-prerelease: true
+
+    - name: Build dokka
+      uses: gradle/gradle-build-action@v2
+      with:
+        arguments: dokkaHtmlCollector
+
+    - name: Upload dokka artifact
+      uses: actions/upload-pages-artifact@v2
+      with:
+        path: ./build/dokka/htmlCollector
+
+  deploy-dokka:
+    needs: build
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v2
