@@ -27,6 +27,9 @@ bungeecord = "1.19-R0.1-SNAPSHOT"
 velocity = "3.1.1"
 paper = "1.16.5-R0.1-SNAPSHOT"
 
+minestom = "7320437640"
+minestom-extensions = "1.2.0"
+
 opus-jni = "1.0.3"
 opus-concentus = "acaadf2075"
 rnnoise-jni = "1.0.2"
@@ -63,6 +66,9 @@ supervanish = { module = "com.github.LeonMangler:SuperVanish", version.ref = "su
 bungeecord   = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord"}
 velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
 paper        = { module = "com.destroystokyo.paper:paper-api", version.ref = "paper" }
+
+minestom = { module = "net.minestom:minestom-snapshots", version.ref = "minestom" }
+minestom-extension = { module = "dev.hollowcube:minestom-ce-extensions", version.ref = "minestom-extensions" }
 
 opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-jni" }
 opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }

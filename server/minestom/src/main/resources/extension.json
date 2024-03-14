@@ -1,0 +1,10 @@
+{
+    "entrypoint": "su.plo.voice.minestom.MinestomVoiceLoader",
+    "name": "PlasmoVoice",
+    "version": "${version}",
+    "dependencies": [],
+    "externalDependencies": {
+        "repositories": [],
+        "artifacts": []
+    }
+}
