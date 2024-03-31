@@ -11,7 +11,8 @@ public enum ModrinthLoader {
     FORGE("forge"),
     VELOCITY("velocity"),
     BUNGEECORD("bungeecord"),
-    PAPER("paper");
+    PAPER("paper"),
+    MINESTOM("minestom");
 
     @Getter
     private final String loader;
