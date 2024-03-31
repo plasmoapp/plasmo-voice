@@ -1,1 +1,1 @@
-- [Paper] SuperVanish/PremiumVanish integration with show and hide events
+- Fixed stacktrace spam on bad packets [#397](https://github.com/plasmoapp/plasmo-voice/issues/397)
