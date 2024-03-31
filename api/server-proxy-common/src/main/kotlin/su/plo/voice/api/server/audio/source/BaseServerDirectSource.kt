@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.audio.source
 
 import su.plo.slib.api.position.Pos3d
+import su.plo.voice.api.server.audio.provider.AudioFrameProvider
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.packets.Packet
@@ -115,4 +116,12 @@ interface BaseServerDirectSource : ServerAudioSource<DirectSourceInfo> {
      * @return `true` if the packet was successfully sent, `false` otherwise.
      */
     fun sendPacket(packet: Packet<*>): Boolean
+
+    /**
+     * Creates a new audio sender for this source.
+     *
+     * @param frameProvider The audio frame provider.
+     * @return An audio sender.
+     */
+    fun createAudioSender(frameProvider: AudioFrameProvider): AudioSender
 }

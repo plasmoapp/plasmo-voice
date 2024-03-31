@@ -8,6 +8,8 @@ import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
+import su.plo.voice.api.server.audio.provider.AudioFrameProvider;
+import su.plo.voice.api.server.audio.source.AudioSender;
 import su.plo.voice.api.server.audio.source.BaseServerDirectSource;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -110,6 +112,11 @@ public abstract class VoiceBaseServerDirectSource
                 lookAngle,
                 cameraRelative
         );
+    }
+
+    @Override
+    public @NotNull AudioSender createAudioSender(@NotNull AudioFrameProvider frameProvider) {
+        return new AudioSender(frameProvider, this::sendAudioFrame, this::sendAudioEnd);
     }
 
     protected void updateSourceInfo() {
