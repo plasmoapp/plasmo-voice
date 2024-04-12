@@ -9,12 +9,11 @@ plugins {
 
 dependencies {
     api(project(":api:common"))
+    api(libs.config)
 
     compileOnly(libs.netty)
-
-    api(libs.config)
-    api(libs.opus.jni)
-    api(libs.opus.concentus)
+    compileOnly(libs.opus.jni)
+    compileOnly(libs.opus.concentus)
 
     testImplementation(project(":api:common"))
 }
