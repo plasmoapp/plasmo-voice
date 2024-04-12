@@ -16,7 +16,7 @@ dependencies {
     kapt(libs.velocity)
     compileOnly(libs.versions.bstats.map { "org.bstats:bstats-velocity:$it" })
 
-    compileOnly(project(":proxy:common"))
+    api(project(":proxy:common"))
     compileOnly(libs.netty)
 
     // shadow projects

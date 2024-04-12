@@ -19,7 +19,7 @@ dependencies {
 
     compileOnly("org.bstats:bstats-bukkit:${libs.versions.bstats.get()}")
 
-    compileOnly(project(":server:common"))
+    api(project(":server:common"))
 
     // shadow projects
     listOf(

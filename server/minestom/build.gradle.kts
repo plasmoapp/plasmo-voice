@@ -12,7 +12,7 @@ dependencies {
     compileOnly(libs.minestom)
     compileOnly(libs.minestom.extension)
 
-    compileOnly(project(":server:common"))
+    api(project(":server:common"))
 
     // shadow projects
     listOf(

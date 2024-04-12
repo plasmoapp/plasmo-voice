@@ -16,7 +16,7 @@ dependencies {
     compileOnly(libs.bungeecord)
     compileOnly("org.bstats:bstats-bungeecord:${libs.versions.bstats.get()}")
 
-    compileOnly(project(":proxy:common"))
+    api(project(":proxy:common"))
     compileOnly(libs.netty)
 
     // shadow projects
