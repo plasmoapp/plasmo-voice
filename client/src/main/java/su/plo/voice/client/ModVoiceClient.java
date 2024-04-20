@@ -1,6 +1,8 @@
 package su.plo.voice.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import su.plo.slib.api.logging.McLoggerFactory;
+import su.plo.slib.mod.logging.Log4jLogger;
 import su.plo.voice.client.gui.settings.VoiceScreens;
 import su.plo.voice.universal.UKeyboard;
 import su.plo.voice.universal.UMinecraft;
@@ -87,6 +89,8 @@ public final class ModVoiceClient extends BaseVoiceClient
         //#else
         super(ModrinthLoader.FABRIC);
         //#endif
+
+        McLoggerFactory.supplier = Log4jLogger::new;
 
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
 
