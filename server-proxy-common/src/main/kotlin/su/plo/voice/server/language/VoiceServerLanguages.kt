@@ -6,11 +6,11 @@ import com.google.common.collect.Maps
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.future
-import org.slf4j.LoggerFactory
 import su.plo.config.toml.Toml
 import su.plo.config.toml.TomlWriter
 import su.plo.crowdin.CrowdinLib
 import su.plo.slib.api.language.ServerTranslator
+import su.plo.slib.api.logging.McLoggerFactory
 import su.plo.voice.api.server.resource.ResourceLoader
 import su.plo.voice.api.server.language.ServerLanguages
 import java.io.*
@@ -432,6 +432,6 @@ class VoiceServerLanguages(
     }
 
     companion object {
-        private val LOGGER = LoggerFactory.getLogger(VoiceServerLanguages::class.java)
+        private val LOGGER = McLoggerFactory.createLogger("VoiceServerLanguages")
     }
 }

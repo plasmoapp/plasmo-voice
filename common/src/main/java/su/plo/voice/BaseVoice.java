@@ -2,8 +2,8 @@ package su.plo.voice;
 
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import su.plo.slib.api.logging.McLogger;
+import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
 import su.plo.voice.api.addon.AddonManager;
@@ -16,7 +16,6 @@ import su.plo.voice.audio.codec.opus.OpusCodecSupplier;
 import su.plo.voice.encryption.VoiceEncryptionManager;
 import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;
-import su.plo.voice.logging.Slf4jLogger;
 import su.plo.voice.util.version.ModrinthLoader;
 
 import java.io.InputStream;
@@ -25,8 +24,8 @@ import java.util.concurrent.ScheduledExecutorService;
 
 public abstract class BaseVoice implements PlasmoVoice {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger("PlasmoVoice");
-    public static final DebugLogger DEBUG_LOGGER = new DebugLogger(new Slf4jLogger("PlasmoVoice"));
+    public static final McLogger LOGGER = McLoggerFactory.createLogger("PlasmoVoice");
+    public static final DebugLogger DEBUG_LOGGER = new DebugLogger(LOGGER);
 
     protected final ModrinthLoader loader;
 

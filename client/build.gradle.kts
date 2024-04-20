@@ -152,11 +152,6 @@ dependencies {
     shadowCommon(libs.crowdin) {
         isTransitive = false
     }
-
-    if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {
-        shadowCommon(libs.slf4j)
-        shadowCommon(libs.slf4j.log4j)
-    }
 }
 
 tasks {

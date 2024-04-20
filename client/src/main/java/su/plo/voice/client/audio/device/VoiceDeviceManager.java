@@ -5,9 +5,9 @@ import com.google.common.collect.ImmutableList;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import su.plo.config.entry.ConfigEntry;
+import su.plo.slib.api.logging.McLogger;
+import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
@@ -33,7 +33,7 @@ import static su.plo.voice.universal.UDesktop.isMac;
 @RequiredArgsConstructor
 public final class VoiceDeviceManager implements DeviceManager {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(VoiceDeviceManager.class);
+    private static final McLogger LOGGER = McLoggerFactory.createLogger("VoiceDeviceManager");
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;

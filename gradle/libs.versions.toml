@@ -6,9 +6,6 @@ kotlinx-coroutines = "1.7.3"
 
 junit5 = "5.8.2"
 
-slf4j = "1.7.30"
-slf4j-log4j = "2.15.0"
-
 lombok = "1.18.24"
 annotations = "23.0.0"
 guava = "31.1-jre"
@@ -46,9 +43,6 @@ kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-j
 
 junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit5" }
-
-slf4j        = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
-slf4j-log4j  = { module = "org.apache.logging.log4j:log4j-slf4j-impl", version.ref = "slf4j-log4j" }
 
 lombok       = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 annotations  = { module = "org.jetbrains:annotations", version.ref = "annotations" }
