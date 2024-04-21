@@ -129,6 +129,7 @@ data class PlasmoVoiceMeta(
 
         @Synchronized
         private fun saveCache() {
+            cacheFile.parentFile.mkdirs()
             cacheFile.writer().use {
                 gson.toJson(metaByLanguage, it)
             }
