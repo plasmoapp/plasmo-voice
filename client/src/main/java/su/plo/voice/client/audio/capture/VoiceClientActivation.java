@@ -2,7 +2,7 @@ package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import su.plo.voice.universal.UChat;
+import gg.essential.universal.UChat;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

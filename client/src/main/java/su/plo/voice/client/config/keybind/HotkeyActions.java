@@ -10,7 +10,7 @@ import su.plo.voice.api.client.config.keybind.KeyBinding;
 import su.plo.voice.api.client.config.keybind.KeyBindings;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
-import su.plo.voice.universal.UChat;
+import gg.essential.universal.UChat;
 
 @RequiredArgsConstructor
 public final class HotkeyActions {

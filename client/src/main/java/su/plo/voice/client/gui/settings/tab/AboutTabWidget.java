@@ -1,9 +1,9 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
-import su.plo.voice.universal.UDesktop;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UDesktop;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.components.Button;
@@ -24,7 +24,7 @@ import java.util.Collections;
 import java.util.List;
 
 //#if MC>=12005
-//$$ import su.plo.voice.universal.UMinecraft;
+//$$ import gg.essential.universal.UMinecraft;
 //#endif
 
 public final class AboutTabWidget extends TabWidget {

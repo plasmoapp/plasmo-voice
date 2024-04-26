@@ -1,8 +1,8 @@
 package su.plo.voice.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import su.plo.voice.universal.UKeyboard;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UKeyboard;
+import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
 import org.jetbrains.annotations.NotNull;

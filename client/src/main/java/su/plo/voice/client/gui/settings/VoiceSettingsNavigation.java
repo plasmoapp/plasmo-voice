@@ -1,9 +1,9 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UKeyboard;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UKeyboard;
+import gg.essential.universal.UMatrixStack;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +25,7 @@ import java.util.List;
 import java.util.Optional;
 
 //#if MC>=12005
-//$$ import su.plo.voice.universal.UMinecraft;
+//$$ import gg.essential.universal.UMinecraft;
 //$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.MENU_LIST_BACKGROUND_LOCATION;
 //$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_MENU_LIST_BACKGROUND_LOCATION;
 //$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.FOOTER_SEPARATOR_LOCATION;

@@ -2,9 +2,9 @@ package su.plo.voice.client.render.voice;
 
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.scores.Objective;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.UMinecraft;
 import lombok.NonNull;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;

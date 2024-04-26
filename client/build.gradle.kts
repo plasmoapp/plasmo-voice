@@ -45,13 +45,6 @@ plasmoCrowdin {
 
 val shadowCommon by configurations.creating
 
-val relocatedUC = registerRelocationAttribute("relocate-uc") {
-    relocate("gg.essential.universal", "su.plo.voice.universal")
-}
-val universalCraft by configurations.creating {
-    attributes { attribute(relocatedUC, true) }
-}
-
 fun uStatsVersion() = rootProject.libs.versions.ustats.map {
     val minecraftVersion = when (platform.mcVersion) {
         12001, 12002, 12004, 12005 -> "1.20"
@@ -85,14 +78,16 @@ dependencies {
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
     }
 
-    universalCraft(rootProject.libs.versions.universalcraft.map {
+    rootProject.libs.versions.universalcraft.map {
         "gg.essential:universalcraft-$platform:$it"
-    }) {
-        isTransitive = false
+    }.also {
+        modApi(it) {
+            isTransitive = false
+        }
+        shadowCommon(it) {
+            isTransitive = false
+        }
     }
-    // prebundleNow was trying to access maven repo too early (?)
-    modApi(prebundle(universalCraft))
-    shadowCommon(prebundle(universalCraft))
 
     "su.plo.ustats:${uStatsVersion()}".also {
         modApi(it) {
@@ -157,6 +152,7 @@ tasks {
         configurations = listOf(shadowCommon)
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+        relocate("gg.essential.universal", "su.plo.voice.universal")
 
         relocate("su.plo.ustats", "su.plo.voice.ustats")
 
