@@ -29,6 +29,15 @@ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.util.TriState;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
+
+//#if MC>=12005
+//$$ import net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry;
+//$$ import su.plo.voice.codec.PacketServicePayload;
+//$$ import su.plo.voice.codec.PacketServicePayloadCodec;
+//$$ import su.plo.voice.codec.PacketTcpPayload;
+//$$ import su.plo.voice.codec.PacketTcpPayloadCodec;
+//#endif
+
 //#else
 //$$ import net.minecraftforge.event.RegisterCommandsEvent;
 //$$ import net.minecraftforge.event.entity.player.PlayerEvent;
@@ -127,16 +136,38 @@ public final class ModVoiceServer
     //#if FABRIC
     @Override
     public void onInitialize() {
+        //#if MC>=12005
+        //$$ PayloadTypeRegistry.playC2S().register(
+        //$$         PacketTcpPayload.TYPE,
+        //$$         new PacketTcpPayloadCodec()
+        //$$ );
+        //$$
+        //$$ PayloadTypeRegistry.playC2S().register(
+        //$$         PacketServicePayload.TYPE,
+        //$$         new PacketServicePayloadCodec()
+        //$$ );
+        //#endif
+
         ServerLifecycleEvents.SERVER_STARTED.register((server) -> {
             if (handler == null) {
                 this.handler = new ModServerChannelHandler(this);
                 S2CPlayChannelEvents.REGISTER.register(handler);
+
+                //#if MC>=12005
+                //$$ ServerPlayNetworking.registerGlobalReceiver(PacketTcpPayload.TYPE, handler);
+                //#else
                 ServerPlayNetworking.registerGlobalReceiver(CHANNEL, handler);
+                //#endif
             }
 
             if (serviceHandler == null) {
                 this.serviceHandler = new ModServerServiceChannelHandler(this);
+
+                //#if MC>=12005
+                //$$ ServerPlayNetworking.registerGlobalReceiver(PacketServicePayload.TYPE, serviceHandler);
+                //#else
                 ServerPlayNetworking.registerGlobalReceiver(SERVICE_CHANNEL, serviceHandler);
+                //#endif
             }
 
             this.onInitialize(server);

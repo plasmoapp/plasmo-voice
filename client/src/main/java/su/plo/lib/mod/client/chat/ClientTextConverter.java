@@ -21,12 +21,12 @@ public final class ClientTextConverter extends TranslatableTextConverter<Compone
 
     @Override
     public @NotNull String convertToJson(@NotNull Component text) {
-        return Component.Serializer.toJson(text);
+        return textConverter.convertToJson(text);
     }
 
     @Override
     public Component convertFromJson(@NotNull String json) {
-        return Component.Serializer.fromJson(json);
+        return textConverter.convertFromJson(json);
     }
 
     @Override

@@ -23,6 +23,10 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
+//#if MC>=12005
+//$$ import su.plo.voice.universal.UMinecraft;
+//#endif
+
 public final class AboutTabWidget extends TabWidget {
 
     public AboutTabWidget(@NotNull VoiceSettingsScreen parent,
@@ -162,11 +166,27 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         public void renderBackground(@NotNull UMatrixStack stack, int x, int y, int entryWidth) {
+            //#if MC>=12005
+            //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+            //#else
             UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+            //#endif
             UGraphics.color4f(1F, 1F, 1F, 1F);
 
             int height = this.height - 4;
 
+            //#if MC>=12005
+            //$$ UGraphics.enableBlend();
+            //$$ RenderUtil.blit(
+            //$$         stack,
+            //$$         x, x + entryWidth,
+            //$$         y, y + height,
+            //$$         0,
+            //$$         0F, entryWidth / 32.0F,
+            //$$         0F, height / 32.0F
+            //$$ );
+            //$$ UGraphics.disableBlend();
+            //#else
             RenderUtil.blitColor(
                     stack,
                     x, x + entryWidth,
@@ -176,6 +196,7 @@ public final class AboutTabWidget extends TabWidget {
                     0F, height / 32.0F,
                     40, 40, 40, 255
             );
+            //#endif
         }
 
         @Override
@@ -217,11 +238,25 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         public void renderBackground(@NotNull UMatrixStack stack, int x, int y, int entryWidth) {
+            //#if MC>=12005
+            //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+            //#else
             UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+            //#endif
             UGraphics.color4f(1F, 1F, 1F, 1F);
 
             int height = this.height - 2;
 
+            //#if MC>=12005
+            //$$ RenderUtil.blit(
+            //$$         stack,
+            //$$         x, x + entryWidth,
+            //$$         y, y + height,
+            //$$         0,
+            //$$         0F, entryWidth / 32.0F,
+            //$$         0F, height / 32.0F
+            //$$ );
+            //#else
             RenderUtil.blitColor(
                     stack,
                     x, x + entryWidth,
@@ -231,6 +266,7 @@ public final class AboutTabWidget extends TabWidget {
                     0F, height / 32.0F,
                     40, 40, 40, 255
             );
+            //#endif
         }
 
         @Override

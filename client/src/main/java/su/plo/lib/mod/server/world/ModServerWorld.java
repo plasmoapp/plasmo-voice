@@ -15,6 +15,11 @@ import java.util.Objects;
 
 //#if MC>=11903
 import net.minecraft.core.registries.BuiltInRegistries;
+
+//#if MC>=12005
+//$$ import net.minecraft.core.Holder;
+//#endif
+
 //#else
 //$$ import net.minecraft.core.Registry;
 //#endif
@@ -63,6 +68,13 @@ public final class ModServerWorld implements MinecraftServerWorld {
     }
 
     //#if MC>=11900
+
+    //#if MC>=12005
+    //$$ private Holder.Reference<GameEvent> parseGameEvent(@NotNull String gameEventName) {
+    //$$     return BuiltInRegistries.GAME_EVENT.getHolder(new ResourceLocation(gameEventName))
+    //$$             .orElseThrow(() -> new IllegalArgumentException("Invalid game event"));
+    //$$ }
+    //#else
     private GameEvent parseGameEvent(@NotNull String gameEventName) {
         //#if MC>=11903
         return BuiltInRegistries.GAME_EVENT.get(new ResourceLocation(gameEventName));
@@ -70,5 +82,7 @@ public final class ModServerWorld implements MinecraftServerWorld {
         //$$ return Registry.GAME_EVENT.get(new ResourceLocation(gameEventName));
         //#endif
     }
+    //#endif
+
     //#endif
 }

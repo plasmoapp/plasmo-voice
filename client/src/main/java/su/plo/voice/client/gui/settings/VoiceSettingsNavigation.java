@@ -20,12 +20,19 @@ import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
 import su.plo.voice.client.gui.settings.widget.TabButton;
-import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
 
 import java.util.List;
 import java.util.Optional;
 
+//#if MC>=12005
+//$$ import su.plo.voice.universal.UMinecraft;
+//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.MENU_LIST_BACKGROUND_LOCATION;
+//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_MENU_LIST_BACKGROUND_LOCATION;
+//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.FOOTER_SEPARATOR_LOCATION;
+//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_FOOTER_SEPARATOR_LOCATION;
+//#else
 import static su.plo.lib.mod.client.gui.widget.GuiWidget.BACKGROUND_LOCATION;
+//#endif
 
 public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
@@ -275,9 +282,37 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         int width = parent.getWidth();
         int height = getHeight();
 
+        //#if MC>=12005
+        //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+        //#else
         UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+        //#endif
         UGraphics.color4f(1F, 1F, 1F, 1F);
 
+        //#if MC>=12005
+        //$$ UGraphics.enableBlend();
+        //$$
+        //$$ RenderUtil.blit(
+        //$$         stack,
+        //$$         0, width,
+        //$$         0, height,
+        //$$         0,
+        //$$         0, width / 32F,
+        //$$         0, height / 32F
+        //$$ );
+        //$$
+        //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION);
+        //$$ RenderUtil.blit(
+        //$$         stack,
+        //$$         0, width,
+        //$$         height, height + 2,
+        //$$         0,
+        //$$         0, width / 32F,
+        //$$         0, 1F
+        //$$ );
+
+        //$$ UGraphics.disableBlend();
+        //#else
         RenderUtil.blitColor(
                 stack,
                 0, width,
@@ -287,7 +322,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 0, height / 32F,
                 64, 64, 64, 255
         );
-
 
         UGraphics.depthFunc(515);
         UGraphics.disableDepth();
@@ -312,6 +346,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 //        render.enableTexture();
         UGraphics.enableBlend();
         RenderUtil.defaultBlendFunc();
+        //#endif
     }
 
     public void openTab(int index) {

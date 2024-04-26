@@ -2,7 +2,7 @@ import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
-import gg.essential.util.prebundleNow
+import gg.essential.gradle.util.prebundle
 
 val mavenGroup: String by rootProject
 val isMainProject = project.name == file("../mainProject").readText().trim()
@@ -54,7 +54,7 @@ val universalCraft by configurations.creating {
 
 fun uStatsVersion() = rootProject.libs.versions.ustats.map {
     val minecraftVersion = when (platform.mcVersion) {
-        12001, 12002, 12003 -> "1.20"
+        12001, 12002, 12004, 12005 -> "1.20"
         else -> platform.mcVersionStr
     }
 
@@ -76,7 +76,8 @@ dependencies {
             11904 -> "0.76.0+1.19.4"
             12001 -> "0.84.0+1.20.1"
             12002 -> "0.89.1+1.20.2"
-            12003 -> "0.91.1+1.20.3"
+            12004 -> "0.97.0+1.20.4"
+            12005 -> "0.97.6+1.20.5"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -89,8 +90,9 @@ dependencies {
     }) {
         isTransitive = false
     }
-    modApi(prebundleNow(universalCraft))
-    shadowCommon(prebundleNow(universalCraft))
+    // prebundleNow was trying to access maven repo too early (?)
+    modApi(prebundle(universalCraft))
+    shadowCommon(prebundle(universalCraft))
 
     "su.plo.ustats:${uStatsVersion()}".also {
         modApi(it) {

@@ -14,9 +14,9 @@ plugins {
     alias(libs.plugins.idea.ext)
     alias(libs.plugins.crowdin.plugin) apply(false)
 
-    kotlin("jvm") version("1.6.10")
-    kotlin("plugin.lombok") version("1.6.10")
-    kotlin("kapt") version("1.6.10")
+    kotlin("jvm") version("1.9.23")
+    kotlin("plugin.lombok") version("1.9.23")
+    kotlin("kapt") version("1.9.23")
 
     id("gg.essential.multi-version.root") apply(false)
     id("su.plo.voice.relocate") version("1.0.1") apply(false)
