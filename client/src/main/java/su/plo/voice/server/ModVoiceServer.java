@@ -142,7 +142,17 @@ public final class ModVoiceServer
         //$$         new PacketTcpPayloadCodec()
         //$$ );
         //$$
+        //$$ PayloadTypeRegistry.playS2C().register(
+        //$$         PacketTcpPayload.TYPE,
+        //$$         new PacketTcpPayloadCodec()
+        //$$ );
+        //$$
         //$$ PayloadTypeRegistry.playC2S().register(
+        //$$         PacketServicePayload.TYPE,
+        //$$         new PacketServicePayloadCodec()
+        //$$ );
+        //$$
+        //$$ PayloadTypeRegistry.playS2C().register(
         //$$         PacketServicePayload.TYPE,
         //$$         new PacketServicePayloadCodec()
         //$$ );

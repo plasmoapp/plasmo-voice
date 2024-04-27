@@ -149,10 +149,6 @@ public final class ModVoiceClient extends BaseVoiceClient
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
 
         //#if MC>=12005
-        //$$ PayloadTypeRegistry.playS2C().register(
-        //$$         PacketTcpPayload.TYPE,
-        //$$         new PacketTcpPayloadCodec()
-        //$$ );
         //$$ ClientPlayNetworking.registerGlobalReceiver(PacketTcpPayload.TYPE, handler);
         //$$
         //$$ PayloadTypeRegistry.playS2C().register(
