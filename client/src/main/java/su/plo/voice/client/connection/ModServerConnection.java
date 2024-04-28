@@ -17,8 +17,7 @@ import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
-import su.plo.voice.api.client.audio.device.OutputDevice;
-import su.plo.voice.api.client.audio.device.source.AlSource;
+import su.plo.voice.api.client.audio.device.AlContextOutputDevice;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.connection.ServerConnection;
@@ -201,7 +200,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         voiceClient.getActivationManager().clear();
 
         // cleanup devices
-        voiceClient.getDeviceManager().clear(null);
+        voiceClient.getDeviceManager().clear();
         voiceClient.getDeviceManager().stopJob();
     }
 
@@ -329,8 +328,8 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         );
 
         try {
-            OutputDevice<AlSource> outputDevice = voiceClient.getDeviceManager().openOutputDevice(format);
-            voiceClient.getDeviceManager().add(outputDevice);
+            AlContextOutputDevice outputDevice = voiceClient.getDeviceManager().openOutputDevice(format);
+            voiceClient.getDeviceManager().setOutputDevice(outputDevice);
         } catch (Exception e) {
             LOGGER.error("Failed to open primary OpenAL output device", e);
         }

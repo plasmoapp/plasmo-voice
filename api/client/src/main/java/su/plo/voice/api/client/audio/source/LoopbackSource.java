@@ -1,9 +1,10 @@
 package su.plo.voice.api.client.audio.source;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.audio.device.DeviceException;
-import su.plo.voice.api.client.audio.device.source.SourceGroup;
+import su.plo.voice.api.client.audio.device.source.AlSource;
 
 import java.util.Optional;
 
@@ -51,5 +52,5 @@ public interface LoopbackSource {
      *
      * @return An optional containing the associated source group, if available.
      */
-    Optional<SourceGroup> getSourceGroup();
+    @NotNull Optional<AlSource> getSource();
 }

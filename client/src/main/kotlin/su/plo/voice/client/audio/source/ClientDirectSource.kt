@@ -6,9 +6,7 @@ import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
-import su.plo.voice.api.client.audio.device.AlContextAudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
-import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.extension.toVec3
@@ -111,16 +109,12 @@ class ClientDirectSource(
     }
 
     private suspend fun updateSourceParams() {
-        for (source in sourceGroup.sources) {
-            if (source !is AlSource) continue
-
-            val device = source.device as AlContextAudioDevice
-            device.runInContext {
-                source.setInt(
-                    0x202,  // AL_SOURCE_RELATIVE
-                    if (sourceInfo.isCameraRelative) 1 else 0
-                )
-            }
+        val device = source.device
+        device.runInContext {
+            source.setInt(
+                0x202,  // AL_SOURCE_RELATIVE
+                if (sourceInfo.isCameraRelative) 1 else 0
+            )
         }
     }
 }

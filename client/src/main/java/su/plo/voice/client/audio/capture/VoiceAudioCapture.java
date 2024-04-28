@@ -87,8 +87,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     @Override
     public Optional<InputDevice> getDevice() {
-        Collection<AudioDevice> devices = this.devices.getDevices(DeviceType.INPUT);
-        return Optional.ofNullable((InputDevice) devices.stream().findFirst().orElse(null));
+        return this.devices.getInputDevice();
     }
 
     @Override
@@ -120,11 +119,8 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         if (!getDevice().isPresent() && !config.getVoice().getDisableInputDevice().value()) {
             try {
-                devices.replace(null, DeviceType.INPUT, (oldDevice) -> {
-                    if (oldDevice != null) oldDevice.close();
-
-                    return devices.openInputDevice(format);
-                });
+                InputDevice inputDevice = devices.openInputDevice(format);
+                devices.setInputDevice(inputDevice);
             } catch (Exception e) {
                 LOGGER.error("Failed to open input device", e);
             }
@@ -310,7 +306,7 @@ public final class VoiceAudioCapture implements AudioCapture {
         Optional<InputDevice> device = getDevice();
         if (device.isPresent() && device.get().isOpen()) {
             device.get().close();
-            devices.remove(device.get());
+            devices.setInputDevice(null);
         }
 
         this.thread = null;

@@ -17,9 +17,9 @@ import su.plo.lib.mod.extensions.eyePosition
 import su.plo.voice.BaseVoice
 import su.plo.voice.api.audio.codec.AudioDecoder
 import su.plo.voice.api.audio.codec.CodecException
+import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.device.source.AlSourceParams
-import su.plo.voice.api.client.audio.device.source.SourceGroup
 import su.plo.voice.api.client.audio.source.ClientAudioSource
 import su.plo.voice.api.client.connection.ServerInfo.VoiceInfo
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent
@@ -49,13 +49,13 @@ import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.acos
 import kotlin.math.pow
 
-abstract class BaseClientAudioSource<T> constructor(
+abstract class BaseClientAudioSource<T>(
     protected val voiceClient: BaseVoiceClient,
     protected val config: VoiceClientConfig,
     final override var sourceInfo: T
 ) : ClientAudioSource<T> where T : SourceInfo {
 
-    override var sourceGroup: SourceGroup = runBlocking { createSourceGroup(sourceInfo) }
+    override var source: AlSource = runBlocking { createSource(sourceInfo) }
 
     private var lineVolume: DoubleConfigEntry
     private var lineMute: BooleanConfigEntry
@@ -118,9 +118,9 @@ abstract class BaseClientAudioSource<T> constructor(
 
             // initialize sources
             if (stereoChanged) {
-                val oldSourceGroup = sourceGroup
-                sourceGroup = createSourceGroup(sourceInfo)
-                oldSourceGroup.clear()
+                val oldSource = source
+                source = createSource(sourceInfo)
+                oldSource.closeAsync()
 
                 BaseVoice.DEBUG_LOGGER.log(
                     "Update device sources for {} in {}",
@@ -187,7 +187,7 @@ abstract class BaseClientAudioSource<T> constructor(
         closed.set(true)
 
         decoder?.close()
-        sourceGroup.clear()
+        source.closeAsync()
 
         voiceClient.eventBus.fire(AudioSourceClosedEvent(this@BaseClientAudioSource))
         BaseVoice.DEBUG_LOGGER.log("Source {} closed", sourceInfo)
@@ -222,13 +222,13 @@ abstract class BaseClientAudioSource<T> constructor(
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
-        if (closed.get() || !sourceGroup.sources.contains(event.source)) return
+        if (closed.get() || source != event.source) return
         closeAsync()
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceStopped(event: AlStreamSourceStoppedEvent) {
-        if (closed.get() || !sourceGroup.sources.contains(event.source) || closeTimeoutMs == 0L) return
+        if (closed.get() || source != event.source || closeTimeoutMs == 0L) return
         resetAsync()
     }
 
@@ -424,57 +424,46 @@ abstract class BaseClientAudioSource<T> constructor(
     }
 
     private fun write(samples: ShortArray) {
-        for (source in sourceGroup.sources) {
-            source.write(
-                AudioUtil.shortsToBytes(
-                    source.device.processFilters(samples)
-                )
+        source.write(
+            AudioUtil.shortsToBytes(
+                source.device.processFilters(samples)
             )
-        }
+        )
     }
 
     private suspend fun updateSource(volume: Float, position: Vec3) {
-        for (source in sourceGroup.sources) {
-            if (source !is AlSource) continue
-            val device = source.device
+        source.device.runInContext {
+            source.volume = volume
 
-            device.runInContext {
-                source.volume = volume
-
-                if (isPanningDisabled()) {
-                    source.setInt(
-                        0x202,  // AL_SOURCE_RELATIVE
-                        1
-                    )
-                    source.setFloatArray(0x1004, POSITION_ZERO)
-                    return@runInContext
-                } else {
-                    source.setInt(
-                        0x202,  // AL_SOURCE_RELATIVE
-                        0
-                    )
-                }
-
-                source.setFloatArray(0x1004, position.toFloatArray()) // AL_POSITION
+            if (isPanningDisabled()) {
+                source.setInt(
+                    0x202,  // AL_SOURCE_RELATIVE
+                    1
+                )
+                source.setFloatArray(0x1004, POSITION_ZERO)
+                return@runInContext
+            } else {
+                source.setInt(
+                    0x202,  // AL_SOURCE_RELATIVE
+                    0
+                )
             }
+
+            source.setFloatArray(0x1004, position.toFloatArray()) // AL_POSITION
         }
     }
 
-    private suspend fun createSourceGroup(sourceInfo: T): SourceGroup {
-        return voiceClient.deviceManager.createSourceGroup().also {
-            it.create(isStereo(sourceInfo), AlSourceParams.DEFAULT)
+    private suspend fun createSource(sourceInfo: T): AlSource {
+        val device = voiceClient.deviceManager.outputDevice.orElseThrow { DeviceException("Output device is null") }
+        val source = device.createSource(isStereo(sourceInfo), AlSourceParams.DEFAULT)
 
-            for (source in it.sources) {
-                if (source !is AlSource) continue
-
-                val device = source.device
-                device.runInContext {
-                    source.setFloat(0x100E, 4f) // AL_MAX_GAIN
-                    source.setInt(AL10.AL_DISTANCE_MODEL, AL10.AL_NONE)
-                    source.play()
-                }
-            }
+        device.runInContext {
+            source.setFloat(0x100E, 4f) // AL_MAX_GAIN
+            source.setInt(AL10.AL_DISTANCE_MODEL, AL10.AL_NONE)
+            source.play()
         }
+
+        return source
     }
 
     private fun createDecoder(sourceInfo: T, voiceInfo: VoiceInfo, decoderInfo: CodecInfo): AudioDecoder {

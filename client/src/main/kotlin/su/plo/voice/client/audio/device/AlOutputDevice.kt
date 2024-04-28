@@ -40,9 +40,7 @@ class AlOutputDevice
     format: AudioFormat
 ) :
     BaseAudioDevice(voiceClient, name, format),
-    su.plo.voice.api.client.audio.device.AlContextAudioDevice,
-    HrtfAudioDevice,
-    OutputDevice<AlSource> {
+    AlContextOutputDevice {
 
     val coroutineScope: CoroutineScope
 

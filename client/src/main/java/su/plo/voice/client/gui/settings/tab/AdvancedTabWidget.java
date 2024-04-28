@@ -85,8 +85,8 @@ public final class AdvancedTabWidget extends TabWidget {
 
     private OptionEntry<ToggleButton> createStereoToMonoSources() {
         Runnable onUpdate = () -> {
-            devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT)
-                    .forEach(OutputDevice::closeSourcesAsync);
+            devices.getOutputDevice()
+                    .ifPresent(OutputDevice::closeSourcesAsync);
         };
 
         ToggleButton toggleButton = new ToggleButton(

@@ -14,7 +14,6 @@ import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.DeviceManager;
-import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
@@ -83,7 +82,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
                 audioCapture.getDevice()
                         .map(InputDevice::isOpen)
                         .orElse(false) &&
-                        devices.getDevices(DeviceType.OUTPUT).size() > 0
+                        devices.getOutputDevice().isPresent()
         );
         this.microphoneTest = ImmutableList.of(testStop, testStart);
 

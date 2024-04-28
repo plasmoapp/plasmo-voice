@@ -1,19 +1,19 @@
 package su.plo.voice.client.audio.source;
 
-import su.plo.voice.api.client.audio.device.source.AlSourceParams;
 import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.client.player.LocalPlayer;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
+import su.plo.voice.api.client.audio.device.AlContextOutputDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
-import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.source.AlSource;
-import su.plo.voice.api.client.audio.device.source.DeviceSource;
-import su.plo.voice.api.client.audio.device.source.SourceGroup;
+import su.plo.voice.api.client.audio.device.source.AlSourceParams;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.config.VoiceClientConfig;
@@ -29,48 +29,44 @@ public final class ClientLoopbackSource implements LoopbackSource {
 
     private final float[] position = new float[3];
 
-    private SourceGroup sourceGroup;
+    private @Nullable AlSource source;
     @Getter
     private boolean stereo;
     @Setter
     private DoubleConfigEntry volumeEntry;
 
     @Override
-    public Optional<SourceGroup> getSourceGroup() {
-        return Optional.ofNullable(sourceGroup);
+    public @NotNull Optional<AlSource> getSource() {
+        return Optional.ofNullable(source);
     }
 
     @Override
     public void initialize(boolean stereo) throws DeviceException {
+        AlContextOutputDevice device = voiceClient.getDeviceManager().getOutputDevice()
+                .orElseThrow(() -> new DeviceException("Output device is null"));
+
         this.stereo = stereo;
-        this.sourceGroup = voiceClient.getDeviceManager().createSourceGroup();
-        sourceGroup.create(stereo, AlSourceParams.DEFAULT);
+        this.source = device.createSource(stereo, AlSourceParams.DEFAULT);
 
-        for (DeviceSource source : sourceGroup.getSources()) {
-            if (source instanceof AlSource) {
-                AlSource alSource = (AlSource) source;
-                alSource.setCloseTimeoutMs(0L);
-                AlContextAudioDevice device = alSource.getDevice();
+        source.setCloseTimeoutMs(0L);
 
-                device.runInContextBlocking(() -> {
-                    alSource.setFloat(0x100E, 4F); // AL_MAX_GAIN
-                    if (relative) alSource.setInt(0x202, 1); // AL_SOURCE_RELATIVE
+        device.runInContextBlocking(() -> {
+            source.setFloat(0x100E, 4F); // AL_MAX_GAIN
+            if (relative) source.setInt(0x202, 1); // AL_SOURCE_RELATIVE
 
-                    alSource.play();
-                });
-            }
-        }
+            source.play();
+        });
     }
 
     @Override
     public void close() {
-        if (sourceGroup == null) return;
-        sourceGroup.clear();
+        if (source == null) return;
+        source.closeAsync();
     }
 
     @Override
     public void write(short[] samples) {
-        if (sourceGroup == null) return; // not initialized yet
+        if (source == null) return; // not initialized yet
 
         if (!relative) {
             LocalPlayer player = UMinecraft.getPlayer();
@@ -91,23 +87,17 @@ public final class ClientLoopbackSource implements LoopbackSource {
         }
 
         updateSources(volume);
-        for (DeviceSource source : sourceGroup.getSources()) {
-            samples = source.getDevice().processFilters(samples);
-            source.write(AudioUtil.shortsToBytes(samples));
-        }
+
+        samples = source.getDevice().processFilters(samples);
+        source.write(AudioUtil.shortsToBytes(samples));
     }
 
     private void updateSources(float volume) {
-        for (DeviceSource source : sourceGroup.getSources()) {
-            if (source instanceof AlSource) {
-                AlSource alSource = (AlSource) source;
-                AlContextAudioDevice device = alSource.getDevice();
+        AlContextAudioDevice device = source.getDevice();
 
-                device.runInContextBlocking(() -> {
-                    alSource.setVolume(volume);
-                    if (!relative) alSource.setFloatArray(0x1004, position); // AL_POSITION
-                });
-            }
-        }
+        device.runInContextBlocking(() -> {
+            source.setVolume(volume);
+            if (!relative) source.setFloatArray(0x1004, position); // AL_POSITION
+        });
     }
 }

@@ -9,7 +9,6 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.*;
-import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.event.EventSubscribe;
@@ -20,7 +19,6 @@ import su.plo.voice.client.gui.settings.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
 
-import java.util.Collection;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -138,11 +136,7 @@ public final class DevicesTabWidget extends TabWidget {
         }
 
         ImmutableList<String> inputDeviceNames = deviceFactory.get().getDeviceNames();
-        Collection<AudioDevice> inputDevices = this.devices.getDevices(DeviceType.INPUT);
-        Optional<AudioDevice> inputDevice = Optional.empty();
-        if (!config.getVoice().getDisableInputDevice().value()) {
-            inputDevice = inputDevices.stream().findFirst();
-        }
+        Optional<InputDevice> inputDevice = this.devices.getInputDevice();
 
         DropDownWidget dropdown = new DropDownWidget(
                 parent,
@@ -208,8 +202,7 @@ public final class DevicesTabWidget extends TabWidget {
         if (!deviceFactory.isPresent()) throw new IllegalStateException("Al Output device factory not initialized");
 
         ImmutableList<String> outputDeviceNames = deviceFactory.get().getDeviceNames();
-        Collection<AudioDevice> outputDevices = this.devices.getDevices(DeviceType.OUTPUT);
-        Optional<AudioDevice> outputDevice = outputDevices.stream().findFirst();
+        Optional<AlContextOutputDevice> outputDevice = this.devices.getOutputDevice();
 
         DropDownWidget dropdown = new DropDownWidget(
                 parent,
@@ -248,14 +241,12 @@ public final class DevicesTabWidget extends TabWidget {
 
     private OptionEntry<ToggleButton> createHrtfEntry() {
         Consumer<Boolean> onUpdate = (toggled) -> {
-            devices.<OutputDevice<?>>getDevices(DeviceType.OUTPUT).forEach(device -> {
-                if (device instanceof HrtfAudioDevice) {
-                    try {
-                        device.reload();
-                    } catch (DeviceException e) {
-                        BaseVoice.LOGGER.warn("Failed to reload device: {}", e.getMessage());
-                        e.printStackTrace();
-                    }
+            devices.getOutputDevice().ifPresent(device -> {
+                try {
+                    device.reload();
+                } catch (DeviceException e) {
+                    BaseVoice.LOGGER.warn("Failed to reload device: {}", e.getMessage());
+                    e.printStackTrace();
                 }
             });
         };
@@ -280,11 +271,10 @@ public final class DevicesTabWidget extends TabWidget {
 
     private void reloadOutputDevice() {
         try {
-            devices.replace(null, DeviceType.OUTPUT, (oldDevice) -> {
-                if (oldDevice != null) oldDevice.close();
+            devices.getOutputDevice().ifPresent(AlContextOutputDevice::close);
+            AlContextOutputDevice newDevice = devices.openOutputDevice(null);
+            devices.setOutputDevice(newDevice);
 
-                return devices.openOutputDevice(null);
-            });
             testController.restart();
             Minecraft.getInstance().execute(this::init);
         } catch (Exception e) {
@@ -296,11 +286,10 @@ public final class DevicesTabWidget extends TabWidget {
         if (config.getVoice().getDisableInputDevice().value()) return;
 
         try {
-            devices.replace(null, DeviceType.INPUT, (oldDevice) -> {
-                if (oldDevice != null) oldDevice.close();
+            devices.getInputDevice().ifPresent(InputDevice::close);
+            InputDevice newDevice = devices.openInputDevice(null);
+            devices.setInputDevice(newDevice);
 
-                return devices.openInputDevice(null);
-            });
             Minecraft.getInstance().execute(this::init);
         } catch (Exception e) {
             BaseVoice.LOGGER.error("Failed to open input device", e);

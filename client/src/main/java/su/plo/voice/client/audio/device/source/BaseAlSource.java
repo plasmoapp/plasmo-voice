@@ -3,7 +3,6 @@ package su.plo.voice.client.audio.device.source;
 import org.jetbrains.annotations.NotNull;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
-import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
 import su.plo.voice.api.client.audio.device.source.AlSource;
@@ -19,8 +18,6 @@ public abstract class BaseAlSource implements AlSource {
     protected final AlOutputDevice device;
     protected final int format;
     protected int pointer;
-
-    private Pos3d position;
 
     protected BaseAlSource(PlasmoVoiceClient client, AlOutputDevice device, boolean stereo, int pointer) {
         this.client = client;
