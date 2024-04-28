@@ -1,9 +1,9 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.USound;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.USound;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;

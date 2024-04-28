@@ -1,7 +1,7 @@
 package su.plo.voice.client.extension
 
-import su.plo.voice.universal.ChatColor
-import su.plo.voice.universal.UGraphics
+import gg.essential.universal.ChatColor
+import gg.essential.universal.UGraphics
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.slib.api.chat.component.McTextComponent
 

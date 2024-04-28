@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.gui.screen;
 
 import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.voice.universal.*;
+import gg.essential.universal.*;
 import lombok.Getter;
 import lombok.ToString;
 import net.minecraft.client.gui.screens.Screen;

@@ -2,9 +2,9 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.voice.universal.UDesktop;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UDesktop;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
@@ -22,6 +22,10 @@ import su.plo.voice.client.meta.Patron;
 import java.net.URI;
 import java.util.Collections;
 import java.util.List;
+
+//#if MC>=12005
+//$$ import gg.essential.universal.UMinecraft;
+//#endif
 
 public final class AboutTabWidget extends TabWidget {
 
@@ -164,10 +168,24 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         public void renderBackground(@NotNull UMatrixStack stack, int x, int y, int entryWidth) {
-            UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+            int height = this.height - 4;
             UGraphics.color4f(1F, 1F, 1F, 1F);
 
-            int height = this.height - 4;
+            //#if MC>=12005
+            //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+            //$$
+            //$$ UGraphics.enableBlend();
+            //$$ RenderUtil.blit(
+            //$$         stack,
+            //$$         x, x + entryWidth,
+            //$$         y, y + height,
+            //$$         0,
+            //$$         0F, entryWidth / 32.0F,
+            //$$         0F, height / 32.0F
+            //$$ );
+            //$$ UGraphics.disableBlend();
+            //#else
+            UGraphics.bindTexture(0, BACKGROUND_LOCATION);
 
             RenderUtil.blitColor(
                     stack,
@@ -178,6 +196,7 @@ public final class AboutTabWidget extends TabWidget {
                     0F, height / 32.0F,
                     40, 40, 40, 255
             );
+            //#endif
         }
 
         @Override
@@ -219,10 +238,22 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         public void renderBackground(@NotNull UMatrixStack stack, int x, int y, int entryWidth) {
-            UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+            int height = this.height - 2;
             UGraphics.color4f(1F, 1F, 1F, 1F);
 
-            int height = this.height - 2;
+            //#if MC>=12005
+            //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+            //$$
+            //$$ RenderUtil.blit(
+            //$$         stack,
+            //$$         x, x + entryWidth,
+            //$$         y, y + height,
+            //$$         0,
+            //$$         0F, entryWidth / 32.0F,
+            //$$         0F, height / 32.0F
+            //$$ );
+            //#else
+            UGraphics.bindTexture(0, BACKGROUND_LOCATION);
 
             RenderUtil.blitColor(
                     stack,
@@ -233,6 +264,7 @@ public final class AboutTabWidget extends TabWidget {
                     0F, height / 32.0F,
                     40, 40, 40, 255
             );
+            //#endif
         }
 
         @Override

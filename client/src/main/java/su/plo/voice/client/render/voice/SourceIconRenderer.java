@@ -31,9 +31,9 @@ import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.UMinecraft;
 
 import java.util.Collection;
 import java.util.Optional;

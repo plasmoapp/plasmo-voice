@@ -1,8 +1,8 @@
 package su.plo.voice.client.gui;
 
 import su.plo.lib.mod.extensions.AABBKt;
-import su.plo.voice.universal.UMinecraft;
-import su.plo.voice.universal.UScreen;
+import gg.essential.universal.UMinecraft;
+import gg.essential.universal.UScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;

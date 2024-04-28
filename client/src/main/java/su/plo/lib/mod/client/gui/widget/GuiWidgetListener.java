@@ -1,6 +1,6 @@
 package su.plo.lib.mod.client.gui.widget;
 
-import su.plo.voice.universal.UKeyboard;
+import gg.essential.universal.UKeyboard;
 import org.jetbrains.annotations.Nullable;
 
 public interface GuiWidgetListener {

@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.render.shader;
 
-import su.plo.voice.universal.shader.BlendState;
-import su.plo.voice.universal.shader.SamplerUniform;
-import su.plo.voice.universal.shader.UShader;
+import gg.essential.universal.shader.BlendState;
+import gg.essential.universal.shader.SamplerUniform;
+import gg.essential.universal.shader.UShader;
 import lombok.experimental.UtilityClass;
 
 import java.io.IOException;

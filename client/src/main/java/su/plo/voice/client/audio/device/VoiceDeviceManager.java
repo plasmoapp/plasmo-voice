@@ -28,7 +28,7 @@ import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static su.plo.voice.universal.UDesktop.isMac;
+import static gg.essential.universal.UDesktop.isMac;
 
 @RequiredArgsConstructor
 public final class VoiceDeviceManager implements DeviceManager {

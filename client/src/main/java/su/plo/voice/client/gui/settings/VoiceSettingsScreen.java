@@ -2,8 +2,8 @@ package su.plo.voice.client.gui.settings;
 
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;

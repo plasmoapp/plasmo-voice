@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
 import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 

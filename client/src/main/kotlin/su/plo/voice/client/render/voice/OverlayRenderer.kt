@@ -18,10 +18,10 @@ import su.plo.voice.client.event.render.HudRenderEvent
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
-import su.plo.voice.universal.UGraphics
-import su.plo.voice.universal.UMatrixStack
-import su.plo.voice.universal.UResolution.scaledHeight
-import su.plo.voice.universal.UResolution.scaledWidth
+import gg.essential.universal.UGraphics
+import gg.essential.universal.UMatrixStack
+import gg.essential.universal.UResolution.scaledHeight
+import gg.essential.universal.UResolution.scaledWidth
 import java.util.*
 
 class OverlayRenderer(

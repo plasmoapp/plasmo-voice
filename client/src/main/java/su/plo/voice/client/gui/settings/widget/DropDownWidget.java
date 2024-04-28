@@ -1,9 +1,9 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UResolution;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.UResolution;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;

@@ -2,8 +2,8 @@ package su.plo.lib.mod.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.screens.Screen;

@@ -1,19 +1,19 @@
 [versions]
-kotlin = "1.8.22"
+kotlin = "1.9.23"
 dokka = "1.8.20"
 kotlinx-json = "1.5.1"
 kotlinx-coroutines = "1.7.3"
 
 junit5 = "5.8.2"
 
-lombok = "1.18.24"
+lombok = "1.18.32"
 annotations = "23.0.0"
 guava = "31.1-jre"
-gson = "2.9.0"
+gson = "2.10.1"
 netty = "4.1.77.Final"
 crowdin = "1.0.2-SNAPSHOT"
 config = "1.0.1"
-universalcraft = "5"
+universalcraft = "330+feature-1.20.5-fabric"
 slib = "1.0.0-SNAPSHOT"
 bstats = "3.0.2"
 luckperms = "5.4"
@@ -31,10 +31,10 @@ opus-jni = "1.0.3"
 opus-concentus = "acaadf2075"
 rnnoise-jni = "1.0.2"
 
-shadow = "7.0.0"
+shadow = "8.1.1"
 idea-ext = "1.1.7"
 
-asm = "9.3"
+asm = "9.6"
 
 [libraries]
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
@@ -68,7 +68,7 @@ opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-j
 opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }
 rnnoise-jni  = { module = "com.plasmoverse:rnnoise-jni-rust", version.ref = "rnnoise-jni" }
 
-shadow = { module = "gradle.plugin.com.github.jengelman.gradle.plugins:shadow", version.ref = "shadow" }
+shadow = { module = "com.github.johnrengelman:shadow", version.ref = "shadow" }
 asm = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
 
 [plugins]

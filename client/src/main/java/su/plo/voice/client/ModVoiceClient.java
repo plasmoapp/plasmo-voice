@@ -4,8 +4,8 @@ import com.mojang.blaze3d.platform.InputConstants;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.slib.mod.logging.Log4jLogger;
 import su.plo.voice.client.gui.settings.VoiceScreens;
-import su.plo.voice.universal.UKeyboard;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UKeyboard;
+import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +33,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+
+//#if MC>=12005
+//$$ import su.plo.slib.mod.channel.ByteArrayCodec;
+//$$ import su.plo.slib.mod.channel.ModChannelManager;
+//#endif
+
 //#else
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -138,12 +144,21 @@ public final class ModVoiceClient extends BaseVoiceClient
 
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());
         HudRenderCallback.EVENT.register(hudRenderer::render);
-        WorldRenderEvents.END.register(
+        WorldRenderEvents.LAST.register(
                 (context) -> levelRenderer.render(context.world(), context.matrixStack(), context.camera(), context.tickDelta())
         );
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
+
+        //#if MC>=12005
+        //$$ ByteArrayCodec voiceChannelCodec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
+        //$$ ByteArrayCodec flagChannelCodec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.FLAG_CHANNEL);
+        //$$
+        //$$ ClientPlayNetworking.registerGlobalReceiver(voiceChannelCodec.getType(), handler);
+        //$$ ClientPlayNetworking.registerGlobalReceiver(flagChannelCodec.getType(), (payload, context) -> {});
+        //#else
         ClientPlayNetworking.registerGlobalReceiver(ModVoiceServer.CHANNEL, handler);
         ClientPlayNetworking.registerGlobalReceiver(ModVoiceServer.FLAG_CHANNEL, (client, handler, buf, responseSender) -> {});
+        //#endif
 
         KeyBindingHelper.registerKeyBinding(MENU_KEY);
     }

@@ -11,9 +11,9 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
-import su.plo.voice.universal.UDesktop;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UDesktop;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
 
 import java.net.URI;
 

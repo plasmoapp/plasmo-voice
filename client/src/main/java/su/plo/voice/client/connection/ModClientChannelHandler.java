@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.client.BaseVoiceClient;
+import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 
 //#if FABRIC
@@ -15,7 +17,13 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
+//#if MC>=12005
+//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
+//#else
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
+//#endif
+
 //#else
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraftforge.network.NetworkEvent;
@@ -25,9 +33,13 @@ import java.io.IOException;
 import java.util.Optional;
 
 public final class ModClientChannelHandler
-    //#if FABRIC
-    implements ClientPlayNetworking.PlayChannelHandler
-    //#endif
+        //#if FABRIC
+        //#if MC>=12005
+        //$$ implements ClientPlayNetworking.PlayPayloadHandler<ByteArrayPayload>
+        //#else
+        implements ClientPlayNetworking.PlayChannelHandler
+        //#endif
+        //#endif
 {
 
     private final BaseVoiceClient voiceClient;
@@ -50,6 +62,14 @@ public final class ModClientChannelHandler
     }
 
     //#if FABRIC
+
+    //#if MC>=12005
+    //$$ @Override
+    //$$ public void receive(ByteArrayPayload payload, ClientPlayNetworking.Context context) {
+    //$$     Connection connection = context.client().getConnection().getConnection();
+    //$$     receive(connection, payload.getData());
+    //$$ }
+    //#else
     @Override
     public void receive(
             Minecraft client,
@@ -59,6 +79,8 @@ public final class ModClientChannelHandler
     ) {
         receive(handler.getConnection(), buf);
     }
+    //#endif
+
     //#else
     //$$ public void receive(@NotNull NetworkEvent event) {
     //#if MC>=12002
@@ -76,7 +98,7 @@ public final class ModClientChannelHandler
     //$$ }
     //#endif
 
-    private void receive(Connection connection, FriendlyByteBuf buf) {
+    private void receive(Connection connection, Packet<PacketHandler> packet) {
         if (this.connection == null || connection != this.connection.getConnection()) {
             if (this.connection != null) close();
             try {
@@ -90,11 +112,17 @@ public final class ModClientChannelHandler
             }
         }
 
-        byte[] data = ByteBufUtil.getBytes(buf.duplicate());
+        this.connection.handle(packet);
+    }
 
+    private void receive(Connection connection, FriendlyByteBuf buf) {
+        receive(connection, ByteBufUtil.getBytes(buf.duplicate()));
+    }
+
+    private void receive(Connection connection, byte[] data) {
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
-                    .ifPresent(this.connection::handle);
+                    .ifPresent(packet -> receive(connection, packet));
         } catch (IOException e) {
             e.printStackTrace();
         }

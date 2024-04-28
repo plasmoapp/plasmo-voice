@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.slib.api.entity.player.McGameProfile;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UMinecraft;
 
 import java.util.Map;
 import java.util.UUID;

@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.chat;
 
 import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UMinecraft;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import net.minecraft.network.chat.Component;

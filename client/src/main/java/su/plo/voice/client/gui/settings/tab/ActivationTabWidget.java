@@ -25,7 +25,7 @@ import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.*;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UMinecraft;
 
 import java.util.Collections;
 import java.util.List;

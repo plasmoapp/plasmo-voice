@@ -2,7 +2,6 @@ import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
-import gg.essential.util.prebundleNow
 import su.plo.config.toml.Toml
 import su.plo.voice.extension.slibPlatform
 import su.plo.voice.util.copyJarToRootProject
@@ -55,13 +54,6 @@ crowdin {
 
 val shadowCommon by configurations.creating
 
-val relocatedUC = registerRelocationAttribute("relocate-uc") {
-    relocate("gg.essential.universal", "su.plo.voice.universal")
-}
-val universalCraft by configurations.creating {
-    attributes { attribute(relocatedUC, true) }
-}
-
 fun universalCraftVersion() = libs.versions.universalcraft.map {
     val minecraftVersion = when (platform.mcVersion) {
         11605 -> "1.16.2"
@@ -100,6 +92,7 @@ dependencies {
             12001 -> "0.84.0+1.20.1"
             12002 -> "0.89.1+1.20.2"
             12004 -> "0.95.4+1.20.4"
+            12006 -> "0.97.7+1.20.6"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -107,11 +100,16 @@ dependencies {
         "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
     }
 
-    universalCraft("gg.essential:universalcraft-${universalCraftVersion()}") {
-        isTransitive = false
+    rootProject.libs.versions.universalcraft.map {
+        "gg.essential:universalcraft-${universalCraftVersion()}"
+    }.also {
+        modApi(it) {
+            isTransitive = false
+        }
+        shadowCommon(it) {
+            isTransitive = false
+        }
     }
-    modApi(prebundleNow(universalCraft))
-    shadowCommon(prebundleNow(universalCraft))
 
     val includedProjects = listOf(
         ":api:common",
@@ -194,6 +192,8 @@ tasks {
 
             exclude("README.md")
             exclude("META-INF/*.kotlin_module")
+
+            relocate("gg.essential.universal", "su.plo.voice.universal")
 
             if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {
                 exclude(dependency("org.apache.logging.log4j:log4j-api"))

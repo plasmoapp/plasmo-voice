@@ -2,7 +2,7 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UMinecraft;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.local.LocalAddress;
 import lombok.Getter;
@@ -57,6 +57,13 @@ import java.util.UUID;
 
 //#if FABRIC
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+
+//#if MC>=12005
+//$$ import su.plo.slib.mod.channel.ByteArrayCodec;
+//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
+//$$ import su.plo.slib.mod.channel.ModChannelManager;
+//#endif
+
 //#else
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
@@ -108,12 +115,21 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         byte[] encoded = PacketTcpCodec.encode(packet);
         if (encoded == null) return;
 
+        //#if MC<12005
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded));
+        //#endif
 
         //#if FABRIC
         // Use connection#send instead of ClientPlayNetworking#send,
         // because Minecraft.getInstance().getConnection() can be null and a packet will not be sent
+
+        //#if MC>=12005
+        //$$ ByteArrayCodec codec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
+        //$$ connection.send(ClientPlayNetworking.createC2SPacket(new ByteArrayPayload(codec.getType(), encoded)));
+        //#else
         connection.send(ClientPlayNetworking.createC2SPacket(ModVoiceServer.CHANNEL, buf));
+        //#endif
+
         //#else
         //#if MC>=12002
         //$$ ServerboundCustomPayloadPacket customPacket = NetworkDirection.PLAY_TO_SERVER.<ServerboundCustomPayloadPacket>buildPacket(buf, ModVoiceServer.CHANNEL).getThis();

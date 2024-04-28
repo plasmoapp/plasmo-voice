@@ -1,9 +1,9 @@
 package su.plo.voice.client.render.voice;
 
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
-import su.plo.voice.universal.UResolution;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.UMinecraft;
+import gg.essential.universal.UResolution;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;

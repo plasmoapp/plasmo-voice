@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.render.particle;
 
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
 import net.minecraft.client.particle.ParticleRenderType;
 
 import net.minecraft.world.phys.AABB;
