@@ -240,7 +240,7 @@ public final class OverlayTabWidget extends TabWidget {
                     OverlayPosition disabledPosition = null;
                     try {
                         disabledPosition = OverlayPosition.valueOf(
-                                config.getOverlay().getOverlayPosition().value().toString()
+                                config.getOverlay().getActivationIconPosition().value().toString()
                         );
                     } catch (IllegalArgumentException ignored) {
                     }

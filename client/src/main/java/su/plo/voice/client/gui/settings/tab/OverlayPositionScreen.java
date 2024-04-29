@@ -68,7 +68,7 @@ public final class OverlayPositionScreen extends HudPositionScreen<OverlayPositi
                 McTextComponent.translatable(overlayPosition.getTranslation()),
                 (btn) -> {
                     entry.set(overlayPosition);
-                    ScreenWrapper.openScreen(null);
+                    ScreenWrapper.openScreen(parent);
                 },
                 Button.NO_TOOLTIP
         );
