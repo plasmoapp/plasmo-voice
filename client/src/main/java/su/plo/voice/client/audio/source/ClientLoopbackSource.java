@@ -88,8 +88,7 @@ public final class ClientLoopbackSource implements LoopbackSource {
 
         updateSources(volume);
 
-        samples = source.getDevice().processFilters(samples);
-        source.write(AudioUtil.shortsToBytes(samples));
+        source.write(samples, true);
     }
 
     private void updateSources(float volume) {

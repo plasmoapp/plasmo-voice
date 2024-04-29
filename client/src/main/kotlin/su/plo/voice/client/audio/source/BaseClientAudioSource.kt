@@ -424,11 +424,7 @@ abstract class BaseClientAudioSource<T>(
     }
 
     private fun write(samples: ShortArray) {
-        source.write(
-            AudioUtil.shortsToBytes(
-                source.device.processFilters(samples)
-            )
-        )
+        source.write(samples)
     }
 
     private suspend fun updateSource(volume: Float, position: Vec3) {

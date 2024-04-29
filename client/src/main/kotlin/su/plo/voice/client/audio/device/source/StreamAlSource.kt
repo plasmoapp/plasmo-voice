@@ -12,6 +12,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.event.audio.device.source.*
+import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.AlOutputDevice
 import java.nio.Buffer
@@ -92,6 +93,16 @@ class StreamAlSource private constructor(
 
     override fun setCloseTimeoutMs(timeoutMs: Long) {
         this.closeTimeoutMs = timeoutMs
+    }
+
+    override fun write(samples: ShortArray, applyFilters: Boolean) {
+        val processedSamples = if (applyFilters) {
+            device.processFilters(samples)
+        } else {
+            samples
+        }
+
+        write(AudioUtil.shortsToBytes(processedSamples))
     }
 
     override fun write(samples: ByteArray) {

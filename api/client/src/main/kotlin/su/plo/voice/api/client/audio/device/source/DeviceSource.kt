@@ -16,7 +16,15 @@ interface DeviceSource {
     /**
      * Writes audio samples to the source.
      *
-     * @param samples The audio samples to write as a byte array.
+     * @param samples The audio samples to write.
+     * @param applyFilters Whether the audio filters from [device] should be applied.
+     */
+    fun write(samples: ShortArray, applyFilters: Boolean = true)
+
+    /**
+     * Writes audio samples to the source without applying [device] filters.
+     *
+     * @param samples The audio samples to write.
      */
     fun write(samples: ByteArray)
 
