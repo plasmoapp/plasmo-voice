@@ -2,7 +2,7 @@ import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
-import gg.essential.util.prebundleNow
+import gg.essential.gradle.util.prebundle
 
 val mavenGroup: String by rootProject
 val isMainProject = project.name == file("../mainProject").readText().trim()
@@ -45,16 +45,9 @@ plasmoCrowdin {
 
 val shadowCommon by configurations.creating
 
-val relocatedUC = registerRelocationAttribute("relocate-uc") {
-    relocate("gg.essential.universal", "su.plo.voice.universal")
-}
-val universalCraft by configurations.creating {
-    attributes { attribute(relocatedUC, true) }
-}
-
 fun uStatsVersion() = rootProject.libs.versions.ustats.map {
     val minecraftVersion = when (platform.mcVersion) {
-        12001, 12002, 12003 -> "1.20"
+        12001, 12002, 12004, 12006 -> "1.20"
         else -> platform.mcVersionStr
     }
 
@@ -76,7 +69,8 @@ dependencies {
             11904 -> "0.76.0+1.19.4"
             12001 -> "0.84.0+1.20.1"
             12002 -> "0.89.1+1.20.2"
-            12003 -> "0.91.1+1.20.3"
+            12004 -> "0.97.0+1.20.4"
+            12006 -> "0.97.8+1.20.6"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -84,13 +78,16 @@ dependencies {
         "include"(modImplementation("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")!!)
     }
 
-    universalCraft(rootProject.libs.versions.universalcraft.map {
+    rootProject.libs.versions.universalcraft.map {
         "gg.essential:universalcraft-$platform:$it"
-    }) {
-        isTransitive = false
+    }.also {
+        modApi(it) {
+            isTransitive = false
+        }
+        shadowCommon(it) {
+            isTransitive = false
+        }
     }
-    modApi(prebundleNow(universalCraft))
-    shadowCommon(prebundleNow(universalCraft))
 
     "su.plo.ustats:${uStatsVersion()}".also {
         modApi(it) {
@@ -155,6 +152,7 @@ tasks {
         configurations = listOf(shadowCommon)
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
+        relocate("gg.essential.universal", "su.plo.voice.universal")
 
         relocate("su.plo.ustats", "su.plo.voice.ustats")
 

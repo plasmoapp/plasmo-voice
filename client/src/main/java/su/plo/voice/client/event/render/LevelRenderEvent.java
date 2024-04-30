@@ -1,6 +1,6 @@
 package su.plo.voice.client.event.render;
 
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.NonNull;
 import net.minecraft.client.multiplayer.ClientLevel;

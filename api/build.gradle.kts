@@ -52,8 +52,6 @@ subprojects {
                 configurations.api.get().allDependencies.forEach {
                     if (it is ProjectDependency) return@forEach
 
-                    println(it.name)
-
                     val dependencyNode = dependenciesNode.appendNode("dependency")
                     dependencyNode.appendNode("groupId", it.group)
                     dependencyNode.appendNode("artifactId", it.name)

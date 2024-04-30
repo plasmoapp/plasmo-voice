@@ -1,9 +1,9 @@
 package su.plo.lib.mod.client.gui.components;
 
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UKeyboard;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UKeyboard;
+import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.api.MathLib;

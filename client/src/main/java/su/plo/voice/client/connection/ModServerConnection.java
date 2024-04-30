@@ -2,7 +2,7 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UMinecraft;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.local.LocalAddress;
 import lombok.Getter;
@@ -57,6 +57,15 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
+//#if FABRIC
+
+//#if MC>=12005
+//$$ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+//$$ import su.plo.voice.codec.PacketTcpPayload;
+//#endif
+
+//#endif
+
 //#if MC>=12002
 //$$ import net.minecraft.resources.ResourceLocation;
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
@@ -105,6 +114,11 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         if (checkUdpConnection && !voiceClient.getUdpClientManager().isConnected())
             return;
 
+        //#if MC>=12005
+        //$$ connection.send(
+        //$$         ClientPlayNetworking.createC2SPacket(new PacketTcpPayload((Packet<PacketHandler>) packet))
+        //$$ );
+        //#else
         byte[] encoded = PacketTcpCodec.encode(packet);
         if (encoded == null) return;
 
@@ -113,6 +127,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         buf.writeBytes(encoded);
 
         connection.send(new ServerboundCustomPayloadPacket(buf));
+        //#endif
     }
 
     @Override

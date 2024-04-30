@@ -1,6 +1,6 @@
 package su.plo.lib.mod.client.gui.components;
 
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.api.chat.MinecraftTextComponent;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;

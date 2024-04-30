@@ -1,6 +1,6 @@
 package su.plo.lib.mod.client.chat;
 
-import su.plo.voice.universal.wrappers.message.UTextComponent;
+import gg.essential.universal.wrappers.message.UTextComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.network.chat.Component;
@@ -21,12 +21,12 @@ public final class ClientTextConverter extends TranslatableTextConverter<Compone
 
     @Override
     public @NotNull String convertToJson(@NotNull Component text) {
-        return Component.Serializer.toJson(text);
+        return textConverter.convertToJson(text);
     }
 
     @Override
     public Component convertFromJson(@NotNull String json) {
-        return Component.Serializer.fromJson(json);
+        return textConverter.convertFromJson(json);
     }
 
     @Override

@@ -1,13 +1,12 @@
 package su.plo.voice.client.render.voice;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.world.scores.Objective;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.UMinecraft;
 import lombok.NonNull;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -198,38 +197,14 @@ public final class SourceIconRenderer {
         if (hasPercent) stack.translate(0D, 0.3D, 0D);
         translateEntityMatrix(stack, camera, entity, distance, hasLabel);
 
-        UGraphics.bindTexture(0, iconLocation);
-        UGraphics.color4f(1F, 1F, 1F, 1F);
-        // TRANSLUCENT_TRANSPARENCY
-        UGraphics.enableBlend();
-        UGraphics.tryBlendFuncSeparate(
-                770, // SourceFactor.SRC_ALPHA
-                771, // DestFactor.ONE_MINUS_SRC_ALPHA
-                1, // SourceFactor.ONE
-                771 // DestFactor.ONE_MINUS_SRC_ALPHA
-        );
-        // LIGHT
-        RenderUtil.turnOnLightLayer();
-
         if (entity.isDescending()) {
-            vertices(stack, buffer, 40, light, false);
+            vertices(stack, buffer, 40, light, iconLocation, false);
         } else {
-            vertices(stack, buffer, 255, light, false);
-            vertices(stack, buffer, 40, light, true);
+            vertices(stack, buffer, 255, light, iconLocation, false);
+            vertices(stack, buffer, 40, light, iconLocation, true);
         }
 
         stack.pop();
-
-        // TRANSLUCENT_TRANSPARENCY
-        UGraphics.disableBlend();
-        RenderUtil.defaultBlendFunc();
-        UGraphics.depthMask(true);
-
-        // LIGHT
-//        RenderUtil.turnOffLightLayer();
-
-        UGraphics.enableDepth();
-        UGraphics.depthFunc(515);
     }
 
     private void renderPercent(@NonNull UMatrixStack stack,
@@ -319,8 +294,8 @@ public final class SourceIconRenderer {
 
         // todo: legacy getBbHeight?
         stack.translate(0D, entity.getBbHeight() + 0.5D, 0D);
-        stack.rotate(-camera.pitch(), 0.0F, 1.0F, 0.0F);
-        stack.rotate(camera.yaw(), 1.0F, 0.0F, 0.0F);
+        stack.rotate(-camera.yRot(), 0.0F, 1.0F, 0.0F);
+        stack.rotate(camera.xRot(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
         stack.translate(-5D, -1D, 0D);
     }
@@ -329,60 +304,34 @@ public final class SourceIconRenderer {
                               @NonNull ModCamera camera,
                               int light,
                               @NotNull ResourceLocation iconLocation,
-                              @NotNull Pos3d position) {
-        if (camera.position().distanceToSqr(new Vec3(
-                position.getX(), position.getY(), position.getZ()
-        )) > 4096D) return;
-
-        // TEXTURE
-        UGraphics.bindTexture(0, iconLocation);
-        UGraphics.color4f(1F, 1F, 1F, 1F);
-        // TRANSLUCENT_TRANSPARENCY
-        UGraphics.enableBlend();
-        UGraphics.tryBlendFuncSeparate(
-                770, // SourceFactor.SRC_ALPHA
-                771, // DestFactor.ONE_MINUS_SRC_ALPHA
-                1, // SourceFactor.ONE
-                771 // DestFactor.ONE_MINUS_SRC_ALPHA
-        );
-        // LIGHT
-        RenderUtil.turnOnLightLayer();
+                              @NotNull Pos3d mcPosition) {
+        Vec3 position = new Vec3(mcPosition.getX(), mcPosition.getY(), mcPosition.getZ());
+        if (camera.position().distanceToSqr(position) > 4096D) return;
 
         UGraphics buffer = UGraphics.getFromTessellator();
 
         stack.push();
         stack.translate(
-                position.getX() - camera.position().x,
-                position.getY() - camera.position().y,
-                position.getZ() - camera.position().z
+                position.x - camera.position().x,
+                position.y - camera.position().y,
+                position.z - camera.position().z
         );
-        stack.rotate(-camera.pitch(), 0.0F, 1.0F, 0.0F);
-        stack.rotate(camera.yaw(), 1.0F, 0.0F, 0.0F);
+        stack.rotate(-camera.yRot(), 0.0F, 1.0F, 0.0F);
+        stack.rotate(camera.xRot(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
         stack.translate(-5D, 0D, 0D);
 
-
-        vertices(stack, buffer, 255, light, false);
-        vertices(stack, buffer, 40, light, true);
+        vertices(stack, buffer, 255, light, iconLocation, false);
+        vertices(stack, buffer, 40, light, iconLocation, true);
 
         stack.pop();
-
-        // TRANSLUCENT_TRANSPARENCY
-        UGraphics.disableBlend();
-        RenderUtil.defaultBlendFunc();
-        UGraphics.depthMask(true);
-
-        // LIGHT
-//        RenderUtil.turnOffLightLayer();
-
-        UGraphics.enableDepth();
-        UGraphics.depthFunc(515);
     }
 
     private void vertices(@NonNull UMatrixStack stack,
                           @NonNull UGraphics buffer,
                           int alpha,
                           int light,
+                          @NotNull ResourceLocation iconLocation,
                           boolean seeThrough) {
         if (seeThrough) {
             UGraphics.disableDepth();
@@ -392,17 +341,12 @@ public final class SourceIconRenderer {
             UGraphics.depthMask(true);
         }
 
-        //#if MC>=11700
+        //#if MC>=11600
         if (seeThrough) {
-            UGraphics.setShader(GameRenderer::getRendertypeTextSeeThroughShader);
+            buffer.beginRenderLayer(RenderType.textSeeThrough(iconLocation));
         } else {
-            UGraphics.setShader(GameRenderer::getRendertypeTextShader);
+            buffer.beginRenderLayer(RenderType.text(iconLocation));
         }
-
-        buffer.beginWithActiveShader(
-                UGraphics.DrawMode.QUADS,
-                DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP
-        );
         //#endif
 
         vertex(stack, buffer, 0F, 10F, 0F, 0F, 1F, alpha, light);

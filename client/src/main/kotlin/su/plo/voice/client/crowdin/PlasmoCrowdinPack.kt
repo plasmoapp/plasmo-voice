@@ -10,6 +10,11 @@ import java.io.InputStream
 
 //#if MC>=11903
 import net.minecraft.server.packs.resources.IoSupplier
+
+//#if MC>=12005
+//$$ import net.minecraft.server.packs.PackLocationInfo
+//#endif
+
 //#else
 //$$ import java.io.FileInputStream
 //$$ import java.util.function.Predicate
@@ -40,7 +45,14 @@ class PlasmoCrowdinPack(
         resourceOutput: PackResources.ResourceOutput
     ) {}
 
+    //#if MC>=12005
+    //$$ override fun location(): net.minecraft.server.packs.PackLocationInfo {
+    //$$     throw UnsupportedOperationException()
+    //$$ }
+    //#else
     override fun isBuiltin() = true
+    //#endif
+
     //#else
     //$$ override fun getRootResource(fileName: String): InputStream? =
     //$$     File(crowdinFolder, fileName)

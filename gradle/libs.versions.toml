@@ -2,16 +2,16 @@
 junit5 = "5.8.2"
 crowdin = "1.0.1"
 ustats = "1.0.2"
-universalcraft = "320"
+universalcraft = "330+feature-1.20.5-fabric"
 bstats = "3.0.2"
 
 supervanish = "6.2.18-3"
 
 [libraries]
-lombok       = { module = "org.projectlombok:lombok", version = "1.18.24" }
+lombok       = { module = "org.projectlombok:lombok", version = "1.18.32" }
 annotations  = { module = "org.jetbrains:annotations", version = "23.0.0" }
 guava        = { module = "com.google.guava:guava", version = "31.1-jre" }
-gson         = { module = "com.google.code.gson:gson", version = "2.9.0" }
+gson         = { module = "com.google.code.gson:gson", version = "2.10.1" }
 
 slf4j        = { module = "org.slf4j:slf4j-api", version = "1.7.30" }
 junit-api    = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit5" }
@@ -37,6 +37,6 @@ supervanish = { module = "com.github.LeonMangler:SuperVanish", version.ref = "su
 [plugins]
 architectury-plugin = { id = "architectury-plugin", version = "3.4-SNAPSHOT" }
 architectury-loom   = { id = "dev.architectury.loom", version = "0.12.0-SNAPSHOT" }
-shadow              = { id = "com.github.johnrengelman.shadow", version = "7.1.0" }
+shadow              = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 idea-ext            = { id = "org.jetbrains.gradle.plugin.idea-ext", version = "1.1.7"}
 crowdin-plugin      = { id = "su.plo.crowdin.plugin", version.ref = "crowdin" }

@@ -8,6 +8,8 @@ import net.minecraft.server.level.ServerPlayer;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.server.entity.ModServerPlayer;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
+import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
 
@@ -19,6 +21,11 @@ import net.fabricmc.fabric.api.networking.v1.S2CPlayChannelEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+
+//#if MC>=12005
+//$$ import su.plo.voice.codec.PacketTcpPayload;
+//#endif
+
 //#else
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraftforge.network.NetworkEvent;
@@ -35,7 +42,13 @@ import java.util.List;
 public final class ModServerChannelHandler
         extends BaseServerChannelHandler
         //#if FABRIC
-        implements ServerPlayNetworking.PlayChannelHandler, S2CPlayChannelEvents.Register
+
+        //#if MC>=12005
+        //$$ implements ServerPlayNetworking.PlayPayloadHandler<PacketTcpPayload>,
+        //#else
+        implements ServerPlayNetworking.PlayChannelHandler,
+        //#endif
+        S2CPlayChannelEvents.Register
         //#endif
 {
 
@@ -60,26 +73,36 @@ public final class ModServerChannelHandler
 
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
-                    .ifPresent(packet -> {
-                        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
-
-                        PlayerChannelHandler channel = channels.computeIfAbsent(
-                                player.getUUID(),
-                                (playerId) -> new PlayerChannelHandler(voiceServer, voicePlayer)
-                        );
-
-                        channel.handlePacket(packet);
-                    });
+                    .ifPresent(packet -> receive(player, packet));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    private void receive(ServerPlayer player, Packet<PacketHandler> packet) {
+        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().wrap(player);
+
+        PlayerChannelHandler channel = channels.computeIfAbsent(
+                player.getUUID(),
+                (playerId) -> new PlayerChannelHandler(voiceServer, voicePlayer)
+        );
+
+        channel.handlePacket(packet);
+    }
+
     //#if FABRIC
+
+    //#if MC>=12005
+    //$$ @Override
+    //$$ public void receive(PacketTcpPayload payload, ServerPlayNetworking.Context context) {
+    //$$     receive(context.player(), payload.getPacket());
+    //$$ }
+    //#else
     @Override
     public void receive(MinecraftServer server, ServerPlayer player, ServerGamePacketListenerImpl handler, FriendlyByteBuf buf, PacketSender responseSender) {
         receive(player, buf);
     }
+    //#endif
 
     @Override
     public void onChannelRegister(ServerGamePacketListenerImpl handler, PacketSender sender, MinecraftServer server, List<ResourceLocation> channels) {

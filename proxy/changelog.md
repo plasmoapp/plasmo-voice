@@ -1,1 +1,1 @@
-- Fixed a bug where an AES key was not reset properly after a backend restart
+- Fixed stacktrace spam on bad packets [#397](https://github.com/plasmoapp/plasmo-voice/issues/397)

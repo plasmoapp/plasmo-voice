@@ -12,16 +12,39 @@ import su.plo.lib.api.chat.*;
 
 import java.util.List;
 
+//#if MC>=12005
+//$$ import com.mojang.serialization.JsonOps;
+//$$ import com.google.gson.*;
+//$$ import net.minecraft.network.chat.ComponentSerialization;
+//#endif
+
 public final class ComponentTextConverter implements MinecraftTextConverter<Component> {
+
+    //#if MC>=12005
+    //$$ private static final Gson GSON = (new GsonBuilder()).disableHtmlEscaping().create();
+    //#endif
 
     @Override // todo: legacy
     public @NotNull String convertToJson(@NotNull Component text) {
+        //#if MC>=12005
+        //$$ return GSON.toJson(
+        //$$         ComponentSerialization.CODEC.encodeStart(JsonOps.INSTANCE, text)
+        //$$                 .getOrThrow(JsonParseException::new)
+        //$$ );
+        //#else
         return Component.Serializer.toJson(text);
+        //#endif
     }
 
     @Override // todo: legacy
     public Component convertFromJson(@NotNull String json) {
+        //#if MC>=12005
+        //$$ JsonElement jsonElement = JsonParser.parseString(json);
+        //$$ return jsonElement == null ? null : ComponentSerialization.CODEC.parse(JsonOps.INSTANCE, jsonElement)
+        //$$         .getOrThrow(JsonParseException::new);
+        //#else
         return Component.Serializer.fromJson(json);
+        //#endif
     }
 
     @Override

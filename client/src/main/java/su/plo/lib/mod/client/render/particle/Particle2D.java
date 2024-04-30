@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.render.particle;
 
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import su.plo.voice.universal.UGraphics;
-import su.plo.voice.universal.UMatrixStack;
+import gg.essential.universal.UGraphics;
+import gg.essential.universal.UMatrixStack;
 import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.core.particles.ParticleGroup;
 import net.minecraft.util.RandomSource;

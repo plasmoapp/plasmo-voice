@@ -28,6 +28,21 @@ import java.util.Set;
 
 import static su.plo.lib.mod.server.utils.ServerPlayerKt.serverLevel;
 
+//#if FABRIC
+//#if MC>=12005
+//$$ import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+//$$ import su.plo.voice.codec.PacketServicePayload;
+//$$ import su.plo.voice.codec.PacketTcpPayload;
+//$$ import su.plo.voice.proto.packets.Packet;
+//$$ import su.plo.voice.proto.packets.PacketHandler;
+//$$ import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
+//$$ import su.plo.voice.server.ModVoiceServer;
+//$$
+//$$ import java.io.IOException;
+//$$ import com.google.common.io.ByteStreams;
+//#endif
+//#endif
+
 //#if MC>=12002
 //$$ import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 //$$ import net.minecraft.resources.ResourceLocation;
@@ -102,11 +117,47 @@ public final class ModServerPlayer
 
     @Override
     public void sendPacket(@NotNull String channel, byte[] data) {
+        //#if MC>=12005
+        //$$ try {
+        //$$     switch (channel) {
+        //$$         case ModVoiceServer.CHANNEL_STRING:
+        //$$             // todo: this is actually unnecessary re-encoding, but I don't think anything can be done without rewriting good chunk of code
+        //$$             //  I'll try to fix it in slib and PV 2.1.x
+        //$$             Packet<PacketHandler> packet = PacketTcpCodec.decode(ByteStreams.newDataInput(data))
+        //$$                     .orElseThrow(() -> new IOException("data is not Plasmo Voice packet"));
+        //$$
+        //$$             instance.connection.send(
+        //$$                     ServerPlayNetworking.createS2CPacket(
+        //$$                             new PacketTcpPayload(packet)
+        //$$                     )
+        //$$             );
+        //$$
+        //$$             break;
+        //$$
+        //$$         case ModVoiceServer.SERVICE_CHANNEL_STRING:
+        //$$
+        //$$             instance.connection.send(
+        //$$                     ServerPlayNetworking.createS2CPacket(
+        //$$                             new PacketServicePayload(data)
+        //$$                     )
+        //$$             );
+        //$$
+        //$$             break;
+        //$$
+        //$$         default:
+        //$$             throw new IllegalArgumentException("This method is now not supported for custom channels due to 1.20.5 changes. It'll be fixed in PV 2.1.x");
+        //$$     }
+        //$$ } catch (IOException e) {
+        //$$     e.printStackTrace();
+        //$$     return;
+        //$$ }
+        //#else
         FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.buffer());
         buf.writeResourceLocation(resources.getLocation(channel));
         buf.writeBytes(data);
 
         instance.connection.send(new ClientboundCustomPayloadPacket(buf));
+        //#endif
     }
 
     @Override

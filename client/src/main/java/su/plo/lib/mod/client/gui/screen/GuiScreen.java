@@ -1,9 +1,9 @@
 package su.plo.lib.mod.client.gui.screen;
 
 import com.google.common.collect.Lists;
-import su.plo.voice.universal.UMatrixStack;
-import su.plo.voice.universal.UMinecraft;
-import su.plo.voice.universal.UResolution;
+import gg.essential.universal.UMatrixStack;
+import gg.essential.universal.UMinecraft;
+import gg.essential.universal.UResolution;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.screens.Screen;
