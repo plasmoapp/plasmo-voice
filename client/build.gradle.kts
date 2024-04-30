@@ -47,7 +47,7 @@ val shadowCommon by configurations.creating
 
 fun uStatsVersion() = rootProject.libs.versions.ustats.map {
     val minecraftVersion = when (platform.mcVersion) {
-        12001, 12002, 12004, 12005 -> "1.20"
+        12001, 12002, 12004, 12006 -> "1.20"
         else -> platform.mcVersionStr
     }
 
@@ -70,7 +70,7 @@ dependencies {
             12001 -> "0.84.0+1.20.1"
             12002 -> "0.89.1+1.20.2"
             12004 -> "0.97.0+1.20.4"
-            12005 -> "0.97.6+1.20.5"
+            12006 -> "0.97.8+1.20.6"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
