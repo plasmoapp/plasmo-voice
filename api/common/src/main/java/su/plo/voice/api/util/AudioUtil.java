@@ -69,7 +69,15 @@ public final class AudioUtil {
         short[] shorts = new short[floats.length];
 
         for(int i = 0; i < floats.length; i++) {
-            shorts[i] = Float.valueOf(floats[i]).shortValue();
+            shorts[i] = Float.valueOf(
+                    Math.min( // Clamp to prevent overdrive causing clipping (https://github.com/remjey/mumble/commit/f16b47c81aceaf0c8704b355d9316bf685cb3704)
+                            Short.MAX_VALUE,
+                            Math.max(
+                                    Short.MIN_VALUE,
+                                    floats[i]
+                            )
+                    )
+            ).shortValue();
         }
 
         return shorts;
