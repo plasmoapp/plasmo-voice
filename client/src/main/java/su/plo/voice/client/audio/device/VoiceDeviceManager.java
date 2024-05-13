@@ -17,6 +17,7 @@ import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
 
 import javax.sound.sampled.AudioFormat;
+import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -35,6 +36,9 @@ public final class VoiceDeviceManager implements DeviceManager {
     private @Nullable InputDevice inputDevice = null;
 
     private ScheduledFuture<?> job;
+
+    private String failedOutputDevices = "";
+    private String failedInputDevices = "";
 
     @Override
     public @NotNull Optional<AlContextOutputDevice> getOutputDevice() {
@@ -180,11 +184,16 @@ public final class VoiceDeviceManager implements DeviceManager {
                 .orElseThrow(() -> new IllegalStateException("OpenAL input factory is not registered"));;
 
         if (outputDevice == null) {
-            if (outputFactory.getDeviceNames().size() > 0) {
+            List<String> deviceNames = outputFactory.getDeviceNames();
+            String deviceNamesString = String.join("\n", deviceNames);
+
+            if (deviceNames.size() > 0 && !deviceNamesString.equals(failedOutputDevices)) {
                 try {
                     setOutputDevice(openOutputDevice(null));
+                    failedOutputDevices = "";
                 } catch (Exception e) {
                     LOGGER.error("Failed to open primary OpenAL output device", e);
+                    failedOutputDevices = deviceNamesString;
                 }
 
                 if (!voiceClient.getAudioCapture().isActive() && inputDevice != null) {
@@ -199,11 +208,16 @@ public final class VoiceDeviceManager implements DeviceManager {
         }
 
         if (inputDevice == null) {
-            if (inputFactory.getDeviceNames().size() > 0 && !config.getVoice().getDisableInputDevice().value()) {
+            List<String> deviceNames = inputFactory.getDeviceNames();
+            String deviceNamesString = String.join("\n", deviceNames);
+
+            if (deviceNames.size() > 0 && !deviceNamesString.equals(failedInputDevices) && !config.getVoice().getDisableInputDevice().value()) {
                 try {
                     setInputDevice(openInputDevice(null));
+                    failedInputDevices = "";
                 } catch (Exception e) {
                     LOGGER.error("Failed to open input device", e);
+                    failedInputDevices = deviceNamesString;
                 }
 
                 if (!voiceClient.getAudioCapture().isActive()) {
