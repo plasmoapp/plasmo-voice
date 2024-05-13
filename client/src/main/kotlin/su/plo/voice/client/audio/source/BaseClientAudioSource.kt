@@ -21,11 +21,13 @@ import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.device.source.AlSourceParams
 import su.plo.voice.api.client.audio.source.ClientAudioSource
+import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.api.client.connection.ServerInfo.VoiceInfo
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent
 import su.plo.voice.api.client.event.audio.device.source.AlStreamSourceStoppedEvent
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent
 import su.plo.voice.api.client.event.audio.source.AudioSourceInitializedEvent
+import su.plo.voice.api.client.event.audio.source.AudioSourceResetEvent
 import su.plo.voice.api.encryption.Encryption
 import su.plo.voice.api.encryption.EncryptionException
 import su.plo.voice.api.event.EventPriority
@@ -55,6 +57,9 @@ abstract class BaseClientAudioSource<T>(
     final override var sourceInfo: T
 ) : ClientAudioSource<T> where T : SourceInfo {
 
+    private val timeSupplier: TimeSupplier
+        get() = voiceClient.timeSupplier
+
     override var source: AlSource = runBlocking { createSource(sourceInfo) }
 
     private var lineVolume: DoubleConfigEntry
@@ -69,6 +74,10 @@ abstract class BaseClientAudioSource<T>(
     private var endRequest: Job? = null
 
     override var closeTimeoutMs: Long = 500
+        set(value) {
+            source.setCloseTimeoutMs(value)
+            field = value
+        }
 
     private var lastSequenceNumbers: MutableMap<UUID, Long> = HashMap()
     private var lastActivation = 0L
@@ -175,7 +184,7 @@ abstract class BaseClientAudioSource<T>(
         endRequest = SCOPE.launch {
             try {
                 delay(100L)
-                reset()
+                reset(AudioSourceResetEvent.Cause.VOICE_END)
             } catch (_: CancellationException) {
             }
         }
@@ -201,11 +210,10 @@ abstract class BaseClientAudioSource<T>(
 
     override fun isActivated(): Boolean {
         if (activated.get()) {
-            if (closeTimeoutMs > 0L && System.currentTimeMillis() - lastActivation > closeTimeoutMs) {
-                LOGGER.warn("Voice end packet was not received. Resetting audio source")
-                resetAsync()
-                return false
+            if (closeTimeoutMs > 0L && timeSupplier.currentTimeMillis - lastActivation > closeTimeoutMs) {
+                resetAsync(AudioSourceResetEvent.Cause.TIMED_OUT)
             }
+
             return true
         }
 
@@ -228,8 +236,8 @@ abstract class BaseClientAudioSource<T>(
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceStopped(event: AlStreamSourceStoppedEvent) {
-        if (closed.get() || source != event.source || closeTimeoutMs == 0L) return
-        resetAsync()
+        if (closed.get() || source != event.source) return
+        resetAsync(AudioSourceResetEvent.Cause.SOURCE_STOPPED)
     }
 
     private suspend fun processAudioPacket(packet: SourceAudioPacket) = mutex.withLock {
@@ -316,7 +324,7 @@ abstract class BaseClientAudioSource<T>(
         if (lastSequenceNumber >= 0) {
             val packetsToCompensate = (packet.sequenceNumber - (lastSequenceNumber + 1)).toInt()
             if (packetsToCompensate in 1..4) {
-                LOGGER.warn("Compensate {} packets", packetsToCompensate)
+                BaseVoice.DEBUG_LOGGER.warn("Compensate {} lost packets", packetsToCompensate)
                 for (i in 0 until packetsToCompensate) {
                     if (decoder != null && decoder is AudioDecoderPlc && !sourceInfo.isStereo) {
                         try {
@@ -349,7 +357,7 @@ abstract class BaseClientAudioSource<T>(
         }
 
         lastSequenceNumbers[sourceInfo.lineId] = packet.sequenceNumber
-        lastActivation = System.currentTimeMillis()
+        lastActivation = timeSupplier.currentTimeMillis
 
         if (distance > 0) canHear.set(sourceDistance <= distance)
         activated.set(true)
@@ -361,16 +369,23 @@ abstract class BaseClientAudioSource<T>(
         lastSequenceNumbers[sourceInfo.lineId] = packet.sequenceNumber
     }
 
-    private suspend fun reset() = mutex.withLock {
+    private suspend fun reset(cause: AudioSourceResetEvent.Cause) = mutex.withLock {
+        val event = AudioSourceResetEvent(this, cause)
+        if (!voiceClient.eventBus.fire(event)) return@withLock
+
         if (!resetted.compareAndSet(false, true)) return
         if (decoder != null) decoder!!.reset()
         activated.set(false)
         canHear.set(false)
+
+        if (cause == AudioSourceResetEvent.Cause.TIMED_OUT) {
+            LOGGER.debug("Voice end packet was not received")
+        }
     }
 
-    private fun resetAsync() =
+    private fun resetAsync(cause: AudioSourceResetEvent.Cause) =
         SCOPE.future {
-            reset()
+            reset(cause)
             null
         }
 

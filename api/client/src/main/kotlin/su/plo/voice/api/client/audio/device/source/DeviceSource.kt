@@ -29,6 +29,11 @@ interface DeviceSource {
     fun write(samples: ByteArray)
 
     /**
+     * Clears the audio buffer.
+     */
+    fun clearBuffer()
+
+    /**
      * Closes the audio source.
      */
     @JvmSynthetic

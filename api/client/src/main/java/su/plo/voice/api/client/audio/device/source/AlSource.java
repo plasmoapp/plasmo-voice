@@ -157,6 +157,13 @@ public interface AlSource extends DeviceSource {
      */
     void setCloseTimeoutMs(long timeoutMs);
 
+    /**
+     * Gets the OpenAL format of the source.
+     *
+     * @return The format of the source.
+     */
+    int getFormat();
+
     enum State {
         INITIAL(4113),
         PLAYING(4114),

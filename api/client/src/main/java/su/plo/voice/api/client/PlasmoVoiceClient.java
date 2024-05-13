@@ -18,6 +18,8 @@ import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.client.socket.UdpClient;
+import su.plo.voice.api.client.time.SystemTimeSupplier;
+import su.plo.voice.api.client.time.TimeSupplier;
 
 import java.util.Optional;
 
@@ -143,4 +145,24 @@ public interface PlasmoVoiceClient extends PlasmoVoice {
      * @return The {@link ClientConfig}.
      */
     @NotNull ClientConfig getConfig();
+
+    /**
+     * Sets the time supplier.
+     * <br/>
+     * Default is {@link SystemTimeSupplier}.
+     */
+    void setTimeSupplier(@NotNull TimeSupplier timeSupplier);
+
+    /**
+     * Gets the current time supplier.
+     * <br/>
+     * Time supplier is used in sources,
+     * so you can change the time supplier to prevent closing the sources in environments with custom time
+     * (for example, in replays).
+     * <br/>
+     * Default is {@link SystemTimeSupplier}.
+     *
+     * @return The current time supplier.
+     */
+    @NotNull TimeSupplier getTimeSupplier();
 }

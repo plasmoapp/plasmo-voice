@@ -160,6 +160,11 @@ public abstract class BaseAlSource implements AlSource {
         AlUtil.checkErrors("Set source float[] " + param + ": " + Arrays.toString(values));
     }
 
+    @Override
+    public int getFormat() {
+        return format;
+    }
+
     private boolean callParamEvent(int param, Object value) {
         AlSourceUpdateParamEvent event = new AlSourceUpdateParamEvent(this, param, value);
         return client.getEventBus().fire(event);

@@ -31,6 +31,8 @@ import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
+import su.plo.voice.api.client.time.SystemTimeSupplier;
+import su.plo.voice.api.client.time.TimeSupplier;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.capture.VoiceAudioCapture;
 import su.plo.voice.client.audio.capture.VoiceClientActivationManager;
@@ -81,6 +83,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     private ClientSourceManager sourceManager;
     @Getter
     private DistanceVisualizer distanceVisualizer;
+
+    @Getter
+    @Setter
+    private TimeSupplier timeSupplier = new SystemTimeSupplier();
 
     @Getter
     protected VoiceClientConfig config;

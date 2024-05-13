@@ -18,6 +18,10 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
      * Gets or sets the timeout duration in milliseconds for closing this audio source.
      * If the source remains inactive for this duration, it will be automatically closed.
      *
+     * Set to 0 to disable.
+     *
+     * Default is 500ms.
+     *
      * @return The close timeout in ms.
      */
     var closeTimeoutMs: Long
@@ -75,7 +79,7 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
     /**
      * Checks if the audio source is currently playing audio.
      *
-     * @return `true` if the audio source is playing audio,`false` otherwise.
+     * @return `true` if the audio source is playing audio, `false` otherwise.
      */
     fun isActivated(): Boolean
 

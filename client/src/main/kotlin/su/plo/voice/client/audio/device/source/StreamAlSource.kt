@@ -12,6 +12,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.event.audio.device.source.*
+import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.AlOutputDevice
@@ -28,6 +29,9 @@ class StreamAlSource private constructor(
     numBuffers: Int,
     pointer: Int
 ) : BaseAlSource(client, device, stereo, pointer) {
+
+    private val timeSupplier: TimeSupplier
+        get() = client.timeSupplier
 
     private var closeTimeoutMs = 25000L
 
@@ -117,17 +121,25 @@ class StreamAlSource private constructor(
             return
         }
 
-        val buffer = MemoryUtil.memAlloc(samples.size)
-        buffer.put(samples)
+        val writeEvent = AlSourceWriteEvent(this, samples)
+        if (!client.eventBus.fire(writeEvent)) return
+
+        val newSamples = writeEvent.samples
+
+        val buffer = MemoryUtil.memAlloc(newSamples.size)
+        buffer.put(newSamples)
         (buffer as Buffer).flip()
 
-        if (!client.eventBus.fire(AlSourceWriteEvent(this, buffer))) return
-
         queue.offer(buffer)
-        if (samples != emptyBuffer) {
+        if (newSamples != emptyBuffer) {
             emptyFilled.set(false)
-            lastBufferTime = System.currentTimeMillis()
+            lastBufferTime = timeSupplier.currentTimeMillis
         }
+    }
+
+    override fun clearBuffer() {
+        if (queue.isEmpty()) return
+        queue.clear()
     }
 
     override suspend fun close() {
@@ -190,7 +202,7 @@ class StreamAlSource private constructor(
             queueWithEmptyBuffers()
             fillQueue()
 
-            lastBufferTime = System.currentTimeMillis()
+            lastBufferTime = timeSupplier.currentTimeMillis
             availableBuffer[0] = -1
 
             while (isStreaming.get()) {
@@ -242,7 +254,7 @@ class StreamAlSource private constructor(
                     AlUtil.checkErrors("Source play")
                 }
 
-                if (closeTimeoutMs > 0L && System.currentTimeMillis() - lastBufferTime > closeTimeoutMs) {
+                if (closeTimeoutMs > 0L && timeSupplier.currentTimeMillis - lastBufferTime > closeTimeoutMs) {
                     BaseVoice.DEBUG_LOGGER.log("Stream timed out. Closing...")
                     close()
                     break
@@ -253,6 +265,9 @@ class StreamAlSource private constructor(
         }
     }
 
+    // todo: this creates playback delay
+    //  if I understand this correctly, AL plays only last buffer in the queue when new buffer is pushed
+    //  so it probably better to use one buffer to decrease delays?
     private fun queueWithEmptyBuffers() {
         for (i in 0 until numBuffers) {
             write(emptyBuffer)
@@ -297,7 +312,7 @@ class StreamAlSource private constructor(
     companion object {
 
         private val LOGGER = LogManager.getLogger(StreamAlSource::class.java)
-        private const val DEFAULT_NUM_BUFFERS = 8
+        private const val DEFAULT_NUM_BUFFERS = 4
 
         @JvmStatic
         fun create(device: AlOutputDevice, client: PlasmoVoiceClient, stereo: Boolean, numBuffers: Int): AlSource {
