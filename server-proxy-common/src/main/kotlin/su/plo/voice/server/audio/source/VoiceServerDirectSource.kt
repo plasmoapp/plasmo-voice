@@ -2,6 +2,7 @@ package su.plo.voice.server.audio.source
 
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoBaseVoiceServer
+import su.plo.voice.api.server.audio.capture.PlayerActivationInfo
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine
 import su.plo.voice.api.server.audio.source.ServerDirectSource
 import su.plo.voice.api.server.connection.UdpConnectionManager
@@ -26,8 +27,8 @@ class VoiceServerDirectSource(
 ) : VoiceBaseServerDirectSource(voiceServer, udpConnections, addon, line, decoderInfo, stereo),
     ServerDirectSource {
 
-    override fun sendAudioPacket(packet: SourceAudioPacket, activationId: UUID?): Boolean {
-        val event = ServerSourceAudioPacketEvent(this, packet, activationId);
+    override fun sendAudioPacket(packet: SourceAudioPacket, activationInfo: PlayerActivationInfo?): Boolean {
+        val event = ServerSourceAudioPacketEvent(this, packet, activationInfo)
         if (!voiceServer.eventBus.fire(event)) return false
 
         packet.sourceState = state.get().toByte()

@@ -5,11 +5,9 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.event.EventCancellableBase;
+import su.plo.voice.api.server.audio.capture.PlayerActivationInfo;
 import su.plo.voice.api.server.audio.source.ServerAudioSource;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
-
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * This event is fired when the {@link SourceAudioPacket} is about to send to the players.
@@ -23,29 +21,26 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
     @Getter
     @Setter
     private short distance;
-    private UUID activationId;
+    @Getter
+    private @Nullable PlayerActivationInfo activationInfo;
 
     public ServerSourceAudioPacketEvent(
             @NotNull ServerAudioSource source,
             @NotNull SourceAudioPacket packet,
-            @Nullable UUID activationId
+            @Nullable PlayerActivationInfo activationInfo
     ) {
-        this(source, packet, (short) -1, activationId);
+        this(source, packet, (short) -1, activationInfo);
     }
 
     public ServerSourceAudioPacketEvent(
             @NotNull ServerAudioSource source,
             @NotNull SourceAudioPacket packet,
             short distance,
-            @Nullable UUID activationId
+            @Nullable PlayerActivationInfo activationInfo
     ) {
         this.source = source;
         this.packet = packet;
         this.distance = distance;
-        this.activationId = activationId;
-    }
-
-    public Optional<UUID> getActivationId() {
-        return Optional.ofNullable(activationId);
+        this.activationInfo = activationInfo;
     }
 }

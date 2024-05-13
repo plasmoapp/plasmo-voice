@@ -20,9 +20,7 @@ import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.data.audio.codec.CodecInfo
-import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket
-import su.plo.voice.proto.packets.tcp.clientbound.ActivationUnregisterPacket
-import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler
+import su.plo.voice.proto.packets.tcp.clientbound.*
 import su.plo.voice.server.player.BaseVoicePlayer
 import java.util.*
 import java.util.function.Consumer
@@ -34,6 +32,11 @@ class VoiceServerActivationManager(
 ) : ServerActivationManager {
 
     private val activationById: MutableMap<UUID, ServerActivation> = Maps.newConcurrentMap()
+    private val selfActivationHelper = SelfActivationHelper(voiceServer)
+
+    init {
+        voiceServer.eventBus.register(voiceServer, selfActivationHelper)
+    }
 
     override fun getActivationById(id: UUID) =
         Optional.ofNullable(activationById[id])
@@ -104,7 +107,7 @@ class VoiceServerActivationManager(
         activationById.clear()
     }
 
-    @EventSubscribe(priority = EventPriority.LOWEST)
+    @EventSubscribe(priority = EventPriority.LOW)
     fun onPlayerSpeak(event: PlayerSpeakEvent) {
         val player = event.player as BaseVoicePlayer<*>
         val packet = event.packet
@@ -135,7 +138,7 @@ class VoiceServerActivationManager(
         }
     }
 
-    @EventSubscribe(priority = EventPriority.LOWEST)
+    @EventSubscribe(priority = EventPriority.LOW)
     fun onPlayerSpeakEnd(event: PlayerSpeakEndEvent) {
         val player = event.player as BaseVoicePlayer<*>
         val packet = event.packet

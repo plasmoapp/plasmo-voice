@@ -3,6 +3,7 @@ package su.plo.voice.server.audio.source
 import su.plo.slib.api.server.position.ServerPos3d
 import su.plo.voice.api.addon.AddonContainer
 import su.plo.voice.api.server.PlasmoVoiceServer
+import su.plo.voice.api.server.audio.capture.PlayerActivationInfo
 import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.provider.AudioFrameProvider
 import su.plo.voice.api.server.audio.source.AudioSender
@@ -34,9 +35,9 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
             field = value
         }
 
-    override fun sendAudioPacket(packet: SourceAudioPacket, distance: Short, activationId: UUID?): Boolean {
+    override fun sendAudioPacket(packet: SourceAudioPacket, distance: Short, activationInfo: PlayerActivationInfo?): Boolean {
         // call event
-        val event = ServerSourceAudioPacketEvent(this, packet, distance, activationId)
+        val event = ServerSourceAudioPacketEvent(this, packet, distance, activationInfo)
         if (!voiceServer.eventBus.fire(event)) return false
 
         // update packet's source state

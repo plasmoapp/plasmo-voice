@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.audio.source
 
 import su.plo.slib.api.server.position.ServerPos3d
+import su.plo.voice.api.server.audio.capture.PlayerActivationInfo
 import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.provider.AudioFrameProvider
 import su.plo.voice.proto.data.audio.source.SourceInfo
@@ -40,7 +41,7 @@ interface ServerProximitySource<S : SourceInfo> : ServerAudioSource<S> {
         sendPacket(SourceAudioEndPacket(id, sequenceNumber), distance)
 
     /**
-     * Sends an encoded and encrypted audio frame to players within the specified distance with null activation ID.
+     * Sends an encoded and encrypted audio frame to players within the specified distance with null activation info.
      *
      * @param frame      The frame to send.
      * @param sequenceNumber The sequence number of the frame.
@@ -51,15 +52,15 @@ interface ServerProximitySource<S : SourceInfo> : ServerAudioSource<S> {
         sendAudioFrame(frame, sequenceNumber, distance, null)
 
     /**
-     * Sends an encoded and encrypted audio frame to players within the specified distance with an activation ID.
+     * Sends an encoded and encrypted audio frame to players within the specified distance with activation info.
      *
-     * @param frame      The frame to send.
-     * @param sequenceNumber The sequence number of the frame.
-     * @param distance   The maximum distance at which players can hear the audio.
-     * @param activationId The activation ID for the audio packet.
+     * @param frame             The frame to send.
+     * @param sequenceNumber    The sequence number of the frame.
+     * @param distance          The maximum distance at which players can hear the audio.
+     * @param activationInfo    The activation info for the audio packet.
      * @return `true` if the packet was successfully sent, `false` otherwise.
      */
-    fun sendAudioFrame(frame: ByteArray, sequenceNumber: Long, distance: Short, activationId: UUID?): Boolean {
+    fun sendAudioFrame(frame: ByteArray, sequenceNumber: Long, distance: Short, activationInfo: PlayerActivationInfo?): Boolean {
         val audioPacket = SourceAudioPacket(
             sequenceNumber,
             state.toByte(),
@@ -68,11 +69,11 @@ interface ServerProximitySource<S : SourceInfo> : ServerAudioSource<S> {
             distance
         )
 
-        return sendAudioPacket(audioPacket, distance, activationId)
+        return sendAudioPacket(audioPacket, distance, activationInfo)
     }
 
     /**
-     * Sends an audio packet to players within the specified distance with null activation ID.
+     * Sends an audio packet to players within the specified distance with null activation info.
      *
      * @param packet     The audio packet to send.
      * @param distance   The maximum distance at which players can hear the audio.
@@ -82,14 +83,14 @@ interface ServerProximitySource<S : SourceInfo> : ServerAudioSource<S> {
         sendAudioPacket(packet, distance, null)
 
     /**
-     * Sends an audio packet to players within the specified distance with an activation ID.
+     * Sends an audio packet to players within the specified distance with an activation info.
      *
-     * @param packet       The audio packet to send.
-     * @param distance     The maximum distance at which players can hear the audio.
-     * @param activationId The activation ID for the audio packet.
+     * @param packet            The audio packet to send.
+     * @param distance          The maximum distance at which players can hear the audio.
+     * @param activationInfo    The activation info for the audio packet.
      * @return `true` if the packet was successfully sent, `false` otherwise.
      */
-    fun sendAudioPacket(packet: SourceAudioPacket, distance: Short, activationId: UUID?): Boolean
+    fun sendAudioPacket(packet: SourceAudioPacket, distance: Short, activationInfo: PlayerActivationInfo?): Boolean
 
     /**
      * Sends a TCP packet to players within the specified distance.
