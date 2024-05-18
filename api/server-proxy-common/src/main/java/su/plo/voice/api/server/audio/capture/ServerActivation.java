@@ -119,7 +119,7 @@ public interface ServerActivation extends Activation {
     void setProximity(boolean proximity);
 
     /**
-     * Invoked when a player uses the activation and meets all requirements:
+     * Adds a new listener that will be invoked when a player uses the activation and meets all requirements:
      * <ul>
      *     <li>{@link #checkPermissions(VoicePlayer)}</li>
      *     <li>{@link #checkDistance(int)}</li>
@@ -131,7 +131,21 @@ public interface ServerActivation extends Activation {
     void onPlayerActivation(@NotNull PlayerActivationListener activationListener);
 
     /**
-     * Invoked when a player starts using the activation and meets all requirements:
+     * Removes a player activation listener.
+     *
+     * @param activationListener The listener.
+     *
+     * @return {@code true} if the listener was removed.
+     */
+    boolean removePlayerActivationListener(@NotNull PlayerActivationListener activationListener);
+
+    /**
+     * Clears all player activation listeners.
+     */
+    void clearPlayerActivationListeners();
+
+    /**
+     * Adds a new listener that will be invoked when a player starts using the activation and meets all requirements:
      * <ul>
      *     <li>{@link #checkPermissions(VoicePlayer)}</li>
      *     <li>{@link #checkDistance(int)}</li>
@@ -143,7 +157,21 @@ public interface ServerActivation extends Activation {
     void onPlayerActivationStart(@NotNull ServerActivation.PlayerActivationStartListener activationStartListener);
 
     /**
-     * Invoked when a player sends {@link PlayerAudioEndPacket} and meets all requirements:
+     * Removes a player activation start listener.
+     *
+     * @param activationListener The listener.
+     *
+     * @return {@code true} if the listener was removed.
+     */
+    boolean removePlayerActivationStartListener(@NotNull ServerActivation.PlayerActivationStartListener activationListener);
+
+    /**
+     * Clears all player activation start listeners.
+     */
+    void clearPlayerActivationStartListeners();
+
+    /**
+     * Adds a new listener that will be invoked when a player sends {@link PlayerAudioEndPacket} and meets all requirements:
      * <ul>
      *     <li>{@link #checkPermissions(VoicePlayer)}</li>
      *     <li>{@link #checkDistance(int)}</li>
@@ -154,6 +182,29 @@ public interface ServerActivation extends Activation {
      * @param activationEndListener The listener to handle the activation end event.
      */
     void onPlayerActivationEnd(@NotNull ServerActivation.PlayerActivationEndListener activationEndListener);
+
+    /**
+     * Removes a player activation end listener.
+     *
+     * @param activationListener The listener.
+     *
+     * @return {@code true} if the listener was removed.
+     */
+    boolean removePlayerActivationEndListener(@NotNull ServerActivation.PlayerActivationEndListener activationListener);
+
+    /**
+     * Clears all player activation end listeners.
+     */
+    void clearPlayerActivationEndListeners();
+
+    /**
+     * Clears all activation listeners.
+     */
+    default void clearListeners() {
+        clearPlayerActivationListeners();
+        clearPlayerActivationStartListeners();
+        clearPlayerActivationEndListeners();
+    }
 
     @FunctionalInterface
     interface PlayerActivationListener {

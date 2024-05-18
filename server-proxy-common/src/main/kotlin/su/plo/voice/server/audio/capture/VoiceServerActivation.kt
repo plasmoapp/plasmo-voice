@@ -98,12 +98,33 @@ class VoiceServerActivation(
         activationListeners.add(activationListener)
     }
 
+    override fun removePlayerActivationListener(activationListener: ServerActivation.PlayerActivationListener): Boolean =
+        activationListeners.remove(activationListener)
+
+    override fun clearPlayerActivationListeners() {
+        activationListeners.clear()
+    }
+
     override fun onPlayerActivationStart(activationStartListener: ServerActivation.PlayerActivationStartListener) {
         activationStartListeners.add(activationStartListener)
     }
 
+    override fun removePlayerActivationStartListener(activationListener: ServerActivation.PlayerActivationStartListener): Boolean =
+        activationStartListeners.remove(activationListener)
+
+    override fun clearPlayerActivationStartListeners() {
+        activationStartListeners.clear()
+    }
+
     override fun onPlayerActivationEnd(activationEndListener: ServerActivation.PlayerActivationEndListener) {
         activationEndListeners.add(activationEndListener)
+    }
+
+    override fun removePlayerActivationEndListener(activationListener: ServerActivation.PlayerActivationEndListener): Boolean =
+        activationEndListeners.remove(activationListener)
+
+    override fun clearPlayerActivationEndListeners() {
+        activationEndListeners.clear()
     }
 
     override fun equals(other: Any?): Boolean {
