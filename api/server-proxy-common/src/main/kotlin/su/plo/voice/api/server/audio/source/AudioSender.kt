@@ -16,7 +16,14 @@ class AudioSender(
     private val onEnd: (sequenceNumber: Long) -> Boolean
 ) {
 
-    private var job: Job? = null
+    /**
+     * Gets a coroutine job started by [start].
+     *
+     * Use this field only with [kotlin relocation](https://plasmovoice.com/docs/api/#kotlin).
+     * Otherwise, you will get class not found exception.
+     */
+    var job: Job? = null
+        private set
 
     private var onStop: Runnable? = null
 
@@ -27,7 +34,7 @@ class AudioSender(
      *
      * This will also resume the sender if it was paused using [pause].
      */
-    fun start(): Job {
+    fun start() {
         resume()
 
         val job = CoroutineScope(Dispatchers.Default).launch {
@@ -87,7 +94,6 @@ class AudioSender(
         }
 
         this.job = job
-        return job
     }
 
     /**
