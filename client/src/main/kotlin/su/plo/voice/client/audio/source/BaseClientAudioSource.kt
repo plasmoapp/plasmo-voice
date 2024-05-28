@@ -44,9 +44,7 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
-import java.util.*
 import java.util.concurrent.CompletableFuture
-import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.acos
 import kotlin.math.pow
@@ -79,7 +77,7 @@ abstract class BaseClientAudioSource<T>(
             field = value
         }
 
-    private var lastSequenceNumbers: MutableMap<UUID, Long> = HashMap()
+    private var lastSequenceNumber: Long = -1L
     private var lastActivation = 0L
     private var lastOcclusion = -1.0
 
@@ -89,6 +87,10 @@ abstract class BaseClientAudioSource<T>(
     private val canHear = AtomicBoolean(false)
 
     private val mutex = Mutex()
+
+    private val buffer = JitterBuffer(config.advanced.jitterPacketDelay.value())
+
+    private val job = startJob()
 
     init {
         val serverInfo = voiceClient.serverInfo
@@ -145,7 +147,7 @@ abstract class BaseClientAudioSource<T>(
                 sourceInfo.decoderInfo?.let {
                     decoder = createDecoder(sourceInfo, voiceInfo, it)
                 }
-                lastSequenceNumbers.clear()
+                lastSequenceNumber = -1L
                 BaseVoice.DEBUG_LOGGER.log("Update decoder for {}", sourceInfo)
             }
 
@@ -170,13 +172,13 @@ abstract class BaseClientAudioSource<T>(
     override fun process(packet: SourceAudioPacket) {
         if (isClosed() || lineMute.value()) return
 
-        SCOPE.launch { processAudioPacket(packet) }
+        buffer.offer(packet)
     }
 
     override fun process(packet: SourceAudioEndPacket) {
         if (isClosed() || lineMute.value()) return
 
-        SCOPE.launch { processAudioEndPacket(packet) }
+        buffer.offer(packet)
         endRequest?.cancel()
 
         // because SourceAudioEndPacket can be received BEFORE the end of the stream,
@@ -191,6 +193,8 @@ abstract class BaseClientAudioSource<T>(
     }
 
     override suspend fun close() = mutex.withLock {
+        job.cancel()
+
         activated.set(false)
         canHear.set(false)
         closed.set(true)
@@ -240,6 +244,24 @@ abstract class BaseClientAudioSource<T>(
         resetAsync(AudioSourceResetEvent.Cause.SOURCE_STOPPED)
     }
 
+    private fun startJob(): Job = SCOPE.launch {
+        while (isActive) {
+            val wrappedPacket = buffer.poll()
+            if (wrappedPacket == null) {
+                delay(5L)
+                continue
+            }
+
+            when (wrappedPacket) {
+                is JitterBuffer.SourceAudioPacketWrapper ->
+                    processAudioPacket(wrappedPacket.packet)
+
+                is JitterBuffer.SourceAudioEndPacketWrapper ->
+                    processAudioEndPacket(wrappedPacket.packet)
+            }
+        }
+    }
+
     private suspend fun processAudioPacket(packet: SourceAudioPacket) = mutex.withLock {
         // drop packets if source state diff by more than 10
         if (sourceInfo.state.diff(packet.sourceState) >= 10) {
@@ -247,15 +269,12 @@ abstract class BaseClientAudioSource<T>(
             return
         }
 
-        val lastSequenceNumber = lastSequenceNumbers[sourceInfo.lineId] ?: -1L
-
         // drop packet with bad order
         if (lastSequenceNumber >= 0 && packet.sequenceNumber <= lastSequenceNumber) {
             if (lastSequenceNumber - packet.sequenceNumber < 10L) {
                 BaseVoice.DEBUG_LOGGER.log("Drop packet with bad order")
                 return
             }
-            lastSequenceNumbers.remove(sourceInfo.lineId)
         }
 
         endRequest?.let {
@@ -356,7 +375,7 @@ abstract class BaseClientAudioSource<T>(
             BaseVoice.DEBUG_LOGGER.warn("Failed to decode source audio", e)
         }
 
-        lastSequenceNumbers[sourceInfo.lineId] = packet.sequenceNumber
+        lastSequenceNumber = packet.sequenceNumber
         lastActivation = timeSupplier.currentTimeMillis
 
         if (distance > 0) canHear.set(sourceDistance <= distance)
@@ -366,7 +385,7 @@ abstract class BaseClientAudioSource<T>(
 
     private suspend fun processAudioEndPacket(packet: SourceAudioEndPacket) = mutex.withLock {
         if (!activated.get()) return
-        lastSequenceNumbers[sourceInfo.lineId] = packet.sequenceNumber
+        lastSequenceNumber = packet.sequenceNumber
     }
 
     private suspend fun reset(cause: AudioSourceResetEvent.Cause) = mutex.withLock {
@@ -519,6 +538,6 @@ abstract class BaseClientAudioSource<T>(
         private val LOGGER: Logger = LogManager.getLogger(BaseClientAudioSource::class.java)
         private val POSITION_ZERO = floatArrayOf(0f, 0f, 0f)
 
-        private val SCOPE = CoroutineScope(Executors.newSingleThreadExecutor().asCoroutineDispatcher())
+        private val SCOPE = CoroutineScope(Dispatchers.Default)
     }
 }

@@ -153,6 +153,14 @@ dependencies {
 }
 
 tasks {
+    java {
+        withSourcesJar()
+    }
+
+    getByName<Jar>("sourcesJar") {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    }
+
     processResources {
         val versionInfo = readVersionInfo()
 

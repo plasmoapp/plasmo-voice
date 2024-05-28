@@ -47,7 +47,7 @@ class StreamAlSource private constructor(
     private var lastBufferTime: Long = 0
 
     init {
-        this.numBuffers = if (numBuffers == 0) DEFAULT_NUM_BUFFERS else numBuffers
+        this.numBuffers = if (numBuffers == 0) client.config.advanced.alNumberBuffers.value() else numBuffers
         emptyBuffer = ByteArray(device.frameSize)
     }
 
@@ -312,7 +312,6 @@ class StreamAlSource private constructor(
     companion object {
 
         private val LOGGER = LogManager.getLogger(StreamAlSource::class.java)
-        private const val DEFAULT_NUM_BUFFERS = 4
 
         @JvmStatic
         fun create(device: AlOutputDevice, client: PlasmoVoiceClient, stereo: Boolean, numBuffers: Int): AlSource {

@@ -82,6 +82,10 @@ interface ClientConfig {
         val exponentialVolumeSlider: BooleanConfigEntry
 
         val exponentialDistanceGain: BooleanConfigEntry
+
+        val jitterPacketDelay: IntConfigEntry
+
+        val alNumberBuffers: IntConfigEntry
     }
 
     interface Overlay {
