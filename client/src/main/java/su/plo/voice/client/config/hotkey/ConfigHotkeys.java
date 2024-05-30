@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
-import gg.essential.universal.UScreen;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.SerializableConfigEntry;
@@ -206,7 +206,7 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
         }
 
         hotkeys.values().forEach(entry -> {
-            if (entry.value().isAnyContext() || UScreen.getCurrentScreen() == null) {
+            if (entry.value().isAnyContext() || Minecraft.getInstance().screen == null) {
                 entry.value().updateState(event.getAction());
             }
         });

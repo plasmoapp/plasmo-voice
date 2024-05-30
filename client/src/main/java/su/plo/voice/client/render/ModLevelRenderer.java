@@ -2,7 +2,6 @@ package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.position.Pos3d;
-import gg.essential.universal.UMatrixStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
@@ -27,7 +26,7 @@ public final class ModLevelRenderer extends ModRenderer {
         }
 
         voiceClient.getEventBus().fire(new LevelRenderEvent(
-                new UMatrixStack(poseStack),
+                poseStack,
                 level,
                 new ModCamera(camera.getPosition(), camera.getXRot(), camera.getYRot()),
                 this::getLight,

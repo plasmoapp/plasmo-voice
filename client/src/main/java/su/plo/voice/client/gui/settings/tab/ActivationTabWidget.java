@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -25,7 +26,6 @@ import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.*;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
-import gg.essential.universal.UMinecraft;
 
 import java.util.Collections;
 import java.util.List;
@@ -69,12 +69,12 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
     @EventSubscribe
     public void onActivationRegister(@NotNull ClientActivationRegisteredEvent event) {
-        UMinecraft.getMinecraft().execute(this::init);
+        Minecraft.getInstance().execute(this::init);
     }
 
     @EventSubscribe
     public void onActivationUnregister(@NotNull ClientActivationUnregisteredEvent event) {
-        UMinecraft.getMinecraft().execute(this::init);
+        Minecraft.getInstance().execute(this::init);
     }
 
     private void createActivation(ClientActivation activation, boolean canInherit) {

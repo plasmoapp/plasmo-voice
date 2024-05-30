@@ -1,9 +1,12 @@
 package su.plo.lib.mod.client.gui.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.sounds.SoundEvents;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.USound;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
@@ -73,7 +76,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         if (!visible) return;
 
         this.hovered = isHovered(mouseX, mouseY);
@@ -144,15 +147,15 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     }
 
     // Class methods
-    public void renderButton(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         GuiWidgetTexture sprite = getButtonTexture(hovered);
 
-        UGraphics.bindTexture(0, sprite.getLocation());
-        UGraphics.color4f(1F, 1F, 1F, alpha);
+        RenderUtil.bindTexture(0, sprite.getLocation());
+        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
 
-        UGraphics.enableBlend();
+        RenderSystem.enableBlend();
         RenderUtil.defaultBlendFunc();
-        UGraphics.enableDepth();
+        RenderSystem.enableDepthTest();
 
         RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
         RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
@@ -162,7 +165,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
         renderText(stack, mouseX, mouseY);
     }
 
-    public void renderToolTip(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    public void renderToolTip(@NotNull PoseStack stack, int mouseX, int mouseY) {
     }
 
     public void onClick(double mouseX, double mouseY) {
@@ -182,10 +185,10 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
         return this.hovered || this.focused;
     }
 
-    protected void renderBackground(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
     }
 
-    protected void renderText(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
         int textColor = active ? COLOR_WHITE : COLOR_GRAY;
         RenderUtil.drawCenteredString(
                 stack,
@@ -197,7 +200,18 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     }
 
     protected void playDownSound() {
-        USound.INSTANCE.playButtonPress();
+        SoundManager soundManager = Minecraft.getInstance().getSoundManager();
+        soundManager.play(
+                SimpleSoundInstance.forUI(
+                        //#if MC>=11903
+                        SoundEvents.UI_BUTTON_CLICK.value(),
+                        //#else
+                        //$$ SoundEvents.UI_BUTTON_CLICK,
+                        //#endif
+                        1.0f,
+                        0.25f
+                )
+        );
     }
 
     protected void onFocusedChanged(boolean focused) {

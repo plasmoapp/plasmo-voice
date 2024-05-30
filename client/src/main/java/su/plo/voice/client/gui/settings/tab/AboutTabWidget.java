@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UDesktop;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
@@ -19,12 +19,11 @@ import su.plo.voice.client.meta.PlasmoVoiceMeta;
 import su.plo.voice.client.meta.developer.Developer;
 import su.plo.voice.client.meta.Patron;
 
-import java.net.URI;
 import java.util.Collections;
 import java.util.List;
 
 //#if MC>=12005
-//$$ import gg.essential.universal.UMinecraft;
+//$$ import net.minecraft.client.Minecraft;
 //#endif
 
 public final class AboutTabWidget extends TabWidget {
@@ -110,12 +109,7 @@ public final class AboutTabWidget extends TabWidget {
     }
 
     private void openLink(@NotNull String link) {
-        try {
-            UDesktop.browse(new URI(link));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        minecraft.getWindow().openLink(link, true, (ok) -> minecraft.setScreen(parent));
+        MinecraftUtil.openUri(link);
     }
 
     public static void loadSkins() {
@@ -146,16 +140,16 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             renderBackground(stack, x, y, entryWidth);
 
-            UGraphics.bindTexture(0, ModPlayerSkins.getSkin(developer.getUuid(), developer.getName()));
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+            RenderUtil.bindTexture(0, ModPlayerSkins.getSkin(developer.getUuid(), developer.getName()));
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
-            UGraphics.enableBlend();
+            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
-            UGraphics.disableBlend();
+            RenderSystem.disableBlend();
 
             RenderUtil.drawString(stack, developer.getName(), x + 40, y + 11, 16777215);
             RenderUtil.drawString(stack, developer.getRole().getTranslatable(), x + 40, y + 21, -5592406);
@@ -167,14 +161,14 @@ public final class AboutTabWidget extends TabWidget {
             }
         }
 
-        public void renderBackground(@NotNull UMatrixStack stack, int x, int y, int entryWidth) {
+        public void renderBackground(@NotNull PoseStack stack, int x, int y, int entryWidth) {
             int height = this.height - 4;
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             //#if MC>=12005
-            //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+            //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
             //$$
-            //$$ UGraphics.enableBlend();
+            //$$ RenderSystem.enableBlend();
             //$$ RenderUtil.blit(
             //$$         stack,
             //$$         x, x + entryWidth,
@@ -183,9 +177,9 @@ public final class AboutTabWidget extends TabWidget {
             //$$         0F, entryWidth / 32.0F,
             //$$         0F, height / 32.0F
             //$$ );
-            //$$ UGraphics.disableBlend();
+            //$$ RenderSystem.disableBlend();
             //#else
-            UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+            RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 
             RenderUtil.blitColor(
                     stack,
@@ -216,11 +210,11 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             renderBackground(stack, x, y, entryWidth);
 
-            UGraphics.bindTexture(0, ModPlayerSkins.getSkin(patron.getUuid(), patron.getName()));
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+            RenderUtil.bindTexture(0, ModPlayerSkins.getSkin(patron.getUuid(), patron.getName()));
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 8.0F, 8.0F, 8, 8, 64, 64);
             RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 40.0F, 8.0F, 8, 8, 64, 64);
@@ -237,12 +231,12 @@ public final class AboutTabWidget extends TabWidget {
             );
         }
 
-        public void renderBackground(@NotNull UMatrixStack stack, int x, int y, int entryWidth) {
+        public void renderBackground(@NotNull PoseStack stack, int x, int y, int entryWidth) {
             int height = this.height - 2;
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             //#if MC>=12005
-            //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+            //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
             //$$
             //$$ RenderUtil.blit(
             //$$         stack,
@@ -253,7 +247,7 @@ public final class AboutTabWidget extends TabWidget {
             //$$         0F, height / 32.0F
             //$$ );
             //#else
-            UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+            RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 
             RenderUtil.blitColor(
                     stack,
@@ -289,7 +283,7 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             int gap = 4;
             int elementWidth = entryWidth / widgets.size() - ((widgets.size() - 1) * (gap / 2));
             if (elementWidth % 2 == 1) {
@@ -322,7 +316,7 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             int lines = RenderUtil.drawStringMultiLine(
                     stack,
                     text,
@@ -332,7 +326,7 @@ public final class AboutTabWidget extends TabWidget {
                     entryWidth
             );
 
-            setHeight(lines * UGraphics.getFontHeight() + 16);
+            setHeight(lines * RenderUtil.getFontHeight() + 16);
         }
 
         @Override

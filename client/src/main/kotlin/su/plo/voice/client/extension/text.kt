@@ -1,13 +1,12 @@
 package su.plo.voice.client.extension
 
-import gg.essential.universal.ChatColor
-import gg.essential.universal.UGraphics
+import net.minecraft.ChatFormatting
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.slib.api.chat.component.McTextComponent
 
-fun Char.width() = UGraphics.getCharWidth(this)
+fun Char.width() = RenderUtil.getStringWidth(this.toString()).toFloat()
 
-fun String.width() = UGraphics.getStringWidth(this)
+fun String.width() = RenderUtil.getStringWidth(this)
 
 fun McTextComponent.width() = RenderUtil.getTextWidth(this)
 
@@ -59,15 +58,15 @@ fun getStringSplitToWidth(
     val lineList = mutableListOf<String>()
     val currLine = StringBuilder()
     var textPos = 0
-    var currChatColor: ChatColor? = null
-    var currChatFormatting: ChatColor? = null
+    var currChatColor: ChatFormatting? = null
+    var currChatFormatting: ChatFormatting? = null
 
     fun pushLine() {
         lineList.add(currLine.toString().trim())
         currLine.clear()
         if (processColorCodes) {
-            currChatColor?.also { currLine.append("§${it.char}") }
-            currChatFormatting?.also { currLine.append("§${it.char}") }
+            currChatColor?.also { currLine.append(it.toString()) }
+            currChatFormatting?.also { currLine.append(it.toString()) }
         }
     }
 
@@ -78,7 +77,7 @@ fun getStringSplitToWidth(
             val ch = text[textPos]
             if (processColorCodes && (ch == '§' || ch == '&') && textPos + 1 < text.length) {
                 val colorCh = text[textPos + 1]
-                val nextColor = ChatColor.values().firstOrNull { it.char == colorCh }
+                val nextColor = ChatFormatting.getByCode(colorCh)
                 if (nextColor != null) {
                     builder.append('§')
                     builder.append(colorCh)

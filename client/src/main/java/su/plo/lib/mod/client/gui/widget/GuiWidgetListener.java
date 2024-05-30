@@ -1,8 +1,5 @@
 package su.plo.lib.mod.client.gui.widget;
 
-import gg.essential.universal.UKeyboard;
-import org.jetbrains.annotations.Nullable;
-
 public interface GuiWidgetListener {
 
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
@@ -21,15 +18,15 @@ public interface GuiWidgetListener {
         return false;
     }
 
-    default boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
+    default boolean keyPressed(int keyCode, int modifiers) {
         return false;
     }
 
-    default boolean charTyped(char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    default boolean charTyped(char typedChar, int modifiers) {
         return false;
     }
 
-    default boolean keyReleased(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    default boolean keyReleased(int keyCode, char typedChar, int modifiers) {
         return false;
     }
 

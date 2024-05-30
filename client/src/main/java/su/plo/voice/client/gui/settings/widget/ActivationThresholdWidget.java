@@ -1,10 +1,10 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
@@ -111,7 +111,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     }
 
     @Override
-    public void renderButton(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack, mouseX, mouseY);
 
         renderMicrophoneValue(stack, getSliderWidth(), delta);
@@ -123,19 +123,19 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
         return microphoneTest;
     }
 
-    private void renderMicrophoneValue(@NotNull UMatrixStack stack, int sliderWidth, float delta) {
+    private void renderMicrophoneValue(@NotNull PoseStack stack, int sliderWidth, float delta) {
         if (controller.getMicrophoneValue() > 0.95D) {
-            UGraphics.color4f(1F, 0F, 0F, alpha);
+            RenderSystem.setShaderColor(1F, 0F, 0F, alpha);
         } else if (controller.getMicrophoneValue() > 0.7D) {
-            UGraphics.color4f(1F, 1F, 0F, alpha);
+            RenderSystem.setShaderColor(1F, 1F, 0F, alpha);
         } else {
-            UGraphics.color4f(0F, 1F, 0F, alpha);
+            RenderSystem.setShaderColor(0F, 1F, 0F, alpha);
         }
 
         GuiWidgetTexture sprite = GuiWidgetTexture.BUTTON_DISABLED;
-        UGraphics.bindTexture(0, sprite.getLocation());
+        RenderUtil.bindTexture(0, sprite.getLocation());
         RenderUtil.blitSprite(stack, sprite, x + 1, y + 1, 1, 1, (int) ((sliderWidth - 2) * controller.getMicrophoneValue()), height - 2);
-        UGraphics.color4f(1F, 1F, 1F, 1F);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         controller.tick(delta);
     }

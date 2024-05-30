@@ -1,6 +1,6 @@
 package su.plo.lib.mod.client.gui.widget;
 
-import gg.essential.universal.UMatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -20,5 +20,5 @@ public interface GuiWidget {
 
     int getHeight();
 
-    void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta);
+    void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta);
 }

@@ -1,6 +1,5 @@
 package su.plo.lib.mod.client.gui.screen;
 
-import gg.essential.universal.UKeyboard;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 
@@ -74,17 +73,17 @@ public interface GuiScreenListener extends GuiWidgetListener {
     }
 
     @Override
-    default boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
+    default boolean keyPressed(int keyCode, int modifiers) {
         return getFocused() != null && getFocused().keyPressed(keyCode, modifiers);
     }
 
     @Override
-    default boolean charTyped(char typedChar, UKeyboard.@Nullable Modifiers modifiers) {
+    default boolean charTyped(char typedChar, int modifiers) {
         return getFocused() != null && getFocused().charTyped(typedChar, modifiers);
     }
 
     @Override
-    default boolean keyReleased(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    default boolean keyReleased(int keyCode, char typedChar, int modifiers) {
         return getFocused() != null && getFocused().keyReleased(keyCode, typedChar, modifiers);
     }
 

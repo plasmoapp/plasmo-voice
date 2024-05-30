@@ -2,11 +2,11 @@ package su.plo.voice.client.connection;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import gg.essential.universal.UMinecraft;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.local.LocalAddress;
 import lombok.Getter;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import org.apache.logging.log4j.LogManager;
@@ -167,7 +167,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
     @Override
     public Optional<VoicePlayerInfo> getLocalPlayer() {
-        return Optional.ofNullable(UMinecraft.getPlayer())
+        return Optional.ofNullable(Minecraft.getInstance().player)
                 .flatMap(player -> getPlayerById(player.getUUID()));
     }
 
@@ -340,7 +340,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         voiceClient.getEventBus().fire(event);
 
         // request language
-        sendPacket(new LanguageRequestPacket(UMinecraft.getSettings().languageCode));
+        sendPacket(new LanguageRequestPacket(Minecraft.getInstance().options.languageCode));
     }
 
     @Override
@@ -385,7 +385,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
     @Override
     public void handle(@NotNull PlayerDisconnectPacket packet) {
-        if (Optional.ofNullable(UMinecraft.getPlayer())
+        if (Optional.ofNullable(Minecraft.getInstance().player)
                 .map(player -> player.getUUID().equals(packet.getPlayerId()))
                 .orElse(false)
         ) {
@@ -473,7 +473,7 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
     @Override
     public void handle(@NotNull AnimatedActionBarPacket packet) {
-        UMinecraft.getMinecraft().gui.setOverlayMessage(
+        Minecraft.getInstance().gui.setOverlayMessage(
                 RenderUtil.getTextConverter().convertFromJson(packet.getJsonComponent()),
                 true
         );

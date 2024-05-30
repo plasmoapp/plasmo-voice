@@ -1,9 +1,8 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
@@ -55,7 +54,7 @@ public final class OverlaySourceStateButton extends GuiAbstractWidget {
     }
 
     @Override
-    protected void renderBackground(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
         GuiWidgetTexture sprite;
         if (isHoveredOrFocused() && active) {
             sprite = GuiWidgetTexture.BUTTON_ACTIVE;
@@ -63,7 +62,7 @@ public final class OverlaySourceStateButton extends GuiAbstractWidget {
             sprite = GuiWidgetTexture.BUTTON_DEFAULT;
         }
 
-        UGraphics.bindTexture(0, sprite.getLocation());
+        RenderUtil.bindTexture(0, sprite.getLocation());
         if (entry.value() == OverlaySourceState.ON) {
             int x0 = x + (int) ((double) (width - 8));
             RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);

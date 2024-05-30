@@ -2,9 +2,8 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -131,11 +130,6 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         return false;
     }
 
-    @Override
-    public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
-        super.render(stack, mouseX, mouseY, delta);
-    }
-
     public void setTooltip(@Nullable McTextComponent tooltip) {
         parent.setTooltip(tooltip);
     }
@@ -245,9 +239,9 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        public void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             int elementX = x + (containerWidth / 2) - (RenderUtil.getTextWidth(text) / 2);
-            int elementY = y + (height / 2) - (UGraphics.getFontHeight() / 2);
+            int elementY = y + (height / 2) - (RenderUtil.getFontHeight() / 2);
 
             RenderUtil.drawString(stack, text, elementX, elementY, COLOR);
         }
@@ -271,7 +265,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        public void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             element.setX(x);
             element.setY(y);
             element.setWidth(entryWidth);
@@ -352,7 +346,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        public void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             renderText(stack, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
 
             int elementY = y + height / 2 - element.getHeight() / 2;
@@ -381,24 +375,24 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             return widgets;
         }
 
-        protected void renderText(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             RenderUtil.drawString(
                     stack,
                     text,
                     x,
-                    y + height / 2 - UGraphics.getFontHeight() / 2,
+                    y + height / 2 - RenderUtil.getFontHeight() / 2,
                     0xFFFFFF
             );
         }
 
-        protected void renderElement(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
+        protected void renderElement(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
                                      int elementY) {
             element.setX(x + entryWidth - element.getWidth() - 24);
             element.setY(elementY);
             element.render(stack, mouseX, mouseY, delta);
         }
 
-        protected void renderResetButton(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
+        protected void renderResetButton(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
                                          int elementY) {
             resetButton.setX(x + entryWidth - 20);
             resetButton.setY(elementY);
@@ -452,7 +446,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        protected void renderElement(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta, int elementY) {
+        protected void renderElement(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta, int elementY) {
             if (buttons.size() == 0) {
                 super.renderElement(stack, index, x, y, entryWidth, mouseX, mouseY, hovered, delta, elementY);
                 return;

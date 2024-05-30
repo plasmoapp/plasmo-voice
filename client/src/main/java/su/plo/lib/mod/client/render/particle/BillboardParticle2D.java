@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.render.particle;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import org.joml.Vector3f;
 
@@ -18,7 +18,8 @@ public abstract class BillboardParticle2D extends Particle2D {
         this.scale = 0.1F * (this.random.nextFloat() * 0.5F + 0.5F) * 2.0F;
     }
 
-    public void buildGeometry(UMatrixStack stack, UGraphics buffer, float tickDelta) {
+    @Override
+    public void buildGeometry(PoseStack stack, BufferBuilder buffer, float tickDelta) {
         float f = (float)(Mth.lerp((double)tickDelta, this.prevPosX, this.x));
         float g = (float)(Mth.lerp((double)tickDelta, this.prevPosY, this.y));
 
@@ -37,23 +38,23 @@ public abstract class BillboardParticle2D extends Particle2D {
         float n = this.getMinV();
         float o = this.getMaxV();
 
-        buffer.pos(stack, (double)vec3fs[0].x(), (double)vec3fs[0].y(), (double)vec3fs[0].z())
-                .tex(m, o)
+        buffer.vertex(stack.last().pose(), vec3fs[0].x(), vec3fs[0].y(), vec3fs[0].z())
+                .uv(m, o)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
                 .endVertex();
 
-        buffer.pos(stack, (double)vec3fs[1].x(), (double)vec3fs[1].y(), (double)vec3fs[1].z())
-                .tex(m, n)
+        buffer.vertex(stack.last().pose(), vec3fs[1].x(), vec3fs[1].y(), vec3fs[1].z())
+                .uv(m, n)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
                 .endVertex();
 
-        buffer.pos(stack, (double)vec3fs[2].x(), (double)vec3fs[2].y(), (double)vec3fs[2].z())
-                .tex(l, n)
+        buffer.vertex(stack.last().pose(), vec3fs[2].x(), vec3fs[2].y(), vec3fs[2].z())
+                .uv(l, n)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
                 .endVertex();
 
-        buffer.pos(stack, (double)vec3fs[3].x(), (double)vec3fs[3].y(), (double)vec3fs[3].z())
-                .tex(l, o)
+        buffer.vertex(stack.last().pose(), vec3fs[3].x(), vec3fs[3].y(), vec3fs[3].z())
+                .uv(l, o)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
                 .endVertex();
     }

@@ -2,8 +2,6 @@ package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
-import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UChat;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,7 +9,8 @@ import su.plo.config.Config;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
-import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.chat.ClientChatUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -27,7 +26,10 @@ import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacket;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @Config
@@ -308,7 +310,7 @@ public final class VoiceClientActivation
         if (action != Hotkey.Action.DOWN || getType() == Type.PUSH_TO_TALK) return;
         configToggle.invert();
 
-        UChat.actionBar(RenderUtil.getTextConverter().convert(
+        ClientChatUtil.setActionBar(
                 McTextComponent.translatable(
                         "message.plasmovoice.activation.toggle",
                         McTextComponent.translatable(translation),
@@ -316,7 +318,7 @@ public final class VoiceClientActivation
                                 ? McTextComponent.translatable("message.plasmovoice.on")
                                 : McTextComponent.translatable("message.plasmovoice.off")
                 )
-        ));
+        );
     }
 
     private void onDistanceIncrease(@NotNull Hotkey.Action action) {
@@ -351,13 +353,13 @@ public final class VoiceClientActivation
     }
 
     private void sendDistanceChangedMessage() {
-        UChat.actionBar(RenderUtil.getTextConverter().convert(
+        ClientChatUtil.setActionBar(
                 McTextComponent.translatable(
                         "message.plasmovoice.distance_changed",
                         McTextComponent.translatable(translation),
                         getDistance()
                 )
-        ));
+        );
     }
 
     private HotkeyConfigEntry createHotKey(@NotNull ConfigHotkeys hotKeys,

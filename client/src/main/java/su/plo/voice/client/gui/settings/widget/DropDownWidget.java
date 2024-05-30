@@ -1,9 +1,9 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UResolution;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -59,7 +59,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
     }
 
     @Override
-    public void renderButton(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack, mouseX, mouseY);
         renderArrow(stack);
         renderText(stack);
@@ -69,16 +69,16 @@ public final class DropDownWidget extends GuiAbstractWidget {
     }
 
     @Override
-    protected void renderBackground(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
-        UGraphics.enableBlend();
+    protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
+        RenderSystem.enableBlend();
         RenderUtil.defaultBlendFunc();
-        UGraphics.enableDepth();
+        RenderSystem.enableDepthTest();
 
         RenderUtil.fill(stack, x, y, x + width, y + height, -6250336);
         RenderUtil.fill(stack, x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
     }
 
-    private void renderElements(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    private void renderElements(@NotNull PoseStack stack, int mouseX, int mouseY) {
         int elementY;
 
         boolean renderToTop = renderToTop();
@@ -90,9 +90,9 @@ public final class DropDownWidget extends GuiAbstractWidget {
         }
 
         for (McTextComponent element : elements) {
-            UGraphics.enableDepth();
+            RenderSystem.enableDepthTest();
 
-            stack.push();
+            stack.pushPose();
             stack.translate(0D, 0D, 10D);
 
             if (renderToTop) {
@@ -115,34 +115,34 @@ public final class DropDownWidget extends GuiAbstractWidget {
                     element,
                     width - 10,
                     x + 5,
-                    elementY + ELEMENT_HEIGHT / 2 - UGraphics.getFontHeight() / 2,
+                    elementY + ELEMENT_HEIGHT / 2 - RenderUtil.getFontHeight() / 2,
                     0xE0E0E0
             );
 
-            stack.pop();
-            UGraphics.disableDepth();
+            stack.popPose();
+            RenderSystem.disableDepthTest();
 
             elementY += ELEMENT_HEIGHT + 1;
         }
     }
 
-    private void renderText(@NotNull UMatrixStack stack) {
+    private void renderText(@NotNull PoseStack stack) {
         RenderUtil.drawOrderedString(
                 stack,
                 getText(),
                 active ? (width - 23) : (width - 5),
                 x + 5,
-                y + (height / 2) - (UGraphics.getFontHeight() / 2),
+                y + (height / 2) - (RenderUtil.getFontHeight() / 2),
                 active ? 0xE0E0E0 : 0x707070
         );
     }
 
-    private void renderArrow(@NotNull UMatrixStack stack) {
+    private void renderArrow(@NotNull PoseStack stack) {
         if (!active) return;
 
-        UGraphics.enableBlend();
+        RenderSystem.enableBlend();
         RenderUtil.defaultBlendFunc();
-        UGraphics.enableDepth();
+        RenderSystem.enableDepthTest();
 
         if (open) {
             for (int i = 0; i < 5; i++) {
@@ -170,8 +170,10 @@ public final class DropDownWidget extends GuiAbstractWidget {
     }
 
     private boolean renderToTop() {
-        return (y + height + 1 + (elements.size() * (ELEMENT_HEIGHT + 1)) > UResolution.getScaledHeight()) &&
-                (parent.getNavigation().getHeight() + height + 1 + (elements.size() * (ELEMENT_HEIGHT + 1)) < UResolution.getScaledHeight());
+        float scaledHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+
+        return (y + height + 1 + (elements.size() * (ELEMENT_HEIGHT + 1)) > scaledHeight) &&
+                (parent.getNavigation().getHeight() + height + 1 + (elements.size() * (ELEMENT_HEIGHT + 1)) < scaledHeight);
     }
 
     private boolean elementClicked(double mouseX, double mouseY, int button) {

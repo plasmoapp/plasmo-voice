@@ -1,9 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UKeyboard;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 
 public abstract class AbstractButton extends GuiAbstractWidget {
@@ -26,7 +24,7 @@ public abstract class AbstractButton extends GuiAbstractWidget {
 
     // GuiWidgetListener impl
     @Override
-    public boolean keyPressed(int keyCode, UKeyboard.@Nullable Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, int modifiers) {
         if (!active || !visible) return false;
 
         // GLFW_KEY_ENTER && GLFW_KEY_SPACE && GLFW_KEY_KP_ENTER

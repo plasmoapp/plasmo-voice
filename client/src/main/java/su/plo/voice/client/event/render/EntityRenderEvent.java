@@ -1,17 +1,16 @@
 package su.plo.voice.client.event.render;
 
-import gg.essential.universal.UMatrixStack;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import lombok.NonNull;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.phys.Vec3;
 import su.plo.voice.api.event.Event;
 import su.plo.voice.client.render.ModCamera;
 
 public final class EntityRenderEvent implements Event {
 
     @Getter
-    private final UMatrixStack stack;
+    private final PoseStack stack;
     @Getter
     private final ModCamera camera;
     @Getter
@@ -20,7 +19,7 @@ public final class EntityRenderEvent implements Event {
     private final int light;
     private final boolean label;
 
-    public EntityRenderEvent(@NonNull UMatrixStack stack,
+    public EntityRenderEvent(@NonNull PoseStack stack,
                              @NonNull ModCamera camera,
                              @NonNull Entity entity,
                              int light,

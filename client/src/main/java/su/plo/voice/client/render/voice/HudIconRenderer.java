@@ -1,10 +1,10 @@
 package su.plo.voice.client.render.voice;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
-import gg.essential.universal.UResolution;
+import com.mojang.blaze3d.platform.Window;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -26,8 +26,11 @@ public final class HudIconRenderer {
 
     @EventSubscribe
     public void onHudRender(@NotNull HudRenderEvent event) {
-        if (!voiceClient.getServerInfo().isPresent() || !voiceClient.getUdpClientManager().getClient().isPresent() || UMinecraft.getPlayer() == null || !config.getOverlay().getShowActivationIcon().value())
-            return;
+        if (!voiceClient.getServerInfo().isPresent() ||
+                !voiceClient.getUdpClientManager().getClient().isPresent() ||
+                Minecraft.getInstance().player == null ||
+                !config.getOverlay().getShowActivationIcon().value()
+        ) return;
 
         if (voiceClient.getUdpClientManager().getClient().get().isTimedOut()) {
             renderIcon(event.getStack(), new ResourceLocation("plasmovoice:textures/icons/microphone_disconnected.png"));
@@ -66,37 +69,41 @@ public final class HudIconRenderer {
         if (currentActivation != null) renderIcon(event.getStack(), new ResourceLocation(currentActivation.getIcon()));
     }
 
-    private void renderIcon(@NotNull UMatrixStack stack, @NotNull ResourceLocation iconLocation) {
+    private void renderIcon(@NotNull PoseStack stack, @NotNull ResourceLocation iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
-        UGraphics.enableBlend();
-        UGraphics.depthFunc(515);
-        UGraphics.bindTexture(0, iconLocation);
-        UGraphics.color4f(1F, 1F, 1F, 1F);
+        RenderSystem.enableBlend();
+        RenderSystem.depthFunc(515);
+        RenderUtil.bindTexture(0, iconLocation);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-        stack.push();
+        stack.pushPose();
         stack.translate(0f, 0f, 1000f);
         RenderUtil.blit(stack, calcIconX(iconPosition.getX()), calcIconY(iconPosition.getY()), 0, 0, 16, 16, 16, 16);
-        stack.pop();
+        stack.popPose();
 
-        UGraphics.disableBlend();
+        RenderSystem.disableBlend();
     }
 
     private int calcIconX(Integer x) {
+        Window window = Minecraft.getInstance().getWindow();
+
         if (x == null) {
-            return (UResolution.getScaledWidth() / 2) - 8;
+            return (window.getGuiScaledWidth() / 2) - 8;
         } else if (x < 0) {
-            return UResolution.getScaledWidth() + x - 16;
+            return window.getGuiScaledWidth() + x - 16;
         } else {
             return x;
         }
     }
 
     private int calcIconY(Integer y) {
+        Window window = Minecraft.getInstance().getWindow();
+
         if (y == null) {
-            return UResolution.getScaledHeight() - 32;
+            return window.getGuiScaledHeight() - 32;
         } else if (y < 0) {
-            return UResolution.getScaledHeight() + y - 16;
+            return window.getGuiScaledHeight() + y - 16;
         } else {
             return y;
         }

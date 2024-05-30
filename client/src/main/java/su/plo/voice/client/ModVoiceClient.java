@@ -1,11 +1,11 @@
 package su.plo.voice.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.slib.mod.logging.Log4jLogger;
 import su.plo.voice.client.gui.settings.VoiceScreens;
-import gg.essential.universal.UKeyboard;
-import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import net.minecraft.client.KeyMapping;
 import org.jetbrains.annotations.NotNull;
@@ -76,7 +76,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     public static final KeyMapping MENU_KEY = new KeyMapping(
             "key.plasmovoice.settings",
             InputConstants.Type.KEYSYM,
-            UKeyboard.KEY_V,
+            GLFW.GLFW_KEY_V,
             "Plasmo Voice"
     );
 
@@ -123,7 +123,7 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     @EventSubscribe
     public void onKeyPressed(@NotNull KeyPressedEvent event) {
-        if (UMinecraft.getPlayer() == null) return;
+        if (Minecraft.getInstance().player == null) return;
         if (MENU_KEY.consumeClick()) VoiceScreens.INSTANCE.openSettings(this);
     }
 
@@ -202,9 +202,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ @SubscribeEvent
     //$$ public void onWorldRender(RenderLevelStageEvent event) {
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
-    //$$             UMinecraft.getWorld() == null
+    //$$             Minecraft.getInstance().level == null
     //$$     ) return;
-    //$$     levelRenderer.render(UMinecraft.getWorld(), event.getPoseStack(), event.getCamera(), event.getPartialTick());
+    //$$     levelRenderer.render(Minecraft.getInstance().level, event.getPoseStack(), event.getCamera(), event.getPartialTick());
     //$$ }
     //$$
     //$$ @Mod.EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -219,9 +219,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ @SubscribeEvent
     //$$ public void onWorldRender(RenderLevelLastEvent event) {
     //$$     levelRenderer.render(
-    //$$             UMinecraft.getWorld(),
+    //$$             Minecraft.getInstance().level,
     //$$             event.getPoseStack(),
-    //$$             UMinecraft.getMinecraft().gameRenderer.getMainCamera(),
+    //$$             Minecraft.getInstance().gameRenderer.getMainCamera(),
     //$$             event.getPartialTick()
     //$$     );
     //$$ }

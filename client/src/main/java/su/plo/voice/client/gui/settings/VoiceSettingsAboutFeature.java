@@ -1,15 +1,17 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.USound;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.VertexFormatMode;
 import su.plo.lib.mod.client.render.particle.BlockDustParticle2D;
 import su.plo.voice.util.RandomUtil;
 
@@ -46,23 +48,34 @@ public final class VoiceSettingsAboutFeature {
             this.lastClick = 0L;
             this.clickCount = 0;
 
-            USound.INSTANCE.playButtonPress();
+            SoundManager soundManager = Minecraft.getInstance().getSoundManager();
+            soundManager.play(
+                    SimpleSoundInstance.forUI(
+                            //#if MC>=11903
+                            SoundEvents.UI_BUTTON_CLICK.value(),
+                            //#else
+                            //$$ SoundEvents.UI_BUTTON_CLICK,
+                            //#endif
+                            1.0f,
+                            0.25f
+                    )
+            );
+
             return;
         }
 
         this.lastClick = System.currentTimeMillis();
         this.clickCount++;
 
-        USound.INSTANCE.playSoundStatic(
-                SoundEvents.GRAVEL_HIT,
-                1F,
-                1F
+        SoundManager soundManager = Minecraft.getInstance().getSoundManager();
+        soundManager.play(
+                SimpleSoundInstance.forUI(SoundEvents.GRAVEL_HIT, 1f, 1f)
         );
 
         for (int i = 0; i < 2 + RandomUtil.randomInt(3); i++) {
             BlockDustParticle2D particle = new BlockDustParticle2D(
                     14 + RandomUtil.randomInt(parent.getTitleWidth()),
-                    15 + RandomUtil.randomInt(UGraphics.getFontHeight()),
+                    15 + RandomUtil.randomInt(RenderUtil.getFontHeight()),
                     0D,
                     0D,
                     Blocks.DIRT.defaultBlockState()
@@ -75,33 +88,31 @@ public final class VoiceSettingsAboutFeature {
         }
     }
 
-    public void render(@NotNull UMatrixStack stack, float delta) {
-        UGraphics buffer = UGraphics.getFromTessellator();
+    public void render(@NotNull PoseStack stack, float delta) {
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
 
         for (BlockDustParticle2D particle : particles) {
 //            render.setShader(VertexBuilder.Shader.POSITION_TEX_COLOR);
-            UGraphics.color4f(1.0F, 1.0F, 1.0F, 1.0F);
+            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
 
-            UGraphics.depthFunc(515);
-            UGraphics.disableDepth();
+            RenderSystem.depthFunc(515);
+            RenderSystem.disableDepthTest();
 
-            UGraphics.enableBlend();
+            RenderSystem.enableBlend();
             RenderUtil.defaultBlendFunc();
-            UGraphics.depthMask(true);
+            RenderSystem.depthMask(true);
             //#if MC>=11903
-            UGraphics.bindTexture(0, particle.getSprite().atlasLocation());
+            RenderUtil.bindTexture(0, particle.getSprite().atlasLocation());
             //#else
-            //$$ UGraphics.bindTexture(0, particle.getSprite().atlas().location());
+            //$$ RenderUtil.bindTexture(0, particle.getSprite().atlas().location());
             //#endif
 
-            buffer.beginWithDefaultShader(
-                    UGraphics.DrawMode.QUADS,
-                    UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR
-            );
+            RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
             particle.buildGeometry(stack, buffer, delta);
 
-            buffer.drawDirect();
+            tesselator.end();
         }
     }
 }

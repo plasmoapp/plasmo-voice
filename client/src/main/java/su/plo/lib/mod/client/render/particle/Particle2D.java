@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.render.particle;
 
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.particle.ParticleRenderType;
 
 import net.minecraft.world.phys.AABB;
@@ -130,7 +130,7 @@ public abstract class Particle2D {
         }
     }
 
-    public abstract void buildGeometry(UMatrixStack stack, UGraphics buffer, float tickDelta);
+    public abstract void buildGeometry(PoseStack stack, BufferBuilder buffer, float tickDelta);
 
     public abstract ParticleRenderType getType();
 

@@ -1,12 +1,10 @@
 package su.plo.lib.mod.client.gui.components;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UKeyboard;
-import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
 
@@ -25,27 +23,27 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     @Override
-    public void renderButton(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         renderBackground(stack, mouseX, mouseY);
         renderTrack(stack, mouseX, mouseY);
         renderText(stack, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBackground(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
         int width = getSliderWidth();
         GuiWidgetTexture sprite = getButtonTexture(hovered);
 
-        UGraphics.bindTexture(0, sprite.getLocation());
-        UGraphics.color4f(1F, 1F, 1F, alpha);
+        RenderUtil.bindTexture(0, sprite.getLocation());
+        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
 
-        UGraphics.enableBlend();
+        RenderSystem.enableBlend();
         RenderUtil.defaultBlendFunc();
-        UGraphics.enableDepth();
+        RenderSystem.enableDepthTest();
 
         RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
         RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
-        UGraphics.color4f(1F, 1F, 1F, 1F);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 
     @Override
@@ -64,7 +62,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, int modifiers) {
         boolean rightPressed = keyCode == 263; // GLFW_KEY_RIGHT
         if (rightPressed || keyCode == 262) { // GLFW_KEY_LEFT
             float delta = rightPressed ? -1.0F : 1.0F;
@@ -95,7 +93,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     protected void playDownSound() {
     }
 
-    protected void renderTrack(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderTrack(@NotNull PoseStack stack, int mouseX, int mouseY) {
         GuiWidgetTexture sprite;
         if (isHoveredOrFocused()) {
             sprite = GuiWidgetTexture.BUTTON_ACTIVE;
@@ -103,8 +101,8 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
             sprite = GuiWidgetTexture.BUTTON_DEFAULT;
         }
 
-        UGraphics.bindTexture(0, sprite.getLocation());
-        UGraphics.color4f(1F, 1F, 1F, 1F);
+        RenderUtil.bindTexture(0, sprite.getLocation());
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
         RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
@@ -112,13 +110,13 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     @Override
-    protected void renderText(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
         int textColor = active ? COLOR_WHITE : COLOR_GRAY;
         RenderUtil.drawCenteredString(
                 stack,
                 getText(),
                 x + getSliderWidth() / 2,
-                y + height / 2 - UGraphics.getFontHeight() / 2,
+                y + height / 2 - RenderUtil.getFontHeight() / 2,
                 textColor | ((int) Math.ceil(this.alpha * 255.0F)) << 24
         );
     }

@@ -3,14 +3,13 @@ package su.plo.voice.client.config.hotkey;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.ConfigEntry;
-import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.chat.ClientChatUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.api.client.config.hotkey.Hotkeys;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerStatePacket;
-import gg.essential.universal.UChat;
 
 @RequiredArgsConstructor
 public final class HotkeyActions {
@@ -38,14 +37,14 @@ public final class HotkeyActions {
                     ConfigEntry<Boolean> entry = config.getVoice().getSoundOcclusion();
                     entry.set(!entry.value());
 
-                    UChat.actionBar(RenderUtil.getTextConverter().convert(
+                    ClientChatUtil.setActionBar(
                             McTextComponent.translatable(
                                     "message.plasmovoice.occlusion_changed",
                                     entry.value()
                                             ? McTextComponent.translatable("message.plasmovoice.on")
                                             : McTextComponent.translatable("message.plasmovoice.off")
                             )
-                    ));
+                    );
                 })
         );
     }

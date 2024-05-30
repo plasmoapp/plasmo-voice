@@ -1,9 +1,9 @@
 package su.plo.lib.mod.client.gui.screen;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.gui.screens.Screen;
@@ -17,7 +17,7 @@ import java.util.List;
 
 public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
 
-    protected static final UMinecraft minecraft = UMinecraft.INSTANCE;
+    protected static final Minecraft minecraft = Minecraft.getInstance();
 
     private final List<GuiWidget> renderWidgets = Lists.newArrayList();
     private final List<GuiWidgetListener> widgets = Lists.newArrayList();
@@ -37,9 +37,9 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull UMatrixStack render, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         for (GuiWidget widget : renderWidgets) {
-            widget.render(render, mouseX, mouseY, delta);
+            widget.render(stack, mouseX, mouseY, delta);
         }
     }
 

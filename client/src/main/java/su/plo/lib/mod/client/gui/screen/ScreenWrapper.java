@@ -1,7 +1,9 @@
 package su.plo.lib.mod.client.gui.screen;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import org.lwjgl.glfw.GLFW;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.*;
 import lombok.Getter;
 import lombok.ToString;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,27 +21,28 @@ import java.util.List;
 import java.util.Optional;
 
 //#if MC>=12000
+//$$ import net.minecraft.client.gui.GuiGraphics;
 //$$ import net.minecraft.locale.Language;
 //#endif
 
 @ToString
 public final class ScreenWrapper
-        extends UScreen {
+        extends Screen {
 
     public static void openScreen(@Nullable GuiScreen screen) {
         if (screen == null) {
-            UMinecraft.getMinecraft().execute(() -> UScreen.displayScreen(null));
+            Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(null));
             return;
         }
 
         ScreenWrapper wrapped = new ScreenWrapper(screen);
 
         wrapped.screen.screen = wrapped;
-        UMinecraft.getMinecraft().execute(() -> UScreen.displayScreen(wrapped));
+        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(wrapped));
     }
 
     public static Optional<ScreenWrapper> getCurrentWrappedScreen() {
-        Screen screen = UScreen.getCurrentScreen();
+        Screen screen = Minecraft.getInstance().screen;
         if (screen instanceof ScreenWrapper) {
             return Optional.of((ScreenWrapper) screen);
         }
@@ -51,11 +54,16 @@ public final class ScreenWrapper
     private final GuiScreen screen;
 
     private boolean ignoreFirstMove = true;
-    private double lastDraggedMouseX;
-    private double lastDraggedMouseY;
+
+    //#if MC>=12000
+    //$$ private @Nullable GuiGraphics currentContext;
+    //$$ private int lastMouseX;
+    //$$ private int lastMouseY;
+    //$$ private float lastPartialTicks;
+    //#endif
 
     private ScreenWrapper(@NotNull GuiScreen screen) {
-        super();
+        super(RenderUtil.getTextConverter().convert(McTextComponent.empty()));
 
         this.screen = screen;
     }
@@ -68,12 +76,12 @@ public final class ScreenWrapper
     }
 
     @Override
-    public void onTick() {
+    public void tick() {
         screen.tick();
     }
 
     @Override
-    public void initScreen(int width, int height) {
+    protected void init() {
         screen.init();
 
         ModVoiceClient.INSTANCE.getEventBus().unregister(
@@ -87,7 +95,7 @@ public final class ScreenWrapper
     }
 
     @Override
-    public void onScreenClose() {
+    public void removed() {
         ModVoiceClient.INSTANCE.getEventBus().unregister(
                 ModVoiceClient.INSTANCE,
                 this
@@ -96,10 +104,31 @@ public final class ScreenWrapper
         screen.removed();
     }
 
+    //#if MC>=12000
+    //$$ @Override
+    //$$ public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    //$$     currentContext = guiGraphics;
+    //$$     lastMouseX = mouseX;
+    //$$     lastMouseY = mouseY;
+    //$$     lastPartialTicks = partialTicks;
+    //$$     screen.render(guiGraphics.pose(), mouseX, mouseY, partialTicks);
+    //$$     currentContext = null;
+    //$$ }
+    //$$
+    //$$ public void renderBackground(PoseStack stack) {
+    //$$     if (currentContext == null) return;
+    //#if MC>=12002
+    //$$     super.renderBackground(currentContext, lastMouseX, lastMouseY, lastPartialTicks);
+    //#else
+    //$$     super.renderBackground(currentContext);
+    //#endif
+    //$$ }
+    //#else
     @Override
-    public void onDrawScreen(@NotNull UMatrixStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
         screen.render(matrixStack, mouseX, mouseY, partialTicks);
     }
+    //#endif
 
 //    @Override
 //    protected void updateNarratedWidget(@NotNull NarrationElementOutput narrationOutput) {
@@ -108,44 +137,48 @@ public final class ScreenWrapper
 
     // ContainerEventHandler override
     @Override
-    public void onMouseClicked(double mouseX, double mouseY, int mouseButton) {
+    public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         screen.mouseClicked(mouseX, mouseY, mouseButton);
+        return false;
     }
 
     @Override
-    public void onMouseReleased(double mouseX, double mouseY, int button) {
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
         screen.mouseReleased(mouseX, mouseY, button);
+        return false;
     }
 
     @Override
-    public void onMouseDragged(double mouseX, double mouseY, int button, long timeSinceLastClick) {
-        if (this.ignoreFirstMove) {
-            this.lastDraggedMouseX = mouseX;
-            this.lastDraggedMouseY = mouseY;
-            this.ignoreFirstMove = false;
-        }
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+//        if (this.ignoreFirstMove) {
+//            this.lastDraggedMouseX = mouseX;
+//            this.lastDraggedMouseY = mouseY;
+//            this.ignoreFirstMove = false;
+//        }
+//
+//        double deltaX = (mouseX - lastDraggedMouseX)
+//                * (double)UResolution.getScaledWidth() / (double)UResolution.getWindowWidth()
+//                * UResolution.getScaleFactor();
+//        double deltaY = (mouseY - lastDraggedMouseY)
+//                * (double)UResolution.getScaledHeight() / (double)UResolution.getWindowHeight()
+//                * UResolution.getScaleFactor();
 
-        double deltaX = (mouseX - lastDraggedMouseX)
-                * (double)UResolution.getScaledWidth() / (double)UResolution.getWindowWidth()
-                * UResolution.getScaleFactor();
-        double deltaY = (mouseY - lastDraggedMouseY)
-                * (double)UResolution.getScaledHeight() / (double)UResolution.getWindowHeight()
-                * UResolution.getScaleFactor();
-
-//        System.out.println(UResolution.getScaleFactor());
-
-        this.lastDraggedMouseX = mouseX;
-        this.lastDraggedMouseY = mouseY;
-
-//        System.out.println(deltaY);
+//        this.lastDraggedMouseX = mouseX;
+//        this.lastDraggedMouseY = mouseY;
 
         screen.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
+        return false;
     }
 
     @Override
-    public void onMouseScrolled(double delta) {
-        screen.mouseScrolled(UMouse.Scaled.getX(), UMouse.Scaled.getY(), delta);
+    //#if MC>=12002
+    //$$ public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double delta) {
+    //#else
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+    //#endif
+        screen.mouseScrolled(mouseX, mouseY, delta);
 //        super.onMouseScrolled(delta);
+        return false;
     }
 
     //    @Override
@@ -154,67 +187,56 @@ public final class ScreenWrapper
 //    }
 
     @Override
-    public void onKeyPressed(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 0) {
-            screen.charTyped(typedChar, modifiers);
-            return;
+            screen.charTyped((char) 0, modifiers);
+            return false;
         }
 
         if (screen.keyPressed(keyCode, modifiers)) {
-            return;
+            return true;
         }
 
-        if (keyCode == UKeyboard.KEY_TAB) {
-            boolean shiftKeyDown = UKeyboard.isShiftKeyDown();
+        if (shouldCloseOnEsc() && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+            onClose();
+            return true;
+        }
+
+        if (keyCode == GLFW.GLFW_KEY_TAB) {
+            boolean shiftKeyDown = Screen.hasShiftDown();
 
             if (!screen.changeFocus(shiftKeyDown)) {
                 screen.changeFocus(shiftKeyDown);
             }
         }
+
+        return false;
     }
 
     @Override
-    public void onKeyReleased(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
-        if (screen.keyReleased(keyCode, typedChar, modifiers)) {
-            return;
+    public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
+        if (screen.keyReleased(keyCode, (char) 0, modifiers)) {
+            return false;
         }
 
-        super.onKeyReleased(keyCode, typedChar, modifiers);
-    }
-
-    // WAYTOODANK because I can't return true in onKeyPressed
-    @EventSubscribe
-    public void onWindowKeyPressed(@NotNull KeyPressedEvent event) {
-        if (!event.getAction().equals(Hotkey.Action.UP)) return;
-
-        if (shouldCloseOnEsc() &&
-                event.getKey().equals(Hotkey.Type.KEYSYM.getOrCreate(UKeyboard.KEY_ESCAPE))
-        ) {
-            onClose();
-        }
+        super.keyReleased(keyCode, 0, modifiers);
+        return false;
     }
 
     // MinecraftScreen impl
     @Override
-    public void onDrawBackground(@NotNull UMatrixStack matrixStack, int tint) {
-        super.onDrawBackground(matrixStack, tint);
-    }
-
     public boolean shouldCloseOnEsc() {
         return screen.shouldCloseOnEsc();
     }
 
+    @Override
     public void onClose() {
-        UMinecraft.getMinecraft().execute(() -> UScreen.displayScreen(null));
+        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(null));
     }
 
-    public void renderBackground(UMatrixStack stack) {
-        super.onDrawBackground(stack, 0);
-    }
-
-    public void renderTooltip(UMatrixStack stack, List<McTextComponent> tooltip, int mouseX, int mouseY) {
+    public void renderTooltipWrapped(PoseStack stack, List<McTextComponent> tooltip, int mouseX, int mouseY) {
         //#if MC>=12000
-        //$$ ((Screen) this).setTooltipForNextRenderPass(
+        //$$ setTooltipForNextRenderPass(
         //$$         Language.getInstance().getVisualOrder(
         //$$                 new ArrayList<>(
         //$$                         RenderUtil.getTextConverter().convert(tooltip)
@@ -222,8 +244,8 @@ public final class ScreenWrapper
         //$$         )
         //$$ );
         //#else
-        ((Screen) this).renderComponentTooltip(
-                stack.toMC(),
+        renderComponentTooltip(
+                stack,
                 new ArrayList<>(
                         RenderUtil.getTextConverter().convert(tooltip)
                 ),

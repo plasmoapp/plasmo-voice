@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.device;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
+import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-
-import static gg.essential.universal.UDesktop.isMac;
 
 @RequiredArgsConstructor
 public final class VoiceDeviceManager implements DeviceManager {
@@ -79,7 +78,7 @@ public final class VoiceDeviceManager implements DeviceManager {
     @Override
     public @NotNull InputDevice openInputDevice(@Nullable AudioFormat format) throws DeviceException {
         // Use javax for mac by default
-        if (isMac() && !config.getVoice().getUseJavaxInput().value()) {
+        if (Minecraft.ON_OSX && !config.getVoice().getUseJavaxInput().value()) {
             config.getVoice().getUseJavaxInput().set(true);
             config.save(true);
         }

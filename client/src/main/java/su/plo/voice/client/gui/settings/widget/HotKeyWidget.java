@@ -1,14 +1,11 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UKeyboard;
-import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.language.LanguageUtil;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -100,7 +97,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     @Override
-    public boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, int modifiers) {
         if (isActive()) {
             if (keyCode == 256) { // GLFW_KEY_ESCAPE
                 if (pressedKeys.size() > 0) {
@@ -125,7 +122,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     @Override
-    public boolean keyReleased(int keyCode, char typedChar, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyReleased(int keyCode, char typedChar, int modifiers) {
         if (isActive()
                 && pressedKeys.stream().anyMatch(key -> key.getType() == Hotkey.Type.KEYSYM && key.getCode() == keyCode)
         ) {
@@ -138,7 +135,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     @Override
-    protected void renderText(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
         int j = active ? 16777215 : 10526880;
 
         if (Objects.equals(parent.getFocusedHotKey(), this)) {
@@ -146,7 +143,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
                     stack,
                     getText(),
                     x + width / 2,
-                    y + height / 2 - UGraphics.getFontHeight() / 2,
+                    y + height / 2 - RenderUtil.getFontHeight() / 2,
                     j | Mth.ceil(alpha * 255.0F) << 24
             );
         } else {
@@ -155,14 +152,14 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
                     getText(),
                     width - 16,
                     x + width / 2,
-                    y + height / 2 - UGraphics.getFontHeight() / 2,
+                    y + height / 2 - RenderUtil.getFontHeight() / 2,
                     j | Mth.ceil(alpha * 255.0F) << 24
             );
         }
     }
 
     @Override
-    public void renderToolTip(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    public void renderToolTip(@NotNull PoseStack stack, int mouseX, int mouseY) {
         if (!Objects.equals(parent.getFocusedHotKey(), this)) {
             int width = RenderUtil.getTextWidth(getText());
             if (width > this.width - 16) {

@@ -1,6 +1,8 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -17,15 +19,12 @@ import su.plo.voice.client.gui.settings.tab.AboutTabWidget;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
 import su.plo.voice.client.gui.settings.widget.TabButton;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UKeyboard;
-import gg.essential.universal.UMatrixStack;
 
 import java.util.List;
 import java.util.Optional;
 
 //#if MC>=12005
-//$$ import gg.essential.universal.UMinecraft;
+//$$ import net.minecraft.client.Minecraft;
 //$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.MENU_LIST_BACKGROUND_LOCATION;
 //$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_MENU_LIST_BACKGROUND_LOCATION;
 //$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.FOOTER_SEPARATOR_LOCATION;
@@ -60,7 +59,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
     // GuiWidgetEventListener impl
     @Override
-    public boolean keyPressed(int keyCode, @Nullable UKeyboard.Modifiers modifiers) {
+    public boolean keyPressed(int keyCode, int modifiers) {
         if (keyCode == 256 // GLFW_KEY_ESCAPE
                 || keyCode == 258) { // GLFW_KEY_TAB
             Optional<TabWidget> tab = getActiveTab();
@@ -236,7 +235,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         tabWidgets.forEach(TabWidget::removed);
     }
 
-    public void renderButtons(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButtons(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         int buttonX = 14;
         int buttonY = 36;
 
@@ -260,8 +259,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
             buttonX += button.getWidth() + 4;
             button.setY(buttonY);
 
-            UGraphics.enableDepth();
-            UGraphics.depthFunc(519);
+            RenderSystem.enableDepthTest();
+            RenderSystem.depthFunc(519);
             button.render(stack, mouseX, mouseY, delta);
         }
 
@@ -274,20 +273,20 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         }
     }
 
-    public void renderTab(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void renderTab(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         getActiveTab().ifPresent(tab -> tab.render(stack, mouseX, mouseY, delta));
     }
 
-    public void renderBackground(@NotNull UMatrixStack stack) {
+    public void renderBackground(@NotNull PoseStack stack) {
         int width = parent.getWidth();
         int height = getHeight();
 
-        UGraphics.color4f(1F, 1F, 1F, 1F);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         //#if MC>=12005
-        //$$ UGraphics.enableBlend();
+        //$$ RenderSystem.enableBlend();
         //$$
-        //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
+        //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
         //$$
         //$$ RenderUtil.blit(
         //$$         stack,
@@ -298,7 +297,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         //$$         0, height / 32F
         //$$ );
         //$$
-        //$$ UGraphics.bindTexture(0, UMinecraft.getWorld() == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION);
+        //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION);
         //$$
         //$$ RenderUtil.blit(
         //$$         stack,
@@ -309,9 +308,9 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         //$$         0, 1F
         //$$ );
         //$$
-        //$$ UGraphics.disableBlend();
+        //$$ RenderSystem.disableBlend();
         //#else
-        UGraphics.bindTexture(0, BACKGROUND_LOCATION);
+        RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 
         RenderUtil.blitColor(
                 stack,
@@ -324,17 +323,18 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         );
 
 
-        UGraphics.depthFunc(515);
-        UGraphics.disableDepth();
-        UGraphics.enableBlend();
-        UGraphics.tryBlendFuncSeparate(
+        RenderSystem.depthFunc(515);
+        RenderSystem.disableDepthTest();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(
                 770, // SRC_ALPHA,
                 771, // ONE_MINUS_SRC_ALPHA
                 0, // ZERO
                 1 // ONE
         );
-        UGraphics.shadeModel(7425);
-//        render.disableTexture();
+        //#if MC<11700
+        //$$ RenderSystem.shadeModel(7425);
+        //#endif
 
         RenderUtil.fillGradient(
                 stack,
@@ -346,8 +346,10 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
 //        render.enableTexture();
         RenderUtil.defaultBlendFunc();
-        UGraphics.enableDepth();
-        UGraphics.shadeModel(7424);
+        RenderSystem.enableDepthTest();
+        //#if MC<11700
+        //$$ RenderSystem.shadeModel(7424);
+        //#endif
         //#endif
     }
 

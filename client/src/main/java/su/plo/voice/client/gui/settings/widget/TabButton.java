@@ -1,8 +1,8 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
@@ -60,8 +60,8 @@ public final class TabButton extends Button {
     }
 
     @Override
-    protected void renderText(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
-        UGraphics.bindTexture(0, iconLocation);
+    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
+        RenderUtil.bindTexture(0, iconLocation);
 
         if (shadow) {
             //#if MC>=11701
@@ -76,7 +76,7 @@ public final class TabButton extends Button {
 
             RenderUtil.blitWithActiveShader(
                     stack,
-                    UGraphics.CommonVertexFormats.POSITION_TEXTURE_COLOR,
+                    DefaultVertexFormat.POSITION_TEX_COLOR,
                     x + 7,
                     x + 7 + 8,
                     y + 7,

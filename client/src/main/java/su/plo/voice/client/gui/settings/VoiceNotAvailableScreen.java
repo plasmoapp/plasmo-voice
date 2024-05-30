@@ -1,6 +1,8 @@
 package su.plo.voice.client.gui.settings;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
@@ -11,11 +13,6 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
-import gg.essential.universal.UDesktop;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-
-import java.net.URI;
 
 public final class VoiceNotAvailableScreen extends GuiScreen {
 
@@ -43,8 +40,8 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
         String[] messageLines = formattedMessage.split("\n");
 
         if (messageLines.length == 3 && button == 0) {
-            int lineWidth = UGraphics.getStringWidth(messageLines[2]);
-            int lineHeight = UGraphics.getFontHeight();
+            int lineWidth = RenderUtil.getStringWidth(messageLines[2]);
+            int lineHeight = RenderUtil.getFontHeight();
             float x = (float) (getWidth() / 2 - lineWidth / 2);
 
             if (mouseX >= x && mouseX <= x + lineWidth &&
@@ -81,7 +78,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     }
 
     @Override
-    public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         screen.renderBackground(stack);
 
         int messageLines = RenderUtil.drawStringMultiLineCentered(
@@ -93,7 +90,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
                 16777215
         );
 
-        button.setY(y + (UGraphics.getFontHeight() * messageLines) + 20);
+        button.setY(y + (RenderUtil.getFontHeight() * messageLines) + 20);
 
         super.render(stack, mouseX, mouseY, delta);
     }
@@ -111,11 +108,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     }
 
     private void openLink(@NotNull String link) {
-        try {
-            UDesktop.browse(new URI(link));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        MinecraftUtil.openUri(link);
     }
 
     @EventSubscribe

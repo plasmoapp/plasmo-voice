@@ -60,6 +60,6 @@ preprocess {
     fabric11701.link(fabric11802, file("1.17.1-1.18.2.txt"))
     forge11701.link(forge11802, file("1.17.1-1.18.2.txt"))
 
-    fabric11605.link(fabric11701)
+    fabric11605.link(fabric11701, file("1.16.5-1.17.1.txt"))
     forge11605.link(forge11701, file("1.16.5-1.17.1.txt"))
 }

@@ -1,7 +1,6 @@
 package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import gg.essential.universal.UMatrixStack;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
@@ -30,7 +29,7 @@ public final class ModEntityRenderer extends ModRenderer {
         }
 
         voiceClient.getEventBus().fire(new EntityRenderEvent(
-                new UMatrixStack(poseStack),
+                poseStack,
                 new ModCamera(camera.getPosition(), camera.getXRot(), camera.getYRot()),
                 entity,
                 light,
@@ -50,7 +49,7 @@ public final class ModEntityRenderer extends ModRenderer {
         }
 
         voiceClient.getEventBus().fire(new PlayerRenderEvent(
-                new UMatrixStack(poseStack),
+                poseStack,
                 new ModCamera(camera.getPosition(), camera.getXRot(), camera.getYRot()),
                 player,
                 light,

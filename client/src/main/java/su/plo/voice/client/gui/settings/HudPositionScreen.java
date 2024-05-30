@@ -1,11 +1,9 @@
 package su.plo.voice.client.gui.settings;
 
+import com.mojang.blaze3d.vertex.PoseStack;
+import org.lwjgl.glfw.GLFW;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UKeyboard;
-import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
@@ -32,7 +30,7 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
     }
 
     @Override
-    public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         screen.renderBackground(stack);
         super.render(stack, mouseX, mouseY, delta);
 
@@ -40,14 +38,14 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
                 stack,
                 chooseText,
                 getWidth() / 2 - RenderUtil.getTextWidth(chooseText) / 2,
-                getHeight() / 2 - UGraphics.getFontHeight(),
+                getHeight() / 2 - RenderUtil.getFontHeight(),
                 16777215
         );
     }
 
     @Override
-    public boolean keyPressed(int keyCode, UKeyboard.@Nullable Modifiers modifiers) {
-        if (keyCode == UKeyboard.KEY_ESCAPE) {
+    public boolean keyPressed(int keyCode, int modifiers) {
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
             parent.setPreventEscClose(true);
             ScreenWrapper.openScreen(parent);
             return true;

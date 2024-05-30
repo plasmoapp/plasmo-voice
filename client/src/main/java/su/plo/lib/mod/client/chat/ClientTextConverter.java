@@ -5,7 +5,6 @@ import su.plo.slib.api.chat.component.McTranslatableText;
 import su.plo.slib.api.chat.converter.McTextConverter;
 import su.plo.slib.api.chat.converter.TranslatableTextConverter;
 import su.plo.slib.mod.chat.ComponentTextConverter;
-import gg.essential.universal.wrappers.message.UTextComponent;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import net.minecraft.network.chat.Component;
@@ -52,9 +51,5 @@ public final class ClientTextConverter extends TranslatableTextConverter<Compone
                     return textConverter.convert(translate(language, translatable));
                 })
                 .orElseGet(() -> textConverter.convert(text));
-    }
-
-    public UTextComponent convertToUniversal(@NotNull McTextComponent text) {
-        return new UTextComponent(convert(text));
     }
 }

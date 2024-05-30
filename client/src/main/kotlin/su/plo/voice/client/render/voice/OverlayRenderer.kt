@@ -2,6 +2,8 @@ package su.plo.voice.client.render.voice
 
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
+import com.mojang.blaze3d.systems.RenderSystem
+import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.render.RenderUtil
@@ -18,10 +20,6 @@ import su.plo.voice.client.event.render.HudRenderEvent
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
-import gg.essential.universal.UGraphics
-import gg.essential.universal.UMatrixStack
-import gg.essential.universal.UResolution.scaledHeight
-import gg.essential.universal.UResolution.scaledWidth
 import java.util.*
 
 class OverlayRenderer(
@@ -127,7 +125,7 @@ class OverlayRenderer(
     }
 
     private fun renderEntry(
-        stack: UMatrixStack,
+        stack: PoseStack,
         sourceLine: ClientSourceLine,
         position: OverlayPosition,
         index: Int,
@@ -148,10 +146,10 @@ class OverlayRenderer(
             y += (ENTRY_HEIGHT + 1) * index
         }
 
-        UGraphics.depthFunc(515)
+        RenderSystem.depthFunc(515)
 
-        stack.push()
-        stack.translate(0f, 0f, 1000f)
+        stack.pushPose()
+        stack.translate(0.0, 0.0, 1000.0)
 
 //        int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
         val backgroundColor = (0.25f * 255.0f).toInt() shl 24
@@ -163,12 +161,12 @@ class OverlayRenderer(
                     x -= 16
                 }
 
-                UGraphics.bindTexture(0, loadSkin(it))
-                UGraphics.color4f(1f, 1f, 1f, 1f)
+                RenderUtil.bindTexture(0, loadSkin(it))
+                RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                 RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
-                UGraphics.enableBlend()
+                RenderSystem.enableBlend()
                 RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
-                UGraphics.disableBlend()
+                RenderSystem.disableBlend()
                 if (!position.isRight) {
                     x += 16 + 1
                 }
@@ -196,15 +194,15 @@ class OverlayRenderer(
             }
 
             RenderUtil.fill(stack, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
-            UGraphics.bindTexture(0, ResourceLocation(sourceLine.icon))
-            UGraphics.color4f(1f, 1f, 1f, 1f)
+            RenderUtil.bindTexture(0, ResourceLocation(sourceLine.icon))
+            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            UGraphics.enableBlend()
+            RenderSystem.enableBlend()
             RenderUtil.blit(stack, x, y, 0, 0f, 0f, 16, 16, 16, 16)
-            UGraphics.disableBlend()
+            RenderSystem.disableBlend()
         }
 
-        stack.pop()
+        stack.popPose()
     }
 
     private fun getSourceSenderName(
@@ -295,7 +293,7 @@ class OverlayRenderer(
 
     private fun calcPositionX(x: Int): Int {
         return if (x < 0) {
-            scaledWidth + x
+            Minecraft.getInstance().window.guiScaledWidth + x
         } else {
             x
         }
@@ -303,7 +301,7 @@ class OverlayRenderer(
 
     private fun calcPositionY(y: Int): Int {
         return if (y < 0) {
-            scaledHeight + y
+            Minecraft.getInstance().window.guiScaledHeight + y
         } else {
             y
         }

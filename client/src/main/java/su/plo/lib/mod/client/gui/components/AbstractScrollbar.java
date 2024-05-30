@@ -1,9 +1,9 @@
 package su.plo.lib.mod.client.gui.components;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -54,7 +54,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             this.hoveredEntry = getEntryAtPosition(mouseX, mouseY).orElse(null);
         } else {
@@ -69,7 +69,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
         int maxScroll = getMaxScroll();
         if (maxScroll > 0) {
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             int trackBottom = (int) ((float) ((y1 - y0) * (y1 - y0)) / (float) scrollHeight);
             trackBottom = Mth.clamp(trackBottom, 32, y1 - y0 - 8);
@@ -202,7 +202,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         this.scrollTop = Mth.clamp(scrollTop, 0D, getMaxScroll());
     }
 
-    protected void renderList(@NotNull UMatrixStack stack, int x, int y, int mouseX, int mouseY, float delta) {
+    protected void renderList(@NotNull PoseStack stack, int x, int y, int mouseX, int mouseY, float delta) {
         RenderUtil.enableScissor(0, 0, width, y1 - y0 + 4);
         for (int index = 0; index < entries.size(); index++) {
             Entry entry = entries.get(index);
@@ -288,6 +288,6 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             return Collections.emptyList();
         }
 
-        public abstract void render(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta);
+        public abstract void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta);
     }
 }

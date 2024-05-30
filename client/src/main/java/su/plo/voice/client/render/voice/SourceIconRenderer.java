@@ -1,6 +1,11 @@
 package su.plo.voice.client.render.voice;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.Tesselator;
 import lombok.NonNull;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
@@ -12,6 +17,7 @@ import net.minecraft.world.scores.Objective;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.extensions.PoseStackKt;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -31,9 +37,6 @@ import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -94,7 +97,7 @@ public final class SourceIconRenderer {
 
         Player player = event.getPlayer();
 
-        LocalPlayer clientPlayer = UMinecraft.getPlayer();
+        LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
         if (isIconHidden()
@@ -157,7 +160,7 @@ public final class SourceIconRenderer {
 
         Entity entity = event.getEntity();
 
-        LocalPlayer clientPlayer = UMinecraft.getPlayer();
+        LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
         if (isIconHidden() || entity.isInvisibleTo(clientPlayer)) return;
@@ -179,7 +182,7 @@ public final class SourceIconRenderer {
         );
     }
 
-    public void renderEntity(@NonNull UMatrixStack stack,
+    public void renderEntity(@NonNull PoseStack stack,
                              @NonNull ModCamera camera,
                              int light,
                              @NonNull Entity entity,
@@ -191,25 +194,13 @@ public final class SourceIconRenderer {
         double distance = camera.position().distanceToSqr(position);
         if (distance > 4096D) return;
 
-        UGraphics buffer = UGraphics.getFromTessellator();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
 
-        stack.push();
+        stack.pushPose();
 
         if (hasPercent) stack.translate(0D, 0.3D, 0D);
         translateEntityMatrix(stack, camera, entity, distance, hasLabel);
-
-//        UGraphics.bindTexture(0, iconLocation);
-//        UGraphics.color4f(1F, 1F, 1F, 1F);
-//        // TRANSLUCENT_TRANSPARENCY
-//        UGraphics.enableBlend();
-//        UGraphics.tryBlendFuncSeparate(
-//                770, // SourceFactor.SRC_ALPHA
-//                771, // DestFactor.ONE_MINUS_SRC_ALPHA
-//                1, // SourceFactor.ONE
-//                771 // DestFactor.ONE_MINUS_SRC_ALPHA
-//        );
-//        // LIGHT
-//        RenderUtil.turnOnLightLayer();
 
         if (entity.isDescending()) {
             vertices(stack, buffer, 40, light, iconLocation, false);
@@ -218,21 +209,10 @@ public final class SourceIconRenderer {
             vertices(stack, buffer, 40, light, iconLocation, true);
         }
 
-        stack.pop();
-
-//        // TRANSLUCENT_TRANSPARENCY
-//        UGraphics.disableBlend();
-//        RenderUtil.defaultBlendFunc();
-//        UGraphics.depthMask(true);
-//
-//        // LIGHT
-////        RenderUtil.turnOffLightLayer();
-//
-//        UGraphics.enableDepth();
-//        UGraphics.depthFunc(515);
+        stack.popPose();
     }
 
-    private void renderPercent(@NonNull UMatrixStack stack,
+    private void renderPercent(@NonNull PoseStack stack,
                                @NonNull ModCamera camera,
                                int light,
                                @NotNull Entity entity,
@@ -242,7 +222,7 @@ public final class SourceIconRenderer {
         double distance = camera.position().distanceToSqr(position);
         if (distance > 4096D) return;
 
-        stack.push();
+        stack.pushPose();
 
         translateEntityMatrix(stack, camera, entity, distance, hasLabel);
         stack.translate(5D, 0D, 0D);
@@ -254,9 +234,9 @@ public final class SourceIconRenderer {
         int backgroundColor = (int) (0.25F * 255.0F) << 24;
         int xOffset = -RenderUtil.getTextWidth(text) / 2;
 
-        UGraphics.disableDepth();
-        UGraphics.enableBlend();
-        UGraphics.depthMask(false);
+        RenderSystem.disableDepthTest();
+        RenderSystem.enableBlend();
+        RenderSystem.depthMask(false);
 
         RenderUtil.fill(
                 stack,
@@ -277,8 +257,8 @@ public final class SourceIconRenderer {
                 false
         );
 
-        UGraphics.enableDepth();
-        UGraphics.depthMask(true);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
         RenderUtil.drawStringLight(
                 stack,
                 text,
@@ -290,11 +270,11 @@ public final class SourceIconRenderer {
                 false
         );
 
-        UGraphics.disableBlend();
-        stack.pop();
+        RenderSystem.disableBlend();
+        stack.popPose();
     }
 
-    private void translateEntityMatrix(@NonNull UMatrixStack stack,
+    private void translateEntityMatrix(@NonNull PoseStack stack,
                                        @NonNull ModCamera camera,
                                        @NotNull Entity entity,
                                        double distance,
@@ -313,14 +293,14 @@ public final class SourceIconRenderer {
         }
 
         stack.translate(0D, entity.getBbHeight() + 0.5D, 0D);
-        stack.rotate(-camera.pitch(), 0.0F, 1.0F, 0.0F);
-        stack.rotate(camera.yaw(), 1.0F, 0.0F, 0.0F);
+        PoseStackKt.rotate(stack, -camera.pitch(), 0.0F, 1.0F, 0.0F);
+        PoseStackKt.rotate(stack, camera.yaw(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
         stack.translate(-5D, -1D, 0D);
     }
 
     private void renderStatic(
-            @NonNull UMatrixStack stack,
+            @NonNull PoseStack stack,
             @NonNull ModCamera camera,
             int light,
             @NotNull ResourceLocation iconLocation,
@@ -343,85 +323,78 @@ public final class SourceIconRenderer {
         double distanceToCamera = camera.position().distanceToSqr(toVec3(lastPosition));
         if (distanceToCamera > 4096D) return;
 
-        UGraphics buffer = UGraphics.getFromTessellator();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
 
-        stack.push();
+        stack.pushPose();
+
         stack.translate(
                 lastPosition.getX() - camera.position().x,
                 lastPosition.getY() - camera.position().y,
                 lastPosition.getZ() - camera.position().z
         );
-        stack.rotate(-camera.pitch(), 0.0F, 1.0F, 0.0F);
-        stack.rotate(camera.yaw(), 1.0F, 0.0F, 0.0F);
+        PoseStackKt.rotate(stack, -camera.pitch(), 0.0F, 1.0F, 0.0F);
+        PoseStackKt.rotate(stack, camera.yaw(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
         stack.translate(-5D, 0D, 0D);
-
 
         vertices(stack, buffer, 255, light, iconLocation, false);
         vertices(stack, buffer, 40, light, iconLocation, true);
 
-        stack.pop();
+        stack.popPose();
     }
 
-    private void vertices(@NonNull UMatrixStack stack,
-                          @NonNull UGraphics buffer,
+    private void vertices(@NonNull PoseStack stack,
+                          @NonNull BufferBuilder buffer,
                           int alpha,
                           int light,
                           @NotNull ResourceLocation iconLocation,
                           boolean seeThrough) {
         if (seeThrough) {
-            UGraphics.disableDepth();
-            UGraphics.depthMask(false);
+            RenderSystem.disableDepthTest();
+            RenderSystem.depthMask(false);
         } else {
-            UGraphics.enableDepth();
-            UGraphics.depthMask(true);
+            RenderSystem.enableDepthTest();
+            RenderSystem.depthMask(true);
         }
 
-//        //#if MC>=11700
-//        if (seeThrough) {
-//            UGraphics.setShader(GameRenderer::getRendertypeTextSeeThroughShader);
-//        } else {
-//            UGraphics.setShader(GameRenderer::getRendertypeTextShader);
-//        }
-//
-//        buffer.beginWithActiveShader(
-//                UGraphics.DrawMode.QUADS,
-//                DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP
-//        );
-//        //#endif
-
-        //#if MC>=11600
+        RenderType renderType;
         if (seeThrough) {
-            buffer.beginRenderLayer(RenderType.textSeeThrough(iconLocation));
+            renderType = RenderType.textSeeThrough(iconLocation);
         } else {
-            buffer.beginRenderLayer(RenderType.text(iconLocation));
+            renderType = RenderType.text(iconLocation);
         }
-        //#endif
+
+        buffer.begin(renderType.mode(), renderType.format());
 
         vertex(stack, buffer, 0F, 10F, 0F, 0F, 1F, alpha, light);
         vertex(stack, buffer, 10F, 10F, 0F, 1F, 1F, alpha, light);
         vertex(stack, buffer, 10F, 0F, 0F, 1F, 0F, alpha, light);
         vertex(stack, buffer, 0F, 0F, 0F, 0F, 0F, alpha, light);
 
-        buffer.drawDirect();
+        Tesselator.getInstance().end();
     }
 
-    private void vertex(@NonNull UMatrixStack stack,
-                        @NonNull UGraphics buffer,
+    private void vertex(@NonNull PoseStack stack,
+                        @NonNull BufferBuilder buffer,
                         float x, float y, float z, float u, float v, int alpha, int light) {
-        buffer.pos(stack, x, y, z);
+        buffer.vertex(stack.last().pose(), x, y, z);
         buffer.color(255, 255, 255, alpha);
-        buffer.tex(u, v);
-        buffer.overlay(0, 10);
-        buffer.light(light & '\uffff', light >> 16 & '\uffff');
-        buffer.norm(stack, 0F, 0F, -1F);
+        buffer.uv(u, v);
+        buffer.overlayCoords(0, 10);
+        buffer.uv2(light);
+        //#if MC>=12005
+        //$$ buffer.normal(stack.last(), 0F, 0F, -1F);
+        //#else
+        buffer.normal(stack.last().normal(), 0F, 0F, -1F);
+        //#endif
 
         buffer.endVertex();
     }
 
     private boolean isIconHidden() {
         int showIcons = config.getOverlay().getShowSourceIcons().value();
-        return showIcons == 2 || (UMinecraft.getSettings().hideGui && showIcons == 0);
+        return showIcons == 2 || (Minecraft.getInstance().options.hideGui && showIcons == 0);
     }
 
     private <T extends SourceInfo> ClientSourceLine getHighestActivatedSourceLine(@NotNull Collection<ClientAudioSource<T>> sources) {

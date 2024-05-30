@@ -1,9 +1,8 @@
 package su.plo.voice.client.gui.settings;
 
+import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
@@ -18,6 +17,7 @@ import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
+import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.tab.*;
 
@@ -153,7 +153,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull UMatrixStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         this.tooltip = null;
 
         screen.renderBackground(stack);
@@ -171,7 +171,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
             tooltip = getVersionTooltip();
 
         if (tooltip != null) {
-            screen.renderTooltip(
+            screen.renderTooltipWrapped(
                     stack,
                     getStringSplitToWidth(
                             RenderUtil.getFormattedString(tooltip),
@@ -183,6 +183,20 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
                     mouseY
             );
         }
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int modifiers) {
+        if (super.keyPressed(keyCode, modifiers)) {
+            return true;
+        }
+
+        if (ModVoiceClient.MENU_KEY.matches(keyCode, 0)) {
+            VoiceScreens.INSTANCE.openSettings(voiceClient);
+            return true;
+        }
+
+        return false;
     }
 
     @Override
@@ -198,7 +212,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     // Class methods
     public boolean isTitleHovered(double mouseX, double mouseY) {
         return mouseX >= 14 && mouseX <= (14 + titleWidth) &&
-                mouseY >= 15 && mouseY <= (15 + UGraphics.getFontHeight());
+                mouseY >= 15 && mouseY <= (15 + RenderUtil.getFontHeight());
     }
 
     @EventSubscribe

@@ -1,9 +1,9 @@
 package su.plo.voice.client.audio.source;
 
-import gg.essential.universal.UMinecraft;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +15,6 @@ import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.source.AlSource;
 import su.plo.voice.api.client.audio.device.source.AlSourceParams;
 import su.plo.voice.api.client.audio.source.LoopbackSource;
-import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.config.VoiceClientConfig;
 
 import java.util.Optional;
@@ -69,7 +68,7 @@ public final class ClientLoopbackSource implements LoopbackSource {
         if (source == null) return; // not initialized yet
 
         if (!relative) {
-            LocalPlayer player = UMinecraft.getPlayer();
+            LocalPlayer player = Minecraft.getInstance().player;
             if (player == null) return;
 
             position[0] = (float) player.getX();

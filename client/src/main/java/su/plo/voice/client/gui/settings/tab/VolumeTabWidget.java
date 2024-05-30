@@ -2,12 +2,12 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.slib.api.entity.player.McGameProfile;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -69,12 +69,12 @@ public final class VolumeTabWidget extends TabWidget {
 
     @EventSubscribe
     public void onPlayerConnected(@NotNull VoicePlayerConnectedEvent event) {
-        UMinecraft.getMinecraft().execute(this::refreshPlayerEntries);
+        Minecraft.getInstance().execute(this::refreshPlayerEntries);
     }
 
     @EventSubscribe
     public void onPlayerDisconnected(@NotNull VoicePlayerDisconnectedEvent event) {
-        UMinecraft.getMinecraft().execute(this::refreshPlayerEntries);
+        Minecraft.getInstance().execute(this::refreshPlayerEntries);
     }
 
     private void createSourceLineVolume(@NotNull ClientSourceLine sourceLine) {
@@ -154,7 +154,7 @@ public final class VolumeTabWidget extends TabWidget {
 
                     players.values()
                             .stream()
-                            .filter(player -> !UMinecraft.getPlayer().getUUID().equals(player.getId()))
+                            .filter(player -> !Minecraft.getInstance().player.getUUID().equals(player.getId()))
                             .sorted(Comparator.comparing(McGameProfile::getName))
                             .forEach(this::createPlayerVolume);
                 });
@@ -272,19 +272,19 @@ public final class VolumeTabWidget extends TabWidget {
         }
 
         @Override
-        protected void renderText(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            UGraphics.bindTexture(0, iconLocation);
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            RenderUtil.bindTexture(0, iconLocation);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-            UGraphics.enableBlend();
+            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
-            UGraphics.disableBlend();
+            RenderSystem.disableBlend();
 
             RenderUtil.drawString(
                     stack,
                     text,
                     x + 20,
-                    y + height / 2 - UGraphics.getFontHeight() / 2,
+                    y + height / 2 - RenderUtil.getFontHeight() / 2,
                     0xFFFFFF
             );
         }
@@ -326,23 +326,23 @@ public final class VolumeTabWidget extends TabWidget {
         }
 
         @Override
-        protected void renderText(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            UGraphics.bindTexture(0, loadSkin());
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            RenderUtil.bindTexture(0, loadSkin());
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             int helmY = y + height / 2 - 12;
 
             // render helm
             RenderUtil.blit(stack, x, helmY, 24, 24, 8F, 8F, 8, 8, 64, 64);
-            UGraphics.enableBlend();
+            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x, helmY, 24, 24, 40F, 8F, 8, 8, 64, 64);
-            UGraphics.disableBlend();
+            RenderSystem.disableBlend();
 
             RenderUtil.drawString(
                     stack,
                     text,
                     x + 30,
-                    y + height / 2 - UGraphics.getFontHeight() / 2,
+                    y + height / 2 - RenderUtil.getFontHeight() / 2,
                     0xFFFFFF
             );
         }

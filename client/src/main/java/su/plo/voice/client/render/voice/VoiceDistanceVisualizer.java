@@ -1,14 +1,18 @@
 package su.plo.voice.client.render.voice;
 
 import com.google.common.collect.Maps;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.*;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.VertexFormatMode;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
@@ -17,9 +21,6 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.render.ModCamera;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
-import gg.essential.universal.UMinecraft;
 
 import java.util.Map;
 import java.util.UUID;
@@ -45,7 +46,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     @Override
     public synchronized void render(int radius, int color, @Nullable Pos3d position) {
         if (!config.getAdvanced().getVisualizeVoiceDistance().value()) return;
-        if (radius < 2 || radius > renderDistanceValue(UMinecraft.getSettings()) * 16) return;
+        if (radius < 2 || radius > renderDistanceValue(Minecraft.getInstance().options) * 16) return;
 
         VoiceDistanceRenderEvent event = new VoiceDistanceRenderEvent(this, radius, color);
         if (!voiceClient.getEventBus().fire(event)) return;
@@ -76,7 +77,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             }
 
             if (value.position() != null &&
-                    event.getCamera().position().distanceTo(value.position()) > (renderDistanceValue(UMinecraft.getSettings()) * 16)
+                    event.getCamera().position().distanceTo(value.position()) > (renderDistanceValue(Minecraft.getInstance().options) * 16)
             ) {
                 entries.remove(key);
                 continue;
@@ -88,7 +89,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
     private void renderEntry(
             @NotNull VisualizeEntry entry,
-            @NotNull UMatrixStack stack,
+            @NotNull PoseStack stack,
             @NotNull ModCamera camera,
             float delta
     ) {
@@ -100,32 +101,33 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
         if (entry.position() != null) {
             center = entry.position();
         } else {
-            LocalPlayer clientPlayer = UMinecraft.getPlayer();
+            LocalPlayer clientPlayer = Minecraft.getInstance().player;
             if (clientPlayer == null) return;
 
             center = clientPlayer.position();
         }
 
-        UGraphics buffer = UGraphics.getFromTessellator();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
 
         // setup render
         RenderUtil.disableCull();
-        UGraphics.enableDepth();
-        UGraphics.depthMask(false);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(false);
         RenderUtil.polygonOffset(-3f, -3f);
         RenderUtil.enablePolygonOffset();
-        UGraphics.depthFunc(515);
+        RenderSystem.depthFunc(515);
 
-        UGraphics.enableBlend();
-        UGraphics.tryBlendFuncSeparate(
+        RenderSystem.enableBlend();
+        RenderSystem.blendFuncSeparate(
                 770, // SourceFactor.SRC_ALPHA
                 771, // DestFactor.ONE_MINUS_SRC_ALPHA
                 1, // SourceFactor.ONE
                 0 // DestFactor.ZERO
         );
-        UGraphics.color4f(1F, 1F, 1F, 1F);
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-        stack.push();
+        stack.pushPose();
         RenderUtil.lineWidth(1f);
 
         stack.translate(
@@ -134,10 +136,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 center.z - camera.position().z
         );
 
-        buffer.beginWithDefaultShader(
-                UGraphics.DrawMode.TRIANGLE_STRIP,
-                UGraphics.CommonVertexFormats.POSITION_COLOR
-        );
+        RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
         int r = (entry.color() >> 16) & 0xFF;
         int g = (entry.color() >> 8) & 0xFF;
@@ -163,27 +162,27 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 z0 = (float) (-r0 * Math.sin(beta));
                 z1 = (float) (-r1 * Math.sin(beta));
 
-                buffer.pos(stack, x0, y0, z0)
+                buffer.vertex(stack.last().pose(), x0, y0, z0)
                         .color(r, g, b, entry.alpha())
                         .endVertex();
-                buffer.pos(stack, x1, y1, z1)
+                buffer.vertex(stack.last().pose(), x1, y1, z1)
                         .color(r, g, b, entry.alpha())
                         .endVertex();
             }
         }
 
-        buffer.drawDirect();
+        tesselator.end();
 
-        stack.pop();
+        stack.popPose();
 
         // cleanup render
         RenderUtil.polygonOffset(0f, 0f);
         RenderUtil.disablePolygonOffset();
-        UGraphics.disableBlend();
+        RenderSystem.disableBlend();
         RenderUtil.defaultBlendFunc();
-        UGraphics.disableDepth();
+        RenderSystem.disableDepthTest();
         RenderUtil.enableCull();
-        UGraphics.depthMask(true);
+        RenderSystem.depthMask(true);
     }
 
     @Data

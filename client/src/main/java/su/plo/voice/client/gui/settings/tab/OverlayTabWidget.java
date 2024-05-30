@@ -2,9 +2,9 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -282,19 +282,19 @@ public final class OverlayTabWidget extends TabWidget {
         }
 
         @Override
-        protected void renderText(@NotNull UMatrixStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            UGraphics.bindTexture(0, iconLocation);
-            UGraphics.color4f(1F, 1F, 1F, 1F);
+        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            RenderUtil.bindTexture(0, iconLocation);
+            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-            UGraphics.enableBlend();
+            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
-            UGraphics.disableBlend();
+            RenderSystem.disableBlend();
 
             RenderUtil.drawString(
                     stack,
                     text,
                     x + 20,
-                    y + height / 2 - UGraphics.getFontHeight() / 2,
+                    y + height / 2 - RenderUtil.getFontHeight() / 2,
                     0xFFFFFF
             );
         }

@@ -9,3 +9,5 @@ net.minecraftforge.fml.event.IModBusEvent net.minecraftforge.fml.event.IModBusEv
 net.minecraftforge.fml.client.registry.ClientRegistry net.minecraftforge.fmlclient.registry.ClientRegistry
 
 net.minecraft.server.packs.resources.SimpleReloadableResourceManager createFullReload() createReload()
+
+com.mojang.blaze3d.systems.RenderSystem color4f() setShaderColor()

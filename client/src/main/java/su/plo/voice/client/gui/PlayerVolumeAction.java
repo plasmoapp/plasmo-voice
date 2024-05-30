@@ -1,8 +1,7 @@
 package su.plo.voice.client.gui;
 
+import net.minecraft.client.Minecraft;
 import su.plo.lib.mod.extensions.AABBKt;
-import gg.essential.universal.UMinecraft;
-import gg.essential.universal.UScreen;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -51,7 +50,7 @@ public final class PlayerVolumeAction {
     @EventSubscribe
     public void onScroll(@NotNull MouseScrollEvent event) {
 
-        if (focusedPlayer != null && UScreen.getCurrentScreen() == null) {
+        if (focusedPlayer != null && Minecraft.getInstance().screen == null) {
             this.lastScroll = System.currentTimeMillis();
 
             DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + focusedPlayer.getUUID());
@@ -79,8 +78,8 @@ public final class PlayerVolumeAction {
     }
 
     private Optional<Player> getPlayerBySight() {
-        ClientLevel level = UMinecraft.getWorld();
-        LocalPlayer player = UMinecraft.getPlayer();
+        ClientLevel level = Minecraft.getInstance().level;
+        LocalPlayer player = Minecraft.getInstance().player;
         if (level == null || player == null) return Optional.empty();
 
         Vec3 playerPos = eyePosition(player);
@@ -88,7 +87,7 @@ public final class PlayerVolumeAction {
 
 //        points.clear();
 
-        for (int i = 0; i < (renderDistanceValue(UMinecraft.getSettings()) * 16); i++) {
+        for (int i = 0; i < (renderDistanceValue(Minecraft.getInstance().options) * 16); i++) {
 //            points.add(playerPos);
             playerPos = playerPos.add(rotVector);
 //            points.add(playerPos);

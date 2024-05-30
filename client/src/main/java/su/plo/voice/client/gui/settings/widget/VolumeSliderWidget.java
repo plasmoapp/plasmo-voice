@@ -1,9 +1,9 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import com.mojang.blaze3d.systems.RenderSystem;
+import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.slib.api.chat.component.McTextComponent;
-import gg.essential.universal.UGraphics;
-import gg.essential.universal.UMatrixStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
@@ -55,7 +55,7 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
     }
 
     @Override
-    protected void renderTrack(@NotNull UMatrixStack stack, int mouseX, int mouseY) {
+    protected void renderTrack(@NotNull PoseStack stack, int mouseX, int mouseY) {
         GuiWidgetTexture sprite;
         if (isHoveredOrFocused()) {
             sprite = GuiWidgetTexture.BUTTON_ACTIVE;
@@ -63,8 +63,8 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
             sprite = GuiWidgetTexture.BUTTON_DEFAULT;
         }
 
-        UGraphics.bindTexture(0, sprite.getLocation());
-        UGraphics.color4f(1F, 1F, 1F, 1F);
+        RenderUtil.bindTexture(0, sprite.getLocation());
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
         RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);

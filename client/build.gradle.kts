@@ -54,16 +54,6 @@ crowdin {
 
 val shadowCommon by configurations.creating
 
-fun universalCraftVersion() = libs.versions.universalcraft.map {
-    val minecraftVersion = when (platform.mcVersion) {
-        11605 -> "1.16.2"
-        11802 -> "1.18.1"
-        else -> platform.mcVersionStr
-    }
-
-    "${minecraftVersion}-${platform.loaderStr}:$it"
-}.get()
-
 fun slibArtifact(): String {
     val minecraftVersion = when (platform.mcVersion) {
         11904 -> "1.19.3"
@@ -80,6 +70,8 @@ repositories {
 dependencies {
     compileOnly(libs.netty)
     implementation(libs.rnnoise.jni)
+    implementation(libs.opus.jni)
+    implementation(libs.opus.concentus)
 
     if (platform.isFabric) {
         val fabricApiVersion = when (platform.mcVersion) {
@@ -98,17 +90,6 @@ dependencies {
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
         "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
-    }
-
-    rootProject.libs.versions.universalcraft.map {
-        "gg.essential:universalcraft-${universalCraftVersion()}"
-    }.also {
-        modApi(it) {
-            isTransitive = false
-        }
-        shadowCommon(it) {
-            isTransitive = false
-        }
     }
 
     val includedProjects = listOf(
