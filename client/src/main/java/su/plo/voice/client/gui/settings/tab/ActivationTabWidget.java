@@ -239,7 +239,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                                 ).withStyle(McTextStyle.GRAY)
                         ));
                     },
-                    new ResourceLocation("plasmovoice:textures/icons/microphone_menu.png"),
+                    ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
                     true
             );
             IconButton enableToggleState = new IconButton(
@@ -262,7 +262,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                                 ).withStyle(McTextStyle.GRAY)
                         ));
                     },
-                    new ResourceLocation("plasmovoice:textures/icons/microphone_menu_disabled.png"),
+                    ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
                     true
             );
 

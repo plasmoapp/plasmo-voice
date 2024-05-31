@@ -194,7 +194,7 @@ class OverlayRenderer(
             }
 
             RenderUtil.fill(stack, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
-            RenderUtil.bindTexture(0, ResourceLocation(sourceLine.icon))
+            RenderUtil.bindTexture(0, ResourceLocation.tryParse(sourceLine.icon)!!)
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
             RenderSystem.enableBlend()

@@ -53,7 +53,7 @@ public final class TabButton extends Button {
         this.shadowColor = shadowColor;
 
         this.iconLocation = iconLocation;
-        this.disabledIconLocation = new ResourceLocation(
+        this.disabledIconLocation = ResourceLocation.tryBuild(
                 iconLocation.getNamespace(),
                 iconLocation.getPath().replace(".png", "_disabled.png")
         );

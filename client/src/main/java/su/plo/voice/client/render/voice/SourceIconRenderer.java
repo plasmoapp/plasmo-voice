@@ -3,7 +3,6 @@ package su.plo.voice.client.render.voice;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.Tesselator;
 import lombok.NonNull;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -17,6 +16,8 @@ import net.minecraft.world.scores.Objective;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.VertexBuilder;
+import su.plo.lib.mod.client.render.VertexFormatMode;
 import su.plo.lib.mod.extensions.PoseStackKt;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.position.Pos3d;
@@ -83,7 +84,7 @@ public final class SourceIconRenderer {
                     event.getStack(),
                     event.getCamera(),
                     event.getLightSupplier().getLight(sourcePosition),
-                    new ResourceLocation(sourceLine.get().getIcon()),
+                    ResourceLocation.tryParse(sourceLine.get().getIcon()),
                     staticSource,
                     event.getDelta()
             );
@@ -147,7 +148,7 @@ public final class SourceIconRenderer {
                 event.getCamera(),
                 event.getLight(),
                 player,
-                new ResourceLocation(iconLocation),
+                ResourceLocation.tryParse(iconLocation),
                 event.hasLabel(),
                 hasPercent
         );
@@ -176,7 +177,7 @@ public final class SourceIconRenderer {
                 event.getCamera(),
                 event.getLight(),
                 entity,
-                new ResourceLocation(highestSourceLine.getIcon()),
+                ResourceLocation.tryParse(highestSourceLine.getIcon()),
                 event.hasLabel(),
                 false
         );
@@ -194,19 +195,16 @@ public final class SourceIconRenderer {
         double distance = camera.position().distanceToSqr(position);
         if (distance > 4096D) return;
 
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
         stack.pushPose();
 
         if (hasPercent) stack.translate(0D, 0.3D, 0D);
         translateEntityMatrix(stack, camera, entity, distance, hasLabel);
 
         if (entity.isDescending()) {
-            vertices(stack, buffer, 40, light, iconLocation, false);
+            vertices(stack, 40, light, iconLocation, false);
         } else {
-            vertices(stack, buffer, 255, light, iconLocation, false);
-            vertices(stack, buffer, 40, light, iconLocation, true);
+            vertices(stack, 255, light, iconLocation, false);
+            vertices(stack, 40, light, iconLocation, true);
         }
 
         stack.popPose();
@@ -323,9 +321,6 @@ public final class SourceIconRenderer {
         double distanceToCamera = camera.position().distanceToSqr(toVec3(lastPosition));
         if (distanceToCamera > 4096D) return;
 
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
         stack.pushPose();
 
         stack.translate(
@@ -338,14 +333,13 @@ public final class SourceIconRenderer {
         stack.scale(-0.025F, -0.025F, 0.025F);
         stack.translate(-5D, 0D, 0D);
 
-        vertices(stack, buffer, 255, light, iconLocation, false);
-        vertices(stack, buffer, 40, light, iconLocation, true);
+        vertices(stack, 255, light, iconLocation, false);
+        vertices(stack, 40, light, iconLocation, true);
 
         stack.popPose();
     }
 
     private void vertices(@NonNull PoseStack stack,
-                          @NonNull BufferBuilder buffer,
                           int alpha,
                           int light,
                           @NotNull ResourceLocation iconLocation,
@@ -365,31 +359,30 @@ public final class SourceIconRenderer {
             renderType = RenderType.text(iconLocation);
         }
 
-        buffer.begin(renderType.mode(), renderType.format());
+        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, renderType.format());
 
         vertex(stack, buffer, 0F, 10F, 0F, 0F, 1F, alpha, light);
         vertex(stack, buffer, 10F, 10F, 0F, 1F, 1F, alpha, light);
         vertex(stack, buffer, 10F, 0F, 0F, 1F, 0F, alpha, light);
         vertex(stack, buffer, 0F, 0F, 0F, 0F, 0F, alpha, light);
 
-        Tesselator.getInstance().end();
+        //#if MC>=12000
+        //$$ renderType.end(buffer, RenderSystem.getVertexSorting());
+        //#else
+        renderType.end(buffer, 0, 0, 0);
+        //#endif
     }
 
     private void vertex(@NonNull PoseStack stack,
                         @NonNull BufferBuilder buffer,
                         float x, float y, float z, float u, float v, int alpha, int light) {
-        buffer.vertex(stack.last().pose(), x, y, z);
-        buffer.color(255, 255, 255, alpha);
-        buffer.uv(u, v);
-        buffer.overlayCoords(0, 10);
-        buffer.uv2(light);
-        //#if MC>=12005
-        //$$ buffer.normal(stack.last(), 0F, 0F, -1F);
-        //#else
-        buffer.normal(stack.last().normal(), 0F, 0F, -1F);
-        //#endif
-
-        buffer.endVertex();
+        VertexBuilder.create(buffer)
+                .position(stack, x, y, z)
+                .color(255, 255, 255, alpha)
+                .uv(u, v)
+                .light(light)
+                .normal(stack, 0F, 0F, -1F)
+                .end();
     }
 
     private boolean isIconHidden() {

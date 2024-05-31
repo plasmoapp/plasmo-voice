@@ -89,9 +89,6 @@ public final class VoiceSettingsAboutFeature {
     }
 
     public void render(@NotNull PoseStack stack, float delta) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
         for (BlockDustParticle2D particle : particles) {
 //            render.setShader(VertexBuilder.Shader.POSITION_TEX_COLOR);
             RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
@@ -108,11 +105,11 @@ public final class VoiceSettingsAboutFeature {
             //$$ RenderUtil.bindTexture(0, particle.getSprite().atlas().location());
             //#endif
 
-            RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
+            BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
             particle.buildGeometry(stack, buffer, delta);
 
-            tesselator.end();
+            RenderUtil.drawBuffer(buffer);
         }
     }
 }

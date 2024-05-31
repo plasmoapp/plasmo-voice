@@ -91,7 +91,7 @@ public final class VolumeTabWidget extends TabWidget {
                 volumeEntry,
                 muteEntry,
                 null,
-                new ResourceLocation(sourceLine.getIcon()),
+                ResourceLocation.tryParse(sourceLine.getIcon()),
                 (button, element) -> updateButtons.run()
         ));
     }
@@ -228,7 +228,7 @@ public final class VolumeTabWidget extends TabWidget {
                 20,
                 buttonClick,
                 Button.NO_TOOLTIP,
-                new ResourceLocation("plasmovoice:textures/icons/speaker_menu.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu.png"),
                 true
         );
 
@@ -239,7 +239,7 @@ public final class VolumeTabWidget extends TabWidget {
                 20,
                 buttonClick,
                 Button.NO_TOOLTIP,
-                new ResourceLocation("plasmovoice:textures/icons/speaker_menu_disabled.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png"),
                 true
         );
 

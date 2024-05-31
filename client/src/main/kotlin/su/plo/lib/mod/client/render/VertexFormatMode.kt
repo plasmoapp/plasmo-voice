@@ -23,5 +23,20 @@ enum class VertexFormatMode(
             TRIANGLE_FAN -> VertexFormat.Mode.TRIANGLE_FAN
             QUADS -> VertexFormat.Mode.QUADS
         }
+
+    companion object {
+
+        fun fromMc(mode: VertexFormat.Mode) =
+            when (mode) {
+                VertexFormat.Mode.LINES -> LINE_STRIP
+                VertexFormat.Mode.LINE_STRIP -> LINE_STRIP
+                VertexFormat.Mode.TRIANGLES -> TRIANGLES
+                VertexFormat.Mode.TRIANGLE_STRIP -> TRIANGLE_STRIP
+                VertexFormat.Mode.TRIANGLE_FAN -> TRIANGLE_FAN
+                VertexFormat.Mode.QUADS -> QUADS
+                else -> throw IllegalArgumentException("Vertex format not supported")
+            }
+    }
+
     //#endif
 }

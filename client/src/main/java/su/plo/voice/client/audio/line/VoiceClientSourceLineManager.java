@@ -110,7 +110,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
         String icon = VoiceIconUtil.INSTANCE.getIcon(
                 line.getIcon(),
-                new ResourceLocation("plasmovoice:textures/addons/source_lines/" + line.getName())
+                ResourceLocation.tryParse("plasmovoice:textures/addons/source_lines/" + line.getName())
         );
 
         DoubleConfigEntry volumeEntry = config.getVoice()

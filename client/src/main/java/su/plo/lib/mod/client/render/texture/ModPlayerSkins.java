@@ -38,7 +38,7 @@ public final class ModPlayerSkins {
         if (skinLocation != null) return;
 
         if (fallback != null) {
-            ResourceLocation fallbackIdentifier = new ResourceLocation(
+            ResourceLocation fallbackIdentifier = ResourceLocation.tryBuild(
                     "plasmovoice",
                     "skins/" + Hashing.sha1().hashUnencodedChars(nick.toLowerCase())
             );
@@ -68,7 +68,7 @@ public final class ModPlayerSkins {
             );
         } else {
             String hash = Hashing.sha1().hashUnencodedChars(textures.get(MinecraftProfileTexture.Type.SKIN).getHash()).toString();
-            ResourceLocation identifier = new ResourceLocation("skins/" + hash);
+            ResourceLocation identifier = ResourceLocation.tryParse("skins/" + hash);
             skins.put(profile.getName(), identifier);
         }
         //#endif

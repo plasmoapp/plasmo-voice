@@ -47,6 +47,12 @@ public class RenderUtil {
 
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
 
+    //#if MC>=12100
+    //$$ private static final ByteBufferBuilder TEXT_BUFFER_BUILDER = new ByteBufferBuilder(2097152);
+    //#else
+    private static final BufferBuilder TEXT_BUFFER_BUILDER = new BufferBuilder(2097152);
+    //#endif
+
     public static void enableScissor(int x, int y, int width, int height) {
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
 
@@ -81,9 +87,14 @@ public class RenderUtil {
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR, GameRenderer::getPositionColorShader);
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, GameRenderer::getPositionColorLightmapShader);
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX, GameRenderer::getPositionTexShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX, GameRenderer::getPositionColorTexShader);
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX_COLOR, GameRenderer::getPositionTexColorShader);
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, GameRenderer::getPositionColorTexLightmapShader);
+    //#if MC>=12100
+    //$$     // Shaders for these formats are no longer provided.
+    //#else
+        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX, GameRenderer::getPositionColorTexShader);
+    //#endif
+
     //#if MC>=12005
     //$$     // Shaders for these formats are no longer provided.
     //#else
@@ -93,7 +104,7 @@ public class RenderUtil {
     }
     //#endif
 
-    public static void beginBufferWithDefaultShader(@NotNull BufferBuilder buffer, @NotNull VertexFormatMode mode, @NotNull VertexFormat format) {
+    public static @NotNull BufferBuilder beginBufferWithDefaultShader(@NotNull VertexFormatMode mode, @NotNull VertexFormat format) {
         //#if MC>=11700
         Supplier<ShaderInstance> supplier = DEFAULT_SHADERS.get(format);
         if (supplier == null) {
@@ -103,15 +114,29 @@ public class RenderUtil {
         RenderSystem.setShader(supplier);
         //#endif
 
-        beginBufferWithActiveShader(buffer, mode, format);
+        return beginBufferWithActiveShader(mode, format);
     }
 
-    public static void beginBufferWithActiveShader(@NotNull BufferBuilder buffer, @NotNull VertexFormatMode mode, @NotNull VertexFormat format) {
+    public static @NotNull BufferBuilder beginBufferWithActiveShader(@NotNull VertexFormatMode mode, @NotNull VertexFormat format) {
+        Tesselator tesselator = Tesselator.getInstance();
+        //#if MC>=12100
+        //$$ return tesselator.begin(mode.toMc(), format);
+        //#else
+
+        BufferBuilder buffer = tesselator.getBuilder();
+
         //#if MC>=11700
         buffer.begin(mode.toMc(), format);
         //#else
         //$$ buffer.begin(mode.getGlMode(), format);
         //#endif
+
+        return buffer;
+        //#endif
+    }
+
+    public static void drawBuffer(@NotNull BufferBuilder buffer) {
+        BufferUploader.drawWithShader(buffer.end());
     }
 
     public static void bindTexture(int index, @NotNull ResourceLocation location) {
@@ -170,17 +195,15 @@ public class RenderUtil {
         float h = (float) (color >> 8 & 255) / 255.0F;
         float o = (float) (color & 255) / 255.0F;
 
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
         RenderSystem.enableBlend();
         defaultBlendFunc();
 
-        RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        buffer.vertex(stack.last().pose(), (float) x0, (float) y1, 0F).color(g, h, o, f).endVertex();
-        buffer.vertex(stack.last().pose(), (float) x1, (float) y1, 0F).color(g, h, o, f).endVertex();
-        buffer.vertex(stack.last().pose(), (float) x1, (float) y0, 0F).color(g, h, o, f).endVertex();
-        buffer.vertex(stack.last().pose(), (float) x0, (float) y0, 0F).color(g, h, o, f).endVertex();
-        tesselator.end();
+        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        VertexBuilder.create(buffer).position(stack, (float) x0, (float) y1, 0F).color(g, h, o, f).end();
+        VertexBuilder.create(buffer).position(stack, (float) x1, (float) y1, 0F).color(g, h, o, f).end();
+        VertexBuilder.create(buffer).position(stack, (float) x1, (float) y0, 0F).color(g, h, o, f).end();
+        VertexBuilder.create(buffer).position(stack, (float) x0, (float) y0, 0F).color(g, h, o, f).end();
+        drawBuffer(buffer);
 
         RenderSystem.disableBlend();
     }
@@ -210,10 +233,7 @@ public class RenderUtil {
                                     int startRed, int startBlue, int startGreen, int startAlpha,
                                     int endRed, int endBlue, int endGreen, int endAlpha,
                                     int z) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
-        RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_COLOR);
 
         fillGradient(
                 stack, buffer, startX, startY, endX, endY, z,
@@ -221,25 +241,29 @@ public class RenderUtil {
                 endRed, endBlue, endGreen, endAlpha
         );
 
-        tesselator.end();
+        drawBuffer(buffer);
     }
 
     private static void fillGradient(PoseStack stack, BufferBuilder buffer,
                                      int startX, int startY, int endX, int endY, int z,
                                      int startRed, int startBlue, int startGreen, int startAlpha,
                                      int endRed, int endBlue, int endGreen, int endAlpha) {
-        buffer.vertex(stack.last().pose(), (float) endX, (float) startY, (float) z)
+        VertexBuilder.create(buffer)
+                .position(stack, (float) endX, (float) startY, (float) z)
                 .color(startRed, startGreen, startBlue, startAlpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), (float) startX, (float) startY, (float) z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, (float) startX, (float) startY, (float) z)
                 .color(startRed, startGreen, startBlue, startAlpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), (float) startX, (float) endY, (float) z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, (float) startX, (float) endY, (float) z)
                 .color(endRed, endGreen, endBlue, endAlpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), (float) endX, (float) endY, (float) z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, (float) endX, (float) endY, (float) z)
                 .color(endRed, endGreen, endBlue, endAlpha)
-                .endVertex();
+                .end();
     }
 
     public static void blitSprite(
@@ -276,16 +300,14 @@ public class RenderUtil {
     }
 
     public static void blit(PoseStack stack, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
+        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX);
 
-        RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        buffer.vertex(stack.last().pose(), (float) x0, (float) y1, (float) z).uv(u0, v1).endVertex();
-        buffer.vertex(stack.last().pose(), (float) x1, (float) y1, (float) z).uv(u1, v1).endVertex();
-        buffer.vertex(stack.last().pose(), (float) x1, (float) y0, (float) z).uv(u1, v0).endVertex();
-        buffer.vertex(stack.last().pose(), (float) x0, (float) y0, (float) z).uv(u0, v0).endVertex();
+        VertexBuilder.create(buffer).position(stack, (float) x0, (float) y1, (float) z).uv(u0, v1).end();
+        VertexBuilder.create(buffer).position(stack, (float) x1, (float) y1, (float) z).uv(u1, v1).end();
+        VertexBuilder.create(buffer).position(stack, (float) x1, (float) y0, (float) z).uv(u1, v0).end();
+        VertexBuilder.create(buffer).position(stack, (float) x0, (float) y0, (float) z).uv(u0, v0).end();
 
-        tesselator.end();
+        drawBuffer(buffer);
     }
 
     public static void blitWithActiveShader(PoseStack stack,
@@ -293,62 +315,64 @@ public class RenderUtil {
                                             int x0, int x1, int y0, int y1, int z,
                                             float u0, float u1, float v0, float v1,
                                  int red, int green, int blue, int alpha) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
+        BufferBuilder buffer = RenderUtil.beginBufferWithActiveShader(VertexFormatMode.QUADS, format);
 
-        RenderUtil.beginBufferWithActiveShader(buffer, VertexFormatMode.QUADS, format);
-
-        buffer.vertex(stack.last().pose(), x0, y1, z)
+        VertexBuilder.create(buffer)
+                .position(stack, x0, y1, z)
                 .uv(u0, v1)
                 .color(red, green, blue, alpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), x1, y1, z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, x1, y1, z)
                 .uv(u1, v1)
                 .color(red, green, blue, alpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), x1, y0, z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, x1, y0, z)
                 .uv(u1, v0)
                 .color(red, green, blue, alpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), x0, y0, z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, x0, y0, z)
                 .uv(u0, v0)
                 .color(red, green, blue, alpha)
-                .endVertex();
+                .end();
 
-        tesselator.end();
+        drawBuffer(buffer);
     }
 
     public static void blitColor(PoseStack stack,
                                  int x0, int x1, int y0, int y1, int z,
                                  float u0, float u1, float v0, float v1,
                                  int red, int green, int blue, int alpha) {
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
+        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
 
-        RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-
-        buffer.vertex(stack.last().pose(), x0, y1, z)
+        VertexBuilder.create(buffer)
+                .position(stack, x0, y1, z)
                 .uv(u0, v1)
                 .color(red, green, blue, alpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), x1, y1, z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, x1, y1, z)
                 .uv(u1, v1)
                 .color(red, green, blue, alpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), x1, y0, z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, x1, y0, z)
                 .uv(u1, v0)
                 .color(red, green, blue, alpha)
-                .endVertex();
-        buffer.vertex(stack.last().pose(), x0, y0, z)
+                .end();
+        VertexBuilder.create(buffer)
+                .position(stack, x0, y0, z)
                 .uv(u0, v0)
                 .color(red, green, blue, alpha)
-                .endVertex();
+                .end();
 
-        tesselator.end();
+        drawBuffer(buffer);
     }
 
     public static void drawStringInBatch(PoseStack stack, String text, int x, int y, int color, boolean shadow) {
-        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(TEXT_BUFFER_BUILDER);
         Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, TEXT_LAYER_TYPE, 0, 15728880);
         irendertypebuffer$impl.endBatch();
     }
@@ -438,7 +462,6 @@ public class RenderUtil {
         return getStringX(formattedText, x, dropShadow);
     }
 
-
     public static int drawStringLight(PoseStack stack, McTextComponent text, int x, int y, int color, int light,
                                       boolean seeThrough,
                                       boolean dropShadow) {
@@ -452,7 +475,7 @@ public class RenderUtil {
         //$$ boolean displayMode = seeThrough;
         //#endif
 
-        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(TEXT_BUFFER_BUILDER);
         Minecraft.getInstance().font.drawInBatch(
                 formattedText,
                 (float) x,

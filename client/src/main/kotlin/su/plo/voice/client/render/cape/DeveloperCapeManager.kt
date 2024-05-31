@@ -77,7 +77,7 @@ object DeveloperCapeManager {
 
     private fun getCapeLocationAsync(playerName: String): CompletableFuture<ResourceLocation?> =
         CompletableFuture.supplyAsync {
-            val capeLocation = ResourceLocation("plasmovoice", "developer_capes/${playerName.lowercase()}")
+            val capeLocation = ResourceLocation.tryBuild("plasmovoice", "developer_capes/${playerName.lowercase()}")!!
 
             val url = URL("https://plasmovoice.com/capes/$playerName.png")
 

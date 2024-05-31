@@ -12,6 +12,7 @@ import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.VertexBuilder;
 import su.plo.lib.mod.client.render.VertexFormatMode;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -107,9 +108,6 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             center = clientPlayer.position();
         }
 
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-
         // setup render
         RenderUtil.disableCull();
         RenderSystem.enableDepthTest();
@@ -136,7 +134,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 center.z - camera.position().z
         );
 
-        RenderUtil.beginBufferWithDefaultShader(buffer, VertexFormatMode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
 
         int r = (entry.color() >> 16) & 0xFF;
         int g = (entry.color() >> 8) & 0xFF;
@@ -162,16 +160,18 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 z0 = (float) (-r0 * Math.sin(beta));
                 z1 = (float) (-r1 * Math.sin(beta));
 
-                buffer.vertex(stack.last().pose(), x0, y0, z0)
+                VertexBuilder.create(buffer)
+                        .position(stack, x0, y0, z0)
                         .color(r, g, b, entry.alpha())
-                        .endVertex();
-                buffer.vertex(stack.last().pose(), x1, y1, z1)
+                        .end();
+                VertexBuilder.create(buffer)
+                        .position(stack, x1, y1, z1)
                         .color(r, g, b, entry.alpha())
-                        .endVertex();
+                        .end();
             }
         }
 
-        tesselator.end();
+        RenderUtil.drawBuffer(buffer);
 
         stack.popPose();
 

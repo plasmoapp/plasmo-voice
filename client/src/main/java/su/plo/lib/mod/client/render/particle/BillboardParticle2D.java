@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import org.joml.Vector3f;
+import su.plo.lib.mod.client.render.VertexBuilder;
 
 public abstract class BillboardParticle2D extends Particle2D {
     protected float scale;
@@ -38,25 +39,29 @@ public abstract class BillboardParticle2D extends Particle2D {
         float n = this.getMinV();
         float o = this.getMaxV();
 
-        buffer.vertex(stack.last().pose(), vec3fs[0].x(), vec3fs[0].y(), vec3fs[0].z())
+        VertexBuilder.create(buffer)
+                .position(stack, vec3fs[0].x(), vec3fs[0].y(), vec3fs[0].z())
                 .uv(m, o)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .endVertex();
+                .end();
 
-        buffer.vertex(stack.last().pose(), vec3fs[1].x(), vec3fs[1].y(), vec3fs[1].z())
+        VertexBuilder.create(buffer)
+                .position(stack, vec3fs[1].x(), vec3fs[1].y(), vec3fs[1].z())
                 .uv(m, n)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .endVertex();
+                .end();
 
-        buffer.vertex(stack.last().pose(), vec3fs[2].x(), vec3fs[2].y(), vec3fs[2].z())
+        VertexBuilder.create(buffer)
+                .position(stack, vec3fs[2].x(), vec3fs[2].y(), vec3fs[2].z())
                 .uv(l, n)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .endVertex();
+                .end();
 
-        buffer.vertex(stack.last().pose(), vec3fs[3].x(), vec3fs[3].y(), vec3fs[3].z())
+        VertexBuilder.create(buffer)
+                .position(stack, vec3fs[3].x(), vec3fs[3].y(), vec3fs[3].z())
                 .uv(l, o)
                 .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .endVertex();
+                .end();
     }
 
     public float getSize(float tickDelta) {

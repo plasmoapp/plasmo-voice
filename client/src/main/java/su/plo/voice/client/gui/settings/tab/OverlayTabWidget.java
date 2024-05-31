@@ -109,7 +109,7 @@ public final class OverlayTabWidget extends TabWidget {
                     widget,
                     configEntry,
                     null,
-                    new ResourceLocation(sourceLine.getIcon()),
+                    ResourceLocation.tryParse(sourceLine.getIcon()),
                     null
             ));
         } else {
@@ -142,7 +142,7 @@ public final class OverlayTabWidget extends TabWidget {
                     widget,
                     configEntry,
                     null,
-                    new ResourceLocation(sourceLine.getIcon()),
+                    ResourceLocation.tryParse(sourceLine.getIcon()),
                     (button, element) -> element.setText(OVERLAY_DISPLAYS.get(0))
             ));
         }

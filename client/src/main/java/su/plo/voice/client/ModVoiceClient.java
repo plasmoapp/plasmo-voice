@@ -145,7 +145,16 @@ public final class ModVoiceClient extends BaseVoiceClient
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());
         HudRenderCallback.EVENT.register(hudRenderer::render);
         WorldRenderEvents.LAST.register(
-                (context) -> levelRenderer.render(context.world(), context.matrixStack(), context.camera(), context.tickDelta())
+                (context) -> levelRenderer.render(
+                        context.world(),
+                        context.matrixStack(),
+                        context.camera(),
+                        //#if MC>=12100
+                        //$$ context.tickCounter().getGameTimeDeltaTicks()
+                        //#else
+                        context.tickDelta()
+                        //#endif
+                )
         );
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
 
