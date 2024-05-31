@@ -25,9 +25,9 @@ public class LanguageUtil {
 
     public static String getSelectedLanguage() {
         //#if MC>=11904
-        //$$ return Minecraft.getInstance().getLanguageManager().getSelected();
+        return Minecraft.getInstance().getLanguageManager().getSelected();
         //#else
-        return Minecraft.getInstance().getLanguageManager().getSelected().getCode();
+        //$$ return Minecraft.getInstance().getLanguageManager().getSelected().getCode();
         //#endif
     }
 

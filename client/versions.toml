@@ -5,10 +5,6 @@ mcVersions = ["1.20.5", "1.20.6"]
 forgeVersion = "[49,)"
 mcVersions = ["1.20.3", "1.20.4"]
 
-[12002]
-forgeVersion = "[48,)"
-mcVersions = ["1.20.2"]
-
 [12001]
 forgeVersion = "[46,)"
 mcVersions = ["1.20", "1.20.1"]
@@ -16,10 +12,6 @@ mcVersions = ["1.20", "1.20.1"]
 [11904]
 forgeVersion = "[45,)"
 mcVersions = ["1.19.4"]
-
-[11903]
-forgeVersion = "[44,)"
-mcVersions = ["1.19.3"]
 
 [11902]
 forgeVersion = "[43,)"

@@ -6,3 +6,5 @@ net.minecraftforge.event.network.CustomPayloadEvent net.minecraftforge.network.N
 net.minecraftforge.network.EventNetworkChannel net.minecraftforge.network.event.EventNetworkChannel
 
 net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket
+
+net.minecraft.network.chat.contents.PlainTextContents.LiteralContents net.minecraft.network.chat.contents.LiteralContents

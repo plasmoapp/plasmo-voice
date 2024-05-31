@@ -1,16 +1,10 @@
 package su.plo.lib.mod.client.render;
 
-//#if MC<11502
-//$$ import net.minecraft.client.renderer.GlStateManager;
-//#else
-
 //#if MC>=11904
-//$$ import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Font;
 //#endif
 
 import com.mojang.blaze3d.platform.GlStateManager;
-//#endif
-
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import gg.essential.universal.TextBuilder;
@@ -46,9 +40,9 @@ import net.minecraft.client.renderer.ShaderInstance;
 public class RenderUtil {
 
     //#if MC>=11904
-    //$$ private static final Font.DisplayMode TEXT_LAYER_TYPE = Font.DisplayMode.NORMAL;
-    //#elseif MC>=11602
-    private static final boolean TEXT_LAYER_TYPE = false;
+    private static final Font.DisplayMode TEXT_LAYER_TYPE = Font.DisplayMode.NORMAL;
+    //#else
+    //$$ private static final boolean TEXT_LAYER_TYPE = false;
     //#endif
 
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
@@ -446,20 +440,16 @@ public class RenderUtil {
 
 
     public static int drawStringLight(PoseStack stack, McTextComponent text, int x, int y, int color, int light,
-                                      boolean seeThrough, // only used in 1.16.2+
+                                      boolean seeThrough,
                                       boolean dropShadow) {
         color = adjustColor(color);
 
         String formattedText = getFormattedString(text);
 
-        //#if MC<11602
-        //$$ UGraphics.drawString(stack, formattedText, (float) x, (float) y, color, dropShadow);
-        //#else
-
         //#if MC>=11904
-        //$$ Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;
+        Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;
         //#else
-        boolean displayMode = seeThrough;
+        //$$ boolean displayMode = seeThrough;
         //#endif
 
         MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
@@ -476,7 +466,6 @@ public class RenderUtil {
                 light
         );
         irendertypebuffer$impl.endBatch();
-        //#endif
 
         return getStringX(formattedText, x, dropShadow);
     }
