@@ -27,8 +27,8 @@ import java.util.List;
 
 public final class ActivationThresholdWidget extends AbstractSlider implements UpdatableWidget {
 
-    private static final ResourceLocation STOP_ICON = new ResourceLocation("plasmovoice:textures/icons/speaker_menu.png");
-    private static final ResourceLocation START_ICON = new ResourceLocation("plasmovoice:textures/icons/speaker_menu_disabled.png");
+    private static final ResourceLocation STOP_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu.png");
+    private static final ResourceLocation START_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png");
     private static final MinecraftTextComponent NOT_AVAILABLE = MinecraftTextComponent.translatable("gui.plasmovoice.devices.not_available");
 
     private final DoubleConfigEntry entry;

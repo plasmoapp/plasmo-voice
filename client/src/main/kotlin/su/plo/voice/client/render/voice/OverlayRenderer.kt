@@ -196,7 +196,7 @@ class OverlayRenderer(
             }
 
             RenderUtil.fill(stack, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
-            UGraphics.bindTexture(0, ResourceLocation(sourceLine.icon))
+            UGraphics.bindTexture(0, ResourceLocation.tryParse(sourceLine.icon)!!)
             UGraphics.color4f(1f, 1f, 1f, 1f)
             RenderUtil.blit(stack, x, y, 0, 0f, 0f, 16, 16, 16, 16)
         }

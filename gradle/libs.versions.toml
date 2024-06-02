@@ -2,7 +2,7 @@
 junit5 = "5.8.2"
 crowdin = "1.0.1"
 ustats = "1.0.2"
-universalcraft = "330+feature-1.20.5-fabric"
+universalcraft = "339+feature-1.21-fabric"
 bstats = "3.0.2"
 
 supervanish = "6.2.18-3"

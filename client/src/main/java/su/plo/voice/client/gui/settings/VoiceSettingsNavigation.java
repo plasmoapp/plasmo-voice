@@ -114,7 +114,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
-                new ResourceLocation("plasmovoice:textures/icons/microphone_menu.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
                 true
         );
 
@@ -142,7 +142,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
-                new ResourceLocation("plasmovoice:textures/icons/microphone_menu_disabled.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
                 true
         );
 
@@ -181,7 +181,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
-                new ResourceLocation("plasmovoice:textures/icons/speaker_menu.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu.png"),
                 true
         );
 
@@ -208,7 +208,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                             ).withStyle(MinecraftTextStyle.GRAY)
                     ));
                 },
-                new ResourceLocation("plasmovoice:textures/icons/speaker_menu_disabled.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png"),
                 true
         );
 

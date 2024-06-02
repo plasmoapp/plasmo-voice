@@ -13,7 +13,7 @@ enum class GuiWidgetTexture(
 ) {
     //#if MC>=12002
     //$$ BUTTON_DISABLED(
-    //$$     ResourceLocation("textures/gui/sprites/widget/button_disabled.png"),
+    //$$     ResourceLocation.tryParse("textures/gui/sprites/widget/button_disabled.png")!!,
     //$$     0,
     //$$     0,
     //$$     200,
@@ -22,7 +22,7 @@ enum class GuiWidgetTexture(
     //$$     20
     //$$ ),
     //$$ BUTTON_DEFAULT(
-    //$$     ResourceLocation("textures/gui/sprites/widget/button.png"),
+    //$$     ResourceLocation.tryParse("textures/gui/sprites/widget/button.png")!!,
     //$$     0,
     //$$     0,
     //$$     200,
@@ -31,7 +31,7 @@ enum class GuiWidgetTexture(
     //$$     20
     //$$ ),
     //$$ BUTTON_ACTIVE(
-    //$$     ResourceLocation("textures/gui/sprites/widget/button_highlighted.png"),
+    //$$     ResourceLocation.tryParse("textures/gui/sprites/widget/button_highlighted.png")!!,
     //$$     0,
     //$$     0,
     //$$     200,
@@ -41,7 +41,7 @@ enum class GuiWidgetTexture(
     //$$ )
     //#else
     BUTTON_DISABLED(
-        ResourceLocation("textures/gui/widgets.png"),
+        ResourceLocation.tryParse("textures/gui/widgets.png")!!,
         0,
         46,
         200,
@@ -50,7 +50,7 @@ enum class GuiWidgetTexture(
         256
     ),
     BUTTON_DEFAULT(
-        ResourceLocation("textures/gui/widgets.png"),
+        ResourceLocation.tryParse("textures/gui/widgets.png")!!,
         0,
         46 + 20,
         200,
@@ -59,7 +59,7 @@ enum class GuiWidgetTexture(
         256
     ),
     BUTTON_ACTIVE(
-        ResourceLocation("textures/gui/widgets.png"),
+        ResourceLocation.tryParse("textures/gui/widgets.png")!!,
         0,
         46 + 40,
         200,

@@ -74,7 +74,7 @@ public final class SourceIconRenderer {
                     event.getStack(),
                     event.getCamera(),
                     event.getLightSupplier().getLight(sourcePosition),
-                    new ResourceLocation(sourceLine.get().getIcon()),
+                    ResourceLocation.tryParse(sourceLine.get().getIcon()),
                     sourcePosition
             );
         }
@@ -140,7 +140,7 @@ public final class SourceIconRenderer {
                 event.getCamera(),
                 event.getLight(),
                 player,
-                new ResourceLocation(iconLocation),
+                ResourceLocation.tryParse(iconLocation),
                 event.hasLabel(),
                 hasPercent
         );
@@ -172,7 +172,7 @@ public final class SourceIconRenderer {
                 event.getCamera(),
                 event.getLight(),
                 entity,
-                new ResourceLocation(highestSourceLine.getIcon()),
+                ResourceLocation.tryParse(highestSourceLine.getIcon()),
                 event.hasLabel(),
                 false
         );

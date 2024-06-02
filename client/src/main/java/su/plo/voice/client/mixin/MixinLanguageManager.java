@@ -13,11 +13,20 @@ import su.plo.voice.client.meta.PlasmoVoiceMeta;
 import net.minecraft.client.resources.language.LanguageInfo;
 //#endif
 
+//#if MC>=12100
+//$$ import net.minecraft.client.resources.language.ClientLanguage;
+//$$ import java.util.function.Consumer;
+//#endif
+
 @Mixin(LanguageManager.class)
 public abstract class MixinLanguageManager {
 
     @Inject(method = "<init>", at = @At("RETURN"))
+    //#if MC>=12100
+    //$$ private void init(String string, Consumer<ClientLanguage> reloadConsumer, CallbackInfo ci) {
+    //#else
     private void init(String string, CallbackInfo ci) {
+    //#endif
         //#if FORGE
         //$$ try {
         //$$     Class.forName("kotlin.jvm.internal.Intrinsics");

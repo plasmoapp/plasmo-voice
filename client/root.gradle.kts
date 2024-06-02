@@ -8,6 +8,8 @@ group = "$mavenGroup.client-root"
 
 preprocess {
 
+    val fabric12100 = createNode("1.21-fabric", 12100, "official")
+
     val fabric12006 = createNode("1.20.6-fabric", 12006, "official")
     val fabric12004 = createNode("1.20.4-fabric", 12004, "official")
 
@@ -21,6 +23,8 @@ preprocess {
     val fabric11903 = createNode("1.19.3-fabric", 11903, "official")
     val forge11902 = createNode("1.19.2-forge", 11902, "official")
     val fabric11902 = createNode("1.19.2-fabric", 11902, "official")
+
+    fabric12100.link(fabric12006)
 
     fabric12006.link(fabric12004)
 

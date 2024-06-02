@@ -127,7 +127,7 @@ public final class ModServerChannelHandler
     //$$             active.append(AsciiString.b2c(b));
     //$$         } else {
     //$$             try {
-    //$$                 channels.add(new ResourceLocation(active.toString()));
+    //$$                 channels.add(ResourceLocation.tryParse(active.toString()));
     //$$             } catch (ResourceLocationException ex) {
     //$$                 continue;
     //$$             }
