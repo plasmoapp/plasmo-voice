@@ -366,7 +366,9 @@ public final class SourceIconRenderer {
         vertex(stack, buffer, 10F, 0F, 0F, 1F, 0F, alpha, light);
         vertex(stack, buffer, 0F, 0F, 0F, 0F, 0F, alpha, light);
 
-        //#if MC>=12000
+        //#if MC>=12100
+        //$$ renderType.draw(buffer.build());
+        //#elseif MC>=12000
         //$$ renderType.end(buffer, RenderSystem.getVertexSorting());
         //#else
         renderType.end(buffer, 0, 0, 0);

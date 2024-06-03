@@ -13,6 +13,7 @@ import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 
 //#if FABRIC
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 
@@ -24,9 +25,17 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.networking.v1.PacketSender;
 //#endif
 
-//#else
+//#elseif FORGE
+
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraftforge.network.NetworkEvent;
+
+//#elseif NEOFORGE
+
+//$$ import net.neoforged.neoforge.network.handling.IPayloadContext;
+//$$ import net.neoforged.neoforge.network.handling.IPayloadHandler;
+//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
+
 //#endif
 
 import java.io.IOException;
@@ -39,6 +48,10 @@ public final class ModClientChannelHandler
         //#else
         implements ClientPlayNetworking.PlayChannelHandler
         //#endif
+        //#endif
+
+        //#if NEOFORGE
+        //$$ implements IPayloadHandler<ByteArrayPayload>
         //#endif
 {
 
@@ -81,7 +94,8 @@ public final class ModClientChannelHandler
     }
     //#endif
 
-    //#else
+    //#elseif FORGE
+
     //$$ public void receive(@NotNull NetworkEvent event) {
     //#if MC>=12002
     //$$     CustomPayloadEvent.Context context = event.getSource();
@@ -96,6 +110,14 @@ public final class ModClientChannelHandler
     //#endif
     //$$     context.setPacketHandled(true);
     //$$ }
+
+    //#elseif NEOFORGE
+
+    //$$ @Override
+    //$$ public void handle(@NotNull ByteArrayPayload payload, @NotNull IPayloadContext context) {
+    //$$     receive(context.connection(), payload.getData());
+    //$$ }
+
     //#endif
 
     private void receive(Connection connection, Packet<PacketHandler> packet) {

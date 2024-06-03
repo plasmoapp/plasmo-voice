@@ -21,7 +21,7 @@ public final class ModHudRenderer extends ModRenderer {
 
     //#if MC>=12100
     //$$ public void render(@NotNull GuiGraphics graphics, DeltaTracker delta) {
-    //$$     voiceClient.getEventBus().fire(new HudRenderEvent(graphics.pose(), delta.getGameTimeDeltaTicks()));
+    //$$     voiceClient.getEventBus().fire(new HudRenderEvent(graphics.pose(), delta.getRealtimeDeltaTicks()));
     //$$ }
     //#elseif MC>=12000
     //$$ public void render(@NotNull GuiGraphics graphics, float delta) {

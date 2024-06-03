@@ -63,9 +63,18 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
 //#endif
 
-//#else
+//#elseif FORGE
+
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+
+//#elseif NEOFORGE
+
+//$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
+//$$ import su.plo.slib.mod.channel.ByteArrayCodec;
+//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
+//$$ import su.plo.slib.mod.channel.ModChannelManager;
+
 //#endif
 
 public final class ModServerConnection implements ServerConnection, ClientPacketTcpHandler {
@@ -129,13 +138,24 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
         connection.send(ClientPlayNetworking.createC2SPacket(ModVoiceServer.CHANNEL, buf));
         //#endif
 
-        //#else
+        //#elseif FORGE
+
         //#if MC>=12002
         //$$ ServerboundCustomPayloadPacket customPacket = NetworkDirection.PLAY_TO_SERVER.<ServerboundCustomPayloadPacket>buildPacket(buf, ModVoiceServer.CHANNEL).getThis();
         //#else
         //$$ ServerboundCustomPayloadPacket customPacket = new ServerboundCustomPayloadPacket(ModVoiceServer.CHANNEL, buf);
         //#endif
         //$$ connection.send(customPacket);
+
+        //#elseif NEOFORGE
+
+        //$$ ByteArrayCodec codec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
+        //$$ connection.send(
+        //$$         new ServerboundCustomPayloadPacket(
+        //$$                 new ByteArrayPayload(codec.getType(), encoded)
+        //$$         )
+        //$$ );
+
         //#endif
     }
 

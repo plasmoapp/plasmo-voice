@@ -1,6 +1,5 @@
 import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
-import gg.essential.gradle.util.RelocationTransform.Companion.registerRelocationAttribute
 import gg.essential.gradle.util.noServerRunConfigs
 import su.plo.config.toml.Toml
 import su.plo.voice.extension.slibPlatform
@@ -25,7 +24,6 @@ if (platform.isForge) {
     loom.forge.apply {
         mixinConfig(
             "plasmovoice.mixins.json",
-            "plasmovoice-forge.mixins.json",
             "slib.mixins.json"
         )
 
@@ -144,10 +142,13 @@ tasks {
     processResources {
         val versionInfo = readVersionInfo()
 
-        filesMatching(mutableListOf("META-INF/mods.toml")) {
+        filesMatching(
+            mutableListOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml")
+        ) {
             expand(
                 mutableMapOf(
                     "version" to version,
+                    "neoForgeVersion" to versionInfo.neoForgeVersion,
                     "forgeVersion" to versionInfo.forgeVersion,
                     "mcVersions" to versionInfo.forgeMcVersions
                 )
@@ -195,6 +196,10 @@ tasks {
 
             if (platform.isForge) {
                 exclude("fabric.mod.json")
+                exclude("META-INF/neoforge.mods.toml")
+            } else if (platform.isNeoForge) {
+                exclude("fabric.mod.json")
+                exclude("META-INF/mods.toml")
             } else {
                 exclude("pack.mcmeta")
                 exclude("META-INF/mods.toml")
@@ -215,6 +220,7 @@ tasks {
 }
 
 data class VersionInfo(
+    val neoForgeVersion: String,
     val forgeVersion: String,
     val mcVersions: List<String>
 ) {

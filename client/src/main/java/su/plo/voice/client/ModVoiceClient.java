@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import su.plo.slib.api.logging.McLoggerFactory;
+import su.plo.slib.mod.channel.ModChannelManager;
 import su.plo.slib.mod.logging.Log4jLogger;
 import su.plo.voice.client.gui.settings.VoiceScreens;
 import lombok.Getter;
@@ -24,6 +25,7 @@ import su.plo.voice.client.render.ModLevelRenderer;
 import su.plo.voice.util.version.ModrinthLoader;
 
 //#if FABRIC
+
 import su.plo.voice.server.ModVoiceServer;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -39,7 +41,8 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
 //#endif
 
-//#else
+//#elseif FORGE
+
 //$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //$$
@@ -56,6 +59,18 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 //$$ import net.minecraftforge.client.ClientRegistry;
 //$$ import net.minecraftforge.client.event.RenderLevelLastEvent;
 //#endif
+
+//#elseif NEOFORGE
+
+//$$ import su.plo.voice.server.ModVoiceServer;
+//$$ import net.neoforged.api.distmarker.Dist;
+//$$ import net.neoforged.bus.api.SubscribeEvent;
+//$$ import net.neoforged.fml.common.EventBusSubscriber;
+//$$ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+//$$ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
+//$$ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
+//$$ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+//$$ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 
 //#endif
 
@@ -150,7 +165,7 @@ public final class ModVoiceClient extends BaseVoiceClient
                         context.matrixStack(),
                         context.camera(),
                         //#if MC>=12100
-                        //$$ context.tickCounter().getGameTimeDeltaTicks()
+                        //$$ context.tickCounter().getRealtimeDeltaTicks()
                         //#else
                         context.tickDelta()
                         //#endif
@@ -172,7 +187,7 @@ public final class ModVoiceClient extends BaseVoiceClient
         KeyBindingHelper.registerKeyBinding(MENU_KEY);
     }
 
-    //#else
+    //#elseif FORGE
 
     //$$ public void onInitialize(EventNetworkChannel channel) {
     //$$     channel.addListener(handler::receive);
@@ -235,6 +250,49 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     );
     //$$ }
     //#endif
+
+    //#elseif NEOFORGE
+
+    //$$ public void onInitialize() {
+    //$$     super.onInitialize();
+    //#if NEOFORGE
+    //$$     ModChannelManager.Companion.registerClientHandler(ModVoiceServer.CHANNEL, handler);
+    //#endif
+    //$$ }
+    //$$
+    //$$ @Override
+    //$$ public void onShutdown() {
+    //$$     super.onShutdown();
+    //$$ }
+    //$$
+    //$$ @SubscribeEvent
+    //$$ public void onOverlayRender(@NotNull RenderGuiLayerEvent.Post event) {
+    //$$     if (!event.getName().equals(VanillaGuiLayers.CHAT)) return;
+    //$$
+    //$$     hudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
+    //$$ }
+    //$$
+    //$$ @SubscribeEvent
+    //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
+    //$$     onServerDisconnect();
+    //$$ }
+    //$$
+    //$$ @SubscribeEvent
+    //$$ public void onWorldRender(RenderLevelStageEvent event) {
+    //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
+    //$$             Minecraft.getInstance().level == null
+    //$$     ) return;
+    //$$     levelRenderer.render(Minecraft.getInstance().level, event.getPoseStack(), event.getCamera(), event.getPartialTick());
+    //$$ }
+    //$$
+    //$$ @EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    //$$ public static class ModBusEvents {
+    //$$
+    //$$     @SubscribeEvent
+    //$$     public static void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
+    //$$         event.register(MENU_KEY);
+    //$$     }
+    //$$ }
 
     //#endif
 }

@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[3,)"
+license="LGPL-3.0"
+issueTrackerURL="https://github.com/plasmoapp/plasmo-voice/issues"
+[[mixins]]
+config="plasmovoice.mixins.json"
+[[mixins]]
+config="slib.mixins.json"
+[[mods]]
+modId="plasmovoice"
+version="${version}"
+displayName="Plasmo Voice"
+displayURL="https://github.com/plasmoapp/plasmo-voice"
+logoFile="icon.png"
+authors="Apehum"
+description="A proximity voice chat mod with audio positioning and lots of features"
+[[dependencies.plasmovoice]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neoForgeVersion}"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.plasmovoice]]
+    modId="minecraft"
+    type="required"
+    versionRange="${mcVersions}"
+    ordering="NONE"
+    side="BOTH"

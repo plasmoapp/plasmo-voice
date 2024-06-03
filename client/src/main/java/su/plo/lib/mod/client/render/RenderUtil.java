@@ -47,12 +47,6 @@ public class RenderUtil {
 
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
 
-    //#if MC>=12100
-    //$$ private static final ByteBufferBuilder TEXT_BUFFER_BUILDER = new ByteBufferBuilder(2097152);
-    //#else
-    private static final BufferBuilder TEXT_BUFFER_BUILDER = new BufferBuilder(2097152);
-    //#endif
-
     public static void enableScissor(int x, int y, int width, int height) {
         double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
 
@@ -372,7 +366,11 @@ public class RenderUtil {
     }
 
     public static void drawStringInBatch(PoseStack stack, String text, int x, int y, int color, boolean shadow) {
-        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(TEXT_BUFFER_BUILDER);
+        //#if MC>=12100
+        //$$ MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+        //#else
+        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        //#endif
         Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, TEXT_LAYER_TYPE, 0, 15728880);
         irendertypebuffer$impl.endBatch();
     }
@@ -475,7 +473,11 @@ public class RenderUtil {
         //$$ boolean displayMode = seeThrough;
         //#endif
 
-        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(TEXT_BUFFER_BUILDER);
+        //#if MC>=12100
+        //$$ MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+        //#else
+        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        //#endif
         Minecraft.getInstance().font.drawInBatch(
                 formattedText,
                 (float) x,

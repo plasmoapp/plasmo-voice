@@ -9,6 +9,7 @@ public enum ModrinthLoader {
 
     FABRIC("fabric"),
     FORGE("forge"),
+    NEO_FORGE("neoforge"),
     VELOCITY("velocity"),
     BUNGEECORD("bungeecord"),
     PAPER("paper"),
