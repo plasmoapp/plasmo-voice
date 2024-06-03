@@ -85,7 +85,7 @@ interface ClientConfig {
 
         val jitterPacketDelay: IntConfigEntry
 
-        val alNumberBuffers: IntConfigEntry
+        val alPlaybackBuffers: IntConfigEntry
     }
 
     interface Overlay {

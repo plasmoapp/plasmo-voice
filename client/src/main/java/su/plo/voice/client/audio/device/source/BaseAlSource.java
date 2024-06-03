@@ -165,6 +165,15 @@ public abstract class BaseAlSource implements AlSource {
         return format;
     }
 
+    @Override
+    public int getChannels() {
+        if (format == AL11.AL_FORMAT_STEREO16) {
+            return 2;
+        } else {
+            return 1;
+        }
+    }
+
     private boolean callParamEvent(int param, Object value) {
         AlSourceUpdateParamEvent event = new AlSourceUpdateParamEvent(this, param, value);
         return client.getEventBus().fire(event);

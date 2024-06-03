@@ -47,8 +47,8 @@ class StreamAlSource private constructor(
     private var lastBufferTime: Long = 0
 
     init {
-        this.numBuffers = if (numBuffers == 0) client.config.advanced.alNumberBuffers.value() else numBuffers
-        emptyBuffer = ByteArray(device.frameSize)
+        this.numBuffers = if (numBuffers == 0) client.config.advanced.alPlaybackBuffers.value() else numBuffers
+        this.emptyBuffer = ByteArray(device.frameSize)
     }
 
     override fun play() {
@@ -237,6 +237,7 @@ class StreamAlSource private constructor(
                         break
                     }
                 }
+
                 val state = state
                 if (state == AlSource.State.STOPPED && queueSize == 0 && !emptyFilled.get()) {
                     removeProcessedBuffers()
@@ -246,12 +247,15 @@ class StreamAlSource private constructor(
                     fillQueue()
 
                     client.eventBus.fire(AlStreamSourceStoppedEvent(alSource))
-                    play()
-                    AL11.alSourcePlay(pointer)
-                    AlUtil.checkErrors("Source play")
+                    continue
                 } else if (state != AlSource.State.PLAYING && state != AlSource.State.PAUSED && queueSize > 0) {
                     AL11.alSourcePlay(pointer)
                     AlUtil.checkErrors("Source play")
+                    continue
+                } else if (state == AlSource.State.INITIAL) {
+                    AL11.alSourcePlay(pointer)
+                    AlUtil.checkErrors("Source play")
+                    continue
                 }
 
                 if (closeTimeoutMs > 0L && timeSupplier.currentTimeMillis - lastBufferTime > closeTimeoutMs) {
@@ -265,9 +269,6 @@ class StreamAlSource private constructor(
         }
     }
 
-    // todo: this creates playback delay
-    //  if I understand this correctly, AL plays only last buffer in the queue when new buffer is pushed
-    //  so it probably better to use one buffer to decrease delays?
     private fun queueWithEmptyBuffers() {
         for (i in 0 until numBuffers) {
             write(emptyBuffer)

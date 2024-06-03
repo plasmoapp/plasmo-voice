@@ -404,7 +404,7 @@ public final class VoiceClientConfig implements ClientConfig {
         private IntConfigEntry jitterPacketDelay = new IntConfigEntry(3, 0, 16);
 
         @ConfigField
-        private IntConfigEntry alNumberBuffers = new IntConfigEntry(4, 1, 32);
+        private IntConfigEntry alPlaybackBuffers = new IntConfigEntry(5, 1, 32);
     }
 
     @Config

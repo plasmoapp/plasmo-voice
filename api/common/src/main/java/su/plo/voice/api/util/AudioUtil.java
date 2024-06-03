@@ -364,6 +364,38 @@ public final class AudioUtil {
         return (float) Math.exp(-1.0f / (sampleRate * time));
     }
 
+    public static short[] fadeIn(short[] samples, int channels) {
+        int fadeInDuration = samples.length;
+
+        short[] processed = new short[samples.length];
+
+        for (int index = 0; index < samples.length; index += channels) {
+            float fade = Math.min(index / (float) fadeInDuration, 1.0f);
+
+            for (int channel = 0; channel < channels; channel++) {
+                processed[index + channel] = (short) (samples[index + channel] * fade);
+            }
+        }
+
+        return processed;
+    }
+
+    public static short[] fadeOut(short[] samples, int channels) {
+        int fadeOutDuration = samples.length;
+
+        short[] processed = new short[samples.length];
+
+        for (int index = 0; index < samples.length; index += channels) {
+            float fade = Math.max((fadeOutDuration - index) / (float) fadeOutDuration, 0.0f);
+
+            for (int channel = 0; channel < channels; channel++) {
+                processed[index + channel] = (short) (samples[index + channel] * fade);
+            }
+        }
+
+        return processed;
+    }
+
     private AudioUtil() {
     }
 }

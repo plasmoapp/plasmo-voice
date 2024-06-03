@@ -164,6 +164,13 @@ public interface AlSource extends DeviceSource {
      */
     int getFormat();
 
+    /**
+     * Gets the number of channels.
+     *
+     * @return The number of channels.
+     */
+    int getChannels();
+
     enum State {
         INITIAL(4113),
         PLAYING(4114),

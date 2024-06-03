@@ -70,6 +70,7 @@ abstract class BaseClientAudioSource<T>(
     private var decoder: AudioDecoder? = null
 
     private var endRequest: Job? = null
+    private var endSequenceNumber: Long = -1L
 
     override var closeTimeoutMs: Long = 500
         set(value) {
@@ -148,6 +149,7 @@ abstract class BaseClientAudioSource<T>(
                     decoder = createDecoder(sourceInfo, voiceInfo, it)
                 }
                 lastSequenceNumber = -1L
+                endSequenceNumber = -1L
                 BaseVoice.DEBUG_LOGGER.log("Update decoder for {}", sourceInfo)
             }
 
@@ -180,6 +182,7 @@ abstract class BaseClientAudioSource<T>(
 
         buffer.offer(packet)
         endRequest?.cancel()
+        endSequenceNumber = packet.sequenceNumber
 
         // because SourceAudioEndPacket can be received BEFORE the end of the stream,
         // we need to wait for some time to actually end the stream
@@ -248,7 +251,7 @@ abstract class BaseClientAudioSource<T>(
         while (isActive) {
             val wrappedPacket = buffer.poll()
             if (wrappedPacket == null) {
-                delay(5L)
+                delay(0L)
                 continue
             }
 
@@ -345,15 +348,17 @@ abstract class BaseClientAudioSource<T>(
             if (packetsToCompensate in 1..4) {
                 BaseVoice.DEBUG_LOGGER.warn("Compensate {} lost packets", packetsToCompensate)
                 for (i in 0 until packetsToCompensate) {
+                    val compensatedSequenceNumber = lastSequenceNumber + i + 1
+
                     if (decoder != null && decoder is AudioDecoderPlc && !sourceInfo.isStereo) {
                         try {
-                            write((decoder as AudioDecoderPlc).decodePLC())
+                            write((decoder as AudioDecoderPlc).decodePLC(), compensatedSequenceNumber)
                         } catch (e: CodecException) {
                             LOGGER.warn("Failed to decode source audio", e)
                             return
                         }
                     } else {
-                        write(ShortArray(0))
+                        write(ShortArray(0), compensatedSequenceNumber)
                     }
                 }
             }
@@ -365,9 +370,9 @@ abstract class BaseClientAudioSource<T>(
             val decoded = decoder?.decode(decrypted) ?: AudioUtil.bytesToShorts(decrypted)
 
             if (sourceInfo.isStereo && config.advanced.stereoSourcesToMono.value()) {
-                write(AudioUtil.convertToMonoShorts(decoded))
+                write(AudioUtil.convertToMonoShorts(decoded), packet.sequenceNumber)
             } else {
-                write(decoded)
+                write(decoded, packet.sequenceNumber)
             }
         } catch (e: EncryptionException) {
             BaseVoice.DEBUG_LOGGER.warn("Failed to decrypt source audio", e)
@@ -457,8 +462,14 @@ abstract class BaseClientAudioSource<T>(
         )
     }
 
-    private fun write(samples: ShortArray) {
-        source.write(samples)
+    private fun write(samples: ShortArray, sequenceNumber: Long) {
+        if (!activated.get()) {
+            source.write(AudioUtil.fadeIn(samples, source.channels))
+        } else if (sequenceNumber + 1 == endSequenceNumber) {
+            source.write(AudioUtil.fadeOut(samples, source.channels))
+        } else {
+            source.write(samples)
+        }
     }
 
     private suspend fun updateSource(volume: Float, position: Vec3) {
