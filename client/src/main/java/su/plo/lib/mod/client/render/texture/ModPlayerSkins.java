@@ -13,6 +13,7 @@ import net.minecraft.client.resources.SkinManager;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.slib.api.entity.player.McGameProfile;
 
 import java.util.Map;
@@ -38,7 +39,7 @@ public final class ModPlayerSkins {
         if (skinLocation != null) return;
 
         if (fallback != null) {
-            ResourceLocation fallbackIdentifier = ResourceLocation.tryBuild(
+            ResourceLocation fallbackIdentifier = ResourceLocationUtil.tryBuild(
                     "plasmovoice",
                     "skins/" + Hashing.sha1().hashUnencodedChars(nick.toLowerCase())
             );

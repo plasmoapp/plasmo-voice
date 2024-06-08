@@ -8,6 +8,7 @@ import com.mojang.authlib.minecraft.MinecraftProfileTexture
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.HttpTexture
 import net.minecraft.resources.ResourceLocation
+import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.voice.client.meta.PlasmoVoiceMeta
 import java.io.File
@@ -77,7 +78,7 @@ object DeveloperCapeManager {
 
     private fun getCapeLocationAsync(playerName: String): CompletableFuture<ResourceLocation?> =
         CompletableFuture.supplyAsync {
-            val capeLocation = ResourceLocation.tryBuild("plasmovoice", "developer_capes/${playerName.lowercase()}")!!
+            val capeLocation = ResourceLocationUtil.tryBuild("plasmovoice", "developer_capes/${playerName.lowercase()}")!!
 
             val url = URL("https://plasmovoice.com/capes/$playerName.png")
 

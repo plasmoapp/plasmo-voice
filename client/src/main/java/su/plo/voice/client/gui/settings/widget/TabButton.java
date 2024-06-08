@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -53,7 +54,7 @@ public final class TabButton extends Button {
         this.shadowColor = shadowColor;
 
         this.iconLocation = iconLocation;
-        this.disabledIconLocation = ResourceLocation.tryBuild(
+        this.disabledIconLocation = ResourceLocationUtil.tryBuild(
                 iconLocation.getNamespace(),
                 iconLocation.getPath().replace(".png", "_disabled.png")
         );

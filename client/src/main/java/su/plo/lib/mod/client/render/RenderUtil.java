@@ -130,7 +130,12 @@ public class RenderUtil {
     }
 
     public static void drawBuffer(@NotNull BufferBuilder buffer) {
+        //#if MC>11802
         BufferUploader.drawWithShader(buffer.end());
+        //#else
+        //$$ buffer.end();
+        //$$ BufferUploader.end(buffer);
+        //#endif
     }
 
     public static void bindTexture(int index, @NotNull ResourceLocation location) {
