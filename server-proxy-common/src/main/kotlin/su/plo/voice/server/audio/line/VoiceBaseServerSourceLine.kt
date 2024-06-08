@@ -9,6 +9,8 @@ import su.plo.voice.api.server.audio.line.ServerPlayerSetManager
 import su.plo.voice.api.server.audio.source.ServerAudioSource
 import su.plo.voice.api.server.audio.source.ServerBroadcastSource
 import su.plo.voice.api.server.audio.source.ServerDirectSource
+import su.plo.voice.api.server.event.audio.source.ServerSourceCreatedEvent
+import su.plo.voice.api.server.event.audio.source.ServerSourceRemovedEvent
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
@@ -59,7 +61,7 @@ abstract class VoiceBaseServerSourceLine(
             this,
             decoderInfo,
             stereo
-        ).also { sourceById[it.id] = it }
+        ).also(::addSource)
 
     override fun createDirectSource(player: VoicePlayer, stereo: Boolean, decoderInfo: CodecInfo?): ServerDirectSource =
         VoiceServerDirectSource(
@@ -70,10 +72,12 @@ abstract class VoiceBaseServerSourceLine(
             decoderInfo,
             stereo,
             player
-        ).also { sourceById[it.id] = it }
+        ).also(::addSource)
 
     override fun removeSource(sourceId: UUID) {
-        sourceById.remove(sourceId)
+        val source = sourceById.remove(sourceId) ?: return
+
+        voiceServer.eventBus.fire(ServerSourceRemovedEvent(source))
     }
 
     override fun getSourceById(sourceId: UUID): Optional<ServerAudioSource<*>> =
@@ -83,4 +87,9 @@ abstract class VoiceBaseServerSourceLine(
         sourceById.values
 
     override fun clear() = sourceById.clear()
+
+    protected fun addSource(source: ServerAudioSource<*>) {
+        sourceById[source.id] = source
+        voiceServer.eventBus.fire(ServerSourceCreatedEvent(source))
+    }
 }

@@ -47,7 +47,7 @@ class VoiceServerSourceLine(
             decoderInfo,
             stereo,
             player
-        ).also { sourceById[it.id] = it }
+        ).also(::addSource)
 
     override fun createEntitySource(
         entity: McServerEntity,
@@ -61,7 +61,7 @@ class VoiceServerSourceLine(
             decoderInfo,
             stereo,
             entity
-        ).also { sourceById[it.id] = it }
+        ).also(::addSource)
 
     override fun createStaticSource(
         position: ServerPos3d,
@@ -75,5 +75,5 @@ class VoiceServerSourceLine(
             decoderInfo,
             stereo,
             position
-        ).also { sourceById[it.id] = it }
+        ).also(::addSource)
 }

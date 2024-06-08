@@ -15,7 +15,7 @@ import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
 
     @Getter
-    private final ServerAudioSource source;
+    private final ServerAudioSource<?> source;
     @Getter
     private final SourceAudioPacket packet;
     @Getter
@@ -25,7 +25,7 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
     private @Nullable PlayerActivationInfo activationInfo;
 
     public ServerSourceAudioPacketEvent(
-            @NotNull ServerAudioSource source,
+            @NotNull ServerAudioSource<?> source,
             @NotNull SourceAudioPacket packet,
             @Nullable PlayerActivationInfo activationInfo
     ) {
@@ -33,7 +33,7 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
     }
 
     public ServerSourceAudioPacketEvent(
-            @NotNull ServerAudioSource source,
+            @NotNull ServerAudioSource<?> source,
             @NotNull SourceAudioPacket packet,
             short distance,
             @Nullable PlayerActivationInfo activationInfo

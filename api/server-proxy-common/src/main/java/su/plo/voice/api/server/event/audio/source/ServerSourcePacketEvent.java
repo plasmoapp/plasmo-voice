@@ -13,19 +13,19 @@ import su.plo.voice.proto.packets.Packet;
 public final class ServerSourcePacketEvent extends EventCancellableBase {
 
     @Getter
-    private final ServerAudioSource source;
+    private final ServerAudioSource<?> source;
     @Getter
     private final Packet<?> packet;
     @Getter
     @Setter
     private short distance;
 
-    public ServerSourcePacketEvent(@NotNull ServerAudioSource source,
+    public ServerSourcePacketEvent(@NotNull ServerAudioSource<?> source,
                                    @NotNull Packet<?> packet) {
         this(source, packet, (short) -1);
     }
 
-    public ServerSourcePacketEvent(@NotNull ServerAudioSource source,
+    public ServerSourcePacketEvent(@NotNull ServerAudioSource<?> source,
                                    @NotNull Packet<?> packet,
                                    short distance) {
         this.source = source;
