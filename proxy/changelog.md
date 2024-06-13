@@ -1,1 +1,0 @@
-- Fixed stacktrace spam on bad packets [#397](https://github.com/plasmoapp/plasmo-voice/issues/397)
