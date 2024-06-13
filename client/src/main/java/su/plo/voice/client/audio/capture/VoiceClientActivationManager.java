@@ -102,7 +102,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
             String icon = VoiceIconUtil.INSTANCE.getIcon(
                     serverActivation.getIcon(),
-                    new ResourceLocation("plasmovoice:textures/addons/activations/" + serverActivation.getName())
+                    ResourceLocation.tryParse("plasmovoice:textures/addons/activations/" + serverActivation.getName())
             );
 
             ClientActivation activation = register(new VoiceClientActivation(

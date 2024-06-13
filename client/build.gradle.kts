@@ -45,15 +45,6 @@ plasmoCrowdin {
 
 val shadowCommon by configurations.creating
 
-fun uStatsVersion() = rootProject.libs.versions.ustats.map {
-    val minecraftVersion = when (platform.mcVersion) {
-        12001, 12002, 12004, 12006 -> "1.20"
-        else -> platform.mcVersionStr
-    }
-
-    "${minecraftVersion}-${platform.loaderStr}:$it"
-}.get()
-
 repositories {
     maven("https://repo.essential.gg/repository/maven-public")
 }
@@ -71,6 +62,7 @@ dependencies {
             12002 -> "0.89.1+1.20.2"
             12004 -> "0.97.0+1.20.4"
             12006 -> "0.97.8+1.20.6"
+            12100 -> "0.100.1+1.21"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -81,15 +73,6 @@ dependencies {
     rootProject.libs.versions.universalcraft.map {
         "gg.essential:universalcraft-$platform:$it"
     }.also {
-        modApi(it) {
-            isTransitive = false
-        }
-        shadowCommon(it) {
-            isTransitive = false
-        }
-    }
-
-    "su.plo.ustats:${uStatsVersion()}".also {
         modApi(it) {
             isTransitive = false
         }
@@ -153,8 +136,6 @@ tasks {
 
         relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
         relocate("gg.essential.universal", "su.plo.voice.universal")
-
-        relocate("su.plo.ustats", "su.plo.voice.ustats")
 
         dependencies {
             exclude(dependency("net.java.dev.jna:jna"))

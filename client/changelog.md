@@ -1,2 +1,3 @@
-- Fixed stacktrace spam on bad packets [#397](https://github.com/plasmoapp/plasmo-voice/issues/397)
-- 1.20.5, 1.20.6 support
+- Fixed distorted RNNoise output during mono capture [#400](https://github.com/plasmoapp/plasmo-voice/pull/400)
+- Fixed "Failed to open device" spam in logs
+- 1.21 support

@@ -13,7 +13,7 @@ public final class ResourceCache {
     public ResourceLocation getLocation(@NotNull String resourceLocation) {
         return locationByString.computeIfAbsent(
                 resourceLocation,
-                ResourceLocation::new
+                ResourceLocation::tryParse
         );
     }
 }

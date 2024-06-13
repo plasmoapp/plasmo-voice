@@ -12,8 +12,6 @@ import su.plo.lib.api.server.event.player.PlayerQuitEvent;
 import su.plo.lib.api.server.permission.PermissionDefault;
 import su.plo.lib.api.server.permission.PermissionTristate;
 import su.plo.lib.mod.server.ModServerLib;
-import su.plo.ustats.UStats;
-import su.plo.ustats.mod.ModUStatsPlatform;
 import su.plo.voice.server.connection.ModServerChannelHandler;
 import su.plo.voice.server.connection.ModServerServiceChannelHandler;
 import su.plo.voice.server.player.PermissionSupplier;
@@ -59,9 +57,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class ModVoiceServer
         extends BaseVoiceServer {
 
-    public static final ResourceLocation CHANNEL = new ResourceLocation(CHANNEL_STRING);
-    public static final ResourceLocation FLAG_CHANNEL = new ResourceLocation(FLAG_CHANNEL_STRING);
-    public static final ResourceLocation SERVICE_CHANNEL = new ResourceLocation(SERVICE_CHANNEL_STRING);
+    public static final ResourceLocation CHANNEL = ResourceLocation.tryParse(CHANNEL_STRING);
+    public static final ResourceLocation FLAG_CHANNEL = ResourceLocation.tryParse(FLAG_CHANNEL_STRING);
+    public static final ResourceLocation SERVICE_CHANNEL = ResourceLocation.tryParse(SERVICE_CHANNEL_STRING);
 
     private final String modId = "plasmovoice";
 
@@ -70,8 +68,6 @@ public final class ModVoiceServer
     private MinecraftServer server;
     private ModServerChannelHandler handler;
     private ModServerServiceChannelHandler serviceHandler;
-
-    private UStats uStats;
 
     //#if FORGE
     //$$ private final EventNetworkChannel channel;
@@ -95,18 +91,9 @@ public final class ModVoiceServer
         minecraftServerLib.setPermissions(createPermissionSupplier());
         minecraftServerLib.onInitialize();
         super.onInitialize();
-
-        this.uStats = new UStats(
-                USTATS_PROJECT_UUID,
-                getVersion(),
-                new ModUStatsPlatform(server),
-                getConfigFolder()
-        );
     }
 
     private void onShutdown(MinecraftServer server) {
-        if (uStats != null) uStats.close();
-
         super.onShutdown();
         this.server = null;
         minecraftServerLib.onShutdown();

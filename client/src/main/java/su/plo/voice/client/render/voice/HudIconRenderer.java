@@ -30,23 +30,23 @@ public final class HudIconRenderer {
             return;
 
         if (voiceClient.getUdpClientManager().getClient().get().isTimedOut()) {
-            renderIcon(event.getStack(), new ResourceLocation("plasmovoice:textures/icons/microphone_disconnected.png"));
+            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_disconnected.png"));
             return;
         }
 
         if (config.getVoice().getDisabled().value()) {
-            renderIcon(event.getStack(), new ResourceLocation("plasmovoice:textures/icons/speaker_disabled.png"));
+            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_disabled.png"));
             return;
         }
 
         // server mute
         if (voiceClient.getAudioCapture().isServerMuted()) {
-            renderIcon(event.getStack(), new ResourceLocation("plasmovoice:textures/icons/microphone_muted.png"));
+            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_muted.png"));
             return;
         }
 
         if (config.getVoice().getMicrophoneDisabled().value()) {
-            renderIcon(event.getStack(), new ResourceLocation("plasmovoice:textures/icons/microphone_disabled.png"));
+            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_disabled.png"));
             return;
         }
 
@@ -64,7 +64,7 @@ public final class HudIconRenderer {
             if (!activation.isTransitive()) break;
         }
 
-        if (currentActivation != null) renderIcon(event.getStack(), new ResourceLocation(currentActivation.getIcon()));
+        if (currentActivation != null) renderIcon(event.getStack(), ResourceLocation.tryParse(currentActivation.getIcon()));
     }
 
     private void renderIcon(@NotNull UMatrixStack stack, @NotNull ResourceLocation iconLocation) {

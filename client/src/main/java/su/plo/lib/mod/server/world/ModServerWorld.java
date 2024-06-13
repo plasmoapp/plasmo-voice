@@ -71,15 +71,15 @@ public final class ModServerWorld implements MinecraftServerWorld {
 
     //#if MC>=12005
     //$$ private Holder.Reference<GameEvent> parseGameEvent(@NotNull String gameEventName) {
-    //$$     return BuiltInRegistries.GAME_EVENT.getHolder(new ResourceLocation(gameEventName))
+    //$$     return BuiltInRegistries.GAME_EVENT.getHolder(ResourceLocation.tryParse(gameEventName))
     //$$             .orElseThrow(() -> new IllegalArgumentException("Invalid game event"));
     //$$ }
     //#else
     private GameEvent parseGameEvent(@NotNull String gameEventName) {
         //#if MC>=11903
-        return BuiltInRegistries.GAME_EVENT.get(new ResourceLocation(gameEventName));
+        return BuiltInRegistries.GAME_EVENT.get(ResourceLocation.tryParse(gameEventName));
         //#else
-        //$$ return Registry.GAME_EVENT.get(new ResourceLocation(gameEventName));
+        //$$ return Registry.GAME_EVENT.get(ResourceLocation.tryParse(gameEventName));
         //#endif
     }
     //#endif

@@ -62,7 +62,7 @@
     "gui.plasmovoice.advanced": "Advanced",
 
     "gui.plasmovoice.advanced.visual": "Visual & UI",
-    "gui.plasmovoice.advanced.visualize_voice_distance": "Visualise Voice Distance",
+    "gui.plasmovoice.advanced.visualize_voice_distance": "Visualize Voice Distance",
     "gui.plasmovoice.advanced.visualize_voice_distance_on_join": "Visualize On Join",
 
     "gui.plasmovoice.advanced.audio_engine": "Audio Engine",
@@ -156,5 +156,8 @@
 
     "message.plasmovoice.update_available": "New version %1$s of Plasmo Voice is available: %2$s",
     "message.plasmovoice.update_available.click": "Download",
-    "message.plasmovoice.update_available.hover": "%s"
+    "message.plasmovoice.update_available.hover": "%s",
+
+    "modmenu.descriptionTranslation.plasmovoice": "A proximity voice chat mod with audio positioning and lots of features",
+    "modmenu.summaryTranslation.plasmovoice": "A proximity voice chat mod with audio positioning and lots of features"
 }

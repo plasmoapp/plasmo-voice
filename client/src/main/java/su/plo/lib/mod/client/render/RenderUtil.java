@@ -342,7 +342,11 @@ public class RenderUtil {
         boolean displayMode = seeThrough;
         //#endif
 
+        //#if MC>=12100
+        //$$ MultiBufferSource.BufferSource irendertypebuffer$impl = UMinecraft.getMinecraft().renderBuffers().bufferSource();
+        //#else
         MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        //#endif
         UMinecraft.getFontRenderer().drawInBatch(
                 formattedText,
                 (float) x,

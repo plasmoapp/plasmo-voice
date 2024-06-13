@@ -78,38 +78,38 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
         navigation.addTab(
                 MinecraftTextComponent.translatable("gui.plasmovoice.devices"),
-                new ResourceLocation("plasmovoice:textures/icons/tabs/devices.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/devices.png"),
                 new DevicesTabWidget(this, voiceClient, config, testController)
         );
         navigation.addTab(
                 MinecraftTextComponent.translatable("gui.plasmovoice.volume"),
-                new ResourceLocation("plasmovoice:textures/icons/tabs/volume.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/volume.png"),
                 new VolumeTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 MinecraftTextComponent.translatable("gui.plasmovoice.activation"),
-                new ResourceLocation("plasmovoice:textures/icons/tabs/activation.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/activation.png"),
                 new ActivationTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 MinecraftTextComponent.translatable("gui.plasmovoice.overlay"),
-                new ResourceLocation("plasmovoice:textures/icons/tabs/overlay.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/overlay.png"),
                 new OverlayTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 MinecraftTextComponent.translatable("gui.plasmovoice.advanced"),
-                new ResourceLocation("plasmovoice:textures/icons/tabs/advanced.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/advanced.png"),
                 new AdvancedTabWidget(this, voiceClient, config)
         );
         navigation.addTab(
                 MinecraftTextComponent.translatable("gui.plasmovoice.hotkeys"),
-                new ResourceLocation("plasmovoice:textures/icons/tabs/hotkeys.png"),
+                ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/hotkeys.png"),
                 new HotKeysTabWidget(this, voiceClient, config)
         );
         if (voiceClient.getAddonConfigs().size() > 0) {
             navigation.addTab(
                     MinecraftTextComponent.translatable("gui.plasmovoice.addons"),
-                    new ResourceLocation("plasmovoice:textures/icons/tabs/addons.png"),
+                    ResourceLocation.tryParse("plasmovoice:textures/icons/tabs/addons.png"),
                     new AddonsTabWidget(this, voiceClient, config)
             );
         }

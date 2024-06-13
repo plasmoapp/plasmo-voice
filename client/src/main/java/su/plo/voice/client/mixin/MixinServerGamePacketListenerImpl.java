@@ -18,7 +18,7 @@ package su.plo.voice.client.mixin;
 //$$     @Shadow
 //$$     public abstract ServerPlayer getPlayer();
 //$$
-//$$     private static final ResourceLocation REGISTER = new ResourceLocation("minecraft:register");
+//$$     private static final ResourceLocation REGISTER = ResourceLocation.tryParse("minecraft:register");
 //$$
 //$$     @Inject(method = "handleCustomPayload", at = @At("HEAD"))
 //$$     public void handleCustomPayload(ServerboundCustomPayloadPacket packet, CallbackInfo ci) {
