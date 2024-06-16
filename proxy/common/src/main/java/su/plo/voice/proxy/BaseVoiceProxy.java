@@ -135,7 +135,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     }
 
     protected void onProxyConfigReload() {
-        remoteServerManager.clear();
+        loadConfig(true);
     }
 
     public void loadConfig(boolean reload) {
