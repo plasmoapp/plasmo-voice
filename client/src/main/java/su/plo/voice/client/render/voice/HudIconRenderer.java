@@ -29,7 +29,8 @@ public final class HudIconRenderer {
         if (!voiceClient.getServerInfo().isPresent() ||
                 !voiceClient.getUdpClientManager().getClient().isPresent() ||
                 Minecraft.getInstance().player == null ||
-                !config.getOverlay().getShowActivationIcon().value()
+                !config.getOverlay().getShowActivationIcon().value() ||
+                Minecraft.getInstance().options.hideGui
         ) return;
 
         if (voiceClient.getUdpClientManager().getClient().get().isTimedOut()) {

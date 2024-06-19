@@ -32,7 +32,8 @@ class OverlayRenderer(
         if (!voiceClient.serverInfo.isPresent ||
             !voiceClient.udpClientManager.client.isPresent ||
             Minecraft.getInstance().player == null ||
-            !config.overlay.overlayEnabled.value()
+            !config.overlay.overlayEnabled.value() ||
+            Minecraft.getInstance().options.hideGui
         ) return
 
         val position = config.overlay.overlayPosition.value()
