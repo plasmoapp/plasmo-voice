@@ -61,6 +61,12 @@ public final class ClientLoopbackSource implements LoopbackSource {
     public void close() {
         if (source == null) return;
         source.closeAsync();
+        source = null;
+    }
+
+    @Override
+    public boolean isClosed() {
+        return source == null || source.isClosed();
     }
 
     @Override

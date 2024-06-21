@@ -27,6 +27,13 @@ public interface LoopbackSource {
     void close();
 
     /**
+     * Checks if the audio source is closed or not initialized.
+     *
+     * @return Whether the source is closed.
+     */
+    boolean isClosed();
+
+    /**
      * Writes audio samples to the loopback source.
      *
      * @param samples An array of audio samples to write.
