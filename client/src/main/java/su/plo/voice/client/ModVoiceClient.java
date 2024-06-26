@@ -282,7 +282,16 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
     //$$             Minecraft.getInstance().level == null
     //$$     ) return;
-    //$$     levelRenderer.render(Minecraft.getInstance().level, event.getPoseStack(), event.getCamera(), event.getPartialTick());
+    //$$     levelRenderer.render(
+    //$$            Minecraft.getInstance().level,
+    //$$            event.getPoseStack(),
+    //$$            event.getCamera(),
+    //#if MC>=12100
+    //$$            event.getPartialTick().getRealtimeDeltaTicks()
+    //#else
+    //$$            event.getPartialTick()
+    //#endif
+    //$$     );
     //$$ }
     //$$
     //$$ @EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
