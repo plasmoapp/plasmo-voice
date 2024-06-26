@@ -18,6 +18,7 @@ import su.plo.voice.proto.packets.udp.clientbound.SelfAudioInfoPacket;
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import su.plo.voice.socket.NettyPacketUdp;
 
+import java.net.InetSocketAddress;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -108,8 +109,10 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     private void tick() {
         if (!client.getRemoteAddress().isPresent()) return;
 
-        if (!client.isConnected())
-            client.sendPacket(new PingPacket());
+        if (!client.isConnected()) {
+            InetSocketAddress remoteAddress = client.getRemoteAddress().get();
+            client.sendPacket(new PingPacket(remoteAddress.getHostString(), remoteAddress.getPort()));
+        }
 
         long diff = System.currentTimeMillis() - keepAlive;
         if (diff > MAX_KEEP_ALIVE_TIMEOUT) {

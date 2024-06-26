@@ -36,7 +36,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class NettyUdpClient implements UdpClient {
 
     private final PlasmoVoiceClient voiceClient;
-    private final VoiceClientConfig config;
     @Getter
     private final UUID secret;
 
@@ -55,7 +54,6 @@ public final class NettyUdpClient implements UdpClient {
                           @NotNull VoiceClientConfig config,
                           @NotNull UUID secret) {
         this.voiceClient = checkNotNull(voiceClient, "voiceClient");
-        this.config = checkNotNull(config, "config");
         this.secret = checkNotNull(secret, "secret");
         this.handler = new NettyUdpClientHandler(voiceClient, config, this);
     }
