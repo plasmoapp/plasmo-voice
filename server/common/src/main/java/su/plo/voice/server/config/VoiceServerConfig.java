@@ -12,6 +12,7 @@ import su.plo.config.ConfigField;
 import su.plo.config.ConfigFieldProcessor;
 import su.plo.config.ConfigValidator;
 import su.plo.voice.api.server.config.ServerConfig;
+import su.plo.voice.util.version.SemanticVersion;
 
 import java.util.*;
 import java.util.function.Function;
@@ -121,6 +122,9 @@ public final class VoiceServerConfig implements ServerConfig {
 
         @ConfigField
         private long clientModRequiredCheckTimeoutMs = 3_000L;
+
+        @ConfigField(comment = "Minimum required version for a client with the mod to connect to the voice server.\nThis will not kick the player but will simply not connect them to the voice server and will suggest downloading the required version.")
+        private @NotNull String clientModMinVersion = "2.0.0";
 
         @ConfigField
         private Proximity proximity = new Proximity();

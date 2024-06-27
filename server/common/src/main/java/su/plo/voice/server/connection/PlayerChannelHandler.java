@@ -61,6 +61,17 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
             return;
         }
 
+        SemanticVersion minVersion = SemanticVersion.parse("2.0.0");
+        try {
+            minVersion = SemanticVersion.parse(voiceServer.getConfig().voice().clientModMinVersion());
+        } catch (IllegalArgumentException ignored) {
+        }
+
+        if (clientVersion.asInt() < minVersion.asInt()) {
+            ServerVersionUtil.suggestSupportedVersion(player, clientVersion, packet.getMinecraftVersion());
+            return;
+        }
+
         BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
@@ -75,6 +86,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
         voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
         voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
+        voicePlayer.setModVersion(packet.getVersion());
 
         tcpConnections.connect(player);
     }

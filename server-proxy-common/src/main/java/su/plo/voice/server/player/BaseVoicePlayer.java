@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.entity.player.McPlayer;
 import su.plo.slib.api.position.Pos3d;
@@ -38,6 +39,8 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     protected boolean voiceDisabled;
     @Setter
     protected boolean microphoneMuted;
+    @Setter
+    protected @Nullable String modVersion;
 
     @Setter
     private PublicKey publicKey;
@@ -63,6 +66,15 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     public boolean isMicrophoneMuted() {
         checkVoiceChat();
         return microphoneMuted;
+    }
+
+    @Override
+    public @NotNull Optional<String> getModVersion() {
+        if (!hasVoiceChat()) {
+            return Optional.empty();
+        }
+
+        return Optional.ofNullable(modVersion);
     }
 
     @Override

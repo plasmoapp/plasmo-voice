@@ -70,6 +70,10 @@ public final class SemanticVersion {
         return this.branch == Branch.RELEASE;
     }
 
+    public int asInt() {
+        return major * 100 + minor * 10 + patch;
+    }
+
     public String prettyString() {
         Matcher matcher = VERSION_PATTERN.matcher(string);
         if (!matcher.matches()) return string;

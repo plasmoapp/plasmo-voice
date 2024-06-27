@@ -48,6 +48,13 @@ public interface VoicePlayer {
     boolean isMicrophoneMuted();
 
     /**
+     * Gets the version of the player's Plasmo Voice.
+     *
+     * @return An optional containing the mod version; or empty if the player is not connected to the voice chat.
+     */
+    @NotNull Optional<String> getModVersion();
+
+    /**
      * Creates and returns a new instance of {@link VoicePlayerInfo} for this player.
      *
      * @return A new VoicePlayerInfo instance.
