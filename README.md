@@ -104,10 +104,3 @@ Also read: [Add-on Types](https://plasmovoice.com/docs/addons/types)
 
 ## Documentation
 - [Documentation](https://plasmovoice.com)
-
-## bStats
-
-[![](https://bstats.org/signatures/bukkit/plasmovoice.svg)](https://bstats.org/plugin/bukkit/PlasmoVoice/10928)
-
-## Credits
-- Originally made for [Plasmo](https://rp.plo.su)
