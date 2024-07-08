@@ -11,10 +11,15 @@ import su.plo.config.Config;
 import su.plo.config.ConfigField;
 import su.plo.config.ConfigFieldProcessor;
 import su.plo.config.ConfigValidator;
+import su.plo.slib.api.language.ServerLanguageFormat;
 import su.plo.voice.api.server.config.ServerConfig;
-import su.plo.voice.util.version.SemanticVersion;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -29,6 +34,15 @@ public final class VoiceServerConfig implements ServerConfig {
 
     @ConfigField
     private String defaultLanguage = "en_us";
+
+    @ConfigField(
+            comment = "Format used in languages\n" +
+                    "LEGACY_AMPERSAND — default format using \"&\" for text styles\n\n" +
+                    "MINI_MESSAGE — MiniMessage format, see https://docs.advntr.dev/minimessage/format.html.\n" +
+                    "You need to use \"<argument:[index]>\" instead of \"%s\" or \"%[index]$s\" for language arguments.\n" +
+                    "\"%s\" -> \"<argument:0>\"; \"%1$s\" -> \"<argument:0>\"; \"%2$s\" -> \"<argument:1>\""
+    )
+    private ServerLanguageFormat languageFormat = ServerLanguageFormat.LEGACY_AMPERSAND;
 
     @ConfigField
     private boolean debug = false;

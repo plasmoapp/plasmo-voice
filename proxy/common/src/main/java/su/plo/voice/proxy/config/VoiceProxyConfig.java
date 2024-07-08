@@ -11,6 +11,7 @@ import su.plo.config.Config;
 import su.plo.config.ConfigField;
 import su.plo.config.ConfigValidator;
 import su.plo.config.entry.SerializableConfigEntry;
+import su.plo.slib.api.language.ServerLanguageFormat;
 import su.plo.slib.api.logging.McLogger;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.voice.api.proxy.config.ProxyConfig;
@@ -37,6 +38,15 @@ public final class VoiceProxyConfig implements ProxyConfig {
 
     @ConfigField
     private String defaultLanguage = "en_us";
+
+    @ConfigField(
+            comment = "Format used in languages\n" +
+                    "LEGACY_AMPERSAND — default format using \"&\" for text styles\n\n" +
+                    "MINI_MESSAGE — MiniMessage format, see https://docs.advntr.dev/minimessage/format.html.\n" +
+                    "You need to use \"<argument:[index]>\" instead of \"%s\" or \"%[index]$s\" for language arguments.\n" +
+                    "\"%s\" -> \"<argument:0>\"; \"%1$s\" -> \"<argument:0>\"; \"%2$s\" -> \"<argument:1>\""
+    )
+    private ServerLanguageFormat languageFormat = ServerLanguageFormat.LEGACY_AMPERSAND;
 
     @ConfigField
     private boolean debug = false;

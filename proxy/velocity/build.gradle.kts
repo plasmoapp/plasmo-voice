@@ -49,7 +49,6 @@ dependencies {
 
     slibPlatform(
         "velocity",
-        "proxy",
         libs.versions.slib.get(),
         implementation = ::compileOnly,
         shadow = ::shadow

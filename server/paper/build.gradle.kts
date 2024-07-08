@@ -48,7 +48,6 @@ dependencies {
 
     slibPlatform(
         "spigot",
-        "server",
         libs.versions.slib.get(),
         implementation = ::compileOnly,
         shadow = ::shadow

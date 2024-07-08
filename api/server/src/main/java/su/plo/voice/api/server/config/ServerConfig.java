@@ -2,6 +2,7 @@ package su.plo.voice.api.server.config;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.slib.api.language.ServerLanguageFormat;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -14,6 +15,8 @@ public interface ServerConfig {
     @NotNull String serverId();
 
     @NotNull String defaultLanguage();
+
+    @NotNull ServerLanguageFormat languageFormat();
 
     boolean debug();
 

@@ -42,15 +42,10 @@ dependencies {
 
     slibPlatform(
         "minestom",
-        "server",
         libs.versions.slib.get(),
         implementation = ::compileOnly,
         shadow = ::shadow
     )
-
-    shadow("su.plo.slib:api-common:${libs.versions.slib.get()}") { isTransitive = false }
-    shadow("su.plo.slib:api-server:${libs.versions.slib.get()}") { isTransitive = false }
-    shadow("su.plo.slib:common:${libs.versions.slib.get()}") { isTransitive = false }
 }
 
 tasks {

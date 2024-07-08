@@ -7,7 +7,6 @@ typealias GradleModuleFunction = (module: String, action: Action<ExternalModuleD
 
 fun slibPlatform(
     platform: String,
-    apiModule: String,
     version: String,
     implementation: GradleModuleFunction,
     shadow: GradleModuleFunction? = null
@@ -17,7 +16,4 @@ fun slibPlatform(
     if (shadow == null) return
 
     shadow("su.plo.slib:$platform:$version") { isTransitive = false }
-    shadow("su.plo.slib:api-common:$version") { isTransitive = false }
-    shadow("su.plo.slib:api-$apiModule:$version") { isTransitive = false }
-    shadow("su.plo.slib:common:$version") { isTransitive = false }
 }

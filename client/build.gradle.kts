@@ -110,7 +110,6 @@ dependencies {
     // slib
     slibPlatform(
         slibArtifact(),
-        "server",
         libs.versions.slib.get(),
         ::modApi
     ) { name, action -> shadowCommon(name) { action.execute(this) } }
