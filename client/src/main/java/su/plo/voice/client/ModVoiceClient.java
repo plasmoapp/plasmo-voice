@@ -47,14 +47,23 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 //$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
 //$$
 //$$ import net.minecraftforge.network.event.EventNetworkChannel;
+
+//#if MC>=12100
+//$$ import com.mojang.blaze3d.vertex.PoseStack;
+//#else
 //$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-//$$
+//#endif
+
 //#if MC>=11900
 //$$ import net.minecraftforge.fml.common.Mod;
 //$$ import net.minecraftforge.api.distmarker.Dist;
 //$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
-//$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
 //$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
+
+//#if MC<12100
+//$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
+//#endif
+
 //#else
 //$$ import net.minecraftforge.client.ClientRegistry;
 //$$ import net.minecraftforge.client.event.RenderLevelLastEvent;
@@ -202,6 +211,8 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     super.onShutdown();
     //$$ }
     //$$
+    //#if MC<12100
+
     //$$ @SubscribeEvent
     //$$ public void onOverlayRender(RenderGuiOverlayEvent.Post event) {
     //#if MC>=11900
@@ -216,6 +227,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     hudRenderer.render(event.getPoseStack(), event.getPartialTick());
     //#endif
     //$$ }
+
+    //#endif
+
     //$$
     //$$ @SubscribeEvent
     //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
@@ -228,7 +242,16 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
     //$$             Minecraft.getInstance().level == null
     //$$     ) return;
-    //$$     levelRenderer.render(Minecraft.getInstance().level, event.getPoseStack(), event.getCamera(), event.getPartialTick());
+    //$$     levelRenderer.render(
+    //$$             Minecraft.getInstance().level,
+    //#if MC>=12100
+    //$$             new PoseStack(),
+    //#else
+    //$$             event.getPoseStack(),
+    //#endif
+    //$$             event.getCamera(),
+    //$$             event.getPartialTick()
+    //$$     );
     //$$ }
     //$$
     //$$ @Mod.EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)

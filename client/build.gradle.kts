@@ -30,6 +30,10 @@ if (platform.isForge) {
         if (platform.mcVersion < 12002) {
             mixinConfig("slib-forge.mixins.json")
         }
+
+        if (platform.mcVersion >= 12100) {
+            mixinConfig("plasmovoice-forge.mixins.json")
+        }
     }
 }
 
@@ -108,11 +112,19 @@ dependencies {
     }
 
     // slib
-    slibPlatform(
-        slibArtifact(),
-        libs.versions.slib.get(),
-        ::modApi
-    ) { name, action -> shadowCommon(name) { action.execute(this) } }
+    if (platform.isForge && platform.mcVersion >= 12100) {
+        slibPlatform(
+            slibArtifact(),
+            libs.versions.slib.get(),
+            ::api
+        ) { name, action -> shadowCommon(name) { action.execute(this) } }
+    } else {
+        slibPlatform(
+            slibArtifact(),
+            libs.versions.slib.get(),
+            ::modApi
+        ) { name, action -> shadowCommon(name) { action.execute(this) } }
+    }
 
     // kotlin
     shadowCommon(kotlin("stdlib-jdk8"))

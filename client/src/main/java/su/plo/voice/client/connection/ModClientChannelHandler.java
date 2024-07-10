@@ -27,7 +27,10 @@ import net.fabricmc.fabric.api.networking.v1.PacketSender;
 
 //#elseif FORGE
 
+//#if MC<12100
 //$$ import net.minecraftforge.network.NetworkDirection;
+//#endif
+
 //$$ import net.minecraftforge.network.NetworkEvent;
 
 //#elseif NEOFORGE
@@ -97,17 +100,25 @@ public final class ModClientChannelHandler
     //#elseif FORGE
 
     //$$ public void receive(@NotNull NetworkEvent event) {
+
     //#if MC>=12002
     //$$     CustomPayloadEvent.Context context = event.getSource();
     //#else
     //$$     NetworkEvent.Context context = event.getSource().get();
     //#endif
+
+    //#if MC>=12100
+    //$$     if (context.isServerSide() || event.getPayload() == null) return;
+    //#else
     //$$     if (context.getDirection() != NetworkDirection.PLAY_TO_CLIENT || event.getPayload() == null) return;
+    //#endif
+
     //#if MC>=12002
     //$$     receive(context.getConnection(), event.getPayload());
     //#else
     //$$     receive(context.getNetworkManager(), event.getPayload());
     //#endif
+
     //$$     context.setPacketHandled(true);
     //$$ }
 

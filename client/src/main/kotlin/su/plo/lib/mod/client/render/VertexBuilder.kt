@@ -6,15 +6,27 @@ import com.mojang.blaze3d.vertex.PoseStack
 class VertexBuilder private constructor(private val buffer: BufferBuilder) {
 
     fun position(stack: PoseStack, x: Float, y: Float, z: Float) = apply {
+        //#if MC>=12100
+        //$$ buffer.addVertex(stack.last().pose(), x, y, z)
+        //#else
         buffer.vertex(stack.last().pose(), x, y, z)
+        //#endif
     }
 
     fun uv(u: Float, v: Float) = apply {
+        //#if MC>=12100
+        //$$ buffer.setUv(u, v)
+        //#else
         buffer.uv(u, v)
+        //#endif
     }
 
     fun overlay(u: Int) = apply {
+        //#if MC>=12100
+        //$$ buffer.setOverlay(u)
+        //#else
         buffer.overlayCoords(u)
+        //#endif
     }
 
     fun light(u: Int) = apply {
@@ -26,15 +38,27 @@ class VertexBuilder private constructor(private val buffer: BufferBuilder) {
     }
 
     fun light(u: Int, v: Int) = apply {
+        //#if MC>=12100
+        //$$ buffer.setUv2(u, v)
+        //#else
         buffer.uv2(u, v)
+        //#endif
     }
 
     fun color(r: Int, g: Int, b: Int, a: Int) = apply {
+        //#if MC>=12100
+        //$$ buffer.setColor(r, g, b, a)
+        //#else
         buffer.color(r, g, b, a)
+        //#endif
     }
 
     fun color(r: Float, g: Float, b: Float, a: Float) = apply { 
+        //#if MC>=12100
+        //$$ buffer.setColor(r, g, b, a)
+        //#else
         buffer.color(r, g, b, a)
+        //#endif
     }
 
     fun normal(stack: PoseStack, x: Float, y: Float, z: Float) = apply {

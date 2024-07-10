@@ -68,6 +68,12 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 //$$ import net.minecraftforge.network.NetworkDirection;
 //$$ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
 
+//#if MC>=12100
+//$$ import net.minecraft.network.protocol.common.ServerCommonPacketListener;
+//$$ import net.minecraftforge.network.EventNetworkChannel;
+//$$ import su.plo.slib.mod.channel.ModChannelManager;
+//#endif
+
 //#elseif NEOFORGE
 
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
@@ -140,7 +146,12 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
 
         //#elseif FORGE
 
-        //#if MC>=12002
+        //#if MC>=12100
+        //$$ EventNetworkChannel forgeChannel = ModChannelManager.getForgeChannel(ModVoiceServer.CHANNEL);
+        //$$ FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded));
+        //$$
+        //$$ net.minecraft.network.protocol.Packet<ServerCommonPacketListener> customPacket = NetworkDirection.PLAY_TO_SERVER.buildPacket(forgeChannel, buf);
+        //#elseif MC>=12002
         //$$ ServerboundCustomPayloadPacket customPacket = NetworkDirection.PLAY_TO_SERVER.<ServerboundCustomPayloadPacket>buildPacket(buf, ModVoiceServer.CHANNEL).getThis();
         //#else
         //$$ ServerboundCustomPayloadPacket customPacket = new ServerboundCustomPayloadPacket(ModVoiceServer.CHANNEL, buf);

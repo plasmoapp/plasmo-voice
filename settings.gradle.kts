@@ -16,7 +16,7 @@ pluginManagement {
     }
 
     plugins {
-        val egtVersion = "0.6.0-SNAPSHOT"
+        val egtVersion = "0.7.0-SNAPSHOT"
         id("gg.essential.defaults") version egtVersion
         id("gg.essential.multi-version.root") version egtVersion
     }
