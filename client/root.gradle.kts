@@ -10,8 +10,6 @@ preprocess {
     val fabric12100 = createNode("1.21-fabric", 12100, "official")
     val forge12100 = createNode("1.21-forge", 12100, "official")
 
-    val fabric12006 = createNode("1.20.6-fabric", 12006, "official")
-
     val forge12004 = createNode("1.20.4-forge", 12004, "official")
     val fabric12004 = createNode("1.20.4-fabric", 12004, "official")
 
@@ -34,10 +32,8 @@ preprocess {
     val fabric11605 = createNode("1.16.5-fabric", 11605, "official")
 
     neoForge12100.link(fabric12100)
-    fabric12100.link(fabric12006, file("1.21-1.20.6.txt"))
+    fabric12100.link(fabric12004, file("1.21-1.20.6.txt"))
     forge12100.link(forge12004, file("1.21-1.20.6.txt"))
-
-    fabric12006.link(fabric12004)
 
     fabric12004.link(fabric12001, file("1.20.4-1.20.1.txt"))
     forge12004.link(forge12001, file("1.20.4-1.20.1.txt"))

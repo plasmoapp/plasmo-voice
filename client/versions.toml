@@ -3,10 +3,6 @@ mcVersions = ["1.21"]
 forgeVersion = "[51,)"
 neoForgeVersion = "[20,)"
 
-[12006]
-forgeVersion = "[50,)"
-mcVersions = ["1.20.5", "1.20.6"]
-
 [12004]
 forgeVersion = "[49,)"
 mcVersions = ["1.20.3", "1.20.4"]

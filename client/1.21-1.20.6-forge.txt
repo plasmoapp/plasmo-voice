@@ -1,3 +1,0 @@
-com.mojang.blaze3d.vertex.BufferBuilder build() end()
-com.mojang.blaze3d.vertex.BufferBuilder addVertex() vertex()
-com.mojang.blaze3d.vertex.BufferBuilder setOverlay() overlayCoords()
