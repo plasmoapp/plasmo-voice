@@ -50,7 +50,7 @@ class ProximityServerActivationHelper @JvmOverloads constructor(
 
     @EventSubscribe
     fun onClientDisconnected(event: UdpClientDisconnectedEvent) =
-        sourceByPlayerId.remove(event.connection.player.instance.uuid)
+        sourceByPlayerId.remove(event.connection.player.instance.uuid)?.remove()
 
     private fun onActivation(player: VoicePlayer, packet: PlayerAudioPacket): ServerActivation.Result {
         getPlayerSource(player as VoiceServerPlayer, packet.isStereo).also { source ->
