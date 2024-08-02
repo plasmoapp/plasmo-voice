@@ -8,7 +8,7 @@ import su.plo.lib.mod.client.language.LanguageUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.converter.McTextConverter;
 import su.plo.slib.chat.AdventureComponentTextConverter;
-import su.plo.slib.language.LegacyComponentRenderer;
+import su.plo.slib.language.MiniMessageComponentRenderer;
 import su.plo.slib.libs.adventure.adventure.key.Key;
 import su.plo.slib.libs.adventure.adventure.text.TranslatableComponent;
 import su.plo.slib.libs.adventure.adventure.text.renderer.TranslatableComponentRenderer;
@@ -45,7 +45,7 @@ public final class ClientTextConverter implements McTextConverter<Component> {
                         .orElse(null);
                 if (translationString == null) return null;
 
-                return LegacyComponentRenderer.INSTANCE.renderTranslatable(component, translationString, locale, textRenderer);
+                return MiniMessageComponentRenderer.INSTANCE.renderTranslatable(component, translationString, locale, textRenderer);
             }
 
             @Override
