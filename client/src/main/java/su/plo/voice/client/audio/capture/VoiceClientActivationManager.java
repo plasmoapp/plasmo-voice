@@ -99,6 +99,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                     serverActivation.getMinDistance(),
                     serverActivation.getMaxDistance()
             );
+            activationDistance.set(serverActivation.calculateAllowedDistance(activationDistance.value()));
 
             String icon = VoiceIconUtil.INSTANCE.getIcon(
                     serverActivation.getIcon(),
@@ -206,6 +207,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
         IntConfigEntry activationDistance = serverConfig.getActivationDistance(serverActivation.getId(), serverActivation);
         activationDistance.setDefault(0, 0, 0);
+        activationDistance.set(serverActivation.calculateAllowedDistance(activationDistance.value()));
         if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
             BaseVoice.LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
             activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);

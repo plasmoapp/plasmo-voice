@@ -90,21 +90,6 @@ public interface ServerActivation extends Activation {
     void setDistances(@NotNull List<Integer> distances, int defaultDistance);
 
     /**
-     * Checks if a specified distance is among the available distances for the activation.
-     *
-     * <p>
-     *     If distances are empty, returns {@code true}.
-     * </p>
-     * <p>
-     *     If distances are dynamic, returns {@code true} if the specified distance is within the range (0, {@link #getMaxDistance()}].
-     * </p>
-     *
-     * @param distance The distance to check.
-     * @return {@code true} if the specified distance is among the available distances, {@code false} otherwise.
-     */
-    boolean checkDistance(int distance);
-
-    /**
      * Sets whether the activation is transitive.
      *
      * @param transitive Whether the activation is transitive.

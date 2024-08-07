@@ -20,7 +20,11 @@ import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.data.audio.codec.CodecInfo
-import su.plo.voice.proto.packets.tcp.clientbound.*
+import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket
+import su.plo.voice.proto.packets.tcp.clientbound.ActivationUnregisterPacket
+import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler
+import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket
+import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket
 import su.plo.voice.server.player.BaseVoicePlayer
 import java.util.*
 import java.util.function.Consumer
@@ -110,15 +114,24 @@ class VoiceServerActivationManager(
     @EventSubscribe(priority = EventPriority.LOW)
     fun onPlayerSpeak(event: PlayerSpeakEvent) {
         val player = event.player as BaseVoicePlayer<*>
-        val packet = event.packet
+        val originalPacket = event.packet
 
-        val activation = getActivationById(packet.activationId)
+        val activation = getActivationById(originalPacket.activationId)
             .orElse(null) as VoiceServerActivation?
             ?: return
 
         if (!activation.checkPermissions(player)) return
-        if (!activation.checkDistance(packet.distance.toInt())) return
-        if (activation.requirements?.checkRequirements(player, packet) == false) return
+
+        val distance = activation.calculateAllowedDistance(originalPacket.distance.toInt()).toShort()
+        val packet = PlayerAudioPacket(
+            originalPacket.sequenceNumber,
+            originalPacket.data,
+            originalPacket.activationId,
+            distance,
+            originalPacket.isStereo
+        )
+
+        if (activation.requirements?.checkRequirements(player, originalPacket) == false) return
 
         val lastActivationSequenceNumber = player.lastActivationSequenceNumber.getOrDefault(activation.id, 0)
         if (activation !in player.activeActivations &&
@@ -141,14 +154,22 @@ class VoiceServerActivationManager(
     @EventSubscribe(priority = EventPriority.LOW)
     fun onPlayerSpeakEnd(event: PlayerSpeakEndEvent) {
         val player = event.player as BaseVoicePlayer<*>
-        val packet = event.packet
+        val originalPacket = event.packet
 
-        val activation = getActivationById(packet.activationId)
+        val activation = getActivationById(originalPacket.activationId)
             .orElse(null) as VoiceServerActivation?
             ?: return
 
         if (!player.activeActivations.contains(activation)) return
         if (!activation.checkPermissions(player)) return
+
+        val distance = activation.calculateAllowedDistance(originalPacket.distance.toInt()).toShort()
+        val packet = PlayerAudioEndPacket(
+            originalPacket.sequenceNumber,
+            originalPacket.activationId,
+            distance
+        )
+
         if (!activation.checkDistance(packet.distance.toInt())) return
         if (activation.requirements?.checkRequirements(player, packet) == false) return
 

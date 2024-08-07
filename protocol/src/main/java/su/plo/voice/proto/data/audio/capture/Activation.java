@@ -133,4 +133,46 @@ public interface Activation {
     default int getWeight() {
         return 0;
     }
+
+    /**
+     * Checks if a specified distance is among the available distances for the activation.
+     *
+     * <p>
+     *     If distances are empty, returns {@code true}.
+     * </p>
+     * <p>
+     *     If distances are dynamic, returns {@code true} if the specified distance is within the range (0, {@link #getMaxDistance()}].
+     * </p>
+     *
+     * @param distance The distance to check.
+     * @return {@code true} if the specified distance is among the available distances, {@code false} otherwise.
+     */
+    default boolean checkDistance(int distance) {
+        List<Integer> distances = getDistances();
+
+        if (distances.isEmpty()) {
+            return true;
+        }
+
+        if (distances.size() == 2 && distances.get(0) == -1) {
+            return distance >= 1 && distance <= distances.get(1);
+        }
+
+        return distances.contains(distance);
+    }
+
+    /**
+     * Calculates allowed distance.
+     *
+     * @param distance The distance to check.
+     *
+     * @return The provided distance if {@link #checkDistance(int)} is {@code true} {@link #getDefaultDistance()} otherwise.
+     */
+    default int calculateAllowedDistance(int distance) {
+        if (checkDistance(distance)) {
+            return distance;
+        } else {
+            return getDefaultDistance();
+        }
+    }
 }
