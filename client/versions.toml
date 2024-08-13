@@ -1,5 +1,5 @@
 [12100]
-mcVersions = ["1.21"]
+mcVersions = [">=1.21"]
 forgeVersion = "[51,)"
 neoForgeVersion = "[20,)"
 

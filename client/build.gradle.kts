@@ -238,7 +238,12 @@ data class VersionInfo(
 
     // "${mcVersions}" -> "[1.20,1.20.1]"
     val forgeMcVersions
-        get() = "[${mcVersions.joinToString(",")}]"
+        get() =
+            if (mcVersions[0].startsWith(">=")) {
+                "[${mcVersions[0].substringAfter(">=")},)"
+            } else {
+                "[${mcVersions.joinToString(",")}]"
+            }
 
     // ["${mcVersions}"] -> ["1.20", "1.20.1"]
     val fabricMcVersions
