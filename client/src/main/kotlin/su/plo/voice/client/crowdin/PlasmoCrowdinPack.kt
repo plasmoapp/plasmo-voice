@@ -62,7 +62,7 @@ class PlasmoCrowdinPack(
     //$$ override fun getResource(packType: PackType, resourceLocation: ResourceLocation): InputStream =
     //$$     getRootResource(resourceLocation.path.substringAfter("lang/"))!!
     //$$
-    //#if MC >=11900
+    //#if MC>=11900
     //$$ override fun getResources(
     //$$     packType: PackType,
     //$$     namespace: String,
@@ -90,7 +90,11 @@ class PlasmoCrowdinPack(
 
     override fun <T : Any?> getMetadataSection(metadataSectionSerializer: MetadataSectionSerializer<T>) = null
 
-    override fun packId() = "PlasmoCrowdin resource pack"
+    //#if MC>11902
+    override fun packId() = "Plasmo Crowdin resource pack"
+    //#else
+    //$$ override fun getName() = "Plasmo Crowdin resource pack"
+    //#endif
 
     companion object {
 
