@@ -6,6 +6,7 @@ import gg.essential.universal.UChat;
 import lombok.Getter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.inventory.SignEditScreen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
@@ -242,7 +243,7 @@ public final class VoiceClientActivation
     private @NotNull Result handlePTT() {
         boolean pressed = getPttKey().isPressed();
 
-        if (Minecraft.getInstance().screen instanceof ChatScreen)
+        if (Minecraft.getInstance().screen instanceof ChatScreen || Minecraft.getInstance().screen instanceof SignEditScreen)
             return Result.NOT_ACTIVATED;
 
         if (pressed) {
