@@ -4,6 +4,8 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import gg.essential.universal.UChat;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
@@ -239,6 +241,9 @@ public final class VoiceClientActivation
 
     private @NotNull Result handlePTT() {
         boolean pressed = getPttKey().isPressed();
+
+        if (Minecraft.getInstance().screen instanceof ChatScreen)
+            return Result.NOT_ACTIVATED;
 
         if (pressed) {
             if (!active) this.active = true;
