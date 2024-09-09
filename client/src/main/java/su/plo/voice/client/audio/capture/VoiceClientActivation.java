@@ -3,6 +3,10 @@ package su.plo.voice.client.audio.capture;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.screens.ChatScreen;
+import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.gui.screens.inventory.SignEditScreen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.Config;
@@ -236,7 +240,10 @@ public final class VoiceClientActivation
     }
 
     private @NotNull Result handlePTT() {
-        boolean pressed = getPttKey().isPressed();
+        Screen currentScreen = Minecraft.getInstance().screen;
+        boolean isScreenWithInput = currentScreen instanceof ChatScreen || currentScreen instanceof SignEditScreen;
+
+        boolean pressed = getPttKey().isPressed() && !isScreenWithInput;
 
         if (pressed) {
             if (!active) this.active = true;
