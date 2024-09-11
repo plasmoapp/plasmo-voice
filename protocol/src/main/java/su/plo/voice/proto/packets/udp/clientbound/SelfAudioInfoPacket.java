@@ -28,6 +28,9 @@ public final class SelfAudioInfoPacket implements Packet<ClientPacketUdpHandler>
     @Getter
     private short distance;
 
+    /**
+     * Returns data only if it has been changed on the server.
+     */
     public Optional<byte[]> getData() {
         return Optional.ofNullable(data);
     }

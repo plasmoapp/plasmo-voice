@@ -28,6 +28,7 @@ import su.plo.voice.api.client.event.audio.device.source.AlStreamSourceStoppedEv
 import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent
 import su.plo.voice.api.client.event.audio.source.AudioSourceInitializedEvent
 import su.plo.voice.api.client.event.audio.source.AudioSourceResetEvent
+import su.plo.voice.api.client.event.audio.source.AudioSourceWriteEvent
 import su.plo.voice.api.encryption.Encryption
 import su.plo.voice.api.encryption.EncryptionException
 import su.plo.voice.api.event.EventPriority
@@ -463,6 +464,8 @@ abstract class BaseClientAudioSource<T>(
     }
 
     private fun write(samples: ShortArray, sequenceNumber: Long) {
+        if (!voiceClient.eventBus.fire(AudioSourceWriteEvent(this, samples))) return
+
         if (!activated.get()) {
             source.write(AudioUtil.fadeIn(samples, source.channels))
         } else if (sequenceNumber + 1 == endSequenceNumber) {
