@@ -37,7 +37,7 @@ class AudioSender(
     fun start() {
         resume()
 
-        val job = CoroutineScope(Dispatchers.Default).launch {
+        val job = CoroutineScope(SupervisorJob() + Dispatchers.Default).launch {
             var sequenceNumber = 0L
             val startTime = System.nanoTime()
 

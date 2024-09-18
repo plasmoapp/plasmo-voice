@@ -3,8 +3,6 @@ package su.plo.voice.server.language
 import com.google.common.base.Charsets
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Maps
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.future
 import su.plo.config.toml.Toml
 import su.plo.config.toml.TomlWriter
@@ -13,6 +11,7 @@ import su.plo.slib.api.language.ServerTranslator
 import su.plo.slib.api.logging.McLoggerFactory
 import su.plo.voice.api.server.resource.ResourceLoader
 import su.plo.voice.api.server.language.ServerLanguages
+import su.plo.voice.util.CoroutineScopes
 import java.io.*
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -54,7 +53,7 @@ class VoiceServerLanguages(
         fileName: String?,
         resourceLoader: ResourceLoader,
         languagesFolder: File
-    ): CompletableFuture<Void?> = CoroutineScope(Dispatchers.Default).future {
+    ): CompletableFuture<Void?> = CoroutineScopes.DefaultSupervisor.future {
         registerSync(crowdinProjectId, fileName, resourceLoader, languagesFolder)
         null
     }

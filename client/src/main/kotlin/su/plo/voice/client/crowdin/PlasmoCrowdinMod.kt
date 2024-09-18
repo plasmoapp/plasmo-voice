@@ -1,11 +1,10 @@
 package su.plo.voice.client.crowdin
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import su.plo.crowdin.CrowdinLib
+import su.plo.voice.util.CoroutineScopes
 import java.io.File
 
 object PlasmoCrowdinMod {
@@ -17,7 +16,7 @@ object PlasmoCrowdinMod {
     fun downloadTranslations(crowdinFolder: File) {
         if (!translationsOutdated(crowdinFolder)) return
 
-        CoroutineScope(Dispatchers.Default).launch {
+        CoroutineScopes.DefaultSupervisor.launch {
             logger.info("Downloading translations")
 
             val translations = try {

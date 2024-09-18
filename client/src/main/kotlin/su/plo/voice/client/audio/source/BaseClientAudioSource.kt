@@ -45,6 +45,7 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
+import su.plo.voice.util.CoroutineScopes
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.math.acos
@@ -552,6 +553,6 @@ abstract class BaseClientAudioSource<T>(
         private val LOGGER: Logger = LogManager.getLogger(BaseClientAudioSource::class.java)
         private val POSITION_ZERO = floatArrayOf(0f, 0f, 0f)
 
-        private val SCOPE = CoroutineScope(Dispatchers.Default)
+        private val SCOPE = CoroutineScopes.DefaultSupervisor
     }
 }

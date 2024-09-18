@@ -4,17 +4,15 @@ import com.google.common.collect.Maps
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.reflect.TypeToken
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import su.plo.voice.BuildConstants
 import su.plo.voice.client.meta.developer.Developer
 import su.plo.voice.client.meta.developer.DeveloperRole
+import su.plo.voice.util.CoroutineScopes
 import java.io.File
 import java.net.URL
-import java.util.*
+import java.util.UUID
 import kotlin.time.Duration
-import kotlin.time.DurationUnit
 
 data class PlasmoVoiceMeta(
     val developers: List<Developer>,
@@ -65,7 +63,7 @@ data class PlasmoVoiceMeta(
         private val cacheType = object : TypeToken<Map<String, PlasmoVoiceMeta>>() {}.type
 
         fun fetch(languageName: String) {
-            CoroutineScope(Dispatchers.Default).launch { fetchOrLoadSync(languageName) }
+            CoroutineScopes.DefaultSupervisor.launch { fetchOrLoadSync(languageName) }
         }
 
         private fun fetchOrLoadSync(languageName: String) {
