@@ -16,7 +16,7 @@ config = "1.0.2"
 slib = "1.0.0-SNAPSHOT"
 bstats = "3.0.2"
 luckperms = "5.4"
-papi = "2.11.2"
+papi = "2.11.6"
 supervanish = "6.2.18-3"
 
 bungeecord = "1.19-R0.1-SNAPSHOT"
