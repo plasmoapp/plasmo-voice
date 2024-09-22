@@ -39,6 +39,7 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
         // call event
         val event = ServerSourceAudioPacketEvent(this, packet, distance, activationInfo)
         if (!voiceServer.eventBus.fire(event)) return false
+        if (event.result == ServerSourceAudioPacketEvent.Result.HANDLED) return true
 
         // update packet's source state
         packet.sourceState = state.get().toByte()
@@ -69,6 +70,7 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
         // call event
         val event = ServerSourcePacketEvent(this, packet, distance)
         if (!voiceServer.eventBus.fire(event)) return false
+        if (event.result == ServerSourcePacketEvent.Result.HANDLED) return true
 
         val listenersDistance = event.distance * DISTANCE_MULTIPLIER
 

@@ -31,6 +31,7 @@ class VoiceServerBroadcastSource(
     override fun sendAudioPacket(packet: SourceAudioPacket, activationInfo: PlayerActivationInfo?): Boolean {
         val event = ServerSourceAudioPacketEvent(this, packet, activationInfo)
         if (!voiceServer.eventBus.fire(event)) return false
+        if (event.result == ServerSourceAudioPacketEvent.Result.HANDLED) return true
 
         packet.sourceState = state.get().toByte()
 
@@ -49,6 +50,7 @@ class VoiceServerBroadcastSource(
     override fun sendPacket(packet: Packet<*>): Boolean {
         val event = ServerSourcePacketEvent(this, packet);
         if (!voiceServer.eventBus.fire(event)) return false
+        if (event.result == ServerSourcePacketEvent.Result.HANDLED) return true
 
         getListeners().forEach {
             if (notMatchFilters(it.player)) return@forEach

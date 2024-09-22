@@ -23,6 +23,9 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
     private short distance;
     @Getter
     private @Nullable PlayerActivationInfo activationInfo;
+    @Getter
+    @Setter
+    private Result result = Result.IGNORED;
 
     public ServerSourceAudioPacketEvent(
             @NotNull ServerAudioSource<?> source,
@@ -42,5 +45,19 @@ public final class ServerSourceAudioPacketEvent extends EventCancellableBase {
         this.packet = packet;
         this.distance = distance;
         this.activationInfo = activationInfo;
+    }
+
+    /**
+     * Packet handling result.
+     */
+    public enum Result {
+        /**
+         * If IGNORED, a source packet will be sent to the players normally.
+         */
+        IGNORED,
+        /**
+         * If HANDLED, a source packet will not be sent to the players.
+         */
+        HANDLED
     }
 }
