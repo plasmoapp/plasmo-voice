@@ -22,7 +22,8 @@ val templateSource = file("src/main/java-templates")
 val templateDestination: Provider<Directory> = layout.buildDirectory.dir("generated/sources/java-templates")
 val generateTemplates = tasks.register<Copy>("generateTemplates") {
     val props = mutableMapOf(
-        "version" to version
+        "version" to version,
+        "github_crowdin_url" to "https://github.com/plasmoapp/plasmo-voice-crowdin/archive/refs/heads/pv.zip"
     )
 
     inputs.properties(props)

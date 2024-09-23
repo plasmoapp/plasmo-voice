@@ -4,8 +4,10 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
 import org.apache.logging.log4j.LogManager
 import su.plo.crowdin.CrowdinLib
+import su.plo.voice.BuildConstants
 import su.plo.voice.util.CoroutineScopes
 import java.io.File
+import java.net.URI
 
 object PlasmoCrowdinMod {
 
@@ -20,7 +22,10 @@ object PlasmoCrowdinMod {
             logger.info("Downloading translations")
 
             val translations = try {
-                CrowdinLib.downloadRawTranslations("plasmo-voice", "client.json").await()
+                CrowdinLib.downloadRawTranslations(
+                    URI.create(BuildConstants.GITHUB_CROWDIN_URL).toURL(),
+                    "client.json"
+                ).await()
             } catch (e: Exception) {
                 logger.warn("Failed to download translations: {}", e.message)
                 return@launch

@@ -15,6 +15,7 @@ import su.plo.slib.api.server.McServerLib;
 import su.plo.slib.api.server.channel.McServerChannelManager;
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent;
 import su.plo.voice.BaseVoice;
+import su.plo.voice.BuildConstants;
 import su.plo.voice.api.addon.ServerAddonsLoader;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
@@ -56,6 +57,7 @@ import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Files;
 import java.util.Collection;
 import java.util.Optional;
@@ -209,7 +211,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             ServerTranslator serverTranslator = getMinecraftServer().getServerTranslator();
             this.languages = new VoiceServerLanguages(serverTranslator, config.useCrowdinTranslations());
             languages.register(
-                    "plasmo-voice",
+                    URI.create(BuildConstants.GITHUB_CROWDIN_URL).toURL(),
                     "server.toml",
                     this::getResource,
                     new File(getConfigFolder(), "languages")

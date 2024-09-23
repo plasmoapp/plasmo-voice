@@ -1,3 +1,5 @@
+import java.net.URI
+
 plugins {
     id("su.plo.crowdin.plugin")
     id("su.plo.voice.maven-publish")
@@ -13,7 +15,7 @@ dependencies {
 }
 
 crowdin {
-    projectId = "plasmo-voice"
+    url = URI.create("https://github.com/plasmoapp/plasmo-voice-crowdin/archive/refs/heads/pv.zip").toURL()
     sourceFileName = "server.toml"
     createList = true
 }

@@ -4,6 +4,7 @@ import gg.essential.gradle.util.noServerRunConfigs
 import su.plo.config.toml.Toml
 import su.plo.voice.extension.slibPlatform
 import su.plo.voice.util.copyJarToRootProject
+import java.net.URI
 
 val isMainProject = project.name == file("../mainProject").readText().trim()
 
@@ -49,7 +50,7 @@ loom {
 }
 
 crowdin {
-    projectId = "plasmo-voice"
+    url = URI.create("https://github.com/plasmoapp/plasmo-voice-crowdin/archive/refs/heads/pv.zip").toURL()
     sourceFileName = "client.json"
     resourceDir = "assets/plasmovoice/lang"
 }

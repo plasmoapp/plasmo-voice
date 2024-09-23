@@ -5,6 +5,8 @@ import su.plo.slib.api.chat.component.McTranslatableText
 import su.plo.slib.api.command.McChatHolder
 import su.plo.voice.api.server.resource.ResourceLoader
 import java.io.File
+import java.net.URI
+import java.net.URL
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -54,6 +56,31 @@ interface ServerLanguages {
      */
     fun register(
         crowdinProjectId: String,
+        fileName: String?,
+        resourceLoader: ResourceLoader,
+        languagesFolder: File
+    ): CompletableFuture<Void?> =
+        register(
+            URI.create("https://crowdin.com/backend/download/project/${crowdinProjectId}.zip").toURL(),
+            fileName,
+            resourceLoader,
+            languagesFolder
+        )
+
+    /**
+     * Registers a new language using crowdin.
+     *
+     * This method works similarly to [register], but it also uses crowdin as the default language source.
+     * Crowdin translations will be cached in 'languageFolder/.crowdin' for 3 days.
+     *
+     * @param url              The crowdin project zip URL.
+     * @param fileName         The name of the language file in crowdin (null for default).
+     * @param resourceLoader   The resource loader for reading language resources.
+     * @param languagesFolder  The folder where language files will be saved.
+     * @return A CompletableFuture representing the completion of the registration process.
+     */
+    fun register(
+        url: URL,
         fileName: String?,
         resourceLoader: ResourceLoader,
         languagesFolder: File

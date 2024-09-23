@@ -13,6 +13,7 @@ import su.plo.voice.api.server.resource.ResourceLoader
 import su.plo.voice.api.server.language.ServerLanguages
 import su.plo.voice.util.CoroutineScopes
 import java.io.*
+import java.net.URL
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.util.*
@@ -49,12 +50,12 @@ class VoiceServerLanguages(
     }
 
     override fun register(
-        crowdinProjectId: String,
+        translationsURL: URL,
         fileName: String?,
         resourceLoader: ResourceLoader,
         languagesFolder: File
     ): CompletableFuture<Void?> = CoroutineScopes.DefaultSupervisor.future {
-        registerSync(crowdinProjectId, fileName, resourceLoader, languagesFolder)
+        registerSync(translationsURL, fileName, resourceLoader, languagesFolder)
         null
     }
 
@@ -65,7 +66,7 @@ class VoiceServerLanguages(
         getLanguage(languageName, LanguageScope.CLIENT)
 
     private fun registerSync(
-        crowdinProjectId: String,
+        translationsURL: URL,
         fileName: String?,
         resourceLoader: ResourceLoader,
         languagesFolder: File
@@ -73,11 +74,11 @@ class VoiceServerLanguages(
         try {
             if (crowdinEnabled) {
                 try {
-                    downloadCrowdinTranslations(crowdinProjectId, fileName, languagesFolder)
+                    downloadCrowdinTranslations(translationsURL, fileName, languagesFolder)
                 } catch (e: Exception) {
                     LOGGER.warn(
-                        "Failed to download crowdin project {} ({}) translations: {}",
-                        crowdinProjectId,
+                        "Failed to download archive with translations {} ({}) translations: {}",
+                        translationsURL,
                         fileName,
                         e.message
                     )
@@ -128,7 +129,7 @@ class VoiceServerLanguages(
 
     @Throws(Exception::class)
     private fun downloadCrowdinTranslations(
-        crowdinProjectId: String,
+        translationsURL: URL,
         fileName: String?,
         languagesFolder: File
     ) {
@@ -147,7 +148,7 @@ class VoiceServerLanguages(
         if (System.currentTimeMillis() - timestamp < 86400 * 3 * 1000) return
 
         val rawTranslations: Map<String, ByteArray> = CrowdinLib
-            .downloadRawTranslations(crowdinProjectId, fileName)
+            .downloadRawTranslations(translationsURL, fileName)
             .get()
 
         // write timestamp file
