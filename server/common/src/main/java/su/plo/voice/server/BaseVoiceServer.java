@@ -157,6 +157,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             LOGGER.info("LuckPerms permissions listener attached");
         }
 
+        this.languages = new VoiceServerLanguages(getMinecraftServer().getServerTranslator(), true);
         loadConfig(false);
 
         // check for updates
@@ -209,7 +210,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             }
 
             ServerTranslator serverTranslator = getMinecraftServer().getServerTranslator();
-            this.languages = new VoiceServerLanguages(serverTranslator, config.useCrowdinTranslations());
+            languages.setCrowdinEnabled(config.useCrowdinTranslations());
             languages.register(
                     URI.create(BuildConstants.GITHUB_CROWDIN_URL).toURL(),
                     "server.toml",
