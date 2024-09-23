@@ -333,10 +333,6 @@ public final class VoiceClientConfig implements ClientConfig {
                         if (value.containsKey("volume")) {
                             double volume = (double) value.get("volume");
                             setVolume(key, volume);
-
-                            if (!key.startsWith("source_")) {
-                                getVolume(key).setDefault(1D, volume, 2.0D);
-                            }
                         }
 
                         if (value.containsKey("muted")) {
@@ -354,7 +350,7 @@ public final class VoiceClientConfig implements ClientConfig {
                 volumeByLineName.forEach((key, entry) -> {
                     Map<String, Object> value = Maps.newHashMap();
 
-                    if (!entry.isDefault()) {
+                    if (!entry.isDefault() || !key.startsWith("source_")) {
                         value.put("volume", entry.value());
                         serialized.put(key, value);
                     }
