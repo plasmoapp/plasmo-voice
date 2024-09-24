@@ -113,10 +113,14 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
                 ResourceLocation.tryParse("plasmovoice:textures/addons/source_lines/" + line.getName())
         );
 
+        boolean hasVolume = config.getVoice().getVolumes().hasVolume(line.getName());
+
         DoubleConfigEntry volumeEntry = config.getVoice()
                 .getVolumes()
                 .getVolume(line.getName());
         volumeEntry.setDefault(Mth.clamp(line.getDefaultVolume(), 0D, 1D));
+        if (!hasVolume) volumeEntry.reset();
+
         ClientSourceLine clientLine = new VoiceClientSourceLine(volumeEntry, line, icon);
 
         return register(clientLine);

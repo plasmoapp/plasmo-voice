@@ -59,6 +59,8 @@ interface ClientConfig {
 
             fun getVolume(lineName: String): DoubleConfigEntry
 
+            fun hasVolume(lineName: String): Boolean
+
             fun setMute(lineName: String, muted: Boolean)
 
             fun getMute(lineName: String): BooleanConfigEntry

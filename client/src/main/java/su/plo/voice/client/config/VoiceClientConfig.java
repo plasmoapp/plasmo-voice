@@ -310,6 +310,11 @@ public final class VoiceClientConfig implements ClientConfig {
             }
 
             @Override
+            public synchronized boolean hasVolume(@NotNull String lineName) {
+                return volumeByLineName.containsKey(lineName);
+            }
+
+            @Override
             public synchronized void setMute(@NotNull String lineName, boolean muted) {
                 getMute(lineName).set(muted);
             }
