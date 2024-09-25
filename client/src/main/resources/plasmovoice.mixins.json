@@ -9,7 +9,8 @@
         "MixinMouseHandler",
         "MixinReloadableResourceManager",
         "MixinSkinManager",
-        "MixinPlayerListEntry"
+        "MixinPlayerListEntry",
+        "MixinIntegratedServer"
     ],
     "injectors": {
         "defaultRequire": 1

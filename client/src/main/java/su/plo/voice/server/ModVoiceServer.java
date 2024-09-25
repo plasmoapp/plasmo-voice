@@ -14,6 +14,9 @@ import java.io.File;
 
 public final class ModVoiceServer extends BaseVoiceServer {
 
+    // static instance is used for access from mixins
+    public static ModVoiceServer INSTANCE;
+
     public static final ResourceLocation CHANNEL = ResourceLocation.tryParse(CHANNEL_STRING);
     public static final ResourceLocation FLAG_CHANNEL = ResourceLocation.tryParse(FLAG_CHANNEL_STRING);
     public static final ResourceLocation SERVICE_CHANNEL = ResourceLocation.tryParse(SERVICE_CHANNEL_STRING);
@@ -22,6 +25,7 @@ public final class ModVoiceServer extends BaseVoiceServer {
 
     public ModVoiceServer(@NotNull ModrinthLoader loader) {
         super(loader);
+        INSTANCE = this;
     }
 
     @Override

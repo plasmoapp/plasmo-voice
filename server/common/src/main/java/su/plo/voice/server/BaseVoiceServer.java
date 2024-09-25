@@ -275,7 +275,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         }
     }
 
-    private void startUdpServer() {
+    public void startUdpServer() {
         Collection<VoiceServerPlayer> connectedPlayers = null;
         if (this.udpServer != null) {
             connectedPlayers = udpConnectionManager.getConnections()
