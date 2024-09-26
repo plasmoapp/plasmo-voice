@@ -1,0 +1,111 @@
+name: Publish Release
+
+on:
+  push:
+    branches:
+      - v2.1.x/release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: |
+          8
+          16
+          17
+          21
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+
+    - name: Build with Gradle
+      run: ./gradlew build
+
+    - name: Publish to releases maven repository
+      env:
+        MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
+        MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+      run: ./gradlew publish
+
+    - name: Publish Paper to Modrinth
+      uses: Apehum/mc-publish@v1.1
+      with:
+        name: 'Plasmo Voice'
+        split-releases: true
+        files-primary: build/libs/*-@(Paper)-*.jar
+        version-resolver: 'exact'
+
+        changelog-file: server/changelog.md
+
+        game-versions: |
+          1.16.5
+          1.17.1
+          1.18.2
+          1.19.2
+          1.19.4
+          1.20.1
+          1.20.4
+          1.21
+          1.21.1
+
+        modrinth-unfeature-mode: 'subset'
+        modrinth-id: 1bZhdhsH
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+    - name: Publish Bungee/Velocity to Modrinth
+      uses: Apehum/mc-publish@v1.1
+      with:
+        name: 'Plasmo Voice'
+        split-releases: true
+        files-primary: build/libs/*-@(BungeeCord|Velocity)-*.jar
+        version-resolver: 'exact'
+
+        changelog-file: proxy/changelog.md
+
+        game-versions: |
+          1.16.5
+          1.17.1
+          1.18.2
+          1.19.2
+          1.19.4
+          1.20.1
+          1.20.4
+          1.21
+          1.21.1
+
+        modrinth-unfeature-mode: 'subset'
+        modrinth-id: 1bZhdhsH
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+    - name: Publish Client to Modrinth/CurseForge
+      uses: Apehum/mc-publish@v1.1
+      with:
+        name: 'Plasmo Voice'
+        split-releases: true
+        files-primary: build/libs/*-@(forge|neoforge|fabric)-*.jar
+        version-resolver: 'exact'
+
+        changelog-file: client/changelog.md
+
+        modrinth-unfeature-mode: 'subset'
+        modrinth-id: 1bZhdhsH
+        modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
+
+        curseforge-id: 467028
+        curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
+        
+    - name: Publish to GitHub
+      uses: Apehum/mc-publish@v1.1
+      with:
+        github-token: ${{ secrets.GITHUB_TOKEN }}
+        github-generate-changelog: false
