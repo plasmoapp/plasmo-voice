@@ -92,10 +92,12 @@ Also read: [Add-on Types](https://plasmovoice.com/docs/addons/types)
 
 ## Client Add-ons
 
-| Icon                                                                                    | Link                                                                      | Description                                                                                                                      |
-|-----------------------------------------------------------------------------------------|---------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------|
-| [![](https://i.imgur.com/NjGmgGA.png)](https://modrinth.com/mod/pv-addon-soundphysics/) | [pv-addon-sound-physics](https://modrinth.com/mod/pv-addon-soundphysics/) | Add compatability with the Sound Physics Remastered mod. <br/> With this add-on, Plasmo Voice will be affected by Sound Physics. |
-| [![](https://i.imgur.com/VTndchu.png)](https://modrinth.com/mod/pv-addon-replaymod/)    | [pv-addon-replaymod](https://modrinth.com/mod/pv-addon-replaymod/)        | A fork of Replay Voice Chat that works with Plasmo Voice allowing you to record voice chat with ReplayMod.                       |
+| Icon                                                                                    | Link                                                                      | Description                                                                                                                                                                                                           |
+|-----------------------------------------------------------------------------------------|---------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [![](https://i.imgur.com/NjGmgGA.png)](https://modrinth.com/mod/pv-addon-soundphysics/) | [pv-addon-sound-physics](https://modrinth.com/mod/pv-addon-soundphysics/) | Add compatability with the Sound Physics Remastered mod. <br/> With this add-on, Plasmo Voice will be affected by Sound Physics.                                                                                      |
+| [![](https://i.imgur.com/VTndchu.png)](https://modrinth.com/mod/pv-addon-replaymod/)    | [pv-addon-replaymod](https://modrinth.com/mod/pv-addon-replaymod/)        | A fork of Replay Voice Chat that works with Plasmo Voice allowing you to record voice chat with ReplayMod.                                                                                                            |
+| [![](https://i.imgur.com/ItlrqIU.png)](https://modrinth.com/mod/talkingheads/)          | [Talking Heads](https://modrinth.com/mod/talkingheads)                    | This add-on scales player heads when they’re talking. It’s maintained by a third party, so if you encounter any issues, please report them on the [Talking Heads GitHub](https://github.com/ZipeStudio/TalkingHeads). |
+
 
 ## Download
 
