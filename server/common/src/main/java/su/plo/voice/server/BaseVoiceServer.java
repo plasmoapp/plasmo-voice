@@ -236,6 +236,12 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 config.serverId(System.getenv("PLASMO_VOICE_SERVER_ID"));
             }
 
+            try {
+                UUID.fromString(config.serverId());
+            } catch (IllegalArgumentException ignored) {
+                config.serverId(UUID.randomUUID().toString());
+            }
+
             // load AES key
             byte[] aesKey;
             if (oldConfig != null && oldConfig.voice().aesEncryptionKey() != null) {
