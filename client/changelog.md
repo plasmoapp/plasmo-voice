@@ -15,6 +15,7 @@ so there’s no need to worry if the server hasn't been updated to 2.1.x.
 - Server now checks if a player has voice disabled or microphone muted before sending or receiving the audio.
 - "Open to LAN" now restarts the UDP server with the published port if `host.port` is set to 0.
 - Fixed "GUI Icon remains visible when GUI is hidden with F1" ([#407](https://github.com/plasmoapp/plasmo-voice/issues/407)).
+- Push-To-Talk is now disabled in chat and sign menus ([#414](https://github.com/plasmoapp/plasmo-voice/pull/414)).
 - Fade-in/fade-out effects before and after an audio stream, fixing glitches that occurred when the audio source starts or stops playing audio.
 - Languages now support [MiniMessage format](https://docs.advntr.dev/minimessage/index.html).
 - Network jitter buffer.
