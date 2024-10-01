@@ -5,7 +5,7 @@ neoForgeVersion = "[20,)"
 
 [12004]
 forgeVersion = "[49,)"
-mcVersions = ["1.20.3", "1.20.4"]
+mcVersions = ["1.20.2", "1.20.3", "1.20.4"]
 
 [12001]
 forgeVersion = "[46,)"
@@ -15,9 +15,13 @@ mcVersions = ["1.20", "1.20.1"]
 forgeVersion = "[45,)"
 mcVersions = ["1.19.4"]
 
+[11903]
+forgeVersion = "[44,)"
+mcVersions = ["1.19.3"]
+
 [11902]
-forgeVersion = "[43,)"
-mcVersions = ["1.19.2"]
+forgeVersion = "[41,)"
+mcVersions = [">=1.19 <1.19.3"]
 
 [11802]
 forgeVersion = "[40,)"
