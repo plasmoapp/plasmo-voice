@@ -43,7 +43,7 @@ jobs:
       uses: Apehum/mc-publish@v1.1
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-generate-changelog: true
+        github-generate-changelog: false
         github-prerelease: true
 
     - name: Build dokka
