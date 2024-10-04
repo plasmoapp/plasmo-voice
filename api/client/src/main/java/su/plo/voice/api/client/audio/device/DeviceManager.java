@@ -45,10 +45,12 @@ public interface DeviceManager {
     void setInputDevice(@Nullable InputDevice device);
 
     /**
-     * Removes the output and input devices.
+     * Closes and removes the output and input devices.
      */
     default void clear() {
+        getOutputDevice().ifPresent(OutputDevice::close);
         setOutputDevice(null);
+        getInputDevice().ifPresent(InputDevice::close);
         setInputDevice(null);
     }
 
