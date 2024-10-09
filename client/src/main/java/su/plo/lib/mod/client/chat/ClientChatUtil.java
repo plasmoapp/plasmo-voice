@@ -29,7 +29,9 @@ public class ClientChatUtil {
     public static void sendChatMessage(@NonNull Component message) {
         LocalPlayer player = Minecraft.getInstance().player;
 
-        //#if MC>=11900
+        //#if MC>=12102
+        //$$ player.displayClientMessage(message, false);
+        //#elseif MC>=11900
         player.sendSystemMessage(message);
         //#elseif MC>=11602
         //$$ player.sendMessage(message, null);

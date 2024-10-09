@@ -97,7 +97,10 @@ public final class PlayerVolumeAction {
                     (int) Math.floor(playerPos.z)
             );
             BlockState state = level.getBlockState(blockPos);
-            //#if MC>=12000
+
+            //#if MC>=12102
+            //$$ boolean isSolid = state.isSolidRender();
+            //#elseif MC>=12000
             //$$ boolean isSolid = state.isSolidRender(level, blockPos);
             //#else
             boolean isSolid = state.getMaterial().isSolid();

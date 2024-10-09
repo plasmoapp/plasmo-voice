@@ -88,11 +88,18 @@ dependencies {
             12004 -> "0.95.4+1.20.4"
             12006 -> "0.97.7+1.20.6"
             12100 -> "0.100.4+1.21"
+            12102 -> "0.105.3+1.21.2"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
         modImplementation("net.fabricmc.fabric-api:fabric-api:${fabricApiVersion}")
-        "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+
+        if (platform.mcVersion >= 12102) {
+            // https://github.com/lucko/fabric-permissions-api/pull/26
+            "include"("com.github.sakura-ryoko:fabric-permissions-api:b43d33efb8")
+        } else {
+            "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+        }
     }
 
     val includedProjects = listOf(

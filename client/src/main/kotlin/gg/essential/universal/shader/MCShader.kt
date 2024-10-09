@@ -28,6 +28,12 @@ import java.util.Optional
 //$$ import com.mojang.blaze3d.vertex.VertexFormatElement
 //#endif
 
+//#if MC>=12102
+//$$ import net.minecraft.client.Minecraft
+//$$ import net.minecraft.client.renderer.ShaderDefines
+//$$ import net.minecraft.client.renderer.ShaderProgram
+//#endif
+
 internal class MCShader(
     private val mc: ShaderInstance,
     private val blendState: BlendState
@@ -35,7 +41,11 @@ internal class MCShader(
     override var usable = true
 
     override fun bind() {
+        //#if MC>=12102
+        //$$ RenderSystem.setShader(mc)
+        //#else
         RenderSystem.setShader(::mc)
+        //#endif
 
         // MC's GlBlendState is fundamentally broken because it is lazy in that it does not update anything
         // if the previously active blend state matches this one. But that assumes that it is the only method which
@@ -46,7 +56,11 @@ internal class MCShader(
     }
 
     override fun unbind() {
+        //#if MC>=12102
+        //$$ RenderSystem.clearShader()
+        //#else
         RenderSystem.setShader { null }
+        //#endif
     }
 
     private fun getUniformOrNull(name: String) = mc.getUniform(name)?.let(::MCShaderUniform)
@@ -145,7 +159,25 @@ internal class MCShader(
 
 
             val name = DigestUtils.sha1Hex(json).lowercase()
+
+            //#if MC>=12102
+            //$$ val shaderLocation = ResourceLocation.parse(
+            //$$     "plasmovoice:shaders/$name",
+            //$$ )
+            //$$
+            //$$ val shaderProgram = ShaderProgram(
+            //$$     shaderLocation,
+            //$$     shaderVertexFormat,
+            //$$     ShaderDefines.EMPTY
+            //$$ )
+            //$$ Minecraft.getInstance().shaderManager.preloadForStartup(factory, shaderProgram)
+            //$$ val compiledShaderProgram = Minecraft.getInstance().shaderManager.getProgram(shaderProgram)
+            //$$     ?: throw IllegalStateException("Failed to compile shader")
+            //$$
+            //$$ return MCShader(compiledShaderProgram, blendState)
+            //#else
             return MCShader(ShaderInstance(factory, name, shaderVertexFormat), blendState)
+            //#endif
         }
     }
 }
@@ -171,7 +203,11 @@ internal class MCSamplerUniform(val mc: ShaderInstance, val name: String) : Samp
     override val location: Int = 0
 
     override fun setValue(textureId: Int) {
+        //#if MC>=12102
+        //$$ mc.bindSampler(name, textureId)
+        //#else
         mc.setSampler(name, textureId)
+        //#endif
     }
 }
 

@@ -4,10 +4,6 @@ import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 
-//#if MC>=11700
-import com.mojang.blaze3d.shaders.BlendMode
-//#endif
-
 //#if MC>=11500
 import org.lwjgl.opengl.GL20
 //#endif
@@ -20,38 +16,7 @@ data class BlendState(
     val dstAlpha: Param = dstRgb,
     val enabled: Boolean = true,
 ) {
-    val separate = srcRgb != srcAlpha || dstRgb != dstAlpha
-
-    //#if MC>=11700
-    private inner class McBlendState : BlendMode {
-        constructor() : super()
-        constructor(srcRgb: Int, dstRgb: Int, func: Int) : super(srcRgb, dstRgb, func)
-        constructor(srcRgb: Int, dstRgb: Int, srcAlpha: Int, dstAlpha: Int, func: Int) : super(srcRgb, dstRgb, srcAlpha, dstAlpha, func)
-
-        override fun apply() {
-            super.apply()
-            // MC's enable function is fundamentally broken because it is lazy in that it does not update anything
-            // if the previously active blend state matches this one. But that assumes that it is the only method which
-            // can modify the global GL state, which is just a horrible assumption and MC itself immediately violates
-            // it in RenderLayer.
-            // So, to actually get our state applied, we gotta do it ourselves.
-            this@BlendState.applyState()
-        }
-    }
-    val mc: BlendMode = if (enabled) {
-        if (separate) {
-            McBlendState(srcRgb.glId, dstRgb.glId, srcAlpha.glId, dstAlpha.glId, equation.glId)
-        } else {
-            McBlendState(srcRgb.glId, dstRgb.glId, equation.glId)
-        }
-    } else {
-        McBlendState()
-    }
-
-    fun activate() = mc.apply()
-    //#else
-    //$$ fun activate() = applyState()
-    //#endif
+    fun activate() = applyState()
 
     private fun applyState() {
         if (enabled) {
