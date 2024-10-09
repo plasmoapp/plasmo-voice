@@ -253,7 +253,7 @@ abstract class BaseClientAudioSource<T>(
         while (isActive) {
             val wrappedPacket = buffer.poll()
             if (wrappedPacket == null) {
-                delay(0L)
+                delay(5L)
                 continue
             }
 
