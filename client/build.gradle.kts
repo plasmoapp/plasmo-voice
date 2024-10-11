@@ -242,21 +242,52 @@ tasks {
 data class VersionInfo(
     val neoForgeVersion: String,
     val forgeVersion: String,
-    val mcVersions: List<String>
+    val mcVersions: String
 ) {
 
-    // "${mcVersions}" -> "[1.20,1.20.1]"
-    val forgeMcVersions
-        get() =
-            if (mcVersions[0].startsWith(">=")) {
-                "[${mcVersions[0].substringAfter(">=")},)"
-            } else {
-                "[${mcVersions.joinToString(",")}]"
-            }
+    val forgeMcVersions: String
+        get() {
+            val split = mcVersions.split(" ")
 
-    // ["${mcVersions}"] -> ["1.20", "1.20.1"]
+            fun versionBounds(version: String): Triple<String, String, String>? =
+                when {
+                    version.startsWith(">=") -> Triple(
+                        "[", version.substringAfter(">="), ",)"
+                    )
+                    version.startsWith(">") -> Triple(
+                        "(", version.substringAfter(">"), ",)"
+                    )
+                    version.startsWith("<=") -> Triple(
+                        "(,", version.substringAfter("<="), "]"
+                    )
+                    version.startsWith("<") -> Triple(
+                        "(,", version.substringAfter("<"), ")"
+                    )
+                    else -> null
+                }
+
+            if (split.size == 1) {
+                val version = split.first()
+                val bounds = versionBounds(version)
+
+                return if (bounds == null) {
+                    "[$version]"
+                } else {
+                    "${bounds.first}${bounds.second}${bounds.third}"
+                }
+            } else if (split.size == 2) {
+                val bounds = split.map { versionBounds(it)!! }
+                val first = bounds[0]
+                val second = bounds[1]
+
+                return "${first.first}${first.second},${second.second}${second.third}"
+            } else {
+                throw IllegalStateException("Invalid version")
+            }
+        }
+
     val fabricMcVersions
-        get() = mcVersions.joinToString("\", \"")
+        get() = mcVersions
 }
 
 fun readVersionInfo(): VersionInfo = Toml()

@@ -1,39 +1,39 @@
 [12102]
-mcVersions = [">1.21.1"]
+mcVersions = ">1.21.1"
 
 [12100]
-mcVersions = [">=1.21 <=1.21.1"]
+mcVersions = ">=1.21.0 <=1.21.1"
 forgeVersion = "[51,)"
 neoForgeVersion = "[20,)"
 
 [12004]
 forgeVersion = "[49,)"
-mcVersions = [">=1.20.2 <=1.20.4"]
+mcVersions = ">=1.20.2 <=1.20.4"
 
 [12001]
 forgeVersion = "[46,)"
-mcVersions = [">=1.20 <=1.20.1"]
+mcVersions = ">=1.20.0 <=1.20.1"
 
 [11904]
 forgeVersion = "[45,)"
-mcVersions = ["1.19.4"]
+mcVersions = "1.19.4"
 
 [11903]
 forgeVersion = "[44,)"
-mcVersions = ["1.19.3"]
+mcVersions = "1.19.3"
 
 [11902]
 forgeVersion = "[41,)"
-mcVersions = [">=1.19 <1.19.3"]
+mcVersions = ">=1.19 <1.19.3"
 
 [11802]
 forgeVersion = "[40,)"
-mcVersions = ["1.18.2"]
+mcVersions = "1.18.2"
 
 [11701]
 forgeVersion = "[37,)"
-mcVersions = ["1.17.1"]
+mcVersions = "1.17.1"
 
 [11605]
 forgeVersion = "[32,)"
-mcVersions = ["1.16.5"]
+mcVersions = "1.16.5"
