@@ -21,10 +21,8 @@ class VoiceServerPlayerSource(
 ) : VoiceServerProximitySource<PlayerSourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerPlayerSource {
 
-    private val playerPosition = ServerPos3d()
-
     override val position: ServerPos3d
-        get() = player.instance.getServerPosition(playerPosition)
+        get() = player.instance.getServerPosition()
 
     override val sourceInfo: PlayerSourceInfo
         get() = PlayerSourceInfo(

@@ -27,8 +27,6 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
     stereo: Boolean
 ) : BaseServerAudioSource<S>(addon, id, serverSourceLine, decoderInfo, stereo), ServerProximitySource<S> {
 
-    private val playerPosition = ServerPos3d()
-
     override var angle: Int = 0
         get() = field
         set(value) {
@@ -50,6 +48,7 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
         if (dirty.compareAndSet(true, false))
             sendPacket(SourceInfoPacket(sourceInfo), listenersDistance.toShort())
 
+        val playerPosition = ServerPos3d()
         val sourcePosition = position
         val distanceSquared = (listenersDistance * listenersDistance).toDouble()
 
@@ -74,6 +73,7 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
 
         val listenersDistance = event.distance * DISTANCE_MULTIPLIER
 
+        val playerPosition = ServerPos3d()
         val sourcePosition = position
         val distanceSquared = (listenersDistance * listenersDistance).toDouble()
 
