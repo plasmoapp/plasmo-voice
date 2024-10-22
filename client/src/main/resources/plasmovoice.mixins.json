@@ -3,14 +3,16 @@
     "minVersion": "0.7",
     "package": "su.plo.voice.client.mixin",
     "client": [
-        "MixinEntityRenderer",
         "MixinKeyboardHandler",
         "MixinLanguageManager",
         "MixinMouseHandler",
         "MixinReloadableResourceManager",
         "MixinSkinManager",
         "MixinPlayerListEntry",
-        "MixinIntegratedServer"
+        "MixinIntegratedServer",
+
+        "MixinEntityRenderDispatcher",
+        "accessor.EntityRendererAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

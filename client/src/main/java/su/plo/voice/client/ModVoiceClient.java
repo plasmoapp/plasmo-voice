@@ -4,7 +4,6 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import su.plo.slib.api.logging.McLoggerFactory;
-import su.plo.slib.mod.channel.ModChannelManager;
 import su.plo.slib.mod.logging.Log4jLogger;
 import su.plo.voice.client.gui.settings.VoiceScreens;
 import lombok.Getter;
@@ -19,7 +18,6 @@ import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.connection.ModClientChannelHandler;
 import su.plo.voice.client.event.key.KeyPressedEvent;
-import su.plo.voice.client.render.ModEntityRenderer;
 import su.plo.voice.client.render.ModHudRenderer;
 import su.plo.voice.client.render.ModLevelRenderer;
 import su.plo.voice.util.version.ModrinthLoader;
@@ -71,6 +69,7 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 
 //#elseif NEOFORGE
 
+//$$ import su.plo.slib.mod.channel.ModChannelManager;
 //$$ import su.plo.voice.server.ModVoiceServer;
 //$$ import net.neoforged.api.distmarker.Dist;
 //$$ import net.neoforged.bus.api.SubscribeEvent;
@@ -108,8 +107,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     private final ModHudRenderer hudRenderer;
     @Getter
     private final ModLevelRenderer levelRenderer;
-    @Getter
-    private final ModEntityRenderer entityRenderer;
 
     private final ModClientChannelHandler handler = new ModClientChannelHandler(this);
 
@@ -133,7 +130,6 @@ public final class ModVoiceClient extends BaseVoiceClient
 
         this.hudRenderer = new ModHudRenderer(this);
         this.levelRenderer = new ModLevelRenderer(this);
-        this.entityRenderer = new ModEntityRenderer(this);
 
         INSTANCE = this;
         RenderUtil.getTextConverter().setLanguageSupplier(createLanguageSupplier());

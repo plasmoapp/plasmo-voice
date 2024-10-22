@@ -6,6 +6,9 @@ group = "$group.client-root"
 
 preprocess {
 
+    val neoForge12102 = createNode("1.21.2-neoforge", 12102, "official")
+    val fabric12102 = createNode("1.21.2-fabric", 12102, "official")
+
     val neoForge12100 = createNode("1.21-neoforge", 12100, "official")
     val fabric12100 = createNode("1.21-fabric", 12100, "official")
     val forge12100 = createNode("1.21-forge", 12100, "official")
@@ -19,6 +22,9 @@ preprocess {
     val forge11904 = createNode("1.19.4-forge", 11904, "official")
     val fabric11904 = createNode("1.19.4-fabric", 11904, "official")
 
+    val forge11903 = createNode("1.19.3-forge", 11903, "official")
+    val fabric11903 = createNode("1.19.3-fabric", 11903, "official")
+
     val forge11902 = createNode("1.19.2-forge", 11902, "official")
     val fabric11902 = createNode("1.19.2-fabric", 11902, "official")
 
@@ -30,6 +36,9 @@ preprocess {
 
     val forge11605 = createNode("1.16.5-forge", 11605, "official")
     val fabric11605 = createNode("1.16.5-fabric", 11605, "official")
+
+    fabric12102.link(fabric12100)
+    neoForge12102.link(neoForge12100)
 
     neoForge12100.link(fabric12100)
     fabric12100.link(fabric12004, file("1.21-1.20.6.txt"))
@@ -44,8 +53,11 @@ preprocess {
     // fabric 1.19.4 main project
     forge11904.link(fabric11904)
 
-    fabric11902.link(fabric11904, file("1.19.2-1.19.3.txt"))
-    forge11902.link(forge11904, file("1.19.2-1.19.3.txt"))
+    fabric11903.link(fabric11904)
+    forge11903.link(forge11904)
+
+    fabric11902.link(fabric11903, file("1.19.2-1.19.3.txt"))
+    forge11902.link(forge11903, file("1.19.2-1.19.3.txt"))
 
     fabric11802.link(fabric11902)
     forge11802.link(forge11902, file("1.18.2-1.19.2.txt"))

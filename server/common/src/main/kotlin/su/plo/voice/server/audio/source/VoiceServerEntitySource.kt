@@ -21,10 +21,8 @@ class VoiceServerEntitySource(
 ) : VoiceServerProximitySource<EntitySourceInfo>(voiceServer, addon, UUID.randomUUID(), line, decoderInfo, stereo),
     ServerEntitySource {
 
-    override val position: ServerPos3d = entity.getServerPosition()
-        get() {
-            return entity.getServerPosition(field)
-        }
+    override val position: ServerPos3d
+        get() = entity.getServerPosition()
 
     override val sourceInfo: EntitySourceInfo
         get() = EntitySourceInfo(

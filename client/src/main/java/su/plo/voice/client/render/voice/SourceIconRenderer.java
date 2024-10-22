@@ -4,12 +4,14 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.NonNull;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 import net.minecraft.world.scores.Objective;
@@ -28,9 +30,8 @@ import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.source.ClientStaticSource;
 import su.plo.voice.client.config.VoiceClientConfig;
-import su.plo.voice.client.event.render.EntityRenderEvent;
+import su.plo.voice.client.event.LivingEntityRenderEvent;
 import su.plo.voice.client.event.render.LevelRenderEvent;
-import su.plo.voice.client.event.render.PlayerRenderEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.ModCamera;
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
@@ -59,6 +60,8 @@ public final class SourceIconRenderer {
         this.voiceClient = voiceClient;
         this.config = config;
         this.volumeAction = volumeAction;
+
+        LivingEntityRenderEvent.INSTANCE.registerListener(this::onLivingEntityRender);
     }
 
     @EventSubscribe
@@ -91,19 +94,36 @@ public final class SourceIconRenderer {
         }
     }
 
-    @EventSubscribe
-    public void onPlayerRender(@NotNull PlayerRenderEvent event) {
+    private void onLivingEntityRender(
+            @NotNull LivingEntity entity,
+            @NotNull PoseStack stack,
+            int light,
+            boolean shouldShowName
+    ) {
+        if (entity instanceof Player) {
+            renderPlayer((Player) entity, stack, light, shouldShowName);
+        } else {
+            renderLivingEntity(entity, stack, light, shouldShowName);
+        }
+    }
+
+    private void renderPlayer(
+            @NotNull Player player,
+            @NotNull PoseStack stack,
+            int light,
+            boolean shouldShowName
+    ) {
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
-
-        Player player = event.getPlayer();
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
+        boolean isFakePlayer = !Minecraft.getInstance().getConnection().getOnlinePlayerIds().contains(player.getUUID());
+
         if (isIconHidden()
                 || player.getUUID().equals(clientPlayer.getUUID())
-                || event.isFakePlayer()
+                || isFakePlayer
                 || player.isInvisibleTo(clientPlayer)
         ) return;
 
@@ -126,11 +146,10 @@ public final class SourceIconRenderer {
             hasPercent = volumeAction.isShown(player);
             if (hasPercent) {
                 renderPercent(
-                        event.getStack(),
-                        event.getCamera(),
-                        event.getLight(),
                         player,
-                        event.hasLabel()
+                        stack,
+                        light,
+                        shouldShowName
                 );
             }
 
@@ -144,22 +163,23 @@ public final class SourceIconRenderer {
         }
 
         renderEntity(
-                event.getStack(),
-                event.getCamera(),
-                event.getLight(),
                 player,
+                stack,
+                light,
+                shouldShowName,
                 ResourceLocation.tryParse(iconLocation),
-                event.hasLabel(),
                 hasPercent
         );
     }
 
-    @EventSubscribe
-    public void onEntityRender(@NotNull EntityRenderEvent event) {
+    private void renderLivingEntity(
+            @NotNull LivingEntity entity,
+            @NotNull PoseStack stack,
+            int light,
+            boolean shouldShowName
+    ) {
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
-
-        Entity entity = event.getEntity();
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
@@ -173,32 +193,33 @@ public final class SourceIconRenderer {
         if (highestSourceLine == null) return;
 
         renderEntity(
-                event.getStack(),
-                event.getCamera(),
-                event.getLight(),
                 entity,
+                stack,
+                light,
+                shouldShowName,
                 ResourceLocation.tryParse(highestSourceLine.getIcon()),
-                event.hasLabel(),
                 false
         );
     }
 
-    public void renderEntity(@NonNull PoseStack stack,
-                             @NonNull ModCamera camera,
-                             int light,
-                             @NonNull Entity entity,
-                             @NonNull ResourceLocation iconLocation,
-                             boolean hasLabel,
-                             boolean hasPercent) {
+    private void renderEntity(
+            @NonNull Entity entity,
+            @NonNull PoseStack stack,
+            int light,
+            boolean hasLabel,
+            @NonNull ResourceLocation iconLocation,
+            boolean hasPercent
+    ) {
         Vec3 position = entity.position();
 
-        double distance = camera.position().distanceToSqr(position);
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        double distance = camera.getPosition().distanceToSqr(position.x(), position.y(), position.z());
         if (distance > 4096D) return;
 
         stack.pushPose();
 
         if (hasPercent) stack.translate(0D, 0.3D, 0D);
-        translateEntityMatrix(stack, camera, entity, distance, hasLabel);
+        translateEntityMatrix(entity, camera, stack, distance, hasLabel);
 
         if (entity.isDescending()) {
             vertices(stack, 40, light, iconLocation, false);
@@ -210,19 +231,21 @@ public final class SourceIconRenderer {
         stack.popPose();
     }
 
-    private void renderPercent(@NonNull PoseStack stack,
-                               @NonNull ModCamera camera,
-                               int light,
-                               @NotNull Entity entity,
-                               boolean hasLabel) {
+    private void renderPercent(
+            @NotNull Entity entity,
+            @NonNull PoseStack stack,
+            int light,
+            boolean hasLabel
+    ) {
         Vec3 position = entity.position();
 
-        double distance = camera.position().distanceToSqr(position);
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+        double distance = camera.getPosition().distanceToSqr(position.x(), position.y(), position.z());
         if (distance > 4096D) return;
 
         stack.pushPose();
 
-        translateEntityMatrix(stack, camera, entity, distance, hasLabel);
+        translateEntityMatrix(entity, camera, stack, distance, hasLabel);
         stack.translate(5D, 0D, 0D);
 
         // render percents
@@ -272,11 +295,13 @@ public final class SourceIconRenderer {
         stack.popPose();
     }
 
-    private void translateEntityMatrix(@NonNull PoseStack stack,
-                                       @NonNull ModCamera camera,
-                                       @NotNull Entity entity,
-                                       double distance,
-                                       boolean hasLabel) {
+    private void translateEntityMatrix(
+            @NotNull Entity entity,
+            @NonNull Camera camera,
+            @NonNull PoseStack stack,
+            double distance,
+            boolean hasLabel
+    ) {
         if (hasLabel) {
             stack.translate(0D, 0.3D, 0D);
 
@@ -291,8 +316,8 @@ public final class SourceIconRenderer {
         }
 
         stack.translate(0D, entity.getBbHeight() + 0.5D, 0D);
-        PoseStackKt.rotate(stack, -camera.pitch(), 0.0F, 1.0F, 0.0F);
-        PoseStackKt.rotate(stack, camera.yaw(), 1.0F, 0.0F, 0.0F);
+        PoseStackKt.rotate(stack, -camera.getYRot(), 0.0F, 1.0F, 0.0F);
+        PoseStackKt.rotate(stack, camera.getXRot(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
         stack.translate(-5D, -1D, 0D);
     }

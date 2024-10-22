@@ -36,6 +36,11 @@ import java.util.function.Supplier;
 import net.minecraft.client.renderer.ShaderInstance;
 //#endif
 
+//#if MC>=12102
+//$$ import net.minecraft.client.renderer.CoreShaders;
+//$$ import net.minecraft.client.renderer.ShaderProgram;
+//#endif
+
 @UtilityClass
 public class RenderUtil {
 
@@ -74,6 +79,18 @@ public class RenderUtil {
     //#if MC>=11700
     // Note: Needs to be an Identity hash map because VertexFormat's equals method is broken (compares via its
     //       component Map but order very much matters for VertexFormat) as of 1.17
+    //#if MC>=12102
+    //$$ private static final Map<VertexFormat, ShaderProgram> DEFAULT_SHADERS = new IdentityHashMap<>();
+    //$$ static {
+    //$$
+    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.PARTICLE, CoreShaders.PARTICLE);
+    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION, CoreShaders.POSITION);
+    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR, CoreShaders.POSITION_COLOR);
+    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, CoreShaders.POSITION_COLOR_LIGHTMAP);
+    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX, CoreShaders.POSITION_TEX);
+    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX_COLOR, CoreShaders.POSITION_TEX_COLOR);
+    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, CoreShaders.POSITION_COLOR_TEX_LIGHTMAP);
+    //#else
     private static final Map<VertexFormat, Supplier<ShaderInstance>> DEFAULT_SHADERS = new IdentityHashMap<>();
     static {
         DEFAULT_SHADERS.put(DefaultVertexFormat.PARTICLE, GameRenderer::getParticleShader);
@@ -83,6 +100,7 @@ public class RenderUtil {
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX, GameRenderer::getPositionTexShader);
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX_COLOR, GameRenderer::getPositionTexColorShader);
         DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, GameRenderer::getPositionColorTexLightmapShader);
+    //#endif
     //#if MC>=12100
     //$$     // Shaders for these formats are no longer provided.
     //#else
@@ -100,12 +118,16 @@ public class RenderUtil {
 
     public static @NotNull BufferBuilder beginBufferWithDefaultShader(@NotNull VertexFormatMode mode, @NotNull VertexFormat format) {
         //#if MC>=11700
-        Supplier<ShaderInstance> supplier = DEFAULT_SHADERS.get(format);
-        if (supplier == null) {
+        //#if MC>=12102
+        //$$ ShaderProgram shader = DEFAULT_SHADERS.get(format);
+        //#else
+        Supplier<ShaderInstance> shader = DEFAULT_SHADERS.get(format);
+        //#endif
+        if (shader == null) {
             throw new IllegalArgumentException("No default shader for " + format + ". Bind your own and use beginBufferWithActiveShader instead.");
         }
 
-        RenderSystem.setShader(supplier);
+        RenderSystem.setShader(shader);
         //#endif
 
         return beginBufferWithActiveShader(mode, format);

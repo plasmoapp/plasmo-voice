@@ -78,7 +78,9 @@ public final class SoundOcclusion {
             if (i <= 1) continue;
 
             BlockState state = world.getBlockState(prevSoundPos);
-            //#if MC>=12000
+            //#if MC>=12102
+            //$$ boolean isSolid = state.isSolidRender();
+            //#elseif MC>=12000
             //$$ boolean isSolid = state.isSolidRender(world, prevSoundPos);
             //#else
             boolean isSolid = state.getMaterial().isSolid();
