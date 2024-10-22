@@ -70,7 +70,6 @@ jobs:
         name: 'Plasmo Voice'
         split-releases: true
         files-primary: build/libs/*-@(BungeeCord|Velocity)-*.jar
-        version-resolver: 'exact'
 
         changelog-file: proxy/changelog.md
 
@@ -96,7 +95,6 @@ jobs:
         name: 'Plasmo Voice'
         split-releases: true
         files-primary: build/libs/*-@(forge|neoforge|fabric)-*.jar
-        version-resolver: 'exact'
 
         changelog-file: client/changelog.md
         version-type: alpha
