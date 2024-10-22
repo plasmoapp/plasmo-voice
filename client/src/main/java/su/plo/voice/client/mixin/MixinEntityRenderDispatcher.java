@@ -54,7 +54,7 @@ public class MixinEntityRenderDispatcher {
     //$$             (LivingEntity) entity,
     //$$             poseStack,
     //$$             light,
-    //$$             rendererAccessor.shouldShowName(entity, distanceToCamera)
+    //$$             rendererAccessor.plasmovoice_shouldShowName(entity, distanceToCamera)
     //$$     );
     //$$ }
     //#else
@@ -87,7 +87,7 @@ public class MixinEntityRenderDispatcher {
                 (LivingEntity) entity,
                 poseStack,
                 light,
-                rendererAccessor.shouldShowName(entity)
+                rendererAccessor.plasmovoice_shouldShowName(entity)
         );
     }
     //#endif

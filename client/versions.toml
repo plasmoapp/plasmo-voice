@@ -1,5 +1,6 @@
 [12102]
 mcVersions = ">1.21.1"
+neoForgeVersion = "[21,)"
 
 [12100]
 mcVersions = ">=1.21.0 <=1.21.1"

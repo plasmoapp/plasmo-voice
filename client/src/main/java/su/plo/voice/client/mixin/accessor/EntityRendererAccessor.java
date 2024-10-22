@@ -10,9 +10,9 @@ public interface EntityRendererAccessor {
 
     //#if MC>=12102
     //$$ @Invoker("shouldShowName")
-    //$$ boolean shouldShowName(Entity entity, double distanceToCamera);
+    //$$ boolean plasmovoice_shouldShowName(Entity entity, double distanceToCamera);
     //#else
     @Invoker("shouldShowName")
-    boolean shouldShowName(Entity entity);
+    boolean plasmovoice_shouldShowName(Entity entity);
     //#endif
 }
