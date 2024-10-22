@@ -45,7 +45,6 @@ jobs:
         name: 'Plasmo Voice'
         split-releases: true
         files-primary: build/libs/*-@(Paper)-*.jar
-        version-resolver: 'exact'
 
         changelog-file: server/changelog.md
 
