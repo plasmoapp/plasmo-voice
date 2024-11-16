@@ -4,18 +4,44 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.TargetDataLine;
 import java.util.ArrayList;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class JavaxInputDeviceFactory implements DeviceFactory {
+
+    public static void printSupportedLines() {
+        BaseVoice.DEBUG_LOGGER.log("Supported target data lines:");
+
+        Mixer.Info[] mixers = AudioSystem.getMixerInfo();
+        for (Mixer.Info mixerInfo : mixers) {
+            Mixer mixer = AudioSystem.getMixer(mixerInfo);
+            Line.Info lineInfo = new Line.Info(TargetDataLine.class);
+
+            if (mixer.isLineSupported(lineInfo)) {
+                for (Line.Info info : mixer.getTargetLineInfo()) {
+                    BaseVoice.DEBUG_LOGGER.log(info.toString());
+                    DataLine.Info dataInfo = (DataLine.Info) info;
+                    for (AudioFormat dataFormat : dataInfo.getFormats()) {
+                        BaseVoice.DEBUG_LOGGER.log(dataFormat.toString());
+                    }
+                }
+            }
+        }
+    }
 
     private final PlasmoVoiceClient client;
 
