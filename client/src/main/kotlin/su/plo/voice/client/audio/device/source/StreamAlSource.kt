@@ -99,6 +99,10 @@ class StreamAlSource private constructor(
         this.closeTimeoutMs = timeoutMs
     }
 
+    override fun updateLastBufferTime() {
+        lastBufferTime = timeSupplier.currentTimeMillis
+    }
+
     override fun write(samples: ShortArray, applyFilters: Boolean) {
         val processedSamples = if (applyFilters) {
             device.processFilters(samples)
@@ -202,7 +206,7 @@ class StreamAlSource private constructor(
             queueWithEmptyBuffers()
             fillQueue()
 
-            lastBufferTime = timeSupplier.currentTimeMillis
+            updateLastBufferTime()
             availableBuffer[0] = -1
 
             while (isStreaming.get()) {

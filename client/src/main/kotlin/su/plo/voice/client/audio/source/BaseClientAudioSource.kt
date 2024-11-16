@@ -382,6 +382,8 @@ abstract class BaseClientAudioSource<T>(
             } catch (e: CodecException) {
                 BaseVoice.DEBUG_LOGGER.warn("Failed to decode source audio", e)
             }
+        } else {
+            source.updateLastBufferTime()
         }
 
         lastSequenceNumber = packet.sequenceNumber
