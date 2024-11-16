@@ -401,6 +401,9 @@ public final class VoiceClientConfig implements ClientConfig {
         private BooleanConfigEntry panning = new BooleanConfigEntry(true);
 
         @ConfigField
+        private BooleanConfigEntry mutePlayerOnDirect = new BooleanConfigEntry(true);
+
+        @ConfigField
         private BooleanConfigEntry cameraSoundListener = new BooleanConfigEntry(true);
 
         @ConfigField

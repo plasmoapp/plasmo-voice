@@ -344,42 +344,44 @@ abstract class BaseClientAudioSource<T>(
         // so we need to make sure that source is not closed rn
         if (closed.get()) return
 
-        // packet compensation
-        if (lastSequenceNumber >= 0) {
-            val packetsToCompensate = (packet.sequenceNumber - (lastSequenceNumber + 1)).toInt()
-            if (packetsToCompensate in 1..4) {
-                BaseVoice.DEBUG_LOGGER.warn("Compensate {} lost packets", packetsToCompensate)
-                for (i in 0 until packetsToCompensate) {
-                    val compensatedSequenceNumber = lastSequenceNumber + i + 1
+        if (shouldWrite()) {
+            // packet compensation
+            if (lastSequenceNumber >= 0) {
+                val packetsToCompensate = (packet.sequenceNumber - (lastSequenceNumber + 1)).toInt()
+                if (packetsToCompensate in 1..4) {
+                    BaseVoice.DEBUG_LOGGER.warn("Compensate {} lost packets", packetsToCompensate)
+                    for (i in 0 until packetsToCompensate) {
+                        val compensatedSequenceNumber = lastSequenceNumber + i + 1
 
-                    if (decoder != null && decoder is AudioDecoderPlc && !sourceInfo.isStereo) {
-                        try {
-                            write((decoder as AudioDecoderPlc).decodePLC(), compensatedSequenceNumber)
-                        } catch (e: CodecException) {
-                            LOGGER.warn("Failed to decode source audio", e)
-                            return
+                        if (decoder != null && decoder is AudioDecoderPlc && !sourceInfo.isStereo) {
+                            try {
+                                write((decoder as AudioDecoderPlc).decodePLC(), compensatedSequenceNumber)
+                            } catch (e: CodecException) {
+                                LOGGER.warn("Failed to decode source audio", e)
+                                return
+                            }
+                        } else {
+                            write(ShortArray(0), compensatedSequenceNumber)
                         }
-                    } else {
-                        write(ShortArray(0), compensatedSequenceNumber)
                     }
                 }
             }
-        }
 
-        // decrypt & decode samples
-        try {
-            val decrypted = encryption?.decrypt(packet.data) ?: packet.data
-            val decoded = decoder?.decode(decrypted) ?: AudioUtil.bytesToShorts(decrypted)
+            // decrypt & decode samples
+            try {
+                val decrypted = encryption?.decrypt(packet.data) ?: packet.data
+                val decoded = decoder?.decode(decrypted) ?: AudioUtil.bytesToShorts(decrypted)
 
-            if (sourceInfo.isStereo && config.advanced.stereoSourcesToMono.value()) {
-                write(AudioUtil.convertToMonoShorts(decoded), packet.sequenceNumber)
-            } else {
-                write(decoded, packet.sequenceNumber)
+                if (sourceInfo.isStereo && config.advanced.stereoSourcesToMono.value()) {
+                    write(AudioUtil.convertToMonoShorts(decoded), packet.sequenceNumber)
+                } else {
+                    write(decoded, packet.sequenceNumber)
+                }
+            } catch (e: EncryptionException) {
+                BaseVoice.DEBUG_LOGGER.warn("Failed to decrypt source audio", e)
+            } catch (e: CodecException) {
+                BaseVoice.DEBUG_LOGGER.warn("Failed to decode source audio", e)
             }
-        } catch (e: EncryptionException) {
-            BaseVoice.DEBUG_LOGGER.warn("Failed to decrypt source audio", e)
-        } catch (e: CodecException) {
-            BaseVoice.DEBUG_LOGGER.warn("Failed to decode source audio", e)
         }
 
         lastSequenceNumber = packet.sequenceNumber
@@ -547,6 +549,14 @@ abstract class BaseClientAudioSource<T>(
     private fun isStereo(sourceInfo: SourceInfo): Boolean {
         return sourceInfo.isStereo && !config.advanced.stereoSourcesToMono.value()
     }
+
+    /**
+     * Determines if audio should be written to the underlying AL source.
+     *
+     * Because we don't want to disable source icons in some cases,
+     * we should just disable writing samples to the actual source.
+     */
+    protected open fun shouldWrite(): Boolean = true
 
     companion object {
         private val OUTER_ANGLE: Double = 180.0

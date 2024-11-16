@@ -41,6 +41,13 @@ class ClientPlayerSource(
     override fun isPanningDisabled(): Boolean =
         sourcePlayer == getListener() || super.isPanningDisabled()
 
+    override fun shouldWrite(): Boolean =
+        !voiceClient.config.advanced.mutePlayerOnDirect.value() ||
+        voiceClient.sourceManager.sources
+            .filterIsInstance<ClientDirectSource>()
+            .filter { it.isActivated() }
+            .none { it.sourceInfo.sender?.id == sourceInfo.playerInfo.playerId }
+
     private val sourceMute: BooleanConfigEntry
         get() {
             return config.voice
