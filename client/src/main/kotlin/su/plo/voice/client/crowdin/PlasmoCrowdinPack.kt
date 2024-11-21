@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableSet
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.PackResources
 import net.minecraft.server.packs.PackType
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer
 import java.io.File
 import java.io.InputStream
 
@@ -18,6 +17,12 @@ import net.minecraft.server.packs.resources.IoSupplier
 //#else
 //$$ import java.io.FileInputStream
 //$$ import java.util.function.Predicate
+//#endif
+
+//#if MC>=12104
+//$$ import net.minecraft.server.packs.metadata.MetadataSectionType
+//#else
+import net.minecraft.server.packs.metadata.MetadataSectionSerializer
 //#endif
 
 class PlasmoCrowdinPack(
@@ -88,7 +93,11 @@ class PlasmoCrowdinPack(
 
     override fun getNamespaces(packType: PackType): Set<String> = NAMESPACES
 
-    override fun <T : Any?> getMetadataSection(metadataSectionSerializer: MetadataSectionSerializer<T>) = null
+    //#if MC>=12104
+    //$$ override fun <T : Any?> getMetadataSection(metadataSectionType: MetadataSectionType<T>): T? = null
+    //#else
+    override fun <T : Any?> getMetadataSection(metadataSectionSerializer: MetadataSectionSerializer<T>): T? = null
+    //#endif
 
     //#if MC>11902
     override fun packId() = "Plasmo Crowdin resource pack"
