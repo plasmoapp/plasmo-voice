@@ -10,3 +10,4 @@ so there’s no need to worry if the server hasn't been updated to 2.1.x.
 - Fixed client EncoderException on server switch caused by UDP packets sent to a client when client's server is null.
 - Fixed ArrayIndexOutOfBoundsException exception when using `/` command on Velocity.
 - Fixed `pv.activation.*` permission is not being updated on the client without reconnect.
+- Fixed permission check on BungeeCord.
