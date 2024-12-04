@@ -60,7 +60,7 @@ val shadowCommon by configurations.creating
 fun slibArtifact(): String {
     val minecraftVersion = when (platform.mcVersion) {
         11904 -> "1.19.3"
-        12104 -> "1.21.2"
+        12103, 12104 -> "1.21.2"
         else -> platform.mcVersionStr
     }
 
@@ -89,8 +89,8 @@ dependencies {
             12004 -> "0.95.4+1.20.4"
             12006 -> "0.97.7+1.20.6"
             12100 -> "0.100.4+1.21"
-            12102 -> "0.105.3+1.21.2"
-            12104 -> "0.109.1+1.21.4"
+            12103 -> "0.110.0+1.21.3"
+            12104 -> "0.110.5+1.21.4"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -103,8 +103,7 @@ dependencies {
         fabricApiModules("rendering-v1", "networking-api-v1", "lifecycle-events-v1", "key-binding-api-v1")
 
         if (platform.mcVersion >= 12102) {
-            // https://github.com/lucko/fabric-permissions-api/pull/26
-            "include"("com.github.sakura-ryoko:fabric-permissions-api:b43d33efb8")
+            "include"("me.lucko:fabric-permissions-api:0.3.3")
         } else {
             "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
         }
