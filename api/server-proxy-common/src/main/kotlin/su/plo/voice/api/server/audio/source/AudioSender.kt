@@ -39,7 +39,7 @@ class AudioSender(
 
         val job = CoroutineScope(Dispatchers.Default).launch {
             var sequenceNumber = 0L
-            val startTime = System.nanoTime()
+            var startTime = 0L
 
             var endOfStream = false
 
@@ -49,6 +49,7 @@ class AudioSender(
                         if (!endOfStream) {
                             endOfStream = true
                             onEnd.invoke(sequenceNumber++)
+                            startTime = 0L
                         }
 
                         delay(10L)
@@ -61,6 +62,7 @@ class AudioSender(
 
                             endOfStream = true
                             onEnd.invoke(sequenceNumber++)
+                            startTime = 0L
                             continue
                         }
 
@@ -74,6 +76,10 @@ class AudioSender(
                     if (frame == null) {
                         delay(5L)
                         continue
+                    }
+
+                    if (startTime == 0L) {
+                        startTime = System.nanoTime()
                     }
 
                     val frameTime = 20_000_000 * sequenceNumber

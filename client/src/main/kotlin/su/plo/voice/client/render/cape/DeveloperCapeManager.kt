@@ -6,7 +6,6 @@ import com.google.common.cache.CacheBuilder
 import com.google.common.hash.Hashing
 import com.mojang.authlib.minecraft.MinecraftProfileTexture
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.texture.HttpTexture
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
@@ -20,6 +19,12 @@ import java.util.function.Supplier
 
 //#if MC>=12002
 //$$ import net.minecraft.client.resources.PlayerSkin
+//#endif
+
+//#if MC>=12104
+//$$ import net.minecraft.client.renderer.texture.SkinTextureDownloader
+//#else
+import net.minecraft.client.renderer.texture.HttpTexture
 //#endif
 
 object DeveloperCapeManager {
@@ -93,10 +98,22 @@ object DeveloperCapeManager {
                 capeFile.delete()
             }
 
+            //#if MC>=12104
+            //$$ try {
+            //$$     SkinTextureDownloader.downloadAndRegisterSkin(
+            //$$         capeLocation,
+            //$$         capeFile.toPath(),
+            //$$         texture.url,
+            //$$         false
+            //$$     ).get()
+            //$$ } catch (ignored: Exception) {
+            //$$ }
+            //#else
             Minecraft.getInstance().textureManager.register(
                 capeLocation,
                 HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
             )
+            //#endif
 
             capeLocation
         }

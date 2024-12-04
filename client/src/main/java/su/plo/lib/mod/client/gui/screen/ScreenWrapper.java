@@ -187,9 +187,13 @@ public final class ScreenWrapper
 //    }
 
     @Override
+    public boolean charTyped(char typedChar, int modifiers) {
+        return screen.charTyped(typedChar, modifiers);
+    }
+
+    @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 0) {
-            screen.charTyped((char) 0, modifiers);
             return false;
         }
 

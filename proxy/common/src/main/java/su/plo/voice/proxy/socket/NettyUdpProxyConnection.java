@@ -42,7 +42,6 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     private InetSocketAddress remoteAddress;
     @Setter
     private RemoteServer remoteServer;
-    @Getter
     private boolean connected = true;
 
     @Override
@@ -52,6 +51,8 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
 
     @Override
     public void sendPacket(Packet<?> packet) {
+        if (!isConnected()) return;
+
         byte[] encoded = PacketUdpCodec.encode(packet, secret);
         if (encoded == null) return;
 
@@ -68,6 +69,11 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     @Override
     public void disconnect() {
         this.connected = false;
+    }
+
+    @Override
+    public boolean isConnected() {
+        return connected && player.getInstance().getServer() != null;
     }
 
     @Override

@@ -33,7 +33,7 @@ public final class VoiceMuteCommand implements McCommand {
     @Override
     public void execute(@NotNull McCommandSource source, @NotNull String[] arguments) {
         if (arguments.length == 0) {
-            source.sendMessage(McTextComponent.translatable("pv.error.no_permissions"));
+            source.sendMessage(McTextComponent.translatable("pv.command.mute.usage"));
             return;
         }
 

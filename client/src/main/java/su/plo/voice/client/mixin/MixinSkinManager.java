@@ -9,7 +9,6 @@ import java.io.File;
 
 //#if MC>=12002
 //$$ import com.mojang.authlib.minecraft.MinecraftSessionService;
-//$$ import net.minecraft.client.renderer.texture.TextureManager;
 //$$
 //$$ import org.spongepowered.asm.mixin.Unique;
 //$$ import org.spongepowered.asm.mixin.injection.At;
@@ -18,6 +17,11 @@ import java.io.File;
 //$$
 //$$ import java.nio.file.Path;
 //$$ import java.util.concurrent.Executor;
+
+//#if MC<12104
+//$$ import net.minecraft.client.renderer.texture.TextureManager;
+//#endif
+
 //#else
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Shadow;
@@ -26,7 +30,19 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(SkinManager.class)
 public abstract class MixinSkinManager implements SkinManagerAccessor {
 
-    //#if MC>=12002
+    //#if MC>=12104
+    //$$ @Unique
+    //$$ private static File SKINS_DIRECTORY;
+    //$$ @Inject(at = @At("RETURN"), method = "<init>")
+    //$$ private void init(Path path, MinecraftSessionService minecraftSessionService, Executor executor, CallbackInfo ci) {
+    //$$     SKINS_DIRECTORY = path.toFile();
+    //$$ }
+    //$$ @NotNull
+    //$$ @Override
+    //$$ public File getSkinsCacheFolder() {
+    //$$     return SKINS_DIRECTORY;
+    //$$ }
+    //#elseif MC>=12002
     //$$ @Unique
     //$$ private static File SKINS_DIRECTORY;
     //$$ @Inject(at = @At("RETURN"), method = "<init>")

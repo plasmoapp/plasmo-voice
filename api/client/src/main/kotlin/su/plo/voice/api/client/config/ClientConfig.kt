@@ -79,6 +79,8 @@ interface ClientConfig {
 
         val panning: BooleanConfigEntry
 
+        val mutePlayerOnDirect: BooleanConfigEntry
+
         val cameraSoundListener: BooleanConfigEntry
 
         val exponentialVolumeSlider: BooleanConfigEntry

@@ -21,15 +21,18 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
-import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceManager;
-import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerInfo;
-import su.plo.voice.api.client.event.audio.capture.*;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureInitializeEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureProcessedEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureStartEvent;
+import su.plo.voice.api.client.event.audio.capture.AudioCaptureStopEvent;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
+import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.mac.AVAuthorizationStatus;
@@ -41,7 +44,10 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
 import javax.sound.sampled.AudioFormat;
-import java.util.*;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
 
 public final class VoiceAudioCapture implements AudioCapture {
 
@@ -123,6 +129,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 devices.setInputDevice(inputDevice);
             } catch (Exception e) {
                 LOGGER.error("Failed to open input device", e);
+                JavaxInputDeviceFactory.printSupportedLines();
             }
         }
 

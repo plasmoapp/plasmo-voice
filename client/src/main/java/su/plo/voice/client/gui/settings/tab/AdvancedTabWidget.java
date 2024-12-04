@@ -55,6 +55,11 @@ public final class AdvancedTabWidget extends TabWidget {
         ));
         addEntry(createStereoToMonoSources());
         addEntry(createPanning());
+        addEntry(createToggleEntry(
+                McTextComponent.translatable("gui.plasmovoice.advanced.mute_player_on_direct"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.mute_player_on_direct.tooltip"),
+                config.getAdvanced().getMutePlayerOnDirect()
+        ));
 
         addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")));
         addEntry(createToggleEntry(

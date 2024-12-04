@@ -191,11 +191,8 @@ class VoiceServerActivationManager(
         val player = event.player
         val permission = event.permission
 
-        if (activationById.values.none { it.permissions.contains(permission) }) return
-
         if (permission == WILDCARD_ACTIVATION_PERMISSION) {
             when (player.instance.getPermission(WILDCARD_ACTIVATION_PERMISSION)) {
-
                 PermissionTristate.TRUE -> activationById.values.forEach {
                     player.sendPacket(ActivationRegisterPacket(it as VoiceActivation))
                 }
@@ -214,6 +211,9 @@ class VoiceServerActivationManager(
             }
             return
         }
+
+        if (activationById.values.none { it.permissions.contains(permission) }) return
+
         val permissionSplit = permission.split("\\.".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
 
         val activation = getActivationByName(permissionSplit[permissionSplit.size - 1]).orElse(null) ?: return

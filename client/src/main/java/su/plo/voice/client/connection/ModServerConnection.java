@@ -122,6 +122,9 @@ public final class ModServerConnection implements ServerConnection, ClientPacket
     @Override
     public void sendPacket(@NotNull Packet<?> packet, boolean checkUdpConnection) {
         if (!connection.isConnected()) return;
+        //#if MC>=12004
+        //$$ if (Minecraft.getInstance().getConnection() == null) return;
+        //#endif
 
         if (checkUdpConnection && !voiceClient.getUdpClientManager().isConnected())
             return;

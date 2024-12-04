@@ -158,6 +158,11 @@ public interface AlSource extends DeviceSource {
     void setCloseTimeoutMs(long timeoutMs);
 
     /**
+     * Updates last buffer time to current time provided by the time supplier.
+     */
+    void updateLastBufferTime();
+
+    /**
      * Gets the OpenAL format of the source.
      *
      * @return The format of the source.

@@ -5,12 +5,17 @@ import gg.essential.universal.shader.MCShader
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.PackResources
 import net.minecraft.server.packs.PackType
-import net.minecraft.server.packs.metadata.MetadataSectionSerializer
 import net.minecraft.server.packs.resources.IoSupplier
 import java.io.InputStream
 
 //#if MC>=12005
 //$$ import net.minecraft.server.packs.PackLocationInfo
+//#endif
+
+//#if MC>=12104
+//$$ import net.minecraft.server.packs.metadata.MetadataSectionType
+//#else
+import net.minecraft.server.packs.metadata.MetadataSectionSerializer
 //#endif
 
 /**
@@ -46,9 +51,15 @@ object DummyPack : PackResources {
         throw UnsupportedOperationException()
     }
 
+    //#if MC>=12104
+    //$$ override fun <T : Any?> getMetadataSection(metadataSectionType: MetadataSectionType<T>): T? {
+    //$$     throw UnsupportedOperationException()
+    //$$ }
+    //#else
     override fun <T : Any?> getMetadataSection(metadataSectionSerializer: MetadataSectionSerializer<T>): T? {
         throw UnsupportedOperationException()
     }
+    //#endif
 
     //#if MC>=12005
     //$$ override fun location(): PackLocationInfo {
