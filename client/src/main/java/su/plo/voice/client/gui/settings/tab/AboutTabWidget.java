@@ -238,6 +238,7 @@ public final class AboutTabWidget extends TabWidget {
             //#if MC>=12005
             //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
             //$$
+            //$$ RenderSystem.enableBlend();
             //$$ RenderUtil.blit(
             //$$         stack,
             //$$         x, x + entryWidth,
@@ -246,6 +247,7 @@ public final class AboutTabWidget extends TabWidget {
             //$$         0F, entryWidth / 32.0F,
             //$$         0F, height / 32.0F
             //$$ );
+            //$$ RenderSystem.disableBlend();
             //#else
             RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 
