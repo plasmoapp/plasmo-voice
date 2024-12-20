@@ -283,14 +283,14 @@ class OverlayRenderer(
         return ModPlayerSkins.getSkin(gameProfile.id, gameProfile.name)
     }
 
-    private fun loadSkin(playerId: UUID, playerName: String): ResourceLocation {
-        ModPlayerSkins.loadSkin(
-            playerId,
-            playerName,
-            null
-        )
-        return ModPlayerSkins.getSkin(playerId, playerName)
-    }
+//    private fun loadSkin(playerId: UUID, playerName: String): ResourceLocation {
+//        ModPlayerSkins.loadSkin(
+//            playerId,
+//            playerName,
+//            null
+//        )
+//        return ModPlayerSkins.getSkin(playerId, playerName)
+//    }
 
     private fun calcPositionX(x: Int): Int {
         return if (x < 0) {

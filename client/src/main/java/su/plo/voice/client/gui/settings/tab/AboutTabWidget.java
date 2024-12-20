@@ -32,13 +32,12 @@ public final class AboutTabWidget extends TabWidget {
                           @NotNull PlasmoVoiceClient voiceClient,
                           @NotNull VoiceClientConfig config) {
         super(parent, voiceClient, config);
-
-        loadSkins();
     }
 
     @Override
     public void init() {
         super.init();
+        loadSkins();
 
         addEntry(new CategoryEntry(madeBy(), 24));
         PlasmoVoiceMeta.Companion.getMETA().getDevelopers()
@@ -112,9 +111,21 @@ public final class AboutTabWidget extends TabWidget {
         MinecraftUtil.openUri(link);
     }
 
-    public static void loadSkins() {
+    private void loadSkins() {
         PlasmoVoiceMeta.Companion.getMETA().getDevelopers().forEach(developer ->
-                ModPlayerSkins.loadSkin(developer.getUuid(), developer.getName(), null)
+                ModPlayerSkins.loadSkin(
+                        developer.getUuid(),
+                        developer.getName(),
+                        voiceClient.getBackgroundExecutor()
+                )
+        );
+
+        PlasmoVoiceMeta.Companion.getMETA().getPatrons().forEach(patron ->
+                ModPlayerSkins.loadSkin(
+                        patron.getUuid(),
+                        patron.getName(),
+                        voiceClient.getBackgroundExecutor()
+                )
         );
     }
 
@@ -217,7 +228,9 @@ public final class AboutTabWidget extends TabWidget {
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 8.0F, 8.0F, 8, 8, 64, 64);
+            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 40.0F, 8.0F, 8, 8, 64, 64);
+            RenderSystem.disableBlend();
 
             RenderUtil.drawString(stack, patron.getName(), x + 26, y + 6, 16777215);
 

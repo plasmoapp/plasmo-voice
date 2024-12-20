@@ -1,6 +1,6 @@
 package su.plo.voice.client.meta
 
-import java.util.*
+import java.util.UUID
 
 data class Patron(
     val uuid: UUID,

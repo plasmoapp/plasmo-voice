@@ -1,6 +1,6 @@
 package su.plo.voice.client.meta.developer
 
-import java.util.*
+import java.util.UUID
 
 data class Developer(
     val uuid: UUID,
