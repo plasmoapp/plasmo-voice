@@ -48,7 +48,7 @@ class PaperVoiceServer(
     }
 
     public override fun onShutdown() {
-        metrics.shutdown()
+        if (this::metrics.isInitialized) metrics.shutdown()
         super.onShutdown()
         minecraftServerLib.onShutdown()
     }
