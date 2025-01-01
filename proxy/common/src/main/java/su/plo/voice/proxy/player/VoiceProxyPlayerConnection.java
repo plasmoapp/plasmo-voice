@@ -5,8 +5,12 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.proxy.player.McProxyPlayer;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
+import su.plo.voice.api.proxy.event.connection.TcpPacketSendEvent;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
+import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
+import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.server.player.BaseVoicePlayer;
 
 @ToString(doNotUseGetters = true, callSuper = true)
@@ -26,6 +30,16 @@ public final class VoiceProxyPlayerConnection
         super(voiceProxy, instance);
 
         this.voiceProxy = voiceProxy;
+    }
+
+    @Override
+    public void sendPacket(Packet<?> packet) {
+        byte[] encoded = PacketTcpCodec.encode(packet);
+
+        TcpPacketSendEvent event = new TcpPacketSendEvent(this, packet);
+        if (!voiceProxy.getEventBus().fire(event)) return;
+
+        instance.sendPacket(BaseVoiceProxy.CHANNEL_STRING, encoded);
     }
 
     public boolean hasVoiceChat() {

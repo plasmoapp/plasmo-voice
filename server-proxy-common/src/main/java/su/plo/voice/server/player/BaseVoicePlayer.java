@@ -15,8 +15,6 @@ import su.plo.voice.api.server.PlasmoBaseVoiceServer;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
-import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.proto.packets.tcp.clientbound.AnimatedActionBarPacket;
 import su.plo.voice.proto.packets.tcp.clientbound.DistanceVisualizePacket;
 
@@ -50,11 +48,6 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     private final Set<ServerActivation> activeActivations = Sets.newConcurrentHashSet();
     @Getter
     private final Map<UUID, Long> lastActivationSequenceNumber = Maps.newConcurrentMap();
-
-    @Override
-    public void sendPacket(@NotNull Packet<?> packet) {
-        instance.sendPacket("plasmo:voice/v2", PacketTcpCodec.encode(packet));
-    }
 
     @Override
     public boolean isVoiceDisabled() {

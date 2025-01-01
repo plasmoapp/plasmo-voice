@@ -7,6 +7,7 @@ import su.plo.slib.api.event.player.McPlayerQuitEvent
 import su.plo.slib.api.proxy.channel.McProxyChannelHandler
 import su.plo.slib.api.proxy.connection.McProxyConnection
 import su.plo.slib.api.proxy.player.McProxyPlayer
+import su.plo.voice.api.proxy.event.connection.TcpPacketReceivedEvent
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer
 import su.plo.voice.proto.packets.PacketHandler
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec
@@ -41,6 +42,10 @@ class ProxyChannelHandler(
                 if (playerToServerHandler.player != voicePlayer) {
                     playerToServerHandler.player = voicePlayer
                 }
+
+                val event = TcpPacketReceivedEvent(voicePlayer, packet)
+                if (!voiceProxy.eventBus.fire(event)) return true
+
                 playerToServerHandler
             } else if (destination is McProxyPlayer) {
                 val voicePlayer = voiceProxy.playerManager.getPlayerByInstance(destination.getInstance())
