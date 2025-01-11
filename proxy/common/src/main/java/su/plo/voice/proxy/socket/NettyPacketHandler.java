@@ -98,7 +98,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         InetSocketAddress receiver;
         UUID receiverSecret;
 
-        if (!remoteServer.getAddress().equals(sender)) {
+        if (connection.getSecret().equals(nettyPacket.getPacketUdp().getSecret())) {
             receiver = remoteServer.getAddress();
             receiverSecret = connection.getRemoteSecret();
 
