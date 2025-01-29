@@ -4,6 +4,7 @@ import gg.essential.universal.shader.BlendState;
 import gg.essential.universal.shader.SamplerUniform;
 import gg.essential.universal.shader.UShader;
 import lombok.experimental.UtilityClass;
+import su.plo.voice.BaseVoice;
 
 import java.io.IOException;
 
@@ -14,6 +15,8 @@ public class SolidColorShader {
     private static SamplerUniform samplerUniform;
 
     public static void bind(int textureId) {
+        if (hasVulkan()) return;
+
         if (shader == null) {
             try {
                 //#if MC>=11701
@@ -49,5 +52,21 @@ public class SolidColorShader {
         if (shader != null) {
             shader.unbind();
         }
+    }
+
+    private static boolean hasVulkan = false;
+
+    private static boolean hasVulkan() {
+        if (hasVulkan) return true;
+
+        try {
+            Class.forName("net.vulkanmod.vulkan.Vulkan");
+            BaseVoice.LOGGER.warn("Shaders are not supported for Vulkan yet");
+            hasVulkan = true;
+            return true;
+        } catch (ClassNotFoundException ignored) {
+        }
+
+        return false;
     }
 }
