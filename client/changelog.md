@@ -7,3 +7,4 @@ so there’s no need to worry if the server hasn't been updated to 2.1.x.
 
 ### Changes in 2.1.3
 - Scissor zone of tab content is moved two "pixels" up. Fixes white line in 1.21.2+ under the tab menu. (https://imgur.com/a/FJQGNpo)
+- Fixed "Plasmo Voice is not installed on this server" on 1.20.4.
