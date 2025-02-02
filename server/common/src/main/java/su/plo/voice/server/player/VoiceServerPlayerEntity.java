@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.server.entity.player.McServerPlayer;
 import su.plo.voice.api.server.PlasmoVoiceServer;
 import su.plo.voice.api.server.event.connection.TcpPacketSendEvent;
+import su.plo.voice.api.server.event.player.PlayerInfoCreateEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
@@ -47,7 +48,7 @@ public final class VoiceServerPlayerEntity
     public VoicePlayerInfo createPlayerInfo() {
         if (!hasVoiceChat()) throw new IllegalStateException("Player is not connected to UDP server");
 
-        return new VoicePlayerInfo(
+        VoicePlayerInfo voicePlayerInfo = new VoicePlayerInfo(
                 instance.getUuid(),
                 instance.getName(),
                 voiceServer.getMuteManager()
@@ -56,5 +57,10 @@ public final class VoiceServerPlayerEntity
                 isVoiceDisabled(),
                 isMicrophoneMuted()
         );
+
+        PlayerInfoCreateEvent event = new PlayerInfoCreateEvent(this, voicePlayerInfo);
+        voiceServer.getEventBus().fire(event);
+
+        return event.getVoicePlayerInfo();
     }
 }

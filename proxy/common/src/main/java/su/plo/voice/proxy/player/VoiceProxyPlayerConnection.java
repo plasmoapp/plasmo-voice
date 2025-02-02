@@ -7,6 +7,7 @@ import su.plo.slib.api.proxy.player.McProxyPlayer;
 import su.plo.voice.api.proxy.PlasmoVoiceProxy;
 import su.plo.voice.api.proxy.event.connection.TcpPacketSendEvent;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
+import su.plo.voice.api.server.event.player.PlayerInfoCreateEvent;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
@@ -51,13 +52,18 @@ public final class VoiceProxyPlayerConnection
     public @NotNull VoicePlayerInfo createPlayerInfo() {
         checkVoiceChat();
 
-        return new VoicePlayerInfo(
+        VoicePlayerInfo voicePlayerInfo = new VoicePlayerInfo(
                 instance.getUuid(),
                 instance.getName(),
                 muted,
                 isVoiceDisabled(),
                 isMicrophoneMuted()
         );
+
+        PlayerInfoCreateEvent event = new PlayerInfoCreateEvent(this, voicePlayerInfo);
+        voiceProxy.getEventBus().fire(event);
+
+        return event.getVoicePlayerInfo();
     }
 
     public synchronized boolean update(@NotNull VoicePlayerInfo playerInfo) {
