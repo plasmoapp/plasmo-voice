@@ -27,7 +27,7 @@ import java.util.function.Supplier;
 
 public final class ModPlayerSkins {
 
-    private static final Cache<String, Supplier<ResourceLocation>> SKINS = CacheBuilder
+    private static final Cache<UUID, Supplier<ResourceLocation>> SKINS = CacheBuilder
             .newBuilder()
             .expireAfterAccess(15L, TimeUnit.SECONDS)
             .build();
@@ -40,7 +40,7 @@ public final class ModPlayerSkins {
         PlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(playerId);
         if (playerInfo != null) return;
 
-        Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(nick);
+        Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(playerId);
         if (skinLocation != null) return;
 
         backgroundExecutor.execute(() -> {
@@ -58,7 +58,7 @@ public final class ModPlayerSkins {
                     .fillProfileProperties(new GameProfile(playerId, nick), false);
             //#endif
 
-            SKINS.put(profile.getName(), getInsecureSkinLocation(profile));
+            SKINS.put(profile.getId(), getInsecureSkinLocation(profile));
         });
     }
 
@@ -66,7 +66,7 @@ public final class ModPlayerSkins {
         PlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(gameProfile.getId());
         if (playerInfo != null) return;
 
-        Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(gameProfile.getName());
+        Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(gameProfile.getId());
         if (skinLocation != null) return;
 
         GameProfile profile = new GameProfile(
@@ -82,7 +82,7 @@ public final class ModPlayerSkins {
         });
 
         skinLocation = getInsecureSkinLocation(profile);
-        SKINS.put(gameProfile.getName(), skinLocation);
+        SKINS.put(gameProfile.getId(), skinLocation);
     }
 
     private static Supplier<ResourceLocation> getInsecureSkinLocation(GameProfile gameProfile) {
@@ -111,7 +111,7 @@ public final class ModPlayerSkins {
             //#endif
         }
 
-        Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(nick);
+        Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(playerId);
         if (skinLocation != null) return skinLocation.get();
 
         return getDefaultSkin(playerId);
