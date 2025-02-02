@@ -28,10 +28,10 @@ public final class VoiceServerPlayerEntity
 
     @Override
     public void sendPacket(@NotNull Packet<?> packet) {
-        byte[] encoded = PacketTcpCodec.encode(packet);
-
         TcpPacketSendEvent event = new TcpPacketSendEvent(this, packet);
         if (!voiceServer.getEventBus().fire(event)) return;
+
+        byte[] encoded = PacketTcpCodec.encode(packet);
 
         instance.sendPacket(BaseVoiceServer.CHANNEL_STRING, encoded);
     }

@@ -34,10 +34,10 @@ public final class VoiceProxyPlayerConnection
 
     @Override
     public void sendPacket(Packet<?> packet) {
-        byte[] encoded = PacketTcpCodec.encode(packet);
-
         TcpPacketSendEvent event = new TcpPacketSendEvent(this, packet);
         if (!voiceProxy.getEventBus().fire(event)) return;
+
+        byte[] encoded = PacketTcpCodec.encode(packet);
 
         instance.sendPacket(BaseVoiceProxy.CHANNEL_STRING, encoded);
     }
