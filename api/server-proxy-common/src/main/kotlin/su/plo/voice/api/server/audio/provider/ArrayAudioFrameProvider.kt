@@ -12,7 +12,7 @@ import su.plo.voice.api.server.PlasmoBaseVoiceServer
  */
 class ArrayAudioFrameProvider(
     voiceServer: PlasmoBaseVoiceServer,
-    stereo: Boolean
+    stereo: Boolean,
 ) : CollectionAudioFrameProvider(voiceServer, stereo) {
 
     /**
@@ -30,7 +30,12 @@ class ArrayAudioFrameProvider(
         if (frames.isEmpty() || frames.size == index) {
             AudioFrameResult.Finished
         } else {
-            AudioFrameResult.Provided(frames[index]).also {
+            val frame = frames[index]
+            if (frame.isEmpty()) {
+                AudioFrameResult.Finished
+            } else {
+                AudioFrameResult.Provided(frame)
+            }.also {
                 if (loop) {
                     this.index = (index + 1) % frames.size
                 } else {
