@@ -182,7 +182,18 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             if (oldConfig != null && oldConfig.aesEncryptionKey() != null) {
                 aesKey = oldConfig.aesEncryptionKey();
             } else {
-                UUID aesEncryptionKey = UUID.randomUUID();
+                UUID aesEncryptionKey;
+                File aesEncryptionKeyFile = System.getenv().containsKey("PLASMO_VOICE_AES_KEY_FILE")
+                        ? new File(System.getenv("PLASMO_VOICE_AES_KEY_FILE"))
+                        : new File(getConfigFolder(), "aes-key");
+                if (System.getenv("PLASMO_VOICE_AES_KEY") != null) {
+                    aesEncryptionKey = UUID.fromString(System.getenv("PLASMO_VOICE_AES_KEY"));
+                } else if (aesEncryptionKeyFile.exists()) {
+                    aesEncryptionKey = UUID.fromString(new String(Files.readAllBytes(aesEncryptionKeyFile.toPath())));
+                } else {
+                    aesEncryptionKey = UUID.randomUUID();
+                }
+
                 ByteArrayDataOutput out = ByteStreams.newDataOutput();
                 out.writeLong(aesEncryptionKey.getMostSignificantBits());
                 out.writeLong(aesEncryptionKey.getLeastSignificantBits());
