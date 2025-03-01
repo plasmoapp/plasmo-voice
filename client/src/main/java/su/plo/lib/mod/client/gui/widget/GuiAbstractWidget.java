@@ -153,10 +153,6 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
         RenderUtil.bindTexture(0, sprite.getLocation());
         RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
 
-        RenderSystem.enableBlend();
-        RenderUtil.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-
         RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
         RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
 

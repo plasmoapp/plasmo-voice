@@ -286,9 +286,7 @@ public final class OverlayTabWidget extends TabWidget {
             RenderUtil.bindTexture(0, iconLocation);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
-            RenderSystem.disableBlend();
 
             RenderUtil.drawString(
                     stack,

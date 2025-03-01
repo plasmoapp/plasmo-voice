@@ -1,6 +1,5 @@
 package su.plo.voice.client.render.voice;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.NonNull;
@@ -10,16 +9,15 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
-import net.minecraft.world.scores.Objective;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.VertexBuilder;
-import su.plo.lib.mod.client.render.VertexFormatMode;
+import su.plo.lib.mod.client.render.entity.LivingEntityRenderState;
+import su.plo.lib.mod.client.render.pipeline.RenderPipeline;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.lib.mod.extensions.PoseStackKt;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.position.Pos3d;
@@ -42,9 +40,13 @@ import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.UUID;
 
-import static su.plo.slib.mod.extension.ScoreboardKt.getObjectiveBelowName;
 import static su.plo.voice.client.extension.MathKt.toVec3;
+
+//#if MC>=12000
+//$$ import com.mojang.blaze3d.systems.RenderSystem;
+//#endif
 
 public final class SourceIconRenderer {
 
@@ -95,23 +97,21 @@ public final class SourceIconRenderer {
     }
 
     private void onLivingEntityRender(
-            @NotNull LivingEntity entity,
+            @NotNull LivingEntityRenderState entityRenderState,
             @NotNull PoseStack stack,
-            int light,
-            boolean shouldShowName
+            int light
     ) {
-        if (entity instanceof Player) {
-            renderPlayer((Player) entity, stack, light, shouldShowName);
+        if (entityRenderState.getEntityType().equals(EntityType.PLAYER)) {
+            renderPlayer(entityRenderState, stack, light);
         } else {
-            renderLivingEntity(entity, stack, light, shouldShowName);
+            renderLivingEntity(entityRenderState, stack, light);
         }
     }
 
     private void renderPlayer(
-            @NotNull Player player,
+            @NotNull LivingEntityRenderState entityRenderState,
             @NotNull PoseStack stack,
-            int light,
-            boolean shouldShowName
+            int light
     ) {
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
@@ -119,21 +119,26 @@ public final class SourceIconRenderer {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
-        boolean isFakePlayer = !Minecraft.getInstance().getConnection().getOnlinePlayerIds().contains(player.getUUID());
+        UUID entityUUID = entityRenderState.getEntityUUID();
+
+        boolean isFakePlayer = !Minecraft.getInstance()
+                .getConnection()
+                .getOnlinePlayerIds()
+                .contains(entityUUID);
 
         if (isIconHidden()
-                || player.getUUID().equals(clientPlayer.getUUID())
+                || entityUUID.equals(clientPlayer.getUUID())
                 || isFakePlayer
-                || player.isInvisibleTo(clientPlayer)
+                || entityRenderState.isInvisibleToPlayer()
         ) return;
 
         boolean hasPercent = false;
         String iconLocation;
 
-        Optional<VoicePlayerInfo> playerInfo = connection.get().getPlayerById(player.getUUID());
+        Optional<VoicePlayerInfo> playerInfo = connection.get().getPlayerById(entityUUID);
         if (!playerInfo.isPresent()) { // not installed
             iconLocation = "plasmovoice:textures/icons/headset_not_installed.png";
-        } else if (config.getVoice().getVolumes().getMute("source_" + player.getUUID()).value()) { // client mute
+        } else if (config.getVoice().getVolumes().getMute("source_" + entityUUID).value()) { // client mute
             iconLocation = "plasmovoice:textures/icons/speaker_disabled.png";
         } else if (playerInfo.get().isMuted()) { // server mute
             iconLocation = "plasmovoice:textures/icons/speaker_muted.png";
@@ -141,15 +146,14 @@ public final class SourceIconRenderer {
             iconLocation = "plasmovoice:textures/icons/headset_disabled.png";
         } else {
             Collection<ClientAudioSource<PlayerSourceInfo>> sources = voiceClient.getSourceManager()
-                    .getPlayerSources(player.getUUID());
+                    .getPlayerSources(entityUUID);
 
-            hasPercent = volumeAction.isShown(player);
+            hasPercent = volumeAction.isShown(entityUUID);
             if (hasPercent) {
                 renderPercent(
-                        player,
+                        entityRenderState,
                         stack,
-                        light,
-                        shouldShowName
+                        light
                 );
             }
 
@@ -163,20 +167,18 @@ public final class SourceIconRenderer {
         }
 
         renderEntity(
-                player,
+                entityRenderState,
                 stack,
                 light,
-                shouldShowName,
                 ResourceLocation.tryParse(iconLocation),
                 hasPercent
         );
     }
 
     private void renderLivingEntity(
-            @NotNull LivingEntity entity,
+            @NotNull LivingEntityRenderState entityRenderState,
             @NotNull PoseStack stack,
-            int light,
-            boolean shouldShowName
+            int light
     ) {
         Optional<ServerConnection> connection = voiceClient.getServerConnection();
         if (!connection.isPresent()) return;
@@ -184,44 +186,39 @@ public final class SourceIconRenderer {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
-        if (isIconHidden() || entity.isInvisibleTo(clientPlayer)) return;
+        if (isIconHidden() || entityRenderState.isInvisibleToPlayer()) return;
 
         Collection<ClientAudioSource<EntitySourceInfo>> sources = voiceClient.getSourceManager()
-                .getEntitySources(entity.getId());
+                .getEntitySources(entityRenderState.getEntityId());
 
         ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(sources);
         if (highestSourceLine == null) return;
 
         renderEntity(
-                entity,
+                entityRenderState,
                 stack,
                 light,
-                shouldShowName,
                 ResourceLocation.tryParse(highestSourceLine.getIcon()),
                 false
         );
     }
 
     private void renderEntity(
-            @NonNull Entity entity,
+            @NonNull LivingEntityRenderState entityRenderState,
             @NonNull PoseStack stack,
             int light,
-            boolean hasLabel,
             @NonNull ResourceLocation iconLocation,
             boolean hasPercent
     ) {
-        Vec3 position = entity.position();
-
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        double distance = camera.getPosition().distanceToSqr(position.x(), position.y(), position.z());
-        if (distance > 4096D) return;
+        if (entityRenderState.getDistanceToCameraSquared() > 4096D) return;
 
         stack.pushPose();
 
         if (hasPercent) stack.translate(0D, 0.3D, 0D);
-        translateEntityMatrix(entity, camera, stack, distance, hasLabel);
+        translateEntityMatrix(entityRenderState, camera, stack);
 
-        if (entity.isDescending()) {
+        if (entityRenderState.isDiscrete()) {
             vertices(stack, 40, light, iconLocation, false);
         } else {
             vertices(stack, 255, light, iconLocation, false);
@@ -232,41 +229,36 @@ public final class SourceIconRenderer {
     }
 
     private void renderPercent(
-            @NotNull Entity entity,
+            @NotNull LivingEntityRenderState entityRenderState,
             @NonNull PoseStack stack,
-            int light,
-            boolean hasLabel
+            int light
     ) {
-        Vec3 position = entity.position();
-
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
-        double distance = camera.getPosition().distanceToSqr(position.x(), position.y(), position.z());
-        if (distance > 4096D) return;
+        if (entityRenderState.getDistanceToCameraSquared() > 4096D) return;
 
         stack.pushPose();
 
-        translateEntityMatrix(entity, camera, stack, distance, hasLabel);
+        translateEntityMatrix(entityRenderState, camera, stack);
         stack.translate(5D, 0D, 0D);
 
         // render percents
-        DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + entity.getUUID());
+        DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + entityRenderState.getEntityUUID());
 
         McTextComponent text = McTextComponent.literal((int) Math.round((volume.value() * 100D)) + "%");
         int backgroundColor = (int) (0.25F * 255.0F) << 24;
         int xOffset = -RenderUtil.getTextWidth(text) / 2;
 
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableBlend();
-        RenderSystem.depthMask(false);
-
-        RenderUtil.fill(
+        RenderUtil.fillLight(
                 stack,
+                RenderPipelines.TEXT_BACKGROUND,
                 xOffset - 1,
                 -1,
                 xOffset + RenderUtil.getTextWidth(text) + 1,
                 8,
-                backgroundColor
+                backgroundColor,
+                light
         );
+
         RenderUtil.drawStringLight(
                 stack,
                 text,
@@ -274,12 +266,10 @@ public final class SourceIconRenderer {
                 0,
                 553648127,
                 light,
-                !entity.isDescending(),
+                !entityRenderState.isDiscrete(),
                 false
         );
 
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(true);
         RenderUtil.drawStringLight(
                 stack,
                 text,
@@ -291,31 +281,25 @@ public final class SourceIconRenderer {
                 false
         );
 
-        RenderSystem.disableBlend();
         stack.popPose();
     }
 
     private void translateEntityMatrix(
-            @NotNull Entity entity,
+            @NotNull LivingEntityRenderState entityRenderState,
             @NonNull Camera camera,
-            @NonNull PoseStack stack,
-            double distance,
-            boolean hasLabel
+            @NonNull PoseStack stack
     ) {
-        if (hasLabel) {
+        Vec3 nameTagAttachment = entityRenderState.getNameTagAttachment();
+
+        if (entityRenderState.getNameTag() != null) {
             stack.translate(0D, 0.3D, 0D);
 
-            if (entity instanceof Player) {
-                Player player = (Player) entity;
-
-                Objective belowNameObjective = getObjectiveBelowName(player.getScoreboard());
-                if (belowNameObjective != null && distance < 100D) {
-                    stack.translate(0D, 0.3D, 0D);
-                }
+            if (entityRenderState.getHasScoreboardText() && entityRenderState.getDistanceToCameraSquared() < 100D) {
+                stack.translate(0D, 0.3D, 0D);
             }
         }
 
-        stack.translate(0D, entity.getBbHeight() + 0.5D, 0D);
+        stack.translate(nameTagAttachment.x(), nameTagAttachment.y() + 0.5D, nameTagAttachment.z());
         PoseStackKt.rotate(stack, -camera.getYRot(), 0.0F, 1.0F, 0.0F);
         PoseStackKt.rotate(stack, camera.getXRot(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
@@ -369,13 +353,13 @@ public final class SourceIconRenderer {
                           int light,
                           @NotNull ResourceLocation iconLocation,
                           boolean seeThrough) {
-        if (seeThrough) {
-            RenderSystem.disableDepthTest();
-            RenderSystem.depthMask(false);
-        } else {
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthMask(true);
-        }
+//        if (seeThrough) {
+//            RenderUtil.disableDepthTest();
+//            RenderUtil.depthMask(false);
+//        } else {
+//            RenderUtil.enableDepthTest();
+//            RenderUtil.depthMask(true);
+//        }
 
         RenderType renderType;
         if (seeThrough) {
@@ -384,7 +368,12 @@ public final class SourceIconRenderer {
             renderType = RenderType.text(iconLocation);
         }
 
-        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, renderType.format());
+        RenderPipeline renderPipeline = RenderPipelines.fromRenderType(
+                seeThrough ? "text_see_through" : "text",
+                renderType
+        );
+
+        BufferBuilder buffer = RenderUtil.beginBuffer(renderPipeline);
 
         vertex(stack, buffer, 0F, 10F, 0F, 0F, 1F, alpha, light);
         vertex(stack, buffer, 10F, 10F, 0F, 1F, 1F, alpha, light);

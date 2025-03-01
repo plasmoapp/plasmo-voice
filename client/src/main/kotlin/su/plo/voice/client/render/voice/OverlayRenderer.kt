@@ -147,7 +147,6 @@ class OverlayRenderer(
             y += (ENTRY_HEIGHT + 1) * index
         }
 
-        RenderSystem.depthFunc(515)
 
         stack.pushPose()
         stack.translate(0.0, 0.0, 1000.0)
@@ -165,9 +164,7 @@ class OverlayRenderer(
                 RenderUtil.bindTexture(0, loadSkin(it))
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
                 RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
-                RenderSystem.enableBlend()
                 RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
-                RenderSystem.disableBlend()
                 if (!position.isRight) {
                     x += 16 + 1
                 }
@@ -198,9 +195,7 @@ class OverlayRenderer(
             RenderUtil.bindTexture(0, ResourceLocation.tryParse(sourceLine.icon)!!)
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            RenderSystem.enableBlend()
             RenderUtil.blit(stack, x, y, 0, 0f, 0f, 16, 16, 16, 16)
-            RenderSystem.disableBlend()
         }
 
         stack.popPose()

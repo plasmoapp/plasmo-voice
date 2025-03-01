@@ -19,6 +19,7 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.key.MouseScrollEvent;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import static su.plo.lib.mod.extensions.EntityKt.eyePosition;
 import static su.plo.voice.client.extension.OptionsKt.renderDistanceValue;
@@ -40,9 +41,9 @@ public final class PlayerVolumeAction {
                 .ifPresent((key) -> key.addPressListener(this::onButton));
     }
 
-    public boolean isShown(@NotNull Player player) {
+    public boolean isShown(@NotNull UUID playerId) {
         return focusedPlayer != null &&
-                focusedPlayer.getUUID().equals(player.getUUID()) &&
+                focusedPlayer.getUUID().equals(playerId) &&
                 lastScroll != 0L &&
                 System.currentTimeMillis() - lastScroll < 1_000L;
     }

@@ -6,6 +6,8 @@ group = "$group.client-root"
 
 preprocess {
 
+    val fabric12105 = createNode("1.21.5-fabric", 12105, "official")
+
     val neoForge12104 = createNode("1.21.4-neoforge", 12104, "official")
     val fabric12104 = createNode("1.21.4-fabric", 12104, "official")
 
@@ -39,6 +41,8 @@ preprocess {
 
     val forge11605 = createNode("1.16.5-forge", 11605, "official")
     val fabric11605 = createNode("1.16.5-fabric", 11605, "official")
+
+    fabric12105.link(fabric12104)
 
     fabric12104.link(fabric12103)
     neoForge12104.link(neoForge12103)

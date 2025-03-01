@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.9.23"
+kotlin = "2.0.21"
 dokka = "1.8.20"
 kotlinx-json = "1.5.1"
 kotlinx-coroutines = "1.7.3"
@@ -13,7 +13,7 @@ gson = "2.10.1"
 netty = "4.1.77.Final"
 crowdin = "1.1.0-SNAPSHOT"
 config = "1.0.2"
-slib = "1.0.7-SNAPSHOT"
+slib = "1.0.8-SNAPSHOT"
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
@@ -33,7 +33,7 @@ rnnoise-jni = "1.0.2"
 shadow = "8.1.1"
 idea-ext = "1.1.7"
 
-asm = "9.6"
+asm = "9.7.1"
 
 [libraries]
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }

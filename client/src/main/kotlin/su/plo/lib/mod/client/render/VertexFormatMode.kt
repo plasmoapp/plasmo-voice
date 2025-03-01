@@ -23,10 +23,22 @@ enum class VertexFormatMode(
             TRIANGLE_FAN -> VertexFormat.Mode.TRIANGLE_FAN
             QUADS -> VertexFormat.Mode.QUADS
         }
+    //#endif
 
     companion object {
+        fun from(glMode: Int) =
+            when (glMode) {
+                GL11.GL_LINES -> LINES
+                GL11.GL_LINE_STRIP -> LINE_STRIP
+                GL11.GL_TRIANGLES -> TRIANGLES
+                GL11.GL_TRIANGLE_STRIP -> TRIANGLE_STRIP
+                GL11.GL_TRIANGLE_FAN -> TRIANGLE_FAN
+                GL11.GL_QUADS -> QUADS
+                else -> throw IllegalArgumentException("Unsupported gl mode $glMode")
+            }
 
-        fun fromMc(mode: VertexFormat.Mode) =
+        //#if MC>=11700
+        fun from(mode: VertexFormat.Mode) =
             when (mode) {
                 VertexFormat.Mode.LINES -> LINE_STRIP
                 VertexFormat.Mode.LINE_STRIP -> LINE_STRIP
@@ -36,7 +48,6 @@ enum class VertexFormatMode(
                 VertexFormat.Mode.QUADS -> QUADS
                 else -> throw IllegalArgumentException("Vertex format not supported")
             }
+        //#endif
     }
-
-    //#endif
 }

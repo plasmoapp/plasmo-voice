@@ -25,7 +25,7 @@ public class ShaderUtil {
     }
 
     private static String readShader(@NonNull String name, @NonNull String ext) throws IOException {
-        try (InputStream is = ModVoiceClient.class.getResource(String.format("/shaders/%s.%s", name, ext)).openStream()) {
+        try (InputStream is = ModVoiceClient.class.getResource(String.format("/assets/plasmovoice/shaders/%s.%s", name, ext)).openStream()) {
             return new BufferedReader(
                     new InputStreamReader(is, StandardCharsets.UTF_8))
                     .lines()

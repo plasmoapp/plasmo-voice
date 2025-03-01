@@ -4,7 +4,7 @@ import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.mod.client.gui.GuiUtil;
+import su.plo.voice.client.gui.GuiUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;

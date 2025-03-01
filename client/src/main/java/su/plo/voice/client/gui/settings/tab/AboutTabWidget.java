@@ -158,9 +158,7 @@ public final class AboutTabWidget extends TabWidget {
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
-            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
-            RenderSystem.disableBlend();
 
             RenderUtil.drawString(stack, developer.getName(), x + 40, y + 11, 16777215);
             RenderUtil.drawString(stack, developer.getRole().getTranslatable(), x + 40, y + 21, -5592406);
@@ -179,7 +177,6 @@ public final class AboutTabWidget extends TabWidget {
             //#if MC>=12005
             //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
             //$$
-            //$$ RenderSystem.enableBlend();
             //$$ RenderUtil.blit(
             //$$         stack,
             //$$         x, x + entryWidth,
@@ -188,7 +185,6 @@ public final class AboutTabWidget extends TabWidget {
             //$$         0F, entryWidth / 32.0F,
             //$$         0F, height / 32.0F
             //$$ );
-            //$$ RenderSystem.disableBlend();
             //#else
             RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 
@@ -228,9 +224,7 @@ public final class AboutTabWidget extends TabWidget {
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 8.0F, 8.0F, 8, 8, 64, 64);
-            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 40.0F, 8.0F, 8, 8, 64, 64);
-            RenderSystem.disableBlend();
 
             RenderUtil.drawString(stack, patron.getName(), x + 26, y + 6, 16777215);
 
@@ -251,7 +245,6 @@ public final class AboutTabWidget extends TabWidget {
             //#if MC>=12005
             //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
             //$$
-            //$$ RenderSystem.enableBlend();
             //$$ RenderUtil.blit(
             //$$         stack,
             //$$         x, x + entryWidth,
@@ -260,7 +253,6 @@ public final class AboutTabWidget extends TabWidget {
             //$$         0F, entryWidth / 32.0F,
             //$$         0F, height / 32.0F
             //$$ );
-            //$$ RenderSystem.disableBlend();
             //#else
             RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 

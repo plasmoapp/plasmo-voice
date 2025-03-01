@@ -2,20 +2,24 @@ package su.plo.lib.mod.client.render
 
 import com.google.common.base.Charsets
 import com.mojang.blaze3d.platform.NativeImage
-import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.resources.ResourceLocation
 import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
-import java.util.*
+import java.util.Base64
 
 fun registerBase64Texture(texture: String, textureLocation: ResourceLocation): ResourceLocation {
     // register base64 icon in minecraft resources
-    RenderSystem.recordRenderCall {
+    Minecraft.getInstance().execute {
         Minecraft.getInstance().textureManager.register(
             textureLocation,
-            DynamicTexture(getNativeImageFromBase64(texture))
+            DynamicTexture(
+                //#if MC>=12105
+                //$$ { null },
+                //#endif
+                getNativeImageFromBase64(texture)
+            )
         )
     }
 

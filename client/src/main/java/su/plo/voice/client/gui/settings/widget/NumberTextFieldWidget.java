@@ -1,6 +1,5 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
@@ -62,7 +61,7 @@ public final class NumberTextFieldWidget extends TextFieldWidget implements Upda
         this.x += 1;
         this.y += 1;
         stack.pushPose();
-        RenderSystem.enableDepthTest();
+
         stack.translate(0.0D, 0.0D, 0.0D);
 
         super.renderButton(stack, mouseX, mouseY, delta);

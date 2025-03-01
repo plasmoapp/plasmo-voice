@@ -1,9 +1,9 @@
 package su.plo.lib.mod.client.render.shader;
 
 import gg.essential.universal.shader.BlendState;
-import gg.essential.universal.shader.SamplerUniform;
 import gg.essential.universal.shader.UShader;
 import lombok.experimental.UtilityClass;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.BaseVoice;
 
 import java.io.IOException;
@@ -12,10 +12,20 @@ import java.io.IOException;
 public class SolidColorShader {
 
     private static UShader shader;
-    private static SamplerUniform samplerUniform;
 
-    public static void bind(int textureId) {
-        if (hasVulkan()) return;
+    public static boolean isAvailable() {
+        //#if MC>=12105
+        //$$ return !hasVulkan();
+        //#else
+        return getShader() != null;
+        //#endif
+    }
+
+    public static @Nullable UShader getShader() {
+        //#if MC>=12105
+        //$$ return null;
+        //#else
+        if (hasVulkan()) return null;
 
         if (shader == null) {
             try {
@@ -27,8 +37,8 @@ public class SolidColorShader {
                 );
                 //#else
                 //$$ shader = ShaderUtil.loadShader(
-                //$$         "position_tex_solid_color_legacy",
-                //$$         "position_tex_solid_color_legacy",
+                //$$         "position_tex_solid_color_1_16",
+                //$$         "position_tex_solid_color_1_16",
                 //$$         BlendState.NORMAL
                 //$$ );
                 //#endif
@@ -39,19 +49,10 @@ public class SolidColorShader {
             if (!shader.getUsable()) {
                 throw new RuntimeException("Failed to load solid color shader");
             }
-
-            samplerUniform = shader.getSamplerUniform("TextureSampler");
         }
 
-        shader.bind();
-
-        samplerUniform.setValue(textureId);
-    }
-
-    public static void unbind() {
-        if (shader != null) {
-            shader.unbind();
-        }
+        return shader;
+        //#endif
     }
 
     private static boolean hasVulkan = false;

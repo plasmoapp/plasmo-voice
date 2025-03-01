@@ -2,7 +2,8 @@ package su.plo.voice.client.render.voice;
 
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
+import com.mojang.blaze3d.vertex.BufferBuilder;
+import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -13,7 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.VertexBuilder;
-import su.plo.lib.mod.client.render.VertexFormatMode;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
@@ -108,25 +109,9 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             center = clientPlayer.position();
         }
 
-        // setup render
-        RenderUtil.disableCull();
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthMask(false);
-        RenderUtil.polygonOffset(-3f, -3f);
-        RenderUtil.enablePolygonOffset();
-        RenderSystem.depthFunc(515);
-
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(
-                770, // SourceFactor.SRC_ALPHA
-                771, // DestFactor.ONE_MINUS_SRC_ALPHA
-                1, // SourceFactor.ONE
-                0 // DestFactor.ZERO
-        );
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         stack.pushPose();
-        RenderUtil.lineWidth(1f);
 
         stack.translate(
                 center.x - camera.position().x,
@@ -134,7 +119,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 center.z - camera.position().z
         );
 
-        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.TRIANGLE_STRIP, DefaultVertexFormat.POSITION_COLOR);
+        BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.DISTANCE_SPHERE);
 
         int r = (entry.color() >> 16) & 0xFF;
         int g = (entry.color() >> 8) & 0xFF;
@@ -171,18 +156,10 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             }
         }
 
-        RenderUtil.drawBuffer(buffer);
+        // todo: doesn't work on 1.16.5(?)
+        RenderUtil.drawBuffer(buffer, RenderPipelines.DISTANCE_SPHERE);
 
         stack.popPose();
-
-        // cleanup render
-        RenderUtil.polygonOffset(0f, 0f);
-        RenderUtil.disablePolygonOffset();
-        RenderSystem.disableBlend();
-        RenderUtil.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
-        RenderUtil.enableCull();
-        RenderSystem.depthMask(true);
     }
 
     @Data

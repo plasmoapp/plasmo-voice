@@ -88,9 +88,6 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
                     stack, trackX0, trackTop, trackX1 - 1, trackTop + trackBottom - 1, -0x3f3f40
             );
         }
-
-//        render.enableTexture();
-//        render.disableBlend();
     }
 
     // GuiScreenListener impl

@@ -259,8 +259,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
             buttonX += button.getWidth() + 4;
             button.setY(buttonY);
 
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthFunc(519);
             button.render(stack, mouseX, mouseY, delta);
         }
 
@@ -284,8 +282,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         //#if MC>=12005
-        //$$ RenderSystem.enableBlend();
-        //$$
         //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
         //$$
         //$$ RenderUtil.blit(
@@ -307,8 +303,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         //$$         0, width / 32F,
         //$$         0, 1F
         //$$ );
-        //$$
-        //$$ RenderSystem.disableBlend();
         //#else
         RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 
@@ -322,20 +316,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 64, 64, 64, 255
         );
 
-
-        RenderSystem.depthFunc(515);
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(
-                770, // SRC_ALPHA,
-                771, // ONE_MINUS_SRC_ALPHA
-                0, // ZERO
-                1 // ONE
-        );
-        //#if MC<11700
-        //$$ RenderSystem.shadeModel(7425);
-        //#endif
-
         RenderUtil.fillGradient(
                 stack,
                 width, height + 4, 0, height,
@@ -343,13 +323,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 0, 0, 0, 255,
                 0
         );
-
-//        render.enableTexture();
-        RenderUtil.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        //#if MC<11700
-        //$$ RenderSystem.shadeModel(7424);
-        //#endif
         //#endif
     }
 

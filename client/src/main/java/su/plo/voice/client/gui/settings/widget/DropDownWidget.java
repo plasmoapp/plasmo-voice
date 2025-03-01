@@ -1,12 +1,11 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 import java.util.List;
@@ -70,10 +69,6 @@ public final class DropDownWidget extends GuiAbstractWidget {
 
     @Override
     protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        RenderSystem.enableBlend();
-        RenderUtil.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-
         RenderUtil.fill(stack, x, y, x + width, y + height, -6250336);
         RenderUtil.fill(stack, x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
     }
@@ -90,8 +85,6 @@ public final class DropDownWidget extends GuiAbstractWidget {
         }
 
         for (McTextComponent element : elements) {
-            RenderSystem.enableDepthTest();
-
             stack.pushPose();
             stack.translate(0D, 0D, 10D);
 
@@ -120,7 +113,6 @@ public final class DropDownWidget extends GuiAbstractWidget {
             );
 
             stack.popPose();
-            RenderSystem.disableDepthTest();
 
             elementY += ELEMENT_HEIGHT + 1;
         }
@@ -139,10 +131,6 @@ public final class DropDownWidget extends GuiAbstractWidget {
 
     private void renderArrow(@NotNull PoseStack stack) {
         if (!active) return;
-
-        RenderSystem.enableBlend();
-        RenderUtil.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
 
         if (open) {
             for (int i = 0; i < 5; i++) {

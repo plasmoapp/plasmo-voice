@@ -73,8 +73,6 @@ public final class HudIconRenderer {
     private void renderIcon(@NotNull PoseStack stack, @NotNull ResourceLocation iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
-        RenderSystem.enableBlend();
-        RenderSystem.depthFunc(515);
         RenderUtil.bindTexture(0, iconLocation);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
@@ -82,8 +80,6 @@ public final class HudIconRenderer {
         stack.translate(0f, 0f, 1000f);
         RenderUtil.blit(stack, calcIconX(iconPosition.getX()), calcIconY(iconPosition.getY()), 0, 0, 16, 16, 16, 16);
         stack.popPose();
-
-        RenderSystem.disableBlend();
     }
 
     private int calcIconX(Integer x) {
