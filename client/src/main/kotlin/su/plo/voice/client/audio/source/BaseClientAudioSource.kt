@@ -91,7 +91,12 @@ abstract class BaseClientAudioSource<T>(
 
     private val mutex = Mutex()
 
-    private val buffer = JitterBuffer(config.advanced.jitterPacketDelay.value())
+    private val buffer: JitterBuffer =
+        if (config.advanced.adaptiveJitterBuffer.value()) {
+            AdaptiveJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
+        } else {
+            StaticJitterBuffer(config.advanced.jitterPacketDelay.value())
+        }
 
     private val job = startJob()
 
@@ -253,6 +258,18 @@ abstract class BaseClientAudioSource<T>(
         while (isActive) {
             val wrappedPacket = buffer.poll()
             if (wrappedPacket == null) {
+                // if playback time is reached, but buffer is not available
+                // we should do PLC
+                if (config.advanced.adaptiveJitterBuffer.value() &&
+                    activated.get() &&
+                    buffer.isNotEmpty() &&
+                    timeSupplier.currentTimeMillis - lastActivation > 20
+                ) {
+                    BaseVoice.DEBUG_LOGGER.warn("Playback time is reached, but packet is not available. PLC will be used to compensate lost packet. ($lastSequenceNumber)")
+                    processPlc()
+                    continue
+                }
+
                 delay(5L)
                 continue
             }
@@ -267,78 +284,46 @@ abstract class BaseClientAudioSource<T>(
         }
     }
 
-    private suspend fun processAudioPacket(packet: SourceAudioPacket) = mutex.withLock {
+    private fun isAudioPacketValid(packet: SourceAudioPacket): Boolean {
         // drop packets if source state diff by more than 10
         if (sourceInfo.state.diff(packet.sourceState) >= 10) {
             BaseVoice.DEBUG_LOGGER.warn("Drop packet with bad source state {}", sourceInfo)
-            return
+            return false
         }
 
         // drop packet with bad order
         if (lastSequenceNumber >= 0 && packet.sequenceNumber <= lastSequenceNumber) {
             if (lastSequenceNumber - packet.sequenceNumber < 10L) {
-                BaseVoice.DEBUG_LOGGER.log("Drop packet with bad order")
-                return
+                BaseVoice.DEBUG_LOGGER.log("Drop packet with bad order ($lastSequenceNumber ${packet.sequenceNumber})")
+                return false
             }
         }
+
+        return true
+    }
+
+    private suspend fun processPlc() = mutex.withLock {
+        val sequenceNumber = lastSequenceNumber + 1
+
+        write((decoder as AudioDecoderPlc).decodePLC(), sequenceNumber)
+
+        lastSequenceNumber = sequenceNumber
+        lastActivation = timeSupplier.currentTimeMillis
+
+        activated.set(true)
+        resetted.set(false)
+    }
+
+    private suspend fun processAudioPacket(packet: SourceAudioPacket) = mutex.withLock {
+        if (!isAudioPacketValid(packet)) return
 
         endRequest?.let {
             it.cancel()
             endRequest = null
         }
 
-        // get source positions
-        val playerPosition = getListenerPosition()
-        val position = getPosition()
-        val lookAngle = getLookAngle()
-
-        val distance = packet.distance.toDouble()
-
-        val sourceDistance = position.distanceTo(playerPosition)
-        val distanceGain = calculateDistanceGain(sourceDistance.coerceAtMost(distance), distance)
-
-        // calculate volume
-        var volume = config.voice.volume.value() * sourceVolume.value() * lineVolume.value()
-        if (shouldCalculateOcclusion()) {
-            var occlusion: Double = calculateOcclusion(position)
-            if (lastOcclusion >= 0) {
-                lastOcclusion = if (occlusion > lastOcclusion) {
-                    (lastOcclusion + 0.05).coerceAtLeast(0.0)
-                } else {
-                    (lastOcclusion - 0.05).coerceAtLeast(occlusion)
-                }
-                occlusion = lastOcclusion
-            }
-
-            volume *= (1.0 - occlusion)
-            if (lastOcclusion == -1.0) {
-                lastOcclusion = occlusion
-            }
-        }
-
-        if (config.advanced.exponentialVolumeSlider.value() && volume < 1) {
-            volume = volume.pow(3)
-        }
-
-        // calculate and apply directional angle gain
-        if (shouldCalculateDirectionalGain()) {
-            val positionDiffNormalized = playerPosition.subtract(position).normalize()
-            val angle = Math.toDegrees(acos(positionDiffNormalized.dot(lookAngle)))
-
-            val innerAngle =
-                if (sourceInfo.angle > 0) sourceInfo.angle / 2
-                else config.advanced.directionalSourcesAngle.value() / 2
-
-            if (angle > innerAngle) {
-                val outAngle = angle - innerAngle
-                volume *= calculateAngleGain(outAngle, innerAngle.toDouble())
-            }
-        }
-
-        volume *= distanceGain
-
         // update source volume & distance
-        updateSource(volume.toFloat(), position)
+        updateSource(packet.distance.toDouble())
 
         // after updating the source, source can be closed by reloading the device,
         // so we need to make sure that source is not closed rn
@@ -349,7 +334,7 @@ abstract class BaseClientAudioSource<T>(
             if (lastSequenceNumber >= 0) {
                 val packetsToCompensate = (packet.sequenceNumber - (lastSequenceNumber + 1)).toInt()
                 if (packetsToCompensate in 1..4) {
-                    BaseVoice.DEBUG_LOGGER.warn("Compensate {} lost packets", packetsToCompensate)
+                    BaseVoice.DEBUG_LOGGER.warn("Compensate {} lost packets ({} {})", packetsToCompensate, lastSequenceNumber, packet.sequenceNumber)
                     for (i in 0 until packetsToCompensate) {
                         val compensatedSequenceNumber = lastSequenceNumber + i + 1
 
@@ -389,7 +374,6 @@ abstract class BaseClientAudioSource<T>(
         lastSequenceNumber = packet.sequenceNumber
         lastActivation = timeSupplier.currentTimeMillis
 
-        if (distance > 0) canHear.set(sourceDistance <= distance)
         activated.set(true)
         resetted.set(false)
     }
@@ -480,9 +464,57 @@ abstract class BaseClientAudioSource<T>(
         }
     }
 
-    private suspend fun updateSource(volume: Float, position: Vec3) {
+    private suspend fun updateSource(distance: Double) {
+        // get source positions
+        val playerPosition = getListenerPosition()
+        val position = getPosition()
+        val lookAngle = getLookAngle()
+
+        val sourceDistance = position.distanceTo(playerPosition)
+        val distanceGain = calculateDistanceGain(sourceDistance.coerceAtMost(distance), distance)
+
+        // calculate volume
+        var volume = config.voice.volume.value() * sourceVolume.value() * lineVolume.value()
+        if (shouldCalculateOcclusion()) {
+            var occlusion: Double = calculateOcclusion(position)
+            if (lastOcclusion >= 0) {
+                lastOcclusion = if (occlusion > lastOcclusion) {
+                    (lastOcclusion + 0.05).coerceAtLeast(0.0)
+                } else {
+                    (lastOcclusion - 0.05).coerceAtLeast(occlusion)
+                }
+                occlusion = lastOcclusion
+            }
+
+            volume *= (1.0 - occlusion)
+            if (lastOcclusion == -1.0) {
+                lastOcclusion = occlusion
+            }
+        }
+
+        if (config.advanced.exponentialVolumeSlider.value() && volume < 1) {
+            volume = volume.pow(3)
+        }
+
+        // calculate and apply directional angle gain
+        if (shouldCalculateDirectionalGain()) {
+            val positionDiffNormalized = playerPosition.subtract(position).normalize()
+            val angle = Math.toDegrees(acos(positionDiffNormalized.dot(lookAngle)))
+
+            val innerAngle =
+                if (sourceInfo.angle > 0) sourceInfo.angle / 2
+                else config.advanced.directionalSourcesAngle.value() / 2
+
+            if (angle > innerAngle) {
+                val outAngle = angle - innerAngle
+                volume *= calculateAngleGain(outAngle, innerAngle.toDouble())
+            }
+        }
+
+        volume *= distanceGain
+
         source.device.runInContext {
-            source.volume = volume
+            source.volume = volume.toFloat()
 
             if (isPanningDisabled()) {
                 source.setInt(
@@ -500,6 +532,8 @@ abstract class BaseClientAudioSource<T>(
 
             source.setFloatArray(0x1004, position.toFloatArray()) // AL_POSITION
         }
+
+        if (distance > 0) canHear.set(sourceDistance <= distance)
     }
 
     private suspend fun createSource(sourceInfo: T): AlSource {

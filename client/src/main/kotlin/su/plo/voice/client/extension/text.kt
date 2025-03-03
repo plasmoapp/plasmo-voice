@@ -1,8 +1,11 @@
 package su.plo.voice.client.extension
 
 import net.minecraft.ChatFormatting
+import net.minecraft.network.chat.Component
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.slib.api.chat.component.McTextComponent
+
+fun McTextComponent.toMinecraft(): Component = RenderUtil.getTextConverter().convert(this)
 
 fun Char.width() = RenderUtil.getStringWidth(this.toString()).toFloat()
 

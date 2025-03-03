@@ -21,6 +21,9 @@
         ],
         "main": [
             "su.plo.voice.ModVoice"
+        ],
+        "modmenu": [
+            "su.plo.voice.client.integration.ModMenuIntegration"
         ]
     },
     "mixins": [

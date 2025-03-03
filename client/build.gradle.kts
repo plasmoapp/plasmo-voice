@@ -69,6 +69,9 @@ fun slibArtifact(): String {
 
 repositories {
     maven("https://repo.plasmoverse.com/snapshots")
+    maven("https://maven.shedaniel.me/")
+    maven("https://maven.terraformersmc.com/")
+    maven("https://maven.nucleoid.xyz/")
 }
 
 dependencies {
@@ -107,6 +110,44 @@ dependencies {
         } else {
             "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
         }
+
+        // build times go _/
+
+        val clothConfigVersion = when (platform.mcVersion) {
+            11605 -> "4.17.101"
+            11701 -> "5.3.63"
+            11802 -> "6.5.102"
+            11902 -> "8.3.134"
+            11903 -> "9.1.104"
+            11904 -> "10.1.135"
+            12001 -> "11.1.136"
+            12004 -> "13.0.138"
+            12100 -> "15.0.140"
+            12103 -> "16.0.143"
+            12104, 12105 -> "17.0.144"
+            else -> throw GradleException("Unsupported platform $platform")
+        }
+
+        modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
+            exclude("net.fabricmc.fabric-api")
+        }
+
+        val modMenuVersion = when (platform.mcVersion) {
+            11605 -> "1.16.23"
+            11701 -> "2.0.17"
+            11802 -> "3.2.5"
+            11902 -> "4.1.2"
+            11903 -> "5.1.0"
+            11904 -> "6.3.1"
+            12001 -> "7.2.2"
+            12004 -> "9.2.0"
+            12100 -> "11.0.3"
+            12103 -> "12.0.0"
+            12104, 12105 -> "13.0.2"
+            else -> throw GradleException("Unsupported platform $platform")
+        }
+
+        modImplementation("com.terraformersmc:modmenu:$modMenuVersion")
     }
 
     val includedProjects = listOf(

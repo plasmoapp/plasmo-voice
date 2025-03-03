@@ -73,6 +73,8 @@
     "gui.plasmovoice.advanced.panning": "Stereo Positioning",
     "gui.plasmovoice.advanced.mute_player_on_direct": "Mute Player On Direct",
     "gui.plasmovoice.advanced.mute_player_on_direct.tooltip": "When enabled, the player's source will be automatically muted if the direct source from the same player becomes active. Use this to avoid overlapping audio or conflicting playback from multiple sources.",
+    "gui.plasmovoice.advanced.adaptive_jitter_buffer": "Adaptive Jitter Buffer",
+    "gui.plasmovoice.advanced.adaptive_jitter_buffer.tooltip": "Time-based network jitter buffer with adaptive delay depending on connection quality.\n\nTry to enable this option if you hear audio artifacts caused by bad connection.",
 
     "gui.plasmovoice.advanced.exponential_volume": "Exponential Volume",
     "gui.plasmovoice.advanced.exponential_volume.volume_slider": "Volume Slider",
@@ -161,5 +163,16 @@
     "message.plasmovoice.update_available.hover": "%s",
 
     "modmenu.descriptionTranslation.plasmovoice": "A proximity voice chat mod with audio positioning and lots of features",
-    "modmenu.summaryTranslation.plasmovoice": "A proximity voice chat mod with audio positioning and lots of features"
+    "modmenu.summaryTranslation.plasmovoice": "A proximity voice chat mod with audio positioning and lots of features",
+
+    "clothconfig.plasmovoice.devices": "Devices",
+    "clothconfig.plasmovoice.devices.disable_input_device": "Disable Input Device",
+    "clothconfig.plasmovoice.devices.use_javax_input": "Javax Input Device",
+    "clothconfig.plasmovoice.devices.use_javax_input.tooltip": "Sometimes OpenAL input device doesn't work properly on some systems, so you can try to use Javax implementation.",
+
+    "clothconfig.plasmovoice.advanced": "Advanced",
+    "clothconfig.plasmovoice.advanced.debug_logger": "Debug Logger",
+    "clothconfig.plasmovoice.advanced.camera_sound_listener": "Camera Sound Listener",
+    "clothconfig.plasmovoice.advanced.camera_sound_listener.tooltip": "Sets the sound listener to the camera entity.\nThe sound listener determines the position in the world from which you hear audio. For example, if you're using freecam and this option is disabled, you'll hear audio as if you were not in freecam.\n\nOn some servers, this may be disabled by pv.allow_freecam permission.",
+    "clothconfig.plasmovoice.advanced.jitter_buffer_packet_delay": "Jitter Buffer Delay"
 }

@@ -417,6 +417,9 @@ public final class VoiceClientConfig implements ClientConfig {
 
         @ConfigField
         private IntConfigEntry alPlaybackBuffers = new IntConfigEntry(5, 1, 32);
+
+        @ConfigField
+        private BooleanConfigEntry adaptiveJitterBuffer = new BooleanConfigEntry(false);
     }
 
     @Config

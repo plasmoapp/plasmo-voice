@@ -1,24 +1,13 @@
 package su.plo.voice.client.gui.settings.tab;
 
-import com.google.common.collect.ImmutableList;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceManager;
-import su.plo.voice.api.client.audio.device.DeviceType;
 import su.plo.voice.api.client.audio.device.OutputDevice;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.client.gui.settings.widget.ToggleButton;
-
-import java.util.List;
 
 public final class AdvancedTabWidget extends TabWidget {
-
-    private static final List<McTextComponent> ICONS_LIST = ImmutableList.of(
-            McTextComponent.translatable("gui.plasmovoice.advanced.show_icons.hud"),
-            McTextComponent.translatable("gui.plasmovoice.advanced.show_icons.always"),
-            McTextComponent.translatable("gui.plasmovoice.advanced.show_icons.hidden")
-    );
 
     private final DeviceManager devices;
 
@@ -53,12 +42,27 @@ public final class AdvancedTabWidget extends TabWidget {
                 config.getAdvanced().getDirectionalSourcesAngle(),
                 ""
         ));
-        addEntry(createStereoToMonoSources());
-        addEntry(createPanning());
+        addEntry(createToggleEntry(
+                McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
+                config.getAdvanced().getStereoSourcesToMono(),
+                toggled -> devices.getOutputDevice().ifPresent(OutputDevice::closeSourcesAsync)
+        ));
+        addEntry(createToggleEntry(
+                McTextComponent.translatable("gui.plasmovoice.advanced.panning"),
+                null,
+                config.getAdvanced().getPanning()
+        ));
         addEntry(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.mute_player_on_direct"),
                 McTextComponent.translatable("gui.plasmovoice.advanced.mute_player_on_direct.tooltip"),
                 config.getAdvanced().getMutePlayerOnDirect()
+        ));
+        addEntry(createToggleEntry(
+                McTextComponent.translatable("gui.plasmovoice.advanced.adaptive_jitter_buffer"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.adaptive_jitter_buffer.tooltip"),
+                config.getAdvanced().getAdaptiveJitterBuffer(),
+                toggled -> voiceClient.getBackgroundExecutor().execute(voiceClient.getSourceManager()::clear)
         ));
 
         addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")));
@@ -86,45 +90,5 @@ public final class AdvancedTabWidget extends TabWidget {
 //                config.getAdvanced().getLimiterThreshold(),
 //                "dB"
 //        ));
-    }
-
-    private OptionEntry<ToggleButton> createStereoToMonoSources() {
-        Runnable onUpdate = () -> {
-            devices.getOutputDevice()
-                    .ifPresent(OutputDevice::closeSourcesAsync);
-        };
-
-        ToggleButton toggleButton = new ToggleButton(
-                config.getAdvanced().getStereoSourcesToMono(),
-                0,
-                0,
-                ELEMENT_WIDTH,
-                20,
-                (toggled) -> onUpdate.run()
-        );
-
-        return new OptionEntry<>(
-                McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono"),
-                toggleButton,
-                config.getAdvanced().getStereoSourcesToMono(),
-                McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
-                (button, element) -> onUpdate.run()
-        );
-    }
-
-    private OptionEntry<ToggleButton> createPanning() {
-        ToggleButton toggleButton = new ToggleButton(
-                config.getAdvanced().getPanning(),
-                0,
-                0,
-                ELEMENT_WIDTH,
-                20
-        );
-
-        return new OptionEntry<>(
-                McTextComponent.translatable("gui.plasmovoice.advanced.panning"),
-                toggleButton,
-                config.getAdvanced().getPanning()
-        );
     }
 }

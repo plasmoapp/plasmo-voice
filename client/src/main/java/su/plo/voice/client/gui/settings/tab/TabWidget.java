@@ -153,12 +153,22 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             @Nullable McTextComponent tooltip,
             @NotNull ConfigEntry<Boolean> entry
     ) {
+        return createToggleEntry(text, tooltip, entry, null);
+    }
+
+    protected OptionEntry<ToggleButton> createToggleEntry(
+            @NotNull McTextComponent text,
+            @Nullable McTextComponent tooltip,
+            @NotNull ConfigEntry<Boolean> entry,
+            @Nullable ToggleButton.PressAction onPress
+    ) {
         ToggleButton toggleButton = new ToggleButton(
                 entry,
                 0,
                 0,
                 ELEMENT_WIDTH,
-                20
+                20,
+                onPress
         );
 
         return new OptionEntry<>(

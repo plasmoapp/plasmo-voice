@@ -32,6 +32,8 @@ interface ClientConfig {
 
         val outputDevice: ConfigEntry<String>
 
+        val disableInputDevice: BooleanConfigEntry
+
         val useJavaxInput: BooleanConfigEntry
 
         val microphoneVolume: DoubleConfigEntry
@@ -88,6 +90,8 @@ interface ClientConfig {
         val exponentialDistanceGain: BooleanConfigEntry
 
         val jitterPacketDelay: IntConfigEntry
+
+        val adaptiveJitterBuffer: BooleanConfigEntry
 
         val alPlaybackBuffers: IntConfigEntry
     }
