@@ -96,7 +96,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             float delta
     ) {
         if (System.currentTimeMillis() - entry.lastChanged() > 2000L) {
-            entry.alpha(Math.max(0, entry.alpha() - (int) (10 * delta)));
+            entry.alpha(Math.max(0, entry.alpha() - (10f * delta)));
         }
 
         Vec3 center;
@@ -147,11 +147,11 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
                 VertexBuilder.create(buffer)
                         .position(stack, x0, y0, z0)
-                        .color(r, g, b, entry.alpha())
+                        .color(r, g, b, (int) entry.alpha())
                         .end();
                 VertexBuilder.create(buffer)
                         .position(stack, x1, y1, z1)
-                        .color(r, g, b, entry.alpha())
+                        .color(r, g, b, (int) entry.alpha())
                         .end();
             }
         }
@@ -170,7 +170,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
         private final float radius;
         private final @Nullable Vec3 position;
 
-        private int alpha = 150;
+        private float alpha = 150f;
         private long lastChanged = System.currentTimeMillis();
     }
 }
