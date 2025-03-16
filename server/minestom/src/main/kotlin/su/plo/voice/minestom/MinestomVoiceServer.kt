@@ -7,10 +7,10 @@ import su.plo.voice.util.version.ModrinthLoader
 import java.io.File
 
 class MinestomVoiceServer(
-    private val extension: Extension
+    private val dataDirectory: File
 ) : BaseVoiceServer(ModrinthLoader.MINESTOM) {
 
-    private val minecraftServerLib = MinestomServerLib(extension)
+    private val minecraftServerLib = MinestomServerLib(dataDirectory)
 
     public override fun onInitialize() {
         minecraftServerLib.onInitialize()
@@ -32,7 +32,7 @@ class MinestomVoiceServer(
         minecraftServerLib.onShutdown()
     }
 
-    override fun getConfigFolder(): File = extension.dataDirectory.toFile()
+    override fun getConfigFolder(): File = dataDirectory
 
     override fun getMinecraftServer() = minecraftServerLib
 }
