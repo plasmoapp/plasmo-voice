@@ -9,11 +9,11 @@ fun slibPlatform(
     platform: String,
     version: String,
     implementation: GradleModuleFunction,
-    shadow: GradleModuleFunction? = null
+    shadow: GradleModuleFunction? = null,
 ) {
-    implementation("su.plo.slib:$platform:$version") {}
+    implementation("com.github.PadowYT2.mc-slib:$platform:$version") {}
 
     if (shadow == null) return
 
-    shadow("su.plo.slib:$platform:$version") { isTransitive = false }
+    shadow("com.github.PadowYT2.mc-slib:$platform:$version") { isTransitive = false }
 }
