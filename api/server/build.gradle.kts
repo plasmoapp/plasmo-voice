@@ -2,5 +2,5 @@ dependencies {
     api(project(":api:common"))
     api(project(":api:server-proxy-common"))
 
-    api("su.plo.slib:api-server:${libs.versions.slib.get()}")
+    api("com.github.PadowYT2.mc-slib:api-server:${libs.versions.slib.get()}")
 }

@@ -37,21 +37,21 @@ file("api").listFilesOrdered {
 // Common
 include("common")
 
-include("client")
-project(":client").apply {
-    projectDir = file("client/")
-    buildFileName = "root.gradle.kts"
-}
+// include("client")
+// project(":client").apply {
+//     projectDir = file("client/")
+//     buildFileName = "root.gradle.kts"
+// }
 
-file("client").listFilesOrdered {
-    return@listFilesOrdered it.isDirectory && it.name.contains("-")
-}.forEach {
-    include("client:${it.name}")
-    project(":client:${it.name}").apply {
-        projectDir = file("client/${it.name}")
-        buildFileName = "../build.gradle.kts"
-    }
-}
+// file("client").listFilesOrdered {
+//     return@listFilesOrdered it.isDirectory && it.name.contains("-")
+// }.forEach {
+//     include("client:${it.name}")
+//     project(":client:${it.name}").apply {
+//         projectDir = file("client/${it.name}")
+//         buildFileName = "../build.gradle.kts"
+//     }
+// }
 
 // Server-Proxy Common (Module for common code between server and proxy implementations)
 include("server-proxy-common")
@@ -66,9 +66,9 @@ file("server").listFilesOrdered {
         .forEach { _ -> include("server:${file.name}:api") }
 }
 
-// Proxy
-file("proxy").listFilesOrdered {
-    return@listFilesOrdered it.isDirectory && it.name != "build"
-}.forEach {
-    include("proxy:${it.name}")
-}
+// // Proxy
+// file("proxy").listFilesOrdered {
+//     return@listFilesOrdered it.isDirectory && it.name != "build"
+// }.forEach {
+//     include("proxy:${it.name}")
+// }

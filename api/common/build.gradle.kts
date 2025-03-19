@@ -1,3 +1,3 @@
 dependencies {
-    api("su.plo.slib:api-common:${libs.versions.slib.get()}")
+    api("com.github.PadowYT2.mc-slib:api-common:${libs.versions.slib.get()}")
 }
