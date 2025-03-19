@@ -13,7 +13,9 @@ gson = "2.10.1"
 netty = "4.1.77.Final"
 crowdin = "1.1.0-SNAPSHOT"
 config = "1.0.2"
+
 slib = "4227799332"
+
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
@@ -23,7 +25,7 @@ bungeecord = "1.19-R0.1-SNAPSHOT"
 velocity = "3.1.1"
 paper = "1.16.5-R0.1-SNAPSHOT"
 
-minestom = "7320437640"
+minestom = "39d445482f"
 minestom-extensions = "1.2.0"
 
 opus-jni = "1.0.3"
