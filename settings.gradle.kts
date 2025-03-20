@@ -11,12 +11,11 @@ pluginManagement {
         maven("https://maven.fabricmc.net")
         maven("https://maven.architectury.dev/")
         maven("https://maven.minecraftforge.net")
-        maven("https://repo.essential.gg/repository/maven-public")
         maven("https://repo.plasmoverse.com/snapshots")
     }
 
     plugins {
-        val egtVersion = "0.8.0-SNAPSHOT"
+        val egtVersion = "0.8.1-SNAPSHOT"
         id("gg.essential.defaults") version egtVersion
         id("gg.essential.multi-version.root") version egtVersion
     }
