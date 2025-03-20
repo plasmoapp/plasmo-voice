@@ -10,7 +10,6 @@ group = "$group.server"
 
 dependencies {
     compileOnly(libs.minestom)
-    compileOnly(libs.minestom.extension)
 
     api(project(":server:common"))
 
@@ -49,16 +48,6 @@ dependencies {
 }
 
 tasks {
-    processResources {
-        filesMatching(mutableListOf("extension.json")) {
-            expand(
-                    mutableMapOf(
-                            "version" to version
-                    )
-            )
-        }
-    }
-
     shadowJar {
         configurations = listOf(project.configurations.shadow.get())
 
@@ -80,7 +69,7 @@ tasks {
     }
 
     java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
+        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     }
 
     compileKotlin {
