@@ -453,7 +453,7 @@ abstract class BaseClientAudioSource<T>(
     }
 
     private fun write(samples: ShortArray, sequenceNumber: Long) {
-        if (!voiceClient.eventBus.fire(AudioSourceWriteEvent(this, samples))) return
+        if (!voiceClient.eventBus.fire(AudioSourceWriteEvent(this, sequenceNumber, samples))) return
 
         if (!activated.get()) {
             source.write(AudioUtil.fadeIn(samples, source.channels))

@@ -9,5 +9,6 @@ import su.plo.voice.api.event.EventCancellableBase
  */
 data class AudioSourceWriteEvent(
     val source: ClientAudioSource<*>,
+    val sequenceNumber: Long,
     val samples: ShortArray
 ) : EventCancellableBase()
