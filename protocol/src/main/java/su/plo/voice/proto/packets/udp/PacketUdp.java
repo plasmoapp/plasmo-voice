@@ -34,6 +34,17 @@ public class PacketUdp {
         this.input = input;
     }
 
+    public PacketUdp(
+            @NotNull UUID secret,
+            long timestamp,
+            @NotNull Packet<?> packet
+    ) {
+        this.secret = secret;
+        this.timestamp = timestamp;
+        this.packet = packet;
+        this.read = true;
+    }
+
     public <T extends PacketHandler> Packet<T> getPacket() throws IOException {
         if (!read) readPacket();
 
