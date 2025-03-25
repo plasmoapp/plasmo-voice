@@ -83,7 +83,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 //#endif
 
-public final class ModServerConnection implements ServerConnection, ClientPacketTcpHandler {
+public final class ModServerConnection implements ServerConnection {
 
     private static final Logger LOGGER = LogManager.getLogger(ModServerConnection.class);
 

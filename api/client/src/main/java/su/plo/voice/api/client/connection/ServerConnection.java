@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
 
 import java.net.SocketAddress;
 import java.security.KeyPair;
@@ -19,7 +20,7 @@ import java.util.UUID;
  *     The connection is initialized upon receiving the first plasmo:voice/v2 channel packet.
  * </p>
  */
-public interface ServerConnection {
+public interface ServerConnection extends ClientPacketTcpHandler {
 
     /**
      * Gets the language of the server.
