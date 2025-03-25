@@ -60,6 +60,11 @@ public final class AesEncryption implements Encryption {
     }
 
     @Override
+    public @NotNull SecretKeySpec getKey() {
+        return key;
+    }
+
+    @Override
     public @NotNull String getName() {
         return CIPHER;
     }
