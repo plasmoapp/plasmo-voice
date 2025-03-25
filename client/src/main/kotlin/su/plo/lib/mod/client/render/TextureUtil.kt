@@ -19,7 +19,9 @@ fun registerBase64Texture(texture: String, textureLocation: ResourceLocation): R
                 //$$ { null },
                 //#endif
                 getNativeImageFromBase64(texture)
-            )
+            ).also { texture ->
+                texture.setFilter(false, true)
+            }
         )
     }
 
