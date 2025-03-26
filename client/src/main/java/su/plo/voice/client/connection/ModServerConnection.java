@@ -219,6 +219,7 @@ public final class ModServerConnection implements ServerConnection {
     @Override
     public void close() {
         // cleanup server connection
+        voiceClient.setServerInfo(null);
         playerById.clear();
 
         // cleanup audio capture
