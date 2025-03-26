@@ -332,6 +332,11 @@ public final class SourceIconRenderer {
 
         stack.pushPose();
 
+        //#if MC<11800
+        //$$ stack.last().pose().setIdentity();
+        //$$ stack.last().normal().setIdentity();
+        //#endif
+
         stack.translate(
                 lastPosition.getX() - camera.position().x,
                 lastPosition.getY() - camera.position().y,

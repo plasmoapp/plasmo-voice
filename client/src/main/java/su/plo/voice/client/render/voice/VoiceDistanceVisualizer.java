@@ -113,6 +113,11 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
         stack.pushPose();
 
+        //#if MC<11800
+        //$$ stack.last().pose().setIdentity();
+        //$$ stack.last().normal().setIdentity();
+        //#endif
+
         stack.translate(
                 center.x - camera.position().x,
                 center.y - camera.position().y,
@@ -156,7 +161,6 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             }
         }
 
-        // todo: doesn't work on 1.16.5(?)
         RenderUtil.drawBuffer(buffer, RenderPipelines.DISTANCE_SPHERE);
 
         stack.popPose();
