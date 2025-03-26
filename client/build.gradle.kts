@@ -228,7 +228,8 @@ tasks {
                     "version" to version,
                     "neoForgeVersion" to versionInfo.neoForgeVersion,
                     "forgeVersion" to versionInfo.forgeVersion,
-                    "mcVersions" to versionInfo.forgeMcVersions
+                    "mcVersions" to versionInfo.forgeMcVersions,
+                    "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\"")
                 )
             )
         }

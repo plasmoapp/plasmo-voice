@@ -9,6 +9,10 @@ pluginManagement {
 
         maven("https://jitpack.io/")
         maven("https://maven.fabricmc.net")
+
+        // https://github.com/architectury/architectury-loom/issues/271
+        maven("https://repo.redlance.org/public/")
+
         maven("https://maven.architectury.dev/")
         maven("https://maven.minecraftforge.net")
         maven("https://repo.plasmoverse.com/snapshots")

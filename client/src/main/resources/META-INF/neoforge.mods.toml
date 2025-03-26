@@ -3,9 +3,7 @@ loaderVersion="[3,)"
 license="LGPL-3.0"
 issueTrackerURL="https://github.com/plasmoapp/plasmo-voice/issues"
 [[mixins]]
-config="plasmovoice.mixins.json"
-[[mixins]]
-config="slib.mixins.json"
+config="${mixins}"
 [[mods]]
 modId="plasmovoice"
 version="${version}"
