@@ -126,6 +126,13 @@ public final class SourceIconRenderer {
                 .getOnlinePlayerIds()
                 .contains(entityUUID);
 
+        Collection<ClientAudioSource<EntitySourceInfo>> entitySources = voiceClient.getSourceManager()
+                .getEntitySources(entityRenderState.getEntityId());
+        if (isFakePlayer && !entitySources.isEmpty()) {
+            renderLivingEntity(entityRenderState, stack, light);
+            return;
+        }
+
         if (isIconHidden()
                 || entityUUID.equals(clientPlayer.getUUID())
                 || isFakePlayer
@@ -145,7 +152,7 @@ public final class SourceIconRenderer {
         } else if (playerInfo.get().isVoiceDisabled()) { // client disabled voicechat
             iconLocation = "plasmovoice:textures/icons/headset_disabled.png";
         } else {
-            Collection<ClientAudioSource<PlayerSourceInfo>> sources = voiceClient.getSourceManager()
+            Collection<ClientAudioSource<PlayerSourceInfo>> playerSources = voiceClient.getSourceManager()
                     .getPlayerSources(entityUUID);
 
             hasPercent = volumeAction.isShown(entityUUID);
@@ -157,10 +164,16 @@ public final class SourceIconRenderer {
                 );
             }
 
-            if (sources.isEmpty()) return;
+            if (playerSources.isEmpty() && entitySources.isEmpty()) return;
 
-            ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(sources);
-            if (highestSourceLine == null) return;
+            ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(playerSources);
+            if (highestSourceLine == null) {
+                highestSourceLine = getHighestActivatedSourceLine(entitySources);
+
+                if (highestSourceLine == null) {
+                    return;
+                }
+            }
 
             // speaking
             iconLocation = highestSourceLine.getIcon();
