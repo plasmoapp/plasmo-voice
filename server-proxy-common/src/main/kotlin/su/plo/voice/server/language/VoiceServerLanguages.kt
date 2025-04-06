@@ -72,24 +72,26 @@ class VoiceServerLanguages(
         languagesFolder: File
     ) {
         try {
-            if (crowdinEnabled) {
-                try {
-                    downloadCrowdinTranslations(translationsURL, fileName, languagesFolder)
-                } catch (e: Exception) {
-                    LOGGER.warn(
-                        "Failed to download archive with translations {} ({}) translations: {}",
-                        translationsURL,
-                        fileName,
-                        e.message
-                    )
-                }
+            // register languages from resources and languages folder
+            // and only then re-register languages using crowdin
+            // this way we don't need to wait for download task to finish
+            // and languages will be available asap
+            register(resourceLoader, languagesFolder).get()
+
+            if (!crowdinEnabled) return
+
+            try {
+                downloadCrowdinTranslations(translationsURL, fileName, languagesFolder)
+            } catch (e: Exception) {
+                LOGGER.warn(
+                    "Failed to download archive with translations {} ({}) translations: {}",
+                    translationsURL,
+                    fileName,
+                    e.message
+                )
             }
 
-            val crowdinFolder = File(languagesFolder, ".crowdin")
-            if (!crowdinFolder.exists()) {
-                register(resourceLoader, languagesFolder).get()
-                return
-            }
+            val crowdinFolder = File(languagesFolder, ".crowdin").takeIf { it.exists() } ?: return
 
             val languages: MutableMap<String, VoiceServerLanguage> = Maps.newHashMap()
 
