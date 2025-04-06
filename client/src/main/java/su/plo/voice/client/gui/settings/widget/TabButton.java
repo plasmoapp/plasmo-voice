@@ -11,7 +11,7 @@ import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.render.RenderUtil;
 
 //#if MC>=11701
-import com.mojang.blaze3d.systems.RenderSystem;
+
 //#else
 //$$ import com.mojang.blaze3d.platform.GlStateManager;
 //#endif
@@ -67,7 +67,7 @@ public final class TabButton extends Button {
         if (shadow && SolidColorShader.isAvailable()) {
             int shadowColor = active ? this.shadowColor : -6250336;
 
-            RenderUtil.blitWithPipeline(
+            RenderUtil.blitColorWithPipeline(
                     stack,
                     RenderPipelines.GUI_TEXTURE_SOLID_COLOR,
                     x + 7,

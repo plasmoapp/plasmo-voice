@@ -26,10 +26,7 @@ import java.util.Iterator;
 import java.util.List;
 
 //#if MC>=11700
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-import net.minecraft.client.renderer.ShaderInstance;
+
 //#else
 //$$ import static org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE;
 //$$ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
@@ -437,33 +434,73 @@ public class RenderUtil {
     }
 
     public static void blit(PoseStack stack, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
-        blit(stack, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x, y, z, u, v, width, height, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
     }
 
     public static void blit(PoseStack stack, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-        blit(stack, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
     }
 
     public static void blit(PoseStack stack, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
-        blit(stack, x, y, width, height, u, v, width, height, textureWidth, textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x, y, u, v, width, height, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x, y, width, height, u, v, width, height, textureWidth, textureHeight);
     }
 
     public static void blit(PoseStack stack, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
-        blit(stack, x0, x1, y0, y1, z, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x0, x1, y0, y1, z, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x0, x1, y0, y1, z, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
     }
 
     public static void blit(PoseStack stack, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-        BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.GUI_TEXTURE);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x0, x1, y0, y1, z, u0, u1, v0, v1);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1
+    ) {
+        BufferBuilder buffer = RenderUtil.beginBuffer(pipeline);
 
         VertexBuilder.create(buffer).position(stack, (float) x0, (float) y1, (float) z).uv(u0, v1).end();
         VertexBuilder.create(buffer).position(stack, (float) x1, (float) y1, (float) z).uv(u1, v1).end();
         VertexBuilder.create(buffer).position(stack, (float) x1, (float) y0, (float) z).uv(u1, v0).end();
         VertexBuilder.create(buffer).position(stack, (float) x0, (float) y0, (float) z).uv(u0, v0).end();
 
-        drawBuffer(buffer, RenderPipelines.GUI_TEXTURE);
+        drawBuffer(buffer, pipeline);
     }
 
-    public static void blitWithPipeline(
+    public static void blitColorWithPipeline(
             @NotNull PoseStack stack,
             @NotNull RenderPipeline pipeline,
             int x0, int x1, int y0, int y1, int z,
@@ -500,30 +537,7 @@ public class RenderUtil {
                                  int x0, int x1, int y0, int y1, int z,
                                  float u0, float u1, float v0, float v1,
                                  int red, int green, int blue, int alpha) {
-        BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.GUI_TEXTURE_COLOR);
-
-        VertexBuilder.create(buffer)
-                .position(stack, x0, y1, z)
-                .uv(u0, v1)
-                .color(red, green, blue, alpha)
-                .end();
-        VertexBuilder.create(buffer)
-                .position(stack, x1, y1, z)
-                .uv(u1, v1)
-                .color(red, green, blue, alpha)
-                .end();
-        VertexBuilder.create(buffer)
-                .position(stack, x1, y0, z)
-                .uv(u1, v0)
-                .color(red, green, blue, alpha)
-                .end();
-        VertexBuilder.create(buffer)
-                .position(stack, x0, y0, z)
-                .uv(u0, v0)
-                .color(red, green, blue, alpha)
-                .end();
-
-        drawBuffer(buffer, RenderPipelines.GUI_TEXTURE_COLOR);
+        blitColorWithPipeline(stack, RenderPipelines.GUI_TEXTURE_COLOR, x0, x1, y0, y1, z, u0, u1, v0, v1, red, green, blue, alpha);
     }
 
     public static void drawStringInBatch(PoseStack stack, String text, int x, int y, int color, boolean shadow) {

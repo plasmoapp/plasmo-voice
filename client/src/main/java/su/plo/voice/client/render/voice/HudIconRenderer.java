@@ -8,6 +8,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.IconPosition;
@@ -78,7 +79,18 @@ public final class HudIconRenderer {
 
         stack.pushPose();
         stack.translate(0f, 0f, 1000f);
-        RenderUtil.blit(stack, calcIconX(iconPosition.getX()), calcIconY(iconPosition.getY()), 0, 0, 16, 16, 16, 16);
+        RenderUtil.blitWithPipeline(
+                stack,
+                RenderPipelines.GUI_TEXTURE_OVERLAY,
+                calcIconX(iconPosition.getX()),
+                calcIconY(iconPosition.getY()),
+                0,
+                0,
+                16,
+                16,
+                16,
+                16
+        );
         stack.popPose();
     }
 

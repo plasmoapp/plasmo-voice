@@ -34,6 +34,18 @@ object RenderPipelines {
         }
 
     @JvmField
+    val GUI_COLOR_OVERLAY =
+        renderPipeline(
+            ResourceLocationUtil.mod("pipeline/gui_texture"),
+            DefaultVertexFormat.POSITION_COLOR,
+            VertexFormatMode.QUADS,
+        ) {
+            blendFunc = BlendFunc.TRANSLUCENT
+            depthTestFunc = AlphaFunc.ALWAYS
+            depthMask = false
+        }
+
+    @JvmField
     val GUI_TEXTURE_SOLID_COLOR =
         renderPipeline(
             ResourceLocationUtil.mod("pipeline/gui_texture_solid_color"),
@@ -63,6 +75,19 @@ object RenderPipelines {
         ) {
             samplers += "Sampler0"
             blendFunc = BlendFunc.TRANSLUCENT
+        }
+
+    @JvmField
+    val GUI_TEXTURE_OVERLAY =
+        renderPipeline(
+            ResourceLocationUtil.mod("pipeline/gui_texture"),
+            DefaultVertexFormat.POSITION_TEX,
+            VertexFormatMode.QUADS,
+        ) {
+            samplers += "Sampler0"
+            blendFunc = BlendFunc.TRANSLUCENT
+            depthTestFunc = AlphaFunc.ALWAYS
+            depthMask = false
         }
 
     @JvmField

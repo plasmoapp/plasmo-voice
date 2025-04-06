@@ -7,6 +7,7 @@ import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.render.RenderUtil
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.entity.player.McGameProfile
@@ -164,8 +165,8 @@ class OverlayRenderer(
 
                 RenderUtil.bindTexture(0, loadSkin(it))
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-                RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
-                RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
+                RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
+                RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
                 if (!position.isRight) {
                     x += 16 + 1
                 }
@@ -178,7 +179,7 @@ class OverlayRenderer(
                 x -= textWidth + 1
             }
 
-            RenderUtil.fill(stack, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
+            RenderUtil.fill(stack, RenderPipelines.GUI_COLOR_OVERLAY, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
             RenderUtil.drawString(stack, sourceName, x + 4, y + 4, 0xFFFFFF, false)
 
             if (sourceInfo.activated && !position.isRight) {
@@ -192,11 +193,11 @@ class OverlayRenderer(
                 x -= 16 + 1
             }
 
-            RenderUtil.fill(stack, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
+            RenderUtil.fill(stack, RenderPipelines.GUI_COLOR_OVERLAY, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
             RenderUtil.bindTexture(0, ResourceLocation.tryParse(sourceLine.icon)!!)
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            RenderUtil.blit(stack, x, y, 0, 0f, 0f, 16, 16, 16, 16)
+            RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 0, 0f, 0f, 16, 16, 16, 16)
         }
 
         stack.popPose()

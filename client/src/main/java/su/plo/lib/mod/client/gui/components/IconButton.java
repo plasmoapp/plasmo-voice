@@ -67,7 +67,7 @@ public final class IconButton extends Button {
         if (hasShadow() && SolidColorShader.isAvailable()) {
             int shadowColor = active ? this.shadowColor : -6250336;
 
-            RenderUtil.blitWithPipeline(
+            RenderUtil.blitColorWithPipeline(
                     stack,
                     RenderPipelines.GUI_TEXTURE_SOLID_COLOR,
                     x + 2,
