@@ -21,6 +21,7 @@ import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import java.util.*
+import kotlin.jvm.optionals.getOrNull
 
 class OverlayRenderer(
     private val voiceClient: PlasmoVoiceClient,
@@ -172,7 +173,7 @@ class OverlayRenderer(
         }
 
         // render text
-        if (overlayStyle.hasName) {
+        if (overlayStyle.hasName && RenderUtil.getFormattedString(sourceName).isNotBlank()) {
             if (position.isRight) {
                 x -= textWidth + 1
             }
@@ -222,9 +223,21 @@ class OverlayRenderer(
             }
 
             is PlayerSourceInfo -> {
-                Minecraft.getInstance().connection?.getPlayerInfo(sourceInfo.playerInfo.playerId)?.let {
-                    McTextComponent.literal(it.profile.name)
-                } ?: sourceLine.translationComponent
+                val playerInfo = sourceInfo.playerInfo
+
+                val voicePlayerNick = voiceClient.serverConnection.getOrNull()
+                    ?.getPlayerById(playerInfo.playerId)
+                    ?.getOrNull()
+                    ?.playerNick
+
+                val minecraftPlayerNick = Minecraft.getInstance().connection
+                    ?.getPlayerInfo(playerInfo.playerId)
+                    ?.profile
+                    ?.name
+
+                return (voicePlayerNick ?: minecraftPlayerNick)
+                    ?.let { McTextComponent.literal(it) }
+                    ?: sourceLine.translationComponent
             }
 
             else -> {
