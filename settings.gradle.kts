@@ -10,16 +10,13 @@ pluginManagement {
         maven("https://jitpack.io/")
         maven("https://maven.fabricmc.net")
 
-        // https://github.com/architectury/architectury-loom/issues/271
-        maven("https://repo.redlance.org/public/")
-
         maven("https://maven.architectury.dev/")
         maven("https://maven.minecraftforge.net")
         maven("https://repo.plasmoverse.com/snapshots")
     }
 
     plugins {
-        val egtVersion = "0.8.1-SNAPSHOT"
+        val egtVersion = "0.8.2-SNAPSHOT"
         id("gg.essential.defaults") version egtVersion
         id("gg.essential.multi-version.root") version egtVersion
     }
