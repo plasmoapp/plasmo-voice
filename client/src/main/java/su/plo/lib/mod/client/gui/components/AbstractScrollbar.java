@@ -39,6 +39,8 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     protected boolean scrolling;
     protected @Nullable Entry hoveredEntry;
 
+    private int lastMaxScroll = 0;
+
     public AbstractScrollbar(P parent,
                              int containerWidth,
                              int y0, int y1) {
@@ -64,23 +66,38 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         int trackX0 = getScrollbarPosition();
         int trackX1 = trackX0 + 6;
 
+        int maxScroll = getMaxScroll();
+        if (lastMaxScroll != maxScroll) {
+            if (lastMaxScroll > 0) {
+                double scrollPercent = scrollTop / lastMaxScroll;
+                setScrollTop(maxScroll * scrollPercent);
+            } else {
+                setScrollTop(0.0D);
+            }
+        }
+        lastMaxScroll = maxScroll;
+
         // render list
         renderList(stack, getContainerX0(), y0, mouseX, mouseY, delta);
 
-        int maxScroll = getMaxScroll();
         if (maxScroll > 0) {
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-            int trackBottom = (int) ((float) ((y1 - y0) * (y1 - y0)) / (float) scrollHeight);
-            trackBottom = Mth.clamp(trackBottom, 32, y1 - y0 - 8);
-            int trackTop = (int) scrollTop * (y1 - y0 - trackBottom) / maxScroll + y0;
-            if (trackTop < y0) {
-                trackTop = y0;
+            int scrollbarY0 = y0 + getScrollbarPadding();
+            int scrollbarY1 = y1 - getScrollbarPadding();
+
+            int trackBottom = (int) ((float) ((scrollbarY1 - scrollbarY0) * (scrollbarY1 - scrollbarY0)) / (float) scrollHeight);
+            trackBottom = Mth.clamp(trackBottom, 32, scrollbarY1 - scrollbarY0 - 8);
+            int trackTop = (int) scrollTop * (scrollbarY1 - scrollbarY0 - trackBottom) / maxScroll + scrollbarY0;
+            if (trackTop < scrollbarY0) {
+                trackTop = scrollbarY0;
             }
 
-            RenderUtil.fill(
-                    stack, trackX0, y0, trackX1, y1, -0x1000000
-            );
+            if (shouldRenderScrollbarBackground()) {
+                RenderUtil.fill(
+                        stack, trackX0, scrollbarY0, trackX1, scrollbarY1, -0x1000000
+                );
+            }
             RenderUtil.fill(
                     stack, trackX0, trackTop, trackX1, trackTop + trackBottom, -0x7f7f80
             );
@@ -98,15 +115,28 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     @Override
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        boolean entryScrolled = entries.stream()
+                .flatMap(entry -> entry.widgets().stream())
+                .filter(entry -> entry.isMouseOver(mouseX, mouseY))
+                .anyMatch(entry -> entry.mouseScrolled(mouseX, mouseY, delta));
+        if (entryScrolled) {
+            return true;
+        }
+
+        if (getMaxScroll() == 0) {
+            return false;
+        }
+
         setScrollTop(scrollTop - delta * ((float) scrollHeight / entries.size()));
         return true;
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        this.scrolling = button == 0 &&
-                mouseX >= this.getScrollbarPosition() &&
-                mouseX < (this.getScrollbarPosition() + 6);
+        this.scrolling = button == 0 && isMouseOverScrollbar(mouseX, mouseY);
+        if (scrolling) {
+            return true;
+        }
 
         Optional<Entry> entry = getEntryAtPosition(mouseX, mouseY);
 
@@ -120,7 +150,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             }
         }
 
-        return this.scrolling;
+        return false;
     }
 
     @Override
@@ -134,6 +164,14 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        boolean entryDragged = entries.stream()
+                .flatMap(entry -> entry.widgets().stream())
+                .filter(entry -> entry.isMouseOver(mouseX, mouseY))
+                .anyMatch(entry -> entry.mouseDragged(mouseX, mouseY, button, deltaX, deltaY));
+        if (entryDragged) {
+            return true;
+        }
+
         if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
         } else if (button == 0 && scrolling) {
@@ -160,8 +198,8 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     public boolean isMouseOver(double mouseX, double mouseY) {
         return mouseY >= y0 &&
                 mouseY <= y1 &&
-                mouseX >= 0 &&
-                mouseX <= width;
+                mouseX >= getContainerX0() &&
+                mouseX <= getContainerX1();
     }
 
     // Class methods
@@ -200,7 +238,13 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     }
 
     protected void renderList(@NotNull PoseStack stack, int x, int y, int mouseX, int mouseY, float delta) {
-        RenderUtil.enableScissor(0, 0, width, y1 - y0 + 6);
+        RenderUtil.enableScissor(
+                getContainerX0(),
+                height - y1,
+                containerWidth,
+                y1 - y0
+        );
+
         for (int index = 0; index < entries.size(); index++) {
             Entry entry = entries.get(index);
             EntryPosition position = entryPositions.get(index);
@@ -227,6 +271,22 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         return getContainerX1() + 13;
     }
 
+    protected int getScrollbarPadding() {
+        return 4;
+    }
+
+    protected boolean shouldRenderScrollbarBackground() {
+        return true;
+    }
+
+    protected final boolean isMouseOverScrollbar(double mouseX, double mouseY) {
+        return getMaxScroll() > 0 &&
+                mouseX >= this.getScrollbarPosition() &&
+                mouseX < (this.getScrollbarPosition() + 6) &&
+                mouseY >= y0 &&
+                mouseY <= y1;
+    }
+
     protected Optional<Entry> getEntryAtPosition(double mouseX, double mouseY) {
         if (mouseX < getContainerX0() || mouseX > getContainerX1()) return Optional.empty();
 
@@ -243,7 +303,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         return Optional.empty();
     }
 
-    private int getMaxScroll() {
+    protected final int getMaxScroll() {
         return Math.max(0, scrollHeight - (y1 - y0));
     }
 

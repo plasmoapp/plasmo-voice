@@ -3,3 +3,4 @@
 - Fixed issue where voice distance visualization was not fading away with high fps.
 - Fixed entity source icon not being rendered on players.
 - Fixed broken render of distance visualization and static source icons on <1.18.
+- Added scrollbar for dropdown widget.

@@ -1,7 +1,6 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -13,12 +12,7 @@ import java.util.function.Consumer;
 
 public final class DropDownWidget extends GuiAbstractWidget {
 
-    private static final int ELEMENT_HEIGHT = 16;
-
-    private final VoiceSettingsScreen parent;
-    private final List<McTextComponent> elements;
-    private final boolean tooltip;
-    private final Consumer<Integer> onSelect;
+    private final DropDownWidgetList list;
 
     private boolean open;
 
@@ -35,26 +29,43 @@ public final class DropDownWidget extends GuiAbstractWidget {
     ) {
         super(x, y, width, height, message);
 
-        this.parent = parent;
-        this.elements = elements;
-        this.onSelect = onSelect;
-        this.tooltip = tooltip;
+        this.list = new DropDownWidgetList(
+                this,
+                elements,
+                parent,
+                width,
+                tooltip,
+                index -> {
+                    this.text = elements.get(index);
+                    switchOpen();
+                    playDownSound();
+                    onSelect.accept(index);
+                }
+        );
     }
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
+        if (open && list.mouseClicked(mouseX, mouseY, button)) {
+            return true;
+        }
+
         if (super.mouseClicked(mouseX, mouseY, button)) {
-            open = !open;
+            switchOpen();
             return true;
         }
 
         if (!open) return false;
 
-        this.open = false;
-        if (!elementClicked(mouseX, mouseY, button)) {
-            playDownSound();
-        }
+        switchOpen();
+        playDownSound();
         return true;
+    }
+
+    @Override
+    public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
+        return open && list.mouseDragged(mouseX, mouseY, button, deltaX, deltaY) ||
+                super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
     @Override
@@ -64,7 +75,8 @@ public final class DropDownWidget extends GuiAbstractWidget {
         renderText(stack);
 
         if (!open) return;
-        renderElements(stack, mouseX, mouseY);
+
+        list.render(stack, mouseX, mouseY, delta);
     }
 
     @Override
@@ -73,48 +85,22 @@ public final class DropDownWidget extends GuiAbstractWidget {
         RenderUtil.fill(stack, x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
     }
 
-    private void renderElements(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        int elementY;
+    @Override
+    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
+        return open && list.mouseScrolled(mouseX, mouseY, delta);
+    }
 
-        boolean renderToTop = renderToTop();
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return (open && list.isMouseOver(mouseX, mouseY)) || super.isMouseOver(mouseX, mouseY);
+    }
 
-        if (renderToTop) {
-            elementY = y - (elements.size() * (ELEMENT_HEIGHT + 1));
+    private void switchOpen() {
+        if (open) {
+            this.open = false;
+            list.setScrollTop(0.0D);
         } else {
-            elementY = y + height;
-        }
-
-        for (McTextComponent element : elements) {
-            stack.pushPose();
-            stack.translate(0D, 0D, 10D);
-
-            if (renderToTop) {
-                RenderUtil.fill(stack, x, elementY - 1, x + width, elementY + ELEMENT_HEIGHT, -0xB9B9BA);
-            } else {
-                RenderUtil.fill(stack, x, elementY, x + width, elementY + ELEMENT_HEIGHT + 1, -0xB9B9BA);
-            }
-            RenderUtil.fill(stack, x + 1, elementY, x + width - 1, elementY + ELEMENT_HEIGHT, -0x1000000);
-
-            if ((mouseX >= x && mouseX <= x + width) &&
-                    (mouseY >= elementY && mouseY <= elementY + ELEMENT_HEIGHT)) {
-                if (tooltip && RenderUtil.getTextWidth(element) > (width - 10)) {
-                    parent.setTooltip(element);
-                }
-                RenderUtil.fill(stack, x + 1, elementY, x + width - 1, elementY + ELEMENT_HEIGHT, -0xCDCDCE);
-            }
-
-            RenderUtil.drawOrderedString(
-                    stack,
-                    element,
-                    width - 10,
-                    x + 5,
-                    elementY + ELEMENT_HEIGHT / 2 - RenderUtil.getFontHeight() / 2,
-                    0xE0E0E0
-            );
-
-            stack.popPose();
-
-            elementY += ELEMENT_HEIGHT + 1;
+            this.open = true;
         }
     }
 
@@ -155,42 +141,5 @@ public final class DropDownWidget extends GuiAbstractWidget {
                 );
             }
         }
-    }
-
-    private boolean renderToTop() {
-        float scaledHeight = Minecraft.getInstance().getWindow().getGuiScaledHeight();
-
-        return (y + height + 1 + (elements.size() * (ELEMENT_HEIGHT + 1)) > scaledHeight) &&
-                (parent.getNavigation().getHeight() + height + 1 + (elements.size() * (ELEMENT_HEIGHT + 1)) < scaledHeight);
-    }
-
-    private boolean elementClicked(double mouseX, double mouseY, int button) {
-        if (isValidClickButton(button)) {
-            if (renderToTop()) {
-                if ((mouseX >= x && mouseX <= x + width) &&
-                        (mouseY >= y + 1 - (elements.size() * (ELEMENT_HEIGHT + 1)) && mouseY <= y + 1)) {
-                    int i = (int) Math.floor((mouseY - (y + 1 - (elements.size() * (ELEMENT_HEIGHT + 1)))) / (ELEMENT_HEIGHT + 1));
-                    playDownSound();
-                    this.text = elements.get(i);
-                    if (onSelect != null) {
-                        onSelect.accept(i);
-                    }
-                    return true;
-                }
-            } else {
-                if ((mouseX >= x && mouseX <= x + width) &&
-                        (mouseY >= y + 1 + height && mouseY <= y + 1 + height + (elements.size() * (ELEMENT_HEIGHT + 1)))) {
-                    int i = (int) Math.floor((mouseY - (y + height + 1)) / (ELEMENT_HEIGHT + 1));
-                    playDownSound();
-                    this.text = elements.get(i);
-                    if (onSelect != null) {
-                        onSelect.accept(i);
-                    }
-                    return true;
-                }
-            }
-        }
-
-        return false;
     }
 }

@@ -110,6 +110,12 @@ dependencies {
 
         fabricApiModules("rendering-v1", "networking-api-v1", "lifecycle-events-v1", "key-binding-api-v1")
 
+        val coreProjectFile = project.file("../mainProject")
+        val coreProject = coreProjectFile.readText().trim()
+        if (coreProject == project.name) {
+            modLocalRuntime("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
+        }
+
         if (platform.mcVersion >= 12102) {
             "include"("me.lucko:fabric-permissions-api:0.3.3")
         } else {
