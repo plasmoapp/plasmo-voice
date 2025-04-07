@@ -15,8 +15,8 @@ data class GlState(
 
 fun applyGlState(state: GlState) {
     if (state.depthFunc != null) {
-        RenderSystem.enableDepthTest();
-        RenderSystem.depthFunc(state.depthFunc);
+        RenderSystem.enableDepthTest()
+        RenderSystem.depthFunc(state.depthFunc)
     } else {
         RenderSystem.disableDepthTest()
     }
