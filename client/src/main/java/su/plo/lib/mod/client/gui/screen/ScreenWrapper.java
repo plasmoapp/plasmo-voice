@@ -119,6 +119,9 @@ public final class ScreenWrapper
     //$$     if (currentContext == null) return;
     //#if MC>=12002
     //$$     super.renderBackground(currentContext, lastMouseX, lastMouseY, lastPartialTicks);
+    //#if MC>=12102
+    //$$     currentContext.flush();
+    //#endif
     //#else
     //$$     super.renderBackground(currentContext);
     //#endif
