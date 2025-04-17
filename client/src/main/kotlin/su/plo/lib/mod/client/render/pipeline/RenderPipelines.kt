@@ -147,6 +147,10 @@ object RenderPipelines {
         renderTypes.computeIfAbsent(renderType) {
             renderPipeline(
                 ResourceLocationUtil.mod("pipeline/render_type_$name"),
+                //#if MC>=12105
+                //$$ renderType.renderPipeline.vertexShader,
+                //$$ renderType.renderPipeline.fragmentShader,
+                //#endif
                 renderType.format(),
                 VertexFormatMode.from(renderType.mode())
             ) {
