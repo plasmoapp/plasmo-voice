@@ -24,7 +24,6 @@ velocity = "3.1.1"
 paper = "1.16.5-R0.1-SNAPSHOT"
 
 minestom = "39d445482f"
-minestom-extensions = "1.2.0"
 
 opus-jni = "1.0.3"
 opus-concentus = "acaadf2075"
@@ -47,8 +46,6 @@ lombok       = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 annotations  = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 guava        = { module = "com.google.guava:guava", version.ref = "guava" }
 gson         = { module = "com.google.code.gson:gson", version.ref = "gson" }
-javax-inject = { module = "javax.inject:javax.inject", version = "1" }
-aopalliance  = { module = "aopalliance:aopalliance", version = "1.0" }
 netty        = { module = "io.netty:netty-all", version.ref = "netty"}
 crowdin      = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
 config       = { module = "su.plo.config:config", version.ref = "config" }
@@ -61,7 +58,6 @@ velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "vel
 paper        = { module = "com.destroystokyo.paper:paper-api", version.ref = "paper" }
 
 minestom = { module = "net.minestom:minestom-snapshots", version.ref = "minestom" }
-minestom-extension = { module = "dev.hollowcube:minestom-ce-extensions", version.ref = "minestom-extensions" }
 
 opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-jni" }
 opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }
