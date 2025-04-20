@@ -13,6 +13,8 @@ import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.widget.GuiWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.ScissorState;
+import su.plo.lib.mod.client.render.ScissorStateKt;
 
 import java.util.Collections;
 import java.util.List;
@@ -238,6 +240,8 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     }
 
     protected void renderList(@NotNull PoseStack stack, int x, int y, int mouseX, int mouseY, float delta) {
+        ScissorState scissorState = ScissorStateKt.getScissorState();
+
         RenderUtil.enableScissor(
                 getContainerX0(),
                 height - y1,
@@ -256,7 +260,8 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
             entry.render(stack, index, x, entryTop, containerWidth, mouseX, mouseY, Objects.equals(hoveredEntry, entry), delta);
         }
-        RenderUtil.disableScissor();
+
+        ScissorStateKt.applyScissorState(scissorState);
     }
 
     protected int getContainerX0() {

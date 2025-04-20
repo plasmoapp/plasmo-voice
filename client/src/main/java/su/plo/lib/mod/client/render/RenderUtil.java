@@ -79,6 +79,15 @@ public class RenderUtil {
         //#endif
     }
 
+    public static void enableScissorScaled(int x, int y, int width, int height) {
+        //#if MC<11502
+        //$$ GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        //$$ GL11.glScissor(x, y, width, height);
+        //#else
+        RenderSystem.enableScissor(x, y, width, height);
+        //#endif
+    }
+
     public static void disableScissor() {
         //#if MC<11502
         //$$ GL11.glDisable(GL11.GL_SCISSOR_TEST);
