@@ -242,12 +242,36 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     protected void renderList(@NotNull PoseStack stack, int x, int y, int mouseX, int mouseY, float delta) {
         ScissorState scissorState = ScissorStateKt.getScissorState();
 
-        RenderUtil.enableScissor(
+        ScissorState newScissorState = ScissorState.of(
                 getContainerX0(),
                 height - y1,
                 containerWidth,
                 y1 - y0
         );
+
+        if (scissorState != null) {
+            int parentX = scissorState.getX();
+            int parentY = scissorState.getY();
+            int parentRight = parentX + scissorState.getWidth();
+            int parentTop = parentY + scissorState.getHeight();
+
+            int childX = newScissorState.getX();
+            int childY = newScissorState.getY();
+            int childRight = childX + newScissorState.getWidth();
+            int childTop = childY + newScissorState.getHeight();
+
+            int clippedX = Math.max(childX, parentX);
+            int clippedY = Math.max(childY, parentY);
+            int clippedRight = Math.min(childRight, parentRight);
+            int clippedTop = Math.min(childTop, parentTop);
+
+            int clippedWidth = Math.max(0, clippedRight - clippedX);
+            int clippedHeight = Math.max(0, clippedTop - clippedY);
+
+            newScissorState = ScissorState.ofScaled(clippedX, clippedY, clippedWidth, clippedHeight);
+        }
+
+        ScissorStateKt.applyScissorState(newScissorState);
 
         for (int index = 0; index < entries.size(); index++) {
             Entry entry = entries.get(index);

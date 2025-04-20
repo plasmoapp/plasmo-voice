@@ -64,22 +64,6 @@ public class RenderUtil {
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
 
     public static void enableScissor(int x, int y, int width, int height) {
-        double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
-
-        double scaledX = x * scaleFactor;
-        double scaledY = y * scaleFactor;
-        double scaledWidth = width * scaleFactor;
-        double scaledHeight = height * scaleFactor;
-
-        //#if MC<11502
-        //$$ GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        //$$ GL11.glScissor((int) scaledX, (int) scaledY, Math.max(0, (int) scaledWidth), Math.max(0, (int) scaledHeight));
-        //#else
-        RenderSystem.enableScissor((int) scaledX, (int) scaledY, Math.max(0, (int) scaledWidth), Math.max(0, (int) scaledHeight));
-        //#endif
-    }
-
-    public static void enableScissorScaled(int x, int y, int width, int height) {
         //#if MC<11502
         //$$ GL11.glEnable(GL11.GL_SCISSOR_TEST);
         //$$ GL11.glScissor(x, y, width, height);
