@@ -38,7 +38,25 @@ enum class GuiWidgetTexture(
     //$$     20,
     //$$     200,
     //$$     20
-    //$$ )
+    //$$ ),
+    //$$ TEXT_FIELD(
+    //$$     ResourceLocation.tryParse("textures/gui/sprites/widget/text_field.png")!!,
+    //$$     0,
+    //$$     0,
+    //$$     200,
+    //$$     20,
+    //$$     200,
+    //$$     20
+    //$$ ),
+    //$$ TEXT_FIELD_ACTIVE(
+    //$$     ResourceLocation.tryParse("textures/gui/sprites/widget/text_field_highlighted.png")!!,
+    //$$     0,
+    //$$     0,
+    //$$     200,
+    //$$     20,
+    //$$     200,
+    //$$     20
+    //$$ ),
     //#else
     BUTTON_DISABLED(
         ResourceLocation.tryParse("textures/gui/widgets.png")!!,
@@ -66,6 +84,6 @@ enum class GuiWidgetTexture(
         20,
         256,
         256
-    )
+    ),
     //#endif
 }

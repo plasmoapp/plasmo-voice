@@ -10,6 +10,10 @@ import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import java.util.List;
 import java.util.function.Consumer;
 
+//#if MC>=12002
+//$$ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
+//#endif
+
 public final class DropDownWidget extends GuiAbstractWidget {
 
     private final DropDownWidgetList list;
@@ -81,8 +85,16 @@ public final class DropDownWidget extends GuiAbstractWidget {
 
     @Override
     protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
+        //#if MC>=12002
+        //$$ GuiWidgetTexture sprite = isFocused() ? GuiWidgetTexture.TEXT_FIELD_ACTIVE : GuiWidgetTexture.TEXT_FIELD;
+        //$$
+        //$$ RenderUtil.bindTexture(0, sprite.getLocation());
+        //$$ RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
+        //$$ RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
+        //#else
         RenderUtil.fill(stack, x, y, x + width, y + height, -6250336);
         RenderUtil.fill(stack, x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
+        //#endif
     }
 
     @Override
