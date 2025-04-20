@@ -383,7 +383,18 @@ public class RenderUtil {
                                     int startRed, int startBlue, int startGreen, int startAlpha,
                                     int endRed, int endBlue, int endGreen, int endAlpha,
                                     int z) {
-        BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.GUI_COLOR);
+        fillGradientWithPipeline(stack, RenderPipelines.GUI_COLOR, startX, startY, endX, endY, startRed, startBlue, startGreen, startAlpha, endRed, endBlue, endGreen, endAlpha, z);
+    }
+
+    public static void fillGradientWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline renderPipeline,
+            int startX, int startY, int endX, int endY,
+            int startRed, int startBlue, int startGreen, int startAlpha,
+            int endRed, int endBlue, int endGreen, int endAlpha,
+            int z
+    ) {
+        BufferBuilder buffer = RenderUtil.beginBuffer(renderPipeline);
 
         fillGradient(
                 stack, buffer, startX, startY, endX, endY, z,
@@ -391,7 +402,7 @@ public class RenderUtil {
                 endRed, endBlue, endGreen, endAlpha
         );
 
-        drawBuffer(buffer, RenderPipelines.GUI_COLOR);
+        drawBuffer(buffer, renderPipeline);
     }
 
     private static void fillGradient(PoseStack stack, BufferBuilder buffer,

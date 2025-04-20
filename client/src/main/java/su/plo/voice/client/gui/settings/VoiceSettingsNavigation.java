@@ -11,6 +11,7 @@ import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -295,8 +296,9 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         //$$
         //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION);
         //$$
-        //$$ RenderUtil.blit(
+        //$$ RenderUtil.blitWithPipeline(
         //$$         stack,
+        //$$         RenderPipelines.GUI_TEXTURE_OVERLAY,
         //$$         0, width,
         //$$         height, height + 2,
         //$$         0,
@@ -316,8 +318,9 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 64, 64, 64, 255
         );
 
-        RenderUtil.fillGradient(
+        RenderUtil.fillGradientWithPipeline(
                 stack,
+                RenderPipelines.GUI_COLOR_OVERLAY,
                 width, height + 4, 0, height,
                 0, 0, 0, 0,
                 0, 0, 0, 255,

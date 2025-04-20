@@ -36,7 +36,7 @@ object RenderPipelines {
     @JvmField
     val GUI_COLOR_OVERLAY =
         renderPipeline(
-            ResourceLocationUtil.mod("pipeline/gui_texture"),
+            ResourceLocationUtil.mod("pipeline/gui_color_overlay"),
             DefaultVertexFormat.POSITION_COLOR,
             VertexFormatMode.QUADS,
         ) {
@@ -80,7 +80,7 @@ object RenderPipelines {
     @JvmField
     val GUI_TEXTURE_OVERLAY =
         renderPipeline(
-            ResourceLocationUtil.mod("pipeline/gui_texture"),
+            ResourceLocationUtil.mod("pipeline/gui_texture_overlay"),
             DefaultVertexFormat.POSITION_TEX,
             VertexFormatMode.QUADS,
         ) {
