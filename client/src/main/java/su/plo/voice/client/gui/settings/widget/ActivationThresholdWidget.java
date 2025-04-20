@@ -132,7 +132,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
             RenderSystem.setShaderColor(0F, 1F, 0F, alpha);
         }
 
-        GuiWidgetTexture sprite = GuiWidgetTexture.BUTTON_DISABLED;
+        GuiWidgetTexture sprite = GuiWidgetTexture.SLIDER;
         RenderUtil.bindTexture(0, sprite.getLocation());
         RenderUtil.blitSprite(stack, sprite, x + 1, y + 1, 1, 1, (int) ((sliderWidth - 2) * controller.getMicrophoneValue()), height - 2);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);

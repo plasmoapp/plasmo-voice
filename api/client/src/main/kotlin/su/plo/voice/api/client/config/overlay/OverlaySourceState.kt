@@ -13,4 +13,13 @@ enum class OverlaySourceState {
 
     val isProximityOnly: Boolean
         get() = this == OFF || this == ON
+
+    fun toBoolean(): Boolean =
+        this == ON
+
+    companion object {
+        @JvmStatic
+        fun fromBoolean(boolean: Boolean): OverlaySourceState =
+            if (boolean) ON else OFF
+    }
 }
