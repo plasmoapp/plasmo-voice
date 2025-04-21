@@ -116,6 +116,15 @@ fun createClothConfigMenu(parent: Screen): Screen =
 
         category(McTextComponent.translatable("clothconfig.plasmovoice.advanced")) {
             addEntry(
+                config.checkForUpdates
+                    .entryBuilder(
+                        entryBuilder(),
+                        McTextComponent.translatable("clothconfig.plasmovoice.advanced.check_for_updates")
+                    )
+                    .build()
+            )
+
+            addEntry(
                 config.debug
                     .entryBuilder(
                         entryBuilder(),
