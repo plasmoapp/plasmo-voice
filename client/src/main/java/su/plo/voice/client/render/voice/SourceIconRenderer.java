@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
+import su.plo.lib.mod.client.render.LazyGlState;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.VertexBuilder;
 import su.plo.lib.mod.client.render.entity.LivingEntityRenderState;
@@ -53,6 +54,8 @@ public final class SourceIconRenderer {
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
     private final PlayerVolumeAction volumeAction;
+
+    private final @NotNull LazyGlState glState = new LazyGlState();
 
     public SourceIconRenderer(
             @NotNull PlasmoVoiceClient voiceClient,
@@ -261,38 +264,40 @@ public final class SourceIconRenderer {
         int backgroundColor = (int) (0.25F * 255.0F) << 24;
         int xOffset = -RenderUtil.getTextWidth(text) / 2;
 
-        RenderUtil.fillLight(
-                stack,
-                RenderPipelines.TEXT_BACKGROUND,
-                xOffset - 1,
-                -1,
-                xOffset + RenderUtil.getTextWidth(text) + 1,
-                8,
-                backgroundColor,
-                light
-        );
+        glState.withState(() -> {
+            RenderUtil.fillLight(
+                    stack,
+                    RenderPipelines.TEXT_BACKGROUND,
+                    xOffset - 1,
+                    -1,
+                    xOffset + RenderUtil.getTextWidth(text) + 1,
+                    8,
+                    backgroundColor,
+                    light
+            );
 
-        RenderUtil.drawStringLight(
-                stack,
-                text,
-                xOffset,
-                0,
-                553648127,
-                light,
-                !entityRenderState.isDiscrete(),
-                false
-        );
+            RenderUtil.drawStringLight(
+                    stack,
+                    text,
+                    xOffset,
+                    0,
+                    553648127,
+                    light,
+                    !entityRenderState.isDiscrete(),
+                    false
+            );
 
-        RenderUtil.drawStringLight(
-                stack,
-                text,
-                xOffset,
-                0,
-                -1,
-                light,
-                false,
-                false
-        );
+            RenderUtil.drawStringLight(
+                    stack,
+                    text,
+                    xOffset,
+                    0,
+                    -1,
+                    light,
+                    false,
+                    false
+            );
+        });
 
         stack.popPose();
     }

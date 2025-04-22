@@ -115,6 +115,12 @@ public class RenderUtil {
     private static @Nullable GlState CURRENT_GL_STATE = null;
     private static @Nullable GlState OLD_GL_STATE = null;
 
+    public static void setGlState(@NotNull GlState glState) {
+        OLD_GL_STATE = glState.javaCopy();
+        CURRENT_GL_STATE = glState;
+        PRESERVE_GL_STATE = true;
+    }
+
     public static void preserveGlState() {
         PRESERVE_GL_STATE = true;
     }

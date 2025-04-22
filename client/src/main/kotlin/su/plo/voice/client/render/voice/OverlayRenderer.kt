@@ -6,6 +6,7 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
+import su.plo.lib.mod.client.render.LazyGlState
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
@@ -21,13 +22,16 @@ import su.plo.voice.client.event.render.HudRenderEvent
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
-import java.util.*
+import java.util.Collections
+import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
 
 class OverlayRenderer(
     private val voiceClient: PlasmoVoiceClient,
-    private val config: VoiceClientConfig
+    private val config: VoiceClientConfig,
 ) {
+
+    private val glState = LazyGlState()
 
     @EventSubscribe
     fun onHudRender(event: HudRenderEvent) {
@@ -121,11 +125,11 @@ class OverlayRenderer(
                 }
             }
 
-            RenderUtil.preserveGlState()
-            for ((_, sourceInfo) in toRender) {
-                renderEntry(event.stack, sourceLine, position, renderedIndex++, sourceInfo)
+            glState.withState {
+                for ((_, sourceInfo) in toRender) {
+                    renderEntry(event.stack, sourceLine, position, renderedIndex++, sourceInfo)
+                }
             }
-            RenderUtil.restoreGlState()
         }
     }
 
@@ -134,7 +138,7 @@ class OverlayRenderer(
         sourceLine: ClientSourceLine,
         position: OverlayPosition,
         index: Int,
-        sourceInfo: RenderSourceInfo
+        sourceInfo: RenderSourceInfo,
     ) {
         if (Minecraft.getInstance().level == null) return
 
@@ -207,7 +211,7 @@ class OverlayRenderer(
 
     private fun getSourceSenderName(
         sourceInfo: SourceInfo,
-        sourceLine: ClientSourceLine
+        sourceLine: ClientSourceLine,
     ): McTextComponent {
         if (sourceInfo.name != null) {
             var sourceName = sourceInfo.name!!
@@ -329,5 +333,5 @@ private data class RenderSourceInfo(
     val sourceId: UUID,
     val sourceName: McTextComponent,
     val player: McGameProfile?,
-    var activated: Boolean
+    var activated: Boolean,
 )

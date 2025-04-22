@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.render.LazyGlState;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -24,6 +25,9 @@ public final class HudIconRenderer {
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
+
+    // in most cases state should be the same, so let's hope it works
+    private final @NotNull LazyGlState glState = new LazyGlState();
 
     @EventSubscribe
     public void onHudRender(@NotNull HudRenderEvent event) {
@@ -79,17 +83,20 @@ public final class HudIconRenderer {
 
         stack.pushPose();
         stack.translate(0f, 0f, 1000f);
-        RenderUtil.blitWithPipeline(
-                stack,
-                RenderPipelines.GUI_TEXTURE_OVERLAY,
-                calcIconX(iconPosition.getX()),
-                calcIconY(iconPosition.getY()),
-                0,
-                0,
-                16,
-                16,
-                16,
-                16
+
+        glState.withState(() ->
+            RenderUtil.blitWithPipeline(
+                    stack,
+                    RenderPipelines.GUI_TEXTURE_OVERLAY,
+                    calcIconX(iconPosition.getX()),
+                    calcIconY(iconPosition.getY()),
+                    0,
+                    0,
+                    16,
+                    16,
+                    16,
+                    16
+            )
         );
         stack.popPose();
     }
