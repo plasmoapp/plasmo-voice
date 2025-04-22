@@ -55,10 +55,10 @@ public class SolidColorShader {
         //#endif
     }
 
-    private static boolean hasVulkan = false;
+    private static @Nullable Boolean hasVulkan = null;
 
     private static boolean hasVulkan() {
-        if (hasVulkan) return true;
+        if (hasVulkan != null) return hasVulkan;
 
         try {
             Class.forName("net.vulkanmod.vulkan.Vulkan");
@@ -68,6 +68,7 @@ public class SolidColorShader {
         } catch (ClassNotFoundException ignored) {
         }
 
+        hasVulkan = false;
         return false;
     }
 }
