@@ -13,6 +13,15 @@ data class BlendFunc(
     val sourceAlpha: SourceFactor,
     val destAlpha: DestFactor,
 ) {
+    val glList by lazy {
+        listOf(
+            sourceColor.gl(),
+            destColor.gl(),
+            sourceAlpha.gl(),
+            destAlpha.gl(),
+        )
+    }
+
     //#if MC>=12105
     //$$ fun mc(): BlendFunction =
     //$$     BlendFunction(

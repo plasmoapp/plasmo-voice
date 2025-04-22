@@ -4,7 +4,6 @@ package su.plo.lib.mod.client.render;
 import net.minecraft.client.gui.Font;
 //#endif
 
-import kotlin.Pair;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import gg.essential.universal.TextBuilder;
@@ -12,9 +11,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-import su.plo.lib.mod.client.render.pipeline.AlphaFunc;
-import su.plo.lib.mod.client.render.pipeline.BlendFunc;
 import su.plo.lib.mod.client.render.pipeline.RenderPipeline;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -112,6 +110,29 @@ public class RenderUtil {
     }
 
     //#if MC<12105
+    private static boolean PRESERVE_GL_STATE = false;
+
+    private static @Nullable GlState CURRENT_GL_STATE = null;
+    private static @Nullable GlState OLD_GL_STATE = null;
+
+    public static void preserveGlState() {
+        PRESERVE_GL_STATE = true;
+    }
+
+    public static void restoreGlState() {
+        restoreGlState(false);
+    }
+
+    public static void restoreGlState(boolean preserveGlState) {
+        if (OLD_GL_STATE != null && CURRENT_GL_STATE != null) {
+            OLD_GL_STATE.apply(CURRENT_GL_STATE);
+        }
+
+        CURRENT_GL_STATE = null;
+        OLD_GL_STATE = null;
+        PRESERVE_GL_STATE = preserveGlState;
+    }
+
     private static void applyRenderPipeline(@NotNull RenderPipeline renderPipeline) {
         //#if MC>=12103
         //$$ RenderSystem.setShader(renderPipeline.getShader().invoke());
@@ -123,49 +144,17 @@ public class RenderUtil {
         //$$ }
         //#endif
 
-        if (renderPipeline.getDepthTestFunc() != AlphaFunc.ALWAYS) {
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthFunc(renderPipeline.getDepthTestFunc().gl());
-        } else {
-            RenderSystem.disableDepthTest();
+        if (CURRENT_GL_STATE == null) {
+            CURRENT_GL_STATE = GlState.current();
+            OLD_GL_STATE = CURRENT_GL_STATE.javaCopy();
         }
 
-        if (renderPipeline.getCull()) {
-            RenderSystem.enableCull();
-        } else {
-            RenderSystem.disableCull();
-        }
-
-        BlendFunc blendFunc = renderPipeline.getBlendFunc();
-        if (blendFunc != null) {
-            RenderSystem.enableBlend();
-            RenderSystem.blendFuncSeparate(
-                    blendFunc.getSourceColor().gl(),
-                    blendFunc.getDestColor().gl(),
-                    blendFunc.getSourceAlpha().gl(),
-                    blendFunc.getDestAlpha().gl()
-            );
-        } else {
-            RenderSystem.disableBlend();
-        }
-
-        RenderSystem.depthMask(renderPipeline.getDepthMask());
-
-        Pair<Float, Float> polygonOffset = renderPipeline.getPolygonOffset();
-        if (polygonOffset != null) {
-            RenderSystem.polygonOffset(polygonOffset.getFirst(), polygonOffset.getSecond());
-            RenderSystem.enablePolygonOffset();
-        } else {
-            RenderSystem.disablePolygonOffset();
-        }
+        renderPipeline.getGlState().apply(CURRENT_GL_STATE);
     }
     //#endif
 
     public static void drawBuffer(@NotNull BufferBuilder buffer, @NotNull RenderPipeline renderPipeline) {
         //#if MC<12105
-        // saving current gl state here to restore it after pipeline render
-        GlState currentGlState = GlStateKt.currentGlState();
-
         applyRenderPipeline(renderPipeline);
         //#endif
 
@@ -226,7 +215,9 @@ public class RenderUtil {
         //#endif
 
         //#if MC<12105
-        GlStateKt.applyGlState(currentGlState);
+        if (!PRESERVE_GL_STATE) {
+            restoreGlState();
+        }
         //#endif
 
         //#if MC>=11700
@@ -552,6 +543,13 @@ public class RenderUtil {
         //#endif
         Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, TEXT_LAYER_TYPE, 0, 15728880);
         irendertypebuffer$impl.endBatch();
+
+        //#if MC<12105
+        if (CURRENT_GL_STATE != null) {
+            CURRENT_GL_STATE.setDepthFunc(null);
+            CURRENT_GL_STATE.setBlendFunc(null);
+        }
+        //#endif
     }
 
     public static int drawCenteredString(PoseStack stack, String string, int x, int y, int color) {

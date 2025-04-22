@@ -6,6 +6,8 @@ import su.plo.lib.mod.client.render.VertexFormatMode
 
 //#if MC<12105
 
+import su.plo.lib.mod.client.render.GlState
+
 //#if MC>=12102
 //$$ import net.minecraft.client.Minecraft
 //$$ import net.minecraft.client.renderer.CoreShaders
@@ -140,6 +142,18 @@ data class RenderPipeline(
     val depthMask: Boolean,
     val polygonOffset: Pair<Float, Float>?,
 ) {
+    val glState by lazy {
+        //#if MC<12105
+        GlState(
+            depthTestFunc.takeIf { it != AlphaFunc.ALWAYS }?.gl(),
+            cull,
+            blendFunc?.glList,
+            depthMask,
+            polygonOffset,
+        )
+        //#endif
+    }
+
     class Builder(
         val location: ResourceLocation,
         //#if MC>=12105

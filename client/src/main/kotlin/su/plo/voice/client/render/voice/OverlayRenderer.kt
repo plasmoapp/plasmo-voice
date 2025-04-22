@@ -121,9 +121,11 @@ class OverlayRenderer(
                 }
             }
 
+            RenderUtil.preserveGlState()
             for ((_, sourceInfo) in toRender) {
                 renderEntry(event.stack, sourceLine, position, renderedIndex++, sourceInfo)
             }
+            RenderUtil.restoreGlState()
         }
     }
 

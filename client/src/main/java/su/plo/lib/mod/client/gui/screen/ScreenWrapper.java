@@ -107,12 +107,18 @@ public final class ScreenWrapper
     //#if MC>=12000
     //$$ @Override
     //$$ public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+    //#if MC<12105
+    //$$     RenderUtil.preserveGlState();
+    //#endif
     //$$     currentContext = guiGraphics;
     //$$     lastMouseX = mouseX;
     //$$     lastMouseY = mouseY;
     //$$     lastPartialTicks = partialTicks;
     //$$     screen.render(guiGraphics.pose(), mouseX, mouseY, partialTicks);
     //$$     currentContext = null;
+    //#if MC<12105
+    //$$     RenderUtil.restoreGlState();
+    //#endif
     //$$ }
     //$$
     //$$ public void renderBackground(PoseStack stack) {
@@ -124,12 +130,23 @@ public final class ScreenWrapper
     //#endif
     //#else
     //$$     super.renderBackground(currentContext);
+    //#if MC<12105
+    //$$     RenderUtil.restoreGlState(true);
+    //#endif
     //#endif
     //$$ }
     //#else
     @Override
     public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
+        //#if MC<12105
+        RenderUtil.preserveGlState();
+        //#endif
+
         screen.render(matrixStack, mouseX, mouseY, partialTicks);
+
+        //#if MC<12105
+        RenderUtil.restoreGlState();
+        //#endif
     }
     //#endif
 
