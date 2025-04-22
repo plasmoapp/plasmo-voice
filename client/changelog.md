@@ -5,3 +5,4 @@
 - Fixed broken render of distance visualization and static source icons on <1.18.
 - Added scrollbar for dropdown widget.
 - Fixed warning "Reference map '...' for 'slib.mixins.json' could not be read" on forgelike >=1.21.
+- Fixed performance issues in mod's GUI due to constant reflection Vulkan check. 
