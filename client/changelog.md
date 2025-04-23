@@ -5,4 +5,5 @@
 - Fixed broken render of distance visualization and static source icons on <1.18.
 - Added scrollbar for dropdown widget.
 - Fixed warning "Reference map '...' for 'slib.mixins.json' could not be read" on forgelike >=1.21.
-- Fixed performance issues in mod's GUI due to constant reflection Vulkan check. 
+- Fixed performance issues in mod's GUI due to constant reflection Vulkan check.
+- Fixed an NPE when opening mod's menu with Polytone installed [#454](https://github.com/plasmoapp/plasmo-voice/issues/454). 

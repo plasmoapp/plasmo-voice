@@ -2,19 +2,16 @@ package su.plo.lib.mod.client.gui.screen;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.ToString;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.network.chat.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.RenderUtil;
-import su.plo.voice.api.client.config.hotkey.Hotkey;
-import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.ModVoiceClient;
-import su.plo.voice.client.event.key.KeyPressedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +60,7 @@ public final class ScreenWrapper
     //#endif
 
     private ScreenWrapper(@NotNull GuiScreen screen) {
-        super(RenderUtil.getTextConverter().convert(McTextComponent.empty()));
+        super(RenderUtil.getTextConverter().convert(screen.getTitle()));
 
         this.screen = screen;
     }
@@ -72,6 +69,10 @@ public final class ScreenWrapper
     @NotNull
     @Override
     public Component getTitle() {
+        if (screen == null) {
+            return super.getTitle();
+        }
+
         return RenderUtil.getTextConverter().convert(screen.getTitle());
     }
 
