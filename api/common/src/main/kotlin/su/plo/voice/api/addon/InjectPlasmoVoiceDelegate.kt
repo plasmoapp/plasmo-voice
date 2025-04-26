@@ -20,5 +20,9 @@ class InjectPlasmoVoiceDelegate<T : PlasmoVoice> : ReadOnlyProperty<Any, T> {
  **
  * @throws IllegalStateException If [PlasmoVoice] is not initialized yet
  */
+@Deprecated(
+    "kotlin classes are relocated and it's impossible to use this delegate without relocation",
+    replaceWith = ReplaceWith("@InjectPlasmoVoice")
+)
 fun <T : PlasmoVoice> injectPlasmoVoice(): ReadOnlyProperty<Any, T> =
     InjectPlasmoVoiceDelegate()

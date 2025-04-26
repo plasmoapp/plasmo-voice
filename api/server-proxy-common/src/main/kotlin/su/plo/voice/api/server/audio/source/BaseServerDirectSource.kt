@@ -8,7 +8,6 @@ import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.packets.Packet
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
-import java.util.*
 
 /**
  * Base interface for a direct sources.
