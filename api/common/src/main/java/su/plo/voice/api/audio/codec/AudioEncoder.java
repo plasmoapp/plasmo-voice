@@ -3,7 +3,7 @@ package su.plo.voice.api.audio.codec;
 /**
  * Represents an audio encoder for encoding audio.
  */
-public interface AudioEncoder {
+public interface AudioEncoder extends AutoCloseable {
 
     /**
      * Encodes the given audio samples into a compressed format represented as an array of bytes.

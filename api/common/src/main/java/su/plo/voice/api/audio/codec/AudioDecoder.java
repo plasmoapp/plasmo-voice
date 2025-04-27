@@ -3,7 +3,7 @@ package su.plo.voice.api.audio.codec;
 /**
  * Represents an audio decoder for decoding audio.
  */
-public interface AudioDecoder {
+public interface AudioDecoder extends AutoCloseable {
 
     /**
      * Decodes the given encoded audio data into an array of audio samples.
