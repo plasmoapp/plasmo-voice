@@ -425,6 +425,11 @@ public final class SourceIconRenderer {
     }
 
     private boolean isIconHidden() {
+        if (
+                !voiceClient.getServerInfo().isPresent() ||
+                !voiceClient.getUdpClientManager().isConnected()
+        ) return true;
+
         int showIcons = config.getOverlay().getShowSourceIcons().value();
         return showIcons == 2 || (Minecraft.getInstance().options.hideGui && showIcons == 0);
     }
