@@ -171,6 +171,7 @@
     "clothconfig.plasmovoice.devices.use_javax_input.tooltip": "Sometimes OpenAL input device doesn't work properly on some systems, so you can try to use Javax implementation.",
 
     "clothconfig.plasmovoice.advanced": "Advanced",
+    "clothconfig.plasmovoice.advanced.check_for_updates": "Check For Updates",
     "clothconfig.plasmovoice.advanced.debug_logger": "Debug Logger",
     "clothconfig.plasmovoice.advanced.camera_sound_listener": "Camera Sound Listener",
     "clothconfig.plasmovoice.advanced.camera_sound_listener.tooltip": "Sets the sound listener to the camera entity.\nThe sound listener determines the position in the world from which you hear audio. For example, if you're using freecam and this option is disabled, you'll hear audio as if you were not in freecam.\n\nOn some servers, this may be disabled by pv.allow_freecam permission.",

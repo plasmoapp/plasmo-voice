@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
@@ -63,40 +63,25 @@ public final class IconButton extends Button {
         super.renderButton(stack, mouseX, mouseY, delta);
 
         RenderUtil.bindTexture(0, iconLocation);
-        RenderSystem.enableDepthTest();
 
-        if (hasShadow()) {
-            //#if MC>=11701
-            int textureId = RenderSystem.getShaderTexture(0);
-            //#else
-            //$$ int textureId = GlStateManager.getActiveTextureName();
-            //#endif
-
+        if (hasShadow() && SolidColorShader.isAvailable()) {
             int shadowColor = active ? this.shadowColor : -6250336;
 
-            try {
-                SolidColorShader.bind(textureId);
-
-                RenderUtil.blitWithActiveShader(
-                        stack,
-                        DefaultVertexFormat.POSITION_TEX_COLOR,
-                        x + 2,
-                        x + 2 + 16,
-                        y + 3,
-                        y + 3 + 16,
-                        0,
-                        0, 1F,
-                        0, 1F,
-                        (int) ((shadowColor >> 16 & 255) * 0.25),
-                        (int) ((shadowColor >> 8 & 255) * 0.25),
-                        (int) ((shadowColor & 255) * 0.25),
-                        shadowColor >> 24 & 255
-                );
-
-                SolidColorShader.unbind();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            RenderUtil.blitColorWithPipeline(
+                    stack,
+                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR,
+                    x + 2,
+                    x + 2 + 16,
+                    y + 3,
+                    y + 3 + 16,
+                    0,
+                    0, 1F,
+                    0, 1F,
+                    (int) ((shadowColor >> 16 & 255) * 0.25),
+                    (int) ((shadowColor >> 8 & 255) * 0.25),
+                    (int) ((shadowColor & 255) * 0.25),
+                    shadowColor >> 24 & 255
+            );
         }
 
         int iconColor = this.iconColor;
@@ -116,7 +101,6 @@ public final class IconButton extends Button {
         }
         RenderUtil.blit(stack, x + 2, y + 2, 0, 0, 16, 16, 16, 16);
 
-        RenderSystem.disableDepthTest();
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 

@@ -1,14 +1,13 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
 
 public final class ToggleButton extends GuiAbstractWidget {
 
@@ -53,11 +52,13 @@ public final class ToggleButton extends GuiAbstractWidget {
 
     @Override
     protected @NotNull GuiWidgetTexture getButtonTexture(boolean hovered) {
-        return GuiWidgetTexture.BUTTON_DISABLED;
+        return GuiWidgetTexture.SLIDER;
     }
 
     @Override
     protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
+        int x0 = entry.value() ? (x + width - 8) : x;
+
         GuiWidgetTexture sprite;
         if (isHoveredOrFocused() && active) {
             sprite = GuiWidgetTexture.BUTTON_ACTIVE;
@@ -66,14 +67,8 @@ public final class ToggleButton extends GuiAbstractWidget {
         }
 
         RenderUtil.bindTexture(0, sprite.getLocation());
-        if (entry.value()) {
-            int x0 = x + (int) ((double) (width - 8));
-            RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
-            RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
-        } else {
-            RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, 4, 20);
-            RenderUtil.blitSprite(stack, sprite, x + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
-        }
+        RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
+        RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
     }
 
     public void invertToggle() {

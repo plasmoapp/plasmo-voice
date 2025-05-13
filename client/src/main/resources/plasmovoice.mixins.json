@@ -11,7 +11,7 @@
         "MixinPlayerListEntry",
         "MixinIntegratedServer",
 
-        "MixinEntityRenderDispatcher",
+        "MixinEntityRenderer",
         "accessor.EntityRendererAccessor"
     ],
     "injectors": {

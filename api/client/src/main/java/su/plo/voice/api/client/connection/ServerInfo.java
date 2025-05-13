@@ -11,6 +11,7 @@ import su.plo.voice.proto.data.audio.line.SourceLine;
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.util.Collection;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -127,6 +128,13 @@ public interface ServerInfo {
      * Represents player-related information of the connected server.
      */
     interface PlayerInfo {
+
+        /**
+         * Gets the player's permissions.
+         *
+         * @return Map with player's permissions.
+         */
+        @NotNull Map<String, Boolean> getPermissions();
 
         /**
          * Gets the player's permission.

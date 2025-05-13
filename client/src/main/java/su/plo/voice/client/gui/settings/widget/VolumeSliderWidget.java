@@ -1,13 +1,9 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
-import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.api.client.config.hotkey.Hotkeys;
 
@@ -52,23 +48,6 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
     public void updateValue() {
         this.value = entry.value() / entry.getMax();
         updateText();
-    }
-
-    @Override
-    protected void renderTrack(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        GuiWidgetTexture sprite;
-        if (isHoveredOrFocused()) {
-            sprite = GuiWidgetTexture.BUTTON_ACTIVE;
-        } else {
-            sprite = GuiWidgetTexture.BUTTON_DEFAULT;
-        }
-
-        RenderUtil.bindTexture(0, sprite.getLocation());
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-
-        int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
-        RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
-        RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
     }
 
     private double calculateValue(double value) {

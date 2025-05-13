@@ -11,6 +11,7 @@ import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -259,8 +260,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
             buttonX += button.getWidth() + 4;
             button.setY(buttonY);
 
-            RenderSystem.enableDepthTest();
-            RenderSystem.depthFunc(519);
             button.render(stack, mouseX, mouseY, delta);
         }
 
@@ -284,8 +283,6 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         //#if MC>=12005
-        //$$ RenderSystem.enableBlend();
-        //$$
         //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
         //$$
         //$$ RenderUtil.blit(
@@ -299,16 +296,15 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         //$$
         //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION);
         //$$
-        //$$ RenderUtil.blit(
+        //$$ RenderUtil.blitWithPipeline(
         //$$         stack,
+        //$$         RenderPipelines.GUI_TEXTURE_OVERLAY,
         //$$         0, width,
         //$$         height, height + 2,
         //$$         0,
         //$$         0, width / 32F,
         //$$         0, 1F
         //$$ );
-        //$$
-        //$$ RenderSystem.disableBlend();
         //#else
         RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
 
@@ -322,34 +318,14 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 64, 64, 64, 255
         );
 
-
-        RenderSystem.depthFunc(515);
-        RenderSystem.disableDepthTest();
-        RenderSystem.enableBlend();
-        RenderSystem.blendFuncSeparate(
-                770, // SRC_ALPHA,
-                771, // ONE_MINUS_SRC_ALPHA
-                0, // ZERO
-                1 // ONE
-        );
-        //#if MC<11700
-        //$$ RenderSystem.shadeModel(7425);
-        //#endif
-
-        RenderUtil.fillGradient(
+        RenderUtil.fillGradientWithPipeline(
                 stack,
+                RenderPipelines.GUI_COLOR_OVERLAY,
                 width, height + 4, 0, height,
                 0, 0, 0, 0,
                 0, 0, 0, 255,
                 0
         );
-
-//        render.enableTexture();
-        RenderUtil.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
-        //#if MC<11700
-        //$$ RenderSystem.shadeModel(7424);
-        //#endif
         //#endif
     }
 

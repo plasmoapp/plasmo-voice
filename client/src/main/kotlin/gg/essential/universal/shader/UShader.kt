@@ -51,7 +51,7 @@ interface UShader {
 
         //#if MC>=11700
         fun fromMcShader(shader: ShaderInstance, blendState: BlendState): UShader {
-            return MCShader(shader, blendState)
+            return MCShader(shader)
         }
         //#endif
     }

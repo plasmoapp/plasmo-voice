@@ -1,6 +1,5 @@
 package gg.essential.universal.shader
 
-import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 
@@ -16,17 +15,17 @@ data class BlendState(
     val dstAlpha: Param = dstRgb,
     val enabled: Boolean = true,
 ) {
-    fun activate() = applyState()
-
-    private fun applyState() {
-        if (enabled) {
-            RenderSystem.enableBlend()
-        } else {
-            RenderSystem.disableBlend()
-        }
-        RenderSystem.blendEquation(equation.glId)
-        RenderSystem.blendFuncSeparate(srcRgb.glId, dstRgb.glId, srcAlpha.glId, dstAlpha.glId)
-    }
+//    fun activate() = applyState()
+//
+//    private fun applyState() {
+////        if (enabled) {
+////            RenderUtil.enableBlend()
+////        } else {
+////            RenderUtil.disableBlend()
+////        }
+////        GlStateManager._blendEquation(equation.glId)
+//        GlStateManager._blendFuncSeparate(srcRgb.glId, dstRgb.glId, srcAlpha.glId, dstAlpha.glId)
+//    }
 
     companion object {
         @JvmField

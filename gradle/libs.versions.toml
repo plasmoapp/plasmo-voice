@@ -1,5 +1,5 @@
 [versions]
-kotlin = "1.9.23"
+kotlin = "2.0.21"
 dokka = "1.8.20"
 kotlinx-json = "1.5.1"
 kotlinx-coroutines = "1.7.3"
@@ -8,12 +8,12 @@ junit5 = "5.8.2"
 
 lombok = "1.18.32"
 annotations = "23.0.0"
-guava = "31.1-jre"
+guava = "33.3.1-jre"
 gson = "2.10.1"
-netty = "4.1.77.Final"
-crowdin = "1.1.0-SNAPSHOT"
+netty = "4.1.121.Final"
+crowdin = "1.1.1-SNAPSHOT"
 config = "1.0.2"
-slib = "1.0.6-SNAPSHOT"
+slib = "1.0.17"
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
@@ -23,8 +23,7 @@ bungeecord = "1.19-R0.1-SNAPSHOT"
 velocity = "3.1.1"
 paper = "1.16.5-R0.1-SNAPSHOT"
 
-minestom = "7320437640"
-minestom-extensions = "1.2.0"
+minestom = "39d445482f"
 
 opus-jni = "1.0.3"
 opus-concentus = "acaadf2075"
@@ -33,7 +32,7 @@ rnnoise-jni = "1.0.2"
 shadow = "8.1.1"
 idea-ext = "1.1.7"
 
-asm = "9.6"
+asm = "9.7.1"
 
 [libraries]
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
@@ -47,8 +46,6 @@ lombok       = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 annotations  = { module = "org.jetbrains:annotations", version.ref = "annotations" }
 guava        = { module = "com.google.guava:guava", version.ref = "guava" }
 gson         = { module = "com.google.code.gson:gson", version.ref = "gson" }
-javax-inject = { module = "javax.inject:javax.inject", version = "1" }
-aopalliance  = { module = "aopalliance:aopalliance", version = "1.0" }
 netty        = { module = "io.netty:netty-all", version.ref = "netty"}
 crowdin      = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
 config       = { module = "su.plo.config:config", version.ref = "config" }
@@ -61,7 +58,6 @@ velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "vel
 paper        = { module = "com.destroystokyo.paper:paper-api", version.ref = "paper" }
 
 minestom = { module = "net.minestom:minestom-snapshots", version.ref = "minestom" }
-minestom-extension = { module = "dev.hollowcube:minestom-ce-extensions", version.ref = "minestom-extensions" }
 
 opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-jni" }
 opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }

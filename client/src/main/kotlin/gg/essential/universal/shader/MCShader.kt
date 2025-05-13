@@ -4,7 +4,6 @@ package gg.essential.universal.shader
 
 import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.shaders.Uniform
-import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -29,38 +28,30 @@ import java.util.Optional
 //#endif
 
 //#if MC>=12102
-//$$ import net.minecraft.client.Minecraft
-//$$ import net.minecraft.client.renderer.ShaderDefines
-//$$ import net.minecraft.client.renderer.ShaderProgram
+//$$ import com.mojang.blaze3d.shaders.CompiledShader
+//#endif
+
+//#if MC>=12105
+//$$ import com.mojang.blaze3d.systems.RenderSystem
+//#endif
+
+//#if MC>=12105
+//$$ import com.mojang.blaze3d.pipeline.RenderPipeline
+//$$ import com.mojang.blaze3d.shaders.ShaderType
+//#elseif MC>=12102
+//$$ import net.minecraft.client.renderer.ShaderProgramConfig
 //#endif
 
 internal class MCShader(
-    private val mc: ShaderInstance,
-    private val blendState: BlendState
+    val mc: ShaderInstance
+//    private val blendState: BlendState
 ) : UShader {
     override var usable = true
 
     override fun bind() {
-        //#if MC>=12102
-        //$$ RenderSystem.setShader(mc)
-        //#else
-        RenderSystem.setShader(::mc)
-        //#endif
-
-        // MC's GlBlendState is fundamentally broken because it is lazy in that it does not update anything
-        // if the previously active blend state matches this one. But that assumes that it is the only method which
-        // can modify the global GL state, which is just a horrible assumption and MC itself immediately violates
-        // it in RenderLayer.
-        // So, to actually get our state applied, we gotta do it ourselves.
-        blendState.activate()
     }
 
     override fun unbind() {
-        //#if MC>=12102
-        //$$ RenderSystem.clearShader()
-        //#else
-        RenderSystem.setShader { null }
-        //#endif
     }
 
     private fun getUniformOrNull(name: String) = mc.getUniform(name)?.let(::MCShaderUniform)
@@ -165,18 +156,55 @@ internal class MCShader(
             //$$     "plasmovoice:shaders/$name",
             //$$ )
             //$$
-            //$$ val shaderProgram = ShaderProgram(
-            //$$     shaderLocation,
-            //$$     shaderVertexFormat,
-            //$$     ShaderDefines.EMPTY
-            //$$ )
-            //$$ Minecraft.getInstance().shaderManager.preloadForStartup(factory, shaderProgram)
-            //$$ val compiledShaderProgram = Minecraft.getInstance().shaderManager.getProgram(shaderProgram)
-            //$$     ?: throw IllegalStateException("Failed to compile shader")
-            //$$
-            //$$ return MCShader(compiledShaderProgram, blendState)
+            //$$ val compiledShaderProgram = CompiledShaderProgram.link(
+            //$$     CompiledShader.compile(
+            //$$         shaderLocation,
+            //#if MC>=12105
+            //$$         ShaderType.VERTEX,
             //#else
-            return MCShader(ShaderInstance(factory, name, shaderVertexFormat), blendState)
+            //$$         CompiledShader.Type.VERTEX,
+            //#endif
+            //$$         transformedVertSource
+            //$$     ),
+            //$$     CompiledShader.compile(
+            //$$         shaderLocation,
+            //#if MC>=12105
+            //$$         ShaderType.FRAGMENT,
+            //#else
+            //$$         CompiledShader.Type.FRAGMENT,
+            //#endif
+            //$$         transformedFragSource
+            //$$     ),
+            //#if MC>=12105
+            //$$     shaderVertexFormat,
+            //$$     name
+            //#else
+            //$$     shaderVertexFormat
+            //#endif
+            //$$ )
+            //$$
+            //#if MC>=12105
+            //$$ compiledShaderProgram.setupUniforms(
+            //$$     transformer.uniforms.map { (name, type) ->
+            //$$         RenderPipeline.UniformDescription(
+            //$$             name,
+            //$$             com.mojang.blaze3d.shaders.UniformType.valueOf(type.typeName.uppercase())
+            //$$         )
+            //$$     },
+            //$$     transformer.samplers.toList()
+            //$$ )
+            //#else
+            //$$ compiledShaderProgram.setupUniforms(
+            //$$     transformer.uniforms.map { (name, type) ->
+            //$$         ShaderProgramConfig.Uniform(name, type.typeName, type.default.size, type.default.map { it.toFloat() })
+            //$$     },
+            //$$     transformer.samplers.map { ShaderProgramConfig.Sampler(it) },
+            //$$ )
+            //#endif
+            //$$
+            //$$ return MCShader(compiledShaderProgram)
+            //#else
+            return MCShader(ShaderInstance(factory, name, shaderVertexFormat))
             //#endif
         }
     }
@@ -184,7 +212,11 @@ internal class MCShader(
 
 internal class MCShaderUniform(val mc: Uniform) : ShaderUniform, IntUniform, FloatUniform, Float2Uniform, Float3Uniform, Float4Uniform, FloatMatrixUniform {
     override val location: Int
+        //#if MC>=12105
+        //$$ get() = 0
+        //#else
         get() = mc.location
+        //#endif
 
     override fun setValue(value: Int) = mc.set(value)
 
@@ -203,7 +235,9 @@ internal class MCSamplerUniform(val mc: ShaderInstance, val name: String) : Samp
     override val location: Int = 0
 
     override fun setValue(textureId: Int) {
-        //#if MC>=12102
+        //#if MC>=12105
+        //$$ mc.bindSampler(name, RenderSystem.getShaderTexture(textureId))
+        //#elseif MC>=12102
         //$$ mc.bindSampler(name, textureId)
         //#else
         mc.setSampler(name, textureId)

@@ -6,7 +6,9 @@ import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
+import su.plo.lib.mod.client.render.LazyGlState
 import su.plo.lib.mod.client.render.RenderUtil
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.entity.player.McGameProfile
@@ -20,12 +22,16 @@ import su.plo.voice.client.event.render.HudRenderEvent
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
-import java.util.*
+import java.util.Collections
+import java.util.UUID
+import kotlin.jvm.optionals.getOrNull
 
 class OverlayRenderer(
     private val voiceClient: PlasmoVoiceClient,
-    private val config: VoiceClientConfig
+    private val config: VoiceClientConfig,
 ) {
+
+    private val glState = LazyGlState()
 
     @EventSubscribe
     fun onHudRender(event: HudRenderEvent) {
@@ -119,8 +125,10 @@ class OverlayRenderer(
                 }
             }
 
-            for ((_, sourceInfo) in toRender) {
-                renderEntry(event.stack, sourceLine, position, renderedIndex++, sourceInfo)
+            glState.withState {
+                for ((_, sourceInfo) in toRender) {
+                    renderEntry(event.stack, sourceLine, position, renderedIndex++, sourceInfo)
+                }
             }
         }
     }
@@ -130,7 +138,7 @@ class OverlayRenderer(
         sourceLine: ClientSourceLine,
         position: OverlayPosition,
         index: Int,
-        sourceInfo: RenderSourceInfo
+        sourceInfo: RenderSourceInfo,
     ) {
         if (Minecraft.getInstance().level == null) return
 
@@ -147,7 +155,6 @@ class OverlayRenderer(
             y += (ENTRY_HEIGHT + 1) * index
         }
 
-        RenderSystem.depthFunc(515)
 
         stack.pushPose()
         stack.translate(0.0, 0.0, 1000.0)
@@ -164,10 +171,8 @@ class OverlayRenderer(
 
                 RenderUtil.bindTexture(0, loadSkin(it))
                 RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-                RenderUtil.blit(stack, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
-                RenderSystem.enableBlend()
-                RenderUtil.blit(stack, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
-                RenderSystem.disableBlend()
+                RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
+                RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
                 if (!position.isRight) {
                     x += 16 + 1
                 }
@@ -175,12 +180,12 @@ class OverlayRenderer(
         }
 
         // render text
-        if (overlayStyle.hasName) {
+        if (overlayStyle.hasName && RenderUtil.getFormattedString(sourceName).isNotBlank()) {
             if (position.isRight) {
                 x -= textWidth + 1
             }
 
-            RenderUtil.fill(stack, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
+            RenderUtil.fill(stack, RenderPipelines.GUI_COLOR_OVERLAY, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
             RenderUtil.drawString(stack, sourceName, x + 4, y + 4, 0xFFFFFF, false)
 
             if (sourceInfo.activated && !position.isRight) {
@@ -194,13 +199,11 @@ class OverlayRenderer(
                 x -= 16 + 1
             }
 
-            RenderUtil.fill(stack, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
+            RenderUtil.fill(stack, RenderPipelines.GUI_COLOR_OVERLAY, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
             RenderUtil.bindTexture(0, ResourceLocation.tryParse(sourceLine.icon)!!)
             RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
 
-            RenderSystem.enableBlend()
-            RenderUtil.blit(stack, x, y, 0, 0f, 0f, 16, 16, 16, 16)
-            RenderSystem.disableBlend()
+            RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 0, 0f, 0f, 16, 16, 16, 16)
         }
 
         stack.popPose()
@@ -208,7 +211,7 @@ class OverlayRenderer(
 
     private fun getSourceSenderName(
         sourceInfo: SourceInfo,
-        sourceLine: ClientSourceLine
+        sourceLine: ClientSourceLine,
     ): McTextComponent {
         if (sourceInfo.name != null) {
             var sourceName = sourceInfo.name!!
@@ -227,9 +230,21 @@ class OverlayRenderer(
             }
 
             is PlayerSourceInfo -> {
-                Minecraft.getInstance().connection?.getPlayerInfo(sourceInfo.playerInfo.playerId)?.let {
-                    McTextComponent.literal(it.profile.name)
-                } ?: sourceLine.translationComponent
+                val playerInfo = sourceInfo.playerInfo
+
+                val voicePlayerNick = voiceClient.serverConnection.getOrNull()
+                    ?.getPlayerById(playerInfo.playerId)
+                    ?.getOrNull()
+                    ?.playerNick
+
+                val minecraftPlayerNick = Minecraft.getInstance().connection
+                    ?.getPlayerInfo(playerInfo.playerId)
+                    ?.profile
+                    ?.name
+
+                return (voicePlayerNick ?: minecraftPlayerNick)
+                    ?.let { McTextComponent.literal(it) }
+                    ?: sourceLine.translationComponent
             }
 
             else -> {
@@ -318,5 +333,5 @@ private data class RenderSourceInfo(
     val sourceId: UUID,
     val sourceName: McTextComponent,
     val player: McGameProfile?,
-    var activated: Boolean
+    var activated: Boolean,
 )

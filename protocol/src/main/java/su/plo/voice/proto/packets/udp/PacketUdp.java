@@ -24,14 +24,33 @@ public class PacketUdp {
     @Getter
     private boolean read;
 
-    public PacketUdp(@NotNull UUID secret,
-                     long timestamp,
-                     @NotNull Packet<?> packet,
-                     @NotNull ByteArrayDataInput input) {
+    public PacketUdp(
+            @NotNull UUID secret,
+            long timestamp,
+            @NotNull Packet<?> packet,
+            @NotNull ByteArrayDataInput input
+    ) {
         this.secret = secret;
         this.timestamp = timestamp;
         this.packet = packet;
         this.input = input;
+    }
+
+    public PacketUdp(
+            @NotNull UUID secret,
+            long timestamp,
+            @NotNull Packet<?> packet
+    ) {
+        this.secret = secret;
+        this.timestamp = timestamp;
+        this.packet = packet;
+        this.read = true;
+    }
+
+    public Packet<?> getPacketUntyped() throws IOException {
+        if (!read) readPacket();
+
+        return packet;
     }
 
     public <T extends PacketHandler> Packet<T> getPacket() throws IOException {

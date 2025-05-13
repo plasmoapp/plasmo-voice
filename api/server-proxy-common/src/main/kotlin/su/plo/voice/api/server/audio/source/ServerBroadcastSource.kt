@@ -1,7 +1,6 @@
 package su.plo.voice.api.server.audio.source
 
 import su.plo.voice.api.server.player.VoicePlayer
-import java.util.function.Supplier
 
 /**
  * Represents a broadcast audio source.

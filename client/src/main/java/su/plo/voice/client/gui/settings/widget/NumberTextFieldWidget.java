@@ -1,11 +1,9 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.mod.client.gui.components.TextFieldWidget;
+import su.plo.slib.api.chat.component.McTextComponent;
 
 import java.util.regex.Pattern;
 
@@ -55,18 +53,5 @@ public final class NumberTextFieldWidget extends TextFieldWidget implements Upda
     @Override
     public void updateValue() {
         setValue(String.valueOf(entry.value()));
-    }
-
-    @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        this.x += 1;
-        this.y += 1;
-        stack.pushPose();
-        RenderSystem.enableDepthTest();
-        stack.translate(0.0D, 0.0D, 0.0D);
-
-        super.renderButton(stack, mouseX, mouseY, delta);
-
-        stack.popPose();
     }
 }

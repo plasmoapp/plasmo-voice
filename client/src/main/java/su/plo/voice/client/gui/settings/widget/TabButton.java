@@ -1,17 +1,17 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.lib.mod.client.ResourceLocationUtil;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
+import su.plo.lib.mod.client.render.shader.SolidColorShader;
 import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.render.RenderUtil;
-import su.plo.lib.mod.client.render.shader.SolidColorShader;
 
 //#if MC>=11701
-import com.mojang.blaze3d.systems.RenderSystem;
+
 //#else
 //$$ import com.mojang.blaze3d.platform.GlStateManager;
 //#endif
@@ -62,22 +62,14 @@ public final class TabButton extends Button {
 
     @Override
     protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        RenderUtil.bindTexture(0, iconLocation);
+        RenderUtil.bindTexture(0, getIconLocation());
 
-        if (shadow) {
-            //#if MC>=11701
-            int textureId = RenderSystem.getShaderTexture(0);
-            //#else
-            //$$ int textureId = GlStateManager.getActiveTextureName();
-            //#endif
-
+        if (shadow && SolidColorShader.isAvailable()) {
             int shadowColor = active ? this.shadowColor : -6250336;
 
-            SolidColorShader.bind(textureId);
-
-            RenderUtil.blitWithActiveShader(
+            RenderUtil.blitColorWithPipeline(
                     stack,
-                    DefaultVertexFormat.POSITION_TEX_COLOR,
+                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR,
                     x + 7,
                     x + 7 + 8,
                     y + 7,
@@ -90,8 +82,6 @@ public final class TabButton extends Button {
                     (int) ((shadowColor & 255) * 0.25),
                     shadowColor >> 24 & 255
             );
-
-            SolidColorShader.unbind();
         }
 
         RenderUtil.blit(stack, x + 6, y + 6, 0, 0, 8, 8, 8, 8);

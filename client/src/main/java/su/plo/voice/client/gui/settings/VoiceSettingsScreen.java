@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings;
 
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
@@ -156,7 +157,11 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
         this.tooltip = null;
 
+        //#if MC<12105
+        RenderSystem.defaultBlendFunc();
+        //#endif
         screen.renderBackground(stack);
+
         navigation.renderTab(stack, mouseX, mouseY, delta);
         navigation.renderBackground(stack);
         super.render(stack, mouseX, mouseY, delta);

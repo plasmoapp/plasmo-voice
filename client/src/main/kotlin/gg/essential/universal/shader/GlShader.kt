@@ -39,7 +39,7 @@ package gg.essential.universal.shader
 //$$             doBindTexture(sampler.textureUnit, sampler.textureId)
 //$$         }
 //$$         prevBlendState = BlendState.active()
-//$$         blendState.activate()
+//$$         // blendState.activate()
 //$$
 //$$         GlStateManager._glUseProgram(program)
 //$$         bound = true
@@ -58,7 +58,7 @@ package gg.essential.universal.shader
 //$$         }
 //$$         prevTextureBindings.clear()
 //$$         RenderSystem.activeTexture(prevActiveTexture)
-//$$         prevBlendState?.activate()
+//$$         // prevBlendState?.activate()
 //$$
 //$$         GlStateManager._glUseProgram(0)
 //$$         bound = false

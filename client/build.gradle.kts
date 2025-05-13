@@ -35,6 +35,10 @@ if (platform.isForge) {
         if (platform.mcVersion >= 12100) {
             mixinConfig("plasmovoice-forge.mixins.json")
         }
+
+        if (platform.mcVersion >= 12102) {
+            mixinConfig("plasmovoice-1.21.2.mixins.json")
+        }
     }
 }
 
@@ -94,6 +98,7 @@ dependencies {
             12100 -> "0.100.4+1.21"
             12103 -> "0.110.0+1.21.3"
             12104 -> "0.110.5+1.21.4"
+            12105 -> "0.119.5+1.21.5"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -104,6 +109,12 @@ dependencies {
         }
 
         fabricApiModules("rendering-v1", "networking-api-v1", "lifecycle-events-v1", "key-binding-api-v1")
+
+        val coreProjectFile = project.file("../mainProject")
+        val coreProject = coreProjectFile.readText().trim()
+        if (coreProject == project.name) {
+            modLocalRuntime("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
+        }
 
         if (platform.mcVersion >= 12102) {
             "include"("me.lucko:fabric-permissions-api:0.3.3")
@@ -210,6 +221,11 @@ tasks {
     processResources {
         val versionInfo = readVersionInfo()
 
+        val mixins = mutableListOf("plasmovoice.mixins.json", "slib.mixins.json")
+        if (platform.mcVersion >= 12102) {
+            mixins.add("plasmovoice-1.21.2.mixins.json")
+        }
+
         filesMatching(
             mutableListOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml")
         ) {
@@ -218,7 +234,8 @@ tasks {
                     "version" to version,
                     "neoForgeVersion" to versionInfo.neoForgeVersion,
                     "forgeVersion" to versionInfo.forgeVersion,
-                    "mcVersions" to versionInfo.forgeMcVersions
+                    "mcVersions" to versionInfo.forgeMcVersions,
+                    "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\"")
                 )
             )
         }
@@ -227,7 +244,8 @@ tasks {
             expand(
                 mutableMapOf(
                     "version" to version,
-                    "mcVersions" to versionInfo.fabricMcVersions
+                    "mcVersions" to versionInfo.fabricMcVersions,
+                    "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\"")
                 )
             )
         }
@@ -262,6 +280,10 @@ tasks {
                 exclude(dependency("org.slf4j:slf4j-api"))
             }
 
+            if (platform.mcVersion < 12102) {
+                exclude("plasmovoice-1.21.2.mixins.json")
+            }
+
             if (platform.isForge) {
                 exclude("fabric.mod.json")
                 exclude("META-INF/neoforge.mods.toml")
@@ -271,6 +293,7 @@ tasks {
             } else {
                 exclude("pack.mcmeta")
                 exclude("META-INF/mods.toml")
+                exclude("META-INF/neoforge.mods.toml")
             }
         }
     }

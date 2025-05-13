@@ -2,6 +2,8 @@ package su.plo.voice.api.encryption;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.crypto.spec.SecretKeySpec;
+
 /**
  * Represents and encryption for encrypting and decrypting data using encryption algorithms.
  */
@@ -31,6 +33,13 @@ public interface Encryption {
      * @param keyData The encryption key data.
      */
     void updateKeyData(byte[] keyData);
+
+    /**
+     * Gets the current encryption key spec.
+     *
+     * @return The encryption key spec.
+     */
+    @NotNull SecretKeySpec getKey();
 
     /**
      * Retrieves the name of the encryption algorithm.

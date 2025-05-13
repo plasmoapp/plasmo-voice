@@ -7,7 +7,9 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.render.LazyGlState;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.IconPosition;
@@ -23,6 +25,9 @@ public final class HudIconRenderer {
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
+
+    // in most cases state should be the same, so let's hope it works
+    private final @NotNull LazyGlState glState = new LazyGlState();
 
     @EventSubscribe
     public void onHudRender(@NotNull HudRenderEvent event) {
@@ -73,17 +78,27 @@ public final class HudIconRenderer {
     private void renderIcon(@NotNull PoseStack stack, @NotNull ResourceLocation iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
-        RenderSystem.enableBlend();
-        RenderSystem.depthFunc(515);
         RenderUtil.bindTexture(0, iconLocation);
         RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         stack.pushPose();
         stack.translate(0f, 0f, 1000f);
-        RenderUtil.blit(stack, calcIconX(iconPosition.getX()), calcIconY(iconPosition.getY()), 0, 0, 16, 16, 16, 16);
-        stack.popPose();
 
-        RenderSystem.disableBlend();
+        glState.withState(() ->
+            RenderUtil.blitWithPipeline(
+                    stack,
+                    RenderPipelines.GUI_TEXTURE_OVERLAY,
+                    calcIconX(iconPosition.getX()),
+                    calcIconY(iconPosition.getY()),
+                    0,
+                    0,
+                    16,
+                    16,
+                    16,
+                    16
+            )
+        );
+        stack.popPose();
     }
 
     private int calcIconX(Integer x) {

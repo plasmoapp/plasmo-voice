@@ -88,7 +88,14 @@ public final class ModPlayerSkins {
     private static Supplier<ResourceLocation> getInsecureSkinLocation(GameProfile gameProfile) {
         //#if MC>=12002
         //$$ Supplier<PlayerSkin> skinSupplier = Minecraft.getInstance().getSkinManager().lookupInsecure(gameProfile);
-        //$$ return () -> skinSupplier.get().texture();
+        //$$ return () -> {
+        //$$     ResourceLocation skinLocation = skinSupplier.get().texture();
+        //$$     Minecraft.getInstance()
+        //$$             .getTextureManager()
+        //$$             .getTexture(skinLocation)
+        //$$             .setFilter(false, true);
+        //$$     return skinLocation;
+        //$$ };
         //#else
         MinecraftProfileTexture minecraftProfileTexture = Minecraft.getInstance()
                 .getSkinManager()

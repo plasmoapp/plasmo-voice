@@ -139,6 +139,11 @@ public final class VoiceServerInfo implements ServerInfo {
         }
 
         @Override
+        public @NotNull Map<String, Boolean> getPermissions() {
+            return permissions;
+        }
+
+        @Override
         public Optional<Boolean> get(@NotNull String key) {
             return Optional.ofNullable(permissions.get(checkNotNull(key)));
         }

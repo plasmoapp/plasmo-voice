@@ -1,7 +1,6 @@
 package su.plo.voice.api.server.audio.source
 
 import kotlinx.coroutines.*
-import kotlinx.coroutines.Runnable
 import su.plo.voice.api.server.audio.provider.AudioFrameProvider
 import su.plo.voice.api.server.audio.provider.AudioFrameResult
 import kotlin.time.Duration.Companion.nanoseconds
@@ -12,8 +11,8 @@ import kotlin.time.Duration.Companion.nanoseconds
 class AudioSender(
     private val frameProvider: AudioFrameProvider,
 
-    private val onFrame: (frame: ByteArray, sequenceNumber: Long) -> Boolean,
-    private val onEnd: (sequenceNumber: Long) -> Boolean
+    private val frameCallback: AudioFrameCallback,
+    private val endCallback: AudioEndCallback,
 ) {
 
     /**
@@ -22,6 +21,10 @@ class AudioSender(
      * Use this field only with [kotlin relocation](https://plasmovoice.com/docs/api/#kotlin).
      * Otherwise, you will get class not found exception.
      */
+    @Deprecated(
+        "kotlin classes are relocated and it's impossible to use this field without relocation",
+        replaceWith = ReplaceWith("use onStop and stop")
+    )
     var job: Job? = null
         private set
 
@@ -48,7 +51,7 @@ class AudioSender(
                     if (paused) {
                         if (!endOfStream) {
                             endOfStream = true
-                            onEnd.invoke(sequenceNumber++)
+                            endCallback.onEnd(sequenceNumber++)
                             startTime = 0L
                         }
 
@@ -61,7 +64,7 @@ class AudioSender(
                             if (endOfStream) continue
 
                             endOfStream = true
-                            onEnd.invoke(sequenceNumber++)
+                            endCallback.onEnd(sequenceNumber++)
                             startTime = 0L
                             continue
                         }
@@ -88,11 +91,11 @@ class AudioSender(
                     delay(waitTime.nanoseconds)
 
                     endOfStream = false
-                    onFrame.invoke(frame, sequenceNumber++)
+                    frameCallback.onAudioFrame(frame, sequenceNumber++)
                 }
             } finally {
                 withContext(NonCancellable) {
-                    onEnd.invoke(sequenceNumber)
+                    endCallback.onEnd(sequenceNumber)
 
                     onStop?.run()
                 }
@@ -130,5 +133,13 @@ class AudioSender(
      */
     fun onStop(onStop: Runnable?) {
         this.onStop = onStop
+    }
+
+    fun interface AudioFrameCallback {
+        fun onAudioFrame(frame: ByteArray, sequenceNumber: Long): Boolean
+    }
+
+    fun interface AudioEndCallback {
+        fun onEnd(sequenceNumber: Long): Boolean
     }
 }

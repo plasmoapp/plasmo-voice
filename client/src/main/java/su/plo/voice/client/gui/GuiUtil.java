@@ -1,4 +1,4 @@
-package su.plo.lib.mod.client.gui;
+package su.plo.voice.client.gui;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;

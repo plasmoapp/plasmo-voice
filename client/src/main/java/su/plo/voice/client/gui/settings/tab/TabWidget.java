@@ -40,8 +40,8 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         super(
                 parent,
                 303,
-//                0, parent.getWidth(),
-                0, 0
+                0,
+                0
         );
 
         this.voiceClient = voiceClient;
@@ -61,12 +61,20 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
     @Override
     public void init() {
         clearEntries();
-        this.y0 = parent.getNavigation().getHeight() + 4;
-        this.y1 = parent.getHeight() - 4;
+        this.y0 = parent.getNavigation().getHeight();
+        this.y1 = parent.getHeight();
     }
 
     public void removed() {
         setScrollTop(0D);
+    }
+
+    @Override
+    public boolean isMouseOver(double mouseX, double mouseY) {
+        return mouseY >= y0 &&
+                mouseY <= y1 &&
+                mouseX >= 0 &&
+                mouseX <= width;
     }
 
     @Override

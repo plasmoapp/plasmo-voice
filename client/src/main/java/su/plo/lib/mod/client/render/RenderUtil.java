@@ -4,20 +4,17 @@ package su.plo.lib.mod.client.render;
 import net.minecraft.client.gui.Font;
 //#endif
 
-import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import gg.essential.universal.TextBuilder;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.texture.AbstractTexture;
-import net.minecraft.client.renderer.texture.SimpleTexture;
-import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.opengl.GL11;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
+import su.plo.lib.mod.client.render.pipeline.RenderPipeline;
+import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -26,17 +23,29 @@ import su.plo.lib.mod.client.chat.ClientTextConverter;
 import java.util.Iterator;
 import java.util.List;
 
-import static org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE;
-import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-
 //#if MC>=11700
-import java.util.IdentityHashMap;
-import java.util.Map;
-import java.util.function.Supplier;
-import net.minecraft.client.renderer.ShaderInstance;
+
+//#else
+//$$ import static org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE;
+//$$ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
+//$$
+//$$ import com.mojang.blaze3d.platform.GlStateManager;
+//$$ import net.minecraft.client.renderer.texture.AbstractTexture;
+//$$ import net.minecraft.client.renderer.texture.SimpleTexture;
+//$$ import net.minecraft.client.renderer.texture.TextureManager;
+//$$
+//$$ import org.lwjgl.opengl.GL11;
 //#endif
 
-//#if MC>=12102
+//#if MC>=12105
+//$$ import com.mojang.blaze3d.buffers.GpuBuffer;
+//$$ import com.mojang.blaze3d.systems.RenderPass;
+//$$ import com.mojang.blaze3d.textures.GpuTexture;
+//$$ import com.mojang.blaze3d.shaders.UniformType;
+//$$
+//$$ import java.util.OptionalInt;
+//$$ import java.util.OptionalDouble;
+//#elseif MC>=12102
 //$$ import net.minecraft.client.renderer.CoreShaders;
 //$$ import net.minecraft.client.renderer.ShaderProgram;
 //#endif
@@ -53,18 +62,11 @@ public class RenderUtil {
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
 
     public static void enableScissor(int x, int y, int width, int height) {
-        double scaleFactor = Minecraft.getInstance().getWindow().getGuiScale();
-
-        double scaledX = x * scaleFactor;
-        double scaledY = y * scaleFactor;
-        double scaledWidth = width * scaleFactor;
-        double scaledHeight = height * scaleFactor;
-
         //#if MC<11502
         //$$ GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        //$$ GL11.glScissor((int) scaledX, (int) scaledY, Math.max(0, (int) scaledWidth), Math.max(0, (int) scaledHeight));
+        //$$ GL11.glScissor(x, y, width, height);
         //#else
-        RenderSystem.enableScissor((int) scaledX, (int) scaledY, Math.max(0, (int) scaledWidth), Math.max(0, (int) scaledHeight));
+        RenderSystem.enableScissor(x, y, width, height);
         //#endif
     }
 
@@ -77,127 +79,218 @@ public class RenderUtil {
     }
 
     //#if MC>=11700
-    // Note: Needs to be an Identity hash map because VertexFormat's equals method is broken (compares via its
-    //       component Map but order very much matters for VertexFormat) as of 1.17
-    //#if MC>=12102
-    //$$ private static final Map<VertexFormat, ShaderProgram> DEFAULT_SHADERS = new IdentityHashMap<>();
-    //$$ static {
-    //$$
-    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.PARTICLE, CoreShaders.PARTICLE);
-    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION, CoreShaders.POSITION);
-    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR, CoreShaders.POSITION_COLOR);
-    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, CoreShaders.POSITION_COLOR_LIGHTMAP);
-    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX, CoreShaders.POSITION_TEX);
-    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX_COLOR, CoreShaders.POSITION_TEX_COLOR);
-    //$$     DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, CoreShaders.POSITION_COLOR_TEX_LIGHTMAP);
-    //#else
-    private static final Map<VertexFormat, Supplier<ShaderInstance>> DEFAULT_SHADERS = new IdentityHashMap<>();
-    static {
-        DEFAULT_SHADERS.put(DefaultVertexFormat.PARTICLE, GameRenderer::getParticleShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION, GameRenderer::getPositionShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR, GameRenderer::getPositionColorShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_LIGHTMAP, GameRenderer::getPositionColorLightmapShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX, GameRenderer::getPositionTexShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX_COLOR, GameRenderer::getPositionTexColorShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX_LIGHTMAP, GameRenderer::getPositionColorTexLightmapShader);
-    //#endif
-    //#if MC>=12100
-    //$$     // Shaders for these formats are no longer provided.
-    //#else
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_COLOR_TEX, GameRenderer::getPositionColorTexShader);
-    //#endif
 
-    //#if MC>=12005
-    //$$     // Shaders for these formats are no longer provided.
-    //#else
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX_LIGHTMAP_COLOR, GameRenderer::getPositionTexLightmapColorShader);
-        DEFAULT_SHADERS.put(DefaultVertexFormat.POSITION_TEX_COLOR_NORMAL, GameRenderer::getPositionTexColorNormalShader);
-    //#endif
-    }
-    //#endif
-
-    public static @NotNull BufferBuilder beginBufferWithDefaultShader(@NotNull VertexFormatMode mode, @NotNull VertexFormat format) {
-        //#if MC>=11700
-        //#if MC>=12102
-        //$$ ShaderProgram shader = DEFAULT_SHADERS.get(format);
+    public static void clearShader() {
+        //#if MC>=12105
+        //#elseif MC>=12103
+        //$$ RenderSystem.clearShader();
         //#else
-        Supplier<ShaderInstance> shader = DEFAULT_SHADERS.get(format);
+        RenderSystem.setShader(() -> null);
         //#endif
-        if (shader == null) {
-            throw new IllegalArgumentException("No default shader for " + format + ". Bind your own and use beginBufferWithActiveShader instead.");
-        }
-
-        RenderSystem.setShader(shader);
-        //#endif
-
-        return beginBufferWithActiveShader(mode, format);
     }
 
-    public static @NotNull BufferBuilder beginBufferWithActiveShader(@NotNull VertexFormatMode mode, @NotNull VertexFormat format) {
+    //#endif
+
+    public static @NotNull BufferBuilder beginBuffer(@NotNull RenderPipeline pipeline) {
         Tesselator tesselator = Tesselator.getInstance();
         //#if MC>=12100
-        //$$ return tesselator.begin(mode.toMc(), format);
+        //$$ return tesselator.begin(pipeline.getVertexFormatMode().toMc(), pipeline.getVertexFormat());
         //#else
 
         BufferBuilder buffer = tesselator.getBuilder();
 
         //#if MC>=11700
-        buffer.begin(mode.toMc(), format);
+        buffer.begin(pipeline.getVertexFormatMode().toMc(), pipeline.getVertexFormat());
         //#else
-        //$$ buffer.begin(mode.getGlMode(), format);
+        //$$ buffer.begin(pipeline.getVertexFormatMode().getGlMode(), pipeline.getVertexFormat());
         //#endif
 
         return buffer;
         //#endif
     }
 
-    public static void drawBuffer(@NotNull BufferBuilder buffer) {
-        //#if MC>11802
+    //#if MC<12105
+    private static boolean PRESERVE_GL_STATE = false;
+
+    private static @Nullable GlState CURRENT_GL_STATE = null;
+    private static @Nullable GlState OLD_GL_STATE = null;
+
+    public static void setGlState(@NotNull GlState glState) {
+        OLD_GL_STATE = glState.javaCopy();
+        CURRENT_GL_STATE = glState;
+        PRESERVE_GL_STATE = true;
+    }
+
+    public static void preserveGlState() {
+        PRESERVE_GL_STATE = true;
+    }
+
+    public static void restoreGlState() {
+        restoreGlState(false);
+    }
+
+    public static void restoreGlState(boolean preserveGlState) {
+        if (OLD_GL_STATE != null && CURRENT_GL_STATE != null) {
+            OLD_GL_STATE.apply(CURRENT_GL_STATE);
+        }
+
+        CURRENT_GL_STATE = null;
+        OLD_GL_STATE = null;
+        PRESERVE_GL_STATE = preserveGlState;
+    }
+
+    private static void applyRenderPipeline(@NotNull RenderPipeline renderPipeline) {
+        //#if MC>=12103
+        //$$ RenderSystem.setShader(renderPipeline.getShader().invoke());
+        //#elseif MC>=11700
+        RenderSystem.setShader(renderPipeline.getShader()::invoke);
+        //#else
+        //$$ if (renderPipeline.getShader() != null) {
+        //$$     renderPipeline.getShader().bind();
+        //$$ }
+        //#endif
+
+        if (CURRENT_GL_STATE == null) {
+            CURRENT_GL_STATE = GlState.current();
+            OLD_GL_STATE = CURRENT_GL_STATE.javaCopy();
+        }
+
+        renderPipeline.getGlState().apply(CURRENT_GL_STATE);
+    }
+    //#endif
+
+    public static void drawBuffer(@NotNull BufferBuilder buffer, @NotNull RenderPipeline renderPipeline) {
+        //#if MC<12105
+        applyRenderPipeline(renderPipeline);
+        //#endif
+
+        //#if MC<11700
+        //$$ if (renderPipeline.getBlendFunc() != null) {
+        //$$     RenderSystem.shadeModel(GL11.GL_SMOOTH);
+        //$$ }
+        //$$
+        //$$ if (renderPipeline.getSamplers().isEmpty()) {
+        //$$     RenderSystem.disableTexture();
+        //$$ }
+        //#endif
+
+        //#if MC>=12105
+        //$$ try (MeshData meshData = buffer.build()) {
+        //$$     GpuBuffer vertexBuffer = meshData.drawState().format().uploadImmediateVertexBuffer(meshData.vertexBuffer());
+        //$$     GpuBuffer indexBuffer;
+        //$$     VertexFormat.IndexType indexType;
+        //$$
+        //$$     if (meshData.indexBuffer() != null) {
+        //$$         indexBuffer = meshData.drawState().format().uploadImmediateIndexBuffer(meshData.indexBuffer());
+        //$$         indexType = meshData.drawState().indexType();
+        //$$     } else {
+        //$$         RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(meshData.drawState().mode());
+        //$$         indexBuffer = autoStorageIndexBuffer.getBuffer(meshData.drawState().indexCount());
+        //$$         indexType = autoStorageIndexBuffer.type();
+        //$$     }
+        //$$
+        //$$     try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
+        //$$             Minecraft.getInstance().getMainRenderTarget().getColorTexture(),
+        //$$             OptionalInt.empty(),
+        //$$             Minecraft.getInstance().getMainRenderTarget().getDepthTexture(),
+        //$$             OptionalDouble.empty()
+        //$$     )) {
+        //$$         renderPass.setPipeline(renderPipeline.getMcRenderPipeline());
+        //$$         renderPass.setVertexBuffer(0, vertexBuffer);
+        //$$
+        //$$         if (RenderSystem.SCISSOR_STATE.isEnabled()) {
+        //$$             renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
+        //$$         }
+        //$$
+        //$$         for(int i = 0; i < 12; ++i) {
+        //$$             GpuTexture gpuTexture = RenderSystem.getShaderTexture(i);
+        //$$             if (gpuTexture != null) {
+        //$$                 renderPass.bindSampler("Sampler" + i, gpuTexture);
+        //$$             }
+        //$$         }
+        //$$
+        //$$         renderPass.setIndexBuffer(indexBuffer, indexType);
+        //$$         renderPass.drawIndexed(0, meshData.drawState().indexCount());
+        //$$     }
+        //$$ }
+        //#elseif MC>11802
         BufferUploader.drawWithShader(buffer.end());
         //#else
         //$$ buffer.end();
         //$$ BufferUploader.end(buffer);
         //#endif
-    }
 
-    public static void bindTexture(int index, @NotNull ResourceLocation location) {
+        //#if MC<12105
+        if (!PRESERVE_GL_STATE) {
+            restoreGlState();
+        }
+        //#endif
+
         //#if MC>=11700
-        RenderSystem.setShaderTexture(index, location);
+        clearShader();
         //#else
-        int glTextureId = getOrLoadTextureId(location);
-        configureTextureUnit(index, () -> RenderSystem.bindTexture(glTextureId));
+        //$$ if (renderPipeline.getShader() != null) {
+        //$$     renderPipeline.getShader().unbind();
+        //$$ }
+        //#endif
+
+        //#if MC<11700
+        //$$ if (renderPipeline.getBlendFunc() != null) {
+        //$$     RenderSystem.shadeModel(GL11.GL_FLAT);
+        //$$ }
+        //$$
+        //$$ if (renderPipeline.getSamplers().isEmpty()) {
+        //$$     RenderSystem.enableTexture();
+        //$$ }
         //#endif
     }
 
-    public static void configureTextureUnit(int index, Runnable block) {
-        int prevActiveTexture = getActiveTexture();
-        setActiveTexture(GL_TEXTURE0 + index);
-
-        block.run();
-
-        setActiveTexture(prevActiveTexture);
+    public static void bindTexture(int index, @NotNull ResourceLocation location) {
+        //#if MC>=12105
+        //$$ RenderSystem.setShaderTexture(index, Minecraft.getInstance().getTextureManager().getTexture(location).getTexture());
+        //#elseif MC>=11700
+        RenderSystem.setShaderTexture(index, location);
+        //#else
+        //$$ int glTextureId = getOrLoadTextureId(location);
+        //$$ configureTextureUnit(index, () -> RenderSystem.bindTexture(glTextureId));
+        //#endif
     }
 
-    public static int getActiveTexture() {
-        return GL11.glGetInteger(GL_ACTIVE_TEXTURE);
-    }
-
-    public static void setActiveTexture(int glId) {
-        GlStateManager._activeTexture(glId);
-    }
-
-    public static int getOrLoadTextureId(ResourceLocation resourceLocation) {
-        TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-        AbstractTexture texture = textureManager.getTexture(resourceLocation);
-        if (texture == null) {
-            texture = new SimpleTexture(resourceLocation);
-            textureManager.register(resourceLocation, (AbstractTexture)texture);
-        }
-
-        return ((AbstractTexture)texture).getId();
-    }
+    //#if MC<11700
+    //$$ public static void configureTextureUnit(int index, Runnable block) {
+    //$$     int prevActiveTexture = getActiveTexture();
+    //$$     setActiveTexture(GL_TEXTURE0 + index);
+    //$$
+    //$$     block.run();
+    //$$
+    //$$     setActiveTexture(prevActiveTexture);
+    //$$ }
+    //$$
+    //$$ public static int getActiveTexture() {
+    //$$     return GL11.glGetInteger(GL_ACTIVE_TEXTURE);
+    //$$ }
+    //$$
+    //$$ public static void setActiveTexture(int glId) {
+    //$$     GlStateManager._activeTexture(glId);
+    //$$ }
+    //$$
+    //$$ public static int getOrLoadTextureId(ResourceLocation resourceLocation) {
+    //$$     TextureManager textureManager = Minecraft.getInstance().getTextureManager();
+    //$$     AbstractTexture texture = textureManager.getTexture(resourceLocation);
+    //$$     if (texture == null) {
+    //$$         texture = new SimpleTexture(resourceLocation);
+    //$$         textureManager.register(resourceLocation, (AbstractTexture)texture);
+    //$$     }
+    //$$
+    //$$     return ((AbstractTexture)texture).getId();
+    //$$ }
+    //#endif
 
     public static void fill(PoseStack stack, int x0, int y0, int x1, int y1, int color) {
+        fill(stack, RenderPipelines.GUI_COLOR, x0, y0, x1, y1, color);
+    }
+
+    public static void fill(PoseStack stack, @NotNull RenderPipeline renderPipeline, int x0, int y0, int x1, int y1, int color) {
         int n;
         if (x0 < x1) {
             n = x0;
@@ -216,17 +309,43 @@ public class RenderUtil {
         float h = (float) (color >> 8 & 255) / 255.0F;
         float o = (float) (color & 255) / 255.0F;
 
-        RenderSystem.enableBlend();
-        defaultBlendFunc();
+        BufferBuilder buffer = RenderUtil.beginBuffer(renderPipeline);
 
-        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_COLOR);
         VertexBuilder.create(buffer).position(stack, (float) x0, (float) y1, 0F).color(g, h, o, f).end();
         VertexBuilder.create(buffer).position(stack, (float) x1, (float) y1, 0F).color(g, h, o, f).end();
         VertexBuilder.create(buffer).position(stack, (float) x1, (float) y0, 0F).color(g, h, o, f).end();
         VertexBuilder.create(buffer).position(stack, (float) x0, (float) y0, 0F).color(g, h, o, f).end();
-        drawBuffer(buffer);
 
-        RenderSystem.disableBlend();
+        drawBuffer(buffer, renderPipeline);
+    }
+
+    public static void fillLight(PoseStack stack, @NotNull RenderPipeline renderPipeline, int x0, int y0, int x1, int y1, int color, int light) {
+        int n;
+        if (x0 < x1) {
+            n = x0;
+            x0 = x1;
+            x1 = n;
+        }
+
+        if (y0 < y1) {
+            n = y0;
+            y0 = y1;
+            y1 = n;
+        }
+
+        float f = (float) (color >> 24 & 255) / 255.0F;
+        float g = (float) (color >> 16 & 255) / 255.0F;
+        float h = (float) (color >> 8 & 255) / 255.0F;
+        float o = (float) (color & 255) / 255.0F;
+
+        BufferBuilder buffer = RenderUtil.beginBuffer(renderPipeline);
+
+        VertexBuilder.create(buffer).position(stack, (float) x0, (float) y1, 0F).color(g, h, o, f).light(light).end();
+        VertexBuilder.create(buffer).position(stack, (float) x1, (float) y1, 0F).color(g, h, o, f).light(light).end();
+        VertexBuilder.create(buffer).position(stack, (float) x1, (float) y0, 0F).color(g, h, o, f).light(light).end();
+        VertexBuilder.create(buffer).position(stack, (float) x0, (float) y0, 0F).color(g, h, o, f).light(light).end();
+
+        drawBuffer(buffer, renderPipeline);
     }
 
     public static void fillGradient(PoseStack stack,
@@ -254,7 +373,18 @@ public class RenderUtil {
                                     int startRed, int startBlue, int startGreen, int startAlpha,
                                     int endRed, int endBlue, int endGreen, int endAlpha,
                                     int z) {
-        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        fillGradientWithPipeline(stack, RenderPipelines.GUI_COLOR, startX, startY, endX, endY, startRed, startBlue, startGreen, startAlpha, endRed, endBlue, endGreen, endAlpha, z);
+    }
+
+    public static void fillGradientWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline renderPipeline,
+            int startX, int startY, int endX, int endY,
+            int startRed, int startBlue, int startGreen, int startAlpha,
+            int endRed, int endBlue, int endGreen, int endAlpha,
+            int z
+    ) {
+        BufferBuilder buffer = RenderUtil.beginBuffer(renderPipeline);
 
         fillGradient(
                 stack, buffer, startX, startY, endX, endY, z,
@@ -262,7 +392,7 @@ public class RenderUtil {
                 endRed, endBlue, endGreen, endAlpha
         );
 
-        drawBuffer(buffer);
+        drawBuffer(buffer, renderPipeline);
     }
 
     private static void fillGradient(PoseStack stack, BufferBuilder buffer,
@@ -305,38 +435,80 @@ public class RenderUtil {
     }
 
     public static void blit(PoseStack stack, int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight) {
-        blit(stack, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x, y, z, u, v, width, height, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, int z, float u, float v, int width, int height, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x, x + width, y, y + height, z, width, height, u, v, textureWidth, textureHeight);
     }
 
     public static void blit(PoseStack stack, int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight) {
-        blit(stack, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x, y, width, height, u, v, regionWidth, regionHeight, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, int width, int height, float u, float v, int regionWidth, int regionHeight, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
     }
 
     public static void blit(PoseStack stack, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
-        blit(stack, x, y, width, height, u, v, width, height, textureWidth, textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x, y, u, v, width, height, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x, y, width, height, u, v, width, height, textureWidth, textureHeight);
     }
 
     public static void blit(PoseStack stack, int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight) {
-        blit(stack, x0, x1, y0, y1, z, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x0, x1, y0, y1, z, regionWidth, regionHeight, u, v, textureWidth, textureHeight);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight
+    ) {
+        blitWithPipeline(stack, pipeline, x0, x1, y0, y1, z, (u + 0.0F) / (float) textureWidth, (u + (float) regionWidth) / (float) textureWidth, (v + 0.0F) / (float) textureHeight, (v + (float) regionHeight) / (float) textureHeight);
     }
 
     public static void blit(PoseStack stack, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {
-        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE, x0, x1, y0, y1, z, u0, u1, v0, v1);
+    }
+
+    public static void blitWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1
+    ) {
+        BufferBuilder buffer = RenderUtil.beginBuffer(pipeline);
 
         VertexBuilder.create(buffer).position(stack, (float) x0, (float) y1, (float) z).uv(u0, v1).end();
         VertexBuilder.create(buffer).position(stack, (float) x1, (float) y1, (float) z).uv(u1, v1).end();
         VertexBuilder.create(buffer).position(stack, (float) x1, (float) y0, (float) z).uv(u1, v0).end();
         VertexBuilder.create(buffer).position(stack, (float) x0, (float) y0, (float) z).uv(u0, v0).end();
 
-        drawBuffer(buffer);
+        drawBuffer(buffer, pipeline);
     }
 
-    public static void blitWithActiveShader(PoseStack stack,
-                                            VertexFormat format,
-                                            int x0, int x1, int y0, int y1, int z,
-                                            float u0, float u1, float v0, float v1,
-                                 int red, int green, int blue, int alpha) {
-        BufferBuilder buffer = RenderUtil.beginBufferWithActiveShader(VertexFormatMode.QUADS, format);
+    public static void blitColorWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x0, int x1, int y0, int y1, int z,
+            float u0, float u1, float v0, float v1,
+            int red, int green, int blue, int alpha
+    ) {
+        BufferBuilder buffer = RenderUtil.beginBuffer(pipeline);
 
         VertexBuilder.create(buffer)
                 .position(stack, x0, y1, z)
@@ -359,37 +531,14 @@ public class RenderUtil {
                 .color(red, green, blue, alpha)
                 .end();
 
-        drawBuffer(buffer);
+        drawBuffer(buffer, pipeline);
     }
 
     public static void blitColor(PoseStack stack,
                                  int x0, int x1, int y0, int y1, int z,
                                  float u0, float u1, float v0, float v1,
                                  int red, int green, int blue, int alpha) {
-        BufferBuilder buffer = RenderUtil.beginBufferWithDefaultShader(VertexFormatMode.QUADS, DefaultVertexFormat.POSITION_TEX_COLOR);
-
-        VertexBuilder.create(buffer)
-                .position(stack, x0, y1, z)
-                .uv(u0, v1)
-                .color(red, green, blue, alpha)
-                .end();
-        VertexBuilder.create(buffer)
-                .position(stack, x1, y1, z)
-                .uv(u1, v1)
-                .color(red, green, blue, alpha)
-                .end();
-        VertexBuilder.create(buffer)
-                .position(stack, x1, y0, z)
-                .uv(u1, v0)
-                .color(red, green, blue, alpha)
-                .end();
-        VertexBuilder.create(buffer)
-                .position(stack, x0, y0, z)
-                .uv(u0, v0)
-                .color(red, green, blue, alpha)
-                .end();
-
-        drawBuffer(buffer);
+        blitColorWithPipeline(stack, RenderPipelines.GUI_TEXTURE_COLOR, x0, x1, y0, y1, z, u0, u1, v0, v1, red, green, blue, alpha);
     }
 
     public static void drawStringInBatch(PoseStack stack, String text, int x, int y, int color, boolean shadow) {
@@ -400,6 +549,13 @@ public class RenderUtil {
         //#endif
         Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, TEXT_LAYER_TYPE, 0, 15728880);
         irendertypebuffer$impl.endBatch();
+
+        //#if MC<12105
+        if (CURRENT_GL_STATE != null) {
+            CURRENT_GL_STATE.setDepthFunc(null);
+            CURRENT_GL_STATE.setBlendFunc(null);
+        }
+        //#endif
     }
 
     public static int drawCenteredString(PoseStack stack, String string, int x, int y, int color) {
@@ -612,72 +768,8 @@ public class RenderUtil {
         return textBuilder.getString();
     }
 
-    public static void enableColorLogic() {
-        //#if MC<11502
-        //$$ GlStateManager.enableColorLogic();
-        //#else
-        RenderSystem.enableColorLogicOp();
-        //#endif
-    }
-
-    public static void disableColorLogic() {
-        //#if MC<11502
-        //$$ GlStateManager.disableColorLogic();
-        //#else
-        RenderSystem.disableColorLogicOp();
-        //#endif
-    }
-
-    public static void logicOp(String opcode) {
-        RenderSystem.logicOp(GlStateManager.LogicOp.valueOf(opcode));
-    }
-
-    public static void enableCull() {
-        //#if MC<11502
-        //$$ GlStateManager.enableCull();
-        //#else
-        RenderSystem.enableCull();
-        //#endif
-    }
-
-    public static void disableCull() {
-        //#if MC<11502
-        //$$ GlStateManager.disableCull();
-        //#else
-        RenderSystem.disableCull();
-        //#endif
-    }
-
-    public static void enablePolygonOffset() {
-        //#if MC<11502
-        //$$ GlStateManager.enablePolygonOffset();
-        //#else
-        RenderSystem.enablePolygonOffset();
-        //#endif
-    }
-
-    public static void disablePolygonOffset() {
-        //#if MC<11502
-        //$$ GlStateManager.disablePolygonOffset();
-        //#else
-        RenderSystem.disablePolygonOffset();
-        //#endif
-    }
-
-    public static void polygonOffset(float factor, float units) {
-        //#if MC<11502
-        //$$ GlStateManager.doPolygonOffset(factor, units);
-        //#else
-        RenderSystem.polygonOffset(factor, units);
-        //#endif
-    }
-
     public static void lineWidth(float width) {
-        //#if MC<11502
-        //$$ GlStateManager.glLineWidth(width);
-        //#else
         RenderSystem.lineWidth(width);
-        //#endif
     }
 
     public static int getStringWidth(String string) {
@@ -690,14 +782,5 @@ public class RenderUtil {
 
     public static ClientTextConverter getTextConverter() {
         return TEXT_CONVERTER;
-    }
-
-    public static void defaultBlendFunc() {
-        RenderSystem.blendFuncSeparate(
-                770,
-                771,
-                1,
-                0
-        );
     }
 }

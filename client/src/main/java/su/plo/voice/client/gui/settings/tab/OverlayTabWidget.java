@@ -4,16 +4,17 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
-import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
@@ -24,7 +25,7 @@ import su.plo.voice.api.client.config.overlay.OverlayStyle;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
-import su.plo.voice.client.gui.settings.widget.OverlaySourceStateButton;
+import su.plo.voice.client.gui.settings.widget.ToggleButton;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 
 import java.util.Arrays;
@@ -96,8 +97,12 @@ public final class OverlayTabWidget extends TabWidget {
         EnumConfigEntry<OverlaySourceState> configEntry = config.getOverlay().getSourceStates().getState(sourceLine);
 
         if (!sourceLine.hasPlayers()) {
-            OverlaySourceStateButton widget = new OverlaySourceStateButton(
-                    configEntry,
+            BooleanConfigEntry booleanConfigEntry = new BooleanConfigEntry(false);
+            booleanConfigEntry.set(configEntry.value().toBoolean());
+            booleanConfigEntry.addChangeListener(state -> configEntry.set(OverlaySourceState.fromBoolean(state)));
+
+            ToggleButton widget = new ToggleButton(
+                    booleanConfigEntry,
                     0,
                     0,
                     ELEMENT_WIDTH,
@@ -107,7 +112,7 @@ public final class OverlayTabWidget extends TabWidget {
             addEntry(new OverlaySourceEntry<>(
                     McTextComponent.translatable(sourceLine.getTranslation()),
                     widget,
-                    configEntry,
+                    booleanConfigEntry,
                     null,
                     ResourceLocation.tryParse(sourceLine.getIcon()),
                     null
@@ -286,9 +291,7 @@ public final class OverlayTabWidget extends TabWidget {
             RenderUtil.bindTexture(0, iconLocation);
             RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-            RenderSystem.enableBlend();
             RenderUtil.blit(stack, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
-            RenderSystem.disableBlend();
 
             RenderUtil.drawString(
                     stack,

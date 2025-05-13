@@ -1,2 +1,5 @@
-### Changes in 2.1.3
-- Fixed an issue where Plasmo Voice failing to load would break all commands tab-completion.
+### Changes in 2.1.4
+- Support 1.21.5 component changes.
+- Fixed SuperVanish `/hide` causes hidden client to disconnect.
+- Fixed game events reflections causing high CPU usage on Spigot-based servers.
+- Fixed crowdin download task blocking language resolution, causing languages not to load.

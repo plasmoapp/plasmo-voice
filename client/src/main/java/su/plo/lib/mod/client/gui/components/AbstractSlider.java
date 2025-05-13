@@ -19,7 +19,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
     @Override
     protected @NotNull GuiWidgetTexture getButtonTexture(boolean hovered) {
-        return GuiWidgetTexture.BUTTON_DISABLED;
+        return GuiWidgetTexture.SLIDER;
     }
 
     @Override
@@ -36,10 +36,6 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
         RenderUtil.bindTexture(0, sprite.getLocation());
         RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
-
-        RenderSystem.enableBlend();
-        RenderUtil.defaultBlendFunc();
-        RenderSystem.enableDepthTest();
 
         RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
         RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
@@ -94,6 +90,16 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     protected void renderTrack(@NotNull PoseStack stack, int mouseX, int mouseY) {
+        int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
+
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+
+        //#if MC>=12002
+        //$$ GuiWidgetTexture sprite = isHoveredOrFocused() ? GuiWidgetTexture.SLIDER_HANDLE_ACTIVE : GuiWidgetTexture.SLIDER_HANDLE;
+        //$$
+        //$$ RenderUtil.bindTexture(0, sprite.getLocation());
+        //$$ RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 8, 20);
+        //#else
         GuiWidgetTexture sprite;
         if (isHoveredOrFocused()) {
             sprite = GuiWidgetTexture.BUTTON_ACTIVE;
@@ -102,11 +108,9 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
         }
 
         RenderUtil.bindTexture(0, sprite.getLocation());
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-
-        int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
         RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
         RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
+        //#endif
     }
 
     @Override

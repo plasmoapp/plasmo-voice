@@ -26,10 +26,7 @@
             "su.plo.voice.client.integration.ModMenuIntegration"
         ]
     },
-    "mixins": [
-        "plasmovoice.mixins.json",
-        "slib.mixins.json"
-    ],
+    "mixins": ["${mixins}"],
     "depends": {
         "fabric": "*",
         "fabricloader": "*",
