@@ -30,7 +30,7 @@ class VoiceServerLanguages(
     override fun register(
         resourceLoader: ResourceLoader,
         languagesFolder: File
-    ): CompletableFuture<Void> {
+    ): CompletableFuture<Void?> {
         try {
             val languages: MutableMap<String, VoiceServerLanguage> = Maps.newHashMap()
 
@@ -41,8 +41,10 @@ class VoiceServerLanguages(
                 languages[languageName] = language
             }
 
-            return CompletableFuture.runAsync {
+            return CoroutineScopes.DefaultSupervisor.future {
                 register(languages, languagesFolder)
+
+                null
             }
         } catch (e: IOException) {
             throw IllegalStateException("Failed to load languages", e)

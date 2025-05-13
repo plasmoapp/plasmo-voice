@@ -40,7 +40,7 @@ interface ServerLanguages {
     fun register(
         resourceLoader: ResourceLoader,
         languagesFolder: File
-    ): CompletableFuture<Void>
+    ): CompletableFuture<Void?>
 
     /**
      * Registers a new language using crowdin.
