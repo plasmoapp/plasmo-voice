@@ -5,12 +5,13 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.audio.codec.CodecSupplier;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.codec.opus.OpusEncoderInfo;
+import su.plo.voice.util.NativesKt;
 
 import java.io.IOException;
 
-import static su.plo.voice.util.NativesKt.isNativesSupported;
-
 public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, BaseOpusDecoder> {
+
+    private boolean nativesFailedToLoad = false;
 
     @Override
     public @NotNull BaseOpusEncoder createEncoder(
@@ -38,6 +39,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
             } catch (Exception | LinkageError e) {
                 encoder = null;
                 BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+                nativesFailedToLoad = true;
             }
         }
 
@@ -74,6 +76,7 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
             } catch (ClassNotFoundException ignored) {
             } catch (Exception | LinkageError e) {
                 BaseVoice.LOGGER.warn("Failed to load native opus. Falling back to pure java impl", e);
+                nativesFailedToLoad = true;
             }
         }
 
@@ -89,5 +92,11 @@ public final class OpusCodecSupplier implements CodecSupplier<BaseOpusEncoder, B
     @Override
     public @NotNull String getName() {
         return "opus";
+    }
+
+    private boolean isNativesSupported() {
+        if (nativesFailedToLoad) return false;
+
+        return NativesKt.isNativesSupported();
     }
 }
