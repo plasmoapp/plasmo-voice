@@ -428,7 +428,7 @@ abstract class BaseClientAudioSource<T>(
         if (config.advanced.exponentialDistanceGain.value())
             distanceGain = distanceGain.pow(3.0)
 
-        return distanceGain
+        return distanceGain.coerceAtLeast(0.0)
     }
 
     protected abstract fun getPosition(): Vec3
