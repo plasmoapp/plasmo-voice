@@ -2,11 +2,11 @@ package su.plo.voice.client.audio.line;
 
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
 import su.plo.voice.api.client.config.overlay.OverlaySourceState;
@@ -110,7 +110,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
 
         String icon = VoiceIconUtil.INSTANCE.getIcon(
                 line.getIcon(),
-                ResourceLocation.tryParse("plasmovoice:textures/addons/source_lines/" + line.getName())
+                ResourceLocationUtil.parse("plasmovoice:textures/addons/source_lines/" + line.getName())
         );
 
         boolean hasVolume = config.getVoice().getVolumes().hasVolume(line.getName());

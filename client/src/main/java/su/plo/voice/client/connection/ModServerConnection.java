@@ -50,6 +50,7 @@ import java.net.SocketAddress;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -317,6 +318,7 @@ public final class ModServerConnection implements ServerConnection {
                 );
             } catch (Exception e) {
                 LOGGER.error("Failed to initialize encryption with name {}", encryptionInfo.getAlgorithm(), e);
+                voiceClient.getUdpClientManager().removeClient(UdpClientClosedEvent.Reason.DISCONNECT);
                 return;
             }
         }
@@ -340,13 +342,24 @@ public final class ModServerConnection implements ServerConnection {
             );
         }
 
-        // register source lines
-        voiceClient.getSourceLineManager()
-                .register(serverInfo.getVoiceInfo().getSourceLines());
+        serverInfo.getVoiceInfo().getSourceLines().forEach(sourceLine -> {
+            try {
+                voiceClient.getSourceLineManager().register(sourceLine);
+            } catch (Exception e) {
+                LOGGER.error("Failed to register source line {}", sourceLine, e);
+            }
+        });
 
-        // register activations
-        voiceClient.getActivationManager()
-                .register(serverInfo.getVoiceInfo().getActivations());
+        serverInfo.getVoiceInfo().getActivations().forEach(activation -> {
+            try {
+                voiceClient.getActivationManager().register(activation);
+            } catch (Exception e) {
+                LOGGER.error("Failed to register activation {}", activation, e);
+            }
+        });
+        // todo: refactor
+        // this is necessary to set activation manager state to initialized
+        voiceClient.getActivationManager().register(Collections.emptyList());
 
         // initialize capture
         AudioCapture audioCapture = voiceClient.getAudioCapture();
@@ -493,7 +506,7 @@ public final class ModServerConnection implements ServerConnection {
         Optional<ServerInfo> serverInfo = voiceClient.getServerInfo();
         if (!serverInfo.isPresent()) return;
 
-        activations.register(Lists.newArrayList(packet.getActivation()));
+        activations.register(packet.getActivation());
     }
 
     @Override

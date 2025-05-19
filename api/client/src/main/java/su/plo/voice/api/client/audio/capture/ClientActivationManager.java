@@ -28,6 +28,14 @@ public interface ClientActivationManager extends ActivationManager<ClientActivat
     @NotNull ClientActivation register(@NotNull ClientActivation activation);
 
     /**
+     * Registers an activation and returns the registered instance.
+     *
+     * @param activation The activation to register.
+     * @return The registered client activation.
+     */
+    @NotNull ClientActivation register(@NotNull Activation activation);
+
+    /**
      * Registers a collection of client activations and returns the registered instances.
      *
      * @param activations The collection of client activations to register.
