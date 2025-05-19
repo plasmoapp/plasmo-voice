@@ -357,9 +357,6 @@ public final class ModServerConnection implements ServerConnection {
                 LOGGER.error("Failed to register activation {}", activation, e);
             }
         });
-        // todo: refactor
-        // this is necessary to set activation manager state to initialized
-        voiceClient.getActivationManager().register(Collections.emptyList());
 
         // initialize capture
         AudioCapture audioCapture = voiceClient.getAudioCapture();

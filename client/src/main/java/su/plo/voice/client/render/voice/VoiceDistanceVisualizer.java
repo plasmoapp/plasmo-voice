@@ -17,12 +17,15 @@ import su.plo.lib.mod.client.render.VertexBuilder;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
+import su.plo.voice.api.client.audio.capture.ClientActivation;
+import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEvent;
 import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.render.ModCamera;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
 import java.util.Map;
 import java.util.UUID;
@@ -65,6 +68,25 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 radius,
                 position != null ? new Vec3(position.getX(), position.getY(), position.getZ()) : null
         ));
+    }
+
+    @EventSubscribe
+    public void onProximityActivationRegistered(@NotNull ClientActivationRegisteredEvent event) {
+        ClientActivation activation = event.getActivation();
+        if (!activation.getId().equals(VoiceActivation.PROXIMITY_ID)) return;
+
+        boolean isConnected = voiceClient.getUdpClientManager().isConnected();
+
+        if (!isConnected &&
+                config.getAdvanced().getVisualizeVoiceDistance().value() &&
+                config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()
+        ) {
+            voiceClient.getDistanceVisualizer().render(
+                    activation.getDistance(),
+                    0x00a000,
+                    null
+            );
+        }
     }
 
     @EventSubscribe

@@ -50,8 +50,6 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     };
     private final Map<UUID, ClientActivation> activationById = Maps.newConcurrentMap();
 
-    private boolean initialized = false;
-
     @Override
     public Optional<ClientActivation> getParentActivation() {
         return Optional.ofNullable(parentActivation);
@@ -73,15 +71,6 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             }
 
             this.parentActivation = activation;
-            if (!initialized &&
-                    config.getAdvanced().getVisualizeVoiceDistance().value() &&
-                    config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()) {
-                voiceClient.getDistanceVisualizer().render(
-                        activation.getDistance(),
-                        0x00a000,
-                        null
-                );
-            }
         }
 
         voiceClient.getEventBus().fire(new ClientActivationRegisteredEvent(activation));
@@ -130,13 +119,9 @@ public final class VoiceClientActivationManager implements ClientActivationManag
 
     @Override
     public @NotNull Collection<ClientActivation> register(@NotNull Collection<Activation> activations) {
-        Collection<ClientActivation> clientActivations = activations.stream()
+        return activations.stream()
                 .map(this::register)
                 .collect(Collectors.toList());
-
-        this.initialized = true;
-
-        return clientActivations;
     }
 
     @Override
@@ -188,7 +173,6 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         
         activations.clear();
         activationById.clear();
-        this.initialized = false;
     }
 
     private VoiceClientConfig.Server getServerConfig() {
