@@ -6,11 +6,18 @@ import su.plo.slib.api.entity.player.McGameProfile;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Represents a base source line.
  */
 public interface SourceLine {
+
+    /**
+     * The regular expression pattern that source line name must match.
+     * A source line may contain only lowercase letters, digits, hyphens, and underscores.
+     */
+    @NotNull Pattern NAME_PATTERN = Pattern.compile("[a-z0-9-_]+");
 
     /**
      * Gets the source line's unique identifier.

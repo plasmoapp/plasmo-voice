@@ -18,6 +18,7 @@ import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent
 import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent
 import su.plo.voice.api.server.player.VoicePlayer
+import su.plo.voice.proto.data.audio.capture.Activation
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket
@@ -26,7 +27,8 @@ import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket
 import su.plo.voice.server.player.BaseVoicePlayer
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 import java.util.function.Consumer
 
 class VoiceServerActivationManager(
@@ -66,12 +68,20 @@ class VoiceServerActivationManager(
             throw IllegalArgumentException("Activation with name $name already exists")
         }
 
+        if (name.isEmpty()) {
+            throw IllegalArgumentException("Activation name can't be empty")
+        }
+
+        if (!name.matches(Activation.NAME_PATTERN.toRegex())) {
+            throw IllegalArgumentException("Non [a-z0-9-_] character in activation name: $name")
+        }
+
         return VoiceServerActivationBuilder(
             addon,
             name,
             translation,
             icon,
-            Sets.newHashSet<String>(permission),
+            Sets.newHashSet(permission),
             weightSupplier?.invoke(name)?.orElse(null) ?: weight
         )
     }

@@ -14,6 +14,7 @@ interface ServerActivationManager : ActivationManager<ServerActivation> {
      *
      * @param addonObject The addon associated with the activation.
      * @param name The name of the activation.
+     * It may contain only lowercase letters, digits, hyphens, and underscores: [[a-z0-9-_]].
      * @param translation The translation key for the activation.
      * @param icon The icon representation of the source line can be a Minecraft ResourceLocation or a base64-encoded string.
      * @param permission The permission required for the activation.
@@ -34,6 +35,7 @@ interface ServerActivationManager : ActivationManager<ServerActivation> {
      *
      * @param addonObject The addon associated with the activation.
      * @param name The name of the activation.
+     * It may contain only lowercase letters, digits, hyphens, and underscores: [[a-z0-9-_]].
      * @param translation The translation key for the activation.
      * @param icon An InputStream representing the icon image.
      * @param permission The permission required for the activation.

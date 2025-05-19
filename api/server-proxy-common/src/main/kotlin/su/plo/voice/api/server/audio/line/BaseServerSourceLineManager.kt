@@ -14,6 +14,7 @@ interface BaseServerSourceLineManager<T : BaseServerSourceLine> : SourceLineMana
      *
      * @param addonObject The addon associated with the source line.
      * @param name The name of the source line.
+     * It may contain only lowercase letters, digits, hyphens, and underscores: [[a-z0-9-_]].
      * @param translation The translation key for the source line.
      * @param icon The icon representation of the source line can be a Minecraft ResourceLocation or a base64-encoded string.
      * @param weight The weight of the source line.
@@ -34,6 +35,7 @@ interface BaseServerSourceLineManager<T : BaseServerSourceLine> : SourceLineMana
      *
      * @param addonObject The addon associated with the source line.
      * @param name The name of the source line.
+     * It may contain only lowercase letters, digits, hyphens, and underscores: [[a-z0-9-_]].
      * @param translation The translation key for the source line.
      * @param icon An InputStream representing the icon image.
      * @param weight The weight of the source line.
