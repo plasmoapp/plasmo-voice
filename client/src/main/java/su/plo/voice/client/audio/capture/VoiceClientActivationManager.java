@@ -105,7 +105,9 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         ));
 
         voiceClient.getServerConnection().ifPresent((connection) -> connection.sendPacket(
-                new PlayerActivationDistancesPacket(new HashMap<>() {{
+                // reason: cannot use '<>' with anonymous inner classes
+                // old java thing
+                new PlayerActivationDistancesPacket(new HashMap<UUID, Integer>() {{
                     put(clientActivation.getId(), clientActivation.getDistance());
                 }})
         ));
