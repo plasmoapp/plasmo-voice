@@ -30,6 +30,7 @@ import su.plo.voice.server.player.BaseVoicePlayer
 import java.util.Optional
 import java.util.UUID
 import java.util.function.Consumer
+import kotlin.math.abs
 
 class VoiceServerActivationManager(
     private val voiceServer: PlasmoBaseVoiceServer,
@@ -144,8 +145,9 @@ class VoiceServerActivationManager(
         if (activation.requirements?.checkRequirements(player, originalPacket) == false) return
 
         val lastActivationSequenceNumber = player.lastActivationSequenceNumber.getOrDefault(activation.id, 0)
+        val sequenceNumberDiff = abs(packet.sequenceNumber - lastActivationSequenceNumber)
         if (activation !in player.activeActivations &&
-            packet.sequenceNumber > lastActivationSequenceNumber
+            (packet.sequenceNumber > lastActivationSequenceNumber || sequenceNumberDiff > 10)
         ) {
             player.activeActivations.add(activation)
             activation.activationStartListeners.forEach { it.onActivationStart(player) }
