@@ -66,8 +66,10 @@ public final class ServerChannelHandler implements McServerChannelHandler {
         // just send info request when player joins the server,
         // because old method of checking for exact channels was causing some unpredictable behavior and bugs
         // this solution should be (hopefully) more consistent
-        voiceServer.getMinecraftServer().executeInMainThread(() ->
-                voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer)
+        voiceServer.getBackgroundExecutor().execute(() ->
+            voiceServer.getMinecraftServer().executeInMainThread(() ->
+                    voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer)
+            )
         );
 
         if (shouldKick(player)) {
