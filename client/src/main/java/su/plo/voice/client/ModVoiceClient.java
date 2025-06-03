@@ -128,7 +128,7 @@ public final class ModVoiceClient extends BaseVoiceClient
         // JavaX input
         getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
 
-        this.hudRenderer = new ModHudRenderer(this);
+        this.hudRenderer = new ModHudRenderer();
         this.levelRenderer = new ModLevelRenderer(this);
 
         INSTANCE = this;

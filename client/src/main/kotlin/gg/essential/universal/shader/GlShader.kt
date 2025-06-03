@@ -78,29 +78,6 @@ package gg.essential.universal.shader
 //$$         }
 //$$     }
 //$$
-//$$     private fun getUniformLocation(uniformName: String): Int? {
-//$$         val loc = if (CORE) {
-//$$             glGetUniformLocation(program, uniformName)
-//$$         } else {
-//$$             glGetUniformLocationARB(program, uniformName)
-//$$         }
-//$$         return if (loc == -1) null else loc
-//$$     }
-//$$
-//$$     override fun getIntUniformOrNull(name: String) = getUniformLocation(name)?.let(::DirectIntUniform)
-//$$     override fun getFloatUniformOrNull(name: String) = getUniformLocation(name)?.let(::DirectFloatUniform)
-//$$     override fun getFloat2UniformOrNull(name: String) = getUniformLocation(name)?.let(::DirectFloat2Uniform)
-//$$     override fun getFloat3UniformOrNull(name: String) = getUniformLocation(name)?.let(::DirectFloat3Uniform)
-//$$     override fun getFloat4UniformOrNull(name: String) = getUniformLocation(name)?.let(::DirectFloat4Uniform)
-//$$     override fun getFloatMatrixUniformOrNull(name: String) = getUniformLocation(name)?.let(::DirectFloatMatrixUniform)
-//$$     override fun getSamplerUniformOrNull(name: String): SamplerUniform? {
-//$$         samplers[name]?.let { return it }
-//$$         val loc = getUniformLocation(name) ?: return null
-//$$         val uniform = DirectSamplerUniform(loc, samplers.size, this)
-//$$         samplers[name] = uniform
-//$$         return uniform
-//$$     }
-//$$
 //$$     private fun createShader() {
 //$$         for ((shader, source) in listOf(vertShader to vertSource, fragShader to fragSource)) {
 //$$             if (CORE) glShaderSource(shader, source) else glShaderSourceARB(shader, source)
@@ -148,69 +125,12 @@ package gg.essential.universal.shader
 //$$     }
 //$$ }
 //$$
-//$$ internal abstract class DirectShaderUniform(override val location: Int) : ShaderUniform
+//$$ internal abstract class DirectShaderUniform(val location: Int)
 //$$
-//$$ internal class DirectIntUniform(location: Int) : DirectShaderUniform(location), IntUniform {
-//$$     override fun setValue(value: Int) {
+//$$ internal class DirectIntUniform(location: Int) : DirectShaderUniform(location) {
+//$$     fun setValue(value: Int) {
 //$$         if (GlShader.CORE) GL20.glUniform1i(location, value)
 //$$         else ARBShaderObjects.glUniform1iARB(location, value)
-//$$     }
-//$$ }
-//$$
-//$$ internal class DirectFloatUniform(location: Int) : DirectShaderUniform(location), FloatUniform {
-//$$     override fun setValue(value: Float) {
-//$$         if (GlShader.CORE) GL20.glUniform1f(location, value)
-//$$         else ARBShaderObjects.glUniform1fARB(location, value)
-//$$     }
-//$$ }
-//$$
-//$$ internal class DirectFloat2Uniform(location: Int) : DirectShaderUniform(location), Float2Uniform {
-//$$     override fun setValue(v1: Float, v2: Float) {
-//$$         if (GlShader.CORE) GL20.glUniform2f(location, v1, v2)
-//$$         else ARBShaderObjects.glUniform2fARB(location, v1, v2)
-//$$     }
-//$$ }
-//$$
-//$$ internal class DirectFloat3Uniform(location: Int) : DirectShaderUniform(location), Float3Uniform {
-//$$     override fun setValue(v1: Float, v2: Float, v3: Float) {
-//$$         if (GlShader.CORE) GL20.glUniform3f(location, v1, v2, v3)
-//$$         else ARBShaderObjects.glUniform3fARB(location, v1, v2, v3)
-//$$     }
-//$$ }
-//$$
-//$$ internal class DirectFloat4Uniform(location: Int) : DirectShaderUniform(location), Float4Uniform {
-//$$     override fun setValue(v1: Float, v2: Float, v3: Float, v4: Float) {
-//$$         if (GlShader.CORE) GL20.glUniform4f(location, v1, v2, v3, v4)
-//$$         else ARBShaderObjects.glUniform4fARB(location, v1, v2, v3, v4)
-//$$     }
-//$$ }
-//$$
-//$$ internal class DirectFloatMatrixUniform(location: Int) : DirectShaderUniform(location), FloatMatrixUniform {
-//$$     override fun setValue(array: FloatArray) {
-//$$         //#if MC<11400
-//$$         //$$ val buffer = ByteBuffer.allocateDirect(array.size * 4).order(ByteOrder.nativeOrder())
-//$$         //$$ val floatBuffer = buffer.asFloatBuffer()
-//$$         //$$ floatBuffer.put(array)
-//$$         //$$ buffer.rewind()
-//$$         //#endif
-//$$         when (array.size) {
-//$$             //#if MC>=11400
-//$$             4 -> if (GlShader.CORE) GL20.glUniformMatrix2fv(location, false, array)
-//$$             else ARBShaderObjects.glUniformMatrix2fvARB(location, false, array)
-//$$             9 -> if (GlShader.CORE) GL20.glUniformMatrix3fv(location, false, array)
-//$$             else ARBShaderObjects.glUniformMatrix3fvARB(location, false, array)
-//$$             16 -> if (GlShader.CORE) GL20.glUniformMatrix4fv(location, false, array)
-//$$             else ARBShaderObjects.glUniformMatrix4fvARB(location, false, array)
-//$$             //#else
-//$$             //$$ 4 -> if (GlShader.CORE) GL20.glUniformMatrix2(location, false, floatBuffer)
-//$$             //$$ else ARBShaderObjects.glUniformMatrix2ARB(location, false, floatBuffer)
-//$$             //$$ 9 -> if (GlShader.CORE) GL20.glUniformMatrix3(location, false, floatBuffer)
-//$$             //$$ else ARBShaderObjects.glUniformMatrix3ARB(location, false, floatBuffer)
-//$$             //$$ 16 -> if (GlShader.CORE) GL20.glUniformMatrix4(location, false, floatBuffer)
-//$$             //$$ else ARBShaderObjects.glUniformMatrix4ARB(location, false, floatBuffer)
-//$$             //#endif
-//$$             else -> throw IllegalArgumentException()
-//$$         }
 //$$     }
 //$$ }
 //$$
@@ -218,7 +138,7 @@ package gg.essential.universal.shader
 //$$     location: Int,
 //$$     val textureUnit: Int,
 //$$     private val shader: GlShader,
-//$$ ) : DirectShaderUniform(location), SamplerUniform {
+//$$ ) : DirectShaderUniform(location) {
 //$$     var textureId: Int = 0
 //$$
 //$$     init {
@@ -227,7 +147,7 @@ package gg.essential.universal.shader
 //$$         }
 //$$     }
 //$$
-//$$     override fun setValue(textureId: Int) {
+//$$     fun setValue(textureId: Int) {
 //$$         this.textureId = textureId
 //$$
 //$$         if (shader.bound) {

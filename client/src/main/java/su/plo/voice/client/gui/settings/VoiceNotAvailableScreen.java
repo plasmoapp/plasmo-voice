@@ -1,12 +1,13 @@
 package su.plo.voice.client.gui.settings;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
@@ -78,21 +79,23 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        screen.renderBackground(stack);
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        // background is rendered by default and there is no way override this behavior without mixins
+        //#if MC<12106
+        screen.renderBackground(context);
+        //#endif
 
-        int messageLines = RenderUtil.drawStringMultiLineCentered(
-                stack,
+        int messageLines = context.drawStringMultiLineCentered(
                 message,
                 getWidth(),
                 y,
                 0,
-                16777215
+                Colors.WHITE
         );
 
         button.setY(y + (RenderUtil.getFontHeight() * messageLines) + 20);
 
-        super.render(stack, mouseX, mouseY, delta);
+        super.render(context, mouseX, mouseY, delta);
     }
 
     public void setNotAvailable() {

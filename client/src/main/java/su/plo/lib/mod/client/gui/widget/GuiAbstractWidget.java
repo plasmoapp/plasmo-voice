@@ -1,26 +1,24 @@
 package su.plo.lib.mod.client.gui.widget;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvents;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
-import su.plo.lib.mod.client.render.RenderUtil;
+
+import java.awt.Color;
 
 public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget, GuiWidgetListener {
 
     public static McTextComponent wrapDefaultNarrationMessage(McTextComponent component) {
         return McTextComponent.translatable("gui.narrate.button", component);
     }
-
-    public static int COLOR_WHITE = 0xFFFFFF;
-    public static int COLOR_GRAY = 0xA0A0A0;
 
     @Getter
     @Setter
@@ -76,11 +74,11 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         if (!visible) return;
 
         this.hovered = isHovered(mouseX, mouseY);
-        renderButton(stack, mouseX, mouseY, delta);
+        renderButton(context, mouseX, mouseY, delta);
     }
 
     // GuiNarratableWidget impl
@@ -147,21 +145,18 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     }
 
     // Class methods
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         GuiWidgetTexture sprite = getButtonTexture(hovered);
 
-        RenderUtil.bindTexture(0, sprite.getLocation());
-        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
+        context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
+        context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
 
-        RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
-        RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
+        renderBackground(context, mouseX, mouseY);
 
-        renderBackground(stack, mouseX, mouseY);
-
-        renderText(stack, mouseX, mouseY);
+        renderText(context, mouseX, mouseY);
     }
 
-    public void renderToolTip(@NotNull PoseStack stack, int mouseX, int mouseY) {
+    public void renderToolTip(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
     }
 
     public void onClick(double mouseX, double mouseY) {
@@ -181,17 +176,17 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
         return this.hovered || this.focused;
     }
 
-    protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
+    protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
     }
 
-    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        int textColor = active ? COLOR_WHITE : COLOR_GRAY;
-        RenderUtil.drawCenteredString(
-                stack,
+    protected void renderText(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
+        Color textColor = Colors.withAlpha(active ? Colors.WHITE : Colors.GRAY, alpha);
+
+        context.drawCenteredString(
                 getText(),
                 x + width / 2,
                 y + (height - 8) / 2,
-                textColor | ((int) Math.ceil(this.alpha * 255.0F)) << 24
+                textColor
         );
     }
 

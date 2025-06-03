@@ -1,7 +1,6 @@
 package su.plo.lib.mod.client.render
 
 import net.minecraft.client.Minecraft
-import org.lwjgl.opengl.GL11
 
 data class ScissorState(
     val x: Int,
@@ -31,28 +30,13 @@ data class ScissorState(
             )
         }
 
+        fun applyScissorState(state: ScissorState?) {
+            if (state == null) {
+                RenderUtil.disableScissor()
+                return
+            }
+
+            RenderUtil.enableScissor(state.x, state.y, state.width, state.height)
+        }
     }
-}
-
-fun applyScissorState(state: ScissorState?) {
-    if (state == null) {
-        RenderUtil.disableScissor()
-        return
-    }
-
-    RenderUtil.enableScissor(state.x, state.y, state.width, state.height)
-}
-
-fun getScissorState(): ScissorState? {
-    if (!GL11.glIsEnabled(GL11.GL_SCISSOR_TEST)) return null
-
-    val scissorBox = IntArray(4)
-    GL11.glGetIntegerv(GL11.GL_SCISSOR_BOX, scissorBox)
-
-    return ScissorState.ofScaled(
-        scissorBox[0],
-        scissorBox[1],
-        scissorBox[2],
-        scissorBox[3],
-    )
 }

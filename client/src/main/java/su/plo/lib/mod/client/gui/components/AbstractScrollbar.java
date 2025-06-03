@@ -1,8 +1,6 @@
 package su.plo.lib.mod.client.gui.components;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.widget.GuiWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
-import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.ScissorState;
-import su.plo.lib.mod.client.render.ScissorStateKt;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
+import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -58,7 +56,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         if (isMouseOver(mouseX, mouseY)) {
             this.hoveredEntry = getEntryAtPosition(mouseX, mouseY).orElse(null);
         } else {
@@ -80,11 +78,9 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         lastMaxScroll = maxScroll;
 
         // render list
-        renderList(stack, getContainerX0(), y0, mouseX, mouseY, delta);
+        renderList(context, getContainerX0(), y0, mouseX, mouseY, delta);
 
         if (maxScroll > 0) {
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-
             int scrollbarY0 = y0 + getScrollbarPadding();
             int scrollbarY1 = y1 - getScrollbarPadding();
 
@@ -96,16 +92,10 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             }
 
             if (shouldRenderScrollbarBackground()) {
-                RenderUtil.fill(
-                        stack, trackX0, scrollbarY0, trackX1, scrollbarY1, -0x1000000
-                );
+                context.fill(trackX0, scrollbarY0, trackX1, scrollbarY1, new Color(0, 0, 0));
             }
-            RenderUtil.fill(
-                    stack, trackX0, trackTop, trackX1, trackTop + trackBottom, -0x7f7f80
-            );
-            RenderUtil.fill(
-                    stack, trackX0, trackTop, trackX1 - 1, trackTop + trackBottom - 1, -0x3f3f40
-            );
+            context.fill(trackX0, trackTop, trackX1, trackTop + trackBottom, new Color(128, 128, 128));
+            context.fill(trackX0, trackTop, trackX1 - 1, trackTop + trackBottom - 1, new Color(192, 192, 192));
         }
     }
 
@@ -239,15 +229,24 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         this.scrollTop = Mth.clamp(scrollTop, 0D, getMaxScroll());
     }
 
-    protected void renderList(@NotNull PoseStack stack, int x, int y, int mouseX, int mouseY, float delta) {
-        ScissorState scissorState = ScissorStateKt.getScissorState();
+    protected void renderList(@NotNull GuiRenderContext context, int x, int y, int mouseX, int mouseY, float delta) {
+        ScissorState scissorState = context.getScissorState();
 
+        //#if MC>=12106
+        //$$ ScissorState newScissorState = ScissorState.ofScaled(
+        //$$         getContainerX0(),
+        //$$         y0,
+        //$$         containerWidth,
+        //$$         y1 - y0
+        //$$ );
+        //#else
         ScissorState newScissorState = ScissorState.of(
                 getContainerX0(),
                 height - y1,
                 containerWidth,
                 y1 - y0
         );
+        //#endif
 
         if (scissorState != null) {
             int parentX = scissorState.getX();
@@ -271,7 +270,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             newScissorState = ScissorState.ofScaled(clippedX, clippedY, clippedWidth, clippedHeight);
         }
 
-        ScissorStateKt.applyScissorState(newScissorState);
+        context.applyScissorState(newScissorState);
 
         for (int index = 0; index < entries.size(); index++) {
             Entry entry = entries.get(index);
@@ -280,12 +279,14 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             int entryTop = y - (int) scrollTop + position.top;
             int entryBottom = y - (int) scrollTop + position.bottom;
 
+            entry.updatePosition(context, index, x, entryTop, containerWidth, mouseX, mouseY, Objects.equals(hoveredEntry, entry), delta);
+
             if (entryTop > y1 || entryBottom < y0) continue;
 
-            entry.render(stack, index, x, entryTop, containerWidth, mouseX, mouseY, Objects.equals(hoveredEntry, entry), delta);
+            entry.render(context, index, x, entryTop, containerWidth, mouseX, mouseY, Objects.equals(hoveredEntry, entry), delta);
         }
 
-        ScissorStateKt.applyScissorState(scissorState);
+        context.applyScissorState(scissorState);
     }
 
     protected int getContainerX0() {
@@ -374,6 +375,9 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             return Collections.emptyList();
         }
 
-        public abstract void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta);
+        public void updatePosition(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        }
+
+        public abstract void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta);
     }
 }

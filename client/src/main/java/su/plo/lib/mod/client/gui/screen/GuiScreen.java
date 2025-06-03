@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.gui.screen;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,9 +37,9 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         for (GuiWidget widget : renderWidgets) {
-            widget.render(stack, mouseX, mouseY, delta);
+            widget.render(context, mouseX, mouseY, delta);
         }
     }
 

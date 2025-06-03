@@ -1,14 +1,15 @@
 package su.plo.voice.client.gui.settings;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import org.lwjgl.glfw.GLFW;
-import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
+import su.plo.slib.api.chat.component.McTextComponent;
 
 public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
 
@@ -30,16 +31,18 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
     }
 
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        screen.renderBackground(stack);
-        super.render(stack, mouseX, mouseY, delta);
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        // background is rendered by default and there is no way override this behavior without mixins
+        //#if MC<12106
+        screen.renderBackground(context);
+        //#endif
+        super.render(context, mouseX, mouseY, delta);
 
-        RenderUtil.drawString(
-                stack,
+        context.drawString(
                 chooseText,
                 getWidth() / 2 - RenderUtil.getTextWidth(chooseText) / 2,
                 getHeight() / 2 - RenderUtil.getFontHeight(),
-                16777215
+                Colors.WHITE
         );
     }
 

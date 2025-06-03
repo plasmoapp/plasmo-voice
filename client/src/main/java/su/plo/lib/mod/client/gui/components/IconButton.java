@@ -1,16 +1,17 @@
 package su.plo.lib.mod.client.gui.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import org.jetbrains.annotations.Nullable;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
 
-import com.mojang.blaze3d.systems.RenderSystem;
+import java.awt.Color;
 
 //#if MC<11701
 //$$ import com.mojang.blaze3d.platform.GlStateManager;
@@ -19,13 +20,13 @@ import com.mojang.blaze3d.systems.RenderSystem;
 public final class IconButton extends Button {
 
     private final boolean shadow;
-    private final int shadowColor;
+    private final Color shadowColor;
     @Getter
     @Setter
     private ResourceLocation iconLocation;
     @Getter
     @Setter
-    private int iconColor;
+    private @Nullable Color iconColor = null;
 
     public IconButton(
             int x,
@@ -37,7 +38,7 @@ public final class IconButton extends Button {
             @NotNull ResourceLocation iconLocation,
             boolean shadow
     ) {
-        this(x, y, width, height, pressAction, tooltipAction, iconLocation, shadow, -0x1);
+        this(x, y, width, height, pressAction, tooltipAction, iconLocation, shadow, Colors.WHITE);
     }
 
     public IconButton(
@@ -49,7 +50,7 @@ public final class IconButton extends Button {
             @NotNull OnTooltip tooltipAction,
             @NotNull ResourceLocation iconLocation,
             boolean shadow,
-            int shadowColor
+            Color shadowColor
     ) {
         super(x, y, width, height, McTextComponent.empty(), pressAction, tooltipAction);
 
@@ -59,49 +60,48 @@ public final class IconButton extends Button {
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        super.renderButton(stack, mouseX, mouseY, delta);
-
-        RenderUtil.bindTexture(0, iconLocation);
+    public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        super.renderButton(context, mouseX, mouseY, delta);
 
         if (hasShadow() && SolidColorShader.isAvailable()) {
-            int shadowColor = active ? this.shadowColor : -6250336;
+            Color shadowColor = active ? this.shadowColor : Colors.GRAY;
 
-            RenderUtil.blitColorWithPipeline(
-                    stack,
-                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR,
+            context.blitColor(
+                    iconLocation,
                     x + 2,
-                    x + 2 + 16,
                     y + 3,
-                    y + 3 + 16,
-                    0,
-                    0, 1F,
-                    0, 1F,
-                    (int) ((shadowColor >> 16 & 255) * 0.25),
-                    (int) ((shadowColor >> 8 & 255) * 0.25),
-                    (int) ((shadowColor & 255) * 0.25),
-                    shadowColor >> 24 & 255
+                    0.0F,
+                    0.0F,
+                    16,
+                    16,
+                    16,
+                    16,
+                    Colors.times(shadowColor, 0.25),
+                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR
             );
         }
 
-        int iconColor = this.iconColor;
-        if (iconColor == 0 && !active) {
-            iconColor = -0x5f5f60;
+        Color iconColor = this.iconColor;
+        if (iconColor == null && !active) {
+            iconColor = Colors.GRAY;
         }
 
-        if (iconColor != 0) {
-            float alpha = (float) (iconColor >> 24 & 255) / 255F;
-            float red = (float) (iconColor >> 16 & 255) / 255F;
-            float green = (float) (iconColor >> 8 & 255) / 255F;
-            float blue = (float) (iconColor & 255) / 255F;
-
-            RenderSystem.setShaderColor(red, green, blue, alpha);
+        if (iconColor != null) {
+            context.blitColor(
+                    iconLocation,
+                    x + 2,
+                    y + 2,
+                    0.0F,
+                    0.0F,
+                    16,
+                    16,
+                    16,
+                    16,
+                    iconColor
+            );
         } else {
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+            context.blit(iconLocation, x + 2, y + 2, 0, 0, 16, 16, 16, 16);
         }
-        RenderUtil.blit(stack, x + 2, y + 2, 0, 0, 16, 16, 16, 16);
-
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
     }
 
     public boolean hasShadow() {

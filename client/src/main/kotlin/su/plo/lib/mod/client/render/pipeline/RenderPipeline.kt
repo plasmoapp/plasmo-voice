@@ -188,6 +188,12 @@ data class RenderPipeline(
             //$$     // uhhh
             //$$     // it's not correct and depends on the shader,
             //$$     // but it should be fine Clueless
+            //#if MC>=12106
+            //$$     .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+            //$$     .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            //$$     .withUniform("Fog", UniformType.UNIFORM_BUFFER)
+            //$$     .withUniform("Globals", UniformType.UNIFORM_BUFFER)
+            //#else
             //$$     .withUniform("ModelViewMat", UniformType.MATRIX4X4)
             //$$     .withUniform("ProjMat", UniformType.MATRIX4X4)
             //$$     .withUniform("FogStart", UniformType.FLOAT)
@@ -195,6 +201,7 @@ data class RenderPipeline(
             //$$     .withUniform("FogShape", UniformType.INT)
             //$$     .withUniform("FogColor", UniformType.VEC4)
             //$$     .withUniform("ColorModulator", UniformType.VEC4)
+            //#endif
             //$$
             //$$      .apply {
             //$$          samplers.forEach(::withSampler)

@@ -1,7 +1,6 @@
 package su.plo.voice.client.render.voice;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Data;
@@ -130,8 +129,6 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
             center = clientPlayer.position();
         }
-
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         stack.pushPose();
 

@@ -2,7 +2,8 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.vertex.PoseStack;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -237,8 +238,6 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
     public final class CategoryEntry extends Entry {
 
-        private static final int COLOR = 0xFFFFFF;
-
         private final McTextComponent text;
         private final int textWidth;
 
@@ -257,11 +256,11 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             int elementX = x + (containerWidth / 2) - (RenderUtil.getTextWidth(text) / 2);
             int elementY = y + (height / 2) - (RenderUtil.getFontHeight() / 2);
 
-            RenderUtil.drawString(stack, text, elementX, elementY, COLOR);
+            context.drawString(text, elementX, elementY, Colors.WHITE);
         }
     }
 
@@ -283,11 +282,15 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void updatePosition(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             element.setX(x);
             element.setY(y);
             element.setWidth(entryWidth);
-            element.render(stack, mouseX, mouseY, delta);
+        }
+
+        @Override
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            element.render(context, mouseX, mouseY, delta);
         }
 
         @Override
@@ -364,13 +367,22 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            renderText(stack, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
-
+        public void updatePosition(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             int elementY = y + height / 2 - element.getHeight() / 2;
 
-            renderElement(stack, index, x, y, entryWidth, mouseX, mouseY, hovered, delta, elementY);
-            renderResetButton(stack, index, x, y, entryWidth, mouseX, mouseY, hovered, delta, elementY);
+            element.setX(x + entryWidth - element.getWidth() - 24);
+            element.setY(elementY);
+
+            resetButton.setX(x + entryWidth - 20);
+            resetButton.setY(elementY);
+        }
+
+        @Override
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            renderText(context, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
+
+            renderElement(context, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
+            renderResetButton(context, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
 
             if (hovered && mouseX < element.getX()) {
                 setTooltip(tooltip);
@@ -393,29 +405,22 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             return widgets;
         }
 
-        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            RenderUtil.drawString(
-                    stack,
+        protected void renderText(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            context.drawString(
                     text,
                     x,
                     y + height / 2 - RenderUtil.getFontHeight() / 2,
-                    0xFFFFFF
+                    Colors.WHITE
             );
         }
 
-        protected void renderElement(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
-                                     int elementY) {
-            element.setX(x + entryWidth - element.getWidth() - 24);
-            element.setY(elementY);
-            element.render(stack, mouseX, mouseY, delta);
+        protected void renderElement(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            element.render(context, mouseX, mouseY, delta);
         }
 
-        protected void renderResetButton(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta,
-                                         int elementY) {
-            resetButton.setX(x + entryWidth - 20);
-            resetButton.setY(elementY);
+        protected void renderResetButton(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             resetButton.setActive(entry != null && !isDefault());
-            resetButton.render(stack, mouseX, mouseY, delta);
+            resetButton.render(context, mouseX, mouseY, delta);
         }
 
         protected boolean isDefault() {
@@ -464,11 +469,9 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         }
 
         @Override
-        protected void renderElement(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta, int elementY) {
-            if (buttons.size() == 0) {
-                super.renderElement(stack, index, x, y, entryWidth, mouseX, mouseY, hovered, delta, elementY);
-                return;
-            }
+        public void updatePosition(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            super.updatePosition(context, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
+            if (buttons.isEmpty()) return;
 
             List<Button> visibleButtons = buttons.stream()
                     .filter(Button::isVisible)
@@ -479,16 +482,26 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                     .reduce(0, Integer::sum);
 
             element.setX(x + entryWidth - element.getWidth() - (visibleButtons.size() * 4) - resetButton.getWidth() - 4 - visibleButtonsWidth);
-            element.setY(elementY);
-            element.render(stack, mouseX, mouseY, delta);
 
             for (int i = 0; i < visibleButtons.size(); i++) {
                 Button button = visibleButtons.get(i);
 
                 button.setX(x + entryWidth - button.getWidth() - ((i + 1) * 24) - (i * 8));
-                button.setY(elementY);
-                button.render(stack, mouseX, mouseY, delta);
+                button.setY(element.getY());
             }
+        }
+
+        @Override
+        protected void renderElement(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            if (buttons.isEmpty()) {
+                super.renderElement(context, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
+                return;
+            }
+
+            element.render(context, mouseX, mouseY, delta);
+            buttons.stream()
+                    .filter(Button::isVisible)
+                    .forEach(button -> button.render(context, mouseX, mouseY, delta));
         }
 
         @Override

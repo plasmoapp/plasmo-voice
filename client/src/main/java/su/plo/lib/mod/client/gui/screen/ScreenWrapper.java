@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.ToString;
@@ -115,20 +116,28 @@ public final class ScreenWrapper
     //$$     lastMouseX = mouseX;
     //$$     lastMouseY = mouseY;
     //$$     lastPartialTicks = partialTicks;
-    //$$     screen.render(guiGraphics.pose(), mouseX, mouseY, partialTicks);
+    //$$     GuiRenderContext context = new GuiRenderContext(guiGraphics);
+    //$$     screen.render(context, mouseX, mouseY, partialTicks);
     //$$     currentContext = null;
     //#if MC<12105
     //$$     RenderUtil.restoreGlState();
     //#endif
     //$$ }
     //$$
-    //$$ public void renderBackground(PoseStack stack) {
+    //$$ public void renderBackground(@NotNull GuiRenderContext context) {
     //$$     if (currentContext == null) return;
     //#if MC>=12002
-    //$$     super.renderBackground(currentContext, lastMouseX, lastMouseY, lastPartialTicks);
-    //#if MC>=12102
-    //$$     currentContext.flush();
+
+    //#if MC>=12106
+    //$$     context.flush();
     //#endif
+
+    //$$     super.renderBackground(currentContext, lastMouseX, lastMouseY, lastPartialTicks);
+
+    //#if MC>=12102
+    //$$     context.flush();
+    //#endif
+
     //#else
     //$$     super.renderBackground(currentContext);
     //#if MC<12105
@@ -143,11 +152,17 @@ public final class ScreenWrapper
         RenderUtil.preserveGlState();
         //#endif
 
-        screen.render(matrixStack, mouseX, mouseY, partialTicks);
+        GuiRenderContext context = new GuiRenderContext(matrixStack);
+
+        screen.render(context, mouseX, mouseY, partialTicks);
 
         //#if MC<12105
         RenderUtil.restoreGlState();
         //#endif
+    }
+
+    public void renderBackground(@NotNull GuiRenderContext context) {
+        super.renderBackground(context.getStack());
     }
     //#endif
 
@@ -259,8 +274,23 @@ public final class ScreenWrapper
         Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(null));
     }
 
-    public void renderTooltipWrapped(PoseStack stack, List<McTextComponent> tooltip, int mouseX, int mouseY) {
-        //#if MC>=12000
+    public void renderTooltipWrapped(
+            @NotNull GuiRenderContext context,
+            @NotNull List<McTextComponent> tooltip,
+            int mouseX,
+            int mouseY
+    ) {
+        //#if MC>=12106
+        //$$ currentContext.setTooltipForNextFrame(
+        //$$         Language.getInstance().getVisualOrder(
+        //$$                 new ArrayList<>(
+        //$$                         RenderUtil.getTextConverter().convert(tooltip)
+        //$$                 )
+        //$$         ),
+        //$$         mouseX,
+        //$$         mouseY
+        //$$ );
+        //#elseif MC>=12000
         //$$ setTooltipForNextRenderPass(
         //$$         Language.getInstance().getVisualOrder(
         //$$                 new ArrayList<>(
@@ -270,7 +300,7 @@ public final class ScreenWrapper
         //$$ );
         //#else
         renderComponentTooltip(
-                stack,
+                context.getStack(),
                 new ArrayList<>(
                         RenderUtil.getTextConverter().convert(tooltip)
                 ),

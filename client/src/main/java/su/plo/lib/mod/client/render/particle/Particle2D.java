@@ -1,18 +1,18 @@
 package su.plo.lib.mod.client.render.particle;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.particle.ParticleRenderType;
-
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.AABB;
+import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
-import java.util.Optional;
 //#if MC>=11900
 import net.minecraft.util.RandomSource;
 //#else
 //$$ import java.util.Random;
 //#endif
 
+// todo: refactor
 public abstract class Particle2D {
     private static final AABB EMPTY_BOUNDING_BOX = new AABB(0.0D, 0.0D, 0.0D, 0.0D, 0.0D, 0.0D);
     protected double prevPosX;
@@ -130,7 +130,7 @@ public abstract class Particle2D {
         }
     }
 
-    public abstract void buildGeometry(PoseStack stack, BufferBuilder buffer, float tickDelta);
+    public abstract void render(@NotNull GuiRenderContext context, @NotNull ResourceLocation textureLocation, float tickDelta);
 
     public abstract ParticleRenderType getType();
 

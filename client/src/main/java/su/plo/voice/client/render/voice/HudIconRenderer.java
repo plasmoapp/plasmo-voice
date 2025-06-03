@@ -1,27 +1,35 @@
 package su.plo.voice.client.render.voice;
 
 import com.mojang.blaze3d.platform.Window;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.render.LazyGlState;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.IconPosition;
 import su.plo.voice.api.client.event.render.HudActivationRenderEvent;
-import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
-import su.plo.voice.client.event.render.HudRenderEvent;
+import su.plo.voice.client.event.HudRenderEvent;
 
 import java.util.List;
 
 @RequiredArgsConstructor
-public final class HudIconRenderer {
+public final class HudIconRenderer  implements HudRenderEvent.Callback {
+
+    private static final ResourceLocation MICROPHONE_DISCONNECTED_ICON =
+            ResourceLocationUtil.parse("plasmovoice:textures/icons/microphone_disconnected.png");
+    private static final ResourceLocation MICROPHONE_MUTED_ICON =
+            ResourceLocationUtil.parse("plasmovoice:textures/icons/microphone_muted.png");
+    private static final ResourceLocation MICROPHONE_DISABLED_ICON =
+            ResourceLocationUtil.parse("plasmovoice:textures/icons/microphone_disabled.png");
+    private static final ResourceLocation SPEAKER_DISABLED_ICON =
+            ResourceLocationUtil.parse("plasmovoice:textures/icons/speaker_disabled.png");
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
@@ -29,8 +37,8 @@ public final class HudIconRenderer {
     // in most cases state should be the same, so let's hope it works
     private final @NotNull LazyGlState glState = new LazyGlState();
 
-    @EventSubscribe
-    public void onHudRender(@NotNull HudRenderEvent event) {
+    @Override
+    public void onRender(@NotNull GuiRenderContext context, float delta) {
         if (!voiceClient.getServerInfo().isPresent() ||
                 !voiceClient.getUdpClientManager().getClient().isPresent() ||
                 Minecraft.getInstance().player == null ||
@@ -39,23 +47,23 @@ public final class HudIconRenderer {
         ) return;
 
         if (voiceClient.getUdpClientManager().getClient().get().isTimedOut()) {
-            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_disconnected.png"));
+            renderIcon(context, MICROPHONE_DISCONNECTED_ICON);
             return;
         }
 
         if (config.getVoice().getDisabled().value()) {
-            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_disabled.png"));
+            renderIcon(context, SPEAKER_DISABLED_ICON);
             return;
         }
 
         // server mute
         if (voiceClient.getAudioCapture().isServerMuted()) {
-            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_muted.png"));
+            renderIcon(context, MICROPHONE_MUTED_ICON);
             return;
         }
 
         if (config.getVoice().getMicrophoneDisabled().value()) {
-            renderIcon(event.getStack(), ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_disabled.png"));
+            renderIcon(context, MICROPHONE_DISABLED_ICON);
             return;
         }
 
@@ -72,22 +80,22 @@ public final class HudIconRenderer {
             if (!activation.isTransitive()) break;
         }
 
-        if (currentActivation != null) renderIcon(event.getStack(), ResourceLocation.tryParse(currentActivation.getIcon()));
+        if (currentActivation != null) renderIcon(context, ResourceLocationUtil.parse(currentActivation.getIcon()));
     }
 
-    private void renderIcon(@NotNull PoseStack stack, @NotNull ResourceLocation iconLocation) {
+    private void renderIcon(@NotNull GuiRenderContext context, @NotNull ResourceLocation iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
         RenderUtil.bindTexture(0, iconLocation);
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
-        stack.pushPose();
-        stack.translate(0f, 0f, 1000f);
+        //#if MC<12106
+        context.getStack().pushPose();
+        context.getStack().translate(0f, 0f, 1000f);
+        //#endif
 
         glState.withState(() ->
-            RenderUtil.blitWithPipeline(
-                    stack,
-                    RenderPipelines.GUI_TEXTURE_OVERLAY,
+            context.blit(
+                    iconLocation,
                     calcIconX(iconPosition.getX()),
                     calcIconY(iconPosition.getY()),
                     0,
@@ -95,10 +103,13 @@ public final class HudIconRenderer {
                     16,
                     16,
                     16,
-                    16
+                    16,
+                    RenderPipelines.GUI_TEXTURE_OVERLAY
             )
         );
-        stack.popPose();
+        //#if MC<12106
+        context.getStack().popPose();
+        //#endif
     }
 
     private int calcIconX(Integer x) {

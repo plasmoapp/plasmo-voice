@@ -2,9 +2,9 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.slib.api.entity.player.McGameProfile;
@@ -272,18 +272,14 @@ public final class VolumeTabWidget extends TabWidget {
         }
 
         @Override
-        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            RenderUtil.bindTexture(0, iconLocation);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        protected void renderText(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            context.blit(iconLocation, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
 
-            RenderUtil.blit(stack, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
-
-            RenderUtil.drawString(
-                    stack,
+            context.drawString(
                     text,
                     x + 20,
                     y + height / 2 - RenderUtil.getFontHeight() / 2,
-                    0xFFFFFF
+                    Colors.WHITE
             );
         }
 
@@ -324,22 +320,20 @@ public final class VolumeTabWidget extends TabWidget {
         }
 
         @Override
-        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            RenderUtil.bindTexture(0, loadSkin());
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        protected void renderText(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            ResourceLocation skinLocation = loadSkin();
 
             int helmY = y + height / 2 - 12;
 
             // render helm
-            RenderUtil.blit(stack, x, helmY, 24, 24, 8F, 8F, 8, 8, 64, 64);
-            RenderUtil.blit(stack, x, helmY, 24, 24, 40F, 8F, 8, 8, 64, 64);
+            context.blit(skinLocation, x, helmY, 24, 24, 8F, 8F, 8, 8, 64, 64);
+            context.blit(skinLocation, x, helmY, 24, 24, 40F, 8F, 8, 8, 64, 64);
 
-            RenderUtil.drawString(
-                    stack,
+            context.drawString(
                     text,
                     x + 30,
                     y + height / 2 - RenderUtil.getFontHeight() / 2,
-                    0xFFFFFF
+                    Colors.WHITE
             );
         }
 

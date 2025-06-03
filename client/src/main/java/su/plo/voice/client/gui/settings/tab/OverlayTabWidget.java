@@ -2,8 +2,6 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +11,9 @@ import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.screen.ScreenWrapper;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
@@ -287,18 +287,14 @@ public final class OverlayTabWidget extends TabWidget {
         }
 
         @Override
-        protected void renderText(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            RenderUtil.bindTexture(0, iconLocation);
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        protected void renderText(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            context.blit(iconLocation, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
 
-            RenderUtil.blit(stack, x, y + height / 2 - 8, 0, 0, 16, 16, 16, 16);
-
-            RenderUtil.drawString(
-                    stack,
+            context.drawString(
                     text,
                     x + 20,
                     y + height / 2 - RenderUtil.getFontHeight() / 2,
-                    0xFFFFFF
+                    Colors.WHITE
             );
         }
 

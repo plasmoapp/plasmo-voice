@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.gui.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
 public interface GuiWidget {
 
@@ -20,5 +20,5 @@ public interface GuiWidget {
 
     int getHeight();
 
-    void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta);
+    void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta);
 }

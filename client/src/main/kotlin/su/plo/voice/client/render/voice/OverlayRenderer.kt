@@ -2,12 +2,14 @@ package su.plo.voice.client.render.voice
 
 import com.google.common.collect.Lists
 import com.google.common.collect.Maps
-import com.mojang.blaze3d.systems.RenderSystem
-import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
+import su.plo.lib.mod.client.ResourceLocationUtil
+import su.plo.lib.mod.client.render.Colors
+import su.plo.lib.mod.client.render.Colors.withAlpha
 import su.plo.lib.mod.client.render.LazyGlState
 import su.plo.lib.mod.client.render.RenderUtil
+import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.slib.api.chat.component.McTextComponent
@@ -16,12 +18,12 @@ import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.line.ClientSourceLine
 import su.plo.voice.api.client.config.overlay.OverlayPosition
 import su.plo.voice.api.client.config.overlay.OverlaySourceState
-import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.client.config.VoiceClientConfig
-import su.plo.voice.client.event.render.HudRenderEvent
+import su.plo.voice.client.event.HudRenderEvent
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
+import java.awt.Color
 import java.util.Collections
 import java.util.UUID
 import kotlin.jvm.optionals.getOrNull
@@ -29,12 +31,11 @@ import kotlin.jvm.optionals.getOrNull
 class OverlayRenderer(
     private val voiceClient: PlasmoVoiceClient,
     private val config: VoiceClientConfig,
-) {
+) : HudRenderEvent.Callback {
 
     private val glState = LazyGlState()
 
-    @EventSubscribe
-    fun onHudRender(event: HudRenderEvent) {
+    override fun onRender(context: GuiRenderContext, delta: Float) {
         if (!voiceClient.serverInfo.isPresent ||
             !voiceClient.udpClientManager.client.isPresent ||
             Minecraft.getInstance().player == null ||
@@ -127,14 +128,14 @@ class OverlayRenderer(
 
             glState.withState {
                 for ((_, sourceInfo) in toRender) {
-                    renderEntry(event.stack, sourceLine, position, renderedIndex++, sourceInfo)
+                    renderEntry(context, sourceLine, position, renderedIndex++, sourceInfo)
                 }
             }
         }
     }
 
     private fun renderEntry(
-        stack: PoseStack,
+        context: GuiRenderContext,
         sourceLine: ClientSourceLine,
         position: OverlayPosition,
         index: Int,
@@ -155,12 +156,13 @@ class OverlayRenderer(
             y += (ENTRY_HEIGHT + 1) * index
         }
 
-
-        stack.pushPose()
-        stack.translate(0.0, 0.0, 1000.0)
+        //#if MC<12106
+        context.stack.pushPose()
+        context.stack.translate(0.0, 0.0, 1000.0)
+        //#endif
 
 //        int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
-        val backgroundColor = (0.25f * 255.0f).toInt() shl 24
+        val backgroundColor = Color.BLACK.withAlpha(0.25f)
 
         // render helm
         if (overlayStyle.hasSkin) {
@@ -169,10 +171,11 @@ class OverlayRenderer(
                     x -= 16
                 }
 
-                RenderUtil.bindTexture(0, loadSkin(it))
-                RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
-                RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64)
-                RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64)
+                val skinLocation = loadSkin(it)
+
+                context.blit(skinLocation, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64, RenderPipelines.GUI_TEXTURE_OVERLAY)
+                context.blit(skinLocation, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64, RenderPipelines.GUI_TEXTURE_OVERLAY)
+
                 if (!position.isRight) {
                     x += 16 + 1
                 }
@@ -185,8 +188,8 @@ class OverlayRenderer(
                 x -= textWidth + 1
             }
 
-            RenderUtil.fill(stack, RenderPipelines.GUI_COLOR_OVERLAY, x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor)
-            RenderUtil.drawString(stack, sourceName, x + 4, y + 4, 0xFFFFFF, false)
+            context.fill(x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor, RenderPipelines.GUI_COLOR_OVERLAY)
+            context.drawString(sourceName, x + 4, y + 4, Colors.WHITE, false)
 
             if (sourceInfo.activated && !position.isRight) {
                 x += textWidth + 1
@@ -199,14 +202,15 @@ class OverlayRenderer(
                 x -= 16 + 1
             }
 
-            RenderUtil.fill(stack, RenderPipelines.GUI_COLOR_OVERLAY, x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor)
-            RenderUtil.bindTexture(0, ResourceLocation.tryParse(sourceLine.icon)!!)
-            RenderSystem.setShaderColor(1f, 1f, 1f, 1f)
+            val iconLocation = ResourceLocationUtil.parse(sourceLine.icon)
 
-            RenderUtil.blitWithPipeline(stack, RenderPipelines.GUI_TEXTURE_OVERLAY, x, y, 0, 0f, 0f, 16, 16, 16, 16)
+            context.fill(x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor, RenderPipelines.GUI_COLOR_OVERLAY)
+            context.blit(iconLocation, x, y, 0f, 0f, 16, 16, 16, 16, RenderPipelines.GUI_TEXTURE_OVERLAY)
         }
 
-        stack.popPose()
+        //#if MC<12106
+        context.stack.popPose()
+        //#endif
     }
 
     private fun getSourceSenderName(
