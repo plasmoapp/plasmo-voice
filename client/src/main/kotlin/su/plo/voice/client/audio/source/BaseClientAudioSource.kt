@@ -397,7 +397,7 @@ abstract class BaseClientAudioSource<T>(
         }
     }
 
-    private fun resetAsync(cause: AudioSourceResetEvent.Cause) =
+    override fun resetAsync(cause: AudioSourceResetEvent.Cause): CompletableFuture<Void?> =
         SCOPE.future {
             reset(cause)
             null
