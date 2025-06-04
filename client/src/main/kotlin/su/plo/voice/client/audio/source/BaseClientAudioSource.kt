@@ -95,7 +95,7 @@ abstract class BaseClientAudioSource<T>(
         if (config.advanced.adaptiveJitterBuffer.value()) {
             AdaptiveJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
         } else {
-            StaticJitterBuffer(config.advanced.jitterPacketDelay.value())
+            StaticJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
         }
 
     private val job = startJob()

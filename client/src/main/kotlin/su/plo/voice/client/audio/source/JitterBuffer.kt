@@ -19,17 +19,20 @@ interface JitterBuffer {
 
     sealed interface PacketWithSequenceNumber {
         val sequenceNumber: Long
+        val arrivalTime: Long
     }
 
     data class SourceAudioPacketWrapper(
-        val packet: SourceAudioPacket
+        val packet: SourceAudioPacket,
+        override val arrivalTime: Long
     ) : PacketWithSequenceNumber {
         override val sequenceNumber: Long
             get() = packet.sequenceNumber
     }
 
     data class SourceAudioEndPacketWrapper(
-        val packet: SourceAudioEndPacket
+        val packet: SourceAudioEndPacket,
+        override val arrivalTime: Long
     ) : PacketWithSequenceNumber {
         override val sequenceNumber: Long
             get() = packet.sequenceNumber

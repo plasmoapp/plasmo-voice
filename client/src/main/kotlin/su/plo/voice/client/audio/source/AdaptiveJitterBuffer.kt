@@ -46,8 +46,7 @@ class AdaptiveJitterBuffer(
 
         queue.offer(
             PacketWithArrivalTime(
-                JitterBuffer.SourceAudioPacketWrapper(packet),
-                arrivalTime,
+                JitterBuffer.SourceAudioPacketWrapper(packet, arrivalTime),
                 scheduledPlaybackTime(packet.sequenceNumber, arrivalTime)
             )
         )
@@ -60,8 +59,7 @@ class AdaptiveJitterBuffer(
 
         queue.offer(
             PacketWithArrivalTime(
-                JitterBuffer.SourceAudioEndPacketWrapper(packet),
-                arrivalTime,
+                JitterBuffer.SourceAudioEndPacketWrapper(packet, arrivalTime),
                 scheduledPlaybackTime(packet.sequenceNumber, arrivalTime)
             )
         )
@@ -109,7 +107,6 @@ class AdaptiveJitterBuffer(
 
     data class PacketWithArrivalTime(
         val packet: JitterBuffer.PacketWithSequenceNumber,
-        val arrivalTime: Long,
         val scheduledPlaybackTime: Long
     )
 }
