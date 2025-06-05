@@ -363,7 +363,7 @@ public final class SourceIconRenderer {
         PoseStackKt.rotate(stack, -camera.pitch(), 0.0F, 1.0F, 0.0F);
         PoseStackKt.rotate(stack, camera.yaw(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
-        stack.translate(-5D, 0D, 0D);
+        stack.translate(-5D, -5D, 0D);
 
         vertices(stack, 255, light, iconLocation, false);
         vertices(stack, 40, light, iconLocation, true);
