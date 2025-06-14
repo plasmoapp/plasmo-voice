@@ -23,7 +23,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
 
     private final BaseVoiceServer voiceServer;
 
-    private final Map<UUID, PlayerChannelHandler> channels = Maps.newHashMap();
+    private final Map<UUID, PlayerChannelHandler> channels = Maps.newConcurrentMap();
 
     private final Map<UUID, ScheduledFuture<?>> playerCheckFutures = Maps.newConcurrentMap();
 
