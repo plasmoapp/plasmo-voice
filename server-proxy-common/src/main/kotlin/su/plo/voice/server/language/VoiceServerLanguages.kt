@@ -42,7 +42,11 @@ class VoiceServerLanguages(
             }
 
             return CoroutineScopes.DefaultSupervisor.future {
-                register(languages, languagesFolder)
+                try {
+                    register(languages, languagesFolder)
+                } catch (e: Throwable) {
+                    LOGGER.error("Failed to load languages", e)
+                }
 
                 null
             }
@@ -57,7 +61,12 @@ class VoiceServerLanguages(
         resourceLoader: ResourceLoader,
         languagesFolder: File
     ): CompletableFuture<Void?> = CoroutineScopes.DefaultSupervisor.future {
-        registerSync(translationsURL, fileName, resourceLoader, languagesFolder)
+        try {
+            registerSync(translationsURL, fileName, resourceLoader, languagesFolder)
+        } catch (e: Throwable) {
+            LOGGER.error("Failed to load languages", e)
+        }
+
         null
     }
 
@@ -181,10 +190,8 @@ class VoiceServerLanguages(
     ) {
         if (languages.isEmpty()) return
 
-        val defaultLanguage = languages.getOrDefault(
-            serverTranslator.defaultLanguage,
-            languages[languages.keys.first()]!!
-        )
+        val defaultLanguage = languages[serverTranslator.defaultLanguage]
+            ?: throw IllegalStateException("Default language '${serverTranslator.defaultLanguage}' doesn't exist")
 
         // load from languagesFolder if not found in list and use default language as defaults
         languagesFolder.mkdirs()
