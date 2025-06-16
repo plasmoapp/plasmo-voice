@@ -1,5 +1,6 @@
 package su.plo.lib.mod.client.compat.vulkan
 
+//#if FABRIC
 //#if MC<12105
 import net.vulkanmod.vulkan.VRenderSystem
 import net.vulkanmod.vulkan.shader.PipelineState
@@ -18,4 +19,5 @@ object VulkanGlState {
             VRenderSystem.depthMask,
         )
 }
+//#endif
 //#endif

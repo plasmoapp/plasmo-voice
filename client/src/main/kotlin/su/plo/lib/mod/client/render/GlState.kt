@@ -5,7 +5,10 @@ import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
 import su.plo.lib.mod.client.compat.vulkan.VulkanCompat
+
+//#if FABRIC
 import su.plo.lib.mod.client.compat.vulkan.VulkanGlState
+//#endif
 
 data class GlState(
     var depthFunc: Int?,
@@ -61,9 +64,11 @@ data class GlState(
     companion object {
         @JvmStatic
         fun current(): GlState {
+            //#if FABRIC
             if (VulkanCompat.hasVulkan) {
                 return VulkanGlState.current()
             }
+            //#endif
 
             val depthFunc: Int? =
                 if (GL11.glIsEnabled(GL11.GL_DEPTH_TEST))
