@@ -4,7 +4,7 @@ import gg.essential.universal.shader.BlendState;
 import gg.essential.universal.shader.UShader;
 import lombok.experimental.UtilityClass;
 import org.jetbrains.annotations.Nullable;
-import su.plo.voice.BaseVoice;
+import su.plo.lib.mod.client.compat.vulkan.VulkanCompat;
 
 import java.io.IOException;
 
@@ -15,7 +15,7 @@ public class SolidColorShader {
 
     public static boolean isAvailable() {
         //#if MC>=12105
-        //$$ return !hasVulkan();
+        //$$ return !VulkanCompat.hasVulkan();
         //#else
         return getShader() != null;
         //#endif
@@ -25,7 +25,7 @@ public class SolidColorShader {
         //#if MC>=12105
         //$$ return null;
         //#else
-        if (hasVulkan()) return null;
+        if (VulkanCompat.hasVulkan()) return null;
 
         if (shader == null) {
             try {
@@ -53,22 +53,5 @@ public class SolidColorShader {
 
         return shader;
         //#endif
-    }
-
-    private static @Nullable Boolean hasVulkan = null;
-
-    private static boolean hasVulkan() {
-        if (hasVulkan != null) return hasVulkan;
-
-        try {
-            Class.forName("net.vulkanmod.vulkan.Vulkan");
-            BaseVoice.LOGGER.warn("Shaders are not supported for Vulkan yet");
-            hasVulkan = true;
-            return true;
-        } catch (ClassNotFoundException ignored) {
-        }
-
-        hasVulkan = false;
-        return false;
     }
 }

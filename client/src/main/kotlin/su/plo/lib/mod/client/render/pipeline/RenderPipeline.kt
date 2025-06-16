@@ -140,7 +140,6 @@ data class RenderPipeline(
     val blendFunc: BlendFunc?,
     val cull: Boolean,
     val depthMask: Boolean,
-    val polygonOffset: Pair<Float, Float>?,
 ) {
     val glState by lazy {
         //#if MC<12105
@@ -149,7 +148,6 @@ data class RenderPipeline(
             cull,
             blendFunc?.glList,
             depthMask,
-            polygonOffset,
         )
         //#endif
     }
@@ -171,7 +169,6 @@ data class RenderPipeline(
         var blendFunc: BlendFunc? = null
         var cull: Boolean = true
         var depthMask: Boolean = true
-        var polygonOffset: Pair<Float, Float>? = null
         val samplers: MutableSet<String> = mutableSetOf()
 
         //#if MC>=12105
@@ -225,12 +222,6 @@ data class RenderPipeline(
             //$$     .withCull(cull)
             //$$     .withDepthWrite(depthMask)
             //$$
-            //$$     .apply {
-            //$$         if (polygonOffset != null) {
-            //$$             withDepthBias(polygonOffset!!.first, polygonOffset!!.second)
-            //$$         }
-            //$$     }
-            //$$
             //$$     .build(),
             //#else
             shader,
@@ -242,7 +233,6 @@ data class RenderPipeline(
             blendFunc,
             cull,
             depthMask,
-            polygonOffset,
         )
     }
 }

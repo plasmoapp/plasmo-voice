@@ -80,6 +80,15 @@ repositories {
     maven("https://maven.shedaniel.me/")
     maven("https://maven.terraformersmc.com/")
     maven("https://maven.nucleoid.xyz/")
+
+    exclusiveContent {
+        forRepository {
+            maven("https://api.modrinth.com/maven")
+        }
+        filter {
+            includeGroup("maven.modrinth")
+        }
+    }
 }
 
 dependencies {
@@ -164,6 +173,10 @@ dependencies {
         }
 
         modImplementation("com.terraformersmc:modmenu:$modMenuVersion")
+
+        if (platform.mcVersion < 12105) {
+            modImplementation("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
+        }
     }
 
     val includedProjects = listOf(

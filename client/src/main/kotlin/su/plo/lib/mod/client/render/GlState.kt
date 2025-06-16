@@ -4,13 +4,14 @@ package su.plo.lib.mod.client.render
 import com.mojang.blaze3d.systems.RenderSystem
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
+import su.plo.lib.mod.client.compat.vulkan.VulkanCompat
+import su.plo.lib.mod.client.compat.vulkan.VulkanGlState
 
 data class GlState(
     var depthFunc: Int?,
     var cull: Boolean,
     var blendFunc: List<Int>?,
     var depthMask: Boolean,
-    var polygonOffset: Pair<Float, Float>?
 ) {
     fun javaCopy() = this.copy()
 
@@ -55,22 +56,15 @@ data class GlState(
             current.depthMask = depthMask
             RenderSystem.depthMask(depthMask)
         }
-
-        val polygonOffset = polygonOffset
-        if (current.polygonOffset != polygonOffset) {
-            current.polygonOffset = polygonOffset
-            if (polygonOffset != null) {
-                RenderSystem.polygonOffset(polygonOffset.first, polygonOffset.second)
-                RenderSystem.enablePolygonOffset()
-            } else {
-                RenderSystem.disablePolygonOffset()
-            }
-        }
     }
 
     companion object {
         @JvmStatic
         fun current(): GlState {
+            if (VulkanCompat.hasVulkan) {
+                return VulkanGlState.current()
+            }
+
             val depthFunc: Int? =
                 if (GL11.glIsEnabled(GL11.GL_DEPTH_TEST))
                     GL11.glGetInteger(GL11.GL_DEPTH_FUNC)
@@ -92,18 +86,11 @@ data class GlState(
 
             val depthMask = GL11.glGetBoolean(GL11.GL_DEPTH_WRITEMASK)
 
-            val polygonOffset: Pair<Float, Float>? =
-                if (GL11.glIsEnabled(GL11.GL_POLYGON_OFFSET_FILL))
-                    GL11.glGetFloat(GL11.GL_POLYGON_OFFSET_FACTOR) to GL11.glGetFloat(GL11.GL_POLYGON_OFFSET_UNITS)
-                else
-                    null
-
             return GlState(
                 depthFunc,
                 cull,
                 blendFunc,
                 depthMask,
-                polygonOffset
             )
         }
     }
