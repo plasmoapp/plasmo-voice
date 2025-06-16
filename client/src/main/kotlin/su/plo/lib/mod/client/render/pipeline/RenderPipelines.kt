@@ -158,6 +158,7 @@ object RenderPipelines {
             ) {
                 //#if MC>=12105
                 //$$ mcRenderPipeline = renderType.renderPipeline
+                //$$ mcRenderType = renderType
                 //#else
                 if (renderType.format().elements.any { it.usage == VertexFormatElement.Usage.UV }) {
                     samplers += "Sampler0"

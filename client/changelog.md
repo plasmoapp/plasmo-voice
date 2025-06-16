@@ -4,3 +4,4 @@
 - Fixed an issue where the audio end packet wasn't sent after reconnecting to the UDP server.
 - Fixed an audio glitch on re-activating abruptly stopped source (e.g. on dimension change while source is activated).
 - Fixed broken rendering of the entire HUD when HUD icons/overlay are being rendered on <1.20.
+- Fixed [crash on <1.21.5](https://github.com/plasmoapp/plasmo-voice/issues/461) and rending issues on 1.21.5 with Vulkanmod.

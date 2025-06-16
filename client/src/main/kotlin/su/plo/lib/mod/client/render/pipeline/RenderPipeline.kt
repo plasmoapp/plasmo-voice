@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.GameRenderer
 //#if MC>=12105
 //$$ import com.mojang.blaze3d.shaders.UniformType
 //$$ import com.mojang.blaze3d.vertex.DefaultVertexFormat
+//$$ import net.minecraft.client.renderer.RenderType
 //#elseif MC>=11700
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -128,6 +129,7 @@ data class RenderPipeline(
     //$$ val vertexShader: ResourceLocation,
     //$$ val fragmentShader: ResourceLocation,
     //$$ val mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline,
+    //$$ val mcRenderType: RenderType,
     //#elseif MC>=11700
     val shader: () -> ShaderInstance,
     //#else
@@ -173,14 +175,12 @@ data class RenderPipeline(
 
         //#if MC>=12105
         //$$ var mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline? = null
+        //$$ var mcRenderType: RenderType? = null
         //#endif
 
-        fun build() = RenderPipeline(
-            location,
+        fun build(): RenderPipeline {
             //#if MC>=12105
-            //$$ vertexShader,
-            //$$ fragmentShader,
-            //$$ mcRenderPipeline ?:
+            //$$ val pipeline = mcRenderPipeline ?:
             //$$ com.mojang.blaze3d.pipeline.RenderPipeline.builder()
             //$$     // uhhh
             //$$     // it's not correct and depends on the shader,
@@ -222,17 +222,35 @@ data class RenderPipeline(
             //$$     .withCull(cull)
             //$$     .withDepthWrite(depthMask)
             //$$
-            //$$     .build(),
-            //#else
-            shader,
+            //$$     .build()
+            //$$
+            //$$ val renderType = mcRenderType ?:
+            //$$     RenderType.create(
+            //$$         location.toString(),
+            //$$         1536,
+            //$$         pipeline,
+            //$$         RenderType.CompositeState.builder().createCompositeState(false)
+            //$$     )
             //#endif
-            samplers,
-            vertexFormat,
-            vertexFormatMode,
-            depthTestFunc,
-            blendFunc,
-            cull,
-            depthMask,
-        )
+
+            return RenderPipeline(
+                location,
+                //#if MC>=12105
+                //$$ vertexShader,
+                //$$ fragmentShader,
+                //$$ pipeline,
+                //$$ renderType,
+                //#else
+                shader,
+                //#endif
+                samplers,
+                vertexFormat,
+                vertexFormatMode,
+                depthTestFunc,
+                blendFunc,
+                cull,
+                depthMask,
+            )
+        }
     }
 }

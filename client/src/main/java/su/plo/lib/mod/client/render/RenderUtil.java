@@ -42,6 +42,7 @@ import java.util.List;
 //#endif
 
 //#if MC>=12105
+//$$ import net.minecraft.client.renderer.RenderType;
 //$$ import com.mojang.blaze3d.buffers.GpuBuffer;
 //$$ import com.mojang.blaze3d.systems.RenderPass;
 //$$ import com.mojang.blaze3d.shaders.UniformType;
@@ -191,77 +192,7 @@ public class RenderUtil {
 
         //#if MC>=12105
         //$$ try (MeshData meshData = buffer.build()) {
-        //$$     GpuBuffer vertexBuffer = meshData.drawState().format().uploadImmediateVertexBuffer(meshData.vertexBuffer());
-        //#if MC>=12106
-        //$$     var gpuBufferSlice = RenderSystem.getDynamicUniforms().writeTransform(RenderSystem.getModelViewMatrix(), new Vector4f(1.0F, 1.0F, 1.0F, 1.0F), RenderSystem.getModelOffset(), RenderSystem.getTextureMatrix(), RenderSystem.getShaderLineWidth());
-        //#endif
-        //$$     GpuBuffer indexBuffer;
-        //$$     VertexFormat.IndexType indexType;
-        //$$
-        //$$     if (meshData.indexBuffer() != null) {
-        //$$         indexBuffer = meshData.drawState().format().uploadImmediateIndexBuffer(meshData.indexBuffer());
-        //$$         indexType = meshData.drawState().indexType();
-        //$$     } else {
-        //$$         RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(meshData.drawState().mode());
-        //$$         indexBuffer = autoStorageIndexBuffer.getBuffer(meshData.drawState().indexCount());
-        //$$         indexType = autoStorageIndexBuffer.type();
-        //$$     }
-        //$$
-        //$$     var renderTarget = Minecraft.getInstance().getMainRenderTarget();
-        //$$     try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-        //#if MC>=12106
-        //$$             () -> "Immediate draw for " + renderPipeline.getLocation(),
-        //$$             RenderSystem.outputColorTextureOverride != null
-        //$$                     ? RenderSystem.outputColorTextureOverride
-        //$$                     : renderTarget.getColorTextureView(),
-        //$$             OptionalInt.empty(),
-        //$$             renderTarget.useDepth
-        //$$                     ? (RenderSystem.outputDepthTextureOverride != null ? RenderSystem.outputDepthTextureOverride : renderTarget.getDepthTextureView())
-        //$$                     : null,
-        //$$             OptionalDouble.empty()
-        //#else
-        //$$             renderTarget.getColorTexture(),
-        //$$             OptionalInt.empty(),
-        //$$             renderTarget.getDepthTexture(),
-        //$$             OptionalDouble.empty()
-        //#endif
-        //$$     )) {
-        //$$         renderPass.setPipeline(renderPipeline.getMcRenderPipeline());
-        //#if MC>=12106
-        //$$         RenderSystem.bindDefaultUniforms(renderPass);
-        //$$         renderPass.setUniform("DynamicTransforms", gpuBufferSlice);
-        //#endif
-        //$$         renderPass.setVertexBuffer(0, vertexBuffer);
-        //$$
-        //#if MC>=12106
-        //$$         if (SCISSOR_STATE != null) {
-        //$$             renderPass.enableScissor(
-        //$$                     SCISSOR_STATE.getX(),
-        //$$                     SCISSOR_STATE.getY(),
-        //$$                     SCISSOR_STATE.getWidth(),
-        //$$                     SCISSOR_STATE.getHeight()
-        //$$             );
-        //$$         } else {
-        //$$             renderPass.disableScissor();
-        //$$         }
-        //#else
-        //$$         renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
-        //#endif
-        //$$
-        //$$         for(int i = 0; i < 12; ++i) {
-        //$$             var gpuTexture = RenderSystem.getShaderTexture(i);
-        //$$             if (gpuTexture != null) {
-        //$$                 renderPass.bindSampler("Sampler" + i, gpuTexture);
-        //$$             }
-        //$$         }
-        //$$
-        //$$         renderPass.setIndexBuffer(indexBuffer, indexType);
-        //#if MC>=12106
-        //$$         renderPass.drawIndexed(0, 0, meshData.drawState().indexCount(), 1);
-        //#else
-        //$$         renderPass.drawIndexed(0, meshData.drawState().indexCount());
-        //#endif
-        //$$     }
+        //$$     renderPipeline.getMcRenderType().draw(meshData);
         //$$ }
         //#elseif MC>11802
         BufferUploader.drawWithShader(buffer.end());
