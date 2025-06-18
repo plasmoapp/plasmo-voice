@@ -147,8 +147,8 @@ object RenderPipelines {
             renderPipeline(
                 ResourceLocationUtil.mod("pipeline/render_type_$name"),
                 //#if MC>=12106
-                //$$ (renderType as CompositeRenderTypeAccessor).renderPipeline.vertexShader,
-                //$$ (renderType as CompositeRenderTypeAccessor).renderPipeline.fragmentShader,
+                //$$ (renderType as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline().vertexShader,
+                //$$ (renderType as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline().fragmentShader,
                 //#elseif MC>=12105
                 //$$ renderType.renderPipeline.vertexShader,
                 //$$ renderType.renderPipeline.fragmentShader,
@@ -156,8 +156,13 @@ object RenderPipelines {
                 renderType.format(),
                 VertexFormatMode.from(renderType.mode())
             ) {
-                //#if MC>=12105
+                //#if MC>=12106
+                //$$ mcRenderPipeline = renderType.plasmovoice_getRenderPipeline()
+                //#elseif MC>=12105
                 //$$ mcRenderPipeline = renderType.renderPipeline
+                //#endif
+
+                //#if MC>=12105
                 //$$ mcRenderType = renderType
                 //#else
                 if (renderType.format().elements.any { it.usage == VertexFormatElement.Usage.UV }) {

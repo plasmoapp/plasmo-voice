@@ -217,7 +217,7 @@ class GuiRenderContext(
         renderPipeline: RenderPipeline = RenderPipelines.GUI_TEXTURE_COLOR,
     ) {
         //#if MC>=12106
-        //$$ (mcContext as GuiGraphicsAccessor).innerBlit(
+        //$$ (mcContext as GuiGraphicsAccessor).plasmovoice_innerBlit(
         //$$     renderPipeline.mcRenderPipeline,
         //$$     textureLocation,
         //$$     x0,

@@ -10,6 +10,6 @@ package su.plo.voice.client.mixin.accessor;
 //$$ @Mixin(GuiGraphics.class)
 //$$ public interface GuiGraphicsAccessor {
 //$$     @Invoker("innerBlit")
-//$$     void innerBlit(RenderPipeline pipeline, ResourceLocation textureLocation, int x0, int x1, int y0, int y1, float u0, float u1, float v0, float v1, int color);
+//$$     void plasmovoice_innerBlit(RenderPipeline pipeline, ResourceLocation textureLocation, int x0, int x1, int y0, int y1, float u0, float u1, float v0, float v1, int color);
 //$$ }
 //#endif
