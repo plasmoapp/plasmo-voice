@@ -175,7 +175,7 @@ dependencies {
         modImplementation("com.terraformersmc:modmenu:$modMenuVersion")
 
         if (platform.mcVersion < 12105) {
-            modImplementation("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
+            modCompileOnly("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
         }
     }
 
