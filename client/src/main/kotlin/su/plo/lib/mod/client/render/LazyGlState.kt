@@ -8,6 +8,7 @@ class LazyGlState {
     val state: GlState
         get() {
             if (System.currentTimeMillis() - lastUpdate > 500 || lastState == null) {
+                lastUpdate = System.currentTimeMillis()
                 lastState = GlState.current()
             }
 

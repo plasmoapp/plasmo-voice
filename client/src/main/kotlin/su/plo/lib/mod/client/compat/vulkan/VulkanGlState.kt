@@ -14,7 +14,7 @@ object VulkanGlState {
             PipelineState.blendInfo
                 .takeIf { it.enabled }
                 ?.let {
-                    listOf(it.srcRgbFactor, it.srcAlphaFactor, it.dstRgbFactor, it.dstAlphaFactor)
+                    listOf(it.srcRgbFactor, it.dstRgbFactor, it.srcAlphaFactor, it.dstAlphaFactor)
                 },
             VRenderSystem.depthMask,
         )

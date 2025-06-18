@@ -82,8 +82,8 @@ data class GlState(
                 if (GL11.glIsEnabled(GL11.GL_BLEND))
                     listOf(
                         GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB),
-                        GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA),
                         GL11.glGetInteger(GL14.GL_BLEND_DST_RGB),
+                        GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA),
                         GL11.glGetInteger(GL14.GL_BLEND_DST_ALPHA),
                     )
                 else
