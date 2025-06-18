@@ -126,6 +126,8 @@ class OverlayRenderer(
                 }
             }
 
+            if (toRender.isEmpty()) continue
+
             glState.withState {
                 for ((_, sourceInfo) in toRender) {
                     renderEntry(context, sourceLine, position, renderedIndex++, sourceInfo)
