@@ -428,7 +428,7 @@ abstract class BaseClientAudioSource<T>(
         if (config.advanced.exponentialDistanceGain.value())
             distanceGain = distanceGain.pow(3.0)
 
-        return distanceGain.coerceAtLeast(0.0)
+        return distanceGain
     }
 
     protected abstract fun getPosition(): Vec3
@@ -514,7 +514,7 @@ abstract class BaseClientAudioSource<T>(
         volume *= distanceGain
 
         source.device.runInContext {
-            source.volume = volume.toFloat()
+            source.volume = volume.coerceAtLeast(0.0).toFloat()
 
             if (isPanningDisabled()) {
                 source.setInt(
