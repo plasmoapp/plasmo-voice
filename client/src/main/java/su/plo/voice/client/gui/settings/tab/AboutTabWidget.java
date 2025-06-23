@@ -333,12 +333,12 @@ public final class AboutTabWidget extends TabWidget {
             int lines = context.drawStringMultiLine(
                     text,
                     x,
-                    y + 16,
+                    y,
                     new Color(0x808080),
                     entryWidth
             );
 
-            setHeight(lines * RenderUtil.getFontHeight() + 16);
+            setHeight(lines * RenderUtil.getFontHeight() + 10);
         }
 
         @Override
