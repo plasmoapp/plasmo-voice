@@ -62,6 +62,9 @@ jobs:
           1.21.2
           1.21.3
           1.21.4
+          1.21.5
+          1.21.6
+          1.21.7
 
         modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
@@ -90,6 +93,9 @@ jobs:
           1.21.2
           1.21.3
           1.21.4
+          1.21.5
+          1.21.6
+          1.21.7
 
         modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
