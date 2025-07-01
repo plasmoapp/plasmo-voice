@@ -2,7 +2,18 @@ package su.plo.lib.mod.client.render
 
 class LazyGlState {
     //#if MC<12105
-    val state by lazy { GlState.current() }
+    private var lastUpdate = 0L
+    private var lastState: GlState? = null
+
+    val state: GlState
+        get() {
+            if (System.currentTimeMillis() - lastUpdate > 500 || lastState == null) {
+                lastUpdate = System.currentTimeMillis()
+                lastState = GlState.current()
+            }
+
+            return lastState!!
+        }
     //#endif
 
     fun withState(block: Runnable) {

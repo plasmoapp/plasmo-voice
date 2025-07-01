@@ -6,11 +6,18 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 /**
  * Base interface for activations.
  */
 public interface Activation {
+
+    /**
+     * The regular expression pattern that activation name must match.
+     * An activation name may contain only lowercase letters, digits, hyphens, and underscores.
+     */
+    @NotNull Pattern NAME_PATTERN = Pattern.compile("[a-z0-9-_]+");
 
     /**
      * Gets the unique identifier of the activation.

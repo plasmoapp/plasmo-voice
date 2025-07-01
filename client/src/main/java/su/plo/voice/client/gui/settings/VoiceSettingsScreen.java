@@ -2,6 +2,8 @@ package su.plo.voice.client.gui.settings;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import lombok.Getter;
@@ -22,6 +24,8 @@ import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.tab.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import static su.plo.voice.client.extension.TextKt.getStringSplitToWidth;
@@ -45,6 +49,8 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     @Setter
     private boolean preventEscClose;
+
+    private final List<Runnable> deferredRenders = new ArrayList<>();
 
     public VoiceSettingsScreen(@NotNull BaseVoiceClient voiceClient) {
         this.voiceClient = voiceClient;
@@ -154,30 +160,38 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     // GuiWidget impl
     @Override
-    public void render(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         this.tooltip = null;
 
         //#if MC<12105
         RenderSystem.defaultBlendFunc();
         //#endif
-        screen.renderBackground(stack);
 
-        navigation.renderTab(stack, mouseX, mouseY, delta);
-        navigation.renderBackground(stack);
-        super.render(stack, mouseX, mouseY, delta);
+        // background is rendered by default and there is no way override this behavior without mixins
+        //#if MC<12106
+        screen.renderBackground(context);
+        //#endif
+
+        navigation.renderTab(context, mouseX, mouseY, delta);
+        navigation.renderBackground(context);
+        super.render(context, mouseX, mouseY, delta);
 
         // render title
-        RenderUtil.drawString(stack, title, 14, 15, 0xFFFFFF);
+        context.drawString(title, 14, 15, Colors.WHITE);
 
-        navigation.renderButtons(stack, mouseX, mouseY, delta);
-        aboutFeature.render(stack, delta);
+        navigation.renderButtons(context, mouseX, mouseY, delta);
+        aboutFeature.render(context, delta);
+
+        context.flush();
+        deferredRenders.forEach(Runnable::run);
+        deferredRenders.clear();
 
         if (tooltip == null && isTitleHovered(mouseX, mouseY))
             tooltip = getVersionTooltip();
 
         if (tooltip != null) {
             screen.renderTooltipWrapped(
-                    stack,
+                    context,
                     getStringSplitToWidth(
                             RenderUtil.getFormattedString(tooltip),
                             180,
@@ -228,6 +242,10 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @EventSubscribe
     public void onClosed(@NotNull UdpClientClosedEvent event) {
         VoiceScreens.INSTANCE.openNotAvailable(voiceClient);
+    }
+
+    public void deferredRender(@NotNull Runnable render) {
+        deferredRenders.add(render);
     }
 
     private McTextComponent getSettingsTitle() {

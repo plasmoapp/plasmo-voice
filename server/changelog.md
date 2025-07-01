@@ -1,5 +1,3 @@
-### Changes in 2.1.4
-- Support 1.21.5 component changes.
-- Fixed SuperVanish `/hide` causes hidden client to disconnect.
-- Fixed game events reflections causing high CPU usage on Spigot-based servers.
-- Fixed crowdin download task blocking language resolution, causing languages not to load.
+### Changes in 2.1.5
+- Fixed an issue where the audio end packet wasn't sent after reconnecting to the UDP server.
+- Fixed a deadlock caused by language loading, which could eventually break languages and other addons that use coroutines (e.g. discs addon).

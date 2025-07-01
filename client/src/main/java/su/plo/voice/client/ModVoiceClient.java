@@ -128,7 +128,7 @@ public final class ModVoiceClient extends BaseVoiceClient
         // JavaX input
         getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
 
-        this.hudRenderer = new ModHudRenderer(this);
+        this.hudRenderer = new ModHudRenderer();
         this.levelRenderer = new ModLevelRenderer(this);
 
         INSTANCE = this;
@@ -297,10 +297,15 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ }
     //$$
     //$$ @SubscribeEvent
+    //#if MC>=12106
+    //$$ public void onWorldRender(RenderLevelStageEvent.AfterParticles event) {
+    //#else
     //$$ public void onWorldRender(RenderLevelStageEvent event) {
-    //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
-    //$$             Minecraft.getInstance().level == null
-    //$$     ) return;
+    //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
+    //#endif
+    //$$
+    //$$     if (Minecraft.getInstance().level == null) return;
+    //$$
     //$$     levelRenderer.render(
     //$$            Minecraft.getInstance().level,
     //$$            event.getPoseStack(),
@@ -313,7 +318,15 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     );
     //$$ }
     //$$
-    //$$ @EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = EventBusSubscriber.Bus.MOD)
+    //$$ @EventBusSubscriber(
+    //$$         modid = "plasmovoice",
+    //#if MC>=12106
+    //$$         value = Dist.CLIENT
+    //#else
+    //$$         value = Dist.CLIENT,
+    //$$         bus = EventBusSubscriber.Bus.MOD
+    //#endif
+    //$$ )
     //$$ public static class ModBusEvents {
     //$$
     //$$     @SubscribeEvent

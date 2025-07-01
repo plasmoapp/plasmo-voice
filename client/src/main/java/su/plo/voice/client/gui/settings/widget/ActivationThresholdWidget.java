@@ -1,17 +1,16 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
-import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
-import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
+import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -22,6 +21,7 @@ import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
+import java.awt.Color;
 import java.util.List;
 
 public final class ActivationThresholdWidget extends AbstractSlider implements UpdatableWidget {
@@ -111,31 +111,38 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack, mouseX, mouseY);
+    public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY);
 
-        renderMicrophoneValue(stack, getSliderWidth(), delta);
-        renderTrack(stack, mouseX, mouseY);
-        renderText(stack, mouseX, mouseY);
+        renderMicrophoneValue(context, getSliderWidth(), delta);
+        renderTrack(context, mouseX, mouseY);
+        renderText(context, mouseX, mouseY);
     }
 
     public List<Button> getButtons() {
         return microphoneTest;
     }
 
-    private void renderMicrophoneValue(@NotNull PoseStack stack, int sliderWidth, float delta) {
+    private void renderMicrophoneValue(@NotNull GuiRenderContext context, int sliderWidth, float delta) {
+        Color color;
         if (controller.getMicrophoneValue() > 0.95D) {
-            RenderSystem.setShaderColor(1F, 0F, 0F, alpha);
+            color = new Color(255, 0, 0);
         } else if (controller.getMicrophoneValue() > 0.7D) {
-            RenderSystem.setShaderColor(1F, 1F, 0F, alpha);
+            color = new Color(255, 255, 0);
         } else {
-            RenderSystem.setShaderColor(0F, 1F, 0F, alpha);
+            color = new Color(0, 255, 0);
         }
 
-        GuiWidgetTexture sprite = GuiWidgetTexture.SLIDER;
-        RenderUtil.bindTexture(0, sprite.getLocation());
-        RenderUtil.blitSprite(stack, sprite, x + 1, y + 1, 1, 1, (int) ((sliderWidth - 2) * controller.getMicrophoneValue()), height - 2);
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        context.blitColorSprite(
+                GuiWidgetTexture.SLIDER,
+                x + 1,
+                y + 1,
+                1,
+                1,
+                (int) ((sliderWidth - 2) * controller.getMicrophoneValue()),
+                height - 2,
+                Colors.withAlpha(color, alpha)
+        );
 
         controller.tick(delta);
     }

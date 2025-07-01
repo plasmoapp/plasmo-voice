@@ -1,5 +1,6 @@
 package su.plo.lib.mod.client
 
+import net.minecraft.ResourceLocationException
 import net.minecraft.resources.ResourceLocation
 
 object ResourceLocationUtil {
@@ -12,6 +13,27 @@ object ResourceLocationUtil {
         ResourceLocation.tryBuild(namespace, location)
         //#else
         //$$ ResourceLocation(namespace, location)
+        //#endif
+
+    @JvmStatic
+    @Throws(ResourceLocationException::class)
+    fun build(
+        namespace: String,
+        location: String,
+    ): ResourceLocation =
+    //#if MC>=12100
+    //$$ ResourceLocation.fromNamespaceAndPath(namespace, location)
+        //#else
+        ResourceLocation(namespace, location)
+    //#endif
+
+    @JvmStatic
+    @Throws(ResourceLocationException::class)
+    fun parse(location: String): ResourceLocation =
+        //#if MC>=12100
+        //$$ ResourceLocation.parse(location)
+        //#else
+        ResourceLocation(location)
         //#endif
 
     @JvmStatic

@@ -1,12 +1,11 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 
 public final class ToggleButton extends GuiAbstractWidget {
@@ -56,7 +55,7 @@ public final class ToggleButton extends GuiAbstractWidget {
     }
 
     @Override
-    protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
+    protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         int x0 = entry.value() ? (x + width - 8) : x;
 
         GuiWidgetTexture sprite;
@@ -66,9 +65,8 @@ public final class ToggleButton extends GuiAbstractWidget {
             sprite = GuiWidgetTexture.BUTTON_DEFAULT;
         }
 
-        RenderUtil.bindTexture(0, sprite.getLocation());
-        RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
-        RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
+        context.blitSprite(sprite, x0, y, 0, 0, 4, 20);
+        context.blitSprite(sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
     }
 
     public void invertToggle() {

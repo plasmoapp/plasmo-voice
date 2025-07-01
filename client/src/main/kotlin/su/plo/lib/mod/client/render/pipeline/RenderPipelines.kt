@@ -8,6 +8,10 @@ import su.plo.lib.mod.client.render.SourceFactor
 import su.plo.lib.mod.client.render.VertexFormatMode
 import su.plo.lib.mod.client.render.shader.SolidColorShader
 
+//#if MC>=12106
+//$$ import su.plo.voice.client.mixin.accessor.CompositeRenderTypeAccessor
+//#endif
+
 //#if MC>=12105
 //$$ import net.minecraft.resources.ResourceLocation
 //#else
@@ -15,14 +19,6 @@ import com.mojang.blaze3d.vertex.VertexFormatElement
 //#endif
 
 object RenderPipelines {
-    @JvmField
-    val GUI_HIGHLIGHT =
-        renderPipeline(
-            ResourceLocationUtil.mod("pipeline/gui_highlight"),
-            DefaultVertexFormat.POSITION,
-            VertexFormatMode.QUADS,
-        ) // todo: withColorLogic(LogicOp.OR_REVERSE)?
-
     @JvmField
     val GUI_COLOR =
         renderPipeline(
@@ -49,7 +45,10 @@ object RenderPipelines {
     val GUI_TEXTURE_SOLID_COLOR =
         renderPipeline(
             ResourceLocationUtil.mod("pipeline/gui_texture_solid_color"),
-            //#if MC>=12105
+            //#if MC>=12106
+            //$$ ResourceLocationUtil.mod("position_tex_solid_color_1_21_6"),
+            //$$ ResourceLocationUtil.mod("position_tex_solid_color_1_21_6"),
+            //#elseif MC>=12105
             //$$ ResourceLocationUtil.mod("position_tex_solid_color"),
             //$$ ResourceLocationUtil.mod("position_tex_solid_color"),
             //#elseif MC>=11700
@@ -147,15 +146,24 @@ object RenderPipelines {
         renderTypes.computeIfAbsent(renderType) {
             renderPipeline(
                 ResourceLocationUtil.mod("pipeline/render_type_$name"),
-                //#if MC>=12105
+                //#if MC>=12106
+                //$$ (renderType as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline().vertexShader,
+                //$$ (renderType as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline().fragmentShader,
+                //#elseif MC>=12105
                 //$$ renderType.renderPipeline.vertexShader,
                 //$$ renderType.renderPipeline.fragmentShader,
                 //#endif
                 renderType.format(),
                 VertexFormatMode.from(renderType.mode())
             ) {
-                //#if MC>=12105
+                //#if MC>=12106
+                //$$ mcRenderPipeline = renderType.plasmovoice_getRenderPipeline()
+                //#elseif MC>=12105
                 //$$ mcRenderPipeline = renderType.renderPipeline
+                //#endif
+
+                //#if MC>=12105
+                //$$ mcRenderType = renderType
                 //#else
                 if (renderType.format().elements.any { it.usage == VertexFormatElement.Usage.UV }) {
                     samplers += "Sampler0"

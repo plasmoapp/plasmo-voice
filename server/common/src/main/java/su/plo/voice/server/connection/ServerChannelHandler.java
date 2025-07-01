@@ -23,7 +23,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
 
     private final BaseVoiceServer voiceServer;
 
-    private final Map<UUID, PlayerChannelHandler> channels = Maps.newHashMap();
+    private final Map<UUID, PlayerChannelHandler> channels = Maps.newConcurrentMap();
 
     private final Map<UUID, ScheduledFuture<?>> playerCheckFutures = Maps.newConcurrentMap();
 
@@ -66,8 +66,10 @@ public final class ServerChannelHandler implements McServerChannelHandler {
         // just send info request when player joins the server,
         // because old method of checking for exact channels was causing some unpredictable behavior and bugs
         // this solution should be (hopefully) more consistent
-        voiceServer.getMinecraftServer().executeInMainThread(() ->
-                voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer)
+        voiceServer.getBackgroundExecutor().execute(() ->
+            voiceServer.getMinecraftServer().executeInMainThread(() ->
+                    voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer)
+            )
         );
 
         if (shouldKick(player)) {

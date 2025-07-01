@@ -1,10 +1,11 @@
 package su.plo.lib.mod.client.render.particle;
 
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
-import org.joml.Vector3f;
-import su.plo.lib.mod.client.render.VertexBuilder;
+import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
+
+import java.awt.*;
 
 public abstract class BillboardParticle2D extends Particle2D {
     protected float scale;
@@ -20,48 +21,43 @@ public abstract class BillboardParticle2D extends Particle2D {
     }
 
     @Override
-    public void buildGeometry(PoseStack stack, BufferBuilder buffer, float tickDelta) {
-        float f = (float)(Mth.lerp((double)tickDelta, this.prevPosX, this.x));
-        float g = (float)(Mth.lerp((double)tickDelta, this.prevPosY, this.y));
+    public void render(
+            @NotNull GuiRenderContext context,
+            @NotNull ResourceLocation textureLocation,
+            float tickDelta
+    ) {
+        float newX = (float) Mth.lerp(tickDelta, this.prevPosX, this.x);
+        float newY = (float) Mth.lerp(tickDelta, this.prevPosY, this.y);
 
-        Vector3f vec3f = new Vector3f(-1.0F, -1.0F, 0.0F);
-        Vector3f[] vec3fs = new Vector3f[]{new Vector3f(-1.0F, -1.0F, 0.0F), new Vector3f(-1.0F, 1.0F, 0.0F), new Vector3f(1.0F, 1.0F, 0.0F), new Vector3f(1.0F, -1.0F, 0.0F)};
-        float j = this.getSize(tickDelta);
+        float size = this.getSize(tickDelta);
 
-        for(int k = 0; k < 4; ++k) {
-            Vector3f vec3f2 = vec3fs[k];
-            vec3f2.mul(j);
-            vec3f2.add(f, g, 0);
-        }
+        float x0 = newX + (-1.0f * size);
+        float x1 = newX + size;
+        float y0 = newY + (-1.0f * size);
+        float y1 = newY + size;
 
-        float l = this.getMinU();
-        float m = this.getMaxU();
-        float n = this.getMinV();
-        float o = this.getMaxV();
+        float u0 = this.getMinU();
+        float u1 = this.getMaxU();
+        float v0 = this.getMinV();
+        float v1 = this.getMaxV();
 
-        VertexBuilder.create(buffer)
-                .position(stack, vec3fs[0].x(), vec3fs[0].y(), vec3fs[0].z())
-                .uv(m, o)
-                .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .end();
-
-        VertexBuilder.create(buffer)
-                .position(stack, vec3fs[1].x(), vec3fs[1].y(), vec3fs[1].z())
-                .uv(m, n)
-                .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .end();
-
-        VertexBuilder.create(buffer)
-                .position(stack, vec3fs[2].x(), vec3fs[2].y(), vec3fs[2].z())
-                .uv(l, n)
-                .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .end();
-
-        VertexBuilder.create(buffer)
-                .position(stack, vec3fs[3].x(), vec3fs[3].y(), vec3fs[3].z())
-                .uv(l, o)
-                .color(this.colorRed, this.colorGreen, this.colorBlue, this.colorAlpha)
-                .end();
+        context.blitColor(
+                textureLocation,
+                (int) x0,
+                (int) x1,
+                (int) y0,
+                (int) y1,
+                u0,
+                u1,
+                v0,
+                v1,
+                new Color(
+                        colorRed,
+                        colorGreen,
+                        colorBlue,
+                        colorAlpha
+                )
+        );
     }
 
     public float getSize(float tickDelta) {

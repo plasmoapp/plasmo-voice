@@ -8,12 +8,12 @@ import su.plo.voice.api.server.audio.line.BaseServerSourceLine
 import su.plo.voice.api.server.audio.line.BaseServerSourceLineManager
 import su.plo.voice.api.server.connection.PacketManager
 import su.plo.voice.api.server.player.VoicePlayer
-import su.plo.voice.proto.data.audio.capture.VoiceActivation
+import su.plo.voice.proto.data.audio.line.SourceLine
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
 import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler
 import su.plo.voice.proto.packets.tcp.clientbound.SourceLineUnregisterPacket
-import java.lang.IllegalArgumentException
-import java.util.*
+import java.util.Optional
+import java.util.UUID
 
 abstract class VoiceBaseServerSourceLineManager<T : BaseServerSourceLine>(
     private val voiceServer: PlasmoBaseVoiceServer,
@@ -60,8 +60,16 @@ abstract class VoiceBaseServerSourceLineManager<T : BaseServerSourceLine>(
         val addon = voiceServer.addonManager.getAddon(addonObject)
             .orElseThrow { IllegalArgumentException("addonObject is not an addon") }
 
-        if (lineById.containsKey(VoiceActivation.generateId(name))) {
-            throw IllegalArgumentException("Activation with name $name already exists")
+        if (lineById.containsKey(VoiceSourceLine.generateId(name))) {
+            throw IllegalArgumentException("Source line with name $name already exists")
+        }
+
+        if (name.isEmpty()) {
+            throw IllegalArgumentException("Activation name can't be empty")
+        }
+
+        if (!name.matches(SourceLine.NAME_PATTERN.toRegex())) {
+            throw IllegalArgumentException("Non [a-z0-9-_] character in source line name: $name")
         }
 
         return Builder(addon, name, translation, icon, weight)
@@ -97,8 +105,8 @@ abstract class VoiceBaseServerSourceLineManager<T : BaseServerSourceLine>(
         }
 
         override fun build(): T {
-            if (lineById.containsKey(VoiceActivation.generateId(name))) {
-                throw IllegalArgumentException("Activation with name $name already exists")
+            if (lineById.containsKey(VoiceSourceLine.generateId(name))) {
+                throw IllegalArgumentException("Source line with name $name already exists")
             }
 
             return createSourceLine(

@@ -95,7 +95,7 @@ abstract class BaseClientAudioSource<T>(
         if (config.advanced.adaptiveJitterBuffer.value()) {
             AdaptiveJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
         } else {
-            StaticJitterBuffer(config.advanced.jitterPacketDelay.value())
+            StaticJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
         }
 
     private val job = startJob()
@@ -397,7 +397,7 @@ abstract class BaseClientAudioSource<T>(
         }
     }
 
-    private fun resetAsync(cause: AudioSourceResetEvent.Cause) =
+    override fun resetAsync(cause: AudioSourceResetEvent.Cause): CompletableFuture<Void?> =
         SCOPE.future {
             reset(cause)
             null
@@ -514,7 +514,7 @@ abstract class BaseClientAudioSource<T>(
         volume *= distanceGain
 
         source.device.runInContext {
-            source.volume = volume.toFloat()
+            source.volume = volume.coerceAtLeast(0.0).toFloat()
 
             if (isPanningDisabled()) {
                 source.setInt(

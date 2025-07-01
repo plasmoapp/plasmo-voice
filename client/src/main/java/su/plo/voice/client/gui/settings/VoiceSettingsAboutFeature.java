@@ -1,19 +1,17 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.particle.BlockDustParticle2D;
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.voice.util.RandomUtil;
 
 import java.util.List;
@@ -89,21 +87,15 @@ public final class VoiceSettingsAboutFeature {
         }
     }
 
-    public void render(@NotNull PoseStack stack, float delta) {
+    public void render(@NotNull GuiRenderContext context, float delta) {
         for (BlockDustParticle2D particle : particles) {
-            RenderSystem.setShaderColor(1.0F, 1.0F, 1.0F, 1.0F);
-
             //#if MC>=11903
-            RenderUtil.bindTexture(0, particle.getSprite().atlasLocation());
+            ResourceLocation textureLocation = particle.getSprite().atlasLocation();
             //#else
-            //$$ RenderUtil.bindTexture(0, particle.getSprite().atlas().location());
+            //$$ ResourceLocation textureLocation = particle.getSprite().atlas().location();
             //#endif
 
-            BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.GUI_PARTICLE_TEXTURE_COLOR);
-
-            particle.buildGeometry(stack, buffer, delta);
-
-            RenderUtil.drawBuffer(buffer, RenderPipelines.GUI_PARTICLE_TEXTURE_COLOR);
+            particle.render(context, textureLocation, delta);
         }
     }
 }

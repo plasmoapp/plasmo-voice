@@ -2,9 +2,9 @@ package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.Maps;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.IntConfigEntry;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -21,6 +21,7 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerActivationDistancesPacke
 
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 @RequiredArgsConstructor
 public final class VoiceClientActivationManager implements ClientActivationManager {
@@ -49,8 +50,6 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     };
     private final Map<UUID, ClientActivation> activationById = Maps.newConcurrentMap();
 
-    private boolean initialized = false;
-
     @Override
     public Optional<ClientActivation> getParentActivation() {
         return Optional.ofNullable(parentActivation);
@@ -72,15 +71,6 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             }
 
             this.parentActivation = activation;
-            if (!initialized &&
-                    config.getAdvanced().getVisualizeVoiceDistance().value() &&
-                    config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()) {
-                voiceClient.getDistanceVisualizer().render(
-                        activation.getDistance(),
-                        0x00a000,
-                        null
-                );
-            }
         }
 
         voiceClient.getEventBus().fire(new ClientActivationRegisteredEvent(activation));
@@ -88,46 +78,52 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     }
 
     @Override
-    public @NotNull Collection<ClientActivation> register(@NotNull Collection<Activation> activations) {
+    public @NotNull ClientActivation register(@NotNull Activation activation) {
         VoiceClientConfig.Server serverConfig = getServerConfig();
 
-        for (Activation serverActivation : activations) {
-            ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
-            IntConfigEntry activationDistance = serverConfig.getActivationDistance(serverActivation.getId(), serverActivation);
-            activationDistance.setDefault(
-                    serverActivation.getDefaultDistance(),
-                    serverActivation.getMinDistance(),
-                    serverActivation.getMaxDistance()
-            );
-            activationDistance.set(serverActivation.calculateAllowedDistance(activationDistance.value()));
+        ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getId(), activation);
+        IntConfigEntry activationDistance = serverConfig.getActivationDistance(activation.getId(), activation);
+        activationDistance.setDefault(
+                activation.getDefaultDistance(),
+                activation.getMinDistance(),
+                activation.getMaxDistance()
+        );
+        activationDistance.set(activation.calculateAllowedDistance(activationDistance.value()));
 
-            String icon = VoiceIconUtil.INSTANCE.getIcon(
-                    serverActivation.getIcon(),
-                    ResourceLocation.tryParse("plasmovoice:textures/addons/activations/" + serverActivation.getName())
-            );
+        String icon = VoiceIconUtil.INSTANCE.getIcon(
+                activation.getIcon(),
+                ResourceLocationUtil.parse("plasmovoice:textures/addons/activations/" + activation.getName())
+        );
 
-            ClientActivation activation = register(new VoiceClientActivation(
-                    voiceClient,
-                    config,
-                    activationConfig,
-                    activationDistance,
-                    serverActivation,
-                    icon
-            ));
+        ClientActivation clientActivation = register(new VoiceClientActivation(
+                voiceClient,
+                config,
+                activationConfig,
+                activationDistance,
+                activation,
+                icon
+        ));
 
-            voiceClient.getServerConnection().ifPresent((connection) -> connection.sendPacket(
-                    new PlayerActivationDistancesPacket(new HashMap<UUID, Integer>() {{
-                        put(activation.getId(), activation.getDistance());
-                    }})
-            ));
-        }
+        voiceClient.getServerConnection().ifPresent((connection) -> connection.sendPacket(
+                // reason: cannot use '<>' with anonymous inner classes
+                // old java thing
+                new PlayerActivationDistancesPacket(new HashMap<UUID, Integer>() {{
+                    put(clientActivation.getId(), clientActivation.getDistance());
+                }})
+        ));
 
         if (parentActivation == null) {
             this.parentActivation = createParentActivation(serverConfig);
         }
 
-        this.initialized = true;
-        return getActivations();
+        return clientActivation;
+    }
+
+    @Override
+    public @NotNull Collection<ClientActivation> register(@NotNull Collection<Activation> activations) {
+        return activations.stream()
+                .map(this::register)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -179,7 +175,6 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         
         activations.clear();
         activationById.clear();
-        this.initialized = false;
     }
 
     private VoiceClientConfig.Server getServerConfig() {

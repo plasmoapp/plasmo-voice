@@ -3,7 +3,6 @@ package gg.essential.universal.shader
 //#if MC>11700
 
 import com.google.common.collect.ImmutableMap
-import com.mojang.blaze3d.shaders.Uniform
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -53,15 +52,6 @@ internal class MCShader(
 
     override fun unbind() {
     }
-
-    private fun getUniformOrNull(name: String) = mc.getUniform(name)?.let(::MCShaderUniform)
-    override fun getIntUniformOrNull(name: String) = getUniformOrNull(name)
-    override fun getFloatUniformOrNull(name: String) = getUniformOrNull(name)
-    override fun getFloat2UniformOrNull(name: String) = getUniformOrNull(name)
-    override fun getFloat3UniformOrNull(name: String) = getUniformOrNull(name)
-    override fun getFloat4UniformOrNull(name: String) = getUniformOrNull(name)
-    override fun getFloatMatrixUniformOrNull(name: String) = getUniformOrNull(name)
-    override fun getSamplerUniformOrNull(name: String) = MCSamplerUniform(mc, name)
 
     companion object {
         private val DEBUG_LEGACY = System.getProperty("universalcraft.shader.legacy.debug", "") == "true"
@@ -207,41 +197,6 @@ internal class MCShader(
             return MCShader(ShaderInstance(factory, name, shaderVertexFormat))
             //#endif
         }
-    }
-}
-
-internal class MCShaderUniform(val mc: Uniform) : ShaderUniform, IntUniform, FloatUniform, Float2Uniform, Float3Uniform, Float4Uniform, FloatMatrixUniform {
-    override val location: Int
-        //#if MC>=12105
-        //$$ get() = 0
-        //#else
-        get() = mc.location
-        //#endif
-
-    override fun setValue(value: Int) = mc.set(value)
-
-    override fun setValue(value: Float) = mc.set(value)
-
-    override fun setValue(v1: Float, v2: Float) = mc.set(v1, v2)
-
-    override fun setValue(v1: Float, v2: Float, v3: Float) = mc.set(v1, v2, v3)
-
-    override fun setValue(v1: Float, v2: Float, v3: Float, v4: Float) = mc.set(v1, v2, v3, v4)
-
-    override fun setValue(array: FloatArray) = mc.set(array)
-}
-
-internal class MCSamplerUniform(val mc: ShaderInstance, val name: String) : SamplerUniform {
-    override val location: Int = 0
-
-    override fun setValue(textureId: Int) {
-        //#if MC>=12105
-        //$$ mc.bindSampler(name, RenderSystem.getShaderTexture(textureId))
-        //#elseif MC>=12102
-        //$$ mc.bindSampler(name, textureId)
-        //#else
-        mc.setSampler(name, textureId)
-        //#endif
     }
 }
 

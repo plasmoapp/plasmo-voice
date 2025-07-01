@@ -37,10 +37,14 @@ import java.util.List;
 //$$ import org.lwjgl.opengl.GL11;
 //#endif
 
+//#if MC>=12106
+//$$ import org.joml.Vector4f;
+//#endif
+
 //#if MC>=12105
+//$$ import net.minecraft.client.renderer.RenderType;
 //$$ import com.mojang.blaze3d.buffers.GpuBuffer;
 //$$ import com.mojang.blaze3d.systems.RenderPass;
-//$$ import com.mojang.blaze3d.textures.GpuTexture;
 //$$ import com.mojang.blaze3d.shaders.UniformType;
 //$$
 //$$ import java.util.OptionalInt;
@@ -61,10 +65,16 @@ public class RenderUtil {
 
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
 
+    //#if MC>=12106
+    //$$ private static @Nullable ScissorState SCISSOR_STATE;
+    //#endif
+
     public static void enableScissor(int x, int y, int width, int height) {
         //#if MC<11502
         //$$ GL11.glEnable(GL11.GL_SCISSOR_TEST);
         //$$ GL11.glScissor(x, y, width, height);
+        //#elseif MC>=12106
+        //$$ SCISSOR_STATE = new ScissorState(x, y, width, height);
         //#else
         RenderSystem.enableScissor(x, y, width, height);
         //#endif
@@ -73,6 +83,8 @@ public class RenderUtil {
     public static void disableScissor() {
         //#if MC<11502
         //$$ GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        //#elseif MC>=12106
+        //$$ SCISSOR_STATE = null;
         //#else
         RenderSystem.disableScissor();
         //#endif
@@ -160,6 +172,10 @@ public class RenderUtil {
     //#endif
 
     public static void drawBuffer(@NotNull BufferBuilder buffer, @NotNull RenderPipeline renderPipeline) {
+        //#if MC<=12105
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        //#endif
+
         //#if MC<12105
         applyRenderPipeline(renderPipeline);
         //#endif
@@ -176,42 +192,7 @@ public class RenderUtil {
 
         //#if MC>=12105
         //$$ try (MeshData meshData = buffer.build()) {
-        //$$     GpuBuffer vertexBuffer = meshData.drawState().format().uploadImmediateVertexBuffer(meshData.vertexBuffer());
-        //$$     GpuBuffer indexBuffer;
-        //$$     VertexFormat.IndexType indexType;
-        //$$
-        //$$     if (meshData.indexBuffer() != null) {
-        //$$         indexBuffer = meshData.drawState().format().uploadImmediateIndexBuffer(meshData.indexBuffer());
-        //$$         indexType = meshData.drawState().indexType();
-        //$$     } else {
-        //$$         RenderSystem.AutoStorageIndexBuffer autoStorageIndexBuffer = RenderSystem.getSequentialBuffer(meshData.drawState().mode());
-        //$$         indexBuffer = autoStorageIndexBuffer.getBuffer(meshData.drawState().indexCount());
-        //$$         indexType = autoStorageIndexBuffer.type();
-        //$$     }
-        //$$
-        //$$     try (RenderPass renderPass = RenderSystem.getDevice().createCommandEncoder().createRenderPass(
-        //$$             Minecraft.getInstance().getMainRenderTarget().getColorTexture(),
-        //$$             OptionalInt.empty(),
-        //$$             Minecraft.getInstance().getMainRenderTarget().getDepthTexture(),
-        //$$             OptionalDouble.empty()
-        //$$     )) {
-        //$$         renderPass.setPipeline(renderPipeline.getMcRenderPipeline());
-        //$$         renderPass.setVertexBuffer(0, vertexBuffer);
-        //$$
-        //$$         if (RenderSystem.SCISSOR_STATE.isEnabled()) {
-        //$$             renderPass.enableScissor(RenderSystem.SCISSOR_STATE);
-        //$$         }
-        //$$
-        //$$         for(int i = 0; i < 12; ++i) {
-        //$$             GpuTexture gpuTexture = RenderSystem.getShaderTexture(i);
-        //$$             if (gpuTexture != null) {
-        //$$                 renderPass.bindSampler("Sampler" + i, gpuTexture);
-        //$$             }
-        //$$         }
-        //$$
-        //$$         renderPass.setIndexBuffer(indexBuffer, indexType);
-        //$$         renderPass.drawIndexed(0, meshData.drawState().indexCount());
-        //$$     }
+        //$$     renderPipeline.getMcRenderType().draw(meshData);
         //$$ }
         //#elseif MC>11802
         BufferUploader.drawWithShader(buffer.end());
@@ -246,7 +227,9 @@ public class RenderUtil {
     }
 
     public static void bindTexture(int index, @NotNull ResourceLocation location) {
-        //#if MC>=12105
+        //#if MC>=12106
+        //$$ RenderSystem.setShaderTexture(index, Minecraft.getInstance().getTextureManager().getTexture(location).getTextureView());
+        //#elseif MC>=12105
         //$$ RenderSystem.setShaderTexture(index, Minecraft.getInstance().getTextureManager().getTexture(location).getTexture());
         //#elseif MC>=11700
         RenderSystem.setShaderTexture(index, location);
@@ -501,6 +484,57 @@ public class RenderUtil {
         drawBuffer(buffer, pipeline);
     }
 
+    public static void blitColorSprite(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            @NotNull GuiWidgetTexture sprite,
+            int x,
+            int y,
+            int u,
+            int v,
+            int width,
+            int height,
+            int red, int green, int blue, int alpha
+    ) {
+        blitColorWithPipeline(stack, pipeline, x, y, u + sprite.getU(), v + sprite.getV(), width, height, sprite.getTextureWidth(), sprite.getTextureHeight(), red, green, blue, alpha);
+    }
+
+    public static void blitColorWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight,
+            int red, int green, int blue, int alpha
+    ) {
+        blitColorWithPipeline(stack, pipeline, x, y, u, v, width, height, width, height, textureWidth, textureHeight, red, green, blue, alpha);
+    }
+
+    public static void blitColorWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x, int y, float u, float v, int width, int height, int regionWidth, int regionHeight, int textureWidth, int textureHeight,
+            int red, int green, int blue, int alpha
+    ) {
+        blitColorWithPipeline(stack, pipeline, x, x + width, y, y + height, 0, regionWidth, regionHeight, u, v, textureWidth, textureHeight, red, green, blue, alpha);
+    }
+
+    public static void blitColorWithPipeline(
+            @NotNull PoseStack stack,
+            @NotNull RenderPipeline pipeline,
+            int x0, int x1, int y0, int y1, int z, int regionWidth, int regionHeight, float u, float v, int textureWidth, int textureHeight,
+            int red, int green, int blue, int alpha
+    ) {
+        blitColorWithPipeline(
+                stack,
+                pipeline,
+                x0, x1, y0, y1, z,
+                (u + 0.0F) / (float) textureWidth,
+                (u + (float) regionWidth) / (float) textureWidth,
+                (v + 0.0F) / (float) textureHeight,
+                (v + (float) regionHeight) / (float) textureHeight,
+                red, green, blue, alpha
+        );
+    }
+
     public static void blitColorWithPipeline(
             @NotNull PoseStack stack,
             @NotNull RenderPipeline pipeline,
@@ -559,6 +593,10 @@ public class RenderUtil {
     }
 
     public static int drawCenteredString(PoseStack stack, String string, int x, int y, int color) {
+        return drawCenteredString(stack, string, x, y, color, true);
+    }
+
+    public static int drawCenteredString(PoseStack stack, String string, int x, int y, int color, boolean dropShadow) {
         color = adjustColor(color);
 
         int centeredX = x - getStringWidth(string) / 2;
@@ -569,10 +607,10 @@ public class RenderUtil {
                 centeredX,
                 y,
                 color,
-                true
+                dropShadow
         );
 
-        return getStringX(string, centeredX, true);
+        return getStringX(string, centeredX, dropShadow);
     }
 
     public static int drawCenteredString(PoseStack stack, McTextComponent text, int x, int y, int color) {
@@ -580,6 +618,10 @@ public class RenderUtil {
     }
 
     public static void drawCenteredOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color) {
+        drawCenteredOrderedString(stack, text, width, x, y, color, true);
+    }
+
+    public static void drawCenteredOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color, boolean dropShadow) {
         color = adjustColor(color);
 
         String orderedText = getOrderedString(text, width);
@@ -590,11 +632,15 @@ public class RenderUtil {
                 x - getStringWidth(orderedText) / 2,
                 y,
                 color,
-                true
+                dropShadow
         );
     }
 
     public static void drawOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color) {
+        drawOrderedString(stack, text, width, x, y, color, true);
+    }
+
+    public static void drawOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color, boolean dropShadow) {
         color = adjustColor(color);
 
         drawStringInBatch(
@@ -603,11 +649,15 @@ public class RenderUtil {
                 x,
                 y,
                 color,
-                true
+                dropShadow
         );
     }
 
     public static int drawString(PoseStack stack, String string, int x, int y, int color) {
+        return drawString(stack, string, x, y, color, false);
+    }
+
+    public static int drawString(PoseStack stack, String string, int x, int y, int color, boolean dropShadow) {
         color = adjustColor(color);
 
         drawStringInBatch(
@@ -616,10 +666,10 @@ public class RenderUtil {
                 x,
                 y,
                 color,
-                false
+                dropShadow
         );
 
-        return getStringX(string, x, false);
+        return getStringX(string, x, dropShadow);
     }
 
     public static int drawString(PoseStack stack, McTextComponent text, int x, int y, int color) {
@@ -679,6 +729,10 @@ public class RenderUtil {
     }
 
     public static int drawStringMultiLine(PoseStack stack, McTextComponent text, int x, int y, int color, int width) {
+        return drawStringMultiLine(stack, text, x, y, color, width, true);
+    }
+
+    public static int drawStringMultiLine(PoseStack stack, McTextComponent text, int x, int y, int color, int width, boolean dropShadow) {
         color = adjustColor(color);
 
         String string = getFormattedString(text);
@@ -695,7 +749,7 @@ public class RenderUtil {
                     x,
                     y - lineHeight - 1,
                     color,
-                    true
+                    dropShadow
             );
         }
 
@@ -703,6 +757,10 @@ public class RenderUtil {
     }
 
     public static int drawStringMultiLineCentered(PoseStack stack, McTextComponent text, int width, int y, int yGap, int color) {
+        return drawStringMultiLineCentered(stack, text, width, y, yGap, color, true);
+    }
+
+    public static int drawStringMultiLineCentered(PoseStack stack, McTextComponent text, int width, int y, int yGap, int color, boolean dropShadow) {
         color = adjustColor(color);
 
         String string = getFormattedString(text);
@@ -719,7 +777,7 @@ public class RenderUtil {
                     width / 2 - getStringWidth(orderedText) / 2,
                     y + lineHeight,
                     color,
-                    true
+                    dropShadow
             );
         }
 
@@ -735,13 +793,17 @@ public class RenderUtil {
     }
 
     public static String stringToWidth(String string, int width, boolean tail) {
+        return stringToWidth(string, width, tail, "...");
+    }
+
+    public static String stringToWidth(String string, int width, boolean tail, String trimmedTextSuffix) {
         List<String> lines = su.plo.voice.client.extension.TextKt.splitStringToWidthTruncated(
                 string,
                 width,
                 1,
                 false,
                 true,
-                "..."
+                trimmedTextSuffix
         );
 
         return lines.get(tail ? lines.size() - 1 : 0);

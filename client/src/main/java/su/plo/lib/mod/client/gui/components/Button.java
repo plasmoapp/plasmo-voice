@@ -1,6 +1,6 @@
 package su.plo.lib.mod.client.gui.components;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
@@ -40,16 +40,16 @@ public class Button extends AbstractButton {
 
     // GuiAbstractWidget impl
     @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        super.renderButton(stack, mouseX, mouseY, delta);
+    public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        super.renderButton(context, mouseX, mouseY, delta);
         if (isHoveredOrFocused()) {
-            renderToolTip(stack, mouseX, mouseY);
+            renderToolTip(context, mouseX, mouseY);
         }
     }
 
     @Override
-    public void renderToolTip(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        tooltipAction.onTooltip(this, stack, mouseX, mouseY);
+    public void renderToolTip(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
+        tooltipAction.onTooltip(this, context, mouseX, mouseY);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class Button extends AbstractButton {
 
     public interface OnTooltip {
 
-        void onTooltip(Button button, PoseStack stack, int mouseX, int mouseY);
+        void onTooltip(Button button, GuiRenderContext context, int mouseX, int mouseY);
 
         default void narrateTooltip(Consumer<McTextComponent> consumer) {
         }

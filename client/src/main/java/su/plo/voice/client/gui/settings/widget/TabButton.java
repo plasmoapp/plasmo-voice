@@ -1,14 +1,16 @@
 package su.plo.voice.client.gui.settings.widget;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.lib.mod.client.ResourceLocationUtil;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
 import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
-import su.plo.lib.mod.client.render.RenderUtil;
+
+import java.awt.Color;
 
 //#if MC>=11701
 
@@ -19,7 +21,7 @@ import su.plo.lib.mod.client.render.RenderUtil;
 public final class TabButton extends Button {
 
     private final boolean shadow;
-    private final int shadowColor;
+    private final Color shadowColor;
 
     private final ResourceLocation iconLocation;
     private final ResourceLocation disabledIconLocation;
@@ -35,7 +37,7 @@ public final class TabButton extends Button {
             @NotNull OnTooltip tooltipAction,
             boolean shadow
     ) {
-        this(x, y, width, height, text, iconLocation, pressAction, tooltipAction, shadow, -0x1);
+        this(x, y, width, height, text, iconLocation, pressAction, tooltipAction, shadow, Colors.WHITE);
     }
 
     public TabButton(int x,
@@ -47,7 +49,7 @@ public final class TabButton extends Button {
                      @NotNull OnPress pressAction,
                      @NotNull OnTooltip tooltipAction,
                      boolean shadow,
-                     int shadowColor) {
+                     Color shadowColor) {
         super(x, y, width, height, text, pressAction, tooltipAction);
 
         this.shadow = shadow;
@@ -61,38 +63,34 @@ public final class TabButton extends Button {
     }
 
     @Override
-    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        RenderUtil.bindTexture(0, getIconLocation());
-
+    protected void renderText(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         if (shadow && SolidColorShader.isAvailable()) {
-            int shadowColor = active ? this.shadowColor : -6250336;
+            Color shadowColor = active ? this.shadowColor : Colors.GRAY;
 
-            RenderUtil.blitColorWithPipeline(
-                    stack,
-                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR,
+            context.blitColor(
+                    getIconLocation(),
                     x + 7,
-                    x + 7 + 8,
                     y + 7,
-                    y + 7 + 8,
-                    0,
-                    0, 1F,
-                    0, 1F,
-                    (int) ((shadowColor >> 16 & 255) * 0.25),
-                    (int) ((shadowColor >> 8 & 255) * 0.25),
-                    (int) ((shadowColor & 255) * 0.25),
-                    shadowColor >> 24 & 255
+                    0.0F,
+                    0.0F,
+                    8,
+                    8,
+                    8,
+                    8,
+                    Colors.times(shadowColor, 0.25),
+                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR
             );
         }
 
-        RenderUtil.blit(stack, x + 6, y + 6, 0, 0, 8, 8, 8, 8);
+        context.blit(getIconLocation(), x + 6, y + 6, 0, 0, 8, 8, 8, 8);
 
-        int textColor = active ? COLOR_WHITE : COLOR_GRAY;
-        RenderUtil.drawString(
-                stack,
+        Color textColor = active ? Colors.WHITE : Colors.GRAY;
+        context.drawString(
                 getText(),
                 x + 16,
                 y + (height - 8) / 2,
-                textColor | ((int) Math.ceil(this.alpha * 255.0F)) << 24
+                Colors.withAlpha(textColor, alpha),
+                true
         );
     }
 

@@ -21,6 +21,7 @@ import net.minecraft.client.renderer.GameRenderer
 //#if MC>=12105
 //$$ import com.mojang.blaze3d.shaders.UniformType
 //$$ import com.mojang.blaze3d.vertex.DefaultVertexFormat
+//$$ import net.minecraft.client.renderer.RenderType
 //#elseif MC>=11700
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -128,6 +129,7 @@ data class RenderPipeline(
     //$$ val vertexShader: ResourceLocation,
     //$$ val fragmentShader: ResourceLocation,
     //$$ val mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline,
+    //$$ val mcRenderType: RenderType,
     //#elseif MC>=11700
     val shader: () -> ShaderInstance,
     //#else
@@ -140,7 +142,6 @@ data class RenderPipeline(
     val blendFunc: BlendFunc?,
     val cull: Boolean,
     val depthMask: Boolean,
-    val polygonOffset: Pair<Float, Float>?,
 ) {
     val glState by lazy {
         //#if MC<12105
@@ -149,7 +150,6 @@ data class RenderPipeline(
             cull,
             blendFunc?.glList,
             depthMask,
-            polygonOffset,
         )
         //#endif
     }
@@ -171,23 +171,26 @@ data class RenderPipeline(
         var blendFunc: BlendFunc? = null
         var cull: Boolean = true
         var depthMask: Boolean = true
-        var polygonOffset: Pair<Float, Float>? = null
         val samplers: MutableSet<String> = mutableSetOf()
 
         //#if MC>=12105
         //$$ var mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline? = null
+        //$$ var mcRenderType: RenderType? = null
         //#endif
 
-        fun build() = RenderPipeline(
-            location,
+        fun build(): RenderPipeline {
             //#if MC>=12105
-            //$$ vertexShader,
-            //$$ fragmentShader,
-            //$$ mcRenderPipeline ?:
+            //$$ val pipeline = mcRenderPipeline ?:
             //$$ com.mojang.blaze3d.pipeline.RenderPipeline.builder()
             //$$     // uhhh
             //$$     // it's not correct and depends on the shader,
             //$$     // but it should be fine Clueless
+            //#if MC>=12106
+            //$$     .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
+            //$$     .withUniform("Projection", UniformType.UNIFORM_BUFFER)
+            //$$     .withUniform("Fog", UniformType.UNIFORM_BUFFER)
+            //$$     .withUniform("Globals", UniformType.UNIFORM_BUFFER)
+            //#else
             //$$     .withUniform("ModelViewMat", UniformType.MATRIX4X4)
             //$$     .withUniform("ProjMat", UniformType.MATRIX4X4)
             //$$     .withUniform("FogStart", UniformType.FLOAT)
@@ -195,6 +198,7 @@ data class RenderPipeline(
             //$$     .withUniform("FogShape", UniformType.INT)
             //$$     .withUniform("FogColor", UniformType.VEC4)
             //$$     .withUniform("ColorModulator", UniformType.VEC4)
+            //#endif
             //$$
             //$$      .apply {
             //$$          samplers.forEach(::withSampler)
@@ -218,24 +222,35 @@ data class RenderPipeline(
             //$$     .withCull(cull)
             //$$     .withDepthWrite(depthMask)
             //$$
-            //$$     .apply {
-            //$$         if (polygonOffset != null) {
-            //$$             withDepthBias(polygonOffset!!.first, polygonOffset!!.second)
-            //$$         }
-            //$$     }
+            //$$     .build()
             //$$
-            //$$     .build(),
-            //#else
-            shader,
+            //$$ val renderType = mcRenderType ?:
+            //$$     RenderType.create(
+            //$$         location.toString(),
+            //$$         1536,
+            //$$         pipeline,
+            //$$         RenderType.CompositeState.builder().createCompositeState(false)
+            //$$     )
             //#endif
-            samplers,
-            vertexFormat,
-            vertexFormatMode,
-            depthTestFunc,
-            blendFunc,
-            cull,
-            depthMask,
-            polygonOffset,
-        )
+
+            return RenderPipeline(
+                location,
+                //#if MC>=12105
+                //$$ vertexShader,
+                //$$ fragmentShader,
+                //$$ pipeline,
+                //$$ renderType,
+                //#else
+                shader,
+                //#endif
+                samplers,
+                vertexFormat,
+                vertexFormatMode,
+                depthTestFunc,
+                blendFunc,
+                cull,
+                depthMask,
+            )
+        }
     }
 }

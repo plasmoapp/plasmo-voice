@@ -1,12 +1,14 @@
 package su.plo.lib.mod.client.gui.components;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.util.Mth;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
+
+import java.awt.Color;
 
 public abstract class AbstractSlider extends GuiAbstractWidget {
 
@@ -23,23 +25,19 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        renderBackground(stack, mouseX, mouseY);
-        renderTrack(stack, mouseX, mouseY);
-        renderText(stack, mouseX, mouseY);
+    public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        renderBackground(context, mouseX, mouseY);
+        renderTrack(context, mouseX, mouseY);
+        renderText(context, mouseX, mouseY);
     }
 
     @Override
-    protected void renderBackground(@NotNull PoseStack stack, int mouseX, int mouseY) {
+    protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         int width = getSliderWidth();
         GuiWidgetTexture sprite = getButtonTexture(hovered);
 
-        RenderUtil.bindTexture(0, sprite.getLocation());
-        RenderSystem.setShaderColor(1F, 1F, 1F, alpha);
-
-        RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
-        RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
+        context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
     }
 
     @Override
@@ -89,16 +87,13 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     protected void playDownSound() {
     }
 
-    protected void renderTrack(@NotNull PoseStack stack, int mouseX, int mouseY) {
+    protected void renderTrack(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
-
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         //#if MC>=12002
         //$$ GuiWidgetTexture sprite = isHoveredOrFocused() ? GuiWidgetTexture.SLIDER_HANDLE_ACTIVE : GuiWidgetTexture.SLIDER_HANDLE;
         //$$
-        //$$ RenderUtil.bindTexture(0, sprite.getLocation());
-        //$$ RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 8, 20);
+        //$$ context.blitSprite(sprite, x0, y, 0, 0, 8, 20);
         //#else
         GuiWidgetTexture sprite;
         if (isHoveredOrFocused()) {
@@ -107,21 +102,19 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
             sprite = GuiWidgetTexture.BUTTON_DEFAULT;
         }
 
-        RenderUtil.bindTexture(0, sprite.getLocation());
-        RenderUtil.blitSprite(stack, sprite, x0, y, 0, 0, 4, 20);
-        RenderUtil.blitSprite(stack, sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
+        context.blitSprite(sprite, x0, y, 0, 0, 4, 20);
+        context.blitSprite(sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
         //#endif
     }
 
     @Override
-    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        int textColor = active ? COLOR_WHITE : COLOR_GRAY;
-        RenderUtil.drawCenteredString(
-                stack,
+    protected void renderText(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
+        Color textColor = Colors.withAlpha(active ? Colors.WHITE : Colors.GRAY, alpha);
+        context.drawCenteredString(
                 getText(),
                 x + getSliderWidth() / 2,
                 y + height / 2 - RenderUtil.getFontHeight() / 2,
-                textColor | ((int) Math.ceil(this.alpha * 255.0F)) << 24
+                textColor
         );
     }
 

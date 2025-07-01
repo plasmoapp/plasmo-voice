@@ -1,8 +1,5 @@
 package su.plo.lib.mod.client.gui.components;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.BufferBuilder;
-import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
@@ -10,13 +7,15 @@ import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
-import su.plo.lib.mod.client.render.VertexBuilder;
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 
+import java.awt.Color;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -55,9 +54,9 @@ public class TextFieldWidget extends GuiAbstractWidget {
     private int cursorPosition;
     private int highlightPosition;
     @Setter
-    private int textColor;
+    private Color textColor;
     @Setter
-    private int textColorUneditable;
+    private Color textColorUneditable;
     @Setter
     @Nullable
     private String suggestion;
@@ -77,8 +76,8 @@ public class TextFieldWidget extends GuiAbstractWidget {
         this.bordered = true;
         this.canLoseFocus = true;
         this.editable = true;
-        this.textColor = 14737632;
-        this.textColorUneditable = 7368816;
+        this.textColor = new Color(0xE0E0E0);
+        this.textColorUneditable = new Color(0x707070);
         this.filter = Objects::nonNull;
         this.formatter = (string, integer) -> McTextComponent.literal(string);
     }
@@ -123,7 +122,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
         }
 
         switch (keyCode) {
-            case 259: // GLFW_KEY_BACKSPACE
+            case GLFW.GLFW_KEY_BACKSPACE:
                 if (isEditable()) {
                     shiftPressed = false;
                     deleteText(-1);
@@ -131,14 +130,14 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case 260: // GLFW_KEY_INSERT
-            case 264: // GLFW_KEY_DOWN
-            case 265: // GLFW_KEY_UP
-            case 266: // GLFW_KEY_PAGE_UP
-            case 267: // GLFW_KEY_PAGE_DOWN
+            case GLFW.GLFW_KEY_INSERT:
+            case GLFW.GLFW_KEY_DOWN:
+            case GLFW.GLFW_KEY_UP:
+            case GLFW.GLFW_KEY_PAGE_UP:
+            case GLFW.GLFW_KEY_PAGE_DOWN:
             default:
                 return false;
-            case 261: // GLFW_KEY_DELETE
+            case GLFW.GLFW_KEY_DELETE:
                 if (isEditable()) {
                     this.shiftPressed = false;
                     this.deleteText(1);
@@ -146,7 +145,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case 262: // GLFW_KEY_RIGHT
+            case GLFW.GLFW_KEY_RIGHT:
                 if (Screen.hasControlDown()) {
                     moveCursorTo(getWordPosition(1));
                 } else {
@@ -154,7 +153,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case 263: // GLFW_KEY_LEFT
+            case GLFW.GLFW_KEY_LEFT:
                 if (Screen.hasControlDown()) {
                     moveCursorTo(this.getWordPosition(-1));
                 } else {
@@ -162,10 +161,10 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case 268: // GLFW_KEY_HOME
+            case GLFW.GLFW_KEY_HOME:
                 moveCursorToStart();
                 return true;
-            case 269: // GLFW_KEY_END
+            case GLFW.GLFW_KEY_END:
                 moveCursorToEnd();
                 return true;
         }
@@ -187,11 +186,11 @@ public class TextFieldWidget extends GuiAbstractWidget {
         if (canLoseFocus) setFocused(mouseOver);
 
         if (isFocused() && mouseOver && isValidClickButton(button)) {
-            int j = Mth.floor(mouseX) - x;
-            if (bordered) j -= 4;
+            int inputX = Mth.floor(mouseX) - x;
+            if (bordered) inputX -= 4;
 
-            String string = RenderUtil.stringToWidth(value.substring(displayPosition), getInnerWidth());
-            moveCursorTo(RenderUtil.stringToWidth(string, j).length() + displayPosition);
+            String visibileString = RenderUtil.stringToWidth(value.substring(displayPosition), getInnerWidth());
+            moveCursorTo(RenderUtil.stringToWidth(visibileString, inputX, false, "").length() + displayPosition);
             return true;
         } else {
             return false;
@@ -214,122 +213,118 @@ public class TextFieldWidget extends GuiAbstractWidget {
     }
 
     @Override
-    public void renderButton(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
-        int color;
+        Color color;
         if (isBordered()) {
-            color = isFocused() ? -1 : -6250336;
+            color = isFocused() ? Colors.WHITE : Colors.GRAY;
 
             //#if MC>=12002
             //$$ GuiWidgetTexture sprite = isFocused() ? GuiWidgetTexture.TEXT_FIELD_ACTIVE : GuiWidgetTexture.TEXT_FIELD;
             //$$
-            //$$ RenderUtil.bindTexture(0, sprite.getLocation());
-            //$$ RenderUtil.blitSprite(stack, sprite, x, y, 0, 0, width / 2, height);
-            //$$ RenderUtil.blitSprite(stack, sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
+            //$$ context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
+            //$$ context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
             //#else
-            RenderUtil.fill(stack, x, y, x + width, y + height, color);
-            RenderUtil.fill(stack, x + 1, y + 1, x + width - 1, y + height - 1, -16777216);
+            context.fill(x, y, x + width, y + height, color);
+            context.fill(x + 1, y + 1, x + width - 1, y + height - 1, Colors.BLACK);
             //#endif
         }
 
         color = isEditable() ? textColor : textColorUneditable;
-        int l = cursorPosition - displayPosition;
-        int m = highlightPosition - displayPosition;
-        String string = RenderUtil.stringToWidth(value.substring(displayPosition), getInnerWidth());
+        int cursorIndex = cursorPosition - displayPosition;
+        int selectionEnd = highlightPosition - displayPosition;
+        String text = isFocused()
+                ? RenderUtil.stringToWidth(value.substring(displayPosition), getInnerWidth(), false, "")
+                : RenderUtil.stringToWidth(value.substring(displayPosition), getInnerWidth());
 
-        boolean bl = l >= 0 && l <= string.length();
-        boolean bl2 = isFocused() && frame / 6 % 2 == 0 && bl;
-        int n = bordered ? x + 5 : x;
-        int o = bordered ? y + (height - 8) / 2 : y;
-        int p = n;
-        if (m > string.length()) {
-            m = string.length();
+        boolean isCursorVisible = cursorIndex >= 0 && cursorIndex <= text.length();
+        boolean isFocused = isFocused() && frame / 6 % 2 == 0 && isCursorVisible;
+        int textX = bordered ? x + 5 : x;
+        int textY = bordered ? y + (height - 8) / 2 : y;
+        int currentX = textX;
+        if (selectionEnd > text.length()) {
+            selectionEnd = text.length();
+        }
+        String visibleText = isCursorVisible ? text.substring(0, cursorIndex) : text;
+
+        if (!text.isEmpty()) {
+            currentX = RenderUtil.getStringX(RenderUtil.getFormattedString(formatter.apply(visibleText, displayPosition)), textX, true);
         }
 
-        if (!string.isEmpty()) {
-            String string2 = bl ? string.substring(0, l) : string;
-            p = RenderUtil.drawString(stack, formatter.apply(string2, displayPosition), n, o, color);
+        boolean shouldDrawCursor = cursorPosition < value.length() || value.length() >= maxLength;
+        int selectionX = currentX;
+        if (!isCursorVisible) {
+            selectionX = cursorIndex > 0 ? textX + width : textX;
+        } else if (shouldDrawCursor) {
+            selectionX = currentX - 1;
+            --currentX;
         }
 
-        boolean bl3 = cursorPosition < value.length() || value.length() >= maxLength;
-        int q = p;
-        if (!bl) {
-            q = l > 0 ? n + width : n;
-        } else if (bl3) {
-            q = p - 1;
-            --p;
+        if (selectionEnd != cursorIndex) {
+            int selectionWidth = textX + RenderUtil.getStringWidth(text.substring(0, selectionEnd));
+            renderHighlight(
+                    context,
+                    selectionX,
+                    textY - 1,
+                    selectionWidth - 1,
+                    textY + 1 + 9
+            );
         }
 
-        if (!string.isEmpty() && bl && l < string.length()) {
-            RenderUtil.drawString(stack, formatter.apply(string.substring(l), cursorPosition), p, o, color);
+        if (!text.isEmpty()) {
+            context.drawString(formatter.apply(visibleText, displayPosition), textX, textY, color);
         }
 
-        if (!bl3 && suggestion != null) {
-            RenderUtil.drawString(stack, suggestion, q - 1, o, -8355712);
+        if (!text.isEmpty() && isCursorVisible && cursorIndex < text.length()) {
+            context.drawString(formatter.apply(text.substring(cursorIndex), cursorPosition), currentX, textY, color);
         }
 
-        if (string.isEmpty() && !isFocused()) {
-            RenderUtil.drawString(stack, getText(), n, o, -1);
+        if (!shouldDrawCursor && suggestion != null) {
+            context.drawString(suggestion, selectionX - 1, textY, new Color(0x808080));
         }
 
-        int var10002;
-        int var10003;
-        int var10004;
-        if (bl2) {
-            if (bl3) {
-                var10002 = o - 1;
-                var10003 = q + 1;
-                var10004 = o + 1;
-                RenderUtil.fill(stack, q, var10002, var10003, var10004 + 9, -3092272);
+        if (text.isEmpty() && !isFocused()) {
+            context.drawString(getText(), textX, textY, Colors.BLACK);
+        }
+
+        if (isFocused) {
+            if (shouldDrawCursor) {
+                context.fill(
+                        selectionX,
+                        textY - 1,
+                        selectionX + 1,
+                        textY + 1 + 9,
+                        new Color(0xD0D0D0)
+                );
             } else {
-                RenderUtil.drawString(stack, "_", q, o, color);
+                context.drawString("_", selectionX, textY, color);
             }
-        }
-
-        if (m != l) {
-            int r = n + RenderUtil.getStringWidth(string.substring(0, m));
-            var10002 = o - 1;
-            var10003 = r - 1;
-            var10004 = o + 1;
-            renderHighlight(stack, q, var10002, var10003, var10004 + 9);
         }
     }
 
-    private void renderHighlight(@NotNull PoseStack stack, int i, int j, int k, int l) {
-        int m;
-        if (i < k) {
-            m = i;
-            i = k;
-            k = m;
+    private void renderHighlight(@NotNull GuiRenderContext context, int x0, int y0, int x1, int y1) {
+        if (x0 < x1) {
+            int x = x0;
+            x0 = x1;
+            x1 = x;
         }
 
-        if (j < l) {
-            m = j;
-            j = l;
-            l = m;
+        if (y0 < y1) {
+            int y = y0;
+            y0 = y1;
+            y1 = y;
         }
 
-        if (k > x + width) {
-            k = x + width;
+        if (x1 > x + width) {
+            x1 = x + width;
         }
 
-        if (i > x + width) {
-            i = x + width;
+        if (x0 > x + width) {
+            x0 = x + width;
         }
 
-        RenderSystem.setShaderColor(0F, 0F, 1F, 1F);
-
-        BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.GUI_HIGHLIGHT);
-
-        VertexBuilder.create(buffer).position(stack, i, l, 0F).end();
-        VertexBuilder.create(buffer).position(stack, k, l, 0F).end();
-        VertexBuilder.create(buffer).position(stack, k, j, 0F).end();
-        VertexBuilder.create(buffer).position(stack, i, j, 0F).end();
-
-        RenderUtil.drawBuffer(buffer, RenderPipelines.GUI_HIGHLIGHT);
-
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+        context.fill(x0, y0, x1, y1, new Color(0x4B4BFF));
     }
 
     public boolean canConsumeInput() {
@@ -369,110 +364,114 @@ public class TextFieldWidget extends GuiAbstractWidget {
     }
 
     public void insertText(String string) {
-        int i = Math.min(cursorPosition, highlightPosition);
-        int j = Math.max(cursorPosition, highlightPosition);
-        int k = maxLength - value.length() - (i - j);
-        String string2 = filterText(string);
-        int l = string2.length();
-        if (k < l) {
-            string2 = string2.substring(0, k);
-            l = k;
+        int startPosition = Math.min(cursorPosition, highlightPosition);
+        int endPosition = Math.max(cursorPosition, highlightPosition);
+        int maxInsertLength = maxLength - value.length() - (startPosition - endPosition);
+        String filteredText = filterText(string);
+        int filteredTextLength = filteredText.length();
+        if (maxInsertLength < filteredTextLength) {
+            filteredText = filteredText.substring(0, maxInsertLength);
+            filteredTextLength = maxInsertLength;
         }
 
-        String string3 = (new StringBuilder(value)).replace(i, j, string2).toString();
-        if (filter.test(string3)) {
-            this.value = string3;
-            this.setCursorPosition(i + l);
+        String newValue = (new StringBuilder(value)).replace(startPosition, endPosition, filteredText).toString();
+        if (filter.test(newValue)) {
+            this.value = newValue;
+            this.setCursorPosition(startPosition + filteredTextLength);
             this.setHighlightPos(cursorPosition);
             this.onValueChange(value);
         }
     }
 
-    private void deleteText(int position) {
+    private void deleteText(int offset) {
         if (Screen.hasControlDown()) {
-            deleteWords(position);
+            deleteWords(offset);
         } else {
-            deleteChars(position);
+            deleteChars(offset);
         }
     }
 
-    public void deleteWords(int position) {
-        if (!value.isEmpty()) {
-            if (highlightPosition != cursorPosition) {
-                insertText("");
-            } else {
-                deleteChars(getWordPosition(position) - cursorPosition);
-            }
+    public void deleteWords(int offset) {
+        if (value.isEmpty()) {
+            return;
+        }
+
+        if (highlightPosition != cursorPosition) {
+            insertText("");
+        } else {
+            deleteChars(getWordPosition(offset) - cursorPosition);
         }
     }
 
-    public void deleteChars(int i) {
-        if (!value.isEmpty()) {
-            if (highlightPosition != cursorPosition) {
-                this.insertText("");
-            } else {
-                int j = getCursorPos(i);
-                int k = Math.min(j, cursorPosition);
-                int l = Math.max(j, cursorPosition);
-                if (k != l) {
-                    String string = (new StringBuilder(value)).delete(k, l).toString();
-                    if (filter.test(string)) {
-                        this.value = string;
-                        this.moveCursorTo(k);
-                    }
+    public void deleteChars(int offset) {
+        if (value.isEmpty()) {
+            return;
+        }
+
+        if (highlightPosition != cursorPosition) {
+            this.insertText("");
+            return;
+        }
+
+        int cursorPosition = getCursorPos(offset);
+        int startRange = Math.min(cursorPosition, this.cursorPosition);
+        int endRange = Math.max(cursorPosition, this.cursorPosition);
+        if (startRange == endRange) {
+            return;
+        }
+
+        String newText = (new StringBuilder(value)).delete(startRange, endRange).toString();
+        if (filter.test(newText)) {
+            this.value = newText;
+            this.moveCursorTo(startRange);
+        }
+    }
+
+    public int getWordPosition(int offset) {
+        return this.getWordPosition(offset, cursorPosition);
+    }
+
+    private int getWordPosition(int offset, int cursorPosition) {
+        int wordPosition = cursorPosition;
+        boolean toLeft = offset < 0;
+        int searchLimit = Math.abs(offset);
+
+        for (int index = 0; index < searchLimit; ++index) {
+            if (toLeft) {
+                while (wordPosition > 0 && this.value.charAt(wordPosition - 1) == ' ') {
+                    --wordPosition;
                 }
-            }
-        }
-    }
 
-    public int getWordPosition(int position) {
-        return this.getWordPosition(position, cursorPosition);
-    }
+                while (wordPosition > 0 && this.value.charAt(wordPosition - 1) != ' ') {
+                    --wordPosition;
+                }
+            } else {
+                int valueLength = this.value.length();
+                wordPosition = this.value.indexOf(32, wordPosition);
 
-    private int getWordPosition(int position, int cursorPosition) {
-        return this.getWordPosition(position, cursorPosition, true);
-    }
-
-    private int getWordPosition(int i, int j, boolean bl) {
-        int k = j;
-        boolean bl2 = i < 0;
-        int l = Math.abs(i);
-
-        for (int m = 0; m < l; ++m) {
-            if (!bl2) {
-                int n = this.value.length();
-                k = this.value.indexOf(32, k);
-                if (k == -1) {
-                    k = n;
+                if (wordPosition == -1) {
+                    wordPosition = valueLength;
                 } else {
-                    while (bl && k < n && this.value.charAt(k) == ' ') {
-                        ++k;
+                    while (wordPosition < valueLength && this.value.charAt(wordPosition) == ' ') {
+                        ++wordPosition;
                     }
-                }
-            } else {
-                while (bl && k > 0 && this.value.charAt(k - 1) == ' ') {
-                    --k;
-                }
-
-                while (k > 0 && this.value.charAt(k - 1) != ' ') {
-                    --k;
                 }
             }
         }
 
-        return k;
+        return wordPosition;
     }
 
     public void setCursorPosition(int position) {
         this.cursorPosition = Mth.clamp(position, 0, value.length());
     }
 
-    public void moveCursor(int position) {
-        moveCursorTo(getCursorPos(position));
+    public void moveCursor(int offset) {
+        moveCursorTo(getCursorPos(offset));
     }
 
-    private int getCursorPos(int position) {
-        return offsetByCodepoints(value, cursorPosition, position);
+    private int getCursorPos(int offset) {
+        return offsetByCodepoints(value, cursorPosition, offset);
     }
 
     public int getInnerWidth() {
@@ -539,9 +538,8 @@ public class TextFieldWidget extends GuiAbstractWidget {
 
     public static String filterText(String string) {
         StringBuilder stringBuilder = new StringBuilder();
-        char[] var2 = string.toCharArray();
 
-        for (char c : var2) {
+        for (char c : string.toCharArray()) {
             if (isAllowedChatCharacter(c)) {
                 stringBuilder.append(c);
             }
@@ -554,24 +552,29 @@ public class TextFieldWidget extends GuiAbstractWidget {
         return c != 167 && c >= ' ' && c != 127;
     }
 
-    public static int offsetByCodepoints(String string, int i, int j) {
-        int k = string.length();
-        int l;
-        if (j >= 0) {
-            for (l = 0; i < k && l < j; ++l) {
-                if (Character.isHighSurrogate(string.charAt(i++)) && i < k && Character.isLowSurrogate(string.charAt(i))) {
-                    ++i;
+    public static int offsetByCodepoints(String string, int cursorPosition, int offset) {
+        int stringLength = string.length();
+        if (offset >= 0) {
+            for (int i = 0; cursorPosition < stringLength && i < offset; ++i) {
+                if (Character.isHighSurrogate(string.charAt(cursorPosition++)) &&
+                        cursorPosition < stringLength &&
+                        Character.isLowSurrogate(string.charAt(cursorPosition))
+                ) {
+                    ++cursorPosition;
                 }
             }
         } else {
-            for (l = j; i > 0 && l < 0; ++l) {
-                --i;
-                if (Character.isLowSurrogate(string.charAt(i)) && i > 0 && Character.isHighSurrogate(string.charAt(i - 1))) {
-                    --i;
+            for (int i = offset; cursorPosition > 0 && i < 0; ++i) {
+                --cursorPosition;
+                if (Character.isLowSurrogate(string.charAt(cursorPosition)) &&
+                        cursorPosition > 0 &&
+                        Character.isHighSurrogate(string.charAt(cursorPosition - 1))
+                ) {
+                    --cursorPosition;
                 }
             }
         }
 
-        return i;
+        return cursorPosition;
     }
 }

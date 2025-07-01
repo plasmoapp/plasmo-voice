@@ -1,9 +1,8 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Getter;
+import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -11,6 +10,7 @@ import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
@@ -21,6 +21,7 @@ import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
 import su.plo.voice.client.gui.settings.widget.TabButton;
 
+import java.awt.Color;
 import java.util.List;
 import java.util.Optional;
 
@@ -236,7 +237,7 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         tabWidgets.forEach(TabWidget::removed);
     }
 
-    public void renderButtons(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
+    public void renderButtons(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         int buttonX = 14;
         int buttonY = 36;
 
@@ -260,71 +261,71 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
             buttonX += button.getWidth() + 4;
             button.setY(buttonY);
 
-            button.render(stack, mouseX, mouseY, delta);
+            button.render(context, mouseX, mouseY, delta);
         }
 
         for (Button button : disableMicrophoneButtons) {
-            button.render(stack, mouseX, mouseY, delta);
+            button.render(context, mouseX, mouseY, delta);
         }
 
         for (Button button : disableVoiceButtons) {
-            button.render(stack, mouseX, mouseY, delta);
+            button.render(context, mouseX, mouseY, delta);
         }
     }
 
-    public void renderTab(@NotNull PoseStack stack, int mouseX, int mouseY, float delta) {
-        getActiveTab().ifPresent(tab -> tab.render(stack, mouseX, mouseY, delta));
+    public void renderTab(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        getActiveTab().ifPresent(tab -> tab.render(context, mouseX, mouseY, delta));
     }
 
-    public void renderBackground(@NotNull PoseStack stack) {
+    public void renderBackground(@NotNull GuiRenderContext context) {
         int width = parent.getWidth();
         int height = getHeight();
 
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
-
         //#if MC>=12005
-        //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
-        //$$
-        //$$ RenderUtil.blit(
-        //$$         stack,
-        //$$         0, width,
-        //$$         0, height,
+        //$$ context.blit(
+        //$$         Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
         //$$         0,
-        //$$         0, width / 32F,
-        //$$         0, height / 32F
+        //$$         0,
+        //$$         0.0F,
+        //$$         0.0F,
+        //$$         width,
+        //$$         height,
+        //$$         32,
+        //$$         32
         //$$ );
         //$$
-        //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION);
-        //$$
-        //$$ RenderUtil.blitWithPipeline(
-        //$$         stack,
-        //$$         RenderPipelines.GUI_TEXTURE_OVERLAY,
-        //$$         0, width,
-        //$$         height, height + 2,
+        //$$ context.blit(
+        //$$         Minecraft.getInstance().level == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION,
         //$$         0,
-        //$$         0, width / 32F,
-        //$$         0, 1F
+        //$$         height,
+        //$$         0.0F,
+        //$$         0.0F,
+        //$$         width,
+        //$$         2,
+        //$$         32,
+        //$$         2,
+        //$$         RenderPipelines.GUI_TEXTURE_OVERLAY
         //$$ );
         //#else
-        RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
-
-        RenderUtil.blitColor(
-                stack,
-                0, width,
-                0, height,
+        context.blitColor(
+                BACKGROUND_LOCATION,
                 0,
-                0, width / 32F,
-                0, height / 32F,
-                64, 64, 64, 255
+                0,
+                0.0F,
+                0.0F,
+                width,
+                height,
+                16,
+                16,
+                new Color(64, 64, 64)
         );
 
-        RenderUtil.fillGradientWithPipeline(
-                stack,
-                RenderPipelines.GUI_COLOR_OVERLAY,
+        context.fillGradient(
                 width, height + 4, 0, height,
                 0, 0, 0, 0,
                 0, 0, 0, 255,
-                0
+                0,
+                RenderPipelines.GUI_COLOR_OVERLAY
         );
         //#endif
     }

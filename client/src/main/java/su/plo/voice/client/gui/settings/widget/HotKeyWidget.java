@@ -1,8 +1,8 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableSet;
-import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.util.Mth;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +13,7 @@ import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 
+import java.awt.Color;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -135,31 +136,29 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     @Override
-    protected void renderText(@NotNull PoseStack stack, int mouseX, int mouseY) {
-        int j = active ? 16777215 : 10526880;
+    protected void renderText(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
+        Color textColor = Colors.withAlpha(active ? Colors.WHITE : Colors.GRAY, alpha);
 
         if (Objects.equals(parent.getFocusedHotKey(), this)) {
-            RenderUtil.drawCenteredString(
-                    stack,
+            context.drawCenteredString(
                     getText(),
                     x + width / 2,
                     y + height / 2 - RenderUtil.getFontHeight() / 2,
-                    j | Mth.ceil(alpha * 255.0F) << 24
+                    textColor
             );
         } else {
-            RenderUtil.drawCenteredOrderedString(
-                    stack,
+            context.drawCenteredOrderedString(
                     getText(),
                     width - 16,
                     x + width / 2,
                     y + height / 2 - RenderUtil.getFontHeight() / 2,
-                    j | Mth.ceil(alpha * 255.0F) << 24
+                    textColor
             );
         }
     }
 
     @Override
-    public void renderToolTip(@NotNull PoseStack stack, int mouseX, int mouseY) {
+    public void renderToolTip(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         if (!Objects.equals(parent.getFocusedHotKey(), this)) {
             int width = RenderUtil.getTextWidth(getText());
             if (width > this.width - 16) {
@@ -167,7 +166,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
             }
         }
 
-        super.renderToolTip(stack, mouseX, mouseY);
+        super.renderToolTip(context, mouseX, mouseY);
     }
 
     @Override

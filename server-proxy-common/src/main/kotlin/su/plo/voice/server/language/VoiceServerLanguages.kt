@@ -3,6 +3,7 @@ package su.plo.voice.server.language
 import com.google.common.base.Charsets
 import com.google.common.collect.ImmutableMap
 import com.google.common.collect.Maps
+import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import su.plo.config.toml.Toml
 import su.plo.config.toml.TomlWriter
@@ -42,7 +43,11 @@ class VoiceServerLanguages(
             }
 
             return CoroutineScopes.DefaultSupervisor.future {
-                register(languages, languagesFolder)
+                try {
+                    register(languages, languagesFolder)
+                } catch (e: Throwable) {
+                    LOGGER.error("Failed to load languages", e)
+                }
 
                 null
             }
@@ -57,7 +62,12 @@ class VoiceServerLanguages(
         resourceLoader: ResourceLoader,
         languagesFolder: File
     ): CompletableFuture<Void?> = CoroutineScopes.DefaultSupervisor.future {
-        registerSync(translationsURL, fileName, resourceLoader, languagesFolder)
+        try {
+            registerSync(translationsURL, fileName, resourceLoader, languagesFolder)
+        } catch (e: Throwable) {
+            LOGGER.error("Failed to load languages", e)
+        }
+
         null
     }
 
@@ -67,7 +77,7 @@ class VoiceServerLanguages(
     override fun getClientLanguage(languageName: String?) =
         getLanguage(languageName, LanguageScope.CLIENT)
 
-    private fun registerSync(
+    private suspend fun registerSync(
         translationsURL: URL,
         fileName: String?,
         resourceLoader: ResourceLoader,
@@ -78,7 +88,7 @@ class VoiceServerLanguages(
             // and only then re-register languages using crowdin
             // this way we don't need to wait for download task to finish
             // and languages will be available asap
-            register(resourceLoader, languagesFolder).get()
+            register(resourceLoader, languagesFolder).await()
 
             if (!crowdinEnabled) return
 
@@ -132,7 +142,7 @@ class VoiceServerLanguages(
     }
 
     @Throws(Exception::class)
-    private fun downloadCrowdinTranslations(
+    private suspend fun downloadCrowdinTranslations(
         translationsURL: URL,
         fileName: String?,
         languagesFolder: File
@@ -153,7 +163,7 @@ class VoiceServerLanguages(
 
         val rawTranslations: Map<String, ByteArray> = CrowdinLib
             .downloadRawTranslations(translationsURL, fileName)
-            .get()
+            .await()
 
         // write timestamp file
         crowdinFolder.mkdirs()
@@ -181,10 +191,8 @@ class VoiceServerLanguages(
     ) {
         if (languages.isEmpty()) return
 
-        val defaultLanguage = languages.getOrDefault(
-            serverTranslator.defaultLanguage,
-            languages[languages.keys.first()]!!
-        )
+        val defaultLanguage = languages[serverTranslator.defaultLanguage]
+            ?: throw IllegalStateException("Default language '${serverTranslator.defaultLanguage}' doesn't exist")
 
         // load from languagesFolder if not found in list and use default language as defaults
         languagesFolder.mkdirs()

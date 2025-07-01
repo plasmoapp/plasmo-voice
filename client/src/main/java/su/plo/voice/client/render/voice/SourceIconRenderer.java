@@ -13,6 +13,7 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.LazyGlState;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.VertexBuilder;
@@ -47,6 +48,10 @@ import static su.plo.voice.client.extension.MathKt.toVec3;
 
 //#if MC>=12000
 //$$ import com.mojang.blaze3d.systems.RenderSystem;
+//#endif
+
+//#if MC>=12103
+//$$ import net.minecraft.client.renderer.LightTexture;
 //#endif
 
 public final class SourceIconRenderer {
@@ -281,7 +286,11 @@ public final class SourceIconRenderer {
                     text,
                     xOffset,
                     0,
-                    553648127,
+                    //#if MC>=12103
+                    //$$ Colors.withAlpha(Colors.WHITE, 0.5f).getRGB(),
+                    //#else
+                    Colors.withAlpha(Colors.WHITE, 0.13f).getRGB(),
+                    //#endif
                     light,
                     !entityRenderState.isDiscrete(),
                     false
@@ -293,7 +302,11 @@ public final class SourceIconRenderer {
                     xOffset,
                     0,
                     -1,
+                    //#if MC>=12103
+                    //$$ LightTexture.lightCoordsWithEmission(light, 2),
+                    //#else
                     light,
+                    //#endif
                     false,
                     false
             );
@@ -363,7 +376,7 @@ public final class SourceIconRenderer {
         PoseStackKt.rotate(stack, -camera.pitch(), 0.0F, 1.0F, 0.0F);
         PoseStackKt.rotate(stack, camera.yaw(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
-        stack.translate(-5D, 0D, 0D);
+        stack.translate(-5D, -5D, 0D);
 
         vertices(stack, 255, light, iconLocation, false);
         vertices(stack, 40, light, iconLocation, true);
@@ -425,6 +438,11 @@ public final class SourceIconRenderer {
     }
 
     private boolean isIconHidden() {
+        if (
+                !voiceClient.getServerInfo().isPresent() ||
+                !voiceClient.getUdpClientManager().isConnected()
+        ) return true;
+
         int showIcons = config.getOverlay().getShowSourceIcons().value();
         return showIcons == 2 || (Minecraft.getInstance().options.hideGui && showIcons == 0);
     }

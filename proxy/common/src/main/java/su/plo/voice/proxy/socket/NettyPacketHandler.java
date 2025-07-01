@@ -15,6 +15,7 @@ import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.proxy.connection.CancelForwardingException;
+import su.plo.voice.proxy.server.VoiceRemoteServer;
 import su.plo.voice.socket.NettyPacketUdp;
 
 import java.io.IOException;
@@ -66,7 +67,10 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         BaseVoice.DEBUG_LOGGER.log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
 
-        if (!remoteServer.get().isAesEncryptionKeySet()) {
+        if (!remoteServer.get().isAesEncryptionKeySet() && System.getProperty("plasmovoice.skip_aes_server_check").equals("true")) {
+            ((VoiceRemoteServer) remoteServer.get()).setAesEncryptionKeySet(true);
+            remoteServer.get().getAddress(true);
+        } else if (!remoteServer.get().isAesEncryptionKeySet()) {
             BaseVoice.LOGGER.warn(
                     "AES encryption for server {} ({}) is not present. You need to set up the forwarding secret on backend servers: https://plasmovoice.com/docs/server/proxy/#specify-the-forwarding-secret",
                     remoteServer.get(),

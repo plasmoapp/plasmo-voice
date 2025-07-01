@@ -45,6 +45,7 @@ import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.config.hotkey.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
+import su.plo.voice.client.event.HudRenderEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.cape.DeveloperCapeManager;
 import su.plo.voice.client.render.voice.HudIconRenderer;
@@ -162,9 +163,9 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         // render
         eventBus.register(this, distanceVisualizer);
-        eventBus.register(this, new HudIconRenderer(this, config));
+        HudRenderEvent.INSTANCE.registerListener(new HudIconRenderer(this, config));
         eventBus.register(this, new SourceIconRenderer(this, config, volumeAction));
-        eventBus.register(this, new OverlayRenderer(this, config));
+        HudRenderEvent.INSTANCE.registerListener(new OverlayRenderer(this, config));
 
         // addons
         addons.initializeLoadedAddons();

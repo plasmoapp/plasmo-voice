@@ -3,6 +3,7 @@ package su.plo.voice.api.client.audio.source
 import su.plo.voice.api.audio.source.AudioSource
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
+import su.plo.voice.api.client.event.audio.source.AudioSourceResetEvent
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
@@ -102,4 +103,11 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
      * @return A [CompletableFuture] indicating the completion of the close operation.
      */
     fun closeAsync(): CompletableFuture<Void?>
+
+    /**
+     * Resets the audio source state asynchronously.
+     *
+     * @return A [CompletableFuture] indicating the completion of the close operation.
+     */
+    fun resetAsync(cause: AudioSourceResetEvent.Cause): CompletableFuture<Void?>
 }

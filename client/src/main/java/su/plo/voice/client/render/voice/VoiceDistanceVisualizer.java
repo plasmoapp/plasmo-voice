@@ -1,7 +1,6 @@
 package su.plo.voice.client.render.voice;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Data;
@@ -17,12 +16,15 @@ import su.plo.lib.mod.client.render.VertexBuilder;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.client.PlasmoVoiceClient;
+import su.plo.voice.api.client.audio.capture.ClientActivation;
+import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEvent;
 import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.render.ModCamera;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
 import java.util.Map;
 import java.util.UUID;
@@ -68,6 +70,25 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
     }
 
     @EventSubscribe
+    public void onProximityActivationRegistered(@NotNull ClientActivationRegisteredEvent event) {
+        ClientActivation activation = event.getActivation();
+        if (!activation.getId().equals(VoiceActivation.PROXIMITY_ID)) return;
+
+        boolean isConnected = voiceClient.getUdpClientManager().isConnected();
+
+        if (!isConnected &&
+                config.getAdvanced().getVisualizeVoiceDistance().value() &&
+                config.getAdvanced().getVisualizeVoiceDistanceOnJoin().value()
+        ) {
+            voiceClient.getDistanceVisualizer().render(
+                    activation.getDistance(),
+                    0x00a000,
+                    null
+            );
+        }
+    }
+
+    @EventSubscribe
     public void onLevelRender(@NotNull LevelRenderEvent event) {
         for (Map.Entry<UUID, VisualizeEntry> entry : entries.entrySet()) {
             UUID key = entry.getKey();
@@ -108,8 +129,6 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
             center = clientPlayer.position();
         }
-
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
         stack.pushPose();
 

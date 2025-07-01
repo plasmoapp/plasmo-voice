@@ -2,8 +2,8 @@ package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import org.jetbrains.annotations.NotNull;
-import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.client.event.render.HudRenderEvent;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
+import su.plo.voice.client.event.HudRenderEvent;
 
 //#if MC>=12100
 //$$ import net.minecraft.client.DeltaTracker;
@@ -13,27 +13,23 @@ import su.plo.voice.client.event.render.HudRenderEvent;
 //$$ import net.minecraft.client.gui.GuiGraphics;
 //#endif
 
-public final class ModHudRenderer extends ModRenderer {
-
-    public ModHudRenderer(@NotNull PlasmoVoiceClient voiceClient) {
-        super(voiceClient);
-    }
+public final class ModHudRenderer {
 
     //#if MC>=12100
     //$$ public void render(@NotNull GuiGraphics graphics, DeltaTracker delta) {
     //$$     render(graphics, delta.getRealtimeDeltaTicks());
     //$$ }
     //$$
-    //$$ public void render(@NotNull GuiGraphics graphics, float partialTicks) {
-    //$$     voiceClient.getEventBus().fire(new HudRenderEvent(graphics.pose(), partialTicks));
+    //$$ public void render(@NotNull GuiGraphics graphics, float delta) {
+    //$$     HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
     //$$ }
     //#elseif MC>=12000
     //$$ public void render(@NotNull GuiGraphics graphics, float delta) {
-    //$$     voiceClient.getEventBus().fire(new HudRenderEvent(graphics.pose(), delta));
+    //$$     HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
     //$$ }
     //#else
     public void render(@NotNull PoseStack poseStack, float delta) {
-        voiceClient.getEventBus().fire(new HudRenderEvent(poseStack, delta));
+        HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(poseStack), delta);
     }
     //#endif
 }

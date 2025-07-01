@@ -1,9 +1,10 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.resources.ResourceLocation;
 import su.plo.lib.mod.client.MinecraftUtil;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
@@ -19,6 +20,7 @@ import su.plo.voice.client.meta.PlasmoVoiceMeta;
 import su.plo.voice.client.meta.developer.Developer;
 import su.plo.voice.client.meta.Patron;
 
+import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
@@ -151,51 +153,51 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            renderBackground(stack, x, y, entryWidth);
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            renderBackground(context, x, y, entryWidth);
 
-            RenderUtil.bindTexture(0, ModPlayerSkins.getSkin(developer.getUuid(), developer.getName()));
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+            ResourceLocation skinLocation = ModPlayerSkins.getSkin(developer.getUuid(), developer.getName());
 
-            RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
-            RenderUtil.blit(stack, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
+            context.blit(skinLocation, x + 4, y + 4, 32, 32, 8.0F, 8.0F, 8, 8, 64, 64);
+            context.blit(skinLocation, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
 
-            RenderUtil.drawString(stack, developer.getName(), x + 40, y + 11, 16777215);
-            RenderUtil.drawString(stack, developer.getRole().getTranslatable(), x + 40, y + 21, -5592406);
+            context.drawString(developer.getName(), x + 40, y + 11, Colors.WHITE);
+            context.drawString(developer.getRole().getTranslatable(), x + 40, y + 21, new Color(0xAAAAAA));
 
             if (link != null) {
                 link.setX(x + entryWidth - 62);
                 link.setY(y + 10);
-                link.render(stack, mouseX, mouseY, delta);
+                link.render(context, mouseX, mouseY, delta);
             }
         }
 
-        public void renderBackground(@NotNull PoseStack stack, int x, int y, int entryWidth) {
+        public void renderBackground(@NotNull GuiRenderContext context, int x, int y, int entryWidth) {
             int height = this.height - 4;
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             //#if MC>=12005
-            //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
-            //$$
-            //$$ RenderUtil.blit(
-            //$$         stack,
-            //$$         x, x + entryWidth,
-            //$$         y, y + height,
-            //$$         0,
-            //$$         0F, entryWidth / 32.0F,
-            //$$         0F, height / 32.0F
+            //$$ context.blit(
+            //$$         Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
+            //$$         x,
+            //$$         y,
+            //$$         0.0F,
+            //$$         0.0F,
+            //$$         entryWidth,
+            //$$         height,
+            //$$         32,
+            //$$         32
             //$$ );
             //#else
-            RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
-
-            RenderUtil.blitColor(
-                    stack,
-                    x, x + entryWidth,
-                    y, y + height,
-                    0,
-                    0F, entryWidth / 32.0F,
-                    0F, height / 32.0F,
-                    40, 40, 40, 255
+            context.blitColor(
+                    BACKGROUND_LOCATION,
+                    x,
+                    y,
+                    0.0F,
+                    0.0F,
+                    entryWidth,
+                    height,
+                    16,
+                    16,
+                    new Color(64, 64, 64)
             );
             //#endif
         }
@@ -217,53 +219,52 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            renderBackground(stack, x, y, entryWidth);
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            renderBackground(context, x, y, entryWidth);
 
-            RenderUtil.bindTexture(0, ModPlayerSkins.getSkin(patron.getUuid(), patron.getName()));
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
+            ResourceLocation skinLocation = ModPlayerSkins.getSkin(patron.getUuid(), patron.getName());
 
-            RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 8.0F, 8.0F, 8, 8, 64, 64);
-            RenderUtil.blit(stack, x + 2, y + 2, 16, 16, 40.0F, 8.0F, 8, 8, 64, 64);
+            context.blit(skinLocation, x + 2, y + 2, 16, 16, 8.0F, 8.0F, 8, 8, 64, 64);
+            context.blit(skinLocation, x + 2, y + 2, 16, 16, 40.0F, 8.0F, 8, 8, 64, 64);
 
-            RenderUtil.drawString(stack, patron.getName(), x + 26, y + 6, 16777215);
+            context.drawString(patron.getName(), x + 26, y + 6, Colors.WHITE);
 
             McTextComponent tier = McTextComponent.literal(patron.getTier());
-            RenderUtil.drawString(
-                    stack,
+            context.drawString(
                     tier,
                     x + entryWidth - RenderUtil.getTextWidth(tier) - 6,
                     y + 6,
-                    -5592406
+                    new Color(0xAAAAAA)
             );
         }
 
-        public void renderBackground(@NotNull PoseStack stack, int x, int y, int entryWidth) {
+        public void renderBackground(@NotNull GuiRenderContext context, int x, int y, int entryWidth) {
             int height = this.height - 2;
-            RenderSystem.setShaderColor(1F, 1F, 1F, 1F);
 
             //#if MC>=12005
-            //$$ RenderUtil.bindTexture(0, Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION);
-            //$$
-            //$$ RenderUtil.blit(
-            //$$         stack,
-            //$$         x, x + entryWidth,
-            //$$         y, y + height,
-            //$$         0,
-            //$$         0F, entryWidth / 32.0F,
-            //$$         0F, height / 32.0F
+            //$$ context.blit(
+            //$$         Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
+            //$$         x,
+            //$$         y,
+            //$$         0.0F,
+            //$$         0.0F,
+            //$$         entryWidth,
+            //$$         height,
+            //$$         32,
+            //$$         32
             //$$ );
             //#else
-            RenderUtil.bindTexture(0, BACKGROUND_LOCATION);
-
-            RenderUtil.blitColor(
-                    stack,
-                    x, x + entryWidth,
-                    y, y + height,
-                    0,
-                    0F, entryWidth / 32.0F,
-                    0F, height / 32.0F,
-                    40, 40, 40, 255
+            context.blitColor(
+                    BACKGROUND_LOCATION,
+                    x,
+                    y,
+                    0.0F,
+                    0.0F,
+                    entryWidth,
+                    height,
+                    16,
+                    16,
+                    new Color(0x404040)
             );
             //#endif
         }
@@ -290,7 +291,7 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+        public void updatePosition(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
             int gap = 4;
             int elementWidth = entryWidth / widgets.size() - ((widgets.size() - 1) * (gap / 2));
             if (elementWidth % 2 == 1) {
@@ -305,9 +306,14 @@ public final class AboutTabWidget extends TabWidget {
                 element.setY(y);
                 element.setWidth(elementWidth);
 
-                element.render(stack, mouseX, mouseY, delta);
-
                 elementX += elementWidth + gap;
+            }
+        }
+
+        @Override
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            for (GuiAbstractWidget element : widgets) {
+                element.render(context, mouseX, mouseY, delta);
             }
         }
     }
@@ -323,17 +329,16 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull PoseStack stack, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            int lines = RenderUtil.drawStringMultiLine(
-                    stack,
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            int lines = context.drawStringMultiLine(
                     text,
                     x,
-                    y + 16,
-                    -8355712,
+                    y,
+                    new Color(0x808080),
                     entryWidth
             );
 
-            setHeight(lines * RenderUtil.getFontHeight() + 16);
+            setHeight(lines * RenderUtil.getFontHeight() + 10);
         }
 
         @Override

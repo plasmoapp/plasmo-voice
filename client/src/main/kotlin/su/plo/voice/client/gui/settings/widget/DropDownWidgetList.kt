@@ -1,12 +1,13 @@
 package su.plo.voice.client.gui.settings.widget
 
-import com.mojang.blaze3d.vertex.PoseStack
 import net.minecraft.client.Minecraft
 import su.plo.lib.mod.client.gui.components.AbstractScrollbar
+import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.RenderUtil
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines
+import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen
+import java.awt.Color
 import java.util.function.Consumer
 import kotlin.math.min
 
@@ -28,7 +29,7 @@ class DropDownWidgetList(
         elements.mapIndexed(::Entry).forEach(::addEntry)
     }
 
-    override fun render(stack: PoseStack, mouseX: Int, mouseY: Int, delta: Float) {
+    override fun render(context: GuiRenderContext, mouseX: Int, mouseY: Int, delta: Float) {
         val windowHeight = Minecraft.getInstance().window.guiScaledHeight
         if (shouldRenderToTop()) {
             this.y1 = dropDownWidget.y
@@ -38,26 +39,31 @@ class DropDownWidgetList(
             this.y1 = min(y0 + (elementHeight * maxElements), windowHeight)
         }
 
-        stack.pushPose()
-        stack.translate(0.0, 0.0, 10.0)
+        parent.deferredRender {
+            //#if MC<12106
+            context.stack.pushPose()
+            context.stack.translate(0.0, 0.0, 10.0)
+            //#endif
 
-        super.render(stack, mouseX, mouseY, delta)
+            super.render(context, mouseX, mouseY, delta)
 
-        if (maxScroll > 0) {
-            val lineY = if (shouldRenderToTop()) y0 else y1
+            if (maxScroll > 0) {
+                val lineY = if (shouldRenderToTop()) y0 else y1
 
-            RenderUtil.fill(
-                stack,
-                RenderPipelines.GUI_COLOR_OVERLAY,
-                containerX0,
-                lineY - 1,
-                containerX1,
-                lineY,
-                -0xB9B9BA
-            )
+                context.fill(
+                    containerX0,
+                    lineY - 1,
+                    containerX1,
+                    lineY,
+                    Color(0x464646),
+                )
+            }
+
+            //#if MC<12106
+            context.stack.pushPose()
+            context.stack.translate(0.0, 0.0, 10.0)
+            //#endif
         }
-
-        stack.popPose()
     }
 
     override fun getContainerX0(): Int =
@@ -92,7 +98,7 @@ class DropDownWidgetList(
         }
 
         override fun render(
-            stack: PoseStack,
+            context: GuiRenderContext,
             index: Int,
             x: Int,
             y: Int,
@@ -104,8 +110,8 @@ class DropDownWidgetList(
         ) {
             val yOffset = if (shouldRenderToTop()) 1 else 0
 
-            RenderUtil.fill(stack, x, y, x + entryWidth, y + height, -0xB9B9BA)
-            RenderUtil.fill(stack, x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, -0x1000000)
+            context.fill(x, y, x + entryWidth, y + height, Color(0x464646))
+            context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, Colors.BLACK)
 
             val hasScroll = maxScroll > 0
             val entryPaddingRight = if (hasScroll) 23 else 10
@@ -116,16 +122,15 @@ class DropDownWidgetList(
                 ) {
                     parent.setTooltip(element)
                 }
-                RenderUtil.fill(stack, x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, -0xCDCDCE)
+                context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, Color(0x323232))
             }
 
-            RenderUtil.drawOrderedString(
-                    stack,
+            context.drawOrderedString(
                     element,
                 entryWidth - entryPaddingRight,
                     x + 5,
                     y + height / 2 - RenderUtil.getFontHeight() / 2 + yOffset,
-                    0xE0E0E0
+                    Color(0xE0E0E0)
             )
         }
     }

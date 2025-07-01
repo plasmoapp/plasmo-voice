@@ -121,6 +121,13 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
         ));
     }
 
+    public void reset() {
+        publicKey = null;
+        distanceByActivationId.clear();
+        activeActivations.clear();
+        lastActivationSequenceNumber.clear();
+    }
+
     protected void checkVoiceChat() {
         if (!hasVoiceChat()) throw new IllegalStateException("Player is not connected to UDP server");
     }

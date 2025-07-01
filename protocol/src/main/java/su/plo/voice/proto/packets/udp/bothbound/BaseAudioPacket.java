@@ -11,6 +11,8 @@ import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 @NoArgsConstructor
 @ToString
 public abstract class BaseAudioPacket<T extends PacketHandler> implements Packet<T> {
@@ -23,6 +25,8 @@ public abstract class BaseAudioPacket<T extends PacketHandler> implements Packet
     public BaseAudioPacket(long sequenceNumber, byte[] data) {
         this.sequenceNumber = sequenceNumber;
         this.data = data;
+
+        checkArgument(data.length > 0, "audio data cannot be empty");
     }
 
     @Override

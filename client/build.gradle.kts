@@ -39,6 +39,10 @@ if (platform.isForge) {
         if (platform.mcVersion >= 12102) {
             mixinConfig("plasmovoice-1.21.2.mixins.json")
         }
+
+        if (platform.mcVersion >= 12106) {
+            mixinConfig("plasmovoice-1.21.6.mixins.json")
+        }
     }
 }
 
@@ -76,6 +80,15 @@ repositories {
     maven("https://maven.shedaniel.me/")
     maven("https://maven.terraformersmc.com/")
     maven("https://maven.nucleoid.xyz/")
+
+    exclusiveContent {
+        forRepository {
+            maven("https://api.modrinth.com/maven")
+        }
+        filter {
+            includeGroup("maven.modrinth")
+        }
+    }
 }
 
 dependencies {
@@ -99,6 +112,7 @@ dependencies {
             12103 -> "0.110.0+1.21.3"
             12104 -> "0.110.5+1.21.4"
             12105 -> "0.119.5+1.21.5"
+            12106 -> "0.127.0+1.21.6"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -135,7 +149,7 @@ dependencies {
             12004 -> "13.0.138"
             12100 -> "15.0.140"
             12103 -> "16.0.143"
-            12104, 12105 -> "17.0.144"
+            12104, 12105, 12106 -> "17.0.144"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -154,11 +168,15 @@ dependencies {
             12004 -> "9.2.0"
             12100 -> "11.0.3"
             12103 -> "12.0.0"
-            12104, 12105 -> "13.0.2"
+            12104, 12105, 12106 -> "13.0.2"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
         modImplementation("com.terraformersmc:modmenu:$modMenuVersion")
+
+        if (platform.mcVersion < 12105) {
+            modCompileOnly("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
+        }
     }
 
     val includedProjects = listOf(
@@ -226,6 +244,10 @@ tasks {
             mixins.add("plasmovoice-1.21.2.mixins.json")
         }
 
+        if (platform.mcVersion >= 12106) {
+            mixins.add("plasmovoice-1.21.6.mixins.json")
+        }
+
         filesMatching(
             mutableListOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml")
         ) {
@@ -282,6 +304,20 @@ tasks {
 
             if (platform.mcVersion < 12102) {
                 exclude("plasmovoice-1.21.2.mixins.json")
+            }
+
+            if (platform.mcVersion < 12106) {
+                exclude("plasmovoice-1.21.6.mixins.json")
+            }
+
+            if (platform.mcVersion >= 12106) {
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color.*")
+            } else {
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
+            }
+
+            if (platform.mcVersion >= 11700) {
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_16.*")
             }
 
             if (platform.isForge) {
