@@ -67,7 +67,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
     }
 
     public void onChannelsRegister(@NotNull McServerPlayer player, @NotNull List<String> channels) {
-        if (!channels.contains(BaseVoiceServer.CHANNEL_STRING)) return;
+        if (!channels.contains(BaseVoiceServer.FLAG_CHANNEL_STRING)) return;
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
         // skip if requestPlayerInfo is not sent in onPlayerJoin
         if (!joinPacketSent.contains(player.getUuid())) return;
@@ -93,7 +93,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
         voiceServer.getBackgroundExecutor().execute(() ->
             voiceServer.getMinecraftServer().executeInMainThread(() -> {
                 McServerPlayer serverPlayer = (McServerPlayer) player;
-                if (serverPlayer.getRegisteredChannels().contains(BaseVoiceServer.CHANNEL_STRING)) {
+                if (serverPlayer.getRegisteredChannels().contains(BaseVoiceServer.FLAG_CHANNEL_STRING)) {
                     channelRegisterPacketSent.add(player.getUuid());
                 }
 
