@@ -31,6 +31,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
 
     private final Map<UUID, ScheduledFuture<?>> playerCheckFutures = Maps.newConcurrentMap();
     private final Set<UUID> joinPacketSent = Sets.newConcurrentHashSet();
+    private final Set<UUID> channelRegisterPacketSent = Sets.newConcurrentHashSet();
 
     public ServerChannelHandler(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
@@ -70,11 +71,13 @@ public final class ServerChannelHandler implements McServerChannelHandler {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
         // skip if requestPlayerInfo is not sent in onPlayerJoin
         if (!joinPacketSent.contains(player.getUuid())) return;
+        if (channelRegisterPacketSent.contains(player.getUuid())) return;
 
         VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(player.getInstance());
         // skip if requestPlayerInfo already received from onPlayerJoin request
         if (voicePlayer.getPublicKey().isPresent()) return;
 
+        channelRegisterPacketSent.add(player.getUuid());
         voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer);
     }
 
@@ -88,9 +91,14 @@ public final class ServerChannelHandler implements McServerChannelHandler {
         // because old method of checking for exact channels was causing some unpredictable behavior and bugs
         // this solution should be (hopefully) more consistent
         voiceServer.getBackgroundExecutor().execute(() ->
-            voiceServer.getMinecraftServer().executeInMainThread(() ->
-                    voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer)
-            )
+            voiceServer.getMinecraftServer().executeInMainThread(() -> {
+                McServerPlayer serverPlayer = (McServerPlayer) player;
+                if (serverPlayer.getRegisteredChannels().contains(BaseVoiceServer.CHANNEL_STRING)) {
+                    channelRegisterPacketSent.add(player.getUuid());
+                }
+
+                voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer);
+            })
         );
 
         if (shouldKick(player)) {
@@ -105,6 +113,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
     public void onPlayerQuit(@NotNull McPlayer player) {
         channels.remove(player.getUuid());
         joinPacketSent.remove(player.getUuid());
+        channelRegisterPacketSent.remove(player.getUuid());
         cancelPlayerCheckFuture(player.getUuid());
     }
 
