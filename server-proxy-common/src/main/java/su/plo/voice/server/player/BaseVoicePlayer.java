@@ -122,7 +122,6 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     }
 
     public void reset() {
-        publicKey = null;
         distanceByActivationId.clear();
         activeActivations.clear();
         lastActivationSequenceNumber.clear();
