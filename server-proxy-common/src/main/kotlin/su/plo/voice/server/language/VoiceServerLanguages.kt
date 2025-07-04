@@ -191,8 +191,10 @@ class VoiceServerLanguages(
     ) {
         if (languages.isEmpty()) return
 
-        val defaultLanguage = languages[serverTranslator.defaultLanguage]
-            ?: throw IllegalStateException("Default language '${serverTranslator.defaultLanguage}' doesn't exist")
+        val defaultLanguage = languages.getOrDefault(
+            serverTranslator.defaultLanguage,
+            languages[languages.keys.first()]!!
+        )
 
         // load from languagesFolder if not found in list and use default language as defaults
         languagesFolder.mkdirs()
