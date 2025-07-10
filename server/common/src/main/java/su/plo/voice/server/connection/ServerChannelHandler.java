@@ -11,6 +11,7 @@ import su.plo.slib.api.event.player.McPlayerQuitEvent;
 import su.plo.slib.api.server.channel.McServerChannelHandler;
 import su.plo.slib.api.server.entity.player.McServerPlayer;
 import su.plo.slib.api.server.event.player.McPlayerRegisterChannelsEvent;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
@@ -67,13 +68,22 @@ public final class ServerChannelHandler implements McServerChannelHandler {
     }
 
     public void onChannelsRegister(@NotNull McServerPlayer player, @NotNull List<String> channels) {
+        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(player.getInstance());
+        BaseVoice.DEBUG_LOGGER.log(
+                "{} registered channels: {}. Response received: {}. Join packet sent: {}. Channel register packet sent: {}",
+                player.getName(),
+                player.getRegisteredChannels(),
+                voicePlayer.getPublicKey().isPresent(),
+                joinPacketSent.contains(player.getUuid()),
+                channelRegisterPacketSent.contains(player.getUuid())
+        );
+
         if (!channels.contains(BaseVoiceServer.FLAG_CHANNEL_STRING)) return;
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
         // skip if requestPlayerInfo is not sent in onPlayerJoin
         if (!joinPacketSent.contains(player.getUuid())) return;
         if (channelRegisterPacketSent.contains(player.getUuid())) return;
 
-        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(player.getInstance());
         // skip if requestPlayerInfo already received from onPlayerJoin request
         if (voicePlayer.getPublicKey().isPresent()) return;
 
