@@ -3,3 +3,4 @@
 - Removed debug print when chat message is sent to the player.
 - Removed "Default language '...' doesn't exist" check when using non "en_us" language.
 - Fixed "Failed to encrypt data: VoiceServerPlayerEntity(...) has empty public key".
+- Fixed hover / click text components events on Spigot 1.20.4.
