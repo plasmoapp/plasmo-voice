@@ -67,7 +67,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         BaseVoice.DEBUG_LOGGER.log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
 
-        if (!remoteServer.get().isAesEncryptionKeySet() && System.getProperty("plasmovoice.skip_aes_server_check").equals("true")) {
+        if (!remoteServer.get().isAesEncryptionKeySet() && System.getProperty("plasmovoice.skip_aes_server_check", "false").equals("true")) {
             ((VoiceRemoteServer) remoteServer.get()).setAesEncryptionKeySet(true);
             remoteServer.get().getAddress(true);
         } else if (!remoteServer.get().isAesEncryptionKeySet()) {
