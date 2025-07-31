@@ -9,10 +9,11 @@ import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.source.ServerEntitySource
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo
-import java.util.*
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 class VoiceServerEntitySource(
-    voiceServer: PlasmoVoiceServer,
+    private val voiceServer: PlasmoVoiceServer,
     addon: AddonContainer,
     line: ServerSourceLine,
     decoderInfo: CodecInfo?,
@@ -37,4 +38,7 @@ class VoiceServerEntitySource(
             angle,
             entity.id
         )
+
+    override fun resolveSourceInfo(): CompletableFuture<EntitySourceInfo> =
+        voiceServer.minecraftServer.scheduler.runTaskFor(entity) { sourceInfo }
 }

@@ -9,7 +9,8 @@ import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.api.server.player.VoiceServerPlayer
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
-import java.util.*
+import java.util.UUID
+import java.util.concurrent.CompletableFuture
 
 class VoiceServerPlayerSource(
     voiceServer: PlasmoVoiceServer,
@@ -42,6 +43,9 @@ class VoiceServerPlayerSource(
         addFilter(this::filterSelf)
         addFilter(this::filterVanish)
     }
+
+    override fun resolveSourceInfo(): CompletableFuture<PlayerSourceInfo> =
+        CompletableFuture.completedFuture(sourceInfo)
 
     private fun filterSelf(player: VoicePlayer): Boolean =
         player != this.player

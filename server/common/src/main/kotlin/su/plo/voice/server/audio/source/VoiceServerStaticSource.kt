@@ -6,8 +6,11 @@ import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.source.ServerStaticSource
 import su.plo.voice.proto.data.audio.codec.CodecInfo
+import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo
+import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
 import java.util.*
+import java.util.concurrent.CompletableFuture
 
 class VoiceServerStaticSource(
     voiceServer: PlasmoVoiceServer,
@@ -44,4 +47,7 @@ class VoiceServerStaticSource(
             position.toPosition(),
             position.lookAngle
         )
+
+    override fun resolveSourceInfo(): CompletableFuture<StaticSourceInfo> =
+        CompletableFuture.completedFuture(sourceInfo)
 }

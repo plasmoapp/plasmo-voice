@@ -15,7 +15,7 @@ import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.Packet
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
-import java.util.*
+import java.util.UUID
 import java.util.function.Supplier
 
 abstract class VoiceServerProximitySource<S : SourceInfo>(
@@ -24,7 +24,7 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
     id: UUID,
     private val serverSourceLine: ServerSourceLine,
     decoderInfo: CodecInfo?,
-    stereo: Boolean
+    stereo: Boolean,
 ) : BaseServerAudioSource<S>(addon, id, serverSourceLine, decoderInfo, stereo), ServerProximitySource<S> {
 
     override var angle: Int = 0
@@ -45,8 +45,10 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
         val listenersDistance = event.distance * DISTANCE_MULTIPLIER
 
         // update source info on listeners if source is dirty
-        if (dirty.compareAndSet(true, false))
-            sendPacket(SourceInfoPacket(sourceInfo), listenersDistance.toShort())
+        if (dirty.compareAndSet(true, false)) {
+            resolveSourceInfo()
+                .thenAccept { sendPacket(SourceInfoPacket(it), listenersDistance.toShort()) }
+        }
 
         val playerPosition = ServerPos3d()
         val sourcePosition = position

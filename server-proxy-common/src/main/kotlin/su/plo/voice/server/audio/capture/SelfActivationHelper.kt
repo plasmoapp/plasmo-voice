@@ -6,10 +6,7 @@ import lombok.RequiredArgsConstructor
 import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoBaseVoiceServer
-import su.plo.voice.api.server.audio.capture.ServerActivation
 import su.plo.voice.api.server.audio.source.ServerAudioSource
-import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent
-import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent
 import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent
 import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent
 import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent
@@ -22,7 +19,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
 import su.plo.voice.proto.packets.udp.clientbound.SelfAudioInfoPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket
-import java.util.*
+import java.util.UUID
 import java.util.concurrent.CopyOnWriteArraySet
 import kotlin.jvm.optionals.getOrNull
 
@@ -67,7 +64,7 @@ class SelfActivationHelper(
 
         val lastActivationId = lastPlayerActivationIds.put(player.instance.uuid, activationId)
         if (lastActivationId == null || lastActivationId != activationId) {
-            updateSelfSourceInfo(player, source, null)
+            updateSelfSourceInfo(player, source)
         }
 
         voiceServer.udpConnectionManager.getConnectionByPlayerId(player.instance.uuid)
@@ -85,15 +82,21 @@ class SelfActivationHelper(
 
     fun updateSelfSourceInfo(
         player: VoicePlayer,
-        source: ServerAudioSource<*>,
-        sourceInfo: SourceInfo?
+        source: ServerAudioSource<*>
+    ) {
+        source.resolveSourceInfo().thenApply { updateSelfSourceInfo(player, it) }
+    }
+
+    fun updateSelfSourceInfo(
+        player: VoicePlayer,
+        sourceInfo: SourceInfo
     ) {
         val lastActivationId = lastPlayerActivationIds[player.instance.uuid] ?: return
 
         player.sendPacket(
             SelfSourceInfoPacket(
                 SelfSourceInfo(
-                    sourceInfo ?: source.sourceInfo,
+                    sourceInfo ,
                     player.instance.uuid,
                     lastActivationId,
                     -1L
@@ -128,7 +131,6 @@ class SelfActivationHelper(
         if (packet is SourceInfoPacket) {
             updateSelfSourceInfo(
                 player,
-                source,
                 packet.sourceInfo
             )
         } else if (packet is SourceAudioEndPacket) {

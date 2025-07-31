@@ -19,6 +19,7 @@ import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public abstract class VoiceBaseServerDirectSource
         extends BaseServerAudioSource<DirectSourceInfo>
@@ -117,6 +118,11 @@ public abstract class VoiceBaseServerDirectSource
     @Override
     public @NotNull AudioSender createAudioSender(@NotNull AudioFrameProvider frameProvider) {
         return new AudioSender(frameProvider, this::sendAudioFrame, this::sendAudioEnd);
+    }
+
+    @Override
+    public @NotNull CompletableFuture<DirectSourceInfo> resolveSourceInfo() {
+        return CompletableFuture.completedFuture(getSourceInfo());
     }
 
     protected void updateSourceInfo() {
