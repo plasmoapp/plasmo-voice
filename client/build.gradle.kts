@@ -130,7 +130,9 @@ dependencies {
             modLocalRuntime("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
         }
 
-        if (platform.mcVersion >= 12102) {
+        if (platform.mcVersion >= 12106) {
+            "include"("me.lucko:fabric-permissions-api:0.4.1")
+        } else if (platform.mcVersion >= 12102) {
             "include"("me.lucko:fabric-permissions-api:0.3.3")
         } else {
             "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
