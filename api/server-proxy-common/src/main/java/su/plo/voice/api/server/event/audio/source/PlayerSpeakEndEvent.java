@@ -5,11 +5,14 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.event.EventCancellableBase;
 import su.plo.voice.api.server.audio.capture.ServerActivation;
+import su.plo.voice.api.server.event.audio.capture.PlayerServerActivationEndEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 
 /**
  * This event is fired when the {@link PlayerAudioEndPacket} is received.
+ *
+ * @see PlayerServerActivationEndEvent
  */
 public final class PlayerSpeakEndEvent extends EventCancellableBase {
 

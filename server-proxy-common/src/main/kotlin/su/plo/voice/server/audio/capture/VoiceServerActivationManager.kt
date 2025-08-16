@@ -12,6 +12,9 @@ import su.plo.voice.api.server.PlasmoBaseVoiceServer
 import su.plo.voice.api.server.audio.capture.ServerActivation
 import su.plo.voice.api.server.audio.capture.ServerActivationManager
 import su.plo.voice.api.server.connection.PacketManager
+import su.plo.voice.api.server.event.audio.capture.PlayerServerActivationEndEvent
+import su.plo.voice.api.server.event.audio.capture.PlayerServerActivationEvent
+import su.plo.voice.api.server.event.audio.capture.PlayerServerActivationStartEvent
 import su.plo.voice.api.server.event.audio.capture.ServerActivationRegisterEvent
 import su.plo.voice.api.server.event.audio.capture.ServerActivationUnregisterEvent
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEndEvent
@@ -150,7 +153,16 @@ class VoiceServerActivationManager(
             (packet.sequenceNumber > lastActivationSequenceNumber || sequenceNumberDiff > 10)
         ) {
             player.activeActivations.add(activation)
+            voiceServer.eventBus.fire(PlayerServerActivationStartEvent(player, activation))
             activation.activationStartListeners.forEach { it.onActivationStart(player) }
+        }
+
+        val activationEvent = PlayerServerActivationEvent(player, activation, packet)
+            .also { voiceServer.eventBus.fire(it) }
+        if (activationEvent.result == ServerActivation.Result.HANDLED) {
+            event.result = activationEvent.result
+            event.isCancelled = true
+            return
         }
 
         for (listener in activation.activationListeners) {
@@ -187,6 +199,14 @@ class VoiceServerActivationManager(
 
         player.activeActivations.remove(activation)
         player.lastActivationSequenceNumber[activation.id] = packet.sequenceNumber
+
+        val activationEndEvent = PlayerServerActivationEndEvent(player, activation, packet)
+            .also { voiceServer.eventBus.fire(it) }
+        if (activationEndEvent.result == ServerActivation.Result.HANDLED) {
+            event.result = activationEndEvent.result
+            event.isCancelled = true
+            return
+        }
 
         for (listener in activation.activationEndListeners) {
             val result = listener.onActivationEnd(player, packet)
