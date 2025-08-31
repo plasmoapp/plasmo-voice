@@ -1,6 +1,7 @@
 package su.plo.voice.api.server.socket;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
@@ -41,11 +42,25 @@ public interface UdpConnection {
     @NotNull InetSocketAddress getRemoteAddress();
 
     /**
+     * Gets the public address used by the connection to connect to the server.
+     *
+     * @return The connection address of the connection as an {@link InetSocketAddress}.
+     */
+    @Nullable InetSocketAddress getConnectionAddress();
+
+    /**
      * Sets the connection's remote address.
      *
      * @param remoteAddress The new remote address to set.
      */
     void setRemoteAddress(@NotNull InetSocketAddress remoteAddress);
+
+    /**
+     * Sets the connection's connection address.
+     *
+     * @param connectionAddress The new connection address to set.
+     */
+    void setConnectionAddress(@NotNull InetSocketAddress connectionAddress);
 
     /**
      * Sends a packet to the UDP connection.

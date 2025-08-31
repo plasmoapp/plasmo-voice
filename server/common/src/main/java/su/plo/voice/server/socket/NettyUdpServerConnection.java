@@ -34,6 +34,9 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
     @Getter
     private InetSocketAddress remoteAddress;
     @Getter
+    @Setter
+    private InetSocketAddress connectionAddress;
+    @Getter
     private final UUID secret;
     @Getter
     private final VoiceServerPlayer player;
