@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
@@ -49,6 +50,7 @@ public final class NettyUdpServer implements UdpServer {
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
 
                 pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceServer));
+                pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
         });
 

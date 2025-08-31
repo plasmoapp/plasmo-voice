@@ -25,6 +25,7 @@ import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
+import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
@@ -72,6 +73,7 @@ public final class NettyUdpClient implements UdpClient {
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
 
                 pipeline.addLast("handler", handler);
+                pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
         });
 
