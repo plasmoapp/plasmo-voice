@@ -7,6 +7,7 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.command.McCommand;
 import su.plo.slib.api.command.McCommandSource;
 import su.plo.slib.api.server.entity.player.McServerPlayer;
+import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.server.BaseVoiceServer;
 
@@ -27,7 +28,7 @@ public final class VoiceReconnectCommand implements McCommand {
                 .orElseThrow(() -> new IllegalStateException("how?"));
 
         source.sendMessage(McTextComponent.translatable("pv.command.reconnect.message"));
-        voiceServer.getUdpConnectionManager().removeConnection(voicePlayer);
+        voiceServer.getUdpConnectionManager().removeConnection(voicePlayer, UdpClientDisconnectedEvent.Reason.RECONNECT);
         voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer);
     }
 

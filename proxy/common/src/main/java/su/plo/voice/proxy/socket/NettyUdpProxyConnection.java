@@ -39,6 +39,8 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     @Getter @Setter
     private UUID remoteSecret;
     @Getter @Setter
+    private InetSocketAddress connectionAddress;
+    @Getter @Setter
     private InetSocketAddress remoteAddress;
     @Setter
     private RemoteServer remoteServer;
