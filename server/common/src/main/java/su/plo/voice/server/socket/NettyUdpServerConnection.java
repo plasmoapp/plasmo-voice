@@ -12,6 +12,7 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.event.audio.source.PlayerSpeakEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketReceivedEvent;
 import su.plo.voice.api.server.event.connection.UdpPacketSendEvent;
+import su.plo.voice.api.server.event.connection.UdpPacketSentEvent;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
 import su.plo.voice.proto.packets.Packet;
@@ -45,6 +46,8 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
     @Getter
     @Setter
     private long sentKeepAlive;
+    @Getter
+    private long lastReceivedPacketTimestamp;
 
     @Getter
     private boolean connected = true;
@@ -88,6 +91,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         if (!voiceServer.getEventBus().fire(event)) return;
 
         packet.handle(this);
+        this.lastReceivedPacketTimestamp = System.currentTimeMillis();
     }
 
     @Override
