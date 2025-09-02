@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.render.pipeline
 
 import com.mojang.blaze3d.vertex.VertexFormat
+import net.minecraft.client.renderer.RenderType
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.render.VertexFormatMode
 
@@ -21,7 +22,6 @@ import net.minecraft.client.renderer.GameRenderer
 //#if MC>=12105
 //$$ import com.mojang.blaze3d.shaders.UniformType
 //$$ import com.mojang.blaze3d.vertex.DefaultVertexFormat
-//$$ import net.minecraft.client.renderer.RenderType
 //#elseif MC>=11700
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -129,14 +129,18 @@ data class RenderPipeline(
     //$$ val vertexShader: ResourceLocation,
     //$$ val fragmentShader: ResourceLocation,
     //$$ val mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline,
-    //$$ val mcRenderType: RenderType,
     //#elseif MC>=11700
     val shader: () -> ShaderInstance,
     //#else
     //$$ val shader: UShader?,
     //#endif
+    //#if MC>=12105
+    //$$ val mcRenderType: RenderType,
+    //#else
+    val mcRenderType: RenderType?,
+    //#endif
     val samplers: Set<String>,
-    val vertexFormat: VertexFormat,
+    private val vertexFormatInner: VertexFormat,
     val vertexFormatMode: VertexFormatMode,
     val depthTestFunc: AlphaFunc,
     val blendFunc: BlendFunc?,
@@ -153,6 +157,13 @@ data class RenderPipeline(
         )
         //#endif
     }
+
+    val vertexFormat: VertexFormat
+        //#if MC>=12105
+        //$$ get() = mcRenderType.format()
+        //#else
+        get() = mcRenderType?.format() ?: vertexFormatInner
+        //#endif
 
     class Builder(
         val location: ResourceLocation,
@@ -175,8 +186,8 @@ data class RenderPipeline(
 
         //#if MC>=12105
         //$$ var mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline? = null
-        //$$ var mcRenderType: RenderType? = null
         //#endif
+        var mcRenderType: RenderType? = null
 
         fun build(): RenderPipeline {
             //#if MC>=12105
@@ -231,6 +242,8 @@ data class RenderPipeline(
             //$$         pipeline,
             //$$         RenderType.CompositeState.builder().createCompositeState(false)
             //$$     )
+            //#else
+            val renderType = mcRenderType
             //#endif
 
             return RenderPipeline(
@@ -239,10 +252,10 @@ data class RenderPipeline(
                 //$$ vertexShader,
                 //$$ fragmentShader,
                 //$$ pipeline,
-                //$$ renderType,
                 //#else
                 shader,
                 //#endif
+                renderType,
                 samplers,
                 vertexFormat,
                 vertexFormatMode,
