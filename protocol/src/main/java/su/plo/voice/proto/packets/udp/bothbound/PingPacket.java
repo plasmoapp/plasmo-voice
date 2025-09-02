@@ -34,7 +34,7 @@ public class PingPacket implements Packet<PacketUdpHandler> {
 
         try {
             this.serverIp = in.readUTF();
-            this.serverPort = in.readShort();
+            this.serverPort = in.readUnsignedShort();
         } catch (Exception ignored) {
             // ignore exceptions here, because it's optional
         }
