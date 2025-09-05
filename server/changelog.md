@@ -5,3 +5,4 @@
 - Fixed "Failed to encrypt data: VoiceServerPlayerEntity(...) has empty public key".
 - Fixed hover / click text components events on Spigot 1.20.4.
 - Fixed entity sources on Folia [pv-addon-spectator#4](https://github.com/plasmoapp/pv-addon-spectator/issues/4).
+- Fixed `Cannot send game event asynchronously` on `Folia` with `pv-addon-sculk` [#486](https://github.com/plasmoapp/plasmo-voice/issues/468).
