@@ -1,6 +1,6 @@
 package su.plo.voice.proxy.socket;
 
-import io.netty.buffer.Unpooled;
+import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramChannel;
@@ -11,8 +11,8 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
+import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.packets.udp.PacketUdp;
-import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.proxy.connection.CancelForwardingException;
@@ -144,13 +144,15 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         }
 
         // rewrite to backend server
-        ctx.channel().writeAndFlush(new DatagramPacket(
-                Unpooled.wrappedBuffer(PacketUdpCodec.replaceSecret(
-                        nettyPacket.getPacketData(),
-                        receiverSecret
-                )),
-                receiver
-        ));
+        ByteBuf originalBuf = nettyPacket.getDatagramPacket().content();
+
+        ByteBuf changedBuf = originalBuf.retainedDuplicate();
+        changedBuf.setIndex(0, 5);
+        changedBuf.writeBytes(PacketUtil.getUUIDBytes(receiverSecret));
+        changedBuf.setIndex(0, originalBuf.writerIndex());
+
+        ctx.channel().writeAndFlush(new DatagramPacket(changedBuf, receiver));
+
         return true;
     }
 }
