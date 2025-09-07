@@ -3,6 +3,7 @@ package su.plo.voice.proto.packets.udp;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.PacketUtil;
@@ -40,24 +41,40 @@ public class PacketUdpCodec {
         return data;
     }
 
-    public static byte[] encode(Packet<?> packet, UUID secret) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-
+    public static void encode(@NotNull Packet<?> packet, @NotNull UUID secret, @NotNull ByteArrayDataOutput out) throws IOException {
         int type = PACKETS.getType(packet);
-        if (type < 0) return null;
+        if (type < 0) throw new IOException("Unknown packet type");
 
         out.writeInt(MAGIC_NUMBER);
         out.writeByte(type);
         PacketUtil.writeUUID(out, secret);
         out.writeLong(System.currentTimeMillis());
 
-        try {
-            packet.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        packet.write(out);
+    }
+
+    public static byte[] encode(@NotNull Packet<?> packet, @NotNull UUID secret) throws IOException {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+
+        encode(packet, secret, out);
 
         return out.toByteArray();
+    }
+
+    public static @NotNull PacketUdp decodeThrowing(@NotNull ByteArrayDataInput in) throws IOException {
+        try {
+            if (in.readInt() != MAGIC_NUMBER) throw new IOException("Magic number in packet header doesn't match"); // bad packet
+        } catch (Exception e) {
+            throw new IOException("Failed to read magic number", e);
+        }
+
+        Packet<?> packet = PACKETS.byType(in.readByte());
+        if (packet == null) throw new IOException("Unknown packet type");
+
+        UUID secret = PacketUtil.readUUID(in);
+        long timestamp = in.readLong();
+
+        return new PacketUdp(secret, timestamp, packet, in);
     }
 
     public static Optional<PacketUdp> decode(ByteArrayDataInput in) throws IOException {
