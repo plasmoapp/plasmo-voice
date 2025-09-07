@@ -2,7 +2,6 @@ package su.plo.voice.client.socket;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -25,6 +24,7 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
+import su.plo.voice.socket.ByteBufDataOutput;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
@@ -114,17 +114,21 @@ public final class NettyUdpClient implements UdpClient {
 
     @Override
     public void sendPacket(Packet<?> packet) {
-        byte[] encoded = PacketUdpCodec.encode(packet, secret);
-        if (encoded == null) return;
-
-        ByteBuf buf = Unpooled.wrappedBuffer(encoded);
-
-        BaseVoice.LOGGER.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
-
         UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
         if (!voiceClient.getEventBus().fire(event)) return;
 
+        ByteBuf buf = channel.alloc().ioBuffer();
+        try {
+            PacketUdpCodec.encode(event.getPacket(), secret, new ByteBufDataOutput(buf));
+        } catch (Throwable e) {
+            buf.release();
+            BaseVoice.DEBUG_LOGGER.log("Failed to encode packet", e);
+            return;
+        }
+
         channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()));
+
+        BaseVoice.LOGGER.debug("UDP packet {} sent to {}", event.getPacket(), channel.remoteAddress());
     }
 
     @Override

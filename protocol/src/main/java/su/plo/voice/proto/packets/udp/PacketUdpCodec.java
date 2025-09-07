@@ -4,7 +4,6 @@ import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proto.packets.PacketRegistry;
@@ -43,24 +42,48 @@ public class PacketUdpCodec {
         return data;
     }
 
-    public static byte[] encode(Packet<?> packet, UUID secret) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-
+    public static void encode(@NotNull Packet<?> packet, @NotNull UUID secret, @NotNull ByteArrayDataOutput out) throws IOException {
         int type = PACKETS.getType(packet);
-        if (type < 0) return null;
+        if (type < 0) throw new IOException("Unknown packet type");
 
         out.writeInt(MAGIC_NUMBER);
         out.writeByte(type);
         PacketUtil.writeUUID(out, secret);
         out.writeLong(System.currentTimeMillis());
 
-        try {
-            packet.write(out);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        packet.write(out);
+    }
+
+    public static byte[] encodeThrowing(@NotNull Packet<?> packet, @NotNull UUID secret) throws IOException {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+
+        encode(packet, secret, out);
 
         return out.toByteArray();
+    }
+
+    public static byte[] encode(@NotNull Packet<?> packet, @NotNull UUID secret) {
+        try {
+            return encodeThrowing(packet, secret);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public static @NotNull PacketUdp decodeThrowing(
+            @NotNull ByteArrayDataInput in,
+            @NotNull PacketDirection direction
+    ) throws IOException {
+        if (in.readInt() != MAGIC_NUMBER) throw new IOException("Magic number in packet header doesn't match");
+
+        Packet<?> packet = PACKETS.byType(in.readByte(), direction);
+        if (packet == null) throw new IOException("Unknown packet type");
+
+        UUID secret = PacketUtil.readUUID(in);
+        long timestamp = in.readLong();
+
+        return new PacketUdp(secret, timestamp, packet, in);
     }
 
     public static Optional<PacketUdp> decode(ByteArrayDataInput in) throws IOException {
