@@ -73,12 +73,14 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
 
     @Override
     public void sendPacket(Packet<?> packet) {
-        UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
-        if (!voiceServer.getEventBus().fire(event)) return;
+        if (voiceServer.getEventBus().hasListener(UdpPacketSendEvent.class)) {
+            UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
+            if (!voiceServer.getEventBus().fire(event)) return;
+        }
 
         ByteBuf buf = channel.alloc().ioBuffer();
         try {
-            PacketUdpCodec.encodeThrowing(event.getPacket(), secret, new ByteBufDataOutput(buf));
+            PacketUdpCodec.encodeThrowing(packet, secret, new ByteBufDataOutput(buf));
         } catch (Throwable e) {
             buf.release();
             BaseVoice.DEBUG_LOGGER.log("Failed to encode packet", e);
@@ -87,13 +89,17 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
 
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress), channel.voidPromise());
 
-        voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet));
+        if (voiceServer.getEventBus().hasListener(UdpPacketSentEvent.class)) {
+            voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet));
+        }
     }
 
     @Override
     public void handlePacket(Packet<ServerPacketUdpHandler> packet) {
-        UdpPacketReceivedEvent event = new UdpPacketReceivedEvent(this, packet);
-        if (!voiceServer.getEventBus().fire(event)) return;
+        if (voiceServer.getEventBus().hasListener(UdpPacketReceivedEvent.class)) {
+            UdpPacketReceivedEvent event = new UdpPacketReceivedEvent(this, packet);
+            if (!voiceServer.getEventBus().fire(event)) return;
+        }
 
         packet.handle(this);
         this.lastReceivedPacketTimestamp = System.currentTimeMillis();
