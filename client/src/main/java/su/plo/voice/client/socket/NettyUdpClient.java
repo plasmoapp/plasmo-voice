@@ -114,12 +114,14 @@ public final class NettyUdpClient implements UdpClient {
 
     @Override
     public void sendPacket(Packet<?> packet) {
-        UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
-        if (!voiceClient.getEventBus().fire(event)) return;
+        if (voiceClient.getEventBus().hasListener(UdpClientPacketSendEvent.class)) {
+            UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
+            if (!voiceClient.getEventBus().fire(event)) return;
+        }
 
         ByteBuf buf = channel.alloc().ioBuffer();
         try {
-            PacketUdpCodec.encodeThrowing(event.getPacket(), secret, new ByteBufDataOutput(buf));
+            PacketUdpCodec.encodeThrowing(packet, secret, new ByteBufDataOutput(buf));
         } catch (Throwable e) {
             buf.release();
             BaseVoice.DEBUG_LOGGER.log("Failed to encode packet", e);
@@ -128,7 +130,9 @@ public final class NettyUdpClient implements UdpClient {
 
         channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()), channel.voidPromise());
 
-        BaseVoice.LOGGER.debug("UDP packet {} sent to {}", event.getPacket(), channel.remoteAddress());
+        if (BaseVoice.DEBUG_LOGGER.enabled()) {
+            BaseVoice.LOGGER.debug("UDP packet {} sent to {}", packet, channel.remoteAddress());
+        }
     }
 
     @Override

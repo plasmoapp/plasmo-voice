@@ -220,6 +220,11 @@ public final class VoiceEventBus implements EventBus {
         removeHandlers(ImmutableList.of(handler));
     }
 
+    @Override
+    public boolean hasListener(@NotNull Class<?> eventClass) {
+        return handlers.containsKey(eventClass);
+    }
+
     private void checkIfAddon(@NotNull Object addon) {
         voice.getAddonManager().getAddon(addon)
                 .orElseThrow(() -> new IllegalArgumentException("object " + addon.getClass() + " is not annotated with @Addon"));
