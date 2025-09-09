@@ -58,7 +58,7 @@ class ByteBufDataOutput(
 
     @Deprecated("")
     override fun writeBytes(s: String) {
-        buffer.writeCharSequence(s, StandardCharsets.ISO_8859_1);
+        buffer.writeCharSequence(s, StandardCharsets.ISO_8859_1)
     }
 
     override fun writeChars(s: String) {
