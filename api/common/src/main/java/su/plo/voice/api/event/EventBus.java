@@ -70,4 +70,13 @@ public interface EventBus {
      * @param handler The event handler to unregister.
      */
     void unregister(@NotNull Object addon, @NotNull EventHandler<?> handler);
+
+    /**
+     * Checks if there is at least one listener for the provided class.
+     *
+     * @param eventClass The class of the event to check.
+     *
+     * @return {@link true} if listener exists.
+     */
+    boolean hasListener(@NotNull Class<?> eventClass);
 }
