@@ -76,7 +76,7 @@ public interface EventBus {
      *
      * @param eventClass The class of the event to check.
      *
-     * @return {@link true} if listener exists.
+     * @return {@code true} if listener exists.
      */
     boolean hasListener(@NotNull Class<?> eventClass);
 }
