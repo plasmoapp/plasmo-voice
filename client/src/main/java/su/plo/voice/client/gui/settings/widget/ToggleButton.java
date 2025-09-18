@@ -8,6 +8,10 @@ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 
+//#if MC>=12109
+//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
+//#endif
+
 public final class ToggleButton extends GuiAbstractWidget {
 
     private static final McTextComponent ON = McTextComponent.translatable("message.plasmovoice.on");
@@ -52,6 +56,17 @@ public final class ToggleButton extends GuiAbstractWidget {
     @Override
     protected @NotNull GuiWidgetTexture getButtonTexture(boolean hovered) {
         return GuiWidgetTexture.SLIDER;
+    }
+
+    @Override
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+
+        //#if MC>=12109
+        //$$ if (isHovered()) {
+        //$$     context.requestCursor(isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+        //$$ }
+        //#endif
     }
 
     @Override

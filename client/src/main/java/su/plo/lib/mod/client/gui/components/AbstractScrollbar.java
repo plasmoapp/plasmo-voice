@@ -19,6 +19,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+//#if MC>=12109
+//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
+//#endif
+
 public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScreenListener implements GuiWidget {
 
     protected final List<Entry> entries = Lists.newArrayList();
@@ -97,6 +101,12 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             context.fill(trackX0, trackTop, trackX1, trackTop + trackBottom, new Color(128, 128, 128));
             context.fill(trackX0, trackTop, trackX1 - 1, trackTop + trackBottom - 1, new Color(192, 192, 192));
         }
+
+        //#if MC>=12109
+        //$$ if (isMouseOverScrollbar(mouseX, mouseY)) {
+        //$$     context.requestCursor(scrolling ? CursorTypes.RESIZE_NS : CursorTypes.POINTING_HAND);
+        //$$ }
+        //#endif
     }
 
     // GuiScreenListener impl
@@ -147,6 +157,8 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        this.scrolling = false;
+
         if (getFocused() != null) {
             getFocused().mouseReleased(mouseX, mouseY, button);
         }

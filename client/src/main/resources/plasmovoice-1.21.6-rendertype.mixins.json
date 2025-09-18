@@ -3,7 +3,7 @@
     "minVersion": "0.7",
     "package": "su.plo.voice.client.mixin",
     "client": [
-        "accessor.GuiGraphicsAccessor"
+        "accessor.CompositeRenderTypeAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -3,11 +3,11 @@ package su.plo.lib.mod.client.gui.components;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.lwjgl.glfw.GLFW;
+import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.Colors;
@@ -23,6 +23,10 @@ import java.util.function.Predicate;
 
 //#if MC>=12002
 //$$ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
+//#endif
+
+//#if MC>=12109
+//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
 //#endif
 
 public class TextFieldWidget extends GuiAbstractWidget {
@@ -91,20 +95,20 @@ public class TextFieldWidget extends GuiAbstractWidget {
     public boolean keyPressed(int keyCode, int modifiers) {
         if (!canConsumeInput()) return false;
 
-        this.shiftPressed = Screen.hasShiftDown();
+        this.shiftPressed = Inputs.hasShiftDown();
 
-        if (Screen.isSelectAll(keyCode)) {
+        if (Inputs.isSelectAll(keyCode, modifiers)) {
             moveCursorToEnd();
             setHighlightPos(0);
             return true;
         }
 
-        if (Screen.isCopy(keyCode)) {
+        if (Inputs.isCopy(keyCode, modifiers)) {
             Minecraft.getInstance().keyboardHandler.setClipboard(getHighlighted());
             return true;
         }
 
-        if (Screen.isPaste(keyCode)) {
+        if (Inputs.isPaste(keyCode, modifiers)) {
             if (isEditable()) {
                 insertText(Minecraft.getInstance().keyboardHandler.getClipboard());
             }
@@ -112,7 +116,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
             return true;
         }
 
-        if (Screen.isCut(keyCode)) {
+        if (Inputs.isCut(keyCode, modifiers)) {
             Minecraft.getInstance().keyboardHandler.setClipboard(getHighlighted());
             if (isEditable()) {
                 insertText("");
@@ -125,8 +129,8 @@ public class TextFieldWidget extends GuiAbstractWidget {
             case GLFW.GLFW_KEY_BACKSPACE:
                 if (isEditable()) {
                     shiftPressed = false;
-                    deleteText(-1);
-                    shiftPressed = Screen.hasShiftDown();
+                    deleteText(modifiers, -1);
+                    shiftPressed = Inputs.hasShiftDown();
                 }
 
                 return true;
@@ -140,13 +144,13 @@ public class TextFieldWidget extends GuiAbstractWidget {
             case GLFW.GLFW_KEY_DELETE:
                 if (isEditable()) {
                     this.shiftPressed = false;
-                    this.deleteText(1);
-                    this.shiftPressed = Screen.hasShiftDown();
+                    this.deleteText(modifiers, 1);
+                    this.shiftPressed = Inputs.hasShiftDown();
                 }
 
                 return true;
             case GLFW.GLFW_KEY_RIGHT:
-                if (Screen.hasControlDown()) {
+                if (Inputs.hasControlDown(modifiers)) {
                     moveCursorTo(getWordPosition(1));
                 } else {
                     moveCursor(1);
@@ -154,7 +158,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
 
                 return true;
             case GLFW.GLFW_KEY_LEFT:
-                if (Screen.hasControlDown()) {
+                if (Inputs.hasControlDown(modifiers)) {
                     moveCursorTo(this.getWordPosition(-1));
                 } else {
                     moveCursor(-1);
@@ -301,6 +305,12 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 context.drawString("_", selectionX, textY, color);
             }
         }
+
+        //#if MC>=12109
+        //$$ if (isHovered()) {
+        //$$     context.requestCursor(CursorTypes.IBEAM);
+        //$$ }
+        //#endif
     }
 
     private void renderHighlight(@NotNull GuiRenderContext context, int x0, int y0, int x1, int y1) {
@@ -383,8 +393,8 @@ public class TextFieldWidget extends GuiAbstractWidget {
         }
     }
 
-    private void deleteText(int offset) {
-        if (Screen.hasControlDown()) {
+    private void deleteText(int modifiers, int offset) {
+        if (Inputs.hasControlDown(modifiers)) {
             deleteWords(offset);
         } else {
             deleteChars(offset);

@@ -21,28 +21,34 @@ base.archivesName.set("plasmovoice-${platform.loaderStr}-${platform.mcVersionStr
 
 loom.noServerRunConfigs()
 
+val mixins = mutableListOf("plasmovoice.mixins.json", "slib.mixins.json")
+if (platform.mcVersion >= 12102) {
+    mixins.add("plasmovoice-1.21.2.mixins.json")
+}
+
+if (platform.mcVersion >= 12106) {
+    mixins.add("plasmovoice-1.21.6.mixins.json")
+}
+
+if (platform.mcVersion in 12106..12108) {
+    mixins.add("plasmovoice-1.21.6-rendertype.mixins.json")
+}
+
+if (platform.mcVersion >= 12109) {
+    mixins.add("plasmovoice-1.21.9.mixins.json")
+}
+
 if (platform.isForge) {
+    if (platform.mcVersion < 12002) {
+        mixins.add("slib-forge.mixins.json")
+    }
+
+    if (platform.mcVersion >= 12100) {
+        mixins.add("plasmovoice-forge.mixins.json")
+    }
+
     loom.forge.apply {
-        mixinConfig(
-            "plasmovoice.mixins.json",
-            "slib.mixins.json"
-        )
-
-        if (platform.mcVersion < 12002) {
-            mixinConfig("slib-forge.mixins.json")
-        }
-
-        if (platform.mcVersion >= 12100) {
-            mixinConfig("plasmovoice-forge.mixins.json")
-        }
-
-        if (platform.mcVersion >= 12102) {
-            mixinConfig("plasmovoice-1.21.2.mixins.json")
-        }
-
-        if (platform.mcVersion >= 12106) {
-            mixinConfig("plasmovoice-1.21.6.mixins.json")
-        }
+        mixins.forEach(::mixinConfig)
     }
 }
 
@@ -76,6 +82,8 @@ fun slibArtifact(): String {
 }
 
 repositories {
+    mavenLocal()
+
     maven("https://repo.plasmoverse.com/snapshots")
     maven("https://maven.shedaniel.me/")
     maven("https://maven.terraformersmc.com/")
@@ -113,6 +121,7 @@ dependencies {
             12104 -> "0.110.5+1.21.4"
             12105 -> "0.119.5+1.21.5"
             12106 -> "0.127.0+1.21.6"
+            12109 -> "0.133.7+1.21.9"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -151,7 +160,7 @@ dependencies {
             12004 -> "13.0.138"
             12100 -> "15.0.140"
             12103 -> "16.0.143"
-            12104, 12105, 12106 -> "17.0.144"
+            12104, 12105, 12106, 12109 -> "17.0.144"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -170,7 +179,7 @@ dependencies {
             12004 -> "9.2.0"
             12100 -> "11.0.3"
             12103 -> "12.0.0"
-            12104, 12105, 12106 -> "13.0.2"
+            12104, 12105, 12106, 12109 -> "13.0.2"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -240,15 +249,6 @@ tasks {
 
     processResources {
         val versionInfo = readVersionInfo()
-
-        val mixins = mutableListOf("plasmovoice.mixins.json", "slib.mixins.json")
-        if (platform.mcVersion >= 12102) {
-            mixins.add("plasmovoice-1.21.2.mixins.json")
-        }
-
-        if (platform.mcVersion >= 12106) {
-            mixins.add("plasmovoice-1.21.6.mixins.json")
-        }
 
         filesMatching(
             mutableListOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml")

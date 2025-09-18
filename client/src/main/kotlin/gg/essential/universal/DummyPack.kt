@@ -1,6 +1,6 @@
 package gg.essential.universal
 
-//#if MC>=11903
+//#if MC>=11903 && MC<12105
 import gg.essential.universal.shader.MCShader
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.PackResources

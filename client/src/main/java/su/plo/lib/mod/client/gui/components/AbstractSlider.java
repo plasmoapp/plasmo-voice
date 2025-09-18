@@ -10,6 +10,10 @@ import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
 import java.awt.Color;
 
+//#if MC>=12109
+//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
+//#endif
+
 public abstract class AbstractSlider extends GuiAbstractWidget {
 
     protected double value;
@@ -22,6 +26,17 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     @Override
     protected @NotNull GuiWidgetTexture getButtonTexture(boolean hovered) {
         return GuiWidgetTexture.SLIDER;
+    }
+
+    @Override
+    public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        super.render(context, mouseX, mouseY, delta);
+
+        //#if MC>=12109
+        //$$ if (isHovered()) {
+        //$$     context.requestCursor(dragging ? CursorTypes.RESIZE_EW : CursorTypes.POINTING_HAND);
+        //$$ }
+        //#endif
     }
 
     @Override

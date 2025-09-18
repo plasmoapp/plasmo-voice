@@ -1,7 +1,5 @@
 package su.plo.voice.client.gui.settings;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -29,6 +27,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static su.plo.voice.client.extension.TextKt.getStringSplitToWidth;
+
+//#if MC<12105
+import com.mojang.blaze3d.systems.RenderSystem;
+//#endif
+
+//#if MC>=12109
+//$$ import net.minecraft.client.input.KeyEvent;
+//#endif
 
 // todo: narratables
 public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetListener, TooltipScreen {
@@ -210,7 +216,11 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
             return true;
         }
 
+        //#if MC>=12109
+        //$$ if (ModVoiceClient.MENU_KEY.matches(new KeyEvent(keyCode, 0, modifiers))) {
+        //#else
         if (ModVoiceClient.MENU_KEY.matches(keyCode, 0)) {
+        //#endif
             VoiceScreens.INSTANCE.openSettings(voiceClient);
             return true;
         }

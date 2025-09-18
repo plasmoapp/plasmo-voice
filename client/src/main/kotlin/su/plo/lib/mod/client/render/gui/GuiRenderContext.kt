@@ -11,6 +11,10 @@ import su.plo.voice.client.extension.getStringSplitToWidth
 
 import java.awt.Color
 
+//#if MC>=12109
+//$$ import com.mojang.blaze3d.platform.cursor.CursorType
+//#endif
+
 //#if MC>=12106
 //$$ import org.joml.Matrix3x2fStack
 //$$ import net.minecraft.client.Minecraft
@@ -496,4 +500,10 @@ class GuiRenderContext(
         RenderUtil.fillGradientWithPipeline(stack, renderPipeline, startX, startY, endX, endY, startRed, startBlue, startGreen, startAlpha, endRed, endBlue, endGreen, endAlpha, z)
         //#endif
     }
+
+    //#if MC>=12109
+    //$$ fun requestCursor(cursorType: CursorType) {
+    //$$     mcContext.requestCursor(cursorType)
+    //$$ }
+    //#endif
 }

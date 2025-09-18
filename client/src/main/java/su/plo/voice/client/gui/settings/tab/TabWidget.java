@@ -132,11 +132,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             }
         }
 
-        if (getFocused() != null) {
-            getFocused().mouseReleased(mouseX, mouseY, button);
-        }
-
-        return false;
+        return super.mouseReleased(mouseX, mouseY, button);
     }
 
     public void setTooltip(@Nullable McTextComponent tooltip) {

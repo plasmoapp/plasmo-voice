@@ -1,7 +1,6 @@
 package su.plo.lib.mod.client.render.particle;
 
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.particle.ParticleRenderType;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 
@@ -35,10 +34,6 @@ public class BlockDustParticle2D extends SpriteBillboardParticle2D {
 
     public void setScale(float scale) {
         this.scale = scale;
-    }
-
-    public ParticleRenderType getType() {
-        return ParticleRenderType.TERRAIN_SHEET;
     }
 
     protected float getMinU() {
