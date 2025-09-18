@@ -1,7 +1,7 @@
 package su.plo.voice.util.version;
 
+import kotlin.text.StringsKt;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
@@ -34,6 +34,9 @@ public final class SemanticVersion {
             patch = Integer.parseInt(matcher.group(5));
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Bad version. Valid format: X.X.X", e);
+        }
+        if (StringsKt.endsWith(strVersion, "-SNAPSHOT", true)) {
+            strVersion = strVersion.substring(0, strVersion.length() - "-SNAPSHOT".length());
         }
 
         return new SemanticVersion(
