@@ -216,6 +216,13 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
             return true;
         }
 
+        boolean hasFocusedWidget = navigation.getActiveTab()
+                .map(TabWidget::getFocusedWidget)
+                .isPresent();
+        if (hasFocusedWidget) {
+            return false;
+        }
+
         //#if MC>=12109
         //$$ if (ModVoiceClient.MENU_KEY.matches(new KeyEvent(keyCode, 0, modifiers))) {
         //#else

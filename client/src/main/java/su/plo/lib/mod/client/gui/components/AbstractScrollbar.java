@@ -8,6 +8,7 @@ import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
+import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.ScissorState;
@@ -355,6 +356,27 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     }
 
     public abstract void init();
+
+    // widgets inside scrollbar are always Entry
+    @SuppressWarnings("unchecked")
+    public @Nullable GuiWidgetListener getFocusedWidget() {
+        Entry entry = (Entry) getFocused();
+        if (entry == null) return null;
+
+        GuiWidgetListener widget = entry.getFocused();
+        if (widget instanceof AbstractScrollbar<?>) {
+            return ((AbstractScrollbar<?>) widget).getFocusedWidget();
+        }
+
+        if (widget instanceof GuiAbstractWidget) {
+            GuiAbstractWidget abstractWidget = (GuiAbstractWidget) widget;
+            if (!abstractWidget.isFocused()) return null;
+
+            return widget;
+        }
+
+        return null;
+    }
 
     @AllArgsConstructor
     @ToString
