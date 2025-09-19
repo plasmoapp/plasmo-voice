@@ -193,7 +193,7 @@ class VoiceServerLanguages(
 
         val defaultLanguage = languages.getOrDefault(
             serverTranslator.defaultLanguage,
-            languages[languages.keys.first()]!!
+            VoiceServerLanguage(Toml(), null)
         )
 
         // load from languagesFolder if not found in list and use default language as defaults
@@ -239,6 +239,11 @@ class VoiceServerLanguages(
     }
 
     private fun getLanguage(languageName: String?, scope: LanguageScope): Map<String, String> {
+        if (serverTranslator.forcedLanguage != null) {
+            val language = languages[serverTranslator.forcedLanguage] ?: return ImmutableMap.of()
+            return if (scope == LanguageScope.SERVER) language.serverLanguage else language.clientLanguage
+        }
+
         val language = languages[languageName?.lowercase() ?: serverTranslator.defaultLanguage]
         if (languageName == null && language == null) return ImmutableMap.of()
         if (language == null) return getLanguage(null, scope)

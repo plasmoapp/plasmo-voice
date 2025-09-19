@@ -31,8 +31,20 @@ public final class VoiceServerConfig implements ServerConfig {
     @ConfigField(comment = "Used to store server-related config file on the client\nSet it to a single value on different servers if you want them to share config")
     private String serverId = UUID.randomUUID().toString();
 
-    @ConfigField
+    @ConfigField(
+            comment =
+                    "Language used when client's language doesn't exist.\n\n" +
+                    "By default, client's language used for translations.\n" +
+                    "For example, if default_language is set to ja_jp but the client uses en_us, then en_us will be used.\n" +
+                    "If you want to use one specific language for all clients, uncomment and set forced_language below."
+    )
     private String defaultLanguage = "en_us";
+
+    @ConfigField(
+            comment = "Language used for all clients.",
+            nullComment = "forced_language = \"ja_jp\""
+    )
+    private @Nullable String forcedLanguage = null;
 
     @ConfigField
     private boolean debug = false;

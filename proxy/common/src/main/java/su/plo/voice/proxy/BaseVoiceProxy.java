@@ -154,13 +154,13 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
 
             ServerTranslator serverTranslator = getMinecraftServer().getServerTranslator();
             this.languages = new VoiceServerLanguages(serverTranslator, config.useCrowdinTranslations());
-            serverTranslator.setDefaultLanguage(config.defaultLanguage());
-//            languages.register(
-//                    this::getResource,
-//                    new File(getConfigFolder(), "languages"),
-//                    ServerLanguage.class,
-//                    "en_us"
-//            );
+            if (config.forcedLanguage() != null) {
+                serverTranslator.setDefaultLanguage(config.forcedLanguage());
+                serverTranslator.setForcedLanguage(config.forcedLanguage());
+            } else {
+                serverTranslator.setDefaultLanguage(config.defaultLanguage());
+                serverTranslator.setForcedLanguage(null);
+            }
 
             // load forwarding secret
             UUID forwardingSecret;
