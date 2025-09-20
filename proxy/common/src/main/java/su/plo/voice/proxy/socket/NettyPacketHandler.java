@@ -140,7 +140,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
             receiver = connection.getRemoteAddress();
             receiverSecret = connection.getSecret();
 
-            if (!connection.isConnected()) return true;
+            if (!connection.isConnected() || connection.getPlayer().getInstance().getServer() == null) return true;
         }
 
         // rewrite to backend server

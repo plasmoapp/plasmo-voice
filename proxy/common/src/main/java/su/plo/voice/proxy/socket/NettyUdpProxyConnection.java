@@ -53,7 +53,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
 
     @Override
     public void sendPacket(Packet<?> packet) {
-        if (!isConnected()) return;
+        if (!isConnected() || player.getInstance().getServer() == null) return;
 
         byte[] encoded = PacketUdpCodec.encode(packet, secret);
         if (encoded == null) return;
@@ -75,7 +75,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
 
     @Override
     public boolean isConnected() {
-        return connected && player.getInstance().getServer() != null;
+        return connected;
     }
 
     @Override
