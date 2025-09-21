@@ -5,12 +5,14 @@ import su.plo.voice.api.audio.source.AudioSourceManager
 import su.plo.voice.api.server.audio.source.ServerAudioSource
 import su.plo.voice.api.server.audio.source.ServerBroadcastSource
 import su.plo.voice.api.server.audio.source.ServerDirectSource
+import su.plo.voice.api.server.event.audio.source.ServerSourceCreatedEvent
 import su.plo.voice.api.server.player.VoicePlayer
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo
 import su.plo.voice.proto.data.audio.line.SourceLine
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
-import java.util.*
+import java.util.UUID
+import java.util.function.Consumer
 
 /**
  * Represents a base server source line.
@@ -54,13 +56,31 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
      * @param player The player attached to the direct source.
      * @param stereo Whether the source should be stereo (default is false).
      * @param decoderInfo Optional decoder information, default is [OpusDecoderInfo].
+     * @param builder Optional builder to change source info before it's added to the sources list and [ServerSourceCreatedEvent] is fired.
      * @return A new [ServerDirectSource] instance.
      */
     fun createDirectSource(
         player: VoicePlayer,
         stereo: Boolean = false,
-        decoderInfo: CodecInfo? = OpusDecoderInfo()
+        decoderInfo: CodecInfo? = OpusDecoderInfo(),
+        builder: Consumer<ServerDirectSource> = Consumer {},
     ): ServerDirectSource
+
+    /**
+     * Creates a new direct source.
+     *
+     * Direct sources are used to send audio data directly to the players.
+     *
+     * @param player The player attached to the direct source.
+     * @param stereo Whether the source should be stereo (default is false).
+     * @param decoderInfo Optional decoder information, default is [OpusDecoderInfo].
+     * @return A new [ServerDirectSource] instance.
+     */
+    fun createDirectSource(
+        player: VoicePlayer,
+        stereo: Boolean = false,
+        decoderInfo: CodecInfo? = OpusDecoderInfo(),
+    ): ServerDirectSource = createDirectSource(player, stereo, OpusDecoderInfo(), {})
 
     /**
      * Creates a new direct source.
@@ -73,8 +93,26 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
      */
     fun createDirectSource(
         player: VoicePlayer,
-        stereo: Boolean = false
+        stereo: Boolean = false,
     ): ServerDirectSource = createDirectSource(player, stereo, OpusDecoderInfo())
+
+    /**
+     * Creates a new broadcast source.
+     *
+     * Broadcast sources are used to send audio data directly to the group of players.
+     * By default, it sends packets to all players with Plasmo Voice installed,
+     * but you can change a group of players using [ServerBroadcastSource.players]
+     *
+     * @param stereo Whether the source should be stereo (default is false).
+     * @param decoderInfo Optional decoder information, default is [OpusDecoderInfo].
+     * @param builder Optional builder to change source info before it's added to the sources list and [ServerSourceCreatedEvent] is fired.
+     * @return A new [ServerBroadcastSource] instance.
+     */
+    fun createBroadcastSource(
+        stereo: Boolean = false,
+        decoderInfo: CodecInfo? = OpusDecoderInfo(),
+        builder: Consumer<ServerBroadcastSource> = Consumer {},
+    ): ServerBroadcastSource
 
     /**
      * Creates a new broadcast source.
@@ -89,8 +127,8 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
      */
     fun createBroadcastSource(
         stereo: Boolean = false,
-        decoderInfo: CodecInfo? = OpusDecoderInfo()
-    ): ServerBroadcastSource
+        decoderInfo: CodecInfo? = OpusDecoderInfo(),
+    ): ServerBroadcastSource = createBroadcastSource(stereo, decoderInfo, {})
 
     /**
      * Creates a new broadcast source.
@@ -103,7 +141,7 @@ interface BaseServerSourceLine : SourceLine, AudioSourceManager<ServerAudioSourc
      * @return A new [ServerBroadcastSource] instance.
      */
     fun createBroadcastSource(
-        stereo: Boolean = false
+        stereo: Boolean = false,
     ): ServerBroadcastSource = createBroadcastSource(stereo, OpusDecoderInfo())
 
     /**
