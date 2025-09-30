@@ -21,7 +21,7 @@ supervanish = "6.2.18-3"
 
 bungeecord = "1.19-R0.1-SNAPSHOT"
 velocity = "3.1.1"
-paper = "1.16.5-R0.1-SNAPSHOT"
+paper = "1.18.2-R0.1-SNAPSHOT"
 
 minestom = "39d445482f"
 
@@ -55,7 +55,7 @@ supervanish = { module = "com.github.LeonMangler:SuperVanish", version.ref = "su
 
 bungeecord   = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord"}
 velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
-paper        = { module = "com.destroystokyo.paper:paper-api", version.ref = "paper" }
+paper        = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 
 minestom = { module = "net.minestom:minestom-snapshots", version.ref = "minestom" }
 
