@@ -52,7 +52,20 @@ public interface UdpServerConnectionManager extends UdpConnectionManager<VoiceSe
      * @param connection The UDP server connection to remove.
      * @return {@code true} if the connection was successfully removed, {@code false} if the connection was not found.
      */
-    boolean removeConnection(@NotNull UdpServerConnection connection);
+    default boolean removeConnection(@NotNull UdpServerConnection connection) {
+        return removeConnection(connection, UdpClientDisconnectedEvent.Reason.CUSTOM);
+    }
+
+    /**
+     * Removes a connection from the connection map.
+     * <br/>
+     * This method calls {@link UdpClientDisconnectedEvent} after removing the connection from the map.
+     *
+     * @param connection The UDP server connection to remove.
+     * @param reason The reason of the removal.
+     * @return {@code true} if the connection was successfully removed, {@code false} if the connection was not found.
+     */
+    boolean removeConnection(@NotNull UdpServerConnection connection, @NotNull UdpClientDisconnectedEvent.Reason reason);
 
     /**
      * Removes a connection by player from the connection map.
@@ -62,7 +75,20 @@ public interface UdpServerConnectionManager extends UdpConnectionManager<VoiceSe
      * @param player The player associated with the connection to remove.
      * @return {@code true} if the connection was successfully removed, {@code false} if the connection was not found.
      */
-    boolean removeConnection(@NotNull VoiceServerPlayer player);
+    default boolean removeConnection(@NotNull VoiceServerPlayer player) {
+        return removeConnection(player, UdpClientDisconnectedEvent.Reason.CUSTOM);
+    }
+
+    /**
+     * Removes a connection by player from the connection map.
+     * <br/>
+     * This method calls {@link UdpClientDisconnectedEvent} after removing the connection from the map.
+     *
+     * @param player The player associated with the connection to remove.
+     * @param reason The reason of the removal.
+     * @return {@code true} if the connection was successfully removed, {@code false} if the connection was not found.
+     */
+    boolean removeConnection(@NotNull VoiceServerPlayer player, @NotNull UdpClientDisconnectedEvent.Reason reason);
 
     /**
      * Removes a connection by secret from the connection map.
@@ -72,7 +98,19 @@ public interface UdpServerConnectionManager extends UdpConnectionManager<VoiceSe
      * @param secret The secret associated with the connection to remove.
      * @return {@code true} if the connection was successfully removed, {@code false} if the connection was not found.
      */
-    boolean removeConnection(UUID secret);
+    default boolean removeConnection(@NotNull UUID secret) {
+        return removeConnection(secret, UdpClientDisconnectedEvent.Reason.CUSTOM);
+    }
+
+    /**
+     * Removes a connection by secret from the connection map.
+     * <br/>
+     * This method calls {@link UdpClientDisconnectedEvent} after removing the connection from the map.
+     *
+     * @param secret The secret associated with the connection to remove.
+     * @return {@code true} if the connection was successfully removed, {@code false} if the connection was not found.
+     */
+    boolean removeConnection(@NotNull UUID secret, @NotNull UdpClientDisconnectedEvent.Reason reason);
 
     /**
      * Clears all connections.

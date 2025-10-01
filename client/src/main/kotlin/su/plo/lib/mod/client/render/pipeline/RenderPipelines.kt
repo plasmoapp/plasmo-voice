@@ -6,15 +6,15 @@ import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.DestFactor
 import su.plo.lib.mod.client.render.SourceFactor
 import su.plo.lib.mod.client.render.VertexFormatMode
-import su.plo.lib.mod.client.render.shader.SolidColorShader
 
-//#if MC>=12106
+//#if MC>=12106 && MC<12109
 //$$ import su.plo.voice.client.mixin.accessor.CompositeRenderTypeAccessor
 //#endif
 
 //#if MC>=12105
 //$$ import net.minecraft.resources.ResourceLocation
 //#else
+import su.plo.lib.mod.client.render.shader.SolidColorShader
 import com.mojang.blaze3d.vertex.VertexFormatElement
 //#endif
 
@@ -146,25 +146,20 @@ object RenderPipelines {
         renderTypes.computeIfAbsent(renderType) {
             renderPipeline(
                 ResourceLocationUtil.mod("pipeline/render_type_$name"),
-                //#if MC>=12106
-                //$$ (renderType as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline().vertexShader,
-                //$$ (renderType as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline().fragmentShader,
-                //#elseif MC>=12105
-                //$$ renderType.renderPipeline.vertexShader,
-                //$$ renderType.renderPipeline.fragmentShader,
+                //#if MC>=12105
+                //$$ renderType.renderPipeline().vertexShader,
+                //$$ renderType.renderPipeline().fragmentShader,
                 //#endif
                 renderType.format(),
                 VertexFormatMode.from(renderType.mode())
             ) {
-                //#if MC>=12106
-                //$$ mcRenderPipeline = renderType.plasmovoice_getRenderPipeline()
-                //#elseif MC>=12105
-                //$$ mcRenderPipeline = renderType.renderPipeline
+                //#if MC>=12105
+                //$$ mcRenderPipeline = renderType.renderPipeline()
                 //#endif
 
-                //#if MC>=12105
-                //$$ mcRenderType = renderType
-                //#else
+                mcRenderType = renderType
+
+                //#if MC<12105
                 if (renderType.format().elements.any { it.usage == VertexFormatElement.Usage.UV }) {
                     samplers += "Sampler0"
                 }
@@ -174,4 +169,15 @@ object RenderPipelines {
 
     fun RenderType.toRenderPipeline() =
         fromRenderType(toString(), this)
+
+    //#if MC>=12105
+    //$$ private fun RenderType.renderPipeline(): com.mojang.blaze3d.pipeline.RenderPipeline =
+        //#if MC>=12109
+        //$$ this.pipeline()
+        //#elseif MC>=12106
+        //$$ (this as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline()
+        //#else
+        //$$ this.renderPipeline
+        //#endif
+    //#endif
 }

@@ -1,17 +1,18 @@
 package su.plo.lib.mod.client.render.shader;
 
-import gg.essential.universal.shader.BlendState;
-import gg.essential.universal.shader.UShader;
 import lombok.experimental.UtilityClass;
-import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.compat.vulkan.VulkanCompat;
 
+//#if MC<12105
+import gg.essential.universal.shader.BlendState;
+import gg.essential.universal.shader.UShader;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
+//#endif
 
 @UtilityClass
 public class SolidColorShader {
-
-    private static UShader shader;
 
     public static boolean isAvailable() {
         //#if MC>=12105
@@ -21,10 +22,10 @@ public class SolidColorShader {
         //#endif
     }
 
+    //#if MC<12105
+    private static UShader shader;
+
     public static @Nullable UShader getShader() {
-        //#if MC>=12105
-        //$$ return null;
-        //#else
         if (VulkanCompat.hasVulkan()) return null;
 
         if (shader == null) {
@@ -52,6 +53,6 @@ public class SolidColorShader {
         }
 
         return shader;
-        //#endif
     }
+    //#endif
 }

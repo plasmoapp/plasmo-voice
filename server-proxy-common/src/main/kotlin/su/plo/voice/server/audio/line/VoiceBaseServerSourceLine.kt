@@ -16,7 +16,9 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
 import su.plo.voice.server.audio.source.VoiceServerBroadcastSource
 import su.plo.voice.server.audio.source.VoiceServerDirectSource
-import java.util.*
+import java.util.Optional
+import java.util.UUID
+import java.util.function.Consumer
 import java.util.stream.Collectors
 
 abstract class VoiceBaseServerSourceLine(
@@ -53,7 +55,11 @@ abstract class VoiceBaseServerSourceLine(
             }
         } ?: this
 
-    override fun createBroadcastSource(stereo: Boolean, decoderInfo: CodecInfo?): ServerBroadcastSource =
+    override fun createBroadcastSource(
+        stereo: Boolean,
+        decoderInfo: CodecInfo?,
+        builder: Consumer<ServerBroadcastSource>,
+    ): ServerBroadcastSource =
         VoiceServerBroadcastSource(
             voiceServer,
             voiceServer.udpConnectionManager,
@@ -61,9 +67,16 @@ abstract class VoiceBaseServerSourceLine(
             this,
             decoderInfo,
             stereo
-        ).also(::addSource)
+        )
+            .also(builder::accept)
+            .also(::addSource)
 
-    override fun createDirectSource(player: VoicePlayer, stereo: Boolean, decoderInfo: CodecInfo?): ServerDirectSource =
+    override fun createDirectSource(
+        player: VoicePlayer,
+        stereo: Boolean,
+        decoderInfo: CodecInfo?,
+        builder: Consumer<ServerDirectSource>,
+    ): ServerDirectSource =
         VoiceServerDirectSource(
             voiceServer,
             voiceServer.udpConnectionManager,
@@ -72,7 +85,9 @@ abstract class VoiceBaseServerSourceLine(
             decoderInfo,
             stereo,
             player
-        ).also(::addSource)
+        )
+            .also(builder::accept)
+            .also(::addSource)
 
     override fun removeSource(sourceId: UUID) {
         val source = sourceById.remove(sourceId) ?: return

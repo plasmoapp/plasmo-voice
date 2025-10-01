@@ -1,8 +1,6 @@
-### Changes in 2.1.5
-- Players' icons are now rendered only after successful connect to the UDP server.
-- Added minimum threshold for distance gain to fix `Set source float 4106: -7.955086E-7: Invalid parameter parameter value.`.
-- Fixed an issue where the audio end packet wasn't sent after reconnecting to the UDP server.
-- Fixed an audio glitch on re-activating abruptly stopped source (e.g. on dimension change while source is activated).
-- Fixed broken rendering of the entire HUD when HUD icons/overlay are being rendered on <1.20.
-- Fixed [crash on <1.21.5](https://github.com/plasmoapp/plasmo-voice/issues/461) and rending issues on 1.21.5 with Vulkanmod.
-- Fixed a deadlock caused by language loading, which could eventually break languages and other addons that use coroutines (e.g. discs addon).
+### Changes in 2.1.6
+- Removed "Default language '...' doesn't exist" check when using non "en_us" language.
+- Fixed incorrect version of the fabric-permissions-api in 1.21.6 fabric.
+- Fixed crash with Iris ([#456](https://github.com/plasmoapp/plasmo-voice/issues/456)).
+- Fixed game freeze on the game start with Moonlight Lib installed ([#476](https://github.com/plasmoapp/plasmo-voice/issues/476)).
+- Fixed menu closing when `V` was pressed inside a text input.

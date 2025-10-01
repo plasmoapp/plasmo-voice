@@ -47,7 +47,12 @@ public final class ModPlayerSkins {
             //#if MC>=12002
             //$$ GameProfile profile = Optional.ofNullable(
             //$$                 Minecraft.getInstance()
+            //#if MC>=12109
+            //$$                         .services()
+            //$$                         .sessionService()
+            //#else
             //$$                         .getMinecraftSessionService()
+            //#endif
             //$$                         .fetchProfile(playerId, false)
             //$$         )
             //$$         .map(ProfileResult::profile)
@@ -87,9 +92,17 @@ public final class ModPlayerSkins {
 
     private static Supplier<ResourceLocation> getInsecureSkinLocation(GameProfile gameProfile) {
         //#if MC>=12002
+        //#if MC>=12109
+        //$$ Supplier<PlayerSkin> skinSupplier = Minecraft.getInstance().getSkinManager().createLookup(gameProfile, false);
+        //#else
         //$$ Supplier<PlayerSkin> skinSupplier = Minecraft.getInstance().getSkinManager().lookupInsecure(gameProfile);
+        //#endif
         //$$ return () -> {
+        //#if MC>=12109
+        //$$     ResourceLocation skinLocation = skinSupplier.get().body().texturePath();
+        //#else
         //$$     ResourceLocation skinLocation = skinSupplier.get().texture();
+        //#endif
         //$$     Minecraft.getInstance()
         //$$             .getTextureManager()
         //$$             .getTexture(skinLocation)
@@ -111,7 +124,9 @@ public final class ModPlayerSkins {
     public static synchronized @NotNull ResourceLocation getSkin(@NotNull UUID playerId, @NotNull String nick) {
         PlayerInfo playerInfo = Minecraft.getInstance().getConnection().getPlayerInfo(playerId);
         if (playerInfo != null) {
-            //#if MC>=12002
+            //#if MC>=12109
+            //$$ return playerInfo.getSkin().body().texturePath();
+            //#elseif MC>=12002
             //$$ return playerInfo.getSkin().texture();
             //#else
             return playerInfo.getSkinLocation();
@@ -125,7 +140,9 @@ public final class ModPlayerSkins {
     }
 
     public static @NotNull ResourceLocation getDefaultSkin(@NotNull UUID playerId) {
-        //#if MC>=12002
+        //#if MC>=12109
+        //$$ return DefaultPlayerSkin.get(playerId).body().texturePath();
+        //#elseif MC>=12002
         //$$ return DefaultPlayerSkin.get(playerId).texture();
         //#else
         return DefaultPlayerSkin.getDefaultSkin(playerId);

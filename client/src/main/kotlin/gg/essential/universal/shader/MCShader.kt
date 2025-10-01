@@ -1,6 +1,6 @@
 // MC 1.17+
 package gg.essential.universal.shader
-//#if MC>11700
+//#if MC>11700 && MC<12105
 
 import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.vertex.DefaultVertexFormat

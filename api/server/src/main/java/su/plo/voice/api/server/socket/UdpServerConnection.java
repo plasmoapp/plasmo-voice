@@ -35,4 +35,11 @@ public interface UdpServerConnection extends UdpConnection {
      * @param keepAlive The timestamp of the last sent keep-alive signal.
      */
     void setSentKeepAlive(long keepAlive);
+
+    /**
+     * Gets the timestamp of the last received packet from this connection.
+     *
+     * @return The timestamp of the last received packet.
+     */
+    long getLastReceivedPacketTimestamp();
 }

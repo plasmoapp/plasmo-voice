@@ -1,5 +1,6 @@
 package su.plo.lib.mod.client.render.shader;
 
+//#if MC<12105
 import gg.essential.universal.shader.BlendState;
 import gg.essential.universal.shader.UShader;
 import lombok.NonNull;
@@ -33,3 +34,4 @@ public class ShaderUtil {
         }
     }
 }
+//#endif

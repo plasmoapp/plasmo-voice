@@ -217,7 +217,13 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                     this::getResource,
                     new File(getConfigFolder(), "languages")
             );
-            serverTranslator.setDefaultLanguage(config.defaultLanguage());
+            if (config.forcedLanguage() != null) {
+                serverTranslator.setDefaultLanguage(config.forcedLanguage());
+                serverTranslator.setForcedLanguage(config.forcedLanguage());
+            } else {
+                serverTranslator.setDefaultLanguage(config.defaultLanguage());
+                serverTranslator.setForcedLanguage(null);
+            }
 
             // load forwarding secret
             File forwardingSecretFile = System.getenv().containsKey("PLASMO_VOICE_FORWARDING_SECRET_FILE")

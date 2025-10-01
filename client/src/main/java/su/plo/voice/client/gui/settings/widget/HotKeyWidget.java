@@ -46,7 +46,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
             formatKeys(text, entry.value().getKeys());
         }
 
-        if (isActive()) {
+        if (isActiveHotkey()) {
             if (pressedKeys.size() > 0) {
                 text = McTextComponent.literal("");
                 List<Hotkey.Key> sorted = pressedKeys.stream()
@@ -68,7 +68,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (isActive()
+        if (isActiveHotkey()
                 && !(button == 0 && pressedKeys.size() == 0) // GLFW_MOUSE_BUTTON_1
                 && pressedKeys.stream().anyMatch(key -> key.getType() == Hotkey.Type.MOUSE && key.getCode() == button)
         ) {
@@ -82,7 +82,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (isActive()) {
+        if (isActiveHotkey()) {
             if (pressedKeys.size() < 3) {
                 pressedKeys.add(Hotkey.Type.MOUSE.getOrCreate(button));
             }
@@ -99,7 +99,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
-        if (isActive()) {
+        if (isActiveHotkey()) {
             if (keyCode == 256) { // GLFW_KEY_ESCAPE
                 if (pressedKeys.size() > 0) {
                     keysReleased();
@@ -124,7 +124,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     @Override
     public boolean keyReleased(int keyCode, char typedChar, int modifiers) {
-        if (isActive()
+        if (isActiveHotkey()
                 && pressedKeys.stream().anyMatch(key -> key.getType() == Hotkey.Type.KEYSYM && key.getCode() == keyCode)
         ) {
             keysReleased();
@@ -159,7 +159,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
 
     @Override
     public void renderToolTip(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
-        if (!Objects.equals(parent.getFocusedHotKey(), this)) {
+        if (!isActiveHotkey()) {
             int width = RenderUtil.getTextWidth(getText());
             if (width > this.width - 16) {
                 parent.setTooltip(getText());
@@ -169,8 +169,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
         super.renderToolTip(context, mouseX, mouseY);
     }
 
-    @Override
-    public boolean isActive() {
+    public boolean isActiveHotkey() {
         return Objects.equals(parent.getFocusedHotKey(), this);
     }
 

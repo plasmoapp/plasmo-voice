@@ -1,5 +1,6 @@
 package gg.essential.universal.shader
 
+//#if MC<12105
 import com.mojang.blaze3d.vertex.VertexFormat
 
 //#if MC>=11700
@@ -40,3 +41,4 @@ interface UShader {
         //#endif
     }
 }
+//#endif

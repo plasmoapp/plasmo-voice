@@ -7,7 +7,6 @@ import net.minecraft.client.multiplayer.ClientLevel;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.event.Event;
-import su.plo.voice.client.render.ModCamera;
 
 public final class LevelRenderEvent implements Event {
 
@@ -16,20 +15,18 @@ public final class LevelRenderEvent implements Event {
     @Getter
     private final ClientLevel level;
     @Getter
-    private final ModCamera camera;
-    @Getter
     private final LightSupplier lightSupplier;
     @Getter
     private final float delta;
 
-    public LevelRenderEvent(@NonNull PoseStack stack,
-                            @NonNull ClientLevel level,
-                            @NonNull ModCamera camera,
-                            @NonNull LightSupplier lightSupplier,
-                            float delta) {
+    public LevelRenderEvent(
+            @NonNull PoseStack stack,
+            @NonNull ClientLevel level,
+            @NonNull LightSupplier lightSupplier,
+            float delta
+    ) {
         this.stack = stack;
         this.level = level;
-        this.camera = camera;
         this.lightSupplier = lightSupplier;
         this.delta = delta;
     }

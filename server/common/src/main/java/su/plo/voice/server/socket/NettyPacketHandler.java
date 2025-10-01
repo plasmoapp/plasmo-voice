@@ -7,10 +7,12 @@ import lombok.AllArgsConstructor;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.packets.udp.PacketUdp;
+import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.socket.NettyPacketUdp;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -55,6 +57,12 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 player.get()
         );
         connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
+        if (packet.getPacketUntyped() instanceof PingPacket) {
+            PingPacket pingPacket = (PingPacket) packet.getPacketUntyped();
+            if (pingPacket.getServerIp() != null) {
+                connection.setConnectionAddress(new InetSocketAddress(pingPacket.getServerIp(), pingPacket.getServerPort()));
+            }
+        }
         voiceServer.getUdpConnectionManager().addConnection(connection);
 
         voiceServer.getTcpPacketManager().sendConfigInfo(player.get());

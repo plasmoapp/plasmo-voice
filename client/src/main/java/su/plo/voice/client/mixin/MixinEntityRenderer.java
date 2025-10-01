@@ -12,13 +12,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.lib.mod.client.render.entity.LivingEntityRenderState;
-import su.plo.voice.client.event.LivingEntityRenderEvent;
 import su.plo.voice.client.extension.EntityRendererKt;
 
 //#if MC>=12102
 //$$ import net.minecraft.client.renderer.entity.state.EntityRenderState;
 //$$ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 //$$ import su.plo.voice.client.render.EntityRenderStateAccessor;
+//#endif
+
+//#if MC>=12109
+//$$ import net.minecraft.client.renderer.SubmitNodeCollector;
+//$$ import net.minecraft.client.renderer.state.CameraRenderState;
+//$$ import su.plo.lib.mod.client.render.entity.EntityRenderSubmitCollection;
+//#else
+import su.plo.voice.client.event.LivingEntityRenderEvent;
 //#endif
 
 @Mixin(EntityRenderer.class)
@@ -41,6 +48,24 @@ public class MixinEntityRenderer {
     //$$     entityRenderStateAccessor.plasmovoice_setLivingEntityRenderState(entityRenderState);
     //$$ }
     //$$
+
+    //#if MC>=12109
+    //$$ @Inject(method = "submit", at = @At("RETURN"))
+    //$$ public void submit(
+    //$$         EntityRenderState entityRenderState,
+    //$$         PoseStack poseStack,
+    //$$         SubmitNodeCollector submitNodeCollector,
+    //$$         CameraRenderState cameraRenderState,
+    //$$         CallbackInfo ci
+    //$$ ) {
+    //$$     EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) entityRenderState;
+    //$$     LivingEntityRenderState livingEntityRenderState = entityRenderStateAccessor.plasmovoice_getLivingEntityRenderState();
+    //$$
+    //$$     if (livingEntityRenderState == null) return;
+    //$$
+    //$$     EntityRenderSubmitCollection.submit(livingEntityRenderState, poseStack, entityRenderState.lightCoords);
+    //$$ }
+    //#else
     //$$ @Inject(method = "render", at = @At("RETURN"))
     //$$ public void render(
     //$$         EntityRenderState entityRenderState,
@@ -60,6 +85,8 @@ public class MixinEntityRenderer {
     //$$             light
     //$$     );
     //$$ }
+    //#endif
+
     //#else
     @Inject(method = "render", at = @At("RETURN"))
     public void render(

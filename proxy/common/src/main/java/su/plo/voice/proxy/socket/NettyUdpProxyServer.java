@@ -12,6 +12,7 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
 import su.plo.voice.proxy.BaseVoiceProxy;
+import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
@@ -43,6 +44,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
                 pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceProxy));
+                pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
         });
 

@@ -6,6 +6,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
@@ -23,7 +24,6 @@ import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
-import su.plo.voice.client.render.ModCamera;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
 import java.util.Map;
@@ -90,6 +90,8 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
     @EventSubscribe
     public void onLevelRender(@NotNull LevelRenderEvent event) {
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
         for (Map.Entry<UUID, VisualizeEntry> entry : entries.entrySet()) {
             UUID key = entry.getKey();
             VisualizeEntry value = entry.getValue();
@@ -100,20 +102,20 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             }
 
             if (value.position() != null &&
-                    event.getCamera().position().distanceTo(value.position()) > (renderDistanceValue(Minecraft.getInstance().options) * 16)
+                    camera.getPosition().distanceTo(value.position()) > (renderDistanceValue(Minecraft.getInstance().options) * 16)
             ) {
                 entries.remove(key);
                 continue;
             }
 
-            renderEntry(value, event.getStack(), event.getCamera(), event.getDelta());
+            renderEntry(value, event.getStack(), camera, event.getDelta());
         }
     }
 
     private void renderEntry(
             @NotNull VisualizeEntry entry,
             @NotNull PoseStack stack,
-            @NotNull ModCamera camera,
+            @NotNull Camera camera,
             float delta
     ) {
         if (System.currentTimeMillis() - entry.lastChanged() > 2000L) {
@@ -138,9 +140,9 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
         //#endif
 
         stack.translate(
-                center.x - camera.position().x,
-                center.y - camera.position().y,
-                center.z - camera.position().z
+                center.x - camera.getPosition().x,
+                center.y - camera.getPosition().y,
+                center.z - camera.getPosition().z
         );
 
         BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.DISTANCE_SPHERE);

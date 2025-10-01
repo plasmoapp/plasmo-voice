@@ -11,6 +11,7 @@ import su.plo.voice.proto.data.audio.source.SourceInfo;
 
 import java.util.Collection;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
 /**
@@ -105,6 +106,16 @@ public interface ServerAudioSource<S extends SourceInfo> extends AudioSource<S> 
      * @return {@code true} if the icon is visible, {@code false} otherwise.
      */
     boolean isIconVisible();
+
+    /**
+     * Resolves the source info asynchronously.
+     * <br/><br/>
+     * Sometimes source info should be resolved on the main thread (e.g. in Folia for entities),
+     * so this should be used instead of {@link #getSourceInfo()}.
+     *
+     * @return The source info.
+     */
+    @NotNull CompletableFuture<S> resolveSourceInfo();
 
     /**
      * Adds a new player filter to the source.

@@ -16,6 +16,7 @@ import su.plo.voice.client.audio.filter.GainFilter;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.util.MacVersionKt;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.List;
@@ -78,7 +79,7 @@ public final class VoiceDeviceManager implements DeviceManager {
     @Override
     public @NotNull InputDevice openInputDevice(@Nullable AudioFormat format) throws DeviceException {
         // Use javax for mac by default
-        if (Minecraft.ON_OSX && !config.getVoice().getUseJavaxInput().value()) {
+        if (MacVersionKt.isMac() && !config.getVoice().getUseJavaxInput().value()) {
             config.getVoice().getUseJavaxInput().set(true);
             config.save(true);
         }

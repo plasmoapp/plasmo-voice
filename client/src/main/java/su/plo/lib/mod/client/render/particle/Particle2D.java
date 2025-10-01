@@ -132,8 +132,6 @@ public abstract class Particle2D {
 
     public abstract void render(@NotNull GuiRenderContext context, @NotNull ResourceLocation textureLocation, float tickDelta);
 
-    public abstract ParticleRenderType getType();
-
     public String toString() {
         String var10000 = this.getClass().getSimpleName();
         return var10000 + ", Pos (" + this.x + "," + this.y + "), RGBA (" + this.colorRed + "," + this.colorGreen + "," + this.colorBlue + "," + this.colorAlpha + "), Age " + this.age;

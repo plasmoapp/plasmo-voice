@@ -13,6 +13,11 @@ import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.event.key.MouseScrollEvent;
 
+//#if MC>=12109
+//$$ import net.minecraft.client.input.MouseButtonInfo;
+//$$ import org.jetbrains.annotations.NotNull;
+//#endif
+
 @Mixin(MouseHandler.class)
 public abstract class MixinMouseHandler {
 
@@ -20,6 +25,19 @@ public abstract class MixinMouseHandler {
     @Final
     private Minecraft minecraft;
 
+    //#if MC>=12109
+    //$$ @Inject(at = @At("HEAD"), method = "onButton")
+    //$$ private void onMouseButton(long window, @NotNull MouseButtonInfo buttonInfo, int action, CallbackInfo ci) {
+    //$$     if (window != this.minecraft.getWindow().handle() || ModVoiceClient.INSTANCE == null) return;
+    //$$
+    //$$     KeyPressedEvent event = new KeyPressedEvent(
+    //$$             Hotkey.Type.MOUSE.getOrCreate(buttonInfo.button()),
+    //$$             Hotkey.Action.fromInt(action)
+    //$$     );
+    //$$
+    //$$     ModVoiceClient.INSTANCE.getEventBus().fire(event);
+    //$$ }
+    //#else
     @Inject(at = @At("HEAD"), method = "onPress")
     private void onMouseButton(long window, int button, int action, int mods, CallbackInfo ci) {
         if (window != this.minecraft.getWindow().getWindow() || ModVoiceClient.INSTANCE == null) return;
@@ -31,6 +49,7 @@ public abstract class MixinMouseHandler {
 
         ModVoiceClient.INSTANCE.getEventBus().fire(event);
     }
+    //#endif
 
     @Inject(at = @At("HEAD"), method = "onScroll", cancellable = true)
     private void onMouseScroll(long window, double horizontal, double vertical, CallbackInfo ci) {

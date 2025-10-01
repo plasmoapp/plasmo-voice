@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
+import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
@@ -17,6 +18,12 @@ import su.plo.voice.client.ModVoiceClient;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+//#if MC>=12109
+//$$ import net.minecraft.client.input.CharacterEvent;
+//$$ import net.minecraft.client.input.KeyEvent;
+//$$ import net.minecraft.client.input.MouseButtonEvent;
+//#endif
 
 //#if MC>=12000
 //$$ import net.minecraft.client.gui.GuiGraphics;
@@ -172,6 +179,25 @@ public final class ScreenWrapper
 //    }
 
     // ContainerEventHandler override
+    //#if MC>=12109
+    //$$  @Override
+    //$$ public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean bl) {
+    //$$     screen.mouseClicked(event.x(), event.y(), event.button());
+    //$$     return false;
+    //$$ }
+    //$$
+    //$$ @Override
+    //$$ public boolean mouseReleased(@NotNull MouseButtonEvent event) {
+    //$$     screen.mouseReleased(event.x(), event.y(), event.button());
+    //$$     return false;
+    //$$ }
+    //$$
+    //$$ @Override
+    //$$ public boolean mouseDragged(@NotNull MouseButtonEvent event, double deltaX, double deltaY) {
+    //$$     screen.mouseDragged(event.x(), event.y(), event.button(), deltaX, deltaY);
+    //$$     return false;
+    //$$ }
+    //#else
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int mouseButton) {
         screen.mouseClicked(mouseX, mouseY, mouseButton);
@@ -186,25 +212,10 @@ public final class ScreenWrapper
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-//        if (this.ignoreFirstMove) {
-//            this.lastDraggedMouseX = mouseX;
-//            this.lastDraggedMouseY = mouseY;
-//            this.ignoreFirstMove = false;
-//        }
-//
-//        double deltaX = (mouseX - lastDraggedMouseX)
-//                * (double)UResolution.getScaledWidth() / (double)UResolution.getWindowWidth()
-//                * UResolution.getScaleFactor();
-//        double deltaY = (mouseY - lastDraggedMouseY)
-//                * (double)UResolution.getScaledHeight() / (double)UResolution.getWindowHeight()
-//                * UResolution.getScaleFactor();
-
-//        this.lastDraggedMouseX = mouseX;
-//        this.lastDraggedMouseY = mouseY;
-
         screen.mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
         return false;
     }
+    //#endif
 
     @Override
     //#if MC>=12002
@@ -213,22 +224,34 @@ public final class ScreenWrapper
     public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
     //#endif
         screen.mouseScrolled(mouseX, mouseY, delta);
-//        super.onMouseScrolled(delta);
         return false;
     }
 
-    //    @Override
-//    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-//        return screen.mouseScrolled(mouseX, mouseY, delta);
-//    }
-
+    //#if MC>=12109
+    //$$ @Override
+    //$$ public boolean charTyped(@NotNull CharacterEvent event) {
+    //$$     return screen.charTyped((char) event.codepoint(), event.modifiers());
+    //$$ }
+    //#else
     @Override
     public boolean charTyped(char typedChar, int modifiers) {
         return screen.charTyped(typedChar, modifiers);
     }
+    //#endif
 
+    //#if MC>=12109
+    //$$ @Override
+    //$$ public boolean keyPressed(@NotNull KeyEvent event) {
+    //$$     return innerKeyPressed(event.key(), event.scancode(), event.modifiers());
+    //$$ }
+    //#else
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
+        return innerKeyPressed(keyCode, scanCode, modifiers);
+    }
+    //#endif
+
+    private boolean innerKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 0) {
             return false;
         }
@@ -243,7 +266,7 @@ public final class ScreenWrapper
         }
 
         if (keyCode == GLFW.GLFW_KEY_TAB) {
-            boolean shiftKeyDown = Screen.hasShiftDown();
+            boolean shiftKeyDown = Inputs.hasShiftDown();
 
             if (!screen.changeFocus(shiftKeyDown)) {
                 screen.changeFocus(shiftKeyDown);
@@ -253,6 +276,17 @@ public final class ScreenWrapper
         return false;
     }
 
+    //#if MC>=12109
+    //$$  @Override
+    //$$  public boolean keyReleased(@NotNull KeyEvent event) {
+    //$$      if (screen.keyReleased(event.key(), (char) 0, event.modifiers())) {
+    //$$          return false;
+    //$$      }
+    //$$
+    //$$      super.keyReleased(event);
+    //$$      return false;
+    //$$  }
+    //#else
     @Override
     public boolean keyReleased(int keyCode, int scanCode, int modifiers) {
         if (screen.keyReleased(keyCode, (char) 0, modifiers)) {
@@ -262,6 +296,7 @@ public final class ScreenWrapper
         super.keyReleased(keyCode, 0, modifiers);
         return false;
     }
+    //#endif
 
     // MinecraftScreen impl
     @Override

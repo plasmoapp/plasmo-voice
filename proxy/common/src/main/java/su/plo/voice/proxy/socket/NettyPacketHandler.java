@@ -13,6 +13,7 @@ import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
 import su.plo.voice.proto.packets.udp.PacketUdp;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
+import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.proxy.connection.CancelForwardingException;
 import su.plo.voice.proxy.server.VoiceRemoteServer;
@@ -67,7 +68,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         BaseVoice.DEBUG_LOGGER.log("{} server: {}", player.get().getInstance().getName(), remoteServer.get());
 
-        if (!remoteServer.get().isAesEncryptionKeySet() && System.getProperty("plasmovoice.skip_aes_server_check").equals("true")) {
+        if (!remoteServer.get().isAesEncryptionKeySet() && System.getProperty("plasmovoice.skip_aes_server_check", "false").equals("true")) {
             ((VoiceRemoteServer) remoteServer.get()).setAesEncryptionKeySet(true);
             remoteServer.get().getAddress(true);
         } else if (!remoteServer.get().isAesEncryptionKeySet()) {
@@ -88,6 +89,12 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         connection.setRemoteSecret(remoteSecret.get());
         connection.setRemoteServer(remoteServer.get());
         connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
+        if (packet.getPacketUntyped() instanceof PingPacket) {
+            PingPacket pingPacket = (PingPacket) packet.getPacketUntyped();
+            if (pingPacket.getServerIp() != null) {
+                connection.setConnectionAddress(new InetSocketAddress(pingPacket.getServerIp(), pingPacket.getServerPort()));
+            }
+        }
         voiceProxy.getUdpConnectionManager().addConnection(connection);
 
         sendPacket(ctx, nettyPacket, connection);
@@ -133,7 +140,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
             receiver = connection.getRemoteAddress();
             receiverSecret = connection.getSecret();
 
-            if (!connection.isConnected()) return true;
+            if (!connection.isConnected() || connection.getPlayer().getInstance().getServer() == null) return true;
         }
 
         // rewrite to backend server

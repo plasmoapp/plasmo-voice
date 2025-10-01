@@ -16,6 +16,10 @@ import java.util.function.Consumer;
 //$$ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 //#endif
 
+//#if MC>=12109
+//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
+//#endif
+
 public final class DropDownWidget extends GuiAbstractWidget {
 
     private final DropDownWidgetList list;
@@ -79,6 +83,12 @@ public final class DropDownWidget extends GuiAbstractWidget {
         renderBackground(context, mouseX, mouseY);
         renderArrow(context);
         renderText(context);
+
+        //#if MC>=12109
+        //$$ if (isMouseOver(mouseX, mouseY)) {
+        //$$     context.requestCursor(isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
+        //$$ }
+        //#endif
 
         if (!open) return;
 

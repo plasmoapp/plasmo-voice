@@ -191,8 +191,10 @@ class VoiceServerLanguages(
     ) {
         if (languages.isEmpty()) return
 
-        val defaultLanguage = languages[serverTranslator.defaultLanguage]
-            ?: throw IllegalStateException("Default language '${serverTranslator.defaultLanguage}' doesn't exist")
+        val defaultLanguage = languages.getOrDefault(
+            serverTranslator.defaultLanguage,
+            VoiceServerLanguage(Toml(), null)
+        )
 
         // load from languagesFolder if not found in list and use default language as defaults
         languagesFolder.mkdirs()
@@ -237,6 +239,11 @@ class VoiceServerLanguages(
     }
 
     private fun getLanguage(languageName: String?, scope: LanguageScope): Map<String, String> {
+        if (serverTranslator.forcedLanguage != null) {
+            val language = languages[serverTranslator.forcedLanguage] ?: return ImmutableMap.of()
+            return if (scope == LanguageScope.SERVER) language.serverLanguage else language.clientLanguage
+        }
+
         val language = languages[languageName?.lowercase() ?: serverTranslator.defaultLanguage]
         if (languageName == null && language == null) return ImmutableMap.of()
         if (language == null) return getLanguage(null, scope)

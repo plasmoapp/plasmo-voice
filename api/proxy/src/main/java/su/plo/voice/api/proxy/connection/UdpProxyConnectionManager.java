@@ -4,6 +4,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
+import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent;
 
 import java.util.Optional;
 import java.util.UUID;
@@ -83,7 +84,18 @@ public interface UdpProxyConnectionManager extends UdpConnectionManager<VoicePro
      * @param connection The UDP proxy connection to remove.
      * @return {@code true} if the removal was successful, {@code false} if the connection was not found.
      */
-    boolean removeConnection(@NotNull UdpProxyConnection connection);
+    default boolean removeConnection(@NotNull UdpProxyConnection connection) {
+        return removeConnection(connection, UdpClientDisconnectedEvent.Reason.CUSTOM);
+    }
+
+    /**
+     * Removes a UDP proxy connection.
+     *
+     * @param connection The UDP proxy connection to remove.
+     * @param reason The reason of the removal.
+     * @return {@code true} if the removal was successful, {@code false} if the connection was not found.
+     */
+    boolean removeConnection(@NotNull UdpProxyConnection connection, @NotNull UdpClientDisconnectedEvent.Reason reason);
 
     /**
      * Removes a UDP proxy connection associated with a player.
@@ -91,7 +103,18 @@ public interface UdpProxyConnectionManager extends UdpConnectionManager<VoicePro
      * @param player The voice proxy player whose connection should be removed.
      * @return {@code true} if the removal was successful, {@code false} if the connection was not found.
      */
-    boolean removeConnection(@NotNull VoiceProxyPlayer player);
+    default boolean removeConnection(@NotNull VoiceProxyPlayer player) {
+        return removeConnection(player, UdpClientDisconnectedEvent.Reason.CUSTOM);
+    }
+
+    /**
+     * Removes a UDP proxy connection associated with a player.
+     *
+     * @param player The voice proxy player whose connection should be removed.
+     * @param reason The reason of the removal.
+     * @return {@code true} if the removal was successful, {@code false} if the connection was not found.
+     */
+    boolean removeConnection(@NotNull VoiceProxyPlayer player, @NotNull UdpClientDisconnectedEvent.Reason reason);
 
     /**
      * Retrieves a UDP proxy connection by the remote secret of the player.

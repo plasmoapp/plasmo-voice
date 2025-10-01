@@ -32,7 +32,10 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+
+//#if MC<12109
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+//#endif
 
 //#if MC>=12005
 //$$ import su.plo.slib.mod.channel.ByteArrayCodec;
@@ -82,6 +85,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 
 //#endif
 
+//#if MC>=12109
+//$$ import su.plo.lib.mod.client.ResourceLocationUtil;
+//#endif
+
 import java.io.File;
 import java.util.Optional;
 
@@ -100,7 +107,11 @@ public final class ModVoiceClient extends BaseVoiceClient
             "key.plasmovoice.settings",
             InputConstants.Type.KEYSYM,
             GLFW.GLFW_KEY_V,
+            //#if MC>=12109
+            //$$ KeyMapping.Category.register(ResourceLocationUtil.mod("name"))
+            //#else
             "Plasmo Voice"
+            //#endif
     );
 
     @Getter
@@ -164,11 +175,11 @@ public final class ModVoiceClient extends BaseVoiceClient
 
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());
         HudRenderCallback.EVENT.register(hudRenderer::render);
+        //#if MC<12109
         WorldRenderEvents.LAST.register(
                 (context) -> levelRenderer.render(
                         context.world(),
                         context.matrixStack(),
-                        context.camera(),
                         //#if MC>=12100
                         //$$ context.tickCounter().getRealtimeDeltaTicks()
                         //#else
@@ -176,6 +187,7 @@ public final class ModVoiceClient extends BaseVoiceClient
                         //#endif
                 )
         );
+        //#endif
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
 
         //#if MC>=12005
@@ -245,7 +257,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#else
     //$$             event.getPoseStack(),
     //#endif
-    //$$             event.getCamera(),
     //$$             event.getPartialTick()
     //$$     );
     //$$ }
@@ -264,7 +275,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     levelRenderer.render(
     //$$             Minecraft.getInstance().level,
     //$$             event.getPoseStack(),
-    //$$             Minecraft.getInstance().gameRenderer.getMainCamera(),
     //$$             event.getPartialTick()
     //$$     );
     //$$ }
@@ -309,7 +319,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     levelRenderer.render(
     //$$            Minecraft.getInstance().level,
     //$$            event.getPoseStack(),
-    //$$            event.getCamera(),
     //#if MC>=12100
     //$$            event.getPartialTick().getRealtimeDeltaTicks()
     //#else

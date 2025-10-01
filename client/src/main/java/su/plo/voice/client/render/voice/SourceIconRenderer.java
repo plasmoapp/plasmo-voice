@@ -33,7 +33,6 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.LivingEntityRenderEvent;
 import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
-import su.plo.voice.client.render.ModCamera;
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
@@ -95,7 +94,6 @@ public final class SourceIconRenderer {
 
             renderStatic(
                     event.getStack(),
-                    event.getCamera(),
                     event.getLightSupplier().getLight(sourcePosition),
                     ResourceLocation.tryParse(sourceLine.get().getIcon()),
                     staticSource,
@@ -339,12 +337,13 @@ public final class SourceIconRenderer {
 
     private void renderStatic(
             @NonNull PoseStack stack,
-            @NonNull ModCamera camera,
             int light,
             @NotNull ResourceLocation iconLocation,
             @NotNull ClientStaticSource staticSource,
             double delta
     ) {
+        Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
+
         Pos3d position = staticSource.getSourceInfo().getPosition();
         Pos3d lastPosition = staticSource.getLastRenderPosition();
 
@@ -358,7 +357,7 @@ public final class SourceIconRenderer {
             lastPosition.setZ(Mth.lerp(delta, lastPosition.getZ(), position.getZ()));
         }
 
-        double distanceToCamera = camera.position().distanceToSqr(toVec3(lastPosition));
+        double distanceToCamera = camera.getPosition().distanceToSqr(toVec3(lastPosition));
         if (distanceToCamera > 4096D) return;
 
         stack.pushPose();
@@ -369,12 +368,12 @@ public final class SourceIconRenderer {
         //#endif
 
         stack.translate(
-                lastPosition.getX() - camera.position().x,
-                lastPosition.getY() - camera.position().y,
-                lastPosition.getZ() - camera.position().z
+                lastPosition.getX() - camera.getPosition().x,
+                lastPosition.getY() - camera.getPosition().y,
+                lastPosition.getZ() - camera.getPosition().z
         );
-        PoseStackKt.rotate(stack, -camera.pitch(), 0.0F, 1.0F, 0.0F);
-        PoseStackKt.rotate(stack, camera.yaw(), 1.0F, 0.0F, 0.0F);
+        PoseStackKt.rotate(stack, -camera.getYRot(), 0.0F, 1.0F, 0.0F);
+        PoseStackKt.rotate(stack, camera.getXRot(), 1.0F, 0.0F, 0.0F);
         stack.scale(-0.025F, -0.025F, 0.025F);
         stack.translate(-5D, -5D, 0D);
 

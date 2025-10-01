@@ -17,6 +17,10 @@ import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
+//#if MC>=12109
+//$$ import net.minecraft.core.ClientAsset
+//#endif
+
 //#if MC>=12002
 //$$ import net.minecraft.client.resources.PlayerSkin
 //#endif
@@ -42,6 +46,17 @@ object DeveloperCapeManager {
     //$$     var newSkin = convertedSkins.getIfPresent(playerName)
     //$$
     //$$     if (newSkin == null || skin.texture != newSkin.texture) {
+    //#if MC>=12109
+    //$$         val capeAsset = ClientAsset.ResourceTexture(capeTexture, capeTexture)
+    //$$         newSkin = skin.with(
+    //$$             PlayerSkin.Patch(
+    //$$                 Optional.empty(),
+    //$$                 Optional.of(capeAsset),
+    //$$                 Optional.of(capeAsset),
+    //$$                 Optional.empty(),
+    //$$             ),
+    //$$         )!!
+    //#else
     //$$         newSkin = PlayerSkin(
     //$$             skin.texture(),
     //$$             skin.textureUrl(),
@@ -50,6 +65,7 @@ object DeveloperCapeManager {
     //$$             skin.model(),
     //$$             skin.secure()
     //$$         )
+    //#endif
     //$$         convertedSkins.put(playerName, newSkin)
     //$$     }
     //$$
@@ -90,7 +106,8 @@ object DeveloperCapeManager {
             val texture = MinecraftProfileTexture(url.toString(), HashMap())
             val string = Hashing.sha1().hashUnencodedChars(texture.hash).toString()
 
-            val skinsFolder = (Minecraft.getInstance().skinManager as SkinManagerAccessor).skinsCacheFolder
+            val skinManagerAccessor = (Minecraft.getInstance().skinManager as SkinManagerAccessor)
+            val skinsFolder = skinManagerAccessor.plasmovoice_skinsCacheFolder()
             val hashFolder = File(skinsFolder, if (string.length > 2) string.substring(0, 2) else "xx")
             val capeFile = File(hashFolder, string)
 
@@ -100,7 +117,11 @@ object DeveloperCapeManager {
 
             //#if MC>=12104
             //$$ try {
+            //#if MC>=12109
+            //$$     skinManagerAccessor.plasmovoice_skinTextureDownloader().downloadAndRegisterSkin(
+            //#else
             //$$     SkinTextureDownloader.downloadAndRegisterSkin(
+            //#endif
             //$$         capeLocation,
             //$$         capeFile.toPath(),
             //$$         texture.url,

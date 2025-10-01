@@ -13,6 +13,7 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.server.audio.source.VoiceServerEntitySource
 import su.plo.voice.server.audio.source.VoiceServerPlayerSource
 import su.plo.voice.server.audio.source.VoiceServerStaticSource
+import java.util.function.Consumer
 
 class VoiceServerSourceLine(
     override val voiceServer: PlasmoVoiceServer,
@@ -38,7 +39,8 @@ class VoiceServerSourceLine(
     override fun createPlayerSource(
         player: VoiceServerPlayer,
         stereo: Boolean,
-        decoderInfo: CodecInfo?
+        decoderInfo: CodecInfo?,
+        builder: Consumer<ServerPlayerSource>,
     ): ServerPlayerSource =
         VoiceServerPlayerSource(
             voiceServer,
@@ -47,12 +49,15 @@ class VoiceServerSourceLine(
             decoderInfo,
             stereo,
             player
-        ).also(::addSource)
+        )
+            .also(builder::accept)
+            .also(::addSource)
 
     override fun createEntitySource(
         entity: McServerEntity,
         stereo: Boolean,
-        decoderInfo: CodecInfo?
+        decoderInfo: CodecInfo?,
+        builder: Consumer<ServerEntitySource>,
     ): ServerEntitySource =
         VoiceServerEntitySource(
             voiceServer,
@@ -61,12 +66,15 @@ class VoiceServerSourceLine(
             decoderInfo,
             stereo,
             entity
-        ).also(::addSource)
+        )
+            .also(builder::accept)
+            .also(::addSource)
 
     override fun createStaticSource(
         position: ServerPos3d,
         stereo: Boolean,
-        decoderInfo: CodecInfo?
+        decoderInfo: CodecInfo?,
+        builder: Consumer<ServerStaticSource>,
     ): ServerStaticSource =
         VoiceServerStaticSource(
             voiceServer,
@@ -75,5 +83,7 @@ class VoiceServerSourceLine(
             decoderInfo,
             stereo,
             position
-        ).also(::addSource)
+        )
+            .also(builder::accept)
+            .also(::addSource)
 }

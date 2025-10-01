@@ -9,6 +9,7 @@ import net.minecraft.world.phys.Vec3
 import su.plo.lib.mod.client.render.entity.LivingEntityRenderState
 import su.plo.voice.client.mixin.accessor.EntityRendererAccessor
 import net.minecraft.world.scores.Scoreboard
+import su.plo.lib.mod.extensions.level
 
 //#if MC>=12002
 //$$ import net.minecraft.world.scores.DisplaySlot
@@ -29,7 +30,7 @@ fun EntityRenderer<*>.createEntityRenderState(
     clientPlayer: LocalPlayer,
     entity: LivingEntity,
 ): LivingEntityRenderState {
-    val hasScoreboardText = (entity as? Player)?.scoreboard?.getObjectiveBelowName() != null
+    val hasScoreboardText = (entity as? Player)?.level()?.scoreboard?.getObjectiveBelowName() != null
 
     val camera = Minecraft.getInstance().gameRenderer.mainCamera
     val distanceToCameraSquared = camera.position.distanceToSqr(entity.position())
