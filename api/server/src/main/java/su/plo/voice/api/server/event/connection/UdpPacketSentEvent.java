@@ -16,5 +16,4 @@ public final class UdpPacketSentEvent implements Event {
 
     private final @NonNull UdpServerConnection connection;
     private final @NonNull Packet<?> packet;
-    private final @NonNull byte[] packetEncoded;
 }

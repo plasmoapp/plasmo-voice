@@ -82,7 +82,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
 
-        voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet, encoded));
+        voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet));
     }
 
     @Override
