@@ -2,7 +2,6 @@ package su.plo.voice.client.render;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import su.plo.slib.api.position.Pos3d;
-import net.minecraft.client.Camera;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.core.BlockPos;
@@ -20,7 +19,7 @@ public final class ModLevelRenderer extends ModRenderer {
         super(voiceClient);
     }
 
-    public void render(@NotNull ClientLevel level, @NotNull PoseStack poseStack, @NotNull Camera camera, float delta) {
+    public void render(@NotNull ClientLevel level, @NotNull PoseStack poseStack, float delta) {
         if (!Objects.equals(this.level, level)) {
             this.level = level;
         }
@@ -28,7 +27,6 @@ public final class ModLevelRenderer extends ModRenderer {
         voiceClient.getEventBus().fire(new LevelRenderEvent(
                 poseStack,
                 level,
-                new ModCamera(camera.getPosition(), camera.getXRot(), camera.getYRot()),
                 this::getLight,
                 delta
         ));

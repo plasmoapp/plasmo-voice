@@ -36,6 +36,10 @@ if (platform.mcVersion in 12106..12108) {
 
 if (platform.mcVersion >= 12109) {
     mixins.add("plasmovoice-1.21.9.mixins.json")
+
+    if (platform.isFabric) {
+        mixins.add("plasmovoice-1.21.9-fabric.mixins.json")
+    }
 }
 
 if (platform.isForge) {
@@ -120,7 +124,7 @@ dependencies {
             12104 -> "0.110.5+1.21.4"
             12105 -> "0.119.5+1.21.5"
             12106 -> "0.127.0+1.21.6"
-            12109 -> "0.133.7+1.21.9"
+            12109 -> "0.133.14+1.21.9"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -143,7 +147,7 @@ dependencies {
         } else if (platform.mcVersion >= 12102) {
             "include"("me.lucko:fabric-permissions-api:0.3.3")
         } else {
-            "include"("me.lucko:fabric-permissions-api:0.2-SNAPSHOT")
+            "include"("me.lucko:fabric-permissions-api:0.3.1")
         }
 
         // build times go _/
