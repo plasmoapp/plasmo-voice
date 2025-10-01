@@ -29,8 +29,6 @@ class ProxyChannelHandler(
         try {
             val packet = PacketTcpCodec.decode<PacketHandler>(ByteStreams.newDataInput(data)).orElse(null) ?: return false
 
-            BaseVoiceProxy.DEBUG_LOGGER.log("$source -> $destination: $packet")
-
             val handler = if (source is McProxyPlayer) {
                 val voicePlayer: VoiceProxyPlayer = voiceProxy.playerManager.getPlayerByInstance(source.getInstance())
 
