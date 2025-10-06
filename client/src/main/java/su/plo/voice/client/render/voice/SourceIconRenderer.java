@@ -125,6 +125,8 @@ public final class SourceIconRenderer {
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
 
+        if (entityRenderState.getShouldHideIcon()) return;
+
         UUID entityUUID = entityRenderState.getEntityUUID();
 
         boolean isFakePlayer = !Minecraft.getInstance()
@@ -149,13 +151,13 @@ public final class SourceIconRenderer {
         String iconLocation;
 
         Optional<VoicePlayerInfo> playerInfo = connection.get().getPlayerById(entityUUID);
-        if (!playerInfo.isPresent()) { // not installed
+        if (!playerInfo.isPresent() && !entityRenderState.getShouldHideNotInstalledIcon()) { // not installed
             iconLocation = "plasmovoice:textures/icons/headset_not_installed.png";
         } else if (config.getVoice().getVolumes().getMute("source_" + entityUUID).value()) { // client mute
             iconLocation = "plasmovoice:textures/icons/speaker_disabled.png";
-        } else if (playerInfo.get().isMuted()) { // server mute
+        } else if (playerInfo.map(VoicePlayerInfo::isMuted).orElse(false)) { // server mute
             iconLocation = "plasmovoice:textures/icons/speaker_muted.png";
-        } else if (playerInfo.get().isVoiceDisabled()) { // client disabled voicechat
+        } else if (playerInfo.map(VoicePlayerInfo::isVoiceDisabled).orElse(false)) { // client disabled voicechat
             iconLocation = "plasmovoice:textures/icons/headset_disabled.png";
         } else {
             Collection<ClientAudioSource<PlayerSourceInfo>> playerSources = voiceClient.getSourceManager()
@@ -204,6 +206,8 @@ public final class SourceIconRenderer {
 
         LocalPlayer clientPlayer = Minecraft.getInstance().player;
         if (clientPlayer == null) return;
+
+        if (entityRenderState.getShouldHideIcon()) return;
 
         if (isIconHidden() || entityRenderState.isInvisibleToPlayer()) return;
 

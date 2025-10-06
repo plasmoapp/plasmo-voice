@@ -35,6 +35,10 @@ fun EntityRenderer<*>.createEntityRenderState(
     val camera = Minecraft.getInstance().gameRenderer.mainCamera
     val distanceToCameraSquared = camera.position.distanceToSqr(entity.position())
 
+    val customName = entity.customName?.toString()
+    val shouldHideIcon = customName?.contains("plasmo-voice.hide-all-icons") ?: false
+    val shouldHideNotInstalledIcon = customName?.contains("plasmo-voice.hide-not-installed-icon") ?: false
+
     val rendererAccessor = this as EntityRendererAccessor
     val entityRenderState = LivingEntityRenderState(
         entity.id,
@@ -55,7 +59,10 @@ fun EntityRenderer<*>.createEntityRenderState(
         else
             null,
         Vec3(0.0, entity.bbHeight.toDouble(), 0.0),
-        hasScoreboardText
+        hasScoreboardText,
+
+        shouldHideIcon,
+        shouldHideNotInstalledIcon,
     )
 
     return entityRenderState

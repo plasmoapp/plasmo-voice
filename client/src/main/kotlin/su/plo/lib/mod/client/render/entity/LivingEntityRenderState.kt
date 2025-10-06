@@ -18,4 +18,7 @@ data class LivingEntityRenderState(
     val nameTag: Component?,
     val nameTagAttachment: Vec3,
     val hasScoreboardText: Boolean, // todo: this is actually player only
+
+    val shouldHideIcon: Boolean,
+    val shouldHideNotInstalledIcon: Boolean,
 )
