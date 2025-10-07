@@ -14,6 +14,10 @@ public final class NettyPacketUdpDecoder extends MessageToMessageDecoder<Datagra
     protected void decode(ChannelHandlerContext ctx, DatagramPacket packet, List<Object> out) throws Exception {
         PacketUdp packetUdp = PacketUdpCodec.decodeThrowing(new ByteBufDataInput(packet.content()));
 
+        // Retain the DatagramPacket here because:
+        // The input packet will be released by MessageToMessageDecoder after this method returns,
+        // but NettyPacketUdp needs to keep the buffer alive for downstream handlers
+        // SimpleChannelInboundHandler will auto-release NettyPacketUdp (ByteBufHolder) after channelRead0()
         out.add(new NettyPacketUdp(packet.retainedDuplicate(), packetUdp));
     }
 }

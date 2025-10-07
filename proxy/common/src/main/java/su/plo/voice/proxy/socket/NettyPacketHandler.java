@@ -146,6 +146,10 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         // rewrite to backend server
         ByteBuf originalBuf = nettyPacket.getDatagramPacket().content();
 
+        // Retain the ByteBuf here because:
+        // - writeAndFlush will release after sending
+        // - SimpleChannelInboundHandler will release after handling
+        // so ByteBuf is retained to keep it alive during write
         ByteBuf changedBuf = originalBuf.retainedDuplicate();
         changedBuf.setIndex(0, 5);
         changedBuf.writeBytes(PacketUtil.getUUIDBytes(receiverSecret));
