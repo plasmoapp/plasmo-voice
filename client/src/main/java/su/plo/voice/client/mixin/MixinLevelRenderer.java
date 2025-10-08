@@ -1,6 +1,6 @@
 package su.plo.voice.client.mixin;
 
-//#if FABRIC && MC>=12109
+//#if MC>=12109
 //$$ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 //$$ import com.mojang.blaze3d.buffers.GpuBufferSlice;
 //$$ import com.mojang.blaze3d.resource.GraphicsResourceAllocator;

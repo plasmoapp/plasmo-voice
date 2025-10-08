@@ -1,6 +1,6 @@
 package su.plo.lib.mod.client.render.world
 
-//#if FABRIC && MC>=12109
+//#if MC>=12109
 //$$ import com.mojang.blaze3d.vertex.PoseStack
 //$$ import net.minecraft.client.DeltaTracker
 //$$ import net.minecraft.client.multiplayer.ClientLevel

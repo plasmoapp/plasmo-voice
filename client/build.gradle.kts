@@ -36,10 +36,6 @@ if (platform.mcVersion in 12106..12108) {
 
 if (platform.mcVersion >= 12109) {
     mixins.add("plasmovoice-1.21.9.mixins.json")
-
-    if (platform.isFabric) {
-        mixins.add("plasmovoice-1.21.9-fabric.mixins.json")
-    }
 }
 
 if (platform.isForge) {

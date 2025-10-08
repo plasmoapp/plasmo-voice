@@ -306,6 +306,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     onServerDisconnect();
     //$$ }
     //$$
+    //#if MC<12109
     //$$ @SubscribeEvent
     //#if MC>=12106
     //$$ public void onWorldRender(RenderLevelStageEvent.AfterParticles event) {
@@ -326,6 +327,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#endif
     //$$     );
     //$$ }
+    //#endif
     //$$
     //$$ @EventBusSubscriber(
     //$$         modid = "plasmovoice",
