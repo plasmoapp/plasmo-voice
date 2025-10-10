@@ -6,12 +6,12 @@ import net.md_5.bungee.event.EventHandler
 import org.bstats.bungeecord.Metrics
 import su.plo.slib.bungee.BungeeProxyLib
 import su.plo.voice.proxy.BaseVoiceProxy
-import su.plo.voice.util.version.ModrinthLoader
+import su.plo.voice.util.version.PlatformLoader
 import java.io.File
 
 class BungeeVoiceProxy(
     private val plugin: Plugin
-) : BaseVoiceProxy(ModrinthLoader.BUNGEECORD) {
+) : BaseVoiceProxy(PlatformLoader.BUNGEECORD) {
 
     private lateinit var minecraftServer: BungeeProxyLib
     

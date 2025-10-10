@@ -9,11 +9,11 @@ import su.plo.voice.paper.integration.SpigotVanishIntegration
 import su.plo.voice.paper.integration.SuperVanishIntegration
 import su.plo.voice.paper.integration.VoicePlaceholder
 import su.plo.voice.server.BaseVoiceServer
-import su.plo.voice.util.version.ModrinthLoader
+import su.plo.voice.util.version.PlatformLoader
 
 class PaperVoiceServer(
     private val plugin: JavaPlugin
-) : BaseVoiceServer(ModrinthLoader.PAPER), Listener {
+) : BaseVoiceServer(PlatformLoader.PAPER), Listener {
 
     private val minecraftServerLib = SpigotServerLib(plugin)
 

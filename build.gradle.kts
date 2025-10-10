@@ -54,6 +54,7 @@ subprojects {
 
         annotationProcessor(rootProject.libs.lombok)
 
+        testImplementation(kotlin("test"))
         testCompileOnly(rootProject.libs.junit.api)
         testAnnotationProcessor(rootProject.libs.junit.api)
         testRuntimeOnly(rootProject.libs.junit.engine)

@@ -20,7 +20,7 @@ import su.plo.voice.client.connection.ModClientChannelHandler;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.render.ModHudRenderer;
 import su.plo.voice.client.render.ModLevelRenderer;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 
 //#if FABRIC
 
@@ -125,7 +125,7 @@ public final class ModVoiceClient extends BaseVoiceClient
         //#if FORGE
         //$$ super(ModrinthLoader.FORGE);
         //#else
-        super(ModrinthLoader.FABRIC);
+        super(PlatformLoader.FABRIC);
         //#endif
 
         McLoggerFactory.supplier = Log4jLogger::new;

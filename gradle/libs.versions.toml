@@ -34,6 +34,9 @@ idea-ext = "1.1.7"
 
 asm = "9.7.1"
 
+# mockito 5 requires java 11
+mockito = "4.1.0"
+
 [libraries]
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
@@ -65,6 +68,8 @@ rnnoise-jni  = { module = "com.plasmoverse:rnnoise-jni-rust", version.ref = "rnn
 
 shadow = { module = "com.github.johnrengelman:shadow", version.ref = "shadow" }
 asm = { module = "org.ow2.asm:asm-commons", version.ref = "asm" }
+
+mockito = { module = "org.mockito.kotlin:mockito-kotlin", version.ref = "mockito" }
 
 [plugins]
 idea-ext            = { id = "org.jetbrains.gradle.plugin.idea-ext", version.ref = "idea-ext"}

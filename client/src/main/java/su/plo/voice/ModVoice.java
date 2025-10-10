@@ -1,7 +1,7 @@
 package su.plo.voice;
 
 import su.plo.voice.server.ModVoiceServer;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 
 //#if FABRIC
 
@@ -125,7 +125,7 @@ public final class ModVoice
     //#if FABRIC
     @Override
     public void onInitialize() {
-        ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FABRIC);
+        ModVoiceServer voiceServer = new ModVoiceServer(PlatformLoader.FABRIC);
         voiceServer.onInitialize();
     }
     //#endif
