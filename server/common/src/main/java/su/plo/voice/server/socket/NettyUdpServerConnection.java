@@ -47,7 +47,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
     @Setter
     private long sentKeepAlive;
     @Getter
-    private long lastReceivedPacketTimestamp;
+    private long lastReceivedPacketTimestamp = System.currentTimeMillis();
 
     @Getter
     private boolean connected = true;
