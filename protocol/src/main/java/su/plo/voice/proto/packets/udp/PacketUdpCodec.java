@@ -25,11 +25,11 @@ public class PacketUdpCodec {
     static {
         int lastPacketId = 0x0;
 
-        PACKETS.register(++lastPacketId, PingPacket.class);
-        PACKETS.register(++lastPacketId, PlayerAudioPacket.class);
-        PACKETS.register(++lastPacketId, SourceAudioPacket.class);
-        PACKETS.register(++lastPacketId, SelfAudioInfoPacket.class);
-        PACKETS.register(0x100, CustomPacket.class);
+        PACKETS.register(++lastPacketId, PingPacket.class, PingPacket::new);
+        PACKETS.register(++lastPacketId, PlayerAudioPacket.class, PlayerAudioPacket::new);
+        PACKETS.register(++lastPacketId, SourceAudioPacket.class, SourceAudioPacket::new);
+        PACKETS.register(++lastPacketId, SelfAudioInfoPacket.class, SelfAudioInfoPacket::new);
+        PACKETS.register(0x100, CustomPacket.class, CustomPacket::new);
     }
 
     public static byte[] replaceSecret(byte[] data, UUID secret) {

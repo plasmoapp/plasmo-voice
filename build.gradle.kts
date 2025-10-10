@@ -48,6 +48,7 @@ subprojects {
 
         compileOnly(rootProject.libs.guava)
         compileOnly(rootProject.libs.gson)
+        compileOnly(rootProject.libs.fastutil)
 
         api(rootProject.libs.annotations)
         api(rootProject.libs.lombok)
