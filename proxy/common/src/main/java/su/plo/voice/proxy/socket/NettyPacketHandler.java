@@ -3,8 +3,8 @@ package su.plo.voice.proxy.socket;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.AllArgsConstructor;
 import su.plo.slib.api.proxy.connection.McProxyServerConnection;
 import su.plo.voice.BaseVoice;
@@ -82,7 +82,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         NettyUdpProxyConnection connection = new NettyUdpProxyConnection(
                 voiceProxy,
-                (NioDatagramChannel) ctx.channel(),
+                (DatagramChannel) ctx.channel(),
                 player.get(),
                 secret
         );

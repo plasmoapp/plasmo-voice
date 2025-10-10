@@ -8,6 +8,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
@@ -29,7 +30,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
     private final EventLoopGroup loopGroup;
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
-    private NioDatagramChannel channel;
+    private DatagramChannel channel;
     private InetSocketAddress socketAddress;
 
     public NettyUdpProxyServer(@NotNull BaseVoiceProxy voiceServer) {
@@ -52,9 +53,9 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
                                 : NioDatagramChannel.class
                 );
 
-        bootstrap.handler(new ChannelInitializer<NioDatagramChannel>() {
+        bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
             @Override
-            protected void initChannel(@NotNull NioDatagramChannel ch) throws Exception {
+            protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
@@ -66,7 +67,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
         BaseVoice.LOGGER.info("UDP proxy server is starting on {}:{}", ip, port);
         try {
             ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
-            this.channel = (NioDatagramChannel) channelFuture.channel();
+            this.channel = (DatagramChannel) channelFuture.channel();
             this.socketAddress = channel.localAddress();
         } catch (InterruptedException e) {
             stop();
