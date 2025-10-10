@@ -75,7 +75,7 @@ public final class ModVoice
     //$$
     //$$ @SubscribeEvent
     //$$ public void onCommonSetup(@NotNull FMLCommonSetupEvent event) {
-    //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.NEO_FORGE);
+    //$$     ModVoiceServer voiceServer = new ModVoiceServer(PlatformLoader.NEO_FORGE);
     //$$     voiceServer.onInitialize();
     //$$ }
     //#endif
@@ -105,7 +105,7 @@ public final class ModVoice
     //$$     ModChannelManager.addForgeChannel(ModVoiceServer.CHANNEL, channel);
     //$$     ModChannelManager.addForgeChannel(ModVoiceServer.SERVICE_CHANNEL, serviceChannel);
     //$$
-    //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE);
+    //$$     ModVoiceServer voiceServer = new ModVoiceServer(PlatformLoader.FORGE);
     //$$     voiceServer.onInitialize();
     //$$ }
     //$$

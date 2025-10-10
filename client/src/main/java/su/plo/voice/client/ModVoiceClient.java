@@ -123,7 +123,7 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     public ModVoiceClient() {
         //#if FORGE
-        //$$ super(ModrinthLoader.FORGE);
+        //$$ super(PlatformLoader.FORGE);
         //#else
         super(PlatformLoader.FABRIC);
         //#endif
