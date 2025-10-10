@@ -1,15 +1,21 @@
 package su.plo.voice.server.socket;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollDatagramChannel;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.socket.UdpServer;
@@ -20,10 +26,9 @@ import su.plo.voice.socket.NettyPacketUdpDecoder;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public final class NettyUdpServer implements UdpServer {
 
-    private final EventLoopGroup loopGroup = new NioEventLoopGroup();
+    private final EventLoopGroup loopGroup;
     private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
@@ -33,6 +38,14 @@ public final class NettyUdpServer implements UdpServer {
 
     private InetSocketAddress socketAddress;
 
+    public NettyUdpServer(@NotNull BaseVoiceServer voiceServer) {
+        this.voiceServer = voiceServer;
+
+        this.loopGroup = EpollDatagramChannel.isSegmentedDatagramPacketSupported()
+                ? new EpollEventLoopGroup()
+                : new NioEventLoopGroup();
+    }
+
     @Override
     public void start(String ip, int port) {
         this.keepAlive = new NettyUdpKeepAlive(voiceServer);
@@ -40,11 +53,15 @@ public final class NettyUdpServer implements UdpServer {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
                 .group(loopGroup)
-                .channel(NioDatagramChannel.class);
+                .channel(
+                        EpollDatagramChannel.isSegmentedDatagramPacketSupported()
+                                ? EpollDatagramChannel.class
+                                : NioDatagramChannel.class
+                );
 
-        bootstrap.handler(new ChannelInitializer<NioDatagramChannel>() {
+        bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
             @Override
-            protected void initChannel(@NotNull NioDatagramChannel ch) throws Exception {
+            protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());

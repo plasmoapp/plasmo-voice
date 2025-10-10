@@ -1,12 +1,16 @@
 package su.plo.voice.proxy.socket;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.EpollDatagramChannel;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.concurrent.DefaultEventExecutorGroup;
 import io.netty.util.concurrent.EventExecutorGroup;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
@@ -18,16 +22,23 @@ import su.plo.voice.socket.NettyPacketUdpDecoder;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public final class NettyUdpProxyServer implements UdpProxyServer {
 
     private final BaseVoiceProxy voiceProxy;
 
-    private final EventLoopGroup loopGroup = new NioEventLoopGroup();
+    private final EventLoopGroup loopGroup;
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
     private NioDatagramChannel channel;
     private InetSocketAddress socketAddress;
+
+    public NettyUdpProxyServer(@NotNull BaseVoiceProxy voiceServer) {
+        this.voiceProxy = voiceServer;
+
+        this.loopGroup = EpollDatagramChannel.isSegmentedDatagramPacketSupported()
+                ? new EpollEventLoopGroup()
+                : new NioEventLoopGroup();
+    }
 
     @Override
     public void start(String ip, int port) {
@@ -35,7 +46,11 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
                 .group(loopGroup)
-                .channel(NioDatagramChannel.class);
+                .channel(
+                        EpollDatagramChannel.isSegmentedDatagramPacketSupported()
+                                ? EpollDatagramChannel.class
+                                : NioDatagramChannel.class
+                );
 
         bootstrap.handler(new ChannelInitializer<NioDatagramChannel>() {
             @Override

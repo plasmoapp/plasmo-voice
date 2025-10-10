@@ -2,8 +2,8 @@ package su.plo.voice.server.socket;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,7 +30,7 @@ import java.util.UUID;
 public final class NettyUdpServerConnection implements UdpServerConnection, ServerPacketUdpHandler {
 
     private final BaseVoiceServer voiceServer;
-    private final NioDatagramChannel channel;
+    private final DatagramChannel channel;
 
     @Getter
     private InetSocketAddress remoteAddress;
@@ -53,7 +53,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
     private boolean connected = true;
 
     public NettyUdpServerConnection(@NotNull BaseVoiceServer voiceServer,
-                                    @NotNull NioDatagramChannel channel,
+                                    @NotNull DatagramChannel channel,
                                     @NotNull UUID secret,
                                     @NotNull VoiceServerPlayer player) {
         this.voiceServer = voiceServer;

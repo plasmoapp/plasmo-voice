@@ -2,7 +2,7 @@ package su.plo.voice.server.socket;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.socket.DatagramChannel;
 import lombok.AllArgsConstructor;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
@@ -52,7 +52,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         NettyUdpServerConnection connection = new NettyUdpServerConnection(
                 voiceServer,
-                (NioDatagramChannel) ctx.channel(),
+                (DatagramChannel) ctx.channel(),
                 secret,
                 player.get()
         );
