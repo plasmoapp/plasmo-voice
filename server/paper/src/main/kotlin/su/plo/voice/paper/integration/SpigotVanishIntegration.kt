@@ -19,6 +19,9 @@ class SpigotVanishIntegration(
         val hiddenPlayer = event.entity as? Player ?: return
 
         val voicePlayer = voiceServer.playerManager.getPlayerByInstance(player)
+        val hiddenVoicePlayer = voiceServer.playerManager.getPlayerByInstance(hiddenPlayer)
+        if (!hiddenVoicePlayer.hasVoiceChat()) return
+
         voicePlayer.sendPacket(PlayerDisconnectPacket(hiddenPlayer.uniqueId))
     }
 
@@ -29,6 +32,7 @@ class SpigotVanishIntegration(
 
         val voicePlayer = voiceServer.playerManager.getPlayerByInstance(player)
         val showedVoicePlayer = voiceServer.playerManager.getPlayerByInstance(showedPlayer)
+        if (!showedVoicePlayer.hasVoiceChat()) return
 
         voicePlayer.sendPacket(PlayerInfoUpdatePacket(showedVoicePlayer.createPlayerInfo()))
     }
