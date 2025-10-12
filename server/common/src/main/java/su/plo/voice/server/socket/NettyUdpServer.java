@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.group.ChannelGroup;
@@ -28,6 +29,9 @@ import java.util.Optional;
 
 public final class NettyUdpServer implements UdpServer {
 
+    private final boolean useEpoll = System.getProperty("plasmovoice.use_epoll", "false").equals("true") &&
+            Epoll.isAvailable();
+
     private final EventLoopGroup loopGroup;
     private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
@@ -41,7 +45,7 @@ public final class NettyUdpServer implements UdpServer {
     public NettyUdpServer(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
 
-        this.loopGroup = EpollDatagramChannel.isSegmentedDatagramPacketSupported()
+        this.loopGroup = useEpoll
                 ? new EpollEventLoopGroup()
                 : new NioEventLoopGroup();
     }
@@ -50,14 +54,14 @@ public final class NettyUdpServer implements UdpServer {
     public void start(String ip, int port) {
         this.keepAlive = new NettyUdpKeepAlive(voiceServer);
 
+        Class<? extends DatagramChannel> channelClass = useEpoll
+                ? EpollDatagramChannel.class
+                : NioDatagramChannel.class;
+
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
                 .group(loopGroup)
-                .channel(
-                        EpollDatagramChannel.isSegmentedDatagramPacketSupported()
-                                ? EpollDatagramChannel.class
-                                : NioDatagramChannel.class
-                );
+                .channel(channelClass);
 
         bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
             @Override
@@ -85,7 +89,7 @@ public final class NettyUdpServer implements UdpServer {
             throw e;
         }
 
-        BaseVoice.LOGGER.info("UDP server is started on {}", socketAddress);
+        BaseVoice.LOGGER.info("{} UDP server is started on {}", channelClass.getSimpleName(), socketAddress);
     }
 
     @Override
