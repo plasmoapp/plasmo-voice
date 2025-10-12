@@ -34,7 +34,6 @@ public final class NettyUdpServer implements UdpServer {
 
     private final EventLoopGroup loopGroup;
     private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
-    private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
     private final BaseVoiceServer voiceServer;
 
@@ -69,8 +68,7 @@ public final class NettyUdpServer implements UdpServer {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
-
-                pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceServer));
+                pipeline.addLast("handler", new NettyPacketHandler(voiceServer));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
         });
@@ -98,7 +96,6 @@ public final class NettyUdpServer implements UdpServer {
         if (keepAlive != null) keepAlive.close();
         channelGroup.close();
         loopGroup.shutdownGracefully();
-        executors.shutdownGracefully();
 
         BaseVoice.LOGGER.info("UDP server is stopped");
     }

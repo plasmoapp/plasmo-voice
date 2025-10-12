@@ -11,8 +11,6 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
-import io.netty.util.concurrent.EventExecutorGroup;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
@@ -32,7 +30,6 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
     private final BaseVoiceProxy voiceProxy;
 
     private final EventLoopGroup loopGroup;
-    private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
 
     private DatagramChannel channel;
     private InetSocketAddress socketAddress;
@@ -63,7 +60,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
-                pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceProxy));
+                pipeline.addLast("handler", new NettyPacketHandler(voiceProxy));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
         });
