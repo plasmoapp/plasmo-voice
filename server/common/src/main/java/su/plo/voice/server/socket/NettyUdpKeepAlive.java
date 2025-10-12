@@ -47,7 +47,7 @@ public final class NettyUdpKeepAlive {
                 voiceServer.getUdpConnectionManager().removeConnection(connection, UdpClientDisconnectedEvent.Reason.TIMED_OUT);
                 voiceServer.getTcpPacketManager().requestPlayerInfo(connection.getPlayer());
             } else if (now - connection.getSentKeepAlive() >= 1_000L) {
-                long jitter = 1_000 + jitterRandom.nextInt(3_000);
+                long jitter = 1_500 + jitterRandom.nextInt(1_500);
                 connection.setSentKeepAlive(now + jitter);
                 connection.sendPacket(packet);
             }
