@@ -25,6 +25,12 @@ import java.util.function.Supplier;
 //$$ import java.util.Optional;
 //#endif
 
+//#if MC>=12109
+//$$ import com.google.common.collect.LinkedHashMultimap;
+//$$ import com.google.common.collect.Multimap;
+//$$ import com.mojang.authlib.properties.PropertyMap;
+//#endif
+
 public final class ModPlayerSkins {
 
     private static final Cache<UUID, Supplier<ResourceLocation>> SKINS = CacheBuilder
@@ -74,6 +80,22 @@ public final class ModPlayerSkins {
         Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(gameProfile.getId());
         if (skinLocation != null) return;
 
+        //#if MC>=12109
+        //$$Multimap<String, Property> properties = LinkedHashMultimap.create();
+        //$$gameProfile.getProperties().forEach((property) -> {
+        //$$    properties.put(property.getName(), new Property(
+        //$$            property.getName(),
+        //$$            property.getValue(),
+        //$$            property.getSignature()
+        //$$    ));
+        //$$});
+        //$$
+        //$$GameProfile profile = new GameProfile(
+        //$$        gameProfile.getId(),
+        //$$        gameProfile.getName(),
+        //$$        new PropertyMap(properties)
+        //$$);
+        //#else
         GameProfile profile = new GameProfile(
                 gameProfile.getId(),
                 gameProfile.getName()
@@ -85,6 +107,7 @@ public final class ModPlayerSkins {
                     property.getSignature()
             ));
         });
+        //#endif
 
         skinLocation = getInsecureSkinLocation(profile);
         SKINS.put(gameProfile.getId(), skinLocation);
