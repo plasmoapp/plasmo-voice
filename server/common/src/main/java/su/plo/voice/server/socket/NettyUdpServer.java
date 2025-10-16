@@ -14,8 +14,6 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
-import io.netty.util.concurrent.EventExecutorGroup;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -29,7 +27,7 @@ import java.util.Optional;
 
 public final class NettyUdpServer implements UdpServer {
 
-    private final boolean useEpoll = System.getProperty("plasmovoice.use_epoll", "false").equals("true") &&
+    private final boolean useEpoll = System.getProperty("plasmovoice.use_epoll", "true").equals("true") &&
             Epoll.isAvailable();
 
     private final EventLoopGroup loopGroup;

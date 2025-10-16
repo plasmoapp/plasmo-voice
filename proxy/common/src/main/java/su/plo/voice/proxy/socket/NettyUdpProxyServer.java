@@ -24,7 +24,7 @@ import java.util.Optional;
 
 public final class NettyUdpProxyServer implements UdpProxyServer {
 
-    private final boolean useEpoll = System.getProperty("plasmovoice.use_epoll", "false").equals("true") &&
+    private final boolean useEpoll = System.getProperty("plasmovoice.use_epoll", "true").equals("true") &&
             Epoll.isAvailable();
 
     private final BaseVoiceProxy voiceProxy;
