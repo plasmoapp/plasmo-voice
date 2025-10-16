@@ -96,7 +96,6 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
 
     @Override
     public void disconnect() {
-        channel.disconnect();
         connected = false;
 
         voiceServer.getTcpPacketManager().broadcastPlayerDisconnect(player);
