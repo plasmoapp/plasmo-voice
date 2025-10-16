@@ -26,7 +26,7 @@ jobs:
           21
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
+      uses: gradle/actions/setup-gradle@v5
       with:
         cache-read-only: false
 
