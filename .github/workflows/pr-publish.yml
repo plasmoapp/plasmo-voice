@@ -1,0 +1,62 @@
+name: Publish PR
+
+on:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        distribution: temurin
+        java-version: |
+          8
+          16
+          17
+          21
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-read-only: false
+
+    - name: Build with Gradle
+      run: ./gradlew build --stacktrace -Psnapshot=true
+
+    - name: Get Head Commit Message
+      id: commit
+      run: echo "HEAD_COMMIT_MESSAGE=$(git show -s --format=%s)" >> "$GITHUB_OUTPUT"
+
+    - name: Upload to Registry
+      run: |
+        if [ -z "${{ secrets.REGISTRY_URL }}" ] || [ -z "${{ secrets.REGISTRY_UPLOAD_TOKEN }}" ]; then
+          echo "Registry secrets not configured, skipping upload"
+          exit 0
+        fi
+      
+        for file in build/libs/*; do
+          echo "Uploading $(basename $file)..."
+        
+          if curl -X POST "${{ secrets.REGISTRY_URL }}/upload" \
+            -H "Authorization: Bearer ${{ secrets.REGISTRY_UPLOAD_TOKEN }}" \
+            -F "repoUrl=${{ github.server_url }}/${{ github.repository }}" \
+            -F "project=${{ github.event.repository.name  }}" \
+            -F "branch=${{ github.head_ref }}" \
+            -F "commit=${{ github.sha }}" \
+            -F "message=${{ steps.commit.outputs.HEAD_COMMIT_MESSAGE }}" \
+            -F "file=@$file" \
+            --retry 5 \
+            --retry-delay 2 \
+            --retry-all-errors \
+            --fail-with-body \
+            --show-error; then
+            echo "✓ Uploaded $(basename $file)"
+          else
+            echo "✗ Failed to upload $(basename $file) after retries"
+            exit 1
+          fi
+        done
