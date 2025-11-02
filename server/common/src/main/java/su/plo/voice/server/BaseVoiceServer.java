@@ -4,6 +4,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.slib.api.command.McCommand;
@@ -47,6 +48,9 @@ import su.plo.voice.server.connection.ServerServiceChannelHandler;
 import su.plo.voice.server.connection.VoiceTcpServerConnectionManager;
 import su.plo.voice.server.connection.VoiceUdpServerConnectionManager;
 import su.plo.voice.server.language.VoiceServerLanguages;
+import su.plo.voice.server.metrics.Metrics;
+import su.plo.voice.server.metrics.MetricsListener;
+import su.plo.voice.server.metrics.MetricsRejoinListener;
 import su.plo.voice.server.mute.VoiceMuteManager;
 import su.plo.voice.server.mute.storage.MuteStorageFactory;
 import su.plo.voice.server.player.LuckPermsListener;
@@ -63,6 +67,8 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static su.plo.voice.server.metrics.MetricsKt.createPrometheusMetrics;
 
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
@@ -105,6 +111,11 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     private final ServerChannelHandler channelHandler = new ServerChannelHandler(this);
     private final ServerServiceChannelHandler serviceChannelHandler = new ServerServiceChannelHandler(this);
+
+    @Getter
+    private @Nullable Metrics metrics;
+    private @Nullable MetricsListener metricsListener;
+    private @Nullable MetricsRejoinListener metricsRejoinListener;
 
     protected BaseVoiceServer(@NotNull PlatformLoader loader) {
         super(loader);
@@ -192,6 +203,12 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         this.config = null;
 
         eventBus.unregister(this);
+
+        if (metrics != null) {
+            if (metricsRejoinListener != null) metricsRejoinListener.unregister();
+            metrics.stop();
+        }
+
         super.onShutdown();
     }
 
@@ -234,7 +251,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                     UUID forwardingSecret = UUID.fromString(System.getenv("PLASMO_VOICE_FORWARDING_SECRET"));
                     config.host().forwardingSecret(forwardingSecret);
                 } else if (forwardingSecretFile.exists()) {
-                    UUID forwardingSecret = UUID.fromString(new String(Files.readAllBytes(forwardingSecretFile.toPath())));
+                    UUID forwardingSecret = UUID.fromString(new String(Files.readAllBytes(forwardingSecretFile.toPath())).trim());
                     config.host().forwardingSecret(forwardingSecret);
                 }
             } catch (Exception e) {
@@ -277,6 +294,33 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         if (reload) eventBus.fire(new VoiceServerConfigReloadedEvent(this, config));
         else addons.initializeLoadedAddons();
+
+        // load metrics
+        if (metrics != null) {
+            if (metricsListener != null) eventBus.unregister(this, metricsListener);
+            if (metricsRejoinListener != null) {
+                eventBus.unregister(this, metricsRejoinListener);
+                metricsRejoinListener.unregister();
+            }
+
+            metrics.stop();
+            metrics = null;
+        }
+
+        if (config.metrics().enabled()) {
+            try {
+                metrics = createPrometheusMetrics(config.metrics());
+
+                metricsListener = new MetricsListener(metrics);
+                metricsRejoinListener  = new MetricsRejoinListener(metrics);
+
+                eventBus.register(this, metricsListener);
+                eventBus.register(this, metricsRejoinListener);
+            } catch (Throwable t) {
+                LOGGER.error("Failed to start metrics server", t);
+                metrics = null;
+            }
+        }
 
         if (restartUdpServer) startUdpServer();
     }

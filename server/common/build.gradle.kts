@@ -1,3 +1,4 @@
+import su.plo.voice.extension.excludeKotlin
 import java.net.URI
 
 plugins {
@@ -12,6 +13,16 @@ dependencies {
     api(project(":server-proxy-common"))
 
     compileOnly(libs.netty)
+
+    implementation(libs.micrometer.core)
+    implementation(libs.micrometer.prometheus)
+
+    implementation(libs.http4k.core) {
+        excludeKotlin()
+    }
+    implementation(libs.http4k.jetty) {
+        excludeKotlin()
+    }
 
     testImplementation(libs.mockito)
     testImplementation(libs.netty)

@@ -16,25 +16,39 @@ public interface UdpServerConnection extends UdpConnection {
     @NotNull VoiceServerPlayer getPlayer();
 
     /**
-     * Gets the timestamp of the last received keep-alive signal from this connection.
+     * Gets the timestamp of the last received keep-alive packet from this connection.
      *
-     * @return The timestamp of the last received keep-alive signal.
+     * @return The timestamp of the last received keep-alive packet.
      */
     long getKeepAlive();
 
     /**
-     * Gets the timestamp of the last sent keep-alive signal to this connection.
+     * Gets the timestamp of the last sent keep-alive packet to this connection.
      *
-     * @return The timestamp of the last sent keep-alive signal.
+     * @return The timestamp of the last sent keep-alive packet.
      */
     long getSentKeepAlive();
 
     /**
-     * Sets the timestamp of the last sent keep-alive signal to this connection.
+     * Sets the timestamp of the last sent keep-alive packet to this connection.
      *
-     * @param keepAlive The timestamp of the last sent keep-alive signal.
+     * @param keepAlive The timestamp of the last sent keep-alive packet.
      */
     void setSentKeepAlive(long keepAlive);
+
+    /**
+     * Gets the timestamp of the next scheduled keep alive packet.
+     *
+     * @return The timestamp of the next scheduled keep-alive packet.
+     */
+    long getNextKeepAlive();
+
+    /**
+     * Sets the timestamp of the next scheduled keep alive packet.
+     *
+     * @param keepAlive The timestamp of the next scheduled keep alive packet.
+     */
+    void setNextKeepAlive(long keepAlive);
 
     /**
      * Gets the timestamp of the last received packet from this connection.

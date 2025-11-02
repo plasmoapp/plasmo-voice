@@ -24,6 +24,7 @@ import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 import su.plo.voice.server.BaseVoiceServer;
 
 import java.net.InetSocketAddress;
+import java.time.Duration;
 import java.util.UUID;
 
 @ToString(of = {"channel", "secret", "player", "keepAlive", "sentKeepAlive"})
@@ -41,11 +42,16 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
     private final UUID secret;
     @Getter
     private final VoiceServerPlayer player;
+
     @Getter
     private long keepAlive = System.currentTimeMillis();
     @Getter
     @Setter
     private long sentKeepAlive;
+    @Getter
+    @Setter
+    private long nextKeepAlive;
+
     @Getter
     private long lastReceivedPacketTimestamp = System.currentTimeMillis();
 
@@ -82,7 +88,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         ByteBuf buf = Unpooled.wrappedBuffer(encoded);
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
 
-        voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet));
+        voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet, encoded.length));
     }
 
     @Override
@@ -104,6 +110,10 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
     @Override
     public void handle(@NotNull PingPacket packet) {
         this.keepAlive = System.currentTimeMillis();
+
+        if (voiceServer.getMetrics() != null) {
+            voiceServer.getMetrics().recordRtt(Duration.ofMillis(keepAlive - sentKeepAlive));
+        }
     }
 
     @Override

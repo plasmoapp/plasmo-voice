@@ -20,6 +20,11 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.metrics.Metrics;
+import su.plo.voice.server.metrics.NettyPacketExceptionHandlerMetrics;
+import su.plo.voice.server.metrics.NettyPacketHandlerPostDecoderMetrics;
+import su.plo.voice.server.metrics.NettyPacketHandlerPreDecoderMetrics;
+import su.plo.voice.server.metrics.NettyPacketHandlerPreHandlerMetrics;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
@@ -69,6 +74,19 @@ public final class NettyUdpServer implements UdpServer {
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
                 pipeline.addLast("handler", new NettyPacketHandler(voiceServer));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
+
+                Metrics metrics = voiceServer.getMetrics();
+                if (metrics != null) {
+                    metrics.attachNettyAllocatorMetrics(pipeline.channel().alloc());
+                    metrics.attachNettyExecutorMetrics(loopGroup);
+
+                    pipeline.addBefore("handler", "metrics_pre_handler", new NettyPacketHandlerPreHandlerMetrics(voiceServer));
+
+                    pipeline.addBefore("decoder", "metrics_pre_decoder", new NettyPacketHandlerPreDecoderMetrics(voiceServer));
+                    pipeline.addAfter("decoder", "metrics_post_decoder", new NettyPacketHandlerPostDecoderMetrics(voiceServer));
+
+                    pipeline.addBefore("exception_handler", "metrics_exception_handler", new NettyPacketExceptionHandlerMetrics(voiceServer, Metrics.PacketHandlerErrorStage.Decode));
+                }
             }
         });
 
