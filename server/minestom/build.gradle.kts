@@ -1,3 +1,4 @@
+import su.plo.voice.extension.javaVersion
 import su.plo.voice.extension.slibPlatform
 
 plugins {
@@ -5,6 +6,8 @@ plugins {
 }
 
 group = "$group.server"
+
+javaVersion = 21
 
 dependencies {
     compileOnly(libs.minestom)
@@ -24,16 +27,4 @@ dependencies {
         libs.versions.slib.get(),
         implementation = ::api
     )
-}
-
-tasks {
-    java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-    }
-
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "21"
-        }
-    }
 }

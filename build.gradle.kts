@@ -1,5 +1,4 @@
 import gg.essential.gradle.util.setJvmDefault
-import java.io.ByteArrayOutputStream
 
 // Version
 val targetJavaVersion: String by rootProject
@@ -7,9 +6,8 @@ val targetJavaVersion: String by rootProject
 plugins {
     java
     idea
-    id("com.github.johnrengelman.shadow")
-    alias(libs.plugins.idea.ext)
     alias(libs.plugins.dokka)
+    alias(libs.plugins.grgit)
     alias(libs.plugins.crowdin) apply(false)
 
     kotlin("jvm") version(libs.versions.kotlin.get())
@@ -17,6 +15,11 @@ plugins {
     kotlin("kapt") version(libs.versions.kotlin.get())
 
     id("gg.essential.multi-version.root") apply(false)
+}
+
+if (properties.containsKey("snapshot")) {
+    val gitCommitHash = grgit.head().abbreviatedId.substring(0, 7)
+    version = "$version+$gitCommitHash-SNAPSHOT"
 }
 
 subprojects {
@@ -28,17 +31,7 @@ subprojects {
     apply(plugin = "kotlin")
     apply(plugin = "kotlin-lombok")
 
-    if (properties.containsKey("snapshot")) {
-        val gitCommitHash: String = ByteArrayOutputStream().use { outputStream ->
-            rootProject.exec {
-                commandLine("git")
-                    .args("rev-parse", "--verify", "--short", "HEAD")
-                standardOutput = outputStream
-            }
-            outputStream.toString().trim()
-        }.substring(0, 7) // windows moment?
-        version = "$version+$gitCommitHash-SNAPSHOT"
-    }
+    version = rootProject.version
 
     dependencies {
         implementation(kotlin("stdlib-jdk8"))
@@ -56,10 +49,6 @@ subprojects {
         annotationProcessor(rootProject.libs.lombok)
 
         testImplementation(kotlin("test"))
-        testCompileOnly(rootProject.libs.junit.api)
-        testAnnotationProcessor(rootProject.libs.junit.api)
-        testRuntimeOnly(rootProject.libs.junit.engine)
-
         testImplementation(rootProject.libs.guava)
         testImplementation(rootProject.libs.gson)
     }
@@ -72,9 +61,7 @@ subprojects {
     }
 
     tasks {
-        java {
-            toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
-        }
+        java.toolchain.languageVersion.set(JavaLanguageVersion.of(targetJavaVersion))
 
         compileJava {
             options.encoding = Charsets.UTF_8.name()
@@ -91,9 +78,8 @@ subprojects {
         compileKotlin {
             setJvmDefault("all")
 
-            kotlinOptions {
-                jvmTarget = "1.8"
-                freeCompilerArgs += "-Xcontext-receivers"
+            compilerOptions {
+                freeCompilerArgs.add("-Xcontext-receivers")
             }
         }
     }
