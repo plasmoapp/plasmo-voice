@@ -55,8 +55,12 @@ tasks {
             relocate(packageName, "su.plo.voice.libs.$outputPackage")
         }
 
-        relocate("su.plo.crowdin", "su.plo.voice.libs.crowdin")
-        relocate("org.bstats", "su.plo.voice.libs.bstats")
+        reloc("io.micrometer")
+        reloc("io.prometheus")
+        reloc("org.HdrHistogram")
+        reloc("org.LatencyUtils")
+        reloc("org.eclipse")
+        reloc("org.http4k")
 
         reloc("kotlin")
         reloc("kotlinx.coroutines")

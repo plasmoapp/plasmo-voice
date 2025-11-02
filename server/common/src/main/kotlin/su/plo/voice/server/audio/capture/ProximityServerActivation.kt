@@ -4,16 +4,16 @@ import su.plo.slib.api.permission.PermissionDefault
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.capture.ProximityServerActivationHelper
+import su.plo.voice.api.server.config.ServerConfig
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
-import su.plo.voice.server.config.VoiceServerConfig
 
 class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
 
     private var proximityHelper: ProximityServerActivationHelper? = null
 
-    fun register(config: VoiceServerConfig) {
+    fun register(config: ServerConfig) {
         proximityHelper?.let {
             it.unregisterListeners(voiceServer)
             voiceServer.activationManager.unregister(it.activation)
@@ -29,7 +29,7 @@ class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
             1
         )
         val activation = builder
-            .setDistances(config.voice().proximity().distances())
+            .setDistances(config.voice().proximity().distances().toList())
             .setDefaultDistance(config.voice().proximity().defaultDistance())
             .setProximity(true)
             .setTransitive(true)
