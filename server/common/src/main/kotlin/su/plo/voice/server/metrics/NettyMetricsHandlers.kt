@@ -1,9 +1,11 @@
 package su.plo.voice.server.metrics
 
 import io.netty.channel.ChannelHandlerContext
+import io.netty.channel.ChannelInboundHandler
 import io.netty.channel.ChannelInboundHandlerAdapter
 import io.netty.channel.SimpleChannelInboundHandler
 import io.netty.channel.socket.DatagramPacket
+import su.plo.voice.BaseVoice
 import su.plo.voice.server.BaseVoiceServer
 import su.plo.voice.socket.NettyPacketUdp
 import java.time.Duration
@@ -12,10 +14,11 @@ import kotlin.system.measureNanoTime
 class NettyPacketExceptionHandlerMetrics(
     private val voiceServer: BaseVoiceServer,
     private val stage: Metrics.PacketHandlerErrorStage,
+    private val originalHandler: ChannelInboundHandler,
 ) : ChannelInboundHandlerAdapter() {
     override fun exceptionCaught(ctx: ChannelHandlerContext, cause: Throwable?) {
         voiceServer.metrics?.handlerError(stage)
-        super.exceptionCaught(ctx, cause)
+        originalHandler.exceptionCaught(ctx, cause)
     }
 }
 
