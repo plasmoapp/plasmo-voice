@@ -97,6 +97,7 @@ class Metrics(
         val stage: String,
     ) {
         Decode("decode"),
+        Handle("handle"),
     }
 
     private val activePeerGauges = Maps.newConcurrentMap<String, AtomicInteger>()
@@ -150,7 +151,7 @@ class Metrics(
 
     init {
         PacketHandlerErrorStage.entries.forEach {
-            Counter.builder("pv_decode_errors_total")
+            Counter.builder("pv_pipeline_errors_total")
                 .tag("stage", it.stage)
                 .register(registry)
         }
@@ -236,10 +237,10 @@ class Metrics(
         ).increment()
     }
 
-    // pv_decode_errors_total{stage="decode"}
+    // pv_pipeline_errors_total{stage="decode|handle"}
     fun handlerError(stage: PacketHandlerErrorStage) {
         registry.counter(
-            "pv_decode_errors_total",
+            "pv_pipeline_errors_total",
             "stage", stage.stage,
         ).increment()
     }
