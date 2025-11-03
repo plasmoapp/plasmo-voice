@@ -202,6 +202,7 @@ class Metrics(
     // pv_active_peers{public_ip="127.0.0.1"}
     fun gaugeActivePeer(publicIp: String, number: Int): Int {
         val gauge = activePeerGauges.computeIfAbsent(publicIp) {
+            initPublicIpMetrics(publicIp)
             registry.gauge(
                 "pv_active_peers",
                 Tags.of("public_ip", publicIp),
@@ -245,6 +246,23 @@ class Metrics(
 
     fun stop() {
         httpServer.stop()
+    }
+
+    private fun initPublicIpMetrics(publicIp: String) {
+        registry.counter(
+            "pv_hard_timeouts_total",
+            "public_ip", publicIp,
+        )
+
+        registry.counter(
+            "pv_rejoin_attempts_total",
+            "public_ip", publicIp,
+        )
+
+        registry.counter(
+            "pv_rejoin_success_total",
+            "public_ip", publicIp,
+        )
     }
 }
 
