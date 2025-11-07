@@ -151,9 +151,20 @@ class Metrics(
 
     init {
         PacketHandlerErrorStage.entries.forEach {
-            Counter.builder("pv_pipeline_errors_total")
-                .tag("stage", it.stage)
-                .register(registry)
+            registry.counter(
+                "pv_pipeline_errors_total",
+                "stage", it.stage,
+            )
+        }
+
+        PacketDirection.entries.forEach { direction ->
+            PacketKind.entries.forEach { kind ->
+                registry.counter(
+                    "pv_udp_packets_total",
+                    "dir", direction.direction,
+                    "kind", kind.kind,
+                )
+            }
         }
     }
 
