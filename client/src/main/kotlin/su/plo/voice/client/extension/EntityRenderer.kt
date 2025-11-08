@@ -10,6 +10,10 @@ import su.plo.lib.mod.client.render.entity.LivingEntityRenderState
 import su.plo.voice.client.mixin.accessor.EntityRendererAccessor
 import net.minecraft.world.scores.Scoreboard
 import su.plo.lib.mod.extensions.level
+import su.plo.voice.client.ModVoiceClient
+import su.plo.voice.proto.data.config.PlayerIconVisibility
+import java.util.EnumSet
+import kotlin.jvm.optionals.getOrNull
 
 //#if MC>=12002
 //$$ import net.minecraft.world.scores.DisplaySlot
@@ -36,8 +40,16 @@ fun EntityRenderer<*>.createEntityRenderState(
     val distanceToCameraSquared = camera.position.distanceToSqr(entity.position())
 
     val customName = entity.customName?.toString()
-    val shouldHideIcon = customName?.contains("plasmo-voice.hide-all-icons") ?: false
-    val shouldHideNotInstalledIcon = customName?.contains("plasmo-voice.hide-not-installed-icon") ?: false
+
+    var playerIconVisibility = getPlayerIconVisibility(entity)
+
+    val shouldHideIcon = customName?.contains("plasmo-voice.hide-all-icons") == true
+
+    if (customName?.contains("plasmo-voice.hide-not-installed-icon") == true) {
+        playerIconVisibility = EnumSet.copyOf(
+            playerIconVisibility + setOf(PlayerIconVisibility.HIDE_NOT_INSTALLED)
+        )
+    }
 
     val rendererAccessor = this as EntityRendererAccessor
     val entityRenderState = LivingEntityRenderState(
@@ -62,8 +74,16 @@ fun EntityRenderer<*>.createEntityRenderState(
         hasScoreboardText,
 
         shouldHideIcon,
-        shouldHideNotInstalledIcon,
+        playerIconVisibility,
     )
 
     return entityRenderState
+}
+
+private fun getPlayerIconVisibility(entity: LivingEntity): Set<PlayerIconVisibility> {
+    if (entity !is Player) return PlayerIconVisibility.none()
+
+    val serverInfo = ModVoiceClient.INSTANCE.serverInfo.getOrNull() ?: return PlayerIconVisibility.none()
+
+    return serverInfo.getPlayerIconVisibility()
 }

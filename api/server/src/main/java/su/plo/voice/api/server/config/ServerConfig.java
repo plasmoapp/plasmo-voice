@@ -2,6 +2,7 @@ package su.plo.voice.api.server.config;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.config.PlayerIconVisibility;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -62,6 +63,8 @@ public interface ServerConfig {
         boolean clientModRequired();
 
         long clientModRequiredCheckTimeoutMs();
+
+        Collection<PlayerIconVisibility> playerIconVisibility();
 
         @NotNull String clientModMinVersion();
 

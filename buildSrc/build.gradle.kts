@@ -12,6 +12,7 @@ dependencies {
 
 repositories {
     mavenCentral()
+    mavenLocal()
     gradlePluginPortal()
     maven("https://repo.plasmoverse.com/releases")
 }

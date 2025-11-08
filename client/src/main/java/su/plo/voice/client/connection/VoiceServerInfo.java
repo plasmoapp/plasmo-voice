@@ -1,7 +1,12 @@
 package su.plo.voice.client.connection;
 
 import com.google.common.collect.Maps;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
+import lombok.NonNull;
+import lombok.Setter;
+import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.voice.api.audio.codec.AudioDecoder;
@@ -14,11 +19,17 @@ import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo;
 import su.plo.voice.proto.data.audio.line.SourceLine;
+import su.plo.voice.proto.data.config.PlayerIconVisibility;
 import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
 
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -38,6 +49,9 @@ public final class VoiceServerInfo implements ServerInfo {
     private @NotNull InetSocketAddress remoteAddress;
 
     @Getter
+    private final EnumSet<PlayerIconVisibility> playerIconVisibility;
+
+    @Getter
     @Setter
     private @NotNull VoiceInfo voiceInfo;
 
@@ -48,12 +62,14 @@ public final class VoiceServerInfo implements ServerInfo {
     @Setter
     private @Nullable Encryption encryption;
 
-    public VoiceServerInfo(@NonNull PlasmoVoiceClient voiceClient,
-                           @NonNull UUID serverId,
-                           @NonNull UUID secret,
-                           @NonNull InetSocketAddress remoteAddress,
-                           @Nullable Encryption encryption,
-                           @NonNull ConfigPacket config) {
+    public VoiceServerInfo(
+            @NonNull PlasmoVoiceClient voiceClient,
+            @NonNull UUID serverId,
+            @NonNull UUID secret,
+            @NonNull InetSocketAddress remoteAddress,
+            @Nullable Encryption encryption,
+            @NonNull ConfigPacket config
+    ) {
         this.voiceClient = voiceClient;
         this.serverId = serverId;
         this.secret = secret;
@@ -65,6 +81,12 @@ public final class VoiceServerInfo implements ServerInfo {
                 new ArrayList<>(config.getActivations())
         );
         this.playerInfo = new VoiceServerPlayerInfo(config.getPermissions());
+
+        if (config.getPlayerIconVisibility().isEmpty()) {
+            this.playerIconVisibility = PlayerIconVisibility.none();
+        } else {
+            this.playerIconVisibility = EnumSet.copyOf(config.getPlayerIconVisibility());
+        }
     }
 
     @Override

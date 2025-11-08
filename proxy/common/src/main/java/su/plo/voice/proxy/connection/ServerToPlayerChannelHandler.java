@@ -148,7 +148,8 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
                     packet.getEncryption(),
                     sourceLines.size() > 0 ? sourceLines : Sets.newHashSet(packet.getSourceLines()),
                     activations.size() > 0 ? activations : Sets.newHashSet(packet.getActivations()),
-                    packet.getPermissions()
+                    packet.getPermissions(),
+                    packet.getPlayerIconVisibility()
             ));
             throw new CancelForwardingException();
         }

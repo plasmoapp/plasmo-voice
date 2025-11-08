@@ -3,6 +3,7 @@ package su.plo.lib.mod.client.render.entity
 import net.minecraft.network.chat.Component
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.phys.Vec3
+import su.plo.voice.proto.data.config.PlayerIconVisibility
 import java.util.UUID
 
 data class LivingEntityRenderState(
@@ -20,5 +21,5 @@ data class LivingEntityRenderState(
     val hasScoreboardText: Boolean, // todo: this is actually player only
 
     val shouldHideIcon: Boolean,
-    val shouldHideNotInstalledIcon: Boolean,
+    val playerIconVisibility: Set<PlayerIconVisibility>,
 )

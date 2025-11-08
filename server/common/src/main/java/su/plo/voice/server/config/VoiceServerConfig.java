@@ -12,7 +12,9 @@ import su.plo.config.ConfigField;
 import su.plo.config.ConfigFieldProcessor;
 import su.plo.config.ConfigValidator;
 import su.plo.voice.api.server.config.ServerConfig;
+import su.plo.voice.proto.data.config.PlayerIconVisibility;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -145,6 +147,9 @@ public final class VoiceServerConfig implements ServerConfig {
 
         @ConfigField(comment = "Minimum required version for a client with the mod to connect to the voice server\nThis will not kick the player but will simply not connect them to the voice server and will suggest downloading the required version")
         private @NotNull String clientModMinVersion = "2.0.0";
+
+        @ConfigField(comment = "Controls which icons are hidden above player heads\nLeave empty to show all icons (default)\nTo hide all icons, use: [\"HIDE_NOT_INSTALLED\", \"HIDE_VOICE_CHAT_DISABLED\", \"HIDE_SERVER_MUTED\", \"HIDE_CLIENT_MUTED\", \"HIDE_SOURCE_ICON\"]\n\nAvailable options:\nHIDE_NOT_INSTALLED - hides icon when player doesn't have Plasmo Voice installed\nHIDE_VOICE_CHAT_DISABLED - hides icon when player disables voice chat on the client\nHIDE_SERVER_MUTED - hides icon when player's voice chat is muted on the server\nHIDE_CLIENT_MUTED - hides icon when player is muted on the client using Volume tab\nHIDE_SOURCE_ICON - hides icon when player is talking")
+        private @NotNull List<PlayerIconVisibility> playerIconVisibility = new ArrayList<>(PlayerIconVisibility.none());
 
         @ConfigField
         private Proximity proximity = new Proximity();

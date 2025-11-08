@@ -12,6 +12,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.LazyGlState;
@@ -37,10 +38,12 @@ import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
 import su.plo.voice.proto.data.audio.source.SourceInfo;
 import su.plo.voice.proto.data.audio.source.StaticSourceInfo;
+import su.plo.voice.proto.data.config.PlayerIconVisibility;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import static su.plo.voice.client.extension.MathKt.toVec3;
@@ -147,45 +150,22 @@ public final class SourceIconRenderer {
                 || entityRenderState.isInvisibleToPlayer()
         ) return;
 
-        boolean hasPercent = false;
-        String iconLocation;
+        boolean hasPercent = volumeAction.isShown(entityRenderState.getEntityUUID());
+        if (hasPercent) {
+            renderPercent(
+                    entityRenderState,
+                    stack,
+                    light
+            );
+        }
 
         Optional<VoicePlayerInfo> playerInfo = connection.get().getPlayerById(entityUUID);
-        if (!playerInfo.isPresent() && !entityRenderState.getShouldHideNotInstalledIcon()) { // not installed
-            iconLocation = "plasmovoice:textures/icons/headset_not_installed.png";
-        } else if (config.getVoice().getVolumes().getMute("source_" + entityUUID).value()) { // client mute
-            iconLocation = "plasmovoice:textures/icons/speaker_disabled.png";
-        } else if (playerInfo.map(VoicePlayerInfo::isMuted).orElse(false)) { // server mute
-            iconLocation = "plasmovoice:textures/icons/speaker_muted.png";
-        } else if (playerInfo.map(VoicePlayerInfo::isVoiceDisabled).orElse(false)) { // client disabled voicechat
-            iconLocation = "plasmovoice:textures/icons/headset_disabled.png";
-        } else {
-            Collection<ClientAudioSource<PlayerSourceInfo>> playerSources = voiceClient.getSourceManager()
-                    .getPlayerSources(entityUUID);
-
-            hasPercent = volumeAction.isShown(entityUUID);
-            if (hasPercent) {
-                renderPercent(
-                        entityRenderState,
-                        stack,
-                        light
-                );
-            }
-
-            if (playerSources.isEmpty() && entitySources.isEmpty()) return;
-
-            ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(playerSources);
-            if (highestSourceLine == null) {
-                highestSourceLine = getHighestActivatedSourceLine(entitySources);
-
-                if (highestSourceLine == null) {
-                    return;
-                }
-            }
-
-            // speaking
-            iconLocation = highestSourceLine.getIcon();
-        }
+        String iconLocation = getPlayerIcon(
+                playerInfo.orElse(null),
+                entityRenderState,
+                entityRenderState.getPlayerIconVisibility()
+        );
+        if (iconLocation == null) return;
 
         renderEntity(
                 entityRenderState,
@@ -448,6 +428,92 @@ public final class SourceIconRenderer {
 
         int showIcons = config.getOverlay().getShowSourceIcons().value();
         return showIcons == 2 || (Minecraft.getInstance().options.hideGui && showIcons == 0);
+    }
+
+    private @Nullable String iconOrNull(
+            @NotNull Set<PlayerIconVisibility> iconVisibility,
+            @NotNull PlayerIconVisibility targetIconVisibility,
+            @NotNull String iconLocation
+    ) {
+        return iconVisibility.contains(targetIconVisibility)
+                ? null
+                : iconLocation;
+    }
+
+    private @Nullable String getPlayerIcon(
+            @Nullable VoicePlayerInfo playerInfo,
+            @NotNull LivingEntityRenderState entityRenderState,
+            @NotNull Set<PlayerIconVisibility> iconVisibility
+    ) {
+        // not installed
+        if (playerInfo == null) {
+            // fallback to entity/player source if we don't have a player in connection list
+            String iconBySource = getPlayerIconBySource(entityRenderState, iconVisibility);
+            if (iconBySource != null) {
+                return iconBySource;
+            }
+
+            return iconOrNull(
+                    iconVisibility,
+                    PlayerIconVisibility.HIDE_NOT_INSTALLED,
+                    "plasmovoice:textures/icons/headset_not_installed.png"
+            );
+        }
+
+        // client mute
+        if (config.getVoice().getVolumes().getMute("source_" + playerInfo.getPlayerId()).value()) {
+            return iconOrNull(
+                    iconVisibility,
+                    PlayerIconVisibility.HIDE_CLIENT_MUTED,
+                    "plasmovoice:textures/icons/speaker_disabled.png"
+            );
+        }
+
+        // server mute
+        if (playerInfo.isMuted()) {
+            return iconOrNull(
+                    iconVisibility,
+                    PlayerIconVisibility.HIDE_SERVER_MUTED,
+                    "plasmovoice:textures/icons/speaker_muted.png"
+            );
+        }
+
+        // client disabled voicechat
+        if (playerInfo.isVoiceDisabled()) {
+            return iconOrNull(
+                    iconVisibility,
+                    PlayerIconVisibility.HIDE_VOICE_CHAT_DISABLED,
+                    "plasmovoice:textures/icons/headset_disabled.png"
+            );
+        }
+
+        return getPlayerIconBySource(entityRenderState, iconVisibility);
+    }
+
+    private @Nullable String getPlayerIconBySource(
+            @NotNull LivingEntityRenderState entityRenderState,
+            @NotNull Set<PlayerIconVisibility> iconVisibility
+    ) {
+        if (iconVisibility.contains(PlayerIconVisibility.HIDE_SOURCE_ICON)) {
+            // nothing to render
+            return null;
+        }
+
+        Collection<ClientAudioSource<PlayerSourceInfo>> playerSources = voiceClient.getSourceManager()
+                .getPlayerSources(entityRenderState.getEntityUUID());
+        Collection<ClientAudioSource<EntitySourceInfo>> entitySources = voiceClient.getSourceManager()
+                .getEntitySources(entityRenderState.getEntityId());
+
+        if (playerSources.isEmpty() && entitySources.isEmpty()) return null;
+
+        ClientSourceLine highestSourceLine = getHighestActivatedSourceLine(playerSources);
+        if (highestSourceLine == null) {
+            highestSourceLine = getHighestActivatedSourceLine(entitySources);
+
+            if (highestSourceLine == null) return null;
+        }
+
+        return highestSourceLine.getIcon();
     }
 
     private <T extends SourceInfo> ClientSourceLine getHighestActivatedSourceLine(@NotNull Collection<ClientAudioSource<T>> sources) {

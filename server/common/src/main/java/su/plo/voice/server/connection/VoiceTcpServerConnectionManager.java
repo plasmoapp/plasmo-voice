@@ -12,11 +12,19 @@ import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
-import su.plo.voice.proto.packets.tcp.clientbound.*;
+import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
+import su.plo.voice.proto.packets.tcp.clientbound.ConfigPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.ConnectionPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.PlayerDisconnectPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoRequestPacket;
+import su.plo.voice.proto.packets.tcp.clientbound.PlayerInfoUpdatePacket;
+import su.plo.voice.proto.packets.tcp.clientbound.PlayerListPacket;
 import su.plo.voice.server.BaseVoiceServer;
 
 import javax.crypto.Cipher;
 import java.security.PublicKey;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
 import java.util.function.Predicate;
@@ -133,7 +141,8 @@ public final class VoiceTcpServerConnectionManager implements TcpServerPacketMan
                         .filter(activation -> activation.checkPermissions(receiver))
                         .map(activation -> (VoiceActivation) activation) // waytoodank
                         .collect(Collectors.toSet()),
-                getPlayerPermissions(receiver)
+                getPlayerPermissions(receiver),
+                new HashSet<>(config.voice().playerIconVisibility())
         );
         receiver.sendPacket(packet);
 
