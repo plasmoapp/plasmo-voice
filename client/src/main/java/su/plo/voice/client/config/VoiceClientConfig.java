@@ -117,7 +117,7 @@ public final class VoiceClientConfig implements ClientConfig {
 
         @Override
         public Object serialize() {
-            Map<String, Object> serialized = Maps.newHashMap();
+            Map<String, Object> serialized = Maps.newTreeMap();
 
             serverById.forEach((serverId, server) ->
                     serialized.put(serverId.toString(), toml.serialize(server))
@@ -161,7 +161,7 @@ public final class VoiceClientConfig implements ClientConfig {
 
         @Override
         public Object serialize() {
-            Map<String, Object> serialized = Maps.newHashMap();
+            Map<String, Object> serialized = Maps.newTreeMap();
 
             for (Map.Entry<UUID, ConfigClientActivation> entry : activationById.entrySet()) {
                 UUID activationId = entry.getKey();
@@ -213,8 +213,8 @@ public final class VoiceClientConfig implements ClientConfig {
 
         @Override
         public Object serialize() {
-            Map<String, Map<String, Object>> serialized = Maps.newHashMap();
-            Map<String, Object> distances = Maps.newHashMap();
+            Map<String, Map<String, Object>> serialized = Maps.newTreeMap();
+            Map<String, Object> distances = Maps.newTreeMap();
 
             activationDistances.forEach((activationId, entry) -> {
                 if (entry.isDefault()) return;
@@ -350,10 +350,10 @@ public final class VoiceClientConfig implements ClientConfig {
 
             @Override
             public synchronized Object serialize() {
-                Map<String, Map<String, Object>> serialized = Maps.newHashMap();
+                Map<String, Map<String, Object>> serialized = Maps.newTreeMap();
 
                 volumeByLineName.forEach((key, entry) -> {
-                    Map<String, Object> value = Maps.newHashMap();
+                    Map<String, Object> value = Maps.newTreeMap();
 
                     if (!entry.isDefault() || !key.startsWith("source_")) {
                         value.put("volume", entry.value());
@@ -362,7 +362,7 @@ public final class VoiceClientConfig implements ClientConfig {
                 });
 
                 muteByLineName.forEach((key, entry) -> {
-                    Map<String, Object> value = serialized.getOrDefault(key, Maps.newHashMap());
+                    Map<String, Object> value = serialized.getOrDefault(key, Maps.newTreeMap());
 
                     if (!entry.isDefault()) {
                         value.put("muted", entry.value());
@@ -508,7 +508,7 @@ public final class VoiceClientConfig implements ClientConfig {
 
             @Override
             public synchronized Object serialize() {
-                Map<String, String> serialized = Maps.newHashMap();
+                Map<String, String> serialized = Maps.newTreeMap();
 
                 stateByLineName.forEach((key, entry) ->
                         serialized.put(key, entry.value().name())
@@ -544,7 +544,7 @@ public final class VoiceClientConfig implements ClientConfig {
 
         @Override
         public synchronized Object serialize() {
-            Map<String, Object> serialized = Maps.newHashMap();
+            Map<String, Object> serialized = Maps.newTreeMap();
 
             addons.forEach((key, value) -> {
                 if (value.entries.size() > 0) {
@@ -590,7 +590,7 @@ public final class VoiceClientConfig implements ClientConfig {
 
             @Override
             public synchronized Object serialize() {
-                Map<String, Object> serialized = Maps.newHashMap();
+                Map<String, Object> serialized = Maps.newTreeMap();
 
                 entries.forEach((key, entry) -> serialized.put(key, entry.value()));
 

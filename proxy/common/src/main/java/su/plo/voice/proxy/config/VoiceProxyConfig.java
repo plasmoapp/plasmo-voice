@@ -121,7 +121,7 @@ public final class VoiceProxyConfig implements ProxyConfig {
 
         @Override
         public Object serialize() {
-            Map<String, String> serializedServers = Maps.newHashMap();
+            Map<String, String> serializedServers = Maps.newTreeMap();
             serializedServers.putAll(serverByName);
             return serializedServers;
         }

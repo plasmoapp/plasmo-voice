@@ -157,9 +157,9 @@ public final class VoiceServerConfig implements ServerConfig {
         public static class Weights implements ServerConfig.Voice.Weights {
 
             @ConfigField(path = "activations")
-            private Map<String, Integer> weightByActivationName = Maps.newConcurrentMap();
+            private Map<String, Integer> weightByActivationName = Maps.newTreeMap();
             @ConfigField(path = "source_lines")
-            private Map<String, Integer> weightBySourceLineName = Maps.newConcurrentMap();
+            private Map<String, Integer> weightBySourceLineName = Maps.newTreeMap();
 
             @Override
             public Optional<Integer> getActivationWeight(@NotNull String activationName) {
