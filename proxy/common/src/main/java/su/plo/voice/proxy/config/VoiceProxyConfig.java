@@ -37,29 +37,29 @@ public final class VoiceProxyConfig implements ProxyConfig {
 
     @ConfigField(
             comment =
-                    "Language used when client's language doesn't exist.\n\n" +
-                    "By default, client's language used for translations.\n" +
-                    "For example, if default_language is set to ja_jp but the client uses en_us, then en_us will be used.\n" +
-                    "If you want to use one specific language for all clients, uncomment and set forced_language below."
+                    "Language used when client's language doesn't exist\n\n" +
+                    "By default, client's language used for translations\n" +
+                    "For example, if default_language is set to ja_jp but the client uses en_us, then en_us will be used\n" +
+                    "If you want to use one specific language for all clients, uncomment and set forced_language below"
     )
     private String defaultLanguage = "en_us";
 
     @ConfigField(
-            comment = "Language used for all clients.",
+            comment = "Language used for all clients",
             nullComment = "forced_language = \"ja_jp\""
     )
     private @Nullable String forcedLanguage = null;
 
-    @ConfigField
+    @ConfigField(comment = "Enables debug logging")
     private boolean debug = false;
 
-    @ConfigField
+    @ConfigField(comment = "Enables translations from Crowdin")
     private boolean useCrowdinTranslations = true;
 
     @ConfigField
     private boolean checkForUpdates = true;
 
-    @ConfigField(comment = "The MTU size on the proxy only needs to create Opus encoders using the API")
+    @ConfigField(comment = "MTU size used for Opus encoder creation via API")
     @ConfigValidator(
             value = MtuSizeValidator.class,
             allowed = "128-5000"
@@ -69,9 +69,10 @@ public final class VoiceProxyConfig implements ProxyConfig {
     @ConfigField
     private VoiceHost host = new VoiceHost();
 
-    @ConfigField(nullComment = "[servers]\n" +
-            "farmworld = \"127.0.0.1:25565\"\n" +
-            "overworld = \"127.0.0.1:25566\"")
+    @ConfigField(
+            comment = "Override voice server addresses for specific backend servers\nBy default, uses the same address as the Minecraft backend server (from Velocity/BungeeCord config)",
+            nullComment = "[servers]\nfarmworld = \"127.0.0.1:25565\"\noverworld = \"127.0.0.1:25566\""
+    )
     private Servers servers = new Servers();
 
     @NoArgsConstructor
@@ -132,14 +133,18 @@ public final class VoiceProxyConfig implements ProxyConfig {
     @Accessors(fluent = true)
     public static class VoiceHost implements Host {
 
-        @ConfigField
+        @ConfigField(comment = "IP address for the voice server to bind to\n0.0.0.0 = bind to all available interfaces")
         private String ip = "0.0.0.0";
 
-        @ConfigField
+        @ConfigField(comment = "UDP port for the voice server\n0 = same port as Minecraft proxy server")
         @ConfigValidator(value = PortValidator.class, allowed = "0-65535")
         private int port = 0;
 
-        @ConfigField(path = "public")
+        @ConfigField(
+                path = "public",
+                comment = "Public IP and port that clients will connect to\nIf ip set to 0.0.0.0, ip from [host] will be used\nIf port set to 0, port from [host] will be used",
+                nullComment = "[host.public]\nip = 127.0.0.1\nport = 0"
+        )
         private @Nullable Public hostPublic = null;
 
         @Config
