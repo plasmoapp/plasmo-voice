@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -52,6 +53,9 @@ public final class VoiceServerInfo implements ServerInfo {
     private final EnumSet<PlayerIconVisibility> playerIconVisibility;
 
     @Getter
+    private final Pos3d playerIconOffset;
+
+    @Getter
     @Setter
     private @NotNull VoiceInfo voiceInfo;
 
@@ -82,10 +86,12 @@ public final class VoiceServerInfo implements ServerInfo {
         );
         this.playerInfo = new VoiceServerPlayerInfo(config.getPermissions());
 
-        if (config.getPlayerIconVisibility().isEmpty()) {
-            this.playerIconVisibility = PlayerIconVisibility.none();
+        this.playerIconVisibility = PlayerIconVisibility.of(config.getPlayerIconConfig().getIconVisibility());
+        Pos3d iconOffset = config.getPlayerIconConfig().getIconOffset();
+        if (Math.abs(iconOffset.getX()) < 16.0 && Math.abs(iconOffset.getY()) < 16.0 && Math.abs(iconOffset.getZ()) < 16.0) {
+            this.playerIconOffset = iconOffset;
         } else {
-            this.playerIconVisibility = EnumSet.copyOf(config.getPlayerIconVisibility());
+            this.playerIconOffset = new Pos3d();
         }
     }
 

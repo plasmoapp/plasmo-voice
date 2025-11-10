@@ -11,13 +11,12 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
-import su.plo.voice.proto.data.config.PlayerIconVisibility;
+import su.plo.voice.proto.data.config.PlayerIconConfig;
 import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -37,7 +36,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
     private Set<VoiceSourceLine> sourceLines;
     private Set<VoiceActivation> activations;
     @Getter
-    private Set<PlayerIconVisibility> playerIconVisibility;
+    private PlayerIconConfig playerIconConfig;
 
     public ConfigPacket(
             @NotNull UUID serverId,
@@ -46,7 +45,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
             @NotNull Set<VoiceSourceLine> sourceLines,
             @NotNull Set<VoiceActivation> activations,
             @NotNull Map<String, Boolean> permissions,
-            @NotNull Set<PlayerIconVisibility> playerIconVisibility
+            @NotNull PlayerIconConfig playerIconConfig
     ) {
         super(permissions);
 
@@ -55,7 +54,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         this.encryption = encryption;
         this.sourceLines = sourceLines;
         this.activations = activations;
-        this.playerIconVisibility = new HashSet<>(playerIconVisibility);
+        this.playerIconConfig = playerIconConfig;
     }
 
     public Collection<VoiceSourceLine> getSourceLines() {
@@ -101,14 +100,9 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         // since 2.1.7
         // because server can be still on 2.1.6, we have to implement some kind of fallback mechanics here
         try {
-            int iconVisibilitySize = PacketUtil.readSafeInt(in, 0, PlayerIconVisibility.getEntries().size());
-            Set<PlayerIconVisibility> iconVisibility = Sets.newHashSet();
-            for (int i = 0; i < iconVisibilitySize; i++) {
-                iconVisibility.add(PlayerIconVisibility.valueOf(in.readUTF()));
-            }
-            this.playerIconVisibility = iconVisibility;
-        } catch (Exception e) {
-            this.playerIconVisibility = PlayerIconVisibility.none();
+            this.playerIconConfig = new PlayerIconConfig();
+            playerIconConfig.deserialize(in);
+        } catch (Exception ignored) {
         }
     }
 
@@ -135,10 +129,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
         super.write(out);
 
         // since 2.1.7
-        out.writeInt(playerIconVisibility.size());
-        for (PlayerIconVisibility iconVisibility : playerIconVisibility) {
-            out.writeUTF(iconVisibility.name());
-        }
+        playerIconConfig.serialize(out);
     }
 
     @Override

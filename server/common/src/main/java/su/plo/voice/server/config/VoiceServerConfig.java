@@ -148,19 +148,30 @@ public final class VoiceServerConfig implements ServerConfig {
         @ConfigField(comment = "Minimum required version for a client with the mod to connect to the voice server\nThis will not kick the player but will simply not connect them to the voice server and will suggest downloading the required version")
         private @NotNull String clientModMinVersion = "2.0.0";
 
-        @ConfigField(comment = "Controls which icons are hidden above player heads\nLeave empty to show all icons (default)\nTo hide all icons, use: [\"HIDE_NOT_INSTALLED\", \"HIDE_VOICE_CHAT_DISABLED\", \"HIDE_SERVER_MUTED\", \"HIDE_CLIENT_MUTED\", \"HIDE_SOURCE_ICON\"]\n\nAvailable options:\nHIDE_NOT_INSTALLED - hides icon when player doesn't have Plasmo Voice installed\nHIDE_VOICE_CHAT_DISABLED - hides icon when player disables voice chat on the client\nHIDE_SERVER_MUTED - hides icon when player's voice chat is muted on the server\nHIDE_CLIENT_MUTED - hides icon when player is muted on the client using Volume tab\nHIDE_SOURCE_ICON - hides icon when player is talking")
-        private @NotNull List<PlayerIconVisibility> playerIconVisibility = new ArrayList<>(PlayerIconVisibility.none());
-
         @ConfigField
         private Proximity proximity = new Proximity();
 
         @ConfigField
         private Opus opus = new Opus();
 
+        @ConfigField
+        private PlayerIcon playerIcon = new PlayerIcon();
+
         @ConfigField(
                 comment = "Set custom weights for specific activations and source lines\nWeight determines display order in client menu and overlay (lower = higher position)"
         )
         private Weights weights = new Weights();
+
+        @Config
+        @Data
+        @Accessors(fluent = true)
+        public static class PlayerIcon implements ServerConfig.Voice.PlayerIcon {
+            @ConfigField(comment = "Controls which icons are hidden above player heads\nLeave empty to show all icons (default)\nTo hide all icons, use: [\"HIDE_NOT_INSTALLED\", \"HIDE_VOICE_CHAT_DISABLED\", \"HIDE_SERVER_MUTED\", \"HIDE_CLIENT_MUTED\", \"HIDE_SOURCE_ICON\"]\n\nAvailable options:\nHIDE_NOT_INSTALLED - hides icon when player doesn't have Plasmo Voice installed\nHIDE_VOICE_CHAT_DISABLED - hides icon when player disables voice chat on the client\nHIDE_SERVER_MUTED - hides icon when player's voice chat is muted on the server\nHIDE_CLIENT_MUTED - hides icon when player is muted on the client using Volume tab\nHIDE_SOURCE_ICON - hides icon when player is talking")
+            private @NotNull List<PlayerIconVisibility> visibility = new ArrayList<>(PlayerIconVisibility.none());
+
+            @ConfigField(comment = "Controls the y offset of the icon above player heads")
+            private double yOffset = 0.0;
+        }
 
         @Config
         @Data

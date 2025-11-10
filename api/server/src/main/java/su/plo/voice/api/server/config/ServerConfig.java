@@ -64,15 +64,21 @@ public interface ServerConfig {
 
         long clientModRequiredCheckTimeoutMs();
 
-        Collection<PlayerIconVisibility> playerIconVisibility();
-
         @NotNull String clientModMinVersion();
 
         @NotNull Proximity proximity();
 
         @NotNull Opus opus();
 
+        @NotNull PlayerIcon playerIcon();
+
         @NotNull Weights weights();
+
+        interface PlayerIcon {
+            Collection<PlayerIconVisibility> visibility();
+
+            double yOffset();
+        }
 
         interface Weights {
 

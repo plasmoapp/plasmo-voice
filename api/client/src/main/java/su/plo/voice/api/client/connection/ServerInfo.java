@@ -1,6 +1,7 @@
 package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
@@ -74,6 +75,13 @@ public interface ServerInfo {
      * @return The enum set of icon visibility flags.
      */
     @NotNull Set<PlayerIconVisibility> getPlayerIconVisibility();
+
+    /**
+     * Gets the server's player icon offset.
+     *
+     * @return The offset of the player icon.
+     */
+    @NotNull Pos3d getPlayerIconOffset();
 
     /**
      * Creates a new Opus encoder based on server {@link VoiceInfo}.

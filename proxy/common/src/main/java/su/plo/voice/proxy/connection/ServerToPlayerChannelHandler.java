@@ -149,7 +149,7 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
                     sourceLines.size() > 0 ? sourceLines : Sets.newHashSet(packet.getSourceLines()),
                     activations.size() > 0 ? activations : Sets.newHashSet(packet.getActivations()),
                     packet.getPermissions(),
-                    packet.getPlayerIconVisibility()
+                    packet.getPlayerIconConfig()
             ));
             throw new CancelForwardingException();
         }

@@ -49,6 +49,13 @@ enum class PlayerIconVisibility {
 
     companion object {
         @JvmStatic
+        fun of(collection: Collection<PlayerIconVisibility>): EnumSet<PlayerIconVisibility> =
+            if (collection.isEmpty())
+                none()
+            else
+                EnumSet.copyOf(collection)
+
+        @JvmStatic
         fun none(): EnumSet<PlayerIconVisibility> = EnumSet.noneOf(PlayerIconVisibility::class.java)
 
         @JvmStatic

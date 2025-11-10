@@ -10,6 +10,7 @@ import su.plo.lib.mod.client.render.entity.LivingEntityRenderState
 import su.plo.voice.client.mixin.accessor.EntityRendererAccessor
 import net.minecraft.world.scores.Scoreboard
 import su.plo.lib.mod.extensions.level
+import su.plo.slib.api.position.Pos3d
 import su.plo.voice.client.ModVoiceClient
 import su.plo.voice.proto.data.config.PlayerIconVisibility
 import java.util.EnumSet
@@ -51,6 +52,8 @@ fun EntityRenderer<*>.createEntityRenderState(
         )
     }
 
+    val playerIconOffset = getPlayerIconOffset(entity)
+
     val rendererAccessor = this as EntityRendererAccessor
     val entityRenderState = LivingEntityRenderState(
         entity.id,
@@ -70,7 +73,7 @@ fun EntityRenderer<*>.createEntityRenderState(
             entity.displayName
         else
             null,
-        Vec3(0.0, entity.bbHeight.toDouble(), 0.0),
+        Vec3(playerIconOffset.x, entity.bbHeight.toDouble() + playerIconOffset.y, playerIconOffset.z),
         hasScoreboardText,
 
         shouldHideIcon,
@@ -78,6 +81,15 @@ fun EntityRenderer<*>.createEntityRenderState(
     )
 
     return entityRenderState
+}
+
+private val pos3dZero = Pos3d()
+
+private fun getPlayerIconOffset(entity: LivingEntity): Pos3d {
+    if (entity !is Player) return pos3dZero
+    val serverInfo = ModVoiceClient.INSTANCE.serverInfo.getOrNull() ?: return pos3dZero
+
+    return serverInfo.playerIconOffset
 }
 
 private fun getPlayerIconVisibility(entity: LivingEntity): Set<PlayerIconVisibility> {

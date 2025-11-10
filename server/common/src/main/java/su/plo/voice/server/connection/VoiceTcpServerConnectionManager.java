@@ -3,6 +3,7 @@ package su.plo.voice.server.connection;
 import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.config.ServerConfig;
 import su.plo.voice.api.server.connection.TcpServerPacketManager;
@@ -10,6 +11,7 @@ import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
+import su.plo.voice.proto.data.config.PlayerIconConfig;
 import su.plo.voice.proto.data.encryption.EncryptionInfo;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.ClientPacketTcpHandler;
@@ -23,7 +25,6 @@ import su.plo.voice.server.BaseVoiceServer;
 
 import javax.crypto.Cipher;
 import java.security.PublicKey;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -142,7 +143,10 @@ public final class VoiceTcpServerConnectionManager implements TcpServerPacketMan
                         .map(activation -> (VoiceActivation) activation) // waytoodank
                         .collect(Collectors.toSet()),
                 getPlayerPermissions(receiver),
-                new HashSet<>(config.voice().playerIconVisibility())
+                new PlayerIconConfig(
+                        new HashSet<>(config.voice().playerIcon().visibility()),
+                        new Pos3d(0.0, config.voice().playerIcon().yOffset(), 0.0)
+                )
         );
         receiver.sendPacket(packet);
 
