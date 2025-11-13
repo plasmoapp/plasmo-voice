@@ -111,7 +111,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         List<ClientActivation> activationsToCheck = allActivations.stream()
                 .filter(activation -> activation.isProximity() == proximity)
                 .sorted(Comparator.comparingInt(Activation::getWeight))
-                .toList();
+                .collect(Collectors.toList());
 
         if (activationsToCheck.size() < 2) return conflicts;
 
