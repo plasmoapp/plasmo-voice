@@ -74,8 +74,11 @@
     "gui.plasmovoice.advanced.stereo_sources_to_mono": "Mono Stereo Sources",
     "gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip": "Addons use stereo sources for better audio quality. The quality is much better, but facing doesn't affect the panning. Sound only fades out with distance.\n\nWhen this option is enabled, stereo sources are converted to the usual mono sources. Quality is worse, but they will now have panning.",
     "gui.plasmovoice.advanced.panning": "Stereo Positioning",
-    "gui.plasmovoice.advanced.mute_player_on_direct": "Mute Player On Direct",
-    "gui.plasmovoice.advanced.mute_player_on_direct.tooltip": "When enabled, the player's source will be automatically muted if the direct source from the same player becomes active. Use this to avoid overlapping audio or conflicting playback from multiple sources.",
+    "gui.plasmovoice.advanced.source_types_overlap": "Source Types Overlap",
+    "gui.plasmovoice.advanced.source_types_overlap.tooltip": "Resolves overlaps when a player has both proximity and direct sources active\n\n- Mute Direct: mutes direct sources when proximity is active\n- Mute Proximity: mutes proximity sources when direct is active\n- Off: no overlap resolution",
+    "gui.plasmovoice.advanced.source_types_overlap.mute_direct": "Mute Direct",
+    "gui.plasmovoice.advanced.source_types_overlap.mute_proximity": "Mute Proximity",
+    "gui.plasmovoice.advanced.source_types_overlap.off": "Off",
     "gui.plasmovoice.advanced.adaptive_jitter_buffer": "Adaptive Jitter Buffer",
     "gui.plasmovoice.advanced.adaptive_jitter_buffer.tooltip": "Time-based network jitter buffer with adaptive delay depending on connection quality.\n\nTry to enable this option if you hear audio artifacts caused by bad connection.",
 

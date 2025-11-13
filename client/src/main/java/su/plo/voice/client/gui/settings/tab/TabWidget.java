@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -153,6 +154,35 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                 updatableWidget.updateValue();
             }
         }
+    }
+
+    protected <E extends Enum<E>> OptionEntry<DropDownWidget> createDropDownEntry(
+            @NotNull McTextComponent text,
+            @Nullable McTextComponent tooltip,
+            @NotNull Class<E> enumClass,
+            @NotNull List<McTextComponent> elements,
+            @NotNull EnumConfigEntry<E> entry,
+            boolean elementTooltip
+    ) {
+        DropDownWidget dropdown = new DropDownWidget(
+                parent,
+                0,
+                0,
+                ELEMENT_WIDTH,
+                20,
+                elements.get(entry.value().ordinal()),
+                elements,
+                elementTooltip,
+                selected -> entry.set(enumClass.getEnumConstants()[selected])
+        );
+
+        return new OptionEntry<>(
+                text,
+                dropdown,
+                entry,
+                tooltip,
+                (button, element) -> element.setText(elements.get(entry.getDefault().ordinal()))
+        );
     }
 
     protected OptionEntry<ToggleButton> createToggleEntry(

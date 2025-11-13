@@ -13,6 +13,7 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.api.client.config.ClientConfig;
 import su.plo.voice.api.client.config.IconPosition;
+import su.plo.voice.api.client.config.OverlappingSourceTypes;
 import su.plo.voice.api.client.config.overlay.OverlayPosition;
 import su.plo.voice.api.client.config.overlay.OverlaySourceState;
 import su.plo.voice.api.client.config.overlay.OverlayStyle;
@@ -401,7 +402,10 @@ public final class VoiceClientConfig implements ClientConfig {
         private BooleanConfigEntry panning = new BooleanConfigEntry(true);
 
         @ConfigField
-        private BooleanConfigEntry mutePlayerOnDirect = new BooleanConfigEntry(true);
+        private EnumConfigEntry<OverlappingSourceTypes> sourceTypesOverlap = new EnumConfigEntry<>(
+                OverlappingSourceTypes.class,
+                OverlappingSourceTypes.MUTE_PROXIMITY
+        );
 
         @ConfigField
         private BooleanConfigEntry cameraSoundListener = new BooleanConfigEntry(true);

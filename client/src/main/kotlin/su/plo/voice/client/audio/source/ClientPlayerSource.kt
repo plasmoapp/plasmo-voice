@@ -6,6 +6,7 @@ import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
 import su.plo.lib.mod.extensions.eyePosition
+import su.plo.voice.api.client.config.OverlappingSourceTypes
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
@@ -41,12 +42,16 @@ class ClientPlayerSource(
     override fun isPanningDisabled(): Boolean =
         sourcePlayer == getListener() || super.isPanningDisabled()
 
-    override fun shouldWrite(): Boolean =
-        !voiceClient.config.advanced.mutePlayerOnDirect.value() ||
-        voiceClient.sourceManager.sources
-            .filterIsInstance<ClientDirectSource>()
-            .filter { it.isActivated() }
-            .none { it.sourceInfo.sender?.id == sourceInfo.playerInfo.playerId }
+    override fun shouldWrite(): Boolean {
+        if (voiceClient.config.advanced.sourceTypesOverlap.value() == OverlappingSourceTypes.MUTE_PROXIMITY) {
+            return voiceClient.sourceManager.sources
+                .filterIsInstance<ClientDirectSource>()
+                .filter { it.isActivated() }
+                .none { it.sourceInfo.sender?.id == sourceInfo.playerInfo.playerId }
+        }
+
+        return true
+    }
 
     private val sourceMute: BooleanConfigEntry
         get() {
