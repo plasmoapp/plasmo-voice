@@ -128,6 +128,7 @@ public final class VoiceAudioCapture implements AudioCapture {
                 InputDevice inputDevice = devices.openInputDevice(format);
                 devices.setInputDevice(inputDevice);
             } catch (Exception e) {
+                devices.setInputDevice(null, e);
                 LOGGER.error("Failed to open input device", e);
                 JavaxInputDeviceFactory.printSupportedLines();
             }

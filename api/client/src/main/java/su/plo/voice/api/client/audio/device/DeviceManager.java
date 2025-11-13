@@ -15,7 +15,7 @@ public interface DeviceManager {
     /**
      * Gets the current output device.
      *
-     * @return The output device or null.
+     * @return The output device or empty.
      */
     @NotNull Optional<AlContextOutputDevice> getOutputDevice();
 
@@ -31,9 +31,16 @@ public interface DeviceManager {
     /**
      * Gets the current input device.
      *
-     * @return The output device or null.
+     * @return The input device or empty.
      */
     @NotNull Optional<InputDevice> getInputDevice();
+
+    /**
+     * Gets the last input device error.
+     *
+     * @return The input device error or empty.
+     */
+    @NotNull Optional<Throwable> getInputDeviceError();
 
     /**
      * Sets an input device.
@@ -42,7 +49,19 @@ public interface DeviceManager {
      *
      * @param device The audio output device, or null to remove a current device from the manager.
      */
-    void setInputDevice(@Nullable InputDevice device);
+    default void setInputDevice(@Nullable InputDevice device) {
+        setInputDevice(device, null);
+    }
+
+    /**
+     * Sets an input device.
+     * </br>
+     * This method also registers and unregisters (when replaced or removed) the device in event bus.
+     *
+     * @param device The audio output device, or null to remove a current device from the manager.
+     * @param lastError An error thrown when trying to open a device.
+     */
+    void setInputDevice(@Nullable InputDevice device, @Nullable Throwable lastError);
 
     /**
      * Closes and removes the output and input devices.

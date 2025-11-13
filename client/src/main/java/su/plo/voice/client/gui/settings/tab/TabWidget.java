@@ -91,7 +91,9 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
                 if (e.widgets().size() < 1) continue;
 
                 if (e.widgets().get(0) instanceof DropDownWidget
-                        || e.widgets().get(0) instanceof HotKeyWidget) {
+                        || e.widgets().get(0) instanceof HotKeyWidget
+                        || e.widgets().get(0) instanceof CompositeRowWidget
+                ) {
                     if (e.mouseClicked(mouseX, mouseY, button)) {
                         return true;
                     }
