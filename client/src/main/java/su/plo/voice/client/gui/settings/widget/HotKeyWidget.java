@@ -174,7 +174,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     public void keysReleased() {
-        entry.value().setKeys(ImmutableSet.copyOf(pressedKeys));
+        entry.updateKeys(ImmutableSet.copyOf(pressedKeys));
         pressedKeys.clear();
         parent.setFocusedHotKey(null);
     }

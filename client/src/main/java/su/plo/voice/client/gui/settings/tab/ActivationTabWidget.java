@@ -2,6 +2,8 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -9,12 +11,15 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.gui.components.IconButton;
+import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
+import su.plo.voice.api.client.config.hotkey.Hotkey;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.ClientActivationRegisteredEvent;
 import su.plo.voice.api.client.event.audio.capture.ClientActivationUnregisteredEvent;
@@ -23,12 +28,25 @@ import su.plo.voice.client.audio.capture.VoiceClientActivation;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
+import su.plo.voice.client.extension.TextKt;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.client.gui.settings.widget.*;
+import su.plo.voice.client.gui.settings.widget.CompositeRowWidget;
+import su.plo.voice.client.gui.settings.widget.DistanceSliderWidget;
+import su.plo.voice.client.gui.settings.widget.DropDownWidget;
+import su.plo.voice.client.gui.settings.widget.HotKeyWidget;
+import su.plo.voice.client.gui.settings.widget.NumberTextFieldWidget;
+import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
+import java.awt.Color;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
@@ -43,6 +61,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
     );
 
     private final ClientActivationManager activations;
+    private Map<UUID, Set<UUID>> activationConflicts;
 
     public ActivationTabWidget(@NotNull VoiceSettingsScreen parent,
                                @NotNull PlasmoVoiceClient voiceClient,
@@ -55,6 +74,14 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
     @Override
     public void init() {
         super.init();
+
+        Map<UUID, Set<UUID>> proximityConflicts = detectActivationConflicts(true);
+        Map<UUID, Set<UUID>> nonProximityConflicts = detectActivationConflicts(false);
+        Map<UUID, Set<UUID>> conflicts = Maps.newHashMap();
+        conflicts.putAll(proximityConflicts);
+        conflicts.putAll(nonProximityConflicts);
+
+        this.activationConflicts = conflicts;
 
         activations.getParentActivation().ifPresent(activation ->
                 createActivation(activation, false)
@@ -75,6 +102,66 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
     @EventSubscribe
     public void onActivationUnregister(@NotNull ClientActivationUnregisteredEvent event) {
         Minecraft.getInstance().execute(this::init);
+    }
+
+    private Map<UUID, Set<UUID>> detectActivationConflicts(boolean proximity) {
+        Map<UUID, Set<UUID>> conflicts = Maps.newHashMap();
+        List<ClientActivation> allActivations = Lists.newArrayList(activations.getActivations());
+
+        List<ClientActivation> activationsToCheck = allActivations.stream()
+                .filter(activation -> activation.isProximity() == proximity)
+                .sorted(Comparator.comparingInt(Activation::getWeight))
+                .toList();
+
+        if (activationsToCheck.size() < 2) return conflicts;
+
+        for (int i = 0; i < activationsToCheck.size(); i++) {
+            ClientActivation current = activationsToCheck.get(i);
+            Set<UUID> currentConflicts = conflicts.getOrDefault(current.getId(), Sets.newHashSet());
+
+            for (int j = i + 1; j < activationsToCheck.size(); j++) {
+                ClientActivation higher = activationsToCheck.get(j);
+
+                if (!higher.isTransitive()) {
+                    ConfigClientActivation higherConfig = config.getActivations()
+                            .getActivation(higher.getId())
+                            .orElse(null);
+                    if (higherConfig == null) continue;
+
+                    ConfigClientActivation currentConfig = config.getActivations()
+                            .getActivation(current.getId())
+                            .orElse(null);
+                    if (currentConfig == null) continue;
+
+                    ClientActivation.Type higherType = higherConfig.getConfigType().value();
+                    ClientActivation.Type currentType = currentConfig.getConfigType().value();
+
+                    if (higherType == ClientActivation.Type.PUSH_TO_TALK &&
+                        currentType == ClientActivation.Type.PUSH_TO_TALK) {
+
+                        VoiceClientActivation higherVoice = (VoiceClientActivation) higher;
+                        VoiceClientActivation currentVoice = (VoiceClientActivation) current;
+
+                        Hotkey higherKey = higherVoice.getPttConfigEntry().value();
+                        Hotkey currentKey = currentVoice.getPttConfigEntry().value();
+
+                        if (higherKey.getKeys().equals(currentKey.getKeys())) {
+                            currentConflicts.add(higher.getId());
+                        }
+                    } else if (
+                            (currentType == ClientActivation.Type.VOICE || currentType == ClientActivation.Type.INHERIT) &&
+                                    (higherType == ClientActivation.Type.VOICE || higherType == ClientActivation.Type.INHERIT)) {
+                        currentConflicts.add(higher.getId());
+                    }
+                }
+            }
+
+            if (!currentConflicts.isEmpty()) {
+                conflicts.put(current.getId(), currentConflicts);
+            }
+        }
+
+        return conflicts;
     }
 
     private void createActivation(ClientActivation activation, boolean canInherit) {
@@ -98,18 +185,27 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         }
     }
 
-    private OptionEntry<DropDownWidget> createActivationType(
+    private OptionEntry<?> createActivationType(
             @NotNull ClientActivation activation,
             @NotNull ConfigClientActivation activationConfig,
             boolean canInherit
     ) {
+        Set<UUID> conflicts = activationConflicts.get(activation.getId());
+        boolean hasConflicts = conflicts != null;
+
+        int dropdownWidth = activation.getType() == ClientActivation.Type.PUSH_TO_TALK
+                ? ELEMENT_WIDTH
+                : ELEMENT_WIDTH - 24;
+
+        if (hasConflicts) {
+            dropdownWidth -= 24;
+        }
+
         DropDownWidget dropdown = new DropDownWidget(
                 parent,
                 0,
                 0,
-                activation.getType() == ClientActivation.Type.PUSH_TO_TALK
-                        ? ELEMENT_WIDTH
-                        : ELEMENT_WIDTH - 24,
+                dropdownWidth,
                 20,
                 TYPES.get(activation.getType().ordinal()),
                 canInherit ? TYPES : NO_INHERIT_TYPES,
@@ -122,9 +218,26 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 }
         );
 
-        return new ActivationToggleStateEntry(
-                McTextComponent.translatable("gui.plasmovoice.activation.type"),
+        IconButton warningIcon = null;
+        if (hasConflicts) {
+            warningIcon = createConflictIcon(activation, conflicts);
+        }
+
+        CompositeRowWidget row = new CompositeRowWidget(
+                0,
+                0,
+                activation.getType() == ClientActivation.Type.PUSH_TO_TALK
+                        ? ELEMENT_WIDTH
+                        : ELEMENT_WIDTH - 24,
+                20,
+                4,
                 dropdown,
+                warningIcon
+        );
+
+        return new ActivationToggleStateEntry<>(
+                McTextComponent.translatable("gui.plasmovoice.activation.type"),
+                row,
                 McTextComponent.translatable(activation.getTranslation()),
                 activationConfig.getConfigType(),
                 activationConfig.getConfigToggle(),
@@ -136,6 +249,40 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
     }
 
+    private IconButton createConflictIcon(@NotNull ClientActivation activation, @NotNull Set<UUID> conflicts) {
+        McTextComponent conflictingNames = TextKt.join(
+                conflicts
+                        .stream()
+                        .map(activations::getActivationById)
+                        .filter(Optional::isPresent)
+                        .map(Optional::get)
+                        .map(ClientActivation::getTranslation)
+                        .map(McTextComponent::translatable)
+                        .collect(Collectors.toList()),
+                McTextComponent.literal("\", \"")
+        );
+
+        IconButton icon = new IconButton(
+                0,
+                0,
+                20,
+                20,
+                button -> {},
+                (button, context, mouseX, mouseY) -> {
+                    parent.setTooltip(McTextComponent.translatable(
+                            "gui.plasmovoice.activation.conflict",
+                            McTextComponent.translatable(activation.getTranslation()),
+                            conflictingNames
+                    ));
+                },
+                ResourceLocationUtil.mod("textures/icons/warning.png"),
+                false
+        );
+
+        icon.setIconColor(new Color(0xFAC653));
+        return icon;
+    }
+
     private OptionEntry<HotKeyWidget> createActivationButton(@NotNull VoiceClientActivation activation) {
         String translatable = "gui.plasmovoice.activation.toggle_button";
         HotkeyConfigEntry entry = activation.getToggleConfigEntry();
@@ -144,6 +291,9 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
             translatable = "gui.plasmovoice.activation.ptt_button";
             entry = activation.getPttConfigEntry();
         }
+
+        entry.clearChangeListeners();
+        entry.addChangeListener(event -> init());
 
         return createHotKey(
                 translatable,
@@ -204,16 +354,16 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
     }
 
-    private class ActivationToggleStateEntry extends ButtonOptionEntry<DropDownWidget> {
+    private class ActivationToggleStateEntry<W extends GuiAbstractWidget> extends ButtonOptionEntry<W> {
 
         public ActivationToggleStateEntry(
                 @NotNull McTextComponent text,
-                @NotNull DropDownWidget widget,
+                @NotNull W widget,
                 @NotNull McTextComponent activationName,
                 @NotNull EnumConfigEntry<ClientActivation.Type> entry,
                 @NotNull BooleanConfigEntry stateEntry,
                 @Nullable McTextComponent tooltip,
-                @Nullable OptionResetAction<DropDownWidget> resetAction
+                @Nullable OptionResetAction<W> resetAction
         ) {
             super(text, widget, Lists.newArrayList(), entry, tooltip, resetAction);
 

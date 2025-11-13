@@ -59,6 +59,7 @@
     "gui.plasmovoice.activation.toggle_button": "Toggle Button",
     "gui.plasmovoice.activation.toggle": "Toggle \"%s\"\n%s",
     "gui.plasmovoice.activation.distance": "%s Distance",
+    "gui.plasmovoice.activation.conflict": "\"%s\" may be blocked by higher priority non-transitive activation \"%s\"\n\nThis activation can still be used if the higher priority activation is toggled off\n\n- If all use PTT with the same key: change one to a different key\n- If all use Voice/Inherit: change one to a different activation type",
 
 
     "gui.plasmovoice.advanced": "Advanced",
