@@ -254,12 +254,17 @@ public final class VoiceAudioCapture implements AudioCapture {
                 ClientActivation.Result parentResult = parentActivation.process(samples, null);
 
                 EncodedCapture encoded = new EncodedCapture(device.get(), samples);
-                boolean transitiveReached = false;
+                boolean proximityTransitiveReached = false;
+                boolean nonProximityTransitiveReached = false;
 
                 for (ClientActivation activation : activations.getActivations()) {
                     if ((activation.isDisabled() && !activation.isActive()) ||
                             activation.equals(parentActivation)
                     ) continue;
+
+                    final boolean transitiveReached = activation.isProximity()
+                            ? proximityTransitiveReached
+                            : nonProximityTransitiveReached;
 
                     if (transitiveReached) {
                         activation.reset();
@@ -277,11 +282,19 @@ public final class VoiceAudioCapture implements AudioCapture {
                     }
 
                     if (activationResult.isActivated() && !activation.isTransitive()) {
-                        transitiveReached = true;
+                        if (activation.isProximity()) {
+                            proximityTransitiveReached = true;
+                        } else {
+                            nonProximityTransitiveReached = true;
+                        }
                     }
                 }
 
                 if (parentActivation.getId().equals(VoiceActivation.PROXIMITY_ID)) {
+                    final boolean transitiveReached = parentActivation.isProximity()
+                            ? proximityTransitiveReached
+                            : nonProximityTransitiveReached;
+
                     if (!transitiveReached) {
                         processActivation(device.get(), parentActivation, parentResult, samples, encoded);
                     } else if (activationStreams.remove(parentActivation.getId())) {
