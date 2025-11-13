@@ -228,7 +228,7 @@ public final class DevicesTabWidget extends TabWidget {
                 row,
                 config.getVoice().getInputDevice(),
                 (button, element) -> {
-                    element.setText(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
+                    dropdown.setText(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadInputDevice();
                 }
         );

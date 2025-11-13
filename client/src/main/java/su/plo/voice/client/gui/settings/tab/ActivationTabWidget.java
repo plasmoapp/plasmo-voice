@@ -243,7 +243,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 activationConfig.getConfigToggle(),
                 null,
                 (btn, element) -> {
-                    element.setText(TYPES.get(activation.getType().ordinal()));
+                    dropdown.setText(TYPES.get(activation.getType().ordinal()));
                     init();
                 }
         );
