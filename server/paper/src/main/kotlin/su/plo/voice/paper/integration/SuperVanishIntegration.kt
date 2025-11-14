@@ -6,6 +6,7 @@ import org.bukkit.event.EventHandler
 import org.bukkit.event.Listener
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.proto.packets.tcp.clientbound.PlayerDisconnectPacket
+import kotlin.jvm.optionals.getOrNull
 
 class SuperVanishIntegration(
     private val voiceServer: PlasmoVoiceServer,
@@ -13,7 +14,7 @@ class SuperVanishIntegration(
 
     @EventHandler
     fun onPlayerHide(event: PostPlayerHideEvent) {
-        val player = voiceServer.playerManager.getPlayerByInstance(event.player)
+        val player = voiceServer.playerManager.getPlayerById(event.player.uniqueId, false).getOrNull() ?: return
         if (!player.hasVoiceChat()) return
 
         voiceServer.tcpPacketManager.broadcast(
@@ -25,7 +26,7 @@ class SuperVanishIntegration(
 
     @EventHandler
     fun onPlayerShow(event: PostPlayerShowEvent) {
-        val player = voiceServer.playerManager.getPlayerByInstance(event.player)
+        val player = voiceServer.playerManager.getPlayerById(event.player.uniqueId, false).getOrNull() ?: return
         if (!player.hasVoiceChat()) return
 
         voiceServer.tcpPacketManager.broadcastPlayerInfoUpdate(player)
