@@ -54,6 +54,8 @@ public interface ServerConfig {
          */
         byte[] aesEncryptionKey();
 
+        int maxExtraAudioBroadcastDistance();
+
         int sampleRate();
 
         int keepAliveTimeoutMs();

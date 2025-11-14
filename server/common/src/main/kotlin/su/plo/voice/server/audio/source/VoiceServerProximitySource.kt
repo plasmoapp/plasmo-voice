@@ -17,6 +17,7 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import java.util.UUID
 import java.util.function.Supplier
+import kotlin.math.max
 
 abstract class VoiceServerProximitySource<S : SourceInfo>(
     private val voiceServer: PlasmoVoiceServer,
@@ -42,7 +43,7 @@ abstract class VoiceServerProximitySource<S : SourceInfo>(
         // update packet's source state
         packet.sourceState = state.get().toByte()
 
-        val listenersDistance = event.distance * DISTANCE_MULTIPLIER
+        val listenersDistance = max(event.distance + voiceServer.config!!.voice().maxExtraAudioBroadcastDistance(), event.distance * DISTANCE_MULTIPLIER)
 
         // update source info on listeners if source is dirty
         if (dirty.compareAndSet(true, false)) {
