@@ -17,7 +17,6 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import java.util.UUID
 import java.util.function.Supplier
-import kotlin.math.max
 import kotlin.math.min
 
 abstract class VoiceServerProximitySource<S : SourceInfo>(
