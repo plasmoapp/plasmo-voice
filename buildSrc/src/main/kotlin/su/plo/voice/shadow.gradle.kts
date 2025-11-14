@@ -102,7 +102,7 @@ tasks {
 
         manifest {
             from({
-                zipTree(archiveFile).first()
+                zipTree(archiveFile).first { it.name == "MANIFEST.MF" }
             })
         }
 
