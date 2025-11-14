@@ -118,6 +118,9 @@ public final class VoiceServerConfig implements ServerConfig {
 
         private byte[] aesEncryptionKey = null;
 
+        @ConfigField(comment = "The maximum amount, in blocks, to broadcast audio packets past the audible proximity distance.\nThe plugin will send audio packets to players within 2x the proximity distance, or the distance plus this number - whichever is smaller.")
+        private int maxExtraAudioBroadcastDistance = 16;
+
         @ConfigField(comment = "Supported sample rates: [8000, 12000, 24000, 48000]\nDon't change this to reduce bandwidth; adjust opus bitrate instead")
         @ConfigValidator(
                 value = SampleRateValidator.class,
