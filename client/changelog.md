@@ -6,6 +6,7 @@
 - Added option to choose between direct and proximity mute when sources from the same player are overlapping. (Advanced -> Source Types Overlap)
 - [Added warning on transitive activation conflicts.](https://i.imgur.com/e3a1WeY.png)
 - [Added error button when microphone is not available.](https://i.imgur.com/CutT5Vb.png)
+- Fixed `pv.allow_freecam` set to false breaks 3d audio panning ([#492](https://github.com/plasmoapp/plasmo-voice/issues/492)).
 
 #### Server
 - Fixed `/vreload` not reloading language changes.

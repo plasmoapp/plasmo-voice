@@ -29,7 +29,6 @@ import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.source.StreamAlSource.Companion.create
 import java.nio.Buffer
 import java.nio.IntBuffer
-import java.util.*
 import java.util.concurrent.*
 import javax.sound.sampled.AudioFormat
 
@@ -316,6 +315,9 @@ class AlOutputDevice
 
         private var job: Job? = null
 
+        private val yp = Vector3f(0.0f, 1.0f, 0.0f)
+        private val xp = Vector3f(1.0f, 0.0f, 0.0f)
+
         fun start() {
             job = coroutineScope.launch {
                 while (true) {
@@ -351,12 +353,9 @@ class AlOutputDevice
 
                 rotation[0.0f, 0.0f, 0.0f] = 1.0f
 
-                val YP = Vector3f(0.0f, 1.0f, 0.0f)
-                val XP = Vector3f(1.0f, 0.0f, 0.0f)
-
                 //#if MC>=11903
-                rotation.rotateAxis(-player.yRot, YP)
-                rotation.rotateAxis(player.xRot, XP)
+                rotation.rotateAxis(Math.toRadians(-player.yRot.toDouble()).toFloat(), yp)
+                rotation.rotateAxis(Math.toRadians(player.xRot.toDouble()).toFloat(), xp)
                 //#else
                 //$$ rotation.mul(YP.rotationDegrees(-player.yRot));
                 //$$ rotation.mul(XP.rotationDegrees(player.xRot));
