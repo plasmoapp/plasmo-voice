@@ -357,8 +357,8 @@ class AlOutputDevice
                 rotation.rotateAxis(Math.toRadians(-player.yRot.toDouble()).toFloat(), yp)
                 rotation.rotateAxis(Math.toRadians(player.xRot.toDouble()).toFloat(), xp)
                 //#else
-                //$$ rotation.mul(YP.rotationDegrees(-player.yRot));
-                //$$ rotation.mul(XP.rotationDegrees(player.xRot));
+                //$$ rotation.mul(yp.rotationDegrees(-player.yRot));
+                //$$ rotation.mul(xp.rotationDegrees(player.xRot));
                 //#endif
 
                 forwards[0.0f, 0.0f] = 1.0f
