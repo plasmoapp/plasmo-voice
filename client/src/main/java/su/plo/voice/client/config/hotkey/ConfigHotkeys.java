@@ -71,7 +71,7 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
     }
 
     @Override
-    public synchronized Optional<Hotkey> getHotkey(@NotNull String name) {
+    public synchronized @NotNull Optional<Hotkey> getHotkey(@NotNull String name) {
         if (!hotkeys.containsKey(name)) return Optional.empty();
         return Optional.of(hotkeys.get(name).value());
     }
@@ -124,6 +124,7 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public synchronized void deserialize(Object object) {
         try {
             List<Object> serialized = (List<Object>) object;

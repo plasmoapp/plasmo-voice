@@ -11,14 +11,16 @@ import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.voice.client.meta.PlasmoVoiceMeta
 import java.io.File
-import java.net.URL
-import java.util.*
+import java.net.URI
+import java.util.UUID
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
 import java.util.function.Supplier
 
 //#if MC>=12109
 //$$ import net.minecraft.core.ClientAsset
+//$$
+//$$ import java.util.Optional
 //#endif
 
 //#if MC>=12002
@@ -101,9 +103,10 @@ object DeveloperCapeManager {
         CompletableFuture.supplyAsync {
             val capeLocation = ResourceLocationUtil.tryBuild("plasmovoice", "developer_capes/${playerName.lowercase()}")!!
 
-            val url = URL("https://plasmovoice.com/capes/$playerName.png")
+            val url = URI.create("https://plasmovoice.com/capes/$playerName.png").toURL()
 
             val texture = MinecraftProfileTexture(url.toString(), HashMap())
+            @Suppress("DEPRECATION")
             val string = Hashing.sha1().hashUnencodedChars(texture.hash).toString()
 
             val skinManagerAccessor = (Minecraft.getInstance().skinManager as SkinManagerAccessor)

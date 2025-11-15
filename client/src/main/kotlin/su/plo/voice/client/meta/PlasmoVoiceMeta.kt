@@ -10,7 +10,7 @@ import su.plo.voice.client.meta.developer.Developer
 import su.plo.voice.client.meta.developer.DeveloperRole
 import su.plo.voice.util.CoroutineScopes
 import java.io.File
-import java.net.URL
+import java.net.URI
 import java.util.UUID
 import kotlin.time.Duration
 
@@ -83,7 +83,7 @@ data class PlasmoVoiceMeta(
         }
 
         private fun fetchSync(languageName: String): PlasmoVoiceMeta {
-            val url = URL("https://plasmovoice.com/meta.json?language=${languageName}")
+            val url = URI.create("https://plasmovoice.com/meta.json?language=${languageName}").toURL()
 
             val metaJson = try {
                 val connection = url.openConnection()

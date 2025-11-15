@@ -67,12 +67,12 @@ package su.plo.voice.client.mixin;
 //$$             LevelRenderState levelRenderState,
 //$$             ProfilerFiller profilerFiller,
 //$$             Matrix4f matrix4f,
-//$$             ResourceHandle resourceHandle,
-//$$             ResourceHandle resourceHandle2,
+//$$             ResourceHandle<?> resourceHandle,
+//$$             ResourceHandle<?> resourceHandle2,
 //$$             boolean bl,
 //$$             Frustum frustum,
-//$$             ResourceHandle resourceHandle3,
-//$$             ResourceHandle resourceHandle4,
+//$$             ResourceHandle<?> resourceHandle3,
+//$$             ResourceHandle<?> resourceHandle4,
 //$$             CallbackInfo ci
 //$$     ) {
 //$$         ModVoiceClient.INSTANCE.getLevelRenderer().render(

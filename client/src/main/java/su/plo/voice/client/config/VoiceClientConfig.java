@@ -85,7 +85,7 @@ public final class VoiceClientConfig implements ClientConfig {
 
     private synchronized void save() {
         try {
-            toml.save(VoiceClientConfig.class, this, configFile);
+            toml.save(this, configFile);
         } catch (IOException e) {
             throw new IllegalStateException("Failed to save the config", e);
         }
@@ -105,6 +105,7 @@ public final class VoiceClientConfig implements ClientConfig {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void deserialize(Object object) {
             Map<String, Object> serialized = (Map<String, Object>) object;
 
@@ -150,6 +151,7 @@ public final class VoiceClientConfig implements ClientConfig {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void deserialize(Object o) {
             Map<String, Object> serialized = (Map<String, Object>) o;
 
@@ -198,6 +200,7 @@ public final class VoiceClientConfig implements ClientConfig {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public void deserialize(Object o) {
             Map<String, Object> serialized = (Map<String, Object>) o;
             if (serialized.containsKey("distances")) {
@@ -222,7 +225,7 @@ public final class VoiceClientConfig implements ClientConfig {
                 distances.put(activationId.toString(), entry.value());
             });
 
-            if (distances.size() > 0) serialized.put("distances", distances);
+            if (!distances.isEmpty()) serialized.put("distances", distances);
 
             return serialized;
         }
@@ -303,7 +306,7 @@ public final class VoiceClientConfig implements ClientConfig {
             }
 
             @Override
-            public synchronized DoubleConfigEntry getVolume(@NotNull String lineName) {
+            public synchronized @NotNull DoubleConfigEntry getVolume(@NotNull String lineName) {
                 return volumeByLineName.computeIfAbsent(
                         lineName,
                         (c) -> new DoubleConfigEntry(1D, 0D, 2D)
@@ -321,7 +324,7 @@ public final class VoiceClientConfig implements ClientConfig {
             }
 
             @Override
-            public synchronized BooleanConfigEntry getMute(@NotNull String lineName) {
+            public synchronized @NotNull BooleanConfigEntry getMute(@NotNull String lineName) {
                 return muteByLineName.computeIfAbsent(
                         lineName,
                         (c) -> new BooleanConfigEntry(false)
@@ -329,6 +332,7 @@ public final class VoiceClientConfig implements ClientConfig {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public synchronized void deserialize(Object object) {
                 try {
                     Map<String, Object> map = (Map<String, Object>) object;
@@ -476,7 +480,7 @@ public final class VoiceClientConfig implements ClientConfig {
             }
 
             @Override
-            public synchronized EnumConfigEntry<OverlaySourceState> getState(@NotNull String lineName) {
+            public synchronized @NotNull EnumConfigEntry<OverlaySourceState> getState(@NotNull String lineName) {
                 return stateByLineName.computeIfAbsent(
                         lineName,
                         (c) -> new EnumConfigEntry<>(
@@ -499,6 +503,7 @@ public final class VoiceClientConfig implements ClientConfig {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public synchronized void deserialize(Object object) {
                 try {
                     Map<String, Object> map = (Map<String, Object>) object;
@@ -536,6 +541,7 @@ public final class VoiceClientConfig implements ClientConfig {
         }
 
         @Override
+        @SuppressWarnings("unchecked")
         public synchronized void deserialize(Object object) {
             Map<String, Object> map = (Map<String, Object>) object;
 
@@ -551,7 +557,7 @@ public final class VoiceClientConfig implements ClientConfig {
             Map<String, Object> serialized = Maps.newTreeMap();
 
             addons.forEach((key, value) -> {
-                if (value.entries.size() > 0) {
+                if (!value.entries.isEmpty()) {
                     serialized.put(key, value.serialize());
                 }
             });
@@ -573,6 +579,7 @@ public final class VoiceClientConfig implements ClientConfig {
             }
 
             @Override
+            @SuppressWarnings("unchecked")
             public synchronized void deserialize(Object object) {
                 Map<String, Object> map = (Map<String, Object>) object;
 

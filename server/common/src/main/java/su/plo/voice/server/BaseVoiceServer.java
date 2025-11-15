@@ -203,7 +203,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             VoiceServerConfig oldConfig = config;
 
             this.config = TOML.load(VoiceServerConfig.class, configFile, false);
-            TOML.save(VoiceServerConfig.class, config, configFile);
+            TOML.save(config, configFile);
 
             if (oldConfig != null) {
                 restartUdpServer = !config.host().equals(oldConfig.host());

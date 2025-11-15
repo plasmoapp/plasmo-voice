@@ -59,6 +59,7 @@ object RenderPipelines {
             //#else
             //$$ SolidColorShader.getShader(),
             //#endif
+            @Suppress("DEPRECATION")
             DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormatMode.QUADS,
         ) {
@@ -93,6 +94,7 @@ object RenderPipelines {
     val GUI_TEXTURE_COLOR =
         renderPipeline(
             ResourceLocationUtil.mod("pipeline/gui_texture_color"),
+            @Suppress("DEPRECATION")
             DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormatMode.QUADS,
         ) {
@@ -120,6 +122,7 @@ object RenderPipelines {
     val GUI_PARTICLE_TEXTURE_COLOR =
         renderPipeline(
             ResourceLocationUtil.mod("pipeline/gui_particle_texture_color"),
+            @Suppress("DEPRECATION")
             DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormatMode.QUADS,
         ) {
@@ -166,9 +169,6 @@ object RenderPipelines {
                 //#endif
             }
         }
-
-    fun RenderType.toRenderPipeline() =
-        fromRenderType(toString(), this)
 
     //#if MC>=12105
     //$$ private fun RenderType.renderPipeline(): com.mojang.blaze3d.pipeline.RenderPipeline =

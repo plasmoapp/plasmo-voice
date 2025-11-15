@@ -219,13 +219,13 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         try {
             this.config = toml.load(VoiceClientConfig.class, configFile, false);
-            toml.save(VoiceClientConfig.class, config, configFile);
+            toml.save(config, configFile);
         } catch (Exception e) {
             LOGGER.warn("Failed to load the config", e);
 
             try {
                 this.config = new VoiceClientConfig();
-                toml.save(VoiceClientConfig.class, config, configFile);
+                toml.save(config, configFile);
             } catch (Exception e1) {
                 throw new RuntimeException("Failed to save default config", e1);
             }
