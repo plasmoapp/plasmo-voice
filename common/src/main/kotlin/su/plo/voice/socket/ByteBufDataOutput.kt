@@ -10,7 +10,7 @@ class ByteBufDataOutput(
     private val buffer: ByteBuf,
 ) : ByteArrayDataOutput {
 
-    private val output by lazy { DataOutputStream(ByteBufOutputStream(buffer)) }
+    private var output: DataOutputStream? = null
 
     override fun write(b: Int) {
         buffer.writeByte(b)
@@ -66,7 +66,11 @@ class ByteBufDataOutput(
     }
 
     override fun writeUTF(s: String) {
-        output.writeUTF(s)
+        if (output == null) {
+            output = DataOutputStream(ByteBufOutputStream(buffer))
+        }
+
+        output!!.writeUTF(s)
     }
 
     override fun toByteArray(): ByteArray {
