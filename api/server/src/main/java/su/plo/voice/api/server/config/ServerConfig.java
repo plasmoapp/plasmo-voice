@@ -64,6 +64,8 @@ public interface ServerConfig {
 
         int mtuSize();
 
+        boolean reusePort();
+
         boolean clientModRequired();
 
         long clientModRequiredCheckTimeoutMs();

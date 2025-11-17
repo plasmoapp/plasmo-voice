@@ -1,6 +1,7 @@
 package su.plo.voice.server.config;
 
 import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -144,6 +145,16 @@ public final class VoiceServerConfig implements ServerConfig {
                 allowed = "128-5000"
         )
         private int mtuSize = 1024;
+
+        @ConfigField(
+                comment =
+                        "Enables SO_REUSEPORT\n" +
+                        "Instead of using one single thread for all incoming connections,\n" +
+                        "with SO_REUSEPORT multiple sockets will be bound on the same port\n" +
+                        "and distribute connections between multiple worker threads\n" +
+                        "Requires Linux or macOS"
+        )
+        private boolean reusePort = false;
 
         @ConfigField(comment = "Requires players to have the Plasmo Voice mod installed")
         private boolean clientModRequired = false;
