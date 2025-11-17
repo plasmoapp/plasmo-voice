@@ -216,7 +216,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             TOML.save(config, configFile);
 
             if (oldConfig != null) {
-                restartUdpServer = !config.host().equals(oldConfig.host());
+                restartUdpServer = !config.host().equals(oldConfig.host()) ||
+                        !config.voice().reusePort().equals(oldConfig.voice().reusePort());
             }
 
             ServerTranslator serverTranslator = getMinecraftServer().getServerTranslator();
