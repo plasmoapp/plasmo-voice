@@ -5,19 +5,30 @@ import com.google.common.collect.Maps;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.PlasmoVoice;
-import su.plo.voice.api.event.*;
+import su.plo.voice.api.event.Event;
+import su.plo.voice.api.event.EventBus;
+import su.plo.voice.api.event.EventCancellable;
+import su.plo.voice.api.event.EventHandler;
+import su.plo.voice.api.event.EventPriority;
+import su.plo.voice.api.event.EventSubscribe;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 public final class VoiceEventBus implements EventBus {
+
+    private static final EventPriority[] PRIORITIES = EventPriority.values();
 
     // listener -> event handlers
     private final Map<Object, List<EventHandler<?>>> registeredListeners = Maps.newConcurrentMap();
@@ -41,10 +52,10 @@ public final class VoiceEventBus implements EventBus {
     public <E extends Event> boolean fire(@NotNull E event) {
         if (!this.handlers.containsKey(event.getClass())) return true;
 
-        for (Map.Entry<EventPriority, List<EventHandler<?>>> entry :
-                this.handlers.get(event.getClass()).entrySet()) {
-            List<EventHandler<?>> listeners = entry.getValue();
-
+        EnumMap<EventPriority, List<EventHandler<?>>> eventHandlers = this.handlers.get(event.getClass());
+        for (EventPriority priority : PRIORITIES) {
+            List<EventHandler<?>> listeners = eventHandlers.get(priority);
+            if (listeners == null) continue;
             for (EventHandler listener : listeners) {
                 listener.execute(event);
             }
