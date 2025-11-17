@@ -1,6 +1,7 @@
 package su.plo.voice.server.config;
 
 import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -168,6 +169,9 @@ public final class VoiceServerConfig implements ServerConfig {
         private @NotNull String clientModMinVersion = "2.0.0";
 
         @ConfigField
+        private ReusePort reusePort = new ReusePort();
+
+        @ConfigField
         private Proximity proximity = new Proximity();
 
         @ConfigField
@@ -180,6 +184,28 @@ public final class VoiceServerConfig implements ServerConfig {
                 comment = "Set custom weights for specific activations and source lines\nWeight determines display order in client menu and overlay (lower = higher position)"
         )
         private Weights weights = new Weights();
+
+        @Config
+        @Data
+        @Accessors(fluent = true)
+        public static class ReusePort implements ServerConfig.Voice.ReusePort {
+            @ConfigField(
+                    comment =
+                            "Enables SO_REUSEPORT\n" +
+                            "Instead of using one single thread for all incoming connections,\n" +
+                            "multiple sockets will be bound on the same port\n" +
+                            "and distribute connections between multiple worker threads\n" +
+                            "Requires Linux or macOS"
+            )
+            private boolean enabled = false;
+
+            @ConfigField(
+                    comment =
+                            "Amount of sockets/threads that'll be open with SO_REUSEPORT enabled\n\n" +
+                            "0 means auto and will be derived from \"io.netty.eventLoopThreads\""
+            )
+            private int channels = 0;
+        }
 
         @Config
         @Data

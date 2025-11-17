@@ -6,6 +6,7 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.MultithreadEventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -16,6 +17,7 @@ import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
+import io.netty.channel.unix.UnixChannelOption;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -78,21 +80,56 @@ public final class NettyUdpServer implements UdpServer {
             }
         });
 
+        boolean reusePortEnabled = false;
+        if (useEpoll && voiceServer.getConfig().voice().reusePort().enabled()) {
+            try {
+                bootstrap.option(UnixChannelOption.SO_REUSEPORT, true);
+                reusePortEnabled = true;
+            } catch (Exception e) {
+                BaseVoice.LOGGER.warn("SO_REUSEPORT not supported on this platform, falling back to single channel");
+            }
+        }
+
         try {
-            ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
-            Channel channel = channelFuture.channel();
-            channelGroup.add(channel);
-            keepAlive.start(channel);
-            this.socketAddress = (InetSocketAddress) channelFuture.channel().localAddress();
+            Channel firstChannel = null;
+            int channelCount = reusePortEnabled
+                    ? voiceServer.getConfig().voice().reusePort().channels()
+                    : 1;
+            if (channelCount <= 0) {
+                channelCount = ((MultithreadEventLoopGroup) loopGroup).executorCount();
+            }
+
+            for (int i = 0; i < channelCount; i++) {
+                ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
+                Channel channel = channelFuture.channel();
+                channelGroup.add(channel);
+
+                if (firstChannel == null) {
+                    firstChannel = channel;
+                    this.socketAddress = (InetSocketAddress) channel.localAddress();
+                }
+            }
+
+            if (firstChannel != null) {
+                keepAlive.start(firstChannel);
+            }
+
+            if (reusePortEnabled && channelCount > 1) {
+                BaseVoice.LOGGER.info(
+                        "Bound {} {} UDP server instances with SO_REUSEPORT on {}",
+                        channelCount,
+                        channelClass.getSimpleName(),
+                        socketAddress
+                );
+            } else {
+                BaseVoice.LOGGER.info("{} UDP server is started on {}", channelClass.getSimpleName(), socketAddress);
+            }
         } catch (InterruptedException e) {
             stop();
-            return;
         } catch (Exception e) {
             stop();
             throw e;
         }
-
-        BaseVoice.LOGGER.info("{} UDP server is started on {}", channelClass.getSimpleName(), socketAddress);
     }
 
     @Override

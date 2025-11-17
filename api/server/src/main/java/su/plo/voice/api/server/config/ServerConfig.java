@@ -77,6 +77,8 @@ public interface ServerConfig {
 
         @NotNull String clientModMinVersion();
 
+        @NotNull ReusePort reusePort();
+
         @NotNull Proximity proximity();
 
         @NotNull Opus opus();
@@ -84,6 +86,12 @@ public interface ServerConfig {
         @NotNull PlayerIcon playerIcon();
 
         @NotNull Weights weights();
+
+        interface ReusePort {
+            boolean enabled();
+
+            int channels();
+        }
 
         interface PlayerIcon {
             Collection<PlayerIconVisibility> visibility();
