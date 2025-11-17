@@ -18,6 +18,8 @@ import io.micrometer.prometheusmetrics.PrometheusMeterRegistry
 import io.netty.buffer.ByteBufAllocator
 import io.netty.buffer.ByteBufAllocatorMetricProvider
 import io.netty.util.concurrent.EventExecutor
+import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap
+import it.unimi.dsi.fastutil.ints.Int2ObjectMap
 import org.eclipse.jetty.server.Server
 import org.http4k.core.Method
 import org.http4k.core.Response
@@ -100,6 +102,9 @@ class Metrics(
         Handle("handle"),
     }
 
+    private infix fun PacketDirection.of(kind: PacketKind): Int =
+        this.ordinal + (kind.ordinal shl 1)
+
     private val activePeerGauges = Maps.newConcurrentMap<String, AtomicInteger>()
 
     // pv_handler_time_seconds histo
@@ -149,22 +154,46 @@ class Metrics(
         )
         .register(registry)
 
+    private val udpPacketsTotal: Int2ObjectMap<Counter> = Int2ObjectArrayMap(
+        PacketDirection.entries.flatMap { direction ->
+            PacketKind.entries.map { kind ->
+                direction to kind
+            }
+        }
+            .associate {
+                val key = it.first.ordinal + (it.second.ordinal shl 1)
+
+                key to registry.counter(
+                    "pv_udp_packets_total",
+                    "dir", it.first.direction,
+                    "kind", it.second.kind,
+                )
+            }
+    )
+
+    private val udpBytesTotal: Int2ObjectMap<Counter> = Int2ObjectArrayMap(
+        PacketDirection.entries.flatMap { direction ->
+            PacketKind.entries.map { kind ->
+                direction to kind
+            }
+        }
+            .associate {
+                val key = it.first of it.second
+
+                key to registry.counter(
+                    "pv_udp_bytes_total",
+                    "dir", it.first.direction,
+                    "kind", it.second.kind,
+                )
+            }
+    )
+
     init {
         PacketHandlerErrorStage.entries.forEach {
             registry.counter(
                 "pv_pipeline_errors_total",
                 "stage", it.stage,
             )
-        }
-
-        PacketDirection.entries.forEach { direction ->
-            PacketKind.entries.forEach { kind ->
-                registry.counter(
-                    "pv_udp_packets_total",
-                    "dir", direction.direction,
-                    "kind", kind.kind,
-                )
-            }
         }
     }
 
@@ -198,17 +227,10 @@ class Metrics(
 
     // pv_udp_packets_total{dir="in|out",kind="media|control"}
     fun recordPacket(direction: PacketDirection, kind: PacketKind, bytes: Int) {
-        registry.counter(
-            "pv_udp_packets_total",
-            "dir", direction.direction,
-            "kind", kind.kind
-        ).increment()
+        val key = direction of kind
 
-        registry.counter(
-            "pv_udp_bytes_total",
-            "dir", direction.direction,
-            "kind", kind.kind
-        ).increment(bytes.toDouble())
+        udpPacketsTotal[key].increment()
+        udpBytesTotal[key].increment(bytes.toDouble())
     }
 
     // pv_active_peers{public_ip="127.0.0.1"}
