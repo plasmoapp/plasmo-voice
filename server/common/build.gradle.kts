@@ -14,14 +14,16 @@ dependencies {
 
     compileOnly(libs.netty)
 
-    implementation(libs.micrometer.core)
-    implementation(libs.micrometer.prometheus)
-
-    implementation(libs.http4k.core) {
-        excludeKotlin()
-    }
-    implementation(libs.http4k.jetty) {
-        excludeKotlin()
+    listOf(
+        libs.micrometer.core,
+        libs.micrometer.prometheus,
+        libs.http4k.core,
+        libs.http4k.jetty
+    ).forEach {
+        implementation(it) {
+            excludeKotlin()
+        }
+        testImplementation(it)
     }
 
     testImplementation(libs.mockito)
