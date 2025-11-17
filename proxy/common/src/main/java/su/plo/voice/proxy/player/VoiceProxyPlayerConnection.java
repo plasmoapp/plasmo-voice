@@ -43,12 +43,6 @@ public final class VoiceProxyPlayerConnection
         instance.sendPacket(BaseVoiceProxy.CHANNEL_STRING, encoded);
     }
 
-    public boolean hasVoiceChat() {
-        return voiceProxy.getUdpConnectionManager()
-                .getConnectionByPlayerId(instance.getUuid())
-                .isPresent();
-    }
-
     public @NotNull VoicePlayerInfo createPlayerInfo() {
         VoicePlayerInfo voicePlayerInfo = new VoicePlayerInfo(
                 instance.getUuid(),

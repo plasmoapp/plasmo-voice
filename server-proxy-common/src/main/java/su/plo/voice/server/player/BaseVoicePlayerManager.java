@@ -5,7 +5,9 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.entity.player.McPlayer;
 import su.plo.slib.api.event.player.McPlayerJoinEvent;
 import su.plo.slib.api.event.player.McPlayerQuitEvent;
+import su.plo.voice.api.event.EventPriority;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.server.event.connection.UdpClientConnectedEvent;
 import su.plo.voice.api.server.event.connection.UdpClientDisconnectedEvent;
 import su.plo.voice.api.server.event.player.PlayerPermissionUpdateEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
@@ -72,6 +74,12 @@ public abstract class BaseVoicePlayerManager<P extends VoicePlayer> implements V
         permissions.put(permission, player.getInstance().hasPermission(permission));
 
         player.sendPacket(new ConfigPlayerInfoPacket(permissions));
+    }
+
+    @EventSubscribe(priority = EventPriority.HIGHEST)
+    public void onClientConnect(@NotNull UdpClientConnectedEvent event) {
+        BaseVoicePlayer<?> player = (BaseVoicePlayer<?>) event.getConnection().getPlayer();
+        player.setConnected(true);
     }
 
     @EventSubscribe
