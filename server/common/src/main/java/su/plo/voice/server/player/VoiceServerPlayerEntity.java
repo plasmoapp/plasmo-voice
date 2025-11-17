@@ -38,13 +38,6 @@ public final class VoiceServerPlayerEntity
     }
 
     @Override
-    public boolean hasVoiceChat() {
-        return voiceServer.getUdpConnectionManager()
-                .getConnectionByPlayerId(instance.getUuid())
-                .isPresent();
-    }
-
-    @Override
     public VoicePlayerInfo createPlayerInfo() {
         VoicePlayerInfo voicePlayerInfo = new VoicePlayerInfo(
                 instance.getUuid(),
