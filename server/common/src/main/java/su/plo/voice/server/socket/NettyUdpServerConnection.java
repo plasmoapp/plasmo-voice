@@ -76,7 +76,6 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         );
         this.remoteAddress = remoteAddress;
     }
-
     @Override
     public void sendPacket(Packet<?> packet) {
         if (voiceServer.getEventBus().hasListener(UdpPacketSendEvent.class)) {
@@ -95,7 +94,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         }
         int bufSize = buf.readableBytes();
 
-        channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
+        channel.writeAndFlush(new DatagramPacket(buf, remoteAddress), channel.voidPromise());
 
         if (voiceServer.getEventBus().hasListener(UdpPacketSentEvent.class)) {
             voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet, bufSize));

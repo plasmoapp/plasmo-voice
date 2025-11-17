@@ -155,7 +155,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         changedBuf.writeBytes(PacketUtil.getUUIDBytes(receiverSecret));
         changedBuf.setIndex(0, originalBuf.writerIndex());
 
-        ctx.channel().writeAndFlush(new DatagramPacket(changedBuf, receiver));
+        ctx.channel().writeAndFlush(new DatagramPacket(changedBuf, receiver), ctx.channel().voidPromise());
 
         return true;
     }
