@@ -38,13 +38,6 @@ public final class VoiceServerPlayerEntity
     }
 
     @Override
-    public boolean hasVoiceChat() {
-        return voiceServer.getUdpConnectionManager()
-                .getConnectionByPlayerId(instance.getUuid())
-                .isPresent();
-    }
-
-    @Override
     public VoicePlayerInfo createPlayerInfo() {
         if (!hasVoiceChat()) throw new IllegalStateException("Player is not connected to UDP server");
 

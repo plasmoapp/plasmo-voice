@@ -43,6 +43,9 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     @Setter
     private PublicKey publicKey;
 
+    @Setter
+    private volatile boolean connected;
+
     private final Map<UUID, Integer> distanceByActivationId = Maps.newConcurrentMap();
     @Getter
     private final Set<ServerActivation> activeActivations = Sets.newConcurrentHashSet();
@@ -59,6 +62,11 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     public boolean isMicrophoneMuted() {
         checkVoiceChat();
         return microphoneMuted;
+    }
+
+    @Override
+    public boolean hasVoiceChat() {
+        return connected;
     }
 
     @Override
@@ -122,6 +130,7 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     }
 
     public void reset() {
+        connected = false;
         distanceByActivationId.clear();
         activeActivations.clear();
         lastActivationSequenceNumber.clear();
