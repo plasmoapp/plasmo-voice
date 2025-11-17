@@ -94,7 +94,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
             return;
         }
 
-        channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
+        channel.writeAndFlush(new DatagramPacket(buf, remoteAddress), channel.voidPromise());
     }
 
     @Override
@@ -141,7 +141,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
         }
 
         ByteBuf changedBuf = replaceSecret(nettyPacket, remoteSecret);
-        channelFuture.channel().writeAndFlush(changedBuf);
+        channelFuture.channel().writeAndFlush(changedBuf, channelFuture.channel().voidPromise());
     }
 
     private void connectToRemoteServer(@NotNull InetSocketAddress address) {
@@ -195,7 +195,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
                 changedBuf.release();
                 return;
             }
-            future.channel().writeAndFlush(changedBuf);
+            future.channel().writeAndFlush(changedBuf, future.channel().voidPromise());
         });
     }
 
@@ -223,7 +223,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
             if (!connected || player.getInstance().getServer() == null) return;
 
             ByteBuf changedBuf = replaceSecret(nettyPacket, secret);
-            channel.writeAndFlush(new DatagramPacket(changedBuf, remoteAddress));
+            channel.writeAndFlush(new DatagramPacket(changedBuf, remoteAddress), channel.voidPromise());
         }
     }
 }
