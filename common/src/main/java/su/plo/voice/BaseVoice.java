@@ -32,21 +32,30 @@ public abstract class BaseVoice implements PlasmoVoice {
         return McLoggerFactory.createLogger(LOGGER, name);
     }
 
+    @Getter
+    protected final ScheduledExecutorService backgroundExecutor =
+            Executors.newSingleThreadScheduledExecutor(runnable -> {
+                Thread thread = new Thread(runnable, "Plasmo Voice Background Executor");
+                thread.setDaemon(true);
+                return thread;
+            });
+    protected ExecutorService httpExecutor =
+            Executors.newSingleThreadExecutor(runnable -> {
+                Thread thread = new Thread(runnable, "Plasmo Voice HTTP Executor");
+                thread.setDaemon(true);
+                return thread;
+            });
+
     protected final PlatformLoader loader;
 
-    protected final EventBus eventBus = new VoiceEventBus(this);
+    protected final VoiceAddonManager addons = new VoiceAddonManager(this);
+
+    protected final EventBus eventBus = new VoiceEventBus(backgroundExecutor);
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
     protected final CodecManager codecs = new VoiceCodecManager();
 
-    protected final VoiceAddonManager addons;
-
-    @Getter
-    protected ScheduledExecutorService backgroundExecutor;
-    protected ExecutorService httpExecutor;
-
     protected BaseVoice(@NotNull PlatformLoader loader) {
         this.loader = loader;
-        this.addons = new VoiceAddonManager(this);
 
         encryption.register(new AesEncryptionSupplier());
 
@@ -54,22 +63,10 @@ public abstract class BaseVoice implements PlasmoVoice {
     }
 
     protected void onInitialize() {
-        this.backgroundExecutor = Executors.newSingleThreadScheduledExecutor(runnable -> {
-            Thread thread = new Thread(runnable, "Plasmo Voice Background Executor");
-            thread.setDaemon(true);
-            return thread;
-        });
-        this.httpExecutor = Executors.newSingleThreadExecutor(runnable -> {
-            Thread thread = new Thread(runnable, "Plasmo Voice HTTP Executor");
-            thread.setDaemon(true);
-            return thread;
-        });
         eventBus.register(this, this);
     }
 
     protected void onShutdown() {
-        backgroundExecutor.shutdown();
-        httpExecutor.shutdown();
         addons.clear();
     }
 
