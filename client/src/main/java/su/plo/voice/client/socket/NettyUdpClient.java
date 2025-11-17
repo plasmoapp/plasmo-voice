@@ -126,7 +126,7 @@ public final class NettyUdpClient implements UdpClient {
             return;
         }
 
-        channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()));
+        channel.writeAndFlush(new DatagramPacket(buf, channel.remoteAddress()), channel.voidPromise());
 
         BaseVoice.LOGGER.debug("UDP packet {} sent to {}", event.getPacket(), channel.remoteAddress());
     }
