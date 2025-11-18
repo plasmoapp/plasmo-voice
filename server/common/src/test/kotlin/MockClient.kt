@@ -4,9 +4,9 @@ import io.netty.buffer.Unpooled
 import io.netty.channel.ChannelHandlerContext
 import io.netty.channel.ChannelInitializer
 import io.netty.channel.SimpleChannelInboundHandler
-import io.netty.channel.nio.NioEventLoopGroup
+import io.netty.channel.epoll.EpollDatagramChannel
+import io.netty.channel.epoll.EpollEventLoopGroup
 import io.netty.channel.socket.DatagramPacket
-import io.netty.channel.socket.nio.NioDatagramChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
@@ -91,11 +91,12 @@ class MockClient(
     }
 }
 
+private val workGroup = EpollEventLoopGroup()
+
 class NettyClient(
     private val secret: UUID,
 ) : SimpleChannelInboundHandler<NettyPacketUdp>() {
-    private val workGroup = NioEventLoopGroup()
-    private lateinit var channel: NioDatagramChannel
+    private lateinit var channel: EpollDatagramChannel
 
     fun sendPacket(packet: Packet<*>) {
         if (!::channel.isInitialized) return
@@ -113,11 +114,11 @@ class NettyClient(
     fun connect(serverIp: String, serverPort: Int) {
         val bootstrap = Bootstrap()
         bootstrap.group(workGroup)
-        bootstrap.channel(NioDatagramChannel::class.java)
+        bootstrap.channel(EpollDatagramChannel::class.java)
         bootstrap.handler(
-            object : ChannelInitializer<NioDatagramChannel>() {
+            object : ChannelInitializer<EpollDatagramChannel>() {
                 @Throws(Exception::class)
-                override fun initChannel(ch: NioDatagramChannel) {
+                override fun initChannel(ch: EpollDatagramChannel) {
                     val pipeline = ch.pipeline()
                     pipeline.addLast("decoder", NettyPacketUdpDecoder())
 
@@ -129,7 +130,7 @@ class NettyClient(
 
         try {
             val channelFuture = bootstrap.connect(serverIp, serverPort).sync()
-            channel = channelFuture.channel() as NioDatagramChannel
+            channel = channelFuture.channel() as EpollDatagramChannel
             sendPacket(PingPacket(serverIp, serverPort))
 
             BaseVoice.LOGGER.info("Connecting to $serverIp:$serverPort")
@@ -142,7 +143,7 @@ class NettyClient(
     }
 
     fun close() {
-        workGroup.shutdownGracefully()
+//        workGroup.shutdownGracefully()
     }
 
     override fun channelRead0(context: ChannelHandlerContext, packet: NettyPacketUdp) {

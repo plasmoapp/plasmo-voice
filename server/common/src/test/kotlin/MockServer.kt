@@ -253,7 +253,7 @@ object MockServerChannelManager : McServerChannelManager {
 }
 
 object MockServerLib : McServerLib {
-    private val mainExecutor = Executors.newSingleThreadScheduledExecutor()
+    private val mainExecutor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors())
 
     override val commandManager = mock<McCommandManager<McCommand>> {
     }

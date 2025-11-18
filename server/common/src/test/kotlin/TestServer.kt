@@ -1,3 +1,6 @@
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.time.delay
 import su.plo.slib.api.position.Pos3d
@@ -7,20 +10,35 @@ import kotlin.time.toJavaDuration
 
 fun main() = runBlocking {
     val voiceServer = MockVoiceServer
+    val world = voiceServer.minecraftServer.worlds.first()
 
-    (0 until 4).forEach {
-        val clientPlayer = MockClient(voiceServer.minecraftServer.worlds.first(), Pos3d())
-        MockServerLib.addPlayer(clientPlayer)
-        clientPlayer.sendVoice()
-    }
+    val totalPlayers = 1000
+    val activeSpeakers = 50
+    val worldSize = 200.0
 
-    (0 until 512).forEach {
-        val clientPlayer = MockClient(voiceServer.minecraftServer.worlds.first(), Pos3d())
-        MockServerLib.addPlayer(clientPlayer)
+    val allClients = (0 until totalPlayers).map {
+        async(Dispatchers.Default) {
+            val randomPos = Pos3d(
+                Math.random() * worldSize - worldSize / 2,
+                64.0,
+                Math.random() * worldSize - worldSize / 2
+            )
+            val clientPlayer = MockClient(world, randomPos)
+            MockServerLib.addPlayer(clientPlayer)
+            clientPlayer
+        }
+    }.awaitAll()
+
+    (0 until activeSpeakers).forEach { idx ->
+        allClients[idx].sendVoice()
     }
 
     while (true) {
-        BaseVoice.LOGGER.info("Connections: {}", voiceServer.udpConnectionManager.connections.size)
+        BaseVoice.LOGGER.info(
+            "Connections: {}, Active speakers: {}",
+            voiceServer.udpConnectionManager.connections.size,
+            activeSpeakers,
+        )
 
         delay(1.seconds.toJavaDuration())
     }
