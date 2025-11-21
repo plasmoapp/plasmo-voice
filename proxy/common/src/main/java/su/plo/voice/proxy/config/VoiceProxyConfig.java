@@ -143,7 +143,7 @@ public final class VoiceProxyConfig implements ProxyConfig {
         @ConfigField(
                 path = "public",
                 comment = "Public IP and port that clients will connect to\nIf ip set to 0.0.0.0, ip from [host] will be used\nIf port set to 0, port from [host] will be used",
-                nullComment = "[host.public]\nip = 127.0.0.1\nport = 0"
+                nullComment = "[host.public]\nip = \"127.0.0.1\"\nport = 0"
         )
         private @Nullable Public hostPublic = null;
 
