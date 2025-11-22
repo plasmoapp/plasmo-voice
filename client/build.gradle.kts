@@ -97,7 +97,6 @@ repositories {
 
     maven("https://repo.plasmoverse.com/snapshots")
     maven("https://maven.shedaniel.me/")
-    maven("https://maven.terraformersmc.com/")
     maven("https://maven.nucleoid.xyz/")
 
     exclusiveContent {
@@ -217,9 +216,7 @@ dependencies {
             else -> throw GradleException("Unsupported platform $platform")
         }
 
-        modImplementation("com.terraformersmc:modmenu:$modMenuVersion") {
-            isTransitive = false
-        }
+        modImplementation("maven.modrinth:modmenu:$modMenuVersion")
 
         if (platform.mcVersion < 12105) {
             modCompileOnly("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
