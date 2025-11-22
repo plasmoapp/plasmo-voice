@@ -86,22 +86,6 @@ fun createClothConfigMenu(parent: Screen): Screen =
             }
 
             addEntry(
-                config.voice.disableInputDevice
-                    .entryBuilder(
-                        entryBuilder(),
-                        McTextComponent.translatable("clothconfig.plasmovoice.devices.disable_input_device")
-                    ) { disabled ->
-                        if (disabled) {
-                            voiceClient.deviceManager.inputDevice.ifPresent { it.close() }
-                            return@entryBuilder
-                        }
-
-                        reloadInputDevice()
-                    }
-                    .build()
-            )
-
-            addEntry(
                 config.voice.useJavaxInput
                     .entryBuilder(
                         entryBuilder(),

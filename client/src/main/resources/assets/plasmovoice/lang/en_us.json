@@ -173,7 +173,6 @@
     "modmenu.summaryTranslation.plasmovoice": "A proximity voice chat mod with audio positioning and lots of features",
 
     "clothconfig.plasmovoice.devices": "Devices",
-    "clothconfig.plasmovoice.devices.disable_input_device": "Disable Input Device",
     "clothconfig.plasmovoice.devices.use_javax_input": "Javax Input Device",
     "clothconfig.plasmovoice.devices.use_javax_input.tooltip": "Sometimes OpenAL input device doesn't work properly on some systems, so you can try to use Javax implementation.",
 
