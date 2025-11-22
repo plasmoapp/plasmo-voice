@@ -69,6 +69,18 @@ public final class DevicesTabWidget extends TabWidget {
                 config.getVoice().getNoiseSuppression()
         ));
         addEntry(createStereoCaptureEntry());
+        addEntry(createToggleEntry(
+                McTextComponent.translatable("gui.plasmovoice.devices.disable_input_device"),
+                McTextComponent.translatable("gui.plasmovoice.devices.disable_input_device.tooltip"),
+                config.getVoice().getDisableInputDevice(),
+                toggled -> {
+                    try {
+                        devices.getInputDevice().ifPresent(InputDevice::close);
+                    } catch (Exception e) {
+                        BaseVoice.LOGGER.error("Failed to disable input device", e);
+                    }
+                }
+        ));
 
         addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.devices.output")));
         addEntry(createOutputDeviceEntry());
