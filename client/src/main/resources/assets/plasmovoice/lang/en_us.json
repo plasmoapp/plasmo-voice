@@ -37,7 +37,7 @@
     "gui.plasmovoice.devices.stereo_capture": "Stereo Capture",
     "gui.plasmovoice.devices.stereo_capture.tooltip": "Captures sound in stereo, then converts it to mono.\nMay improve quality, but makes the sound quieter.",
     "gui.plasmovoice.devices.disable_input_device": "Disable Input Device",
-    "gui.plasmovoice.devices.disable_input_device.tooltip": "Completely disables the use of any microphone in the system.\n\n This is useful when you need to disable the use of the microphone for stereo mode in Bluetooth headphones.",
+    "gui.plasmovoice.devices.disable_input_device.tooltip": "Completely disables the use of any microphone in the operating system.\n\n This is useful when you need to disable the use of the microphone for stereo mode in Bluetooth headphones.",
     "gui.plasmovoice.devices.output": "Output",
 
     "gui.plasmovoice.devices.output_device": "Output Device",
