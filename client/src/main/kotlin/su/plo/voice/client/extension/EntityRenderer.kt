@@ -38,7 +38,7 @@ fun EntityRenderer<*>.createEntityRenderState(
     val hasScoreboardText = (entity as? Player)?.level()?.scoreboard?.getObjectiveBelowName() != null
 
     val camera = Minecraft.getInstance().gameRenderer.mainCamera
-    val distanceToCameraSquared = camera.position.distanceToSqr(entity.position())
+    val distanceToCameraSquared = camera.position().distanceToSqr(entity.position())
 
     val customName = entity.customName?.toString()
 

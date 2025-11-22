@@ -2,8 +2,14 @@ package su.plo.voice.client.audio.device
 
 import com.google.common.base.Preconditions
 import com.google.common.collect.Sets
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.Runnable
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.future
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.minecraft.client.Minecraft
@@ -12,10 +18,18 @@ import org.apache.logging.log4j.LogManager
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
-import org.lwjgl.openal.*
+import org.lwjgl.openal.AL
+import org.lwjgl.openal.AL10
+import org.lwjgl.openal.AL11
+import org.lwjgl.openal.ALC
+import org.lwjgl.openal.ALC10
+import org.lwjgl.openal.ALC11
+import org.lwjgl.openal.EXTThreadLocalContext
+import org.lwjgl.openal.SOFTHRTF
 import su.plo.lib.mod.extensions.eyePosition
 import su.plo.voice.api.client.PlasmoVoiceClient
-import su.plo.voice.api.client.audio.device.*
+import su.plo.voice.api.client.audio.device.AlContextOutputDevice
+import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.device.source.AlSourceParams
 import su.plo.voice.api.client.audio.device.source.DeviceSourceParams
@@ -27,9 +41,11 @@ import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.source.StreamAlSource.Companion.create
+import su.plo.voice.client.extension.position
 import java.nio.Buffer
 import java.nio.IntBuffer
-import java.util.concurrent.*
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.Executors
 import javax.sound.sampled.AudioFormat
 
 class AlOutputDevice
@@ -318,6 +334,9 @@ class AlOutputDevice
         private val yp = Vector3f(0.0f, 1.0f, 0.0f)
         private val xp = Vector3f(1.0f, 0.0f, 0.0f)
 
+        private val lookVector = Vector3f()
+        private val upVector = Vector3f()
+
         fun start() {
             job = coroutineScope.launch {
                 while (true) {
@@ -333,8 +352,6 @@ class AlOutputDevice
 
         fun update() {
             val position: Vec3
-            val lookVector: Vector3f
-            val upVector: Vector3f
 
             if (voiceClient.config.advanced.cameraSoundListener.value()
                 && voiceClient.serverInfo.orElse(null)
@@ -343,15 +360,15 @@ class AlOutputDevice
                     ?.orElse(true) == true
             ) {
                 val camera = Minecraft.getInstance().gameRenderer.mainCamera
+                position = camera.position()
 
-                position = camera.position
-                lookVector = camera.lookVector
-                upVector = camera.upVector
+                lookVector.set(camera.lookVector)
+                upVector.set(camera.upVector)
             } else {
                 val player = Minecraft.getInstance().player ?: return
                 position = player.eyePosition()
 
-                rotation[0.0f, 0.0f, 0.0f] = 1.0f
+                rotation.set(0.0f, 0.0f, 0.0f, 1.0f)
 
                 //#if MC>=11903
                 rotation.rotateAxis(Math.toRadians(-player.yRot.toDouble()).toFloat(), yp)
@@ -361,13 +378,11 @@ class AlOutputDevice
                 //$$ rotation.mul(xp.rotationDegrees(player.xRot));
                 //#endif
 
-                forwards[0.0f, 0.0f] = 1.0f
-                forwards.rotate(rotation)
-                up[0.0f, 1.0f] = 0.0f
-                up.rotate(rotation)
+                lookVector.set(forwards)
+                lookVector.rotate(rotation)
 
-                lookVector = forwards
-                upVector = up
+                upVector.set(up)
+                upVector.rotate(rotation)
             }
 
             AL11.alListener3f(
@@ -381,6 +396,12 @@ class AlOutputDevice
                 )
             )
         }
+
+        //#if MC<11903
+        //$$ private fun Vector3f.set(other: Vector3f) {
+        //$$     set(other.x(), other.y(), other.z())
+        //$$ }
+        //#endif
     }
 
     companion object {

@@ -57,6 +57,10 @@ if (platform.isForge) {
     }
 }
 
+if (platform.mcVersion >= 12111) {
+    mixins.add("plasmovoice-1.21.11.mixins.json")
+}
+
 loom {
     runs {
         getByName("client") {
@@ -104,6 +108,15 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+
+    maven {
+        name = "Maven for PR #2815" // https://github.com/neoforged/NeoForge/pull/2815
+        url = uri("https://prmaven.neoforged.net/NeoForge/pr2815")
+        content {
+            includeModule("net.neoforged", "neoforge")
+            includeModule("net.neoforged", "testframework")
+        }
+    }
 }
 
 dependencies {
@@ -129,6 +142,7 @@ dependencies {
             12105 -> "0.119.5+1.21.5"
             12106 -> "0.127.0+1.21.6"
             12109 -> "0.133.14+1.21.9"
+            12111 -> "0.139.1+1.21.11"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -172,7 +186,11 @@ dependencies {
             12004 -> "13.0.138"
             12100 -> "15.0.140"
             12103 -> "16.0.143"
-            12104, 12105, 12106, 12109 -> "17.0.144"
+            12104,
+            12105,
+            12106,
+            12109,
+            12111 -> "17.0.144"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -191,7 +209,11 @@ dependencies {
             12004 -> "9.2.0"
             12100 -> "11.0.3"
             12103 -> "12.0.0"
-            12104, 12105, 12106, 12109 -> "13.0.2"
+            12104,
+            12105,
+            12106,
+            12109,
+            12111 -> "13.0.2"
             else -> throw GradleException("Unsupported platform $platform")
         }
 

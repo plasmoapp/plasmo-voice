@@ -29,6 +29,11 @@ import net.minecraft.client.renderer.ShaderInstance
 //$$ import gg.essential.universal.shader.UShader
 //#endif
 
+//#if MC>=12111
+//$$ import net.minecraft.client.renderer.rendertype.RenderSetup
+//$$ import su.plo.voice.client.mixin.accessor.RenderTypeAccessor
+//#endif
+
 //#if MC>=12105
 //$$ private fun defaultShader(vertexFormat: VertexFormat): ResourceLocation? =
 //$$     when (vertexFormat) {
@@ -236,12 +241,20 @@ data class RenderPipeline(
             //$$     .build()
             //$$
             //$$ val renderType = mcRenderType ?:
+            //#if MC>=12111
+            //$$     RenderTypeAccessor.plasmovoice_create(
+            //$$         location.toString(),
+            //$$         RenderSetup.builder(pipeline).createRenderSetup()
+            //$$     )
+            //#else
             //$$     RenderType.create(
             //$$         location.toString(),
             //$$         1536,
             //$$         pipeline,
             //$$         RenderType.CompositeState.builder().createCompositeState(false)
             //$$     )
+            //#endif
+
             //#else
             val renderType = mcRenderType
             //#endif

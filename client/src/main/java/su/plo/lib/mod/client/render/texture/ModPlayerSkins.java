@@ -128,10 +128,12 @@ public final class ModPlayerSkins {
         //#else
         //$$     ResourceLocation skinLocation = skinSupplier.get().texture();
         //#endif
+        //#if MC<12111
         //$$     Minecraft.getInstance()
         //$$             .getTextureManager()
         //$$             .getTexture(skinLocation)
         //$$             .setFilter(false, true);
+        //#endif
         //$$     return skinLocation;
         //$$ };
         //#else

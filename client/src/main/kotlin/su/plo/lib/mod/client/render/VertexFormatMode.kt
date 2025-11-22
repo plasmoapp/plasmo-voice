@@ -16,8 +16,8 @@ enum class VertexFormatMode(
     //#if MC>=11700
     fun toMc(): VertexFormat.Mode =
         when (this) {
-            LINES -> VertexFormat.Mode.LINE_STRIP
-            LINE_STRIP -> VertexFormat.Mode.LINE_STRIP
+            LINES -> VertexFormat.Mode.DEBUG_LINES
+            LINE_STRIP -> VertexFormat.Mode.DEBUG_LINE_STRIP
             TRIANGLES -> VertexFormat.Mode.TRIANGLES
             TRIANGLE_STRIP -> VertexFormat.Mode.TRIANGLE_STRIP
             TRIANGLE_FAN -> VertexFormat.Mode.TRIANGLE_FAN
@@ -40,8 +40,8 @@ enum class VertexFormatMode(
         //#if MC>=11700
         fun from(mode: VertexFormat.Mode) =
             when (mode) {
-                VertexFormat.Mode.LINES -> LINE_STRIP
-                VertexFormat.Mode.LINE_STRIP -> LINE_STRIP
+                VertexFormat.Mode.DEBUG_LINES -> LINE_STRIP
+                VertexFormat.Mode.DEBUG_LINE_STRIP -> LINE_STRIP
                 VertexFormat.Mode.TRIANGLES -> TRIANGLES
                 VertexFormat.Mode.TRIANGLE_STRIP -> TRIANGLE_STRIP
                 VertexFormat.Mode.TRIANGLE_FAN -> TRIANGLE_FAN

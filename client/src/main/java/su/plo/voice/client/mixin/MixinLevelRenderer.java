@@ -24,12 +24,10 @@ package su.plo.voice.client.mixin;
 //$$ import su.plo.lib.mod.client.render.world.LevelRendererContext;
 //$$ import su.plo.voice.client.ModVoiceClient;
 //$$
-//$$ import javax.annotation.Nullable;
-//$$
 //$$ @Mixin(LevelRenderer.class)
 //$$ public class MixinLevelRenderer {
 //$$
-//$$     @Shadow @Nullable
+//$$     @Shadow
 //$$     private ClientLevel level;
 //$$
 //$$     @Unique
@@ -70,7 +68,9 @@ package su.plo.voice.client.mixin;
 //$$             ResourceHandle<?> resourceHandle,
 //$$             ResourceHandle<?> resourceHandle2,
 //$$             boolean bl,
+//#if MC<12111
 //$$             Frustum frustum,
+//#endif
 //$$             ResourceHandle<?> resourceHandle3,
 //$$             ResourceHandle<?> resourceHandle4,
 //$$             CallbackInfo ci

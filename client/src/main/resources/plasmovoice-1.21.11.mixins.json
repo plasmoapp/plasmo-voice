@@ -1,0 +1,11 @@
+{
+    "required": true,
+    "minVersion": "0.7",
+    "package": "su.plo.voice.client.mixin",
+    "client": [
+        "accessor.RenderTypeAccessor"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

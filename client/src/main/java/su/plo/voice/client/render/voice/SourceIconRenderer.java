@@ -33,6 +33,7 @@ import su.plo.voice.client.audio.source.ClientStaticSource;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.LivingEntityRenderEvent;
 import su.plo.voice.client.event.render.LevelRenderEvent;
+import su.plo.voice.client.extension.CameraKt;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo;
@@ -54,6 +55,10 @@ import static su.plo.voice.client.extension.MathKt.toVec3;
 
 //#if MC>=12103
 //$$ import net.minecraft.client.renderer.LightTexture;
+//#endif
+
+//#if MC>=12111
+//$$ import net.minecraft.client.renderer.rendertype.RenderTypes;
 //#endif
 
 public final class SourceIconRenderer {
@@ -341,7 +346,7 @@ public final class SourceIconRenderer {
             lastPosition.setZ(Mth.lerp(delta, lastPosition.getZ(), position.getZ()));
         }
 
-        double distanceToCamera = camera.getPosition().distanceToSqr(toVec3(lastPosition));
+        double distanceToCamera = CameraKt.position(camera).distanceToSqr(toVec3(lastPosition));
         if (distanceToCamera > 4096D) return;
 
         stack.pushPose();
@@ -352,9 +357,9 @@ public final class SourceIconRenderer {
         //#endif
 
         stack.translate(
-                lastPosition.getX() - camera.getPosition().x,
-                lastPosition.getY() - camera.getPosition().y,
-                lastPosition.getZ() - camera.getPosition().z
+                lastPosition.getX() - CameraKt.position(camera).x,
+                lastPosition.getY() - CameraKt.position(camera).y,
+                lastPosition.getZ() - CameraKt.position(camera).z
         );
         PoseStackKt.rotate(stack, -camera.getYRot(), 0.0F, 1.0F, 0.0F);
         PoseStackKt.rotate(stack, camera.getXRot(), 1.0F, 0.0F, 0.0F);
@@ -372,20 +377,15 @@ public final class SourceIconRenderer {
                           int light,
                           @NotNull ResourceLocation iconLocation,
                           boolean seeThrough) {
-//        if (seeThrough) {
-//            RenderUtil.disableDepthTest();
-//            RenderUtil.depthMask(false);
-//        } else {
-//            RenderUtil.enableDepthTest();
-//            RenderUtil.depthMask(true);
-//        }
-
-        RenderType renderType;
-        if (seeThrough) {
-            renderType = RenderType.textSeeThrough(iconLocation);
-        } else {
-            renderType = RenderType.text(iconLocation);
-        }
+        //#if MC>=12111
+        //$$ RenderType renderType = seeThrough
+        //$$         ? RenderTypes.textSeeThrough(iconLocation)
+        //$$         : RenderTypes.text(iconLocation);
+        //#else
+        RenderType renderType = seeThrough
+                ? RenderType.textSeeThrough(iconLocation)
+                : RenderType.text(iconLocation);
+        //#endif
 
         RenderPipeline renderPipeline = RenderPipelines.fromRenderType(
                 seeThrough ? "text_see_through" : "text",

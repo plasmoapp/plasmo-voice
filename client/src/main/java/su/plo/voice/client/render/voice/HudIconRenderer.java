@@ -7,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.render.LazyGlState;
-import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -85,8 +84,6 @@ public final class HudIconRenderer  implements HudRenderEvent.Callback {
 
     private void renderIcon(@NotNull GuiRenderContext context, @NotNull ResourceLocation iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
-
-        RenderUtil.bindTexture(0, iconLocation);
 
         //#if MC<12106
         context.getStack().pushPose();

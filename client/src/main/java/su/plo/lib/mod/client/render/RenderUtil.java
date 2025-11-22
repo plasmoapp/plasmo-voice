@@ -226,10 +226,9 @@ public class RenderUtil {
         //#endif
     }
 
+    //#if MC<12106
     public static void bindTexture(int index, @NotNull ResourceLocation location) {
-        //#if MC>=12106
-        //$$ RenderSystem.setShaderTexture(index, Minecraft.getInstance().getTextureManager().getTexture(location).getTextureView());
-        //#elseif MC>=12105
+        //#if MC>=12105
         //$$ RenderSystem.setShaderTexture(index, Minecraft.getInstance().getTextureManager().getTexture(location).getTexture());
         //#elseif MC>=11700
         RenderSystem.setShaderTexture(index, location);
@@ -238,6 +237,7 @@ public class RenderUtil {
         //$$ configureTextureUnit(index, () -> RenderSystem.bindTexture(glTextureId));
         //#endif
     }
+    //#endif
 
     //#if MC<11700
     //$$ public static void configureTextureUnit(int index, Runnable block) {
@@ -828,10 +828,6 @@ public class RenderUtil {
         component.getVisualOrderText().accept(textBuilder);
 
         return textBuilder.getString();
-    }
-
-    public static void lineWidth(float width) {
-        RenderSystem.lineWidth(width);
     }
 
     public static int getStringWidth(String string) {
