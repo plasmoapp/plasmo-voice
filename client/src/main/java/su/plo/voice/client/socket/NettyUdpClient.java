@@ -112,7 +112,7 @@ public final class NettyUdpClient implements UdpClient {
         UdpClientPacketSendEvent event = new UdpClientPacketSendEvent(this, packet);
         if (!voiceClient.getEventBus().fire(event)) return;
 
-        ByteBuf buf = channel.alloc().directBuffer();
+        ByteBuf buf = channel.alloc().ioBuffer();
         try {
             PacketUdpCodec.encode(event.getPacket(), secret, new ByteBufDataOutput(buf));
         } catch (Throwable e) {

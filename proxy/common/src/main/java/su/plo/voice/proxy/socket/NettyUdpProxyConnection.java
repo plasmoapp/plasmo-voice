@@ -1,7 +1,6 @@
 package su.plo.voice.proxy.socket;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.Getter;
@@ -57,7 +56,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     public void sendPacket(Packet<?> packet) {
         if (!isConnected() || player.getInstance().getServer() == null) return;
 
-        ByteBuf buf = channel.alloc().directBuffer();
+        ByteBuf buf = channel.alloc().ioBuffer();
         try {
             PacketUdpCodec.encode(packet, secret, new ByteBufDataOutput(buf));
         } catch (Throwable e) {

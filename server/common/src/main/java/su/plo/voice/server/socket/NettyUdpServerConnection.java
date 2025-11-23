@@ -84,7 +84,7 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
             packet = event.getPacket();
         }
 
-        ByteBuf buf = channel.alloc().directBuffer();
+        ByteBuf buf = channel.alloc().ioBuffer();
         try {
             PacketUdpCodec.encode(packet, secret, new ByteBufDataOutput(buf));
         } catch (Throwable e) {
