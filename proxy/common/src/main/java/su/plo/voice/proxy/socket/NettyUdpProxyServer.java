@@ -16,6 +16,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.channel.unix.UnixChannelOption;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -65,6 +66,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
+                pipeline.addLast(new FlushConsolidationHandler(256, true));
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
                 pipeline.addLast("handler", new NettyPacketHandler(voiceProxy));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
