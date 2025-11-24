@@ -19,6 +19,8 @@ public interface ProxyConfig {
 
     int mtuSize();
 
+    boolean reusePort();
+
     @NotNull Host host();
 
     interface Host {

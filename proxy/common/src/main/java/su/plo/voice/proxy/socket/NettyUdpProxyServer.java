@@ -1,16 +1,22 @@
 package su.plo.voice.proxy.socket;
 
 import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
+import io.netty.channel.MultithreadEventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
+import io.netty.channel.group.ChannelGroup;
+import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.unix.UnixChannelOption;
+import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
@@ -31,7 +37,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
 
     private final EventLoopGroup loopGroup;
 
-    private DatagramChannel channel;
+    private final ChannelGroup channelGroup = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
     private InetSocketAddress socketAddress;
 
     public NettyUdpProxyServer(@NotNull BaseVoiceProxy voiceServer) {
@@ -65,24 +71,51 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             }
         });
 
+        boolean reusePortEnabled = false;
+        if (useEpoll && voiceProxy.getConfig().reusePort()) {
+            try {
+                bootstrap.option(UnixChannelOption.SO_REUSEPORT, true);
+                reusePortEnabled = true;
+            } catch (Exception e) {
+                BaseVoice.LOGGER.warn("SO_REUSEPORT not supported on this platform, falling back to single channel");
+            }
+        }
+
         BaseVoice.LOGGER.info("UDP proxy server is starting on {}:{}", ip, port);
         try {
-            ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
-            this.channel = (DatagramChannel) channelFuture.channel();
-            this.socketAddress = channel.localAddress();
+            int channelCount = reusePortEnabled
+                    ? ((MultithreadEventLoopGroup) loopGroup).executorCount()
+                    : 1;
+
+            for (int i = 0; i < channelCount; i++) {
+                ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
+                Channel channel = channelFuture.channel();
+                channelGroup.add(channel);
+
+                this.socketAddress = (InetSocketAddress) channel.localAddress();
+            }
+
+            if (reusePortEnabled && channelCount > 1) {
+                BaseVoice.LOGGER.info(
+                        "Bound {} {} UDP proxy instances with SO_REUSEPORT on {}",
+                        channelCount,
+                        channelClass.getSimpleName(),
+                        socketAddress
+                );
+            } else {
+                BaseVoice.LOGGER.info("{} UDP proxy is started on {}", channelClass.getSimpleName(), socketAddress);
+            }
         } catch (InterruptedException e) {
             stop();
-            return;
         } catch (Exception e) {
             stop();
             throw e;
         }
-        BaseVoice.LOGGER.info("{} UDP proxy server is started on {}", channelClass.getSimpleName(), socketAddress);
     }
 
     @Override
     public void stop() {
-        if (channel != null) channel.close();
+        channelGroup.close();
         loopGroup.shutdownGracefully();
         BaseVoice.LOGGER.info("UDP proxy server is stopped");
 

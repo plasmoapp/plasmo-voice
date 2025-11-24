@@ -66,6 +66,16 @@ public final class VoiceProxyConfig implements ProxyConfig {
     )
     private int mtuSize = 1024;
 
+    @ConfigField(
+            comment =
+                    "Enables SO_REUSEPORT\n" +
+                    "Instead of using one single thread for all incoming connections,\n" +
+                    "with SO_REUSEPORT multiple sockets will be bound on the same port\n" +
+                    "and distribute connections between multiple worker threads\n" +
+                    "Requires Linux or macOS"
+    )
+    private boolean reusePort = false;
+
     @ConfigField
     private VoiceHost host = new VoiceHost();
 
