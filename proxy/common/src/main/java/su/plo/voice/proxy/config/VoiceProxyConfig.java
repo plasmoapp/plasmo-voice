@@ -69,11 +69,36 @@ public final class VoiceProxyConfig implements ProxyConfig {
     @ConfigField
     private VoiceHost host = new VoiceHost();
 
+    @ConfigField
+    private ReusePort reusePort = new ReusePort();
+
     @ConfigField(
             comment = "Override voice server addresses for specific backend servers\nBy default, uses the same address as the Minecraft backend server (from Velocity/BungeeCord config)",
             nullComment = "[servers]\nfarmworld = \"127.0.0.1:25565\"\noverworld = \"127.0.0.1:25566\""
     )
     private Servers servers = new Servers();
+
+    @Config
+    @Data
+    @Accessors(fluent = true)
+    public static class ReusePort implements ProxyConfig.ReusePort {
+        @ConfigField(
+                comment =
+                        "Enables SO_REUSEPORT\n" +
+                                "Instead of using one single thread for all incoming connections,\n" +
+                                "multiple sockets will be bound on the same port\n" +
+                                "and distribute connections between multiple worker threads\n" +
+                                "Requires Linux or macOS"
+        )
+        private boolean enabled = false;
+
+        @ConfigField(
+                comment =
+                        "Amount of sockets/threads that'll be open with SO_REUSEPORT enabled\n\n" +
+                                "0 means auto and will be derived from \"io.netty.eventLoopThreads\""
+        )
+        private int channels = 0;
+    }
 
     @NoArgsConstructor
     public static class MtuSizeValidator implements Predicate<Object> {
