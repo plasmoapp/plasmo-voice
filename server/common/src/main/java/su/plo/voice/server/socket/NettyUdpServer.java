@@ -14,6 +14,7 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
@@ -70,6 +71,7 @@ public final class NettyUdpServer implements UdpServer {
             protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
+                pipeline.addLast("flush_consolidation", new FlushConsolidationHandler(256, true));
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
                 pipeline.addLast("handler", new NettyPacketHandler(voiceServer));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());

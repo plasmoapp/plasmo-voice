@@ -3,7 +3,6 @@ package su.plo.voice.proxy.socket;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -12,6 +11,7 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -64,6 +64,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
+                pipeline.addLast("flush_consolidation", new FlushConsolidationHandler(256, true));
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
                 pipeline.addLast("handler", new NettyPacketHandler(voiceProxy, loopGroup, channelClass));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
