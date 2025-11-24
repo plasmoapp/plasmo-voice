@@ -149,7 +149,8 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             TOML.save(VoiceProxyConfig.class, config, configFile);
 
             if (oldConfig != null) {
-                restartUdpServer = !config.host().equals(oldConfig.host());
+                restartUdpServer = !config.host().equals(oldConfig.host()) ||
+                        !config.reusePort().equals(oldConfig.reusePort());
             }
 
             ServerTranslator serverTranslator = getMinecraftServer().getServerTranslator();

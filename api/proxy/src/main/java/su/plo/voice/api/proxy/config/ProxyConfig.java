@@ -21,10 +21,18 @@ public interface ProxyConfig {
 
     @NotNull Host host();
 
+    @NotNull ReusePort reusePort();
+
     interface Host {
 
         @NotNull String ip();
 
         int port();
+    }
+
+    interface ReusePort {
+        boolean enabled();
+
+        int channels();
     }
 }
