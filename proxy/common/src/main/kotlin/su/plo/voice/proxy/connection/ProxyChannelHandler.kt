@@ -12,14 +12,14 @@ import su.plo.voice.api.proxy.player.VoiceProxyPlayer
 import su.plo.voice.proto.packets.PacketHandler
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec
 import su.plo.voice.proxy.BaseVoiceProxy
-import java.util.*
+import java.util.UUID
 
 class ProxyChannelHandler(
     private val voiceProxy: BaseVoiceProxy
 ) : McProxyChannelHandler {
 
-    private val playerToServerChannels: MutableMap<UUID, PlayerToServerChannelHandler> = Maps.newHashMap()
-    private val serverToPlayerChannels: MutableMap<UUID, ServerToPlayerChannelHandler> = Maps.newHashMap()
+    private val playerToServerChannels: MutableMap<UUID, PlayerToServerChannelHandler> = Maps.newConcurrentMap()
+    private val serverToPlayerChannels: MutableMap<UUID, ServerToPlayerChannelHandler> = Maps.newConcurrentMap()
 
     init {
         McPlayerQuitEvent.registerListener(::onPlayerQuit)
