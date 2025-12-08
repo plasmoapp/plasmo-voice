@@ -26,8 +26,8 @@ import java.util.Optional;
 
 public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScreenListener implements GuiWidget {
 
-    protected final List<Entry> entries = Lists.newArrayList();
-    protected final List<EntryPosition> entryPositions = Lists.newArrayList();
+    protected final List<Entry> entries = Lists.newCopyOnWriteArrayList();
+    protected final List<EntryPosition> entryPositions = Lists.newCopyOnWriteArrayList();
 
     protected final P parent;
     @Getter
