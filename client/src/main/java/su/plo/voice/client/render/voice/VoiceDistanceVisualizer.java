@@ -24,6 +24,7 @@ import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.render.LevelRenderEvent;
+import su.plo.voice.client.extension.CameraKt;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
 import java.util.Map;
@@ -102,7 +103,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
             }
 
             if (value.position() != null &&
-                    camera.getPosition().distanceTo(value.position()) > (renderDistanceValue(Minecraft.getInstance().options) * 16)
+                    CameraKt.position(camera).distanceTo(value.position()) > (renderDistanceValue(Minecraft.getInstance().options) * 16)
             ) {
                 entries.remove(key);
                 continue;
@@ -140,9 +141,9 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
         //#endif
 
         stack.translate(
-                center.x - camera.getPosition().x,
-                center.y - camera.getPosition().y,
-                center.z - camera.getPosition().z
+                center.x - CameraKt.position(camera).x,
+                center.y - CameraKt.position(camera).y,
+                center.z - CameraKt.position(camera).z
         );
 
         BufferBuilder buffer = RenderUtil.beginBuffer(RenderPipelines.DISTANCE_SPHERE);

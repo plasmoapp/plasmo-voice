@@ -52,7 +52,7 @@ import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
 import su.plo.voice.client.render.voice.SourceIconRenderer;
 import su.plo.voice.client.render.voice.VoiceDistanceVisualizer;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 import su.plo.voice.util.version.SemanticVersion;
 
@@ -96,7 +96,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     private boolean updatesChecked;
 
-    protected BaseVoiceClient(@NotNull ModrinthLoader loader) {
+    protected BaseVoiceClient(@NotNull PlatformLoader loader) {
         super(loader);
 
         ClientAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
@@ -219,13 +219,13 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         try {
             this.config = toml.load(VoiceClientConfig.class, configFile, false);
-            toml.save(VoiceClientConfig.class, config, configFile);
+            toml.save(config, configFile);
         } catch (Exception e) {
             LOGGER.warn("Failed to load the config", e);
 
             try {
                 this.config = new VoiceClientConfig();
-                toml.save(VoiceClientConfig.class, config, configFile);
+                toml.save(config, configFile);
             } catch (Exception e1) {
                 throw new RuntimeException("Failed to save default config", e1);
             }

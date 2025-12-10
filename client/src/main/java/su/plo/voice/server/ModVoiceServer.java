@@ -8,7 +8,7 @@ import su.plo.slib.mod.ModServerLib;
 import su.plo.slib.mod.event.ModServerEvents;
 import su.plo.slib.mod.event.server.ServerStartedEvent;
 import su.plo.slib.mod.event.server.ServerStoppingEvent;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 
 import java.io.File;
 
@@ -23,7 +23,7 @@ public final class ModVoiceServer extends BaseVoiceServer {
 
     private final String modId = "plasmovoice";
 
-    public ModVoiceServer(@NotNull ModrinthLoader loader) {
+    public ModVoiceServer(@NotNull PlatformLoader loader) {
         super(loader);
         INSTANCE = this;
     }

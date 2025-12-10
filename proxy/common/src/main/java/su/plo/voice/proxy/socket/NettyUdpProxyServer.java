@@ -1,12 +1,16 @@
 package su.plo.voice.proxy.socket;
 
 import io.netty.bootstrap.Bootstrap;
-import io.netty.channel.*;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.epoll.Epoll;
+import io.netty.channel.epoll.EpollDatagramChannel;
+import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
-import io.netty.util.concurrent.DefaultEventExecutorGroup;
-import io.netty.util.concurrent.EventExecutorGroup;
-import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
@@ -18,32 +22,45 @@ import su.plo.voice.socket.NettyPacketUdpDecoder;
 import java.net.InetSocketAddress;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 public final class NettyUdpProxyServer implements UdpProxyServer {
+
+    private final boolean useEpoll = System.getProperty("plasmovoice.use_epoll", "true").equals("true") &&
+            Epoll.isAvailable();
 
     private final BaseVoiceProxy voiceProxy;
 
-    private final EventLoopGroup loopGroup = new NioEventLoopGroup();
-    private final EventExecutorGroup executors = new DefaultEventExecutorGroup(Runtime.getRuntime().availableProcessors());
+    private final EventLoopGroup loopGroup;
 
-    private NioDatagramChannel channel;
+    private DatagramChannel channel;
     private InetSocketAddress socketAddress;
+
+    public NettyUdpProxyServer(@NotNull BaseVoiceProxy voiceServer) {
+        this.voiceProxy = voiceServer;
+
+        this.loopGroup = useEpoll
+                ? new EpollEventLoopGroup()
+                : new NioEventLoopGroup();
+    }
 
     @Override
     public void start(String ip, int port) {
 
+        Class<? extends DatagramChannel> channelClass = useEpoll
+                ? EpollDatagramChannel.class
+                : NioDatagramChannel.class;
+
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
                 .group(loopGroup)
-                .channel(NioDatagramChannel.class);
+                .channel(channelClass);
 
-        bootstrap.handler(new ChannelInitializer<NioDatagramChannel>() {
+        bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
             @Override
-            protected void initChannel(@NotNull NioDatagramChannel ch) throws Exception {
+            protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder());
-                pipeline.addLast(executors, "handler", new NettyPacketHandler(voiceProxy));
+                pipeline.addLast("handler", new NettyPacketHandler(voiceProxy));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
         });
@@ -51,7 +68,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
         BaseVoice.LOGGER.info("UDP proxy server is starting on {}:{}", ip, port);
         try {
             ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
-            this.channel = (NioDatagramChannel) channelFuture.channel();
+            this.channel = (DatagramChannel) channelFuture.channel();
             this.socketAddress = channel.localAddress();
         } catch (InterruptedException e) {
             stop();
@@ -60,7 +77,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             stop();
             throw e;
         }
-        BaseVoice.LOGGER.info("UDP proxy server is started on {}", socketAddress);
+        BaseVoice.LOGGER.info("{} UDP proxy server is started on {}", channelClass.getSimpleName(), socketAddress);
     }
 
     @Override

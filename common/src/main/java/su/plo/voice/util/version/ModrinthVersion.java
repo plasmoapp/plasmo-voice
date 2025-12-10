@@ -27,7 +27,8 @@ public final class ModrinthVersion {
 
     public static Optional<ModrinthVersion> checkForUpdates(@NonNull String voiceVersion,
                                                    @NonNull String minecraftVersion,
-                                                   @NonNull ModrinthLoader loader) throws IOException {
+                                                   @NonNull PlatformLoader loader) throws IOException {
+        if (!loader.modrinthSupported()) return Optional.empty();
         SemanticVersion version = SemanticVersion.parse(voiceVersion);
 
         return ModrinthVersion.getLatest(minecraftVersion, loader, !version.isRelease(), null)
@@ -39,7 +40,7 @@ public final class ModrinthVersion {
 
     public static Optional<ModrinthVersion> from(@NonNull String stringVersion,
                                                  @NonNull String minecraftVersion,
-                                                 @NonNull ModrinthLoader loader) throws IOException {
+                                                 @NonNull PlatformLoader loader) throws IOException {
 
         JsonArray versions = getVersions(minecraftVersion, loader);
 
@@ -63,7 +64,7 @@ public final class ModrinthVersion {
     }
 
     public static Optional<ModrinthVersion> getLatest(@NonNull String minecraftVersion,
-                                                      @NonNull ModrinthLoader loader,
+                                                      @NonNull PlatformLoader loader,
                                                       boolean alpha,
                                                       @Nullable SemanticVersion targetVersion) throws IOException {
         JsonArray versions = getVersions(minecraftVersion, loader);
@@ -91,7 +92,7 @@ public final class ModrinthVersion {
     }
 
     private static JsonArray getVersions(@NonNull String minecraftVersion,
-                                         @NonNull ModrinthLoader loader) throws IOException {
+                                         @NonNull PlatformLoader loader) throws IOException {
         URL url = new URL(String.format(
                 "https://api.modrinth.com/v2/project/plasmo-voice/version?loaders=[%%22%s%%22]&game_versions=[%%22%s%%22]",
                 loader, minecraftVersion

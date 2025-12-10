@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.render.shader;
 
 //#if MC<12105
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import gg.essential.universal.shader.BlendState;
 import gg.essential.universal.shader.UShader;
 import lombok.NonNull;
@@ -17,11 +18,13 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ShaderUtil {
 
+    @SuppressWarnings("deprecation")
     public static UShader loadShader(@NonNull String vertName, @NonNull String fragName, @NonNull BlendState blendState) throws IOException {
         return UShader.Companion.fromLegacyShader(
                 readShader(vertName, "vsh"),
                 readShader(fragName, "fsh"),
-                blendState
+                blendState,
+                DefaultVertexFormat.POSITION_TEX_COLOR
         );
     }
 

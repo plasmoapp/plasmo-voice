@@ -8,16 +8,14 @@ import org.gradle.kotlin.dsl.`maven-publish`
 plugins {
     java
     `maven-publish`
-    id("com.github.johnrengelman.shadow")
+    id("com.gradleup.shadow")
 }
 
 val platform: MavenPublishSettings = extensions.create("mavenPublish", MavenPublishSettings::class.java)
 
 if (platform.skipShadow) {
-    components.withType(AdhocComponentWithVariants::class.java).forEach { c ->
-        c.withVariantsFromConfiguration(project.configurations.shadowRuntimeElements.get()) {
-            skip()
-        }
+    shadow {
+        addShadowVariantIntoJavaComponent = false
     }
 }
 

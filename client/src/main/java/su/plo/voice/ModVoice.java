@@ -1,7 +1,7 @@
 package su.plo.voice;
 
 import su.plo.voice.server.ModVoiceServer;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 
 //#if FABRIC
 
@@ -75,7 +75,7 @@ public final class ModVoice
     //$$
     //$$ @SubscribeEvent
     //$$ public void onCommonSetup(@NotNull FMLCommonSetupEvent event) {
-    //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.NEO_FORGE);
+    //$$     ModVoiceServer voiceServer = new ModVoiceServer(PlatformLoader.NEO_FORGE);
     //$$     voiceServer.onInitialize();
     //$$ }
     //#endif
@@ -105,7 +105,7 @@ public final class ModVoice
     //$$     ModChannelManager.addForgeChannel(ModVoiceServer.CHANNEL, channel);
     //$$     ModChannelManager.addForgeChannel(ModVoiceServer.SERVICE_CHANNEL, serviceChannel);
     //$$
-    //$$     ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FORGE);
+    //$$     ModVoiceServer voiceServer = new ModVoiceServer(PlatformLoader.FORGE);
     //$$     voiceServer.onInitialize();
     //$$ }
     //$$
@@ -125,7 +125,7 @@ public final class ModVoice
     //#if FABRIC
     @Override
     public void onInitialize() {
-        ModVoiceServer voiceServer = new ModVoiceServer(ModrinthLoader.FABRIC);
+        ModVoiceServer voiceServer = new ModVoiceServer(PlatformLoader.FABRIC);
         voiceServer.onInitialize();
     }
     //#endif

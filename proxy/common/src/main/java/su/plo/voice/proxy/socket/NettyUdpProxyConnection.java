@@ -2,8 +2,8 @@ package su.plo.voice.proxy.socket;
 
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
-import io.netty.channel.socket.nio.NioDatagramChannel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -29,7 +29,7 @@ import java.util.UUID;
 public final class NettyUdpProxyConnection implements UdpProxyConnection, ServerPacketUdpHandler {
 
     private final PlasmoVoiceProxy voiceProxy;
-    private final NioDatagramChannel channel;
+    private final DatagramChannel channel;
 
     @Getter
     private final VoiceProxyPlayer player;

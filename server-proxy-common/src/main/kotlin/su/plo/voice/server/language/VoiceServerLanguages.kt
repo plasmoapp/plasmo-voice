@@ -224,7 +224,7 @@ class VoiceServerLanguages(
         // merge languages
         for ((languageName, value) in languages) {
             val language = this.languages.computeIfAbsent(languageName) { value }
-            language.merge(value)
+            language.merge(value, replace = true)
             language.merge(defaultLanguage)
         }
 
@@ -381,17 +381,26 @@ class VoiceServerLanguages(
             clientLanguage = mergeMaps(language, "client", defaults)
         }
 
-        fun merge(language: VoiceServerLanguage) {
-            original = mergeMaps(original, language.original)
+        fun merge(
+            language: VoiceServerLanguage,
+            replace: Boolean = false,
+        ) {
+            original = mergeMaps(original, language.original, replace)
 
-            language.serverLanguage.forEach(serverLanguage::putIfAbsent)
-            language.clientLanguage.forEach(clientLanguage::putIfAbsent)
+            if (replace) {
+                language.serverLanguage.forEach(serverLanguage::put)
+                language.clientLanguage.forEach(clientLanguage::put)
+            } else {
+                language.serverLanguage.forEach(serverLanguage::putIfAbsent)
+                language.clientLanguage.forEach(clientLanguage::putIfAbsent)
+            }
         }
 
         @Suppress("UNCHECKED_CAST")
         private fun mergeMaps(
             language: Map<String, Any>,
-            defaults: Map<String, Any>
+            defaults: Map<String, Any>,
+            replace: Boolean = false,
         ): Map<String, Any> {
             val merged: MutableMap<String, Any> = Maps.newConcurrentMap()
             merged.putAll(language)
@@ -400,9 +409,10 @@ class VoiceServerLanguages(
                 if (value is Map<*, *>) {
                     merged[key] = mergeMaps(
                         (language[key] ?: Maps.newHashMap<String, Any>()) as Map<String, Any>,
-                        value as Map<String, Any>
+                        value as Map<String, Any>,
+                        replace,
                     )
-                } else if (!language.containsKey(key)) {
+                } else if (!language.containsKey(key) || replace) {
                     merged[key] = value
                 }
             }

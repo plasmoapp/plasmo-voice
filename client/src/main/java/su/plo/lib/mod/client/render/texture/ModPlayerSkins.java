@@ -25,6 +25,12 @@ import java.util.function.Supplier;
 //$$ import java.util.Optional;
 //#endif
 
+//#if MC>=12109
+//$$ import com.mojang.authlib.properties.PropertyMap;
+//$$ import com.google.common.collect.Multimap;
+//$$ import com.google.common.collect.LinkedHashMultimap;
+//#endif
+
 public final class ModPlayerSkins {
 
     private static final Cache<UUID, Supplier<ResourceLocation>> SKINS = CacheBuilder
@@ -74,10 +80,28 @@ public final class ModPlayerSkins {
         Supplier<ResourceLocation> skinLocation = SKINS.getIfPresent(gameProfile.getId());
         if (skinLocation != null) return;
 
+        //#if MC>=12109
+        //$$ Multimap<String, Property> propertyMap = LinkedHashMultimap.create();
+        //$$
+        //$$ gameProfile.getProperties().forEach((property) -> {
+        //$$     propertyMap.put(property.getName(), new Property(
+        //$$             property.getName(),
+        //$$             property.getValue(),
+        //$$             property.getSignature()
+        //$$     ));
+        //$$ });
+        //$$
+        //$$ GameProfile profile = new GameProfile(
+        //$$         gameProfile.getId(),
+        //$$         gameProfile.getName(),
+        //$$         new PropertyMap(propertyMap)
+        //$$ );
+        //#else
         GameProfile profile = new GameProfile(
                 gameProfile.getId(),
                 gameProfile.getName()
         );
+
         gameProfile.getProperties().forEach((property) -> {
             profile.getProperties().put(property.getName(), new Property(
                     property.getName(),
@@ -85,6 +109,7 @@ public final class ModPlayerSkins {
                     property.getSignature()
             ));
         });
+        //#endif
 
         skinLocation = getInsecureSkinLocation(profile);
         SKINS.put(gameProfile.getId(), skinLocation);
@@ -103,10 +128,12 @@ public final class ModPlayerSkins {
         //#else
         //$$     ResourceLocation skinLocation = skinSupplier.get().texture();
         //#endif
+        //#if MC<12111
         //$$     Minecraft.getInstance()
         //$$             .getTextureManager()
         //$$             .getTexture(skinLocation)
         //$$             .setFilter(false, true);
+        //#endif
         //$$     return skinLocation;
         //$$ };
         //#else

@@ -10,6 +10,11 @@ import su.plo.lib.mod.client.render.entity.LivingEntityRenderState
 import su.plo.voice.client.mixin.accessor.EntityRendererAccessor
 import net.minecraft.world.scores.Scoreboard
 import su.plo.lib.mod.extensions.level
+import su.plo.slib.api.position.Pos3d
+import su.plo.voice.client.ModVoiceClient
+import su.plo.voice.proto.data.config.PlayerIconVisibility
+import java.util.EnumSet
+import kotlin.jvm.optionals.getOrNull
 
 //#if MC>=12002
 //$$ import net.minecraft.world.scores.DisplaySlot
@@ -33,7 +38,21 @@ fun EntityRenderer<*>.createEntityRenderState(
     val hasScoreboardText = (entity as? Player)?.level()?.scoreboard?.getObjectiveBelowName() != null
 
     val camera = Minecraft.getInstance().gameRenderer.mainCamera
-    val distanceToCameraSquared = camera.position.distanceToSqr(entity.position())
+    val distanceToCameraSquared = camera.position().distanceToSqr(entity.position())
+
+    val customName = entity.customName?.toString()
+
+    var playerIconVisibility = getPlayerIconVisibility(entity)
+
+    val shouldHideIcon = customName?.contains("plasmo-voice.hide-all-icons") == true
+
+    if (customName?.contains("plasmo-voice.hide-not-installed-icon") == true) {
+        playerIconVisibility = EnumSet.copyOf(
+            playerIconVisibility + setOf(PlayerIconVisibility.HIDE_NOT_INSTALLED)
+        )
+    }
+
+    val playerIconOffset = getPlayerIconOffset(entity)
 
     val rendererAccessor = this as EntityRendererAccessor
     val entityRenderState = LivingEntityRenderState(
@@ -54,9 +73,29 @@ fun EntityRenderer<*>.createEntityRenderState(
             entity.displayName
         else
             null,
-        Vec3(0.0, entity.bbHeight.toDouble(), 0.0),
-        hasScoreboardText
+        Vec3(playerIconOffset.x, entity.bbHeight.toDouble() + playerIconOffset.y, playerIconOffset.z),
+        hasScoreboardText,
+
+        shouldHideIcon,
+        playerIconVisibility,
     )
 
     return entityRenderState
+}
+
+private val pos3dZero = Pos3d()
+
+private fun getPlayerIconOffset(entity: LivingEntity): Pos3d {
+    if (entity !is Player) return pos3dZero
+    val serverInfo = ModVoiceClient.INSTANCE.serverInfo.getOrNull() ?: return pos3dZero
+
+    return serverInfo.playerIconOffset
+}
+
+private fun getPlayerIconVisibility(entity: LivingEntity): Set<PlayerIconVisibility> {
+    if (entity !is Player) return PlayerIconVisibility.none()
+
+    val serverInfo = ModVoiceClient.INSTANCE.serverInfo.getOrNull() ?: return PlayerIconVisibility.none()
+
+    return serverInfo.getPlayerIconVisibility()
 }

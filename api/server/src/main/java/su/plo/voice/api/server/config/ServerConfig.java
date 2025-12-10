@@ -2,6 +2,7 @@ package su.plo.voice.api.server.config;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.voice.proto.data.config.PlayerIconVisibility;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -53,6 +54,8 @@ public interface ServerConfig {
          */
         byte[] aesEncryptionKey();
 
+        int maxExtraAudioBroadcastDistance();
+
         int sampleRate();
 
         int keepAliveTimeoutMs();
@@ -69,7 +72,15 @@ public interface ServerConfig {
 
         @NotNull Opus opus();
 
+        @NotNull PlayerIcon playerIcon();
+
         @NotNull Weights weights();
+
+        interface PlayerIcon {
+            Collection<PlayerIconVisibility> visibility();
+
+            double yOffset();
+        }
 
         interface Weights {
 

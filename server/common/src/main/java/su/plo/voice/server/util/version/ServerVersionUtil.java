@@ -10,7 +10,7 @@ import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.slib.api.logging.McLogger;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 import su.plo.voice.util.version.SemanticVersion;
 
@@ -26,12 +26,12 @@ public final class ServerVersionUtil {
             .expireAfterAccess(15L, TimeUnit.SECONDS)
             .build();
 
-    public static ModrinthLoader getPlayerModrinthLoader(@NonNull VoiceServerPlayer player) {
+    public static PlatformLoader getPlayerModrinthLoader(@NonNull VoiceServerPlayer player) {
         boolean isForge = player.getInstance().getRegisteredChannels()
                 .stream()
                 .anyMatch(channel -> channel.equals("fml:handshake") || channel.equalsIgnoreCase("forge:handshake"));
 
-        return isForge ? ModrinthLoader.FORGE : ModrinthLoader.FABRIC;
+        return isForge ? PlatformLoader.FORGE : PlatformLoader.FABRIC;
     }
 
     public static void suggestSupportedVersion(@NonNull VoiceServerPlayer player,
@@ -67,7 +67,7 @@ public final class ServerVersionUtil {
         }
     }
 
-    private static String getVersionCacheKey(String minecraftVersion, ModrinthLoader loader, SemanticVersion serverVersion) {
+    private static String getVersionCacheKey(String minecraftVersion, PlatformLoader loader, SemanticVersion serverVersion) {
         return minecraftVersion + loader.name() + serverVersion.string();
     }
 

@@ -1,10 +1,8 @@
-### Changes in 2.1.6
-- **Plugin now requires minimum version of Java 17 to run.** 
-- Fixed "Plasmo Voice is not installed on this server" on Paper 1.21.7.
-- Removed debug print when chat message is sent to the player.
-- Removed "Default language '...' doesn't exist" check when using non "en_us" language.
-- Fixed "Failed to encrypt data: VoiceServerPlayerEntity(...) has empty public key".
-- Fixed hover / click text components events on Spigot 1.20.4.
-- Fixed entity sources on Folia [pv-addon-spectator#4](https://github.com/plasmoapp/pv-addon-spectator/issues/4).
-- Fixed `Cannot send game event asynchronously` on `Folia` with `pv-addon-sculk` [#486](https://github.com/plasmoapp/plasmo-voice/issues/468).
-- Improved vanish support by PlayerHideEntityEvent and PlayerShowEntityEvent when direct integration is not available.
+### Changes in 2.1.7
+- Fixed `/vreload` not reloading language changes.
+- Fixed `Player is not connected to UDP server` exception on PlayerShowEntityEvent.
+- Added more descriptive comments in the config.
+- Added configurable player icon visibility and offset. Check `[voice.player_icon]` config block for more info.
+- Reworked keep alive to handle more players.
+- Improved performance using epoll when available.
+- Fixed leaving in vanish breaks Plasmo Voice sometimes. ([#493](https://github.com/plasmoapp/plasmo-voice/issues/493))

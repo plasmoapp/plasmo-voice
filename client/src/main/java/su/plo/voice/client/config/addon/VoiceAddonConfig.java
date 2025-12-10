@@ -158,6 +158,7 @@ public final class VoiceAddonConfig implements AddonConfig {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends ConfigEntry<?>> Optional<T> getWidgetConfigEntry(@NotNull String translatable) {
         ConfigWidget widget = widgetsById.get(translatable);
         if (widget == null) return Optional.empty();

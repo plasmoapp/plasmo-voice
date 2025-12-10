@@ -2,12 +2,12 @@ package su.plo.voice.minestom
 
 import su.plo.slib.minestom.MinestomServerLib
 import su.plo.voice.server.BaseVoiceServer
-import su.plo.voice.util.version.ModrinthLoader
+import su.plo.voice.util.version.PlatformLoader
 import java.io.File
 
 class MinestomVoiceServer(
     private val dataDirectory: File
-) : BaseVoiceServer(ModrinthLoader.MINESTOM) {
+) : BaseVoiceServer(PlatformLoader.MINESTOM) {
 
     private val minecraftServerLib = MinestomServerLib(dataDirectory)
 

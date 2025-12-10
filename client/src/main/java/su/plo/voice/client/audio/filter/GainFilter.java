@@ -36,7 +36,6 @@ public final class GainFilter implements AudioFilter {
 
         highestValues.put(volume);
 
-
         float minVolume = -1F;
         for (float highest : highestValues.getCollection()) {
             if (highest < 0F) {
@@ -48,14 +47,12 @@ public final class GainFilter implements AudioFilter {
                 continue;
             }
 
-            if (highest < highest) {
-                minVolume = highest;
-            }
+            minVolume = Math.min(minVolume, highest);
         }
 
         volume = Math.min(minVolume, volume);
         for (int i = 0; i < samples.length; i ++) {
-            samples[i] *= volume;
+            samples[i] = (short) (samples[i] * volume);
         }
 
         return samples;

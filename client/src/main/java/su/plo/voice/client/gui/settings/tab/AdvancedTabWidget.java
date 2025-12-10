@@ -4,6 +4,7 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.OutputDevice;
+import su.plo.voice.api.client.config.OverlappingSourceTypes;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
@@ -53,10 +54,13 @@ public final class AdvancedTabWidget extends TabWidget {
                 null,
                 config.getAdvanced().getPanning()
         ));
-        addEntry(createToggleEntry(
-                McTextComponent.translatable("gui.plasmovoice.advanced.mute_player_on_direct"),
-                McTextComponent.translatable("gui.plasmovoice.advanced.mute_player_on_direct.tooltip"),
-                config.getAdvanced().getMutePlayerOnDirect()
+        addEntry(createDropDownEntry(
+                McTextComponent.translatable("gui.plasmovoice.advanced.source_types_overlap"),
+                McTextComponent.translatable("gui.plasmovoice.advanced.source_types_overlap.tooltip"),
+                OverlappingSourceTypes.class,
+                OverlappingSourceTypes.getTextElements(),
+                config.getAdvanced().getSourceTypesOverlap(),
+                false
         ));
         addEntry(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.adaptive_jitter_buffer"),

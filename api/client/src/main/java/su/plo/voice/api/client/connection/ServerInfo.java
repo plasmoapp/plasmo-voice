@@ -1,18 +1,21 @@
 package su.plo.voice.api.client.connection;
 
 import org.jetbrains.annotations.NotNull;
+import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.audio.codec.AudioDecoder;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.line.SourceLine;
+import su.plo.voice.proto.data.config.PlayerIconVisibility;
 
 import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -65,6 +68,20 @@ public interface ServerInfo {
      * @return An optional containing the server's encryption information, or empty if the server has disabled encryption.
      */
     Optional<Encryption> getEncryption();
+
+    /**
+     * Gets the server's player icon visibility overrides.
+     *
+     * @return The enum set of icon visibility flags.
+     */
+    @NotNull Set<PlayerIconVisibility> getPlayerIconVisibility();
+
+    /**
+     * Gets the server's player icon offset.
+     *
+     * @return The offset of the player icon.
+     */
+    @NotNull Pos3d getPlayerIconOffset();
 
     /**
      * Creates a new Opus encoder based on server {@link VoiceInfo}.

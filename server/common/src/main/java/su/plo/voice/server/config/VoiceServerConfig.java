@@ -12,7 +12,9 @@ import su.plo.config.ConfigField;
 import su.plo.config.ConfigFieldProcessor;
 import su.plo.config.ConfigValidator;
 import su.plo.voice.api.server.config.ServerConfig;
+import su.plo.voice.proto.data.config.PlayerIconVisibility;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -33,23 +35,23 @@ public final class VoiceServerConfig implements ServerConfig {
 
     @ConfigField(
             comment =
-                    "Language used when client's language doesn't exist.\n\n" +
-                    "By default, client's language used for translations.\n" +
-                    "For example, if default_language is set to ja_jp but the client uses en_us, then en_us will be used.\n" +
-                    "If you want to use one specific language for all clients, uncomment and set forced_language below."
+                    "Language used when client's language doesn't exist\n\n" +
+                    "By default, client's language used for translations\n" +
+                    "For example, if default_language is set to ja_jp but the client uses en_us, then en_us will be used\n" +
+                    "If you want to use one specific language for all clients, uncomment and set forced_language below"
     )
     private String defaultLanguage = "en_us";
 
     @ConfigField(
-            comment = "Language used for all clients.",
+            comment = "Language used for all clients",
             nullComment = "forced_language = \"ja_jp\""
     )
     private @Nullable String forcedLanguage = null;
 
-    @ConfigField
+    @ConfigField(comment = "Enables debug logging")
     private boolean debug = false;
 
-    @ConfigField
+    @ConfigField(comment = "Enables translations from Crowdin")
     private boolean useCrowdinTranslations = true;
 
     @ConfigField
@@ -69,14 +71,18 @@ public final class VoiceServerConfig implements ServerConfig {
 
         private UUID forwardingSecret = null;
 
-        @ConfigField
+        @ConfigField(comment = "IP address for the voice server to bind to\n0.0.0.0 = bind to all available interfaces")
         private String ip = "0.0.0.0";
 
-        @ConfigField
+        @ConfigField(comment = "UDP port for the voice server\n0 = same port as Minecraft server")
         @ConfigValidator(value = PortValidator.class, allowed = "0-65535")
         private int port = 0;
 
-        @ConfigField(path = "public")
+        @ConfigField(
+                path = "public",
+                comment = "Public IP and port that clients will connect to\nIf ip set to 0.0.0.0, ip from [host] will be used\nIf port set to 0, port from [host] will be used\nIgnored when using BungeeCord/Velocity (proxy manages public address instead)",
+                nullComment = "[host.public]\nip = \"127.0.0.1\"\nport = 0"
+        )
         private @Nullable Public hostPublic = null;
 
         @Config
@@ -112,34 +118,37 @@ public final class VoiceServerConfig implements ServerConfig {
 
         private byte[] aesEncryptionKey = null;
 
-        @ConfigField(comment = "Supported sample rates:\n8000\n12000\n24000\n48000")
+        @ConfigField(comment = "The maximum amount, in blocks, to broadcast audio packets past the audible proximity distance.\nThe plugin will send audio packets to players within 2x the proximity distance, or the distance plus this number - whichever is smaller.")
+        private int maxExtraAudioBroadcastDistance = 16;
+
+        @ConfigField(comment = "Supported sample rates: [8000, 12000, 24000, 48000]\nDon't change this to reduce bandwidth; adjust opus bitrate instead")
         @ConfigValidator(
                 value = SampleRateValidator.class,
                 allowed = {"8000", "16000", "24000", "48000"}
         )
         private int sampleRate = 48_000;
 
-        @ConfigField
+        @ConfigField(comment = "Time before voice client connection is considered timed out\nServer will try to automatically reconnect the client after timeout")
         @ConfigValidator(
                 value = KeepAliveTimeoutValidator.class,
                 allowed = "1000-120000"
         )
         private int keepAliveTimeoutMs = 15_000;
 
-        @ConfigField
+        @ConfigField(comment = "Maximum packet size for voice data transmission")
         @ConfigValidator(
                 value = MtuSizeValidator.class,
                 allowed = "128-5000"
         )
         private int mtuSize = 1024;
 
-        @ConfigField
+        @ConfigField(comment = "Requires players to have the Plasmo Voice mod installed")
         private boolean clientModRequired = false;
 
-        @ConfigField
+        @ConfigField(comment = "Time before player is kicked if the mod is required but not installed")
         private long clientModRequiredCheckTimeoutMs = 3_000L;
 
-        @ConfigField(comment = "Minimum required version for a client with the mod to connect to the voice server.\nThis will not kick the player but will simply not connect them to the voice server and will suggest downloading the required version.")
+        @ConfigField(comment = "Minimum required version for a client with the mod to connect to the voice server\nThis will not kick the player but will simply not connect them to the voice server and will suggest downloading the required version")
         private @NotNull String clientModMinVersion = "2.0.0";
 
         @ConfigField
@@ -149,17 +158,39 @@ public final class VoiceServerConfig implements ServerConfig {
         private Opus opus = new Opus();
 
         @ConfigField
+        private PlayerIcon playerIcon = new PlayerIcon();
+
+        @ConfigField(
+                comment = "Set custom weights for specific activations and source lines\nWeight determines display order in client menu and overlay (lower = higher position)"
+        )
         private Weights weights = new Weights();
+
+        @Config
+        @Data
+        @Accessors(fluent = true)
+        public static class PlayerIcon implements ServerConfig.Voice.PlayerIcon {
+            @ConfigField(comment = "Controls which icons are hidden above player heads\nLeave empty to show all icons (default)\nTo hide all icons, use: [\"HIDE_NOT_INSTALLED\", \"HIDE_VOICE_CHAT_DISABLED\", \"HIDE_SERVER_MUTED\", \"HIDE_CLIENT_MUTED\", \"HIDE_SOURCE_ICON\"]\n\nAvailable options:\nHIDE_NOT_INSTALLED - hides icon when player doesn't have Plasmo Voice installed\nHIDE_VOICE_CHAT_DISABLED - hides icon when player disables voice chat on the client\nHIDE_SERVER_MUTED - hides icon when player's voice chat is muted on the server\nHIDE_CLIENT_MUTED - hides icon when player is muted on the client using Volume tab\nHIDE_SOURCE_ICON - hides icon when player is talking")
+            private @NotNull List<PlayerIconVisibility> visibility = new ArrayList<>(PlayerIconVisibility.none());
+
+            @ConfigField(comment = "Controls the y offset of the icon above player heads")
+            private double yOffset = 0.0;
+        }
 
         @Config
         @Data
         @Accessors(fluent = true)
         public static class Weights implements ServerConfig.Voice.Weights {
 
-            @ConfigField(path = "activations")
-            private Map<String, Integer> weightByActivationName = Maps.newConcurrentMap();
-            @ConfigField(path = "source_lines")
-            private Map<String, Integer> weightBySourceLineName = Maps.newConcurrentMap();
+            @ConfigField(
+                    path = "activations",
+                    nullComment = "[voice.weights.activations]\ngroups = 0"
+            )
+            private Map<String, Integer> weightByActivationName = Maps.newTreeMap();
+            @ConfigField(
+                    path = "source_lines",
+                    nullComment = "[voice.weights.source_lines]\ngroups = 0"
+            )
+            private Map<String, Integer> weightBySourceLineName = Maps.newTreeMap();
 
             @Override
             public Optional<Integer> getActivationWeight(@NotNull String activationName) {

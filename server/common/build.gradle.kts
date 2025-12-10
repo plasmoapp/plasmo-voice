@@ -12,6 +12,9 @@ dependencies {
     api(project(":server-proxy-common"))
 
     compileOnly(libs.netty)
+
+    testImplementation(libs.mockito)
+    testImplementation(libs.netty)
 }
 
 crowdin {

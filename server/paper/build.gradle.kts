@@ -1,12 +1,16 @@
+import su.plo.voice.extension.expandMatching
+import su.plo.voice.extension.javaVersion
 import su.plo.voice.extension.slibPlatform
-import su.plo.voice.util.copyJarToRootProject
 
 plugins {
-    id("su.plo.voice.relocate")
+    id("su.plo.voice.shadow")
     id("su.plo.voice.maven-publish")
 }
 
 group = "$group.server"
+
+base.archivesName.set("${rootProject.name}-Paper")
+javaVersion = 17
 
 repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
@@ -31,19 +35,10 @@ dependencies {
         project(":common"),
         project(":protocol")
     ).forEach {
-        shadow(it) { isTransitive = false }
+        shadow(it)
     }
 
     // shadow external deps
-    shadow(kotlin("stdlib-jdk8"))
-    shadow(libs.kotlinx.coroutines)
-    shadow(libs.kotlinx.coroutines.jdk8)
-    shadow(libs.kotlinx.json)
-
-    shadow(libs.opus.jni)
-    shadow(libs.opus.concentus)
-    shadow(libs.config)
-    shadow(libs.crowdin) { isTransitive = false }
     shadow("org.bstats:bstats-bukkit:${libs.versions.bstats.get()}")
 
     slibPlatform(
@@ -56,42 +51,9 @@ dependencies {
 
 tasks {
     processResources {
-        filesMatching(mutableListOf("plugin.yml", "paper-plugin.yml")) {
-            expand(
-                mutableMapOf(
-                    "version" to version
-                )
-            )
-        }
-    }
-
-    shadowJar {
-        configurations = listOf(project.configurations.shadow.get())
-
-        archiveBaseName.set("PlasmoVoice-Paper")
-        archiveAppendix.set("")
-
-        dependencies {
-            exclude(dependency("org.slf4j:slf4j-api"))
-            exclude("META-INF/**")
-        }
-    }
-
-    build {
-        dependsOn.add(shadowJar)
-
-        doLast {
-            copyJarToRootProject(shadowJar.get())
-        }
-    }
-
-    java {
-        toolchain.languageVersion.set(JavaLanguageVersion.of(17))
-    }
-
-    compileKotlin {
-        kotlinOptions {
-            jvmTarget = "17"
-        }
+        expandMatching(
+            listOf("plugin.yml", "paper-plugin.yml"),
+            "version" to version
+        )
     }
 }

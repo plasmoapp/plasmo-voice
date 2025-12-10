@@ -52,7 +52,7 @@ import su.plo.voice.server.mute.storage.MuteStorageFactory;
 import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.VoiceServerPlayerManagerImpl;
 import su.plo.voice.server.socket.NettyUdpServer;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
@@ -106,7 +106,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     private final ServerChannelHandler channelHandler = new ServerChannelHandler(this);
     private final ServerServiceChannelHandler serviceChannelHandler = new ServerServiceChannelHandler(this);
 
-    protected BaseVoiceServer(@NotNull ModrinthLoader loader) {
+    protected BaseVoiceServer(@NotNull PlatformLoader loader) {
         super(loader);
 
         ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
@@ -203,7 +203,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             VoiceServerConfig oldConfig = config;
 
             this.config = TOML.load(VoiceServerConfig.class, configFile, false);
-            TOML.save(VoiceServerConfig.class, config, configFile);
+            TOML.save(config, configFile);
 
             if (oldConfig != null) {
                 restartUdpServer = !config.host().equals(oldConfig.host());

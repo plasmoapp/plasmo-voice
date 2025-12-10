@@ -7,6 +7,7 @@ import net.minecraft.world.phys.Vec3
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
 import su.plo.voice.api.client.audio.device.DeviceException
+import su.plo.voice.api.client.config.OverlappingSourceTypes
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.extension.toVec3
@@ -81,6 +82,18 @@ class ClientDirectSource(
     override fun calculateDistanceGain(sourceDistance: Double, maxDistance: Double) =
         if (sourceInfo.isCameraRelative) 1.0
         else super.calculateDistanceGain(sourceDistance, maxDistance)
+
+    override fun shouldWrite(): Boolean {
+        val sender = sourceInfo.sender
+        if (sender != null && voiceClient.config.advanced.sourceTypesOverlap.value() == OverlappingSourceTypes.MUTE_DIRECT) {
+            return voiceClient.sourceManager.sources
+                .filterIsInstance<ClientPlayerSource>()
+                .filter { it.isActivated() }
+                .none { it.sourceInfo.playerInfo.playerId == sender.id }
+        }
+
+        return true
+    }
 
     private fun createSourceMute(sourceInfo: DirectSourceInfo): BooleanConfigEntry? =
         sourceInfo.sender?.let {

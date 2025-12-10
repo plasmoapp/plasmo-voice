@@ -37,7 +37,7 @@ import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceProxySourceLineManager;
 import su.plo.voice.server.language.VoiceServerLanguages;
 import su.plo.voice.server.player.LuckPermsListener;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
 
 import java.io.File;
@@ -77,7 +77,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     @Getter
     private Encryption defaultEncryption;
 
-    protected BaseVoiceProxy(@NotNull ModrinthLoader loader) {
+    protected BaseVoiceProxy(@NotNull PlatformLoader loader) {
         super(loader);
 
         ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());

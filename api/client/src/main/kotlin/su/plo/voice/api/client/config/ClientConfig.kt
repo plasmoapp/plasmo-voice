@@ -81,7 +81,7 @@ interface ClientConfig {
 
         val panning: BooleanConfigEntry
 
-        val mutePlayerOnDirect: BooleanConfigEntry
+        val sourceTypesOverlap: EnumConfigEntry<OverlappingSourceTypes>
 
         val cameraSoundListener: BooleanConfigEntry
 

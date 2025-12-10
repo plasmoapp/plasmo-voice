@@ -2,7 +2,6 @@ package su.plo.voice.client.audio.device;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
@@ -10,7 +9,11 @@ import su.plo.slib.api.logging.McLogger;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.audio.device.*;
+import su.plo.voice.api.client.audio.device.AlContextOutputDevice;
+import su.plo.voice.api.client.audio.device.DeviceException;
+import su.plo.voice.api.client.audio.device.DeviceFactory;
+import su.plo.voice.api.client.audio.device.DeviceManager;
+import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.client.audio.filter.GainFilter;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
@@ -34,6 +37,7 @@ public final class VoiceDeviceManager implements DeviceManager {
 
     private @Nullable AlContextOutputDevice outputDevice = null;
     private @Nullable InputDevice inputDevice = null;
+    private @Nullable Throwable inputDeviceError = null;
 
     private ScheduledFuture<?> job;
 
@@ -64,12 +68,18 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     @Override
-    public void setInputDevice(@Nullable InputDevice device) {
+    public @NotNull Optional<Throwable> getInputDeviceError() {
+        return Optional.ofNullable(inputDeviceError);
+    }
+
+    @Override
+    public void setInputDevice(@Nullable InputDevice device, @Nullable Throwable lastError) {
         if (inputDevice != null) {
             voiceClient.getEventBus().unregister(voiceClient, inputDevice);
         }
 
         this.inputDevice = device;
+        this.inputDeviceError = lastError;
 
         if (device != null) {
             voiceClient.getEventBus().register(voiceClient, device);
@@ -216,6 +226,7 @@ public final class VoiceDeviceManager implements DeviceManager {
                     setInputDevice(openInputDevice(null));
                     failedInputDevices = "";
                 } catch (Exception e) {
+                    setInputDevice(null, e);
                     LOGGER.error("Failed to open input device", e);
                     failedInputDevices = deviceNamesString;
                 }

@@ -9,6 +9,7 @@ import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
@@ -107,7 +108,10 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     }
 
     public void setCannotConnect() {
-        this.message = McTextComponent.translatable("gui.plasmovoice.cannot_connect_to_udp", WIKI_LINK);
+        this.message = McTextComponent.translatable(
+                "gui.plasmovoice.cannot_connect_to_udp",
+                McTextComponent.literal(WIKI_LINK).withStyle(McTextStyle.YELLOW)
+        );
     }
 
     private void openLink(@NotNull String link) {

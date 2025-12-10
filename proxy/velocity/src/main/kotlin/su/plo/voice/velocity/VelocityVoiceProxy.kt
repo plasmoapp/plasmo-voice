@@ -14,7 +14,7 @@ import su.plo.slib.api.proxy.McProxyLib
 import su.plo.slib.velocity.VelocityProxyLib
 import su.plo.voice.BuildConstants
 import su.plo.voice.proxy.BaseVoiceProxy
-import su.plo.voice.util.version.ModrinthLoader
+import su.plo.voice.util.version.PlatformLoader
 import java.io.File
 import java.nio.file.Path
 
@@ -29,7 +29,7 @@ class VelocityVoiceProxy @Inject constructor(
     private val proxyServer: ProxyServer,
     @DataDirectory private val dataDirectory: Path,
     private val metricsFactory: Metrics.Factory
-) : BaseVoiceProxy(ModrinthLoader.VELOCITY) {
+) : BaseVoiceProxy(PlatformLoader.VELOCITY) {
 
     private lateinit var minecraftProxy: McProxyLib
 

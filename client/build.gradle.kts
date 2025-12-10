@@ -2,18 +2,23 @@ import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.noServerRunConfigs
 import su.plo.config.toml.Toml
+import su.plo.crowdin.CrowdinParams
+import su.plo.voice.extension.expandMatching
 import su.plo.voice.extension.slibPlatform
-import su.plo.voice.util.copyJarToRootProject
 import java.net.URI
 
-val isMainProject = project.name == file("../mainProject").readText().trim()
+val mainProject = project(":client:${file("../mainProject").readText().trim()}")
+val isMainProject = project == mainProject
 
 plugins {
     kotlin("jvm")
     id("gg.essential.multi-version")
     id("gg.essential.defaults")
-    id("su.plo.crowdin.plugin")
-    id("su.plo.voice.relocate")
+    id("su.plo.voice.shadow")
+}
+
+if (isMainProject) {
+    apply(plugin = "su.plo.crowdin.plugin")
 }
 
 group = "$group.client"
@@ -36,10 +41,6 @@ if (platform.mcVersion in 12106..12108) {
 
 if (platform.mcVersion >= 12109) {
     mixins.add("plasmovoice-1.21.9.mixins.json")
-
-    if (platform.isFabric) {
-        mixins.add("plasmovoice-1.21.9-fabric.mixins.json")
-    }
 }
 
 if (platform.isForge) {
@@ -56,6 +57,10 @@ if (platform.isForge) {
     }
 }
 
+if (platform.mcVersion >= 12111) {
+    mixins.add("plasmovoice-1.21.11.mixins.json")
+}
+
 loom {
     runs {
         getByName("client") {
@@ -66,10 +71,13 @@ loom {
     }
 }
 
-crowdin {
-    url = URI.create("https://github.com/plasmoapp/plasmo-voice-crowdin/archive/refs/heads/pv.zip").toURL()
-    sourceFileName = "client.json"
-    resourceDir = "assets/plasmovoice/lang"
+if (isMainProject) {
+    extensions.getByType<CrowdinParams>().apply {
+        url = URI.create("https://github.com/plasmoapp/plasmo-voice-crowdin/archive/refs/heads/pv.zip").toURL()
+        sourceFileName = "client.json"
+        resourceDir = "assets/plasmovoice/lang"
+        outputDir = layout.projectDirectory.file("../build/generated/sources/crowdin").asFile
+    }
 }
 
 val shadowCommon by configurations.creating
@@ -89,7 +97,6 @@ repositories {
 
     maven("https://repo.plasmoverse.com/snapshots")
     maven("https://maven.shedaniel.me/")
-    maven("https://maven.terraformersmc.com/")
     maven("https://maven.nucleoid.xyz/")
 
     exclusiveContent {
@@ -98,6 +105,15 @@ repositories {
         }
         filter {
             includeGroup("maven.modrinth")
+        }
+    }
+
+    maven {
+        name = "Maven for PR #2815" // https://github.com/neoforged/NeoForge/pull/2815
+        url = uri("https://prmaven.neoforged.net/NeoForge/pr2815")
+        content {
+            includeModule("net.neoforged", "neoforge")
+            includeModule("net.neoforged", "testframework")
         }
     }
 }
@@ -125,6 +141,7 @@ dependencies {
             12105 -> "0.119.5+1.21.5"
             12106 -> "0.127.0+1.21.6"
             12109 -> "0.133.14+1.21.9"
+            12111 -> "0.139.1+1.21.11"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -142,12 +159,17 @@ dependencies {
             modLocalRuntime("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
         }
 
-        if (platform.mcVersion >= 12106) {
-            "include"("me.lucko:fabric-permissions-api:0.4.1")
-        } else if (platform.mcVersion >= 12102) {
-            "include"("me.lucko:fabric-permissions-api:0.3.3")
-        } else {
-            "include"("me.lucko:fabric-permissions-api:0.3.1")
+        val fabricPermissionsApi =
+            if (platform.mcVersion >= 12106) {
+                "me.lucko:fabric-permissions-api:0.4.1"
+            } else if (platform.mcVersion >= 12102) {
+                "me.lucko:fabric-permissions-api:0.3.3"
+            } else {
+                "me.lucko:fabric-permissions-api:0.3.1"
+            }
+        "include"(fabricPermissionsApi)
+        modImplementation(fabricPermissionsApi) {
+            isTransitive = false
         }
 
         // build times go _/
@@ -163,7 +185,11 @@ dependencies {
             12004 -> "13.0.138"
             12100 -> "15.0.140"
             12103 -> "16.0.143"
-            12104, 12105, 12106, 12109 -> "17.0.144"
+            12104,
+            12105,
+            12106,
+            12109,
+            12111 -> "17.0.144"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -182,11 +208,15 @@ dependencies {
             12004 -> "9.2.0"
             12100 -> "11.0.3"
             12103 -> "12.0.0"
-            12104, 12105, 12106, 12109 -> "13.0.2"
+            12104,
+            12105,
+            12106,
+            12109,
+            12111 -> "13.0.2"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
-        modImplementation("com.terraformersmc:modmenu:$modMenuVersion")
+        modImplementation("maven.modrinth:modmenu:$modMenuVersion")
 
         if (platform.mcVersion < 12105) {
             modCompileOnly("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
@@ -206,10 +236,10 @@ dependencies {
 
     includedProjects.forEach {
         implementation(project(it))
-        shadowCommon(project(it)) {
-            isTransitive = false
-        }
+        shadowCommon(project(it))
     }
+
+    shadowCommon(libs.rnnoise.jni)
 
     // slib
     if (platform.isForge && platform.mcVersion >= 12100) {
@@ -222,22 +252,13 @@ dependencies {
         slibPlatform(
             slibArtifact(),
             libs.versions.slib.get(),
-            ::modApi
+            { module, action ->
+                modApi(module) {
+                    isTransitive = false
+                    action.execute(this)
+                }
+            }
         ) { name, action -> shadowCommon(name) { action.execute(this) } }
-    }
-
-    // kotlin
-    shadowCommon(kotlin("stdlib-jdk8"))
-    shadowCommon(libs.kotlinx.coroutines)
-    shadowCommon(libs.kotlinx.coroutines.jdk8)
-    shadowCommon(libs.kotlinx.json)
-
-    shadowCommon(libs.config)
-    shadowCommon(libs.opus.jni)
-    shadowCommon(libs.opus.concentus)
-    shadowCommon(libs.rnnoise.jni)
-    shadowCommon(libs.crowdin) {
-        isTransitive = false
     }
 }
 
@@ -246,39 +267,36 @@ tasks {
         withSourcesJar()
     }
 
-    getByName<Jar>("sourcesJar") {
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-    }
-
     processResources {
         val versionInfo = readVersionInfo()
 
-        filesMatching(
-            mutableListOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml")
-        ) {
-            expand(
-                mutableMapOf(
-                    "version" to version,
-                    "neoForgeVersion" to versionInfo.neoForgeVersion,
-                    "forgeVersion" to versionInfo.forgeVersion,
-                    "mcVersions" to versionInfo.forgeMcVersions,
-                    "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\"")
-                )
-            )
-        }
+        expandMatching(
+            listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml"),
+            "version" to version,
+            "neoForgeVersion" to versionInfo.neoForgeVersion,
+            "forgeVersion" to versionInfo.forgeVersion,
+            "mcVersions" to versionInfo.forgeMcVersions,
+            "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\""),
+        )
 
-        filesMatching(mutableListOf("fabric.mod.json")) {
-            expand(
-                mutableMapOf(
-                    "version" to version,
-                    "mcVersions" to versionInfo.fabricMcVersions,
-                    "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\"")
-                )
-            )
-        }
+        expandMatching(
+            listOf("fabric.mod.json"),
+            "version" to version,
+            "mcVersions" to versionInfo.fabricMcVersions,
+            "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\""),
+        )
 
-        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-        dependsOn(crowdinDownload)
+        if (isMainProject) {
+            dependsOn("crowdinDownload")
+        } else {
+            dependsOn(mainProject.tasks.findByName("crowdinDownload"))
+        }
+    }
+
+    if (isMainProject) {
+        findByName("preprocessResources")?.dependsOn("crowdinDownload")
+    } else {
+        findByName("preprocessResources")?.dependsOn(mainProject.tasks.findByName("crowdinDownload"))
     }
 
     jar {
@@ -290,11 +308,6 @@ tasks {
         configurations = listOf(shadowCommon)
 
         dependencies {
-            exclude(dependency("com.google.guava:.*"))
-
-            exclude("README.md")
-            exclude("META-INF/*.kotlin_module")
-
             relocate("gg.essential.universal", "su.plo.voice.universal")
 
             if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {
@@ -342,12 +355,11 @@ tasks {
     remapJar {
         dependsOn(shadowJar)
         inputFile.set(shadowJar.get().archiveFile)
+        archiveClassifier.set("remapped")
     }
 
-    build {
-        doLast {
-            copyJarToRootProject(remapJar.get())
-        }
+    named("copyJarToRootProject") {
+        dependsOn(remapJar)
     }
 }
 

@@ -16,7 +16,7 @@ import su.plo.voice.audio.codec.opus.OpusCodecSupplier;
 import su.plo.voice.encryption.VoiceEncryptionManager;
 import su.plo.voice.encryption.aes.AesEncryptionSupplier;
 import su.plo.voice.event.VoiceEventBus;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 
 import java.io.InputStream;
 import java.util.concurrent.Executors;
@@ -27,7 +27,7 @@ public abstract class BaseVoice implements PlasmoVoice {
     public static final McLogger LOGGER = McLoggerFactory.createLogger("PlasmoVoice");
     public static final DebugLogger DEBUG_LOGGER = new DebugLogger(LOGGER);
 
-    protected final ModrinthLoader loader;
+    protected final PlatformLoader loader;
 
     protected final EventBus eventBus = new VoiceEventBus(this);
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
@@ -38,7 +38,7 @@ public abstract class BaseVoice implements PlasmoVoice {
     @Getter
     protected ScheduledExecutorService backgroundExecutor;
 
-    protected BaseVoice(@NotNull ModrinthLoader loader) {
+    protected BaseVoice(@NotNull PlatformLoader loader) {
         this.loader = loader;
         this.addons = new VoiceAddonManager(this);
 

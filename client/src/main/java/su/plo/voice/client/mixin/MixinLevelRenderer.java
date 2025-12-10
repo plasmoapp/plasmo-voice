@@ -1,6 +1,6 @@
 package su.plo.voice.client.mixin;
 
-//#if FABRIC && MC>=12109
+//#if MC>=12109
 //$$ import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 //$$ import com.mojang.blaze3d.buffers.GpuBufferSlice;
 //$$ import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
@@ -24,12 +24,10 @@ package su.plo.voice.client.mixin;
 //$$ import su.plo.lib.mod.client.render.world.LevelRendererContext;
 //$$ import su.plo.voice.client.ModVoiceClient;
 //$$
-//$$ import javax.annotation.Nullable;
-//$$
 //$$ @Mixin(LevelRenderer.class)
 //$$ public class MixinLevelRenderer {
 //$$
-//$$     @Shadow @Nullable
+//$$     @Shadow
 //$$     private ClientLevel level;
 //$$
 //$$     @Unique
@@ -67,12 +65,14 @@ package su.plo.voice.client.mixin;
 //$$             LevelRenderState levelRenderState,
 //$$             ProfilerFiller profilerFiller,
 //$$             Matrix4f matrix4f,
-//$$             ResourceHandle resourceHandle,
-//$$             ResourceHandle resourceHandle2,
+//$$             ResourceHandle<?> resourceHandle,
+//$$             ResourceHandle<?> resourceHandle2,
 //$$             boolean bl,
+//#if MC<12111
 //$$             Frustum frustum,
-//$$             ResourceHandle resourceHandle3,
-//$$             ResourceHandle resourceHandle4,
+//#endif
+//$$             ResourceHandle<?> resourceHandle3,
+//$$             ResourceHandle<?> resourceHandle4,
 //$$             CallbackInfo ci
 //$$     ) {
 //$$         ModVoiceClient.INSTANCE.getLevelRenderer().render(

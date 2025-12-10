@@ -20,7 +20,7 @@ import su.plo.voice.client.connection.ModClientChannelHandler;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.render.ModHudRenderer;
 import su.plo.voice.client.render.ModLevelRenderer;
-import su.plo.voice.util.version.ModrinthLoader;
+import su.plo.voice.util.version.PlatformLoader;
 
 //#if FABRIC
 
@@ -123,9 +123,9 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     public ModVoiceClient() {
         //#if FORGE
-        //$$ super(ModrinthLoader.FORGE);
+        //$$ super(PlatformLoader.FORGE);
         //#else
-        super(ModrinthLoader.FABRIC);
+        super(PlatformLoader.FABRIC);
         //#endif
 
         McLoggerFactory.supplier = Log4jLogger::new;
@@ -306,6 +306,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     onServerDisconnect();
     //$$ }
     //$$
+    //#if MC<12109
     //$$ @SubscribeEvent
     //#if MC>=12106
     //$$ public void onWorldRender(RenderLevelStageEvent.AfterParticles event) {
@@ -326,6 +327,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#endif
     //$$     );
     //$$ }
+    //#endif
     //$$
     //$$ @EventBusSubscriber(
     //$$         modid = "plasmovoice",
