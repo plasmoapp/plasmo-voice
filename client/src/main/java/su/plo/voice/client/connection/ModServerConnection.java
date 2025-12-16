@@ -236,8 +236,8 @@ public final class ModServerConnection implements ServerConnection {
         voiceClient.getActivationManager().clear();
 
         // cleanup devices
-        voiceClient.getDeviceManager().clear();
         voiceClient.getDeviceManager().stopJob();
+        voiceClient.getDeviceManager().clear();
     }
 
     public void generateKeyPair() throws Exception {

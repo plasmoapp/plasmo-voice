@@ -178,7 +178,12 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     public void stopJob() {
-        if (job != null) job.cancel(false);
+        if (job != null) {
+            job.cancel(false);
+            try {
+                job.get(250, TimeUnit.MILLISECONDS);
+            } catch (Exception ignored) {}
+        }
     }
 
     private synchronized void tickJob() throws DeviceException {

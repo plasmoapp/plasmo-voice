@@ -103,7 +103,13 @@ tasks {
         manifest {
             from({
                 zipTree(archiveFile).first { it.name == "MANIFEST.MF" }
-            })
+            }) {
+                eachEntry {
+                    if (key == "Multi-Release") {
+                        exclude()
+                    }
+                }
+            }
         }
 
         from(rootProject.file("LICENSE")) {
