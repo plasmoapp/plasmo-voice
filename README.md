@@ -1,4 +1,4 @@
-[![Latest release](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/arsmotorin/dreamdisplays/releases/latest)
+[![Latest release](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases/latest)
 [![Discord](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
 
 <div style="text-align: center;">
