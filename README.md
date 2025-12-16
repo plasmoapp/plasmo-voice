@@ -1,7 +1,7 @@
 [![Latest release](https://img.shields.io/github/release/plasmoapp/plasmo-voice.svg)](https://github.com/plasmoapp/plasmo-voice/releases/latest)
 [![Discord](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
 
-<div style="text-align: center;">
+<div align="center">
   <img src="https://imgur.com/3ccgCRz.png" alt="Plasmo Voice Logo"> 
   <div>
     <a href="https://modrinth.com/mod/plasmo-voice">Modrinth</a>
