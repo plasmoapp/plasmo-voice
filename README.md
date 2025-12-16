@@ -48,7 +48,6 @@ features.
 
 - RNNoise noise reduction
 - OpenAL sound engine with great 3D positioning
-- [Sound Physics Remastered](https://modrinth.com/mod/sound-physics-remastered) compatibility
 - Stereo audio sources
 - Smooth volume transitions
 
@@ -56,13 +55,12 @@ features.
 
 - Optional sound occlusion (muffles voices through blocks)
 - Optional directional audio sources (quieter if the speaker is not facing you)
-- Sound Physics Remastered compatibility with [pv-addon-soundphysics](https://modrinth.com/mod/pv-addon-soundphysics)
+- [Sound Physics Remastered](https://modrinth.com/mod/sound-physics-remastered) compatibility with [pv-addon-soundphysics](https://modrinth.com/mod/pv-addon-soundphysics)
 
 **Controls & Interaction**
 
 - Adjustable voice chat distance
 - Choose between Push to Talk or Voice Activation
-- Per-player mute and volume control via the Minecraft social menu
 - Hold **RMB** while looking at a player and use the scroll wheel to adjust their volume
 
 **Devices & UI**
@@ -107,7 +105,7 @@ working.*
 
 ## Server-side add-ons
 
-Universal add-ons work on Fabric, Forge and Paper.
+Universal add-ons work on Fabric, Forge, NeoForge and Paper.
 
 *Also read: [Types of Add-ons](https://plasmovoice.com/docs/addons/types).*
 
