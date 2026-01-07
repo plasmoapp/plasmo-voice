@@ -1,5 +1,8 @@
 package su.plo.lib.mod.client
 
+import net.minecraft.client.Minecraft
+import su.plo.voice.api.client.config.hotkey.Hotkey
+
 //#if MC>=12109
 //$$ import net.minecraft.client.Minecraft
 //$$ import net.minecraft.client.input.InputQuirks
@@ -9,6 +12,18 @@ import net.minecraft.client.gui.screens.Screen
 //#endif
 
 object Inputs {
+
+    @JvmStatic
+    var lastPressedKey: Hotkey.Key? = null
+
+    @JvmStatic
+    fun isLastInputKeyboard(): Boolean =
+        //#if MC<=11903
+        //$$ lastPressedKey?.type == Hotkey.Type.KEYSYM
+        //#else
+        Minecraft.getInstance().lastInputType.isKeyboard
+        //#endif
+
     @JvmStatic
     @JvmOverloads
     fun hasShiftDown(modifiers: Int? = null): Boolean =

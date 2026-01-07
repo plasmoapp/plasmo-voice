@@ -187,7 +187,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
         if (!isVisible()) return false;
 
         boolean mouseOver = isMouseOver(mouseX, mouseY);
-        if (canLoseFocus) setFocused(mouseOver);
+        if (canLoseFocus) applyFocus(mouseOver);
 
         if (isFocused() && mouseOver && isValidClickButton(button)) {
             int inputX = Mth.floor(mouseX) - x;
@@ -207,7 +207,8 @@ public class TextFieldWidget extends GuiAbstractWidget {
     }
 
     @Override
-    protected void onFocusedChanged(boolean focused) {
+    public void applyFocus(boolean focused) {
+        super.applyFocus(focused);
         if (focused) this.frame = 0;
     }
 

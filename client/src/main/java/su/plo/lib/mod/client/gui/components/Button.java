@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 
 public class Button extends AbstractButton {
 
-    public static final OnTooltip NO_TOOLTIP = (button, render, mouseX, mouseY) -> {
+    public static final OnTooltip NO_TOOLTIP = (button, mouseX, mouseY) -> {
     };
     public static final OnPress NO_ACTION = (button) -> {
     };
@@ -59,7 +59,11 @@ public class Button extends AbstractButton {
 
     @Override
     public void renderToolTip(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
-        tooltipAction.onTooltip(this, context, mouseX, mouseY);
+        if (isHovered()) {
+            tooltipAction.onTooltip(this, mouseX, mouseY);
+        } else if (isFocused()) {
+            tooltipAction.onTooltip(this, x, y + height);
+        }
     }
 
     @Override
@@ -72,7 +76,7 @@ public class Button extends AbstractButton {
 
     public interface OnTooltip {
 
-        void onTooltip(Button button, GuiRenderContext context, int mouseX, int mouseY);
+        void onTooltip(Button button, int mouseX, int mouseY);
 
         default void narrateTooltip(Consumer<McTextComponent> consumer) {
         }

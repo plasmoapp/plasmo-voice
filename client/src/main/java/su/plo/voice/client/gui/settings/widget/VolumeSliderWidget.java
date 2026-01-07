@@ -45,6 +45,11 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
     }
 
     @Override
+    protected double minStep() {
+        return 5.0 / (entry.getMax() * 100.0);
+    }
+
+    @Override
     public void updateValue() {
         this.value = entry.value() / entry.getMax();
         updateText();

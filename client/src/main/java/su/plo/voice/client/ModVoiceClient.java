@@ -3,6 +3,7 @@ package su.plo.voice.client;
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
+import su.plo.lib.mod.client.Inputs;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.slib.mod.logging.Log4jLogger;
 import su.plo.voice.client.gui.settings.VoiceScreens;
@@ -156,6 +157,8 @@ public final class ModVoiceClient extends BaseVoiceClient
     public void onKeyPressed(@NotNull KeyPressedEvent event) {
         if (Minecraft.getInstance().player == null) return;
         if (MENU_KEY.consumeClick()) VoiceScreens.INSTANCE.openSettings(this);
+
+        Inputs.setLastPressedKey(event.getKey());
     }
 
     @Override

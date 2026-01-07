@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvents;
+import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -48,7 +49,6 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     protected boolean visible = true;
 
     @Getter
-    @Setter
     private boolean focused;
 
     public GuiAbstractWidget(int x,
@@ -134,9 +134,12 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     public boolean changeFocus(boolean lookForwards) {
         if (!active || !visible) return false;
 
-        this.focused = !lookForwards;
-        onFocusedChanged(lookForwards);
-        return lookForwards;
+        return !focused;
+    }
+
+    @Override
+    public void applyFocus(boolean focused) {
+        this.focused = focused;
     }
 
     @Override
@@ -146,7 +149,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
 
     // Class methods
     public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
-        GuiWidgetTexture sprite = getButtonTexture(hovered);
+        GuiWidgetTexture sprite = getButtonTexture(isHoveredOrFocused());
 
         context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
         context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
@@ -173,7 +176,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     }
 
     public boolean isHoveredOrFocused() {
-        return this.hovered || this.focused;
+        return hovered || (focused && Inputs.isLastInputKeyboard());
     }
 
     protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
@@ -203,9 +206,6 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
                         0.25f
                 )
         );
-    }
-
-    protected void onFocusedChanged(boolean focused) {
     }
 
     protected void defaultButtonNarrationText(NarrationOutput narrationElementOutput) {

@@ -12,6 +12,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
 
 import java.awt.Color;
+import java.util.function.Supplier;
 
 //#if MC<11701
 //$$ import com.mojang.blaze3d.platform.GlStateManager;
@@ -23,7 +24,7 @@ public final class IconButton extends Button {
     private final Color shadowColor;
     @Getter
     @Setter
-    private ResourceLocation iconLocation;
+    private Supplier<ResourceLocation> iconLocation;
     @Getter
     @Setter
     private @Nullable Color iconColor = null;
@@ -35,7 +36,7 @@ public final class IconButton extends Button {
             int height,
             @NotNull OnPress pressAction,
             @NotNull OnTooltip tooltipAction,
-            @NotNull ResourceLocation iconLocation,
+            @NotNull Supplier<ResourceLocation> iconLocation,
             boolean shadow
     ) {
         this(x, y, width, height, pressAction, tooltipAction, iconLocation, shadow, Colors.WHITE);
@@ -49,6 +50,19 @@ public final class IconButton extends Button {
             @NotNull OnPress pressAction,
             @NotNull OnTooltip tooltipAction,
             @NotNull ResourceLocation iconLocation,
+            boolean shadow
+    ) {
+        this(x, y, width, height, pressAction, tooltipAction, () -> iconLocation, shadow, Colors.WHITE);
+    }
+
+    public IconButton(
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull OnPress pressAction,
+            @NotNull OnTooltip tooltipAction,
+            @NotNull Supplier<ResourceLocation> iconLocation,
             boolean shadow,
             Color shadowColor
     ) {
@@ -62,6 +76,8 @@ public final class IconButton extends Button {
     @Override
     public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         super.renderButton(context, mouseX, mouseY, delta);
+
+        ResourceLocation iconLocation = this.iconLocation.get();
 
         if (hasShadow() && SolidColorShader.isAvailable()) {
             Color shadowColor = active ? this.shadowColor : Colors.GRAY;

@@ -166,7 +166,7 @@ public final class DevicesTabWidget extends TabWidget {
                     20,
                     20,
                     button -> MinecraftUtil.openUri("https://plasmovoice.com/docs/client/microphone-not-available"),
-                    (button, context, mouseX, mouseY) -> {
+                    (button, mouseX, mouseY) -> {
                         if (Platform.isMac()) {
                             AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
                             if (authorizationStatus == AVAuthorizationStatus.RESTRICTED) {
@@ -174,7 +174,9 @@ public final class DevicesTabWidget extends TabWidget {
                                         McTextComponent.translatable(
                                                 "message.plasmovoice.macos_incompatible_launcher",
                                                 McTextComponent.literal("Prism Launcher")
-                                        )
+                                        ),
+                                        mouseX,
+                                        mouseY
                                 );
                                 return;
                             }
@@ -193,7 +195,9 @@ public final class DevicesTabWidget extends TabWidget {
                                 McTextComponent.translatable(
                                         "gui.plasmovoice.devices.failed_to_initialize_microphone.tooltip",
                                         currentDeviceName
-                                )
+                                ),
+                                mouseX,
+                                mouseY
                         );
                     },
                     ResourceLocationUtil.mod("textures/icons/warning.png"),

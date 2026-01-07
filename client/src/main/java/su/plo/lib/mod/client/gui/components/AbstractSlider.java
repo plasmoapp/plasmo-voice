@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
 import net.minecraft.util.Mth;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
@@ -49,7 +50,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     @Override
     protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         int width = getSliderWidth();
-        GuiWidgetTexture sprite = getButtonTexture(hovered);
+        GuiWidgetTexture sprite = getButtonTexture(isHoveredOrFocused());
 
         context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
         context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
@@ -72,10 +73,9 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
-        boolean rightPressed = keyCode == 263; // GLFW_KEY_RIGHT
-        if (rightPressed || keyCode == 262) { // GLFW_KEY_LEFT
-            float delta = rightPressed ? -1.0F : 1.0F;
-            setValue(value + (double) (delta / (float) (getSliderWidth() - 8)));
+        if (keyCode == GLFW.GLFW_KEY_RIGHT || keyCode == GLFW.GLFW_KEY_LEFT) {
+            float delta = keyCode == GLFW.GLFW_KEY_LEFT ? -1.0F : 1.0F;
+            setValue(value + (delta * minStep()));
         }
 
         return false;
@@ -152,4 +152,6 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     protected abstract void updateText();
 
     protected abstract void applyValue();
+
+    protected abstract double minStep();
 }

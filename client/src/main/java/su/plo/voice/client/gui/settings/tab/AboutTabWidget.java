@@ -49,37 +49,37 @@ public final class AboutTabWidget extends TabWidget {
         addEntry(new ListEntry(ImmutableList.of(
                 new Button(0, 0, 0, 20, McTextComponent.literal("Github"), button -> {
                     openLink("https://github.com/plasmoapp/plasmo-voice");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://github.com/plasmoapp/plasmo-voice"));
+                }, (button, mouseX, mouseY) -> {
+                    setTooltip(McTextComponent.literal("https://github.com/plasmoapp/plasmo-voice"), mouseX, mouseY);
                 }),
                 new Button(0, 0, 0, 20, McTextComponent.literal("Discord"), button -> {
                     openLink("https://discord.com/invite/uueEqzwCJJ");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://discord.com/invite/uueEqzwCJJ"));
+                }, (button, mouseX, mouseY) -> {
+                    setTooltip(McTextComponent.literal("https://discord.com/invite/uueEqzwCJJ"), mouseX, mouseY);
                 })
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
                 new Button(0, 0, 0, 20, McTextComponent.literal("Modrinth"), button -> {
                     openLink("https://modrinth.com/mod/plasmo-voice");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://modrinth.com/mod/plasmo-voice"));
+                }, (button, mouseX, mouseY) -> {
+                    setTooltip(McTextComponent.literal("https://modrinth.com/mod/plasmo-voice"), mouseX, mouseY);
                 }),
                 new Button(0, 0, 0, 20, McTextComponent.literal("Spigot"), button -> {
                     openLink("https://www.spigotmc.org/resources/plasmo-voice-server.91064/");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/"));
+                }, (button, mouseX, mouseY) -> {
+                    setTooltip(McTextComponent.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/"), mouseX, mouseY);
                 })
         )));
         this.addEntry(new ListEntry(ImmutableList.of(
                 new Button(0, 0, 0, 20, McTextComponent.literal("Patreon"), button -> {
                     openLink("https://www.patreon.com/plasmomc");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://www.patreon.com/plasmomc"));
+                }, (button, mouseX, mouseY) -> {
+                    setTooltip(McTextComponent.literal("https://www.patreon.com/plasmomc"), mouseX, mouseY);
                 }),
                 new Button(0, 0, 0, 20, McTextComponent.literal("Boosty"), button -> {
                     openLink("https://boosty.to/plasmo");
-                }, (button, matrices, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://boosty.to/plasmo"));
+                }, (button, mouseX, mouseY) -> {
+                    setTooltip(McTextComponent.literal("https://boosty.to/plasmo"), mouseX, mouseY);
                 })
         )));
         this.addEntry(new TextEntry(McTextComponent.translatable("gui.plasmovoice.about.copyright")));
@@ -147,8 +147,8 @@ public final class AboutTabWidget extends TabWidget {
                     20,
                     McTextComponent.literal(developer.getSocialLinkName()),
                     (button) -> openLink(developer.getSocialLinkUrl()),
-                    (button, matrices, mouseX, mouseY) -> {
-                        setTooltip(McTextComponent.literal(developer.getSocialLinkUrl()));
+                    (button, mouseX, mouseY) -> {
+                        setTooltip(McTextComponent.literal(developer.getSocialLinkUrl()), mouseX, mouseY);
                     });
         }
 

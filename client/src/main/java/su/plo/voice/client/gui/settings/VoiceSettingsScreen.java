@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings;
 
+import su.plo.lib.mod.client.gui.TooltipData;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -51,7 +52,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Getter
     private int titleWidth;
     @Setter
-    private @Nullable McTextComponent tooltip;
+    private @Nullable TooltipData tooltip;
 
     @Setter
     private boolean preventEscClose;
@@ -193,20 +194,10 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         deferredRenders.clear();
 
         if (tooltip == null && isTitleHovered(mouseX, mouseY))
-            tooltip = getVersionTooltip();
+            tooltip = getVersionTooltip(mouseX, mouseY);
 
         if (tooltip != null) {
-            screen.renderTooltipWrapped(
-                    context,
-                    getStringSplitToWidth(
-                            RenderUtil.getFormattedString(tooltip),
-                            180,
-                            true,
-                            true
-                    ).stream().map(McTextComponent::literal).collect(Collectors.toList()),
-                    mouseX,
-                    mouseY
-            );
+            screen.renderTooltipWrapped(context, tooltip);
         }
     }
 
@@ -287,10 +278,14 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         return title;
     }
 
-    private McTextComponent getVersionTooltip() {
+    private TooltipData getVersionTooltip(int mouseX, int mouseY) {
         String[] versionSplit = voiceClient.getVersion().split("\\+");
         if (versionSplit.length < 2) return null;
 
-        return McTextComponent.literal("build+" + versionSplit[1]);
+        return new TooltipData(
+                McTextComponent.literal("build+" + versionSplit[1]),
+                mouseX,
+                mouseY
+        );
     }
 }

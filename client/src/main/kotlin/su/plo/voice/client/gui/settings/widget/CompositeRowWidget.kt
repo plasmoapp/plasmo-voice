@@ -66,8 +66,8 @@ class CompositeRowWidget(
     override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
         widgets.any { it.isMouseOver(mouseX, mouseY) }
 
-    override fun setFocused(focused: Boolean) {
-        widgets.forEach { it.isFocused = focused }
+    override fun applyFocus(focused: Boolean) {
+        widgets.forEach { it.applyFocus(focused) }
     }
 
     override fun isFocused(): Boolean =

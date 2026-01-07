@@ -3,7 +3,9 @@ package su.plo.lib.mod.client.gui.screen;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 
-import java.util.*;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Optional;
 import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
@@ -11,38 +13,29 @@ public interface GuiScreenListener extends GuiWidgetListener {
 
     List<? extends GuiWidgetListener> widgets();
 
-    default Optional<GuiWidgetListener> getWidgetAt(double mouseX, double mouseY) {
-        Iterator<? extends GuiWidgetListener> iter = widgets().iterator();
-
-        GuiWidgetListener guiEventListener;
-        do {
-            if (!iter.hasNext()) return Optional.empty();
-
-            guiEventListener = iter.next();
-        } while (!guiEventListener.isMouseOver(mouseX, mouseY));
-
-        return Optional.of(guiEventListener);
+    default Optional<? extends GuiWidgetListener> getWidgetAt(double mouseX, double mouseY) {
+        return widgets()
+                .stream()
+                .filter(widget -> widget.isMouseOver(mouseX, mouseY))
+                .findFirst();
     }
 
     @Override
     default boolean mouseClicked(double mouseX, double mouseY, int button) {
-        Iterator<? extends GuiWidgetListener> iter = this.widgets().iterator();
+        for (GuiWidgetListener widget : widgets()) {
+            if (widget.mouseClicked(mouseX, mouseY, button)) {
+                setFocused(widget);
+                if (button == 0) setDragging(true);
+                return true;
+            }
+        }
 
-        GuiWidgetListener widget;
-        do {
-            if (!iter.hasNext()) return false;
-            widget = iter.next();
-        } while (!widget.mouseClicked(mouseX, mouseY, button));
-
-        setFocused(widget);
-        if (button == 0) setDragging(true);
-
-        return true;
+        return false;
     }
 
     @Override
     default boolean mouseReleased(double mouseX, double mouseY, int button) {
-        this.setDragging(false);
+        setDragging(false);
 
         if (getFocused() != null && getFocused().mouseReleased(mouseX, mouseY, button)) {
             return true;
@@ -87,58 +80,36 @@ public interface GuiScreenListener extends GuiWidgetListener {
         return getFocused() != null && getFocused().keyReleased(keyCode, typedChar, modifiers);
     }
 
-    @Override
     default boolean changeFocus(boolean lookForwards) {
-        GuiWidgetListener guiEventListener = getFocused();
+        GuiWidgetListener focused = getFocused();
+        if (focused != null && focused.changeFocus(lookForwards)) return true;
 
-        boolean bl2 = guiEventListener != null;
-        if (!bl2 || !guiEventListener.changeFocus(lookForwards)) {
-            List<? extends GuiWidgetListener> list = widgets();
-            int i = list.indexOf(guiEventListener);
-            int j;
-            if (bl2 && i >= 0) {
-                j = i + (lookForwards ? 1 : 0);
-            } else if (lookForwards) {
-                j = 0;
-            } else {
-                j = list.size();
-            }
+        List<? extends GuiWidgetListener> widgets = widgets();
+        int indexOfFocused = widgets.indexOf(focused);
 
-            ListIterator<? extends GuiWidgetListener> listIterator = list.listIterator(j);
-            BooleanSupplier var10000;
-            if (lookForwards) {
-                Objects.requireNonNull(listIterator);
-                var10000 = listIterator::hasNext;
-            } else {
-                Objects.requireNonNull(listIterator);
-                var10000 = listIterator::hasPrevious;
-            }
-
-            BooleanSupplier booleanSupplier = var10000;
-            Supplier<? extends GuiWidgetListener> var11;
-            if (lookForwards) {
-                Objects.requireNonNull(listIterator);
-                var11 = listIterator::next;
-            } else {
-                Objects.requireNonNull(listIterator);
-                var11 = listIterator::previous;
-            }
-
-            Supplier<? extends GuiWidgetListener> supplier = var11;
-
-            GuiWidgetListener guiEventListener2;
-            do {
-                if (!booleanSupplier.getAsBoolean()) {
-                    this.setFocused(null);
-                    return false;
-                }
-
-                guiEventListener2 = supplier.get();
-            } while (!guiEventListener2.changeFocus(lookForwards));
-
-            this.setFocused(guiEventListener2);
+        int nextIndex;
+        if (focused != null && indexOfFocused >= 0) {
+            nextIndex = indexOfFocused + (lookForwards ? 1 : 0);
+        } else if (lookForwards) {
+            nextIndex = 0;
+        } else {
+            nextIndex = widgets.size();
         }
-        return true;
+
+        ListIterator<? extends GuiWidgetListener> nextIterator = widgets.listIterator(nextIndex);
+        BooleanSupplier nextCheck = lookForwards ? nextIterator::hasNext : nextIterator::hasPrevious;
+        Supplier<? extends GuiWidgetListener> nextSupplier = lookForwards ? nextIterator::next : nextIterator::previous;
+
+        while (nextCheck.getAsBoolean()) {
+            GuiWidgetListener nextFocused = nextSupplier.get();
+            if (nextFocused.changeFocus(lookForwards)) {
+                setFocused(nextFocused);
+                return true;
+            }
+        }
+
+        setFocused(null);
+        return false;
     }
 
     boolean isDragging();

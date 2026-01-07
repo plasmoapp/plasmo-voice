@@ -268,12 +268,16 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 20,
                 20,
                 button -> {},
-                (button, context, mouseX, mouseY) -> {
-                    parent.setTooltip(McTextComponent.translatable(
-                            "gui.plasmovoice.activation.conflict",
-                            McTextComponent.translatable(activation.getTranslation()),
-                            conflictingNames
-                    ));
+                (button, mouseX, mouseY) -> {
+                    parent.setTooltip(
+                            McTextComponent.translatable(
+                                    "gui.plasmovoice.activation.conflict",
+                                    McTextComponent.translatable(activation.getTranslation()),
+                                    conflictingNames
+                            ),
+                            mouseX,
+                            mouseY
+                    );
                 },
                 ResourceLocationUtil.mod("textures/icons/warning.png"),
                 false
@@ -380,14 +384,18 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
                         stateEntry.set(true);
                     },
-                    (button, render, mouseX, mouseY) -> {
-                        parent.setTooltip(McTextComponent.translatable(
-                                "gui.plasmovoice.activation.toggle",
-                                activationName,
-                                McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                        McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN)
-                                ).withStyle(McTextStyle.GRAY)
-                        ));
+                    (button, mouseX, mouseY) -> {
+                        parent.setTooltip(
+                                McTextComponent.translatable(
+                                        "gui.plasmovoice.activation.toggle",
+                                        activationName,
+                                        McTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                                McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN)
+                                        ).withStyle(McTextStyle.GRAY)
+                                ),
+                                mouseX,
+                                mouseY
+                        );
                     },
                     ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
                     true
@@ -403,14 +411,18 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
                         stateEntry.set(false);
                     },
-                    (button, render, mouseX, mouseY) -> {
-                        parent.setTooltip(McTextComponent.translatable(
-                                "gui.plasmovoice.activation.toggle",
-                                activationName,
-                                McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                        McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
-                                ).withStyle(McTextStyle.GRAY)
-                        ));
+                    (button, mouseX, mouseY) -> {
+                        parent.setTooltip(
+                                McTextComponent.translatable(
+                                        "gui.plasmovoice.activation.toggle",
+                                        activationName,
+                                        McTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                                McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
+                                        ).withStyle(McTextStyle.GRAY)
+                                ),
+                                mouseX,
+                                mouseY
+                        );
                     },
                     ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
                     true

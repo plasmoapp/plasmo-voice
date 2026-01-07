@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
@@ -51,6 +52,17 @@ public final class ToggleButton extends GuiAbstractWidget {
     @Override
     public void onClick(double mouseX, double mouseY) {
         invertToggle();
+    }
+
+    @Override
+    public boolean keyPressed(int keyCode, int modifiers) {
+        if (!active || !visible) return false;
+
+        if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) return false;
+
+        playDownSound();
+        invertToggle();
+        return true;
     }
 
     @Override

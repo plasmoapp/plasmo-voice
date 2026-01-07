@@ -2,10 +2,10 @@ package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;
-import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
@@ -37,12 +37,17 @@ import static su.plo.lib.mod.client.gui.widget.GuiWidget.BACKGROUND_LOCATION;
 
 public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
+    private static final ResourceLocation MICROPHONE_ICON = ResourceLocationUtil.mod("textures/icons/microphone_menu.png");
+    private static final ResourceLocation MICROPHONE_DISABLED_ICON = ResourceLocationUtil.mod("textures/icons/microphone_menu_disabled.png");
+    private static final ResourceLocation SPEAKER_ICON = ResourceLocationUtil.mod("textures/icons/speaker_menu.png");
+    private static final ResourceLocation SPEAKER_DISABLED_ICON = ResourceLocationUtil.mod("textures/icons/speaker_menu_disabled.png");
+
     private final PlasmoVoiceClient voiceClient;
     private final VoiceSettingsScreen parent;
     private final VoiceClientConfig config;
 
-    private final List<Button> disableMicrophoneButtons = Lists.newArrayList();
-    private final List<Button> disableVoiceButtons = Lists.newArrayList();
+    private IconButton toggleMicrophoneButton;
+    private IconButton toggleVoiceButton;
     private final List<TabWidget> tabWidgets = Lists.newArrayList();
     private final List<Button> tabButtons = Lists.newArrayList();
     @Nullable
@@ -93,138 +98,70 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     public void init() {
         this.aboutTabWidget = new AboutTabWidget(parent, voiceClient, config);
 
-        disableMicrophoneButtons.clear();
-        disableVoiceButtons.clear();
-
-        // mute mic
-        IconButton disableMicrophoneHide = new IconButton(
+        this.toggleMicrophoneButton = new IconButton(
                 parent.getWidth() - 52,
                 8,
                 20,
                 20,
-                (button) -> {
-                    disableMicrophoneButtons.get(0).setVisible(false);
-                    disableMicrophoneButtons.get(1).setVisible(true);
-                    config.getVoice().getMicrophoneDisabled().set(true);
+                (button) -> config.getVoice().getMicrophoneDisabled().invert(),
+                (button, mouseX, mouseY) -> {
+                    boolean isMicrophoneDisabled = config.getVoice().getMicrophoneDisabled().value();
+
+                    McTextComponent stateText = isMicrophoneDisabled
+                            ? McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
+                            : McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN);
+
+                    parent.setTooltip(
+                            McTextComponent.translatable(
+                                    "gui.plasmovoice.toggle.microphone",
+                                    McTextComponent.translatable("gui.plasmovoice.toggle.currently", stateText)
+                                            .withStyle(McTextStyle.GRAY)
+                            ),
+                            mouseX,
+                            mouseY
+                    );
                 },
-                (button, render, mouseX, mouseY) -> {
-                    parent.setTooltip(McTextComponent.translatable(
-                            "gui.plasmovoice.toggle.microphone",
-                            McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN)
-                            ).withStyle(McTextStyle.GRAY)
-                    ));
-                },
-                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
+                () -> config.getVoice().getMicrophoneDisabled().value() ?  MICROPHONE_DISABLED_ICON : MICROPHONE_ICON,
                 true
         );
 
-        IconButton disableMicrophoneShow = new IconButton(
-                parent.getWidth() - 52,
-                8,
-                20,
-                20,
-                (button) -> {
-                    disableMicrophoneButtons.get(0).setVisible(true);
-                    disableMicrophoneButtons.get(1).setVisible(false);
-                    config.getVoice().getMicrophoneDisabled().set(false);
-
-                    if (config.getVoice().getDisabled().value()) {
-                        this.disableVoiceButtons.get(0).setVisible(true);
-                        this.disableVoiceButtons.get(1).setVisible(false);
-                        config.getVoice().getDisabled().set(false);
-                    }
-                },
-                (button, render, mouseX, mouseY) -> {
-                    parent.setTooltip(McTextComponent.translatable(
-                            "gui.plasmovoice.toggle.microphone",
-                            McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
-                            ).withStyle(McTextStyle.GRAY)
-                    ));
-                },
-                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
-                true
-        );
-
-        disableMicrophoneHide.setVisible(
-                !config.getVoice().getMicrophoneDisabled().value()
-                        && !config.getVoice().getDisabled().value()
-        );
-        disableMicrophoneShow.setVisible(
-                config.getVoice().getMicrophoneDisabled().value()
-                        || config.getVoice().getDisabled().value()
-        );
-
-        // mute speaker
-        IconButton disableVoiceHide = new IconButton(
+        this.toggleVoiceButton = new IconButton(
                 parent.getWidth() - 28,
                 8,
                 20,
                 20,
                 (button) -> {
-                    disableVoiceButtons.get(0).setVisible(false);
-                    disableVoiceButtons.get(1).setVisible(true);
-                    config.getVoice().getDisabled().set(!config.getVoice().getDisabled().value());
+                    boolean isVoiceDisabled = config.getVoice().getDisabled().value();
 
-                    voiceClient.getSourceManager().clear();
+                    config.getVoice().getDisabled().invert();
 
-                    if (!config.getVoice().getMicrophoneDisabled().value()) {
-                        disableMicrophoneButtons.get(0).setVisible(false);
-                        disableMicrophoneButtons.get(1).setVisible(true);
+                    if (isVoiceDisabled) {
+                        voiceClient.getSourceManager().clear();
                     }
                 },
-                (button, render, mouseX, mouseY) -> {
-                    parent.setTooltip(McTextComponent.translatable(
-                            "gui.plasmovoice.toggle.voice",
-                            McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN)
-                            ).withStyle(McTextStyle.GRAY)
-                    ));
+                (button, mouseX, mouseY) -> {
+                    boolean isVoiceDisabled = config.getVoice().getDisabled().value();
+
+                    McTextComponent stateText = isVoiceDisabled
+                            ? McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
+                            : McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN);
+
+                    parent.setTooltip(
+                            McTextComponent.translatable(
+                                    "gui.plasmovoice.toggle.voice",
+                                    McTextComponent.translatable("gui.plasmovoice.toggle.currently", stateText)
+                                            .withStyle(McTextStyle.GRAY)
+                            ),
+                            mouseX,
+                            mouseY
+                    );
                 },
-                ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu.png"),
+                () -> config.getVoice().getDisabled().value() ? SPEAKER_DISABLED_ICON : SPEAKER_ICON,
                 true
         );
 
-        IconButton disableVoiceShow = new IconButton(
-                parent.getWidth() - 28,
-                8,
-                20,
-                20,
-                (button) -> {
-                    disableVoiceButtons.get(0).setVisible(true);
-                    disableVoiceButtons.get(1).setVisible(false);
-                    config.getVoice().getDisabled().set(!config.getVoice().getDisabled().value());
-
-                    if (!config.getVoice().getMicrophoneDisabled().value()) {
-                        disableMicrophoneButtons.get(0).setVisible(true);
-                        disableMicrophoneButtons.get(1).setVisible(false);
-                    }
-                },
-                (button, matrices, mouseX, mouseY) -> {
-                    parent.setTooltip(McTextComponent.translatable(
-                            "gui.plasmovoice.toggle.voice",
-                            McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                    McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
-                            ).withStyle(McTextStyle.GRAY)
-                    ));
-                },
-                ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png"),
-                true
-        );
-
-        disableVoiceHide.setVisible(!config.getVoice().getDisabled().value());
-        disableVoiceShow.setVisible(config.getVoice().getDisabled().value());
-
-        disableMicrophoneButtons.add(disableMicrophoneHide);
-        disableMicrophoneButtons.add(disableMicrophoneShow);
-        parent.addWidget(disableMicrophoneHide);
-        parent.addWidget(disableMicrophoneShow);
-
-        disableVoiceButtons.add(disableVoiceHide);
-        disableVoiceButtons.add(disableVoiceShow);
-        parent.addWidget(disableVoiceHide);
-        parent.addWidget(disableVoiceShow);
+        parent.addWidget(toggleMicrophoneButton);
+        parent.addWidget(toggleVoiceButton);
 
         getActiveTab().ifPresent((widget) -> {
             widget.init();
@@ -264,13 +201,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
             button.render(context, mouseX, mouseY, delta);
         }
 
-        for (Button button : disableMicrophoneButtons) {
-            button.render(context, mouseX, mouseY, delta);
-        }
-
-        for (Button button : disableVoiceButtons) {
-            button.render(context, mouseX, mouseY, delta);
-        }
+        toggleMicrophoneButton.render(context, mouseX, mouseY, delta);
+        toggleVoiceButton.render(context, mouseX, mouseY, delta);
     }
 
     public void renderTab(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {

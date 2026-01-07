@@ -207,6 +207,15 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
                 mouseX <= getContainerX1();
     }
 
+    @Override
+    public void setFocused(@Nullable GuiWidgetListener focused) {
+        if (focused != null) {
+            scrollToEntry(focused);
+        }
+
+        super.setFocused(focused);
+    }
+
     // Class methods
 
     // entries
@@ -292,11 +301,13 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             int entryTop = y - (int) scrollTop + position.top;
             int entryBottom = y - (int) scrollTop + position.bottom;
 
-            entry.updatePosition(context, index, x, entryTop, containerWidth, mouseX, mouseY, Objects.equals(hoveredEntry, entry), delta);
+            boolean isHovered = Objects.equals(hoveredEntry, entry);
+
+            entry.updatePosition(context, index, x, entryTop, containerWidth, mouseX, mouseY, isHovered, delta);
 
             if (entryTop > y1 || entryBottom < y0) continue;
 
-            entry.render(context, index, x, entryTop, containerWidth, mouseX, mouseY, Objects.equals(hoveredEntry, entry), delta);
+            entry.render(context, index, x, entryTop, containerWidth, mouseX, mouseY, isHovered, delta);
         }
 
         context.applyScissorState(scissorState);
@@ -344,6 +355,30 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         }
 
         return Optional.empty();
+    }
+
+    protected void scrollToEntry(@NotNull GuiWidgetListener element) {
+        int entryIndex = entries.indexOf(element);
+        if (entryIndex < 0) return;
+
+        EntryPosition position = entryPositions.get(entryIndex);
+        if (isEntryVisible(position)) return;
+
+        int visibleHeight = y1 - y0;
+
+        boolean scrollingDown = position.top > scrollTop;
+        int newScrollTop = scrollingDown
+                ? position.bottom - visibleHeight
+                : position.top;
+
+        setScrollTop(newScrollTop);
+    }
+
+    private boolean isEntryVisible(@NotNull EntryPosition position) {
+        int visibleHeight = y1 - y0;
+
+        return position.top >= scrollTop
+                && position.bottom <= scrollTop + visibleHeight;
     }
 
     protected final int getMaxScroll() {

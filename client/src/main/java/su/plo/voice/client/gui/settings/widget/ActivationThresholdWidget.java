@@ -14,10 +14,7 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.InputDevice;
-import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.client.event.gui.MicrophoneTestStartedEvent;
-import su.plo.voice.client.event.gui.MicrophoneTestStoppedEvent;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
@@ -33,7 +30,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     private final DoubleConfigEntry entry;
     private final MicrophoneTestController controller;
 
-    private final List<Button> microphoneTest;
+    private final Button microphoneTest;
 
     public ActivationThresholdWidget(@NotNull VoiceSettingsScreen parent,
                                      @NotNull DoubleConfigEntry entry,
@@ -49,42 +46,34 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
         this.entry = entry;
         this.controller = controller;
 
-        IconButton testStop = new IconButton(
+        this.microphoneTest = new IconButton(
                 0,
                 8,
                 20,
                 20,
-                button -> controller.stop(),
-                Button.NO_TOOLTIP,
-                STOP_ICON,
-                true
-        );
-
-        IconButton testStart = new IconButton(
-                0,
-                20,
-                20,
-                20,
-                button -> controller.start(),
-                (button, matrices, mouseX, mouseY) -> {
-                    if (!button.isActive()) {
-                        parent.setTooltip(NOT_AVAILABLE);
+                button -> {
+                    if (controller.isActive()) {
+                        controller.stop();
+                    } else {
+                        controller.start();
                     }
                 },
-                START_ICON,
+                (button, mouseX, mouseY) -> {
+                    if (!button.isActive()) {
+                        parent.setTooltip(NOT_AVAILABLE, mouseX, mouseY);
+                    }
+                },
+                () -> controller.isActive() ? STOP_ICON : START_ICON,
                 true
         );
 
 
-        testStop.setVisible(controller.isActive());
-        testStart.setVisible(!controller.isActive());
-        testStart.setActive(
+        microphoneTest.setActive(
                 audioCapture.getDevice()
                         .map(InputDevice::isOpen)
                         .orElse(false) &&
                         devices.getOutputDevice().isPresent()
         );
-        this.microphoneTest = ImmutableList.of(testStop, testStart);
 
         updateValue();
     }
@@ -106,6 +95,11 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     }
 
     @Override
+    protected double minStep() {
+        return 1.0 / 60.0;
+    }
+
+    @Override
     public boolean isHoveredOrFocused() {
         return super.isHoveredOrFocused() && active;
     }
@@ -120,7 +114,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     }
 
     public List<Button> getButtons() {
-        return microphoneTest;
+        return ImmutableList.of(microphoneTest);
     }
 
     private void renderMicrophoneValue(@NotNull GuiRenderContext context, int sliderWidth, float delta) {
@@ -145,17 +139,5 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
         );
 
         controller.tick(delta);
-    }
-
-    @EventSubscribe
-    public void onTestStarted(@NotNull MicrophoneTestStartedEvent event) {
-        microphoneTest.get(0).setVisible(true);
-        microphoneTest.get(1).setVisible(false);
-    }
-
-    @EventSubscribe
-    public void onTestStopped(@NotNull MicrophoneTestStoppedEvent event) {
-        microphoneTest.get(0).setVisible(false);
-        microphoneTest.get(1).setVisible(true);
     }
 }

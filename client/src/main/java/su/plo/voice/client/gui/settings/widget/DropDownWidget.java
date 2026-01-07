@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -79,6 +80,31 @@ public final class DropDownWidget extends GuiAbstractWidget {
     }
 
     @Override
+    public boolean keyPressed(int keyCode, int modifiers) {
+        if (!active || !visible) return false;
+
+        if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) return false;
+
+        playDownSound();
+        switchOpen();
+        return true;
+    }
+
+    @Override
+    public boolean changeFocus(boolean lookForwards) {
+        if (open) {
+            boolean changed = list.changeFocus(lookForwards);
+            if (!changed) {
+                switchOpen();
+            }
+
+            return changed;
+        }
+
+        return super.changeFocus(lookForwards);
+    }
+
+    @Override
     public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         renderBackground(context, mouseX, mouseY);
         renderArrow(context);
@@ -103,7 +129,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
         //$$ context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
         //$$ context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
         //#else
-        context.fill(x, y, x + width, y + height, Colors.GRAY);
+        context.fill(x, y, x + width, y + height, isFocused() ? Colors.WHITE : Colors.GRAY);
         context.fill(x + 1, y + 1, x + width - 1, y + height - 1, Colors.BLACK);
         //#endif
     }

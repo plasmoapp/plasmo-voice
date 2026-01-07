@@ -50,6 +50,11 @@ public final class IntSliderWidget extends AbstractSlider implements UpdatableWi
     }
 
     @Override
+    protected double minStep() {
+        return 1.0 / (entry.getMax() - entry.getMin());
+    }
+
+    @Override
     public boolean isHoveredOrFocused() {
         return active && super.isHoveredOrFocused();
     }

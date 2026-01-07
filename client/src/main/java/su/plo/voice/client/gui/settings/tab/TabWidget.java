@@ -63,6 +63,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
     @Override
     public void init() {
         clearEntries();
+        this.setFocused(null);
         this.y0 = parent.getNavigation().getHeight();
         this.y1 = parent.getHeight();
     }
@@ -138,8 +139,8 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         return super.mouseReleased(mouseX, mouseY, button);
     }
 
-    public void setTooltip(@Nullable McTextComponent tooltip) {
-        parent.setTooltip(tooltip);
+    public void setTooltip(@Nullable McTextComponent tooltip, int mouseX, int mouseY) {
+        parent.setTooltip(tooltip, mouseX, mouseY);
     }
 
     protected void updateOptionEntries(Predicate<UpdatableWidget> predicate) {
@@ -413,7 +414,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             renderResetButton(context, index, x, y, entryWidth, mouseX, mouseY, hovered, delta);
 
             if (hovered && mouseX < element.getX()) {
-                setTooltip(tooltip);
+                setTooltip(tooltip, mouseX, mouseY);
             }
         }
 
@@ -492,8 +493,9 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
             super(text, widget, entry, tooltip, resetAction, height);
 
             this.buttons = buttons;
-            this.widgets = Lists.newArrayList(element, resetButton);
+            this.widgets = Lists.newArrayList(element);
             widgets.addAll(buttons);
+            widgets.add(resetButton);
         }
 
         @Override

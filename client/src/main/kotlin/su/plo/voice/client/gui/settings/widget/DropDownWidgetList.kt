@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.widget
 
 import net.minecraft.client.Minecraft
+import su.plo.lib.mod.client.Inputs
 import su.plo.lib.mod.client.gui.components.AbstractScrollbar
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.RenderUtil
@@ -92,6 +93,14 @@ class DropDownWidgetList(
         private val element: McTextComponent,
     ) : AbstractScrollbar<VoiceSettingsScreen>.Entry(elementHeight) {
 
+        private var focused = false
+
+        override fun changeFocus(lookForwards: Boolean): Boolean = !focused
+
+        override fun applyFocus(focused: Boolean) {
+            this.focused = focused
+        }
+
         override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
             onSelect.accept(index)
             return true
@@ -116,18 +125,22 @@ class DropDownWidgetList(
             val hasScroll = maxScroll > 0
             val entryPaddingRight = if (hasScroll) 23 else 10
 
-            if (hovered) {
+            if (hovered || focused) {
                 if (enableTooltip && RenderUtil.getTextWidth(element) > (entryWidth - entryPaddingRight) &&
                     !isMouseOverScrollbar(mouseX.toDouble(), mouseY.toDouble())
                 ) {
-                    parent.setTooltip(element)
+                    if (hovered) {
+                        parent.setTooltip(element, mouseX, mouseY)
+                    } else if (focused && Inputs.isLastInputKeyboard()) {
+                        parent.setTooltip(element, x, y + height * 2)
+                    }
                 }
                 context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, Color(0x323232))
             }
 
             context.drawOrderedString(
                     element,
-                entryWidth - entryPaddingRight,
+                    entryWidth - entryPaddingRight,
                     x + 5,
                     y + height / 2 - RenderUtil.getFontHeight() / 2 + yOffset,
                     Color(0xE0E0E0)

@@ -2,10 +2,9 @@ package su.plo.lib.mod.client.gui.screen;
 
 import com.google.common.collect.Lists;
 import net.minecraft.client.Minecraft;
+import su.plo.lib.mod.client.gui.components.AbstractScreenListener;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
-import lombok.Getter;
-import lombok.Setter;
 import net.minecraft.client.gui.screens.Screen;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +14,7 @@ import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 
 import java.util.List;
 
-public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
+public abstract class GuiScreen extends AbstractScreenListener implements GuiWidget {
 
     protected static final Minecraft minecraft = Minecraft.getInstance();
 
@@ -24,13 +23,6 @@ public abstract class GuiScreen implements GuiWidget, GuiScreenListener {
     private final List<GuiNarrationWidget> narrationWidgets = Lists.newArrayList();
 
     protected ScreenWrapper screen;
-
-    @Getter
-    @Setter
-    private GuiWidgetListener focused;
-    @Getter
-    @Setter
-    private boolean dragging;
 
     @Nullable
     private GuiNarrationWidget lastNarration;

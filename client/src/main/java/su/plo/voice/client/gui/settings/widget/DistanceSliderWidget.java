@@ -47,6 +47,11 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
         updateText();
     }
 
+    @Override
+    protected double minStep() {
+        return 1.0 / (double) activation.getDistances().size();
+    }
+
     private int calculateValue(double value) {
         double index = Mth.lerp(
                 Mth.clamp(value, 0.0D, 1.0D),

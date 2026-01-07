@@ -162,7 +162,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
         if (!isActiveHotkey()) {
             int width = RenderUtil.getTextWidth(getText());
             if (width > this.width - 16) {
-                parent.setTooltip(getText());
+                parent.setTooltip(getText(), mouseX, mouseY);
             }
         }
 

@@ -1,5 +1,6 @@
 package su.plo.lib.mod.client.gui.components;
 
+import org.lwjgl.glfw.GLFW;
 import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
@@ -27,8 +28,7 @@ public abstract class AbstractButton extends GuiAbstractWidget {
     public boolean keyPressed(int keyCode, int modifiers) {
         if (!active || !visible) return false;
 
-        // GLFW_KEY_ENTER && GLFW_KEY_SPACE && GLFW_KEY_KP_ENTER
-        if (keyCode != 257 && keyCode != 32 && keyCode != 335) return false;
+        if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) return false;
 
         playDownSound();
         onPress();

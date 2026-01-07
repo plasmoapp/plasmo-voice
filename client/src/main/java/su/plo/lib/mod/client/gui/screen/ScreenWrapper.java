@@ -5,6 +5,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.Inputs;
+import su.plo.lib.mod.client.gui.TooltipData;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
@@ -268,9 +269,7 @@ public final class ScreenWrapper
         if (keyCode == GLFW.GLFW_KEY_TAB) {
             boolean shiftKeyDown = Inputs.hasShiftDown();
 
-            if (!screen.changeFocus(shiftKeyDown)) {
-                screen.changeFocus(shiftKeyDown);
-            }
+            return screen.changeFocus(!shiftKeyDown);
         }
 
         return false;
@@ -311,25 +310,23 @@ public final class ScreenWrapper
 
     public void renderTooltipWrapped(
             @NotNull GuiRenderContext context,
-            @NotNull List<McTextComponent> tooltip,
-            int mouseX,
-            int mouseY
+            @NotNull TooltipData tooltip
     ) {
         //#if MC>=12106
         //$$ currentContext.setTooltipForNextFrame(
         //$$         Language.getInstance().getVisualOrder(
         //$$                 new ArrayList<>(
-        //$$                         RenderUtil.getTextConverter().convert(tooltip)
+        //$$                         RenderUtil.getTextConverter().convert(tooltip.getText())
         //$$                 )
         //$$         ),
-        //$$         mouseX,
-        //$$         mouseY
+        //$$         tooltip.getX(),
+        //$$         tooltip.getY()
         //$$ );
         //#elseif MC>=12000
         //$$ setTooltipForNextRenderPass(
         //$$         Language.getInstance().getVisualOrder(
         //$$                 new ArrayList<>(
-        //$$                         RenderUtil.getTextConverter().convert(tooltip)
+        //$$                         RenderUtil.getTextConverter().convert(tooltip.getText())
         //$$                 )
         //$$         )
         //$$ );
@@ -337,10 +334,10 @@ public final class ScreenWrapper
         renderComponentTooltip(
                 context.getStack(),
                 new ArrayList<>(
-                        RenderUtil.getTextConverter().convert(tooltip)
+                        RenderUtil.getTextConverter().convert(tooltip.getText())
                 ),
-                mouseX,
-                mouseY
+                tooltip.getX(),
+                tooltip.getY()
         );
         //#endif
     }

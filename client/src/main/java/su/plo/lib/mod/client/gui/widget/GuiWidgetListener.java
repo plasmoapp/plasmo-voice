@@ -34,6 +34,9 @@ public interface GuiWidgetListener {
         return false;
     }
 
+    default void applyFocus(boolean focused) {
+    }
+
     default boolean isMouseOver(double mouseX, double mouseY) {
         return false;
     }
