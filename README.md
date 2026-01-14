@@ -126,7 +126,7 @@ Universal add-ons work on Fabric, Forge, NeoForge and Paper.
 |----------------------------------------------------------------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
 | [![](https://i.imgur.com/NjGmgGA.png)](https://modrinth.com/mod/pv-addon-soundphysics) | [pv-addon-soundphysics](https://modrinth.com/mod/pv-addon-soundphysics) | Adds compatibility with Sound Physics Remastered. Plasmo Voice is affected by sound physics                         |
 | [![](https://i.imgur.com/VTndchu.png)](https://modrinth.com/mod/pv-addon-replaymod)    | [pv-addon-replaymod](https://modrinth.com/mod/pv-addon-replaymod)       | Fork of Replay Voice Chat that works with Plasmo Voice and allows recording voice chat with ReplayMod               |
-| [![](https://i.imgur.com/3Q45TKO.png)](https://modrinth.com/mod/talkingheads)          | [Talking Heads](https://modrinth.com/mod/talkingheads)                  | Scales player heads when they’re talking. Third-party add-on. Issues should be reported on the Talking Heads GitHub |
+| [![](https://i.imgur.com/8yjhH8e.png)](https://modrinth.com/mod/talkingheads)          | [Talking Heads](https://modrinth.com/mod/talkingheads)                  | Scales player heads when they’re talking. Third-party add-on. Issues should be reported on the Talking Heads GitHub |
 
 ## Download
 
