@@ -35,7 +35,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
                     try {
                         connection.handlePacket(packet.getPacket());
-                    } catch (IOException e) {
+                    } catch (Throwable e) {
                         BaseVoice.DEBUG_LOGGER.log("Failed to decode packet", e);
                     }
 

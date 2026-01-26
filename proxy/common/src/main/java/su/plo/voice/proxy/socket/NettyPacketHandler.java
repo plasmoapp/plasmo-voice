@@ -122,8 +122,6 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 connection.handlePacket(nettyPacket.getPacketUdp().getPacket());
             } catch (CancelForwardingException ignored) {
                 return true;
-            } catch (IOException e) {
-                BaseVoice.DEBUG_LOGGER.log("Failed to decode packet", e);
             } catch (ClassCastException e) {
                 BaseVoice.DEBUG_LOGGER.log(
                         "Packet {} was received from remote server: {}; connection remote server: {}",
@@ -135,6 +133,8 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 if (BaseVoice.DEBUG_LOGGER.enabled()) {
                     e.printStackTrace();
                 }
+            } catch (Throwable e) {
+                BaseVoice.DEBUG_LOGGER.log("Failed to decode packet", e);
             }
         } else {
             receiver = connection.getRemoteAddress();

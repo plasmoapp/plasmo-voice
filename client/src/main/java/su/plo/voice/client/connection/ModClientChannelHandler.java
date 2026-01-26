@@ -2,6 +2,10 @@ package su.plo.voice.client.connection;
 
 import com.google.common.io.ByteStreams;
 import io.netty.buffer.ByteBufUtil;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.networking.v1.PacketSender;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
 import org.jetbrains.annotations.NotNull;
@@ -11,35 +15,6 @@ import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
-
-//#if FABRIC
-
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.multiplayer.ClientPacketListener;
-
-import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-
-//#if MC>=12005
-//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
-//#else
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-//#endif
-
-//#elseif FORGE
-
-//#if MC<12100
-//$$ import net.minecraftforge.network.NetworkDirection;
-//#endif
-
-//$$ import net.minecraftforge.network.NetworkEvent;
-
-//#elseif NEOFORGE
-
-//$$ import net.neoforged.neoforge.network.handling.IPayloadContext;
-//$$ import net.neoforged.neoforge.network.handling.IPayloadHandler;
-//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
-
-//#endif
 
 import java.io.IOException;
 import java.util.Optional;
@@ -156,8 +131,8 @@ public final class ModClientChannelHandler
         try {
             PacketTcpCodec.decode(ByteStreams.newDataInput(data))
                     .ifPresent(packet -> receive(connection, packet));
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            BaseVoice.LOGGER.warn("Failed to decode packet", e);
         }
     }
 }

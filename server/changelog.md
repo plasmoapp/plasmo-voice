@@ -1,0 +1,1 @@
+- Fixed unhandled exception causing server crash. ([#505](https://github.com/plasmoapp/plasmo-voice/issues/505))

@@ -58,8 +58,8 @@ public final class ServerChannelHandler implements McServerChannelHandler {
 
                         channel.handlePacket(packet);
                     });
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Throwable e) {
+            BaseVoice.DEBUG_LOGGER.warn("Failed to decode packet", e);
         }
     }
 
