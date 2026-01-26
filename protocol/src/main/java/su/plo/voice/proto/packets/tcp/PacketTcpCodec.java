@@ -3,7 +3,9 @@ package su.plo.voice.proto.packets.tcp;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proto.packets.PacketHandler;
 import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket;
@@ -44,38 +46,38 @@ public class PacketTcpCodec {
     static {
         int lastPacketId = 0x0;
 
-        PACKETS.register(++lastPacketId, ConnectionPacket.class, ConnectionPacket::new);
-        PACKETS.register(++lastPacketId, PlayerInfoRequestPacket.class, PlayerInfoRequestPacket::new);
-        PACKETS.register(++lastPacketId, ConfigPacket.class, ConfigPacket::new);
-        PACKETS.register(++lastPacketId, ConfigPlayerInfoPacket.class, ConfigPlayerInfoPacket::new);
-        PACKETS.register(++lastPacketId, LanguageRequestPacket.class, LanguageRequestPacket::new);
-        PACKETS.register(++lastPacketId, LanguagePacket.class, LanguagePacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, ConnectionPacket.class, ConnectionPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, PlayerInfoRequestPacket.class, PlayerInfoRequestPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, ConfigPacket.class, ConfigPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, ConfigPlayerInfoPacket.class, ConfigPlayerInfoPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.SERVER, LanguageRequestPacket.class, LanguageRequestPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, LanguagePacket.class, LanguagePacket::new);
 
-        PACKETS.register(++lastPacketId, PlayerListPacket.class, PlayerListPacket::new);
-        PACKETS.register(++lastPacketId, PlayerInfoUpdatePacket.class, PlayerInfoUpdatePacket::new);
-        PACKETS.register(++lastPacketId, PlayerDisconnectPacket.class, PlayerDisconnectPacket::new);
-        PACKETS.register(++lastPacketId, PlayerInfoPacket.class, PlayerInfoPacket::new);
-        PACKETS.register(++lastPacketId, PlayerStatePacket.class, PlayerStatePacket::new);
-        PACKETS.register(++lastPacketId, PlayerAudioEndPacket.class, PlayerAudioEndPacket::new);
-        PACKETS.register(++lastPacketId, PlayerActivationDistancesPacket.class, PlayerActivationDistancesPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, PlayerListPacket.class, PlayerListPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, PlayerInfoUpdatePacket.class, PlayerInfoUpdatePacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, PlayerDisconnectPacket.class, PlayerDisconnectPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.SERVER, PlayerInfoPacket.class, PlayerInfoPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.SERVER, PlayerStatePacket.class, PlayerStatePacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.SERVER, PlayerAudioEndPacket.class, PlayerAudioEndPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.SERVER, PlayerActivationDistancesPacket.class, PlayerActivationDistancesPacket::new);
 
-        PACKETS.register(++lastPacketId, DistanceVisualizePacket.class, DistanceVisualizePacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, DistanceVisualizePacket.class, DistanceVisualizePacket::new);
 
-        PACKETS.register(++lastPacketId, SourceInfoRequestPacket.class, SourceInfoRequestPacket::new);
-        PACKETS.register(++lastPacketId, SourceInfoPacket.class, SourceInfoPacket::new);
-        PACKETS.register(++lastPacketId, SelfSourceInfoPacket.class, SelfSourceInfoPacket::new);
-        PACKETS.register(++lastPacketId, SourceAudioEndPacket.class, SourceAudioEndPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.SERVER, SourceInfoRequestPacket.class, SourceInfoRequestPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceInfoPacket.class, SourceInfoPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SelfSourceInfoPacket.class, SelfSourceInfoPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceAudioEndPacket.class, SourceAudioEndPacket::new);
 
-        PACKETS.register(++lastPacketId, ActivationRegisterPacket.class, ActivationRegisterPacket::new);
-        PACKETS.register(++lastPacketId, ActivationUnregisterPacket.class, ActivationUnregisterPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, ActivationRegisterPacket.class, ActivationRegisterPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, ActivationUnregisterPacket.class, ActivationUnregisterPacket::new);
 
-        PACKETS.register(++lastPacketId, SourceLineRegisterPacket.class, SourceLineRegisterPacket::new);
-        PACKETS.register(++lastPacketId, SourceLineUnregisterPacket.class, SourceLineUnregisterPacket::new);
-        PACKETS.register(++lastPacketId, SourceLinePlayerAddPacket.class, SourceLinePlayerAddPacket::new);
-        PACKETS.register(++lastPacketId, SourceLinePlayerRemovePacket.class, SourceLinePlayerRemovePacket::new);
-        PACKETS.register(++lastPacketId, SourceLinePlayersListPacket.class, SourceLinePlayersListPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceLineRegisterPacket.class, SourceLineRegisterPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceLineUnregisterPacket.class, SourceLineUnregisterPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceLinePlayerAddPacket.class, SourceLinePlayerAddPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceLinePlayerRemovePacket.class, SourceLinePlayerRemovePacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceLinePlayersListPacket.class, SourceLinePlayersListPacket::new);
 
-        PACKETS.register(++lastPacketId, AnimatedActionBarPacket.class, AnimatedActionBarPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, AnimatedActionBarPacket.class, AnimatedActionBarPacket::new);
     }
 
     public static byte[] encode(Packet<?> packet) {
@@ -93,7 +95,14 @@ public class PacketTcpCodec {
     }
 
     public static <T extends PacketHandler> Optional<Packet<T>> decode(ByteArrayDataInput buf) throws IOException {
-        Packet<T> packet = (Packet<T>) PACKETS.byType(buf.readByte());
+        return decode(buf, PacketDirection.ANY);
+    }
+
+    public static <T extends PacketHandler> Optional<Packet<T>> decode(
+            @NotNull ByteArrayDataInput buf,
+            @NotNull PacketDirection direction
+    ) throws IOException {
+        Packet<T> packet = (Packet<T>) PACKETS.byType(buf.readByte(), direction);
         if (packet != null) {
             packet.read(buf);
             return Optional.of(packet);

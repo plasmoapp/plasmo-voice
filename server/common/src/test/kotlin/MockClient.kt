@@ -17,6 +17,7 @@ import su.plo.voice.BaseVoice
 import su.plo.voice.BuildConstants
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.packets.Packet
+import su.plo.voice.proto.packets.PacketDirection
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationRegisterPacket
 import su.plo.voice.proto.packets.tcp.clientbound.ActivationUnregisterPacket
@@ -119,7 +120,7 @@ class NettyClient(
                 @Throws(Exception::class)
                 override fun initChannel(ch: NioDatagramChannel) {
                     val pipeline = ch.pipeline()
-                    pipeline.addLast("decoder", NettyPacketUdpDecoder())
+                    pipeline.addLast("decoder", NettyPacketUdpDecoder(PacketDirection.CLIENT))
 
                     pipeline.addLast("handler", this@NettyClient)
                     pipeline.addLast("exception_handler", NettyExceptionHandler())

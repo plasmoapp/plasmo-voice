@@ -24,6 +24,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -70,7 +71,7 @@ public final class NettyUdpClient implements UdpClient {
             protected void initChannel(@NotNull NioDatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
-                pipeline.addLast("decoder", new NettyPacketUdpDecoder());
+                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.CLIENT));
 
                 pipeline.addLast("handler", handler);
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());

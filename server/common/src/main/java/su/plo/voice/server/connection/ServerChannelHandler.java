@@ -13,6 +13,7 @@ import su.plo.slib.api.server.entity.player.McServerPlayer;
 import su.plo.slib.api.server.event.player.McPlayerRegisterChannelsEvent;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
+import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
 
@@ -46,7 +47,7 @@ public final class ServerChannelHandler implements McServerChannelHandler {
     @Override
     public void receive(@NotNull McServerPlayer serverPlayer, @NotNull byte[] bytes) {
         try {
-            PacketTcpCodec.decode(ByteStreams.newDataInput(bytes))
+            PacketTcpCodec.decode(ByteStreams.newDataInput(bytes), PacketDirection.SERVER)
                     .ifPresent(packet -> {
                         VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(serverPlayer.getInstance());
                         cancelPlayerCheckFuture(voicePlayer.getInstance().getUuid());

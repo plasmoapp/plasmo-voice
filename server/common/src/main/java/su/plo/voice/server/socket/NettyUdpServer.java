@@ -18,6 +18,7 @@ import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.socket.UdpServer;
+import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -65,7 +66,7 @@ public final class NettyUdpServer implements UdpServer {
             protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
-                pipeline.addLast("decoder", new NettyPacketUdpDecoder());
+                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
                 pipeline.addLast("handler", new NettyPacketHandler(voiceServer));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }

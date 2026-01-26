@@ -3,7 +3,10 @@ package su.plo.voice.proto.packets.udp;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proto.packets.PacketRegistry;
 import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.packets.udp.bothbound.CustomPacket;
@@ -25,11 +28,11 @@ public class PacketUdpCodec {
     static {
         int lastPacketId = 0x0;
 
-        PACKETS.register(++lastPacketId, PingPacket.class, PingPacket::new);
-        PACKETS.register(++lastPacketId, PlayerAudioPacket.class, PlayerAudioPacket::new);
-        PACKETS.register(++lastPacketId, SourceAudioPacket.class, SourceAudioPacket::new);
-        PACKETS.register(++lastPacketId, SelfAudioInfoPacket.class, SelfAudioInfoPacket::new);
-        PACKETS.register(0x100, CustomPacket.class, CustomPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.ANY, PingPacket.class, PingPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.SERVER, PlayerAudioPacket.class, PlayerAudioPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SourceAudioPacket.class, SourceAudioPacket::new);
+        PACKETS.register(++lastPacketId, PacketDirection.CLIENT, SelfAudioInfoPacket.class, SelfAudioInfoPacket::new);
+        PACKETS.register(0x100, PacketDirection.ANY, CustomPacket.class, CustomPacket::new);
     }
 
     public static byte[] replaceSecret(byte[] data, UUID secret) {
@@ -61,13 +64,20 @@ public class PacketUdpCodec {
     }
 
     public static Optional<PacketUdp> decode(ByteArrayDataInput in) throws IOException {
+        return decode(in, PacketDirection.ANY);
+    }
+
+    public static Optional<PacketUdp> decode(
+            @NotNull ByteArrayDataInput in,
+            @NotNull PacketDirection direction
+    ) throws IOException {
         try {
             if (in.readInt() != MAGIC_NUMBER) return Optional.empty(); // bad packet
         } catch (Exception e) {
             return Optional.empty();
         }
 
-        Packet<?> packet = PACKETS.byType(in.readByte());
+        Packet<?> packet = PACKETS.byType(in.readByte(), direction);
         if (packet != null) {
             UUID secret = PacketUtil.readUUID(in);
             long timestamp = in.readLong();

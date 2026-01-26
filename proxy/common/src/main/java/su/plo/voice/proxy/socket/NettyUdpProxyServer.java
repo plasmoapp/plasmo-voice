@@ -15,6 +15,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
 import su.plo.voice.api.proxy.socket.UdpProxyServer;
+import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -59,7 +60,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
-                pipeline.addLast("decoder", new NettyPacketUdpDecoder());
+                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.ANY));
                 pipeline.addLast("handler", new NettyPacketHandler(voiceProxy));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }

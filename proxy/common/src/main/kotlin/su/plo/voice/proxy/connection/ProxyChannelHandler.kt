@@ -9,6 +9,7 @@ import su.plo.slib.api.proxy.connection.McProxyConnection
 import su.plo.slib.api.proxy.player.McProxyPlayer
 import su.plo.voice.api.proxy.event.connection.TcpPacketReceivedEvent
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer
+import su.plo.voice.proto.packets.PacketDirection
 import su.plo.voice.proto.packets.PacketHandler
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec
 import su.plo.voice.proxy.BaseVoiceProxy
@@ -27,9 +28,12 @@ class ProxyChannelHandler(
 
     override fun receive(source: McProxyConnection, destination: McProxyConnection, data: ByteArray): Boolean {
         try {
-            val packet = PacketTcpCodec.decode<PacketHandler>(ByteStreams.newDataInput(data)).orElse(null) ?: return false
+            if (source is McProxyPlayer) {
+                val packet = PacketTcpCodec.decode<PacketHandler>(
+                    ByteStreams.newDataInput(data),
+                    PacketDirection.SERVER,
+                ).orElse(null) ?: return false
 
-            val handler = if (source is McProxyPlayer) {
                 val voicePlayer: VoiceProxyPlayer = voiceProxy.playerManager.getPlayerByInstance(source.getInstance())
 
                 val playerToServerHandler = playerToServerChannels.computeIfAbsent(source.uuid) {
@@ -46,8 +50,17 @@ class ProxyChannelHandler(
                 val event = TcpPacketReceivedEvent(voicePlayer, packet)
                 if (!voiceProxy.eventBus.fire(event)) return true
 
-                playerToServerHandler
+                try {
+                    packet.handle(playerToServerHandler)
+                } catch (_: CancelForwardingException) {
+                    return true
+                }
             } else if (destination is McProxyPlayer) {
+                val packet = PacketTcpCodec.decode<PacketHandler>(
+                    ByteStreams.newDataInput(data),
+                    PacketDirection.CLIENT,
+                ).orElse(null) ?: return false
+
                 val voicePlayer = voiceProxy.playerManager.getPlayerByInstance(destination.getInstance())
 
                 val serverToPlayerHandler = serverToPlayerChannels.computeIfAbsent(destination.uuid) {
@@ -61,13 +74,11 @@ class ProxyChannelHandler(
                     serverToPlayerHandler.player = voicePlayer
                 }
 
-                serverToPlayerHandler
-            } else return false
-
-            try {
-                packet.handle(handler)
-            } catch (ignored: CancelForwardingException) {
-                return true
+                try {
+                    packet.handle(serverToPlayerHandler)
+                } catch (_: CancelForwardingException) {
+                    return true
+                }
             }
         } catch (e: Exception) {
             e.printStackTrace()
