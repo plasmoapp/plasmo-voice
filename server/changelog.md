@@ -1,1 +1,2 @@
-- Fixed unhandled exception causing server crash. ([#505](https://github.com/plasmoapp/plasmo-voice/issues/505))
+- Fixed "Incorrect behavior on resuming AudioSender". ([#501](https://github.com/plasmoapp/plasmo-voice/issues/501))
+- Fixed unhandled packet decode exception spam. ([#505](https://github.com/plasmoapp/plasmo-voice/issues/505))
