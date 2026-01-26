@@ -9,6 +9,8 @@ import lombok.ToString;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.PacketSerializable;
 
+import java.io.IOException;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
@@ -22,7 +24,7 @@ public final class CaptureInfo implements PacketSerializable {
     private CodecInfo encoderInfo;
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         this.sampleRate = in.readInt();
         this.mtuSize = in.readInt();
         if (in.readBoolean()) {

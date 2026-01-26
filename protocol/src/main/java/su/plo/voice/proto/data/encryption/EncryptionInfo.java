@@ -28,7 +28,7 @@ public final class EncryptionInfo implements PacketSerializable {
     public void deserialize(ByteArrayDataInput in) throws IOException {
         this.algorithm = in.readUTF();
 
-        int length = PacketUtil.readSafeInt(in, 1, Integer.MAX_VALUE);
+        int length = PacketUtil.readSafeInt(in, 1, 2048);
         byte[] data = new byte[length];
         in.readFully(data);
         this.data = data;

@@ -20,8 +20,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 @ToString
 public final class LanguagePacket implements Packet<ClientPacketTcpHandler> {
 
-    private final static int MAX_SIZE = 32767;
-
     @Getter
     private String languageName;
     @Getter
@@ -31,7 +29,7 @@ public final class LanguagePacket implements Packet<ClientPacketTcpHandler> {
     public void read(ByteArrayDataInput in) throws IOException {
         this.languageName = in.readUTF();
         this.language = Maps.newHashMap();
-        int size = PacketUtil.readSafeInt(in, 0, MAX_SIZE);
+        int size = PacketUtil.readSafeInt(in, 0, Short.MAX_VALUE);
         for (int i = 0; i < size; i++) {
             String key = in.readUTF();
             String value = in.readUTF();
@@ -42,7 +40,7 @@ public final class LanguagePacket implements Packet<ClientPacketTcpHandler> {
     @Override
     public void write(ByteArrayDataOutput out) throws IOException {
         out.writeUTF(checkNotNull(languageName));
-        if (language.size() > MAX_SIZE) {
+        if (language.size() > Short.MAX_VALUE) {
             throw new IllegalArgumentException("Language size is too big");
         }
 

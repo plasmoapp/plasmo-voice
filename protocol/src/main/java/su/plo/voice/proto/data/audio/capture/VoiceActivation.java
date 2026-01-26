@@ -14,6 +14,7 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.packets.PacketSerializable;
 import su.plo.voice.proto.packets.PacketUtil;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -100,12 +101,12 @@ public class VoiceActivation implements Activation, PacketSerializable {
     }
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         this.name = in.readUTF();
         this.translation = in.readUTF();
         this.icon = in.readUTF();
         this.id = VoiceActivation.generateId(name);
-        this.distances = PacketUtil.readIntList(in);
+        this.distances = PacketUtil.readIntList(in, 64);
         this.defaultDistance = validateDefaultDistance(distances, in.readInt());
         this.proximity = in.readBoolean();
         this.transitive = in.readBoolean();

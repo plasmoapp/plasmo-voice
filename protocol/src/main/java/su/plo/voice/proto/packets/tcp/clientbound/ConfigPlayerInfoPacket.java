@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -27,7 +28,7 @@ public class ConfigPlayerInfoPacket implements Packet<ClientPacketTcpHandler> {
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
-        int size = in.readInt();
+        int size = PacketUtil.readSafeInt(in, 0, Byte.MAX_VALUE);
         for (int i = 0; i < size; i++) {
             String key = in.readUTF();
             boolean value = in.readBoolean();

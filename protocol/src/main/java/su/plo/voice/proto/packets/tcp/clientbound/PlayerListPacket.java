@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public final class PlayerListPacket implements Packet<ClientPacketTcpHandler> {
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
-        int size = in.readInt();
+        int size = PacketUtil.readSafeInt(in, 0, Short.MAX_VALUE);
         this.players = new ArrayList<>(size);
 
         for (int i = 0; i < size; i++) {

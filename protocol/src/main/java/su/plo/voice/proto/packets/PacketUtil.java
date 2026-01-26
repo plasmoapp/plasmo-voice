@@ -67,8 +67,12 @@ public class PacketUtil {
         list.forEach(out::writeInt);
     }
 
-    public static List<Integer> readIntList(ByteArrayDataInput in) {
-        int size = in.readInt();
+    public static List<Integer> readIntList(ByteArrayDataInput in) throws IOException {
+        return readIntList(in, Short.MAX_VALUE);
+    }
+
+    public static List<Integer> readIntList(ByteArrayDataInput in, int maxSize) throws IOException {
+        int size = readSafeInt(in, 0, maxSize);
         List<Integer> list = new ArrayList<>(size);
         for (int i = 0; i < size; i++) list.add(in.readInt());
         return list;

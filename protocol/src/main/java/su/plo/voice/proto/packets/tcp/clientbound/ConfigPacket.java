@@ -79,7 +79,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
 
         // source lines
         this.sourceLines = Sets.newHashSet();
-        int size = in.readInt();
+        int size = PacketUtil.readSafeInt(in, 0, Byte.MAX_VALUE);
         for (int i = 0; i < size; i++) {
             VoiceSourceLine sourceLine = new VoiceSourceLine();
             sourceLine.deserialize(in);
@@ -88,7 +88,7 @@ public final class ConfigPacket extends ConfigPlayerInfoPacket {
 
         // activations
         this.activations = Sets.newHashSet();
-        size = in.readInt();
+        size = PacketUtil.readSafeInt(in, 0, Byte.MAX_VALUE);
         for (int i = 0; i < size; i++) {
             VoiceActivation activation = new VoiceActivation();
             activation.deserialize(in);

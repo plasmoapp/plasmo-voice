@@ -11,6 +11,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.slib.api.entity.player.McGameProfile;
 import su.plo.voice.proto.packets.PacketSerializable;
+import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.serializer.McGameProfileSerializer;
 
 import java.io.IOException;
@@ -73,7 +74,7 @@ public class VoiceSourceLine implements SourceLine, PacketSerializable {
         this.weight = in.readInt();
         if (in.readBoolean()) {
             this.players = new HashSet<>();
-            int size = in.readInt();
+            int size = PacketUtil.readSafeInt(in, 0, Short.MAX_VALUE);
             for (int i = 0; i < size; i++) {
                 players.add(McGameProfileSerializer.INSTANCE.deserialize(in));
             }

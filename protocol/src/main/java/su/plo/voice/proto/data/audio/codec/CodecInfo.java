@@ -8,7 +8,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import su.plo.voice.proto.packets.PacketSerializable;
+import su.plo.voice.proto.packets.PacketUtil;
 
+import java.io.IOException;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -24,11 +26,11 @@ public class CodecInfo implements PacketSerializable {
     protected Map<String, String> params;
 
     @Override
-    public void deserialize(ByteArrayDataInput in) {
+    public void deserialize(ByteArrayDataInput in) throws IOException {
         this.name = in.readUTF();
 
         this.params = Maps.newHashMap();
-        int size = in.readInt();
+        int size = PacketUtil.readSafeInt(in, 0, 128);
         for (int i = 0; i < size; i++) {
             params.put(in.readUTF(), in.readUTF());
         }

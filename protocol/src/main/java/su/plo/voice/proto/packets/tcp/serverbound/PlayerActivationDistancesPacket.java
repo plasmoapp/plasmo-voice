@@ -27,7 +27,7 @@ public final class PlayerActivationDistancesPacket implements Packet<ServerPacke
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
         this.distanceByActivationId = Maps.newHashMap();
-        int size = in.readInt();
+        int size = PacketUtil.readSafeInt(in, 0, Byte.MAX_VALUE);
         for (int i = 0; i < size; i++) {
             distanceByActivationId.put(PacketUtil.readUUID(in), in.readInt());
         }
