@@ -4,7 +4,6 @@ import net.minecraft.client.Minecraft
 import su.plo.voice.api.client.config.hotkey.Hotkey
 
 //#if MC>=12109
-//$$ import net.minecraft.client.Minecraft
 //$$ import net.minecraft.client.input.InputQuirks
 //$$ import org.lwjgl.glfw.GLFW
 //#else
