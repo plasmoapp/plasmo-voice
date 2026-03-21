@@ -1,0 +1,28 @@
+net.minecraft.client.gui.GuiGraphicsExtractor net.minecraft.client.gui.GuiGraphics
+
+net.minecraft.client.gui.GuiGraphicsExtractor text() drawString()
+
+net.minecraft.client.renderer.state.level.CameraRenderState net.minecraft.client.renderer.state.CameraRenderState
+net.minecraft.client.renderer.state.level.LevelRenderState net.minecraft.client.renderer.state.LevelRenderState
+
+net.minecraft.client.gui.Gui extractRenderState() render()
+
+
+net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper
+net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper registerKeyMapping() registerKeyBinding()
+
+net.minecraft.client.gui.screens.Screen extractRenderState() render()
+net.minecraft.client.gui.screens.Screen extractBackground() renderBackground()
+
+net.minecraft.client.Minecraft setScreen() setScreen()
+
+net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking serverboundPlay() playC2S()
+net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking createServerboundPacket() createC2SPacket()
+net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking playS2C() clientboundPlay()
+net.minecraft.client.renderer.LevelRenderer getLightCoords() getLightColor()
+
+net.minecraft.client.renderer.entity.EntityRenderer submit() submit()
+
+net.minecraft.client.renderer.entity.EntityRenderer submit() submit()
+
+net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement extractRenderState() render()

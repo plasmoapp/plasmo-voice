@@ -7,7 +7,6 @@ import su.plo.lib.mod.client.Inputs;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.slib.mod.logging.Log4jLogger;
 import su.plo.voice.client.gui.settings.VoiceScreens;
-import lombok.Getter;
 import net.minecraft.client.KeyMapping;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -32,10 +31,16 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientLifecycleEvents;
 import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
 //#if MC<12109
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
+//#endif
+
+//#if MC>=1.21.6
+//$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+//$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+//#else
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //#endif
 
 //#if MC>=12005
@@ -115,11 +120,6 @@ public final class ModVoiceClient extends BaseVoiceClient
             //#endif
     );
 
-    @Getter
-    private final ModHudRenderer hudRenderer;
-    @Getter
-    private final ModLevelRenderer levelRenderer;
-
     private final ModClientChannelHandler handler = new ModClientChannelHandler(this);
 
     public ModVoiceClient() {
@@ -139,9 +139,6 @@ public final class ModVoiceClient extends BaseVoiceClient
 
         // JavaX input
         getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
-
-        this.hudRenderer = new ModHudRenderer();
-        this.levelRenderer = new ModLevelRenderer(this);
 
         INSTANCE = this;
         RenderUtil.getTextConverter().setLanguageSupplier(createLanguageSupplier());
@@ -177,10 +174,20 @@ public final class ModVoiceClient extends BaseVoiceClient
         super.onInitialize();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());
-        HudRenderCallback.EVENT.register(hudRenderer::render);
+
+        //#if MC>=1.21.6
+        //$$ HudElementRegistry.attachElementAfter(
+        //$$         VanillaHudElements.CHAT,
+        //$$         ModHudRenderer.KEY,
+        //$$         new ModHudRenderer()
+        //$$ );
+        //#else
+        HudRenderCallback.EVENT.register(ModHudRenderer::render);
+        //#endif
+
         //#if MC<12109
         WorldRenderEvents.LAST.register(
-                (context) -> levelRenderer.render(
+                (context) -> ModLevelRenderer.render(
                         context.world(),
                         context.matrixStack(),
                         //#if MC>=12100
@@ -233,9 +240,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#endif
     //$$
     //#if MC>=12000
-    //$$     hudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
+    //$$     ModHudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
     //#else
-    //$$     hudRenderer.render(event.getPoseStack(), event.getPartialTick());
+    //$$     ModHudRenderer.render(event.getPoseStack(), event.getPartialTick());
     //#endif
     //$$ }
 
@@ -253,7 +260,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
     //$$             Minecraft.getInstance().level == null
     //$$     ) return;
-    //$$     levelRenderer.render(
+    //$$     ModLevelRenderer.render(
     //$$             Minecraft.getInstance().level,
     //#if MC>=12100
     //$$             new PoseStack(),
@@ -275,7 +282,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#else
     //$$ @SubscribeEvent
     //$$ public void onWorldRender(RenderLevelLastEvent event) {
-    //$$     levelRenderer.render(
+    //$$     ModLevelRenderer.render(
     //$$             Minecraft.getInstance().level,
     //$$             event.getPoseStack(),
     //$$             event.getPartialTick()
@@ -301,7 +308,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ public void onOverlayRender(@NotNull RenderGuiLayerEvent.Post event) {
     //$$     if (!event.getName().equals(VanillaGuiLayers.CHAT)) return;
     //$$
-    //$$     hudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
+    //$$     ModHudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
     //$$ }
     //$$
     //$$ @SubscribeEvent
@@ -320,7 +327,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$
     //$$     if (Minecraft.getInstance().level == null) return;
     //$$
-    //$$     levelRenderer.render(
+    //$$     ModLevelRenderer.render(
     //$$            Minecraft.getInstance().level,
     //$$            event.getPoseStack(),
     //#if MC>=12100

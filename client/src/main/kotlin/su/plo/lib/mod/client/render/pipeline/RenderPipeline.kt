@@ -22,6 +22,13 @@ import net.minecraft.client.renderer.GameRenderer
 //#if MC>=12105
 //$$ import com.mojang.blaze3d.shaders.UniformType
 //$$ import com.mojang.blaze3d.vertex.DefaultVertexFormat
+
+//#if MC>=260100
+//$$ import com.mojang.blaze3d.pipeline.ColorTargetState
+//$$ import com.mojang.blaze3d.pipeline.DepthStencilState
+//$$ import java.util.Optional
+//#endif
+
 //#elseif MC>=11700
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -225,6 +232,18 @@ data class RenderPipeline(
             //$$     .withFragmentShader(fragmentShader)
             //$$     .withVertexFormat(vertexFormat, vertexFormatMode.toMc())
             //$$
+            //#if MC>=260100
+            //$$     .apply {
+            //$$         if (depthTestFunc != AlphaFunc.ALWAYS) {
+            //$$             withDepthStencilState(DepthStencilState(depthTestFunc.mcCompareOp(), depthMask, 0f, 0f))
+            //$$         }
+            //$$     }
+            //$$     .withCull(cull)
+            //$$     .withColorTargetState(ColorTargetState(
+            //$$         Optional.ofNullable(if (blendFunc != null) blendFunc!!.mc() else null),
+            //$$         ColorTargetState.WRITE_COLOR or ColorTargetState.WRITE_ALPHA
+            //$$     ))
+            //#else
             //$$     .withDepthTestFunction(depthTestFunc.mcDepthFunc())
             //$$
             //$$     .apply {
@@ -237,6 +256,7 @@ data class RenderPipeline(
             //$$
             //$$     .withCull(cull)
             //$$     .withDepthWrite(depthMask)
+            //#endif
             //$$
             //$$     .build()
             //$$

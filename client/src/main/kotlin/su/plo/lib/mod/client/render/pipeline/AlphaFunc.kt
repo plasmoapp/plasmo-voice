@@ -2,7 +2,9 @@ package su.plo.lib.mod.client.render.pipeline
 
 import org.lwjgl.opengl.GL11C
 
-//#if MC>=12105
+//#if MC>=260100
+//$$ import com.mojang.blaze3d.platform.CompareOp
+//#elseif MC>=12105
 //$$ import com.mojang.blaze3d.platform.DepthTestFunction
 //#endif
 
@@ -16,7 +18,17 @@ enum class AlphaFunc {
     GEQUAL,
     ALWAYS;
 
-    //#if MC>=12105
+    //#if MC>=260100
+    //$$ fun mcCompareOp() =
+    //$$     when (this) {
+    //$$         ALWAYS -> CompareOp.ALWAYS_PASS
+    //$$         EQUAL -> CompareOp.EQUAL
+    //$$         LEQUAL -> CompareOp.LESS_THAN_OR_EQUAL
+    //$$         LESS -> CompareOp.LESS_THAN
+    //$$         GREATER -> CompareOp.GREATER_THAN
+    //$$         else -> throw IllegalArgumentException("Unknown depth func $this")
+    //$$     }
+    //#elseif MC>=12105
     //$$ fun mcDepthFunc() =
     //$$     when (this) {
     //$$         ALWAYS -> DepthTestFunction.NO_DEPTH_TEST

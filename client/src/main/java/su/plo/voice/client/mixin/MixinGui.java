@@ -1,4 +1,4 @@
-//#if MC>=12100
+//#if MC>=12100 && FORGE
 //$$ package su.plo.voice.client.mixin;
 //$$
 //$$ import net.minecraft.client.DeltaTracker;
@@ -8,14 +8,14 @@
 //$$ import org.spongepowered.asm.mixin.injection.At;
 //$$ import org.spongepowered.asm.mixin.injection.Inject;
 //$$ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//$$ import su.plo.voice.client.ModVoiceClient;
+//$$ import su.plo.voice.client.render.ModHudRenderer;
 //$$
 //$$ @Mixin(Gui.class)
 //$$ public class MixinGui {
 //$$
 //$$     @Inject(method = "render", at = @At(value = "TAIL"))
 //$$     public void render(GuiGraphics drawContext, DeltaTracker tickCounter, CallbackInfo callbackInfo) {
-//$$         ModVoiceClient.INSTANCE.getHudRenderer().render(drawContext, tickCounter);
+//$$         ModHudRenderer.render(drawContext, tickCounter);
 //$$     }
 //$$ }
 //#endif

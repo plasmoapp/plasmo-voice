@@ -5,8 +5,11 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.NonNull;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
@@ -28,11 +31,10 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.line.ClientSourceLine;
 import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.connection.ServerConnection;
-import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.source.ClientStaticSource;
 import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.client.event.LevelRenderEvent;
 import su.plo.voice.client.event.LivingEntityRenderEvent;
-import su.plo.voice.client.event.render.LevelRenderEvent;
 import su.plo.voice.client.extension.CameraKt;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.proto.data.audio.source.EntitySourceInfo;
@@ -53,7 +55,7 @@ import static su.plo.voice.client.extension.MathKt.toVec3;
 //$$ import com.mojang.blaze3d.systems.RenderSystem;
 //#endif
 
-//#if MC>=12103
+//#if MC>=12103 && MC<26.1
 //$$ import net.minecraft.client.renderer.LightTexture;
 //#endif
 
@@ -79,10 +81,10 @@ public final class SourceIconRenderer {
         this.volumeAction = volumeAction;
 
         LivingEntityRenderEvent.INSTANCE.registerListener(this::onLivingEntityRender);
+        LevelRenderEvent.INSTANCE.registerListener(this::onLevelRender);
     }
 
-    @EventSubscribe
-    public void onLevelRender(@NotNull LevelRenderEvent event) {
+    private void onLevelRender(@NotNull ClientLevel level, @NotNull PoseStack stack, float delta) {
         if (isIconHidden() ||
                 !config.getOverlay().getShowStaticSourceIcons().value()
         ) return;
@@ -99,13 +101,18 @@ public final class SourceIconRenderer {
 
             ClientStaticSource staticSource = (ClientStaticSource) source;
             Pos3d sourcePosition = staticSource.getSourceInfo().getPosition();
+            BlockPos sourceBlockPosition = new BlockPos(
+                    (int) sourcePosition.getX(),
+                    (int) sourcePosition.getY(),
+                    (int) sourcePosition.getZ()
+            );
 
             renderStatic(
-                    event.getStack(),
-                    event.getLightSupplier().getLight(sourcePosition),
+                    stack,
+                    LevelRenderer.getLightColor(level, sourceBlockPosition),
                     ResourceLocation.tryParse(sourceLine.get().getIcon()),
                     staticSource,
-                    event.getDelta()
+                    delta
             );
         }
     }
@@ -289,7 +296,7 @@ public final class SourceIconRenderer {
                     xOffset,
                     0,
                     -1,
-                    //#if MC>=12103
+                    //#if MC>=12103 && MC<26.1
                     //$$ LightTexture.lightCoordsWithEmission(light, 2),
                     //#else
                     light,

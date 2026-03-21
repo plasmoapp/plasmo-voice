@@ -1,6 +1,7 @@
 import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.noServerRunConfigs
+import net.fabricmc.loom.task.RemapJarTask
 import su.plo.config.toml.Toml
 import su.plo.crowdin.CrowdinParams
 import su.plo.voice.extension.expandMatching
@@ -107,15 +108,6 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
-
-    maven {
-        name = "Maven for PR #2815" // https://github.com/neoforged/NeoForge/pull/2815
-        url = uri("https://prmaven.neoforged.net/NeoForge/pr2815")
-        content {
-            includeModule("net.neoforged", "neoforge")
-            includeModule("net.neoforged", "testframework")
-        }
-    }
 }
 
 dependencies {
@@ -142,6 +134,7 @@ dependencies {
             12106 -> "0.127.0+1.21.6"
             12109 -> "0.133.14+1.21.9"
             12111 -> "0.139.1+1.21.11"
+            260100 -> "0.143.14+26.1"
             else -> throw GradleException("Unsupported platform $platform")
         }
 
@@ -151,16 +144,24 @@ dependencies {
             }
         }
 
-        fabricApiModules("rendering-v1", "networking-api-v1", "lifecycle-events-v1", "key-binding-api-v1")
+        fabricApiModules("rendering-v1", "networking-api-v1", "lifecycle-events-v1")
+
+        if (platform.mcVersion < 260100) {
+            fabricApiModules("key-binding-api-v1")
+        } else {
+            fabricApiModules("key-mapping-api-v1")
+        }
 
         val coreProjectFile = project.file("../mainProject")
         val coreProject = coreProjectFile.readText().trim()
         if (coreProject == project.name) {
-            modLocalRuntime("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
+            modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
         }
 
         val fabricPermissionsApi =
-            if (platform.mcVersion >= 12106) {
+            if (platform.mcVersion >= 260100) {
+                "me.lucko:fabric-permissions-api:0.6.3+26.1-SNAPSHOT"
+            } else if (platform.mcVersion >= 12106) {
                 "me.lucko:fabric-permissions-api:0.4.1"
             } else if (platform.mcVersion >= 12102) {
                 "me.lucko:fabric-permissions-api:0.3.3"
@@ -174,7 +175,7 @@ dependencies {
 
         // build times go _/
 
-        val clothConfigVersion = when (platform.mcVersion) {
+        when (platform.mcVersion) {
             11605 -> "4.17.101"
             11701 -> "5.3.63"
             11802 -> "6.5.102"
@@ -190,14 +191,14 @@ dependencies {
             12106,
             12109,
             12111 -> "17.0.144"
-            else -> throw GradleException("Unsupported platform $platform")
+            else -> null
+        }?.let { clothConfigVersion ->
+            modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
+                exclude("net.fabricmc.fabric-api")
+            }
         }
 
-        modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
-            exclude("net.fabricmc.fabric-api")
-        }
-
-        val modMenuVersion = when (platform.mcVersion) {
+        when (platform.mcVersion) {
             11605 -> "1.16.23"
             11701 -> "2.0.17"
             11802 -> "3.2.5"
@@ -213,10 +214,10 @@ dependencies {
             12106,
             12109,
             12111 -> "13.0.2"
-            else -> throw GradleException("Unsupported platform $platform")
+            else -> null
+        }?.let { modMenuVersion ->
+            modImplementation("maven.modrinth:modmenu:$modMenuVersion")
         }
-
-        modImplementation("maven.modrinth:modmenu:$modMenuVersion")
 
         if (platform.mcVersion < 12105) {
             modCompileOnly("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
@@ -282,6 +283,7 @@ tasks {
         expandMatching(
             listOf("fabric.mod.json"),
             "version" to version,
+            "fabricDependencyName" to if (platform.mcVersion >= 260100) "fabric-api" else "fabric",
             "mcVersions" to versionInfo.fabricMcVersions,
             "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\""),
         )
@@ -306,6 +308,15 @@ tasks {
 
     shadowJar {
         configurations = listOf(shadowCommon)
+
+        if (platform.mcVersion >= 260100) {
+            exclude("fabric.mod.json")
+
+            rootSpec.from(zipTree(jar.get().archiveFile)) {
+                include("fabric.mod.json")
+                include("META-INF/jars/**")
+            }
+        }
 
         dependencies {
             relocate("gg.essential.universal", "su.plo.voice.universal")
@@ -352,14 +363,20 @@ tasks {
         }
     }
 
-    remapJar {
-        dependsOn(shadowJar)
-        inputFile.set(shadowJar.get().archiveFile)
-        archiveClassifier.set("remapped")
-    }
+    if (platform.mcVersion < 260100) {
+        val remapJar = named<RemapJarTask>("remapJar") {
+            dependsOn(shadowJar)
+            inputFile.set(shadowJar.get().archiveFile)
+            archiveClassifier.set("remapped")
+        }
 
-    named("copyJarToRootProject") {
-        dependsOn(remapJar)
+        named("copyJarToRootProject") {
+            dependsOn(remapJar)
+        }
+    } else {
+        named("copyJarToRootProject") {
+            dependsOn(shadowJar)
+        }
     }
 }
 

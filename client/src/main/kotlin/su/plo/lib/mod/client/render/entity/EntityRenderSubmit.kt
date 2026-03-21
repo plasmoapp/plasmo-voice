@@ -14,20 +14,20 @@ package su.plo.lib.mod.client.render.entity
 //$$     @JvmStatic
 //$$     val submits = mutableListOf<EntityRenderSubmit>()
 //$$
-//$$ @JvmStatic
-//$$ fun submit(
-//$$     entityRenderState: LivingEntityRenderState,
-//$$     stack: PoseStack,
-//$$     light: Int,
-//$$ ) {
-//$$     submits.add(
-//$$         EntityRenderSubmit(
-//$$             entityRenderState,
-//$$             PoseStack().also { it.last().set(stack.last()) },
-//$$             light,
+//$$     @JvmStatic
+//$$     fun submit(
+//$$         entityRenderState: LivingEntityRenderState,
+//$$         stack: PoseStack,
+//$$         light: Int,
+//$$     ) {
+//$$         submits.add(
+//$$             EntityRenderSubmit(
+//$$                 entityRenderState,
+//$$                 PoseStack().also { it.last().set(stack.last()) },
+//$$                 light,
+//$$             )
 //$$         )
-//$$     )
-//$$ }
+//$$     }
 //$$
 //$$     @JvmStatic
 //$$     fun clear() {

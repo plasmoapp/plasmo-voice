@@ -11,7 +11,11 @@ public class BlockDustParticle2D extends SpriteBillboardParticle2D {
     public BlockDustParticle2D(double x, double y, double velocityX, double velocityY, BlockState state) {
         super(x, y, velocityX, velocityY);
         Minecraft client = Minecraft.getInstance();
+        //#if MC>=26.1
+        //$$ this.setSprite(client.getModelManager().getBlockStateModelSet().getParticleMaterial(state).sprite());
+        //#else
         this.setSprite(client.getBlockRenderer().getBlockModelShaper().getParticleIcon(state));
+        //#endif
         this.gravityStrength = 1.0F;
         this.colorRed = 0.8F;
         this.colorGreen = 0.8F;

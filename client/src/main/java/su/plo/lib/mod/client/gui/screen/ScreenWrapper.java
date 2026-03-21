@@ -231,7 +231,11 @@ public final class ScreenWrapper
     //#if MC>=12109
     //$$ @Override
     //$$ public boolean charTyped(@NotNull CharacterEvent event) {
+    //#if MC>=26.1
+    //$$     return screen.charTyped((char) event.codepoint(), 0);
+    //#else
     //$$     return screen.charTyped((char) event.codepoint(), event.modifiers());
+    //#endif
     //$$ }
     //#else
     @Override

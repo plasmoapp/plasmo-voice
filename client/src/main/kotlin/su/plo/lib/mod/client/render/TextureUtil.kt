@@ -9,14 +9,17 @@ import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
 import java.util.Base64
 
-fun registerBase64Texture(texture: String, textureLocation: ResourceLocation): ResourceLocation {
+fun registerBase64Texture(
+    texture: String,
+    textureLocation: ResourceLocation,
+): ResourceLocation {
     // register base64 icon in minecraft resources
     Minecraft.getInstance().execute {
         Minecraft.getInstance().textureManager.register(
             textureLocation,
             DynamicTexture(
                 //#if MC>=12105
-                //$$ { null },
+                //$$ { textureLocation.toDebugFileName() },
                 //#endif
                 getNativeImageFromBase64(texture)
             )

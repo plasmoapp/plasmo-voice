@@ -28,7 +28,7 @@
     },
     "mixins": ["${mixins}"],
     "depends": {
-        "fabric": "*",
+        "${fabricDependencyName}": "*",
         "fabricloader": "*",
         "minecraft": "${mcVersions}"
     }

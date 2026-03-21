@@ -1,4 +1,5 @@
-//#if FABRIC
+//#if FABRIC && MC<21.6
+// todo: update when available
 package su.plo.voice.client.integration
 
 import me.shedaniel.clothconfig2.api.ConfigBuilder

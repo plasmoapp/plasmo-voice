@@ -4,10 +4,10 @@ import com.google.common.collect.Maps;
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import com.mojang.blaze3d.vertex.PoseStack;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +23,7 @@ import su.plo.voice.api.client.event.render.VoiceDistanceRenderEvent;
 import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.config.VoiceClientConfig;
-import su.plo.voice.client.event.render.LevelRenderEvent;
+import su.plo.voice.client.event.LevelRenderEvent;
 import su.plo.voice.client.extension.CameraKt;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
@@ -32,7 +32,6 @@ import java.util.UUID;
 
 import static su.plo.voice.client.extension.OptionsKt.renderDistanceValue;
 
-@RequiredArgsConstructor
 public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 
     private static final int SPHERE_STACK = 18;
@@ -47,6 +46,13 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
 //    private int alpha = 0;
 //    private float radius = 8F;
 //    private long lastChanged;
+
+    public VoiceDistanceVisualizer(@NotNull PlasmoVoiceClient voiceClient, @NotNull VoiceClientConfig config) {
+        this.voiceClient = voiceClient;
+        this.config = config;
+
+        LevelRenderEvent.INSTANCE.registerListener(this::onLevelRender);
+    }
 
     @Override
     public synchronized void render(int radius, int color, @Nullable Pos3d position) {
@@ -89,8 +95,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
         }
     }
 
-    @EventSubscribe
-    public void onLevelRender(@NotNull LevelRenderEvent event) {
+    private void onLevelRender(@NotNull ClientLevel level, @NotNull PoseStack stack, float delta) {
         Camera camera = Minecraft.getInstance().gameRenderer.getMainCamera();
 
         for (Map.Entry<UUID, VisualizeEntry> entry : entries.entrySet()) {
@@ -109,7 +114,7 @@ public final class VoiceDistanceVisualizer implements DistanceVisualizer {
                 continue;
             }
 
-            renderEntry(value, event.getStack(), camera, event.getDelta());
+            renderEntry(value, stack, camera, delta);
         }
     }
 

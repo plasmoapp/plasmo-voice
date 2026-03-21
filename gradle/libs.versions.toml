@@ -1,10 +1,10 @@
 [versions]
-kotlin = "2.0.21"
+kotlin = "2.3.0"
 dokka = "1.8.20"
-kotlinx-json = "1.5.1"
-kotlinx-coroutines = "1.7.3"
+kotlinx-json = "1.10.0"
+kotlinx-coroutines = "1.10.2"
 
-lombok = "1.18.32"
+lombok = "1.18.44"
 annotations = "23.0.0"
 guava = "33.3.1-jre"
 gson = "2.10.1"
@@ -12,7 +12,7 @@ netty = "4.1.121.Final"
 fastutil = "8.5.18"
 crowdin = "1.2.1"
 config = "1.1.0"
-slib = "1.1.7"
+slib = "1.2.1"
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
@@ -32,7 +32,7 @@ shadow = "9.2.2"
 grgit = "5.3.3"
 buildconfig = "5.7.1"
 
-asm = "9.7.1"
+asm = "9.9.1"
 
 # mockito 5 requires java 11
 mockito = "4.1.0"

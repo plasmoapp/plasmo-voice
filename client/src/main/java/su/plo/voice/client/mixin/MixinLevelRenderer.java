@@ -6,14 +6,12 @@ package su.plo.voice.client.mixin;
 //$$ import com.mojang.blaze3d.resource.GraphicsResourceAllocator;
 //$$ import com.mojang.blaze3d.resource.ResourceHandle;
 //$$ import com.mojang.blaze3d.vertex.PoseStack;
-//$$ import net.minecraft.client.Camera;
 //$$ import net.minecraft.client.DeltaTracker;
 //$$ import net.minecraft.client.multiplayer.ClientLevel;
 //$$ import net.minecraft.client.renderer.LevelRenderer;
 //$$ import net.minecraft.client.renderer.culling.Frustum;
 //$$ import net.minecraft.client.renderer.state.LevelRenderState;
 //$$ import net.minecraft.util.profiling.ProfilerFiller;
-//$$ import org.joml.Matrix4f;
 //$$ import org.joml.Vector4f;
 //$$ import org.spongepowered.asm.mixin.Mixin;
 //$$ import org.spongepowered.asm.mixin.Shadow;
@@ -22,7 +20,16 @@ package su.plo.voice.client.mixin;
 //$$ import org.spongepowered.asm.mixin.injection.Inject;
 //$$ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 //$$ import su.plo.lib.mod.client.render.world.LevelRendererContext;
-//$$ import su.plo.voice.client.ModVoiceClient;
+//$$ import su.plo.voice.client.render.ModLevelRenderer;
+//$$
+//#if MC>=26.1
+//$$ import net.minecraft.client.renderer.chunk.ChunkSectionsToRender;
+//$$ import net.minecraft.client.renderer.state.level.CameraRenderState;
+//$$ import org.joml.Matrix4fc;
+//#else
+//$$ import net.minecraft.client.Camera;
+//$$ import org.joml.Matrix4f;
+//#endif
 //$$
 //$$ @Mixin(LevelRenderer.class)
 //$$ public class MixinLevelRenderer {
@@ -33,6 +40,23 @@ package su.plo.voice.client.mixin;
 //$$     @Unique
 //$$     private final LevelRendererContext context = new LevelRendererContext();
 //$$
+//#if MC>=26.1
+//$$     @Inject(method = "renderLevel", at = @At("HEAD"))
+//$$     private void renderLevel(
+//$$             GraphicsResourceAllocator resourceAllocator,
+//$$             DeltaTracker deltaTracker,
+//$$             boolean renderOutline,
+//$$             CameraRenderState cameraState,
+//$$             Matrix4fc modelViewMatrix,
+//$$             GpuBufferSlice terrainFog,
+//$$             Vector4f fogColor,
+//$$             boolean shouldRenderSky,
+//$$             ChunkSectionsToRender chunkSectionsToRender,
+//$$             CallbackInfo ci
+//$$     ) {
+//$$         context.update(level, deltaTracker);
+//$$     }
+//#else
 //$$     @Inject(method = "renderLevel", at = @At("HEAD"))
 //$$     private void renderLevel(
 //$$             GraphicsResourceAllocator resourceAllocator,
@@ -49,9 +73,14 @@ package su.plo.voice.client.mixin;
 //$$     ) {
 //$$         context.update(level, deltaTracker);
 //$$     }
+//#endif
 //$$
 //$$     @ModifyExpressionValue(
+//#if MC>=26.1
+//$$             method = "lambda$addMainPass$0",
+//#else
 //$$             method = "method_62214",
+//#endif
 //$$             at = @At(value = "NEW", target = "com/mojang/blaze3d/vertex/PoseStack")
 //$$     )
 //$$     private PoseStack setPoseStack(PoseStack matrixStack) {
@@ -59,6 +88,16 @@ package su.plo.voice.client.mixin;
 //$$         return matrixStack;
 //$$     }
 //$$
+//#if MC>=26.1
+//$$     @Inject(method = "lambda$addMainPass$0", at = @At("RETURN"))
+//$$     private void afterRender(CallbackInfo ci) {
+//$$         ModLevelRenderer.render(
+//$$                 context.getLevel(),
+//$$                 context.getStack(),
+//$$                 context.getDeltaTracker().getRealtimeDeltaTicks()
+//$$         );
+//$$     }
+//#else
 //$$     @Inject(method = "method_62214", at = @At("RETURN"))
 //$$     private void afterRender(
 //$$             GpuBufferSlice gpuBufferSlice,
@@ -75,11 +114,12 @@ package su.plo.voice.client.mixin;
 //$$             ResourceHandle<?> resourceHandle4,
 //$$             CallbackInfo ci
 //$$     ) {
-//$$         ModVoiceClient.INSTANCE.getLevelRenderer().render(
+//$$         ModLevelRenderer.render(
 //$$                 context.getLevel(),
 //$$                 context.getStack(),
 //$$                 context.getDeltaTracker().getRealtimeDeltaTicks()
 //$$         );
 //$$     }
+//#endif
 //$$ }
 //#endif

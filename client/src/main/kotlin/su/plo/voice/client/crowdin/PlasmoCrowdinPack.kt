@@ -101,7 +101,7 @@ class PlasmoCrowdinPack(
     override fun getNamespaces(packType: PackType): Set<String> = NAMESPACES
 
     //#if MC>=12104
-    //$$ override fun <T : Any?> getMetadataSection(metadataSectionType: MetadataSectionType<T>): T? = null
+    //$$ override fun <T : Any> getMetadataSection(metadataSectionType: MetadataSectionType<T>): T? = null
     //#else
     override fun <T : Any?> getMetadataSection(metadataSectionSerializer: MetadataSectionSerializer<T>): T? = null
     //#endif

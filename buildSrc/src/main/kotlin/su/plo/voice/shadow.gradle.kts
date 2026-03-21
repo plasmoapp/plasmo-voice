@@ -35,14 +35,15 @@ tasks {
         doLast {
             println("=== Shaded dependencies ===")
 
-            configurations.shadow
-                .get()
-                .resolvedConfiguration
-                .resolvedArtifacts
-                .map { it.moduleVersion.id.toString() }
-                .filter { !isExcluded(it) }
-                .sorted()
-                .forEach { println(it) }
+            shadowJar.get().configurations.get()
+                .forEach { configuration ->
+                    configuration.resolvedConfiguration
+                        .resolvedArtifacts
+                        .map { it.moduleVersion.id.toString() }
+                        .filter { !isExcluded(it) }
+                        .sorted()
+                        .forEach { println(it) }
+                }
         }
     }
 

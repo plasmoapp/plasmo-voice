@@ -11,6 +11,25 @@ package su.plo.voice.client.mixin;
 //$$
 //$$ @Mixin(FeatureRenderDispatcher.class)
 //$$ public class MixinFeatureRenderDispatcher {
+//#if MC>=26.1
+//$$     @Inject(
+//$$             method = "renderTranslucentFeatures",
+//$$             at = @At(
+//$$                     value = "INVOKE",
+//$$                     shift = At.Shift.AFTER,
+//$$                     target = "Lnet/minecraft/client/renderer/feature/NameTagFeatureRenderer;renderTranslucent(Lnet/minecraft/client/renderer/SubmitNodeCollection;Lnet/minecraft/client/renderer/MultiBufferSource$BufferSource;Lnet/minecraft/client/gui/Font;)V"
+//$$             )
+//$$     )
+//$$     public void renderAllFeatures(CallbackInfo ci) {
+//$$         EntityRenderSubmitCollection.getSubmits().forEach(submit -> {
+//$$             LivingEntityRenderEvent.INSTANCE.getInvoker().onRender(
+//$$                     submit.getEntityRenderState(),
+//$$                     submit.getStack(),
+//$$                     submit.getLight()
+//$$             );
+//$$         });
+//$$     }
+//#else
 //$$     @Inject(
 //$$             method = "renderAllFeatures",
 //$$             at = @At(
@@ -28,6 +47,7 @@ package su.plo.voice.client.mixin;
 //$$             );
 //$$         });
 //$$     }
+//#endif
 //$$
 //$$     @Inject(
 //$$             method = "renderAllFeatures",

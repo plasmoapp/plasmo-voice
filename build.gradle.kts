@@ -77,10 +77,6 @@ subprojects {
 
         compileKotlin {
             setJvmDefault("all")
-
-            compilerOptions {
-                freeCompilerArgs.add("-Xcontext-receivers")
-            }
         }
     }
 }

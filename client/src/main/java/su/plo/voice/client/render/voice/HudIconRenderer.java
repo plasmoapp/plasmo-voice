@@ -19,7 +19,7 @@ import su.plo.voice.client.event.HudRenderEvent;
 import java.util.List;
 
 @RequiredArgsConstructor
-public final class HudIconRenderer  implements HudRenderEvent.Callback {
+public final class HudIconRenderer implements HudRenderEvent.Callback {
 
     private static final ResourceLocation MICROPHONE_DISCONNECTED_ICON =
             ResourceLocationUtil.parse("plasmovoice:textures/icons/microphone_disconnected.png");

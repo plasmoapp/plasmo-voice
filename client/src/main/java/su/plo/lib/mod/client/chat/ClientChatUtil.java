@@ -30,7 +30,9 @@ public class ClientChatUtil {
         LocalPlayer player = Minecraft.getInstance().player;
 
         Minecraft.getInstance().execute(() -> {
-            //#if MC>=12102
+            //#if MC>=26.1
+            //$$ player.sendSystemMessage(message);
+            //#elseif MC>=12102
             //$$ player.displayClientMessage(message, false);
             //#elseif MC>=11900
             player.sendSystemMessage(message);
