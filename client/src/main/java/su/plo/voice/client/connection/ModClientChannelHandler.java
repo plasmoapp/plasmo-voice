@@ -82,8 +82,9 @@ public final class ModClientChannelHandler
     //#if MC>=12005
     //$$ @Override
     //$$ public void receive(ByteArrayPayload payload, ClientPlayNetworking.Context context) {
-    //$$     Connection connection = context.client().getConnection().getConnection();
-    //$$     receive(connection, payload.getData());
+    //$$     ClientPacketListener listener = context.client().getConnection();
+    //$$     if (listener == null) return;
+    //$$     receive(listener.getConnection(), payload.getData());
     //$$ }
     //#else
     @Override
