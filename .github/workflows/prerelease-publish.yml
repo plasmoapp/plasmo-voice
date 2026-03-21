@@ -40,7 +40,7 @@ jobs:
       run: ./gradlew publish --stacktrace -Psnapshot=true
 
     - name: Publish to GitHub
-      uses: Apehum/mc-publish@v1.1
+      uses: apehum/mc-publish@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: false
@@ -73,12 +73,12 @@ jobs:
 
 
     - name: Build dokka
-      run: ./gradlew dokkaHtmlCollector
+      run: ./gradlew dokkaGeneratePublicationHtml
 
     - name: Upload dokka artifact
       uses: actions/upload-pages-artifact@v3
       with:
-        path: ./build/dokka/htmlCollector
+        path: ./build/dokka/html
 
   deploy-dokka:
     needs: build

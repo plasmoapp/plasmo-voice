@@ -1,6 +1,6 @@
 [versions]
 kotlin = "2.3.0"
-dokka = "1.8.20"
+dokka = "2.1.0"
 kotlinx-json = "1.10.0"
 kotlinx-coroutines = "1.10.2"
 

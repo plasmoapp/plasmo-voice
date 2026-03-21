@@ -81,6 +81,11 @@ subprojects {
     }
 }
 
+dependencies {
+    dokka(project(":api"))
+    dokka(project(":protocol"))
+}
+
 allprojects {
     repositories {
         mavenLocal()
