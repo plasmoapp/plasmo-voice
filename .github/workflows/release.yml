@@ -1,9 +1,16 @@
 name: Publish Release
 
 on:
-  push:
-    branches:
-      - release/v2.1.x
+  workflow_dispatch:
+    inputs:
+      release-type:
+        description: 'Release type'
+        required: true
+        type: choice
+        options:
+          - release
+          - beta
+          - alpha
 
 jobs:
   build:
@@ -47,6 +54,7 @@ jobs:
         files-primary: build/libs/*-@(Paper)-*.jar
 
         changelog-file: server/changelog.md
+        version-type: ${{ inputs.release-type }}
 
         game-versions: |
           1.16.5
@@ -81,6 +89,7 @@ jobs:
         files-primary: build/libs/*-@(BungeeCord|Velocity)-*.jar
 
         changelog-file: proxy/changelog.md
+        version-type: ${{ inputs.release-type }}
 
         game-versions: |
           1.16.5
@@ -115,6 +124,7 @@ jobs:
         files-primary: build/libs/*-@(forge|neoforge|fabric)-*.jar
 
         changelog-file: client/changelog.md
+        version-type: ${{ inputs.release-type }}
 
         modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
@@ -128,6 +138,7 @@ jobs:
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: false
+        github-prerelease: ${{ inputs.release-type != 'release' }}
 
     - name: Restore previous doc versions
       run: |
