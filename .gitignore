@@ -19,3 +19,4 @@ classes/
 .settings
 *.launch
 *_key.txt
+previousDocVersions/
