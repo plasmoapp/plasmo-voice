@@ -5,6 +5,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.hash.Hashing
 import com.mojang.authlib.minecraft.MinecraftProfileTexture
+import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.ResourceLocationUtil
@@ -133,10 +134,12 @@ object DeveloperCapeManager {
             //$$ } catch (ignored: Exception) {
             //$$ }
             //#else
-            Minecraft.getInstance().textureManager.register(
-                capeLocation,
-                HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
-            )
+            RenderSystem.recordRenderCall {
+                Minecraft.getInstance().textureManager.register(
+                    capeLocation,
+                    HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
+                )
+            }
             //#endif
 
             capeLocation
