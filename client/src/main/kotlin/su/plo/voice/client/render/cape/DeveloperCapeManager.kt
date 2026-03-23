@@ -5,6 +5,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.hash.Hashing
 import com.mojang.authlib.minecraft.MinecraftProfileTexture
+import com.mojang.blaze3d.systems.RenderSystem
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.ResourceLocationUtil
@@ -31,6 +32,7 @@ import java.util.function.Supplier
 //$$ import net.minecraft.client.renderer.texture.SkinTextureDownloader
 //#else
 import net.minecraft.client.renderer.texture.HttpTexture
+import java.util.concurrent.TimeoutException
 //#endif
 
 object DeveloperCapeManager {
@@ -133,10 +135,22 @@ object DeveloperCapeManager {
             //$$ } catch (ignored: Exception) {
             //$$ }
             //#else
-            Minecraft.getInstance().textureManager.register(
-                capeLocation,
-                HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
-            )
+            val future = CompletableFuture<Void>()
+            RenderSystem.recordRenderCall {
+                try {
+                    Minecraft.getInstance().textureManager.register(
+                        capeLocation,
+                        HttpTexture(capeFile, texture.url, ModPlayerSkins.getDefaultSkin(UUID.randomUUID()), false) {}
+                    )
+                    future.complete(null)
+                } catch (e: Throwable) {
+                    future.completeExceptionally(e)
+                }
+            }
+            try {
+                future.get(5, TimeUnit.SECONDS)
+            } catch (_: TimeoutException) {
+            }
             //#endif
 
             capeLocation
