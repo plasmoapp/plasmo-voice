@@ -170,7 +170,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             if (System.getenv("PLASMO_VOICE_FORWARDING_SECRET") != null) {
                 forwardingSecret = UUID.fromString(System.getenv("PLASMO_VOICE_FORWARDING_SECRET"));
             } else if (forwardingSecretFile.exists()) {
-                forwardingSecret = UUID.fromString(new String(Files.readAllBytes(forwardingSecretFile.toPath())));
+                forwardingSecret = UUID.fromString(new String(Files.readAllBytes(forwardingSecretFile.toPath())).trim());
             } else {
                 forwardingSecret = UUID.randomUUID();
                 Files.write(forwardingSecretFile.toPath(), forwardingSecret.toString().getBytes(StandardCharsets.UTF_8));
@@ -189,7 +189,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
                 if (System.getenv("PLASMO_VOICE_AES_KEY") != null) {
                     aesEncryptionKey = UUID.fromString(System.getenv("PLASMO_VOICE_AES_KEY"));
                 } else if (aesEncryptionKeyFile.exists()) {
-                    aesEncryptionKey = UUID.fromString(new String(Files.readAllBytes(aesEncryptionKeyFile.toPath())));
+                    aesEncryptionKey = UUID.fromString(new String(Files.readAllBytes(aesEncryptionKeyFile.toPath())).trim());
                 } else {
                     aesEncryptionKey = UUID.randomUUID();
                 }

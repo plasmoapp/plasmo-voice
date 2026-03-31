@@ -20,3 +20,4 @@ classes/
 *.launch
 *_key.txt
 previousDocVersions/
+.kotlin/

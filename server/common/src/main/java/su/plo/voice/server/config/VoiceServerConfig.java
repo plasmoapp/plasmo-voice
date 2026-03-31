@@ -63,6 +63,9 @@ public final class VoiceServerConfig implements ServerConfig {
     @ConfigField
     private Voice voice = new Voice();
 
+    @ConfigField
+    private Metrics metrics = new Metrics();
+
     @Config
     @Data
     @Accessors(fluent = true)
@@ -307,5 +310,24 @@ public final class VoiceServerConfig implements ServerConfig {
                 return keepAliveTimeout >= 1_000 && keepAliveTimeout <= 120_000;
             }
         }
+    }
+
+    @Config
+    @Data
+    @Accessors(fluent = true)
+    @EqualsAndHashCode
+    public static class Metrics implements ServerConfig.Metrics {
+        @ConfigField(comment = "Enable prometheus metrics server")
+        private boolean enabled = false;
+
+        @ConfigField
+        private boolean jvmMetrics = false;
+
+        @ConfigField
+        private String ip = "0.0.0.0";
+
+        @ConfigField
+        @ConfigValidator(value = Host.PortValidator.class, allowed = "0-65535")
+        private int port = 24455;
     }
 }

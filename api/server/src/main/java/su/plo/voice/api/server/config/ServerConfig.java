@@ -26,6 +26,8 @@ public interface ServerConfig {
 
     @NotNull Voice voice();
 
+    @NotNull Metrics metrics();
+
     interface Host {
 
         @NotNull String ip();
@@ -102,5 +104,15 @@ public interface ServerConfig {
 
             int bitrate();
         }
+    }
+
+    interface Metrics {
+        boolean enabled();
+
+        boolean jvmMetrics();
+
+        @NotNull String ip();
+
+        int port();
     }
 }

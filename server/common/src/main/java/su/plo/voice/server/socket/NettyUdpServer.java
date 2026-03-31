@@ -3,6 +3,7 @@ package su.plo.voice.server.socket;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInboundHandler;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
@@ -20,6 +21,11 @@ import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.server.metrics.Metrics;
+import su.plo.voice.server.metrics.NettyPacketExceptionHandlerMetrics;
+import su.plo.voice.server.metrics.NettyPacketHandlerPostDecoderMetrics;
+import su.plo.voice.server.metrics.NettyPacketHandlerPreDecoderMetrics;
+import su.plo.voice.server.metrics.NettyPacketHandlerPreHandlerMetrics;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
@@ -67,8 +73,39 @@ public final class NettyUdpServer implements UdpServer {
                 ChannelPipeline pipeline = ch.pipeline();
 
                 pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
+                pipeline.addLast("decoder_exception_handler", new NettyExceptionHandler("Failed to decode packet"));
                 pipeline.addLast("handler", new NettyPacketHandler(voiceServer));
-                pipeline.addLast("exception_handler", new NettyExceptionHandler());
+                pipeline.addLast("handler_exception_handler", new NettyExceptionHandler());
+
+                Metrics metrics = voiceServer.getMetrics();
+                if (metrics != null) {
+                    metrics.attachNettyAllocatorMetrics(pipeline.channel().alloc());
+                    metrics.attachNettyExecutorMetrics(loopGroup);
+
+                    pipeline.addBefore("handler", "metrics_pre_handler", new NettyPacketHandlerPreHandlerMetrics(voiceServer));
+
+                    pipeline.addBefore("decoder", "metrics_pre_decoder", new NettyPacketHandlerPreDecoderMetrics(voiceServer));
+                    pipeline.addAfter("decoder", "metrics_post_decoder", new NettyPacketHandlerPostDecoderMetrics(voiceServer));
+
+                    pipeline.replace(
+                            "decoder_exception_handler",
+                            "decoder_exception_handler",
+                            new NettyPacketExceptionHandlerMetrics(
+                                    voiceServer,
+                                    Metrics.PacketHandlerErrorStage.Decode,
+                                    (ChannelInboundHandler) pipeline.get("decoder_exception_handler")
+                            )
+                    );
+                    pipeline.replace(
+                            "handler_exception_handler",
+                            "handler_exception_handler",
+                            new NettyPacketExceptionHandlerMetrics(
+                                    voiceServer,
+                                    Metrics.PacketHandlerErrorStage.Handle,
+                                    (ChannelInboundHandler) pipeline.get("handler_exception_handler")
+                            )
+                    );
+                }
             }
         });
 

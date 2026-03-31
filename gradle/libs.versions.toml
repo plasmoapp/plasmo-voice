@@ -17,6 +17,8 @@ bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
 supervanish = "6.2.18-3"
+micrometer = "1.15.5"
+http4k = "6.15.1.0"
 
 bungeecord = "1.21-R0.5-SNAPSHOT"
 velocity = "3.1.1"
@@ -53,6 +55,11 @@ config       = { module = "su.plo.config:config", version.ref = "config" }
 luckperms    = { module = "net.luckperms:api", version.ref = "luckperms" }
 papi         = { module = "me.clip:placeholderapi", version.ref = "papi" }
 supervanish  = { module = "com.github.LeonMangler:SuperVanish", version.ref = "supervanish" }
+
+micrometer-core       = { module = "io.micrometer:micrometer-core", version.ref = "micrometer" }
+micrometer-prometheus = { module = "io.micrometer:micrometer-registry-prometheus", version.ref = "micrometer" }
+http4k-core           = { module = "org.http4k:http4k-core", version.ref = "http4k" }
+http4k-jetty          = { module = "org.http4k:http4k-server-jetty", version.ref = "http4k" }
 
 bungeecord   = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord"}
 velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }

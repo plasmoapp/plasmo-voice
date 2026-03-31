@@ -184,6 +184,8 @@ class MockClientConnection(
     }
 
     override fun handle(packet: PlayerInfoRequestPacket) {
+        udpClient?.close()
+        udpClient = null
         sendPacket(
             PlayerInfoPacket(
                 "1.0.0",
