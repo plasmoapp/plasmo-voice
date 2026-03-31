@@ -13,22 +13,13 @@ preprocess {
     val neoForge12111 = createNode("1.21.11-neoforge", 12111, "official")
     val fabric12111 = createNode("1.21.11-fabric", 12111, "official")
 
-    val neoForge12109 = createNode("1.21.9-neoforge", 12109, "official")
-    val fabric12109 = createNode("1.21.9-fabric", 12109, "official")
-
     val neoForge12107 = createNode("1.21.7-neoforge", 12106, "official")
 
     val neoForge12106 = createNode("1.21.6-neoforge", 12106, "official")
     val fabric12106 = createNode("1.21.6-fabric", 12106, "official")
 
-    val neoForge12105 = createNode("1.21.5-neoforge", 12105, "official")
-    val fabric12105 = createNode("1.21.5-fabric", 12105, "official")
-
     val neoForge12104 = createNode("1.21.4-neoforge", 12104, "official")
     val fabric12104 = createNode("1.21.4-fabric", 12104, "official")
-
-    val neoForge12103 = createNode("1.21.3-neoforge", 12103, "official")
-    val fabric12103 = createNode("1.21.3-fabric", 12103, "official")
 
     val neoForge12100 = createNode("1.21-neoforge", 12100, "official")
     val fabric12100 = createNode("1.21-fabric", 12100, "official")
@@ -61,25 +52,16 @@ preprocess {
     fabric260100.link(fabric12111, file("26.1-1.21.11.txt"))
     neoForge260100.link(neoForge12111, file("26.1-1.21.11.txt"))
 
-    fabric12111.link(fabric12109)
-    neoForge12111.link(neoForge12109)
-
-    fabric12109.link(fabric12106, file("1.21.9-1.21.8.txt"))
-    neoForge12109.link(neoForge12107, file("1.21.9-1.21.8.txt"))
+    fabric12111.link(fabric12106, file("1.21.9-1.21.8.txt"))
+    neoForge12111.link(neoForge12107, file("1.21.9-1.21.8.txt"))
 
     neoForge12107.link(neoForge12106)
 
-    fabric12106.link(fabric12105, file("1.21.6-1.21.5.txt"))
-    neoForge12106.link(neoForge12105, file("1.21.6-1.21.5.txt"))
+    fabric12106.link(fabric12104, file("1.21.6-1.21.5.txt"))
+    neoForge12106.link(neoForge12104, file("1.21.6-1.21.5.txt"))
 
-    fabric12105.link(fabric12104)
-    neoForge12105.link(neoForge12104)
-
-    fabric12104.link(fabric12103)
-    neoForge12104.link(neoForge12103)
-
-    fabric12103.link(fabric12100)
-    neoForge12103.link(neoForge12100)
+    fabric12104.link(fabric12100)
+    neoForge12104.link(neoForge12100)
 
     neoForge12100.link(fabric12100)
     fabric12100.link(fabric12004, file("1.21-1.20.6.txt"))

@@ -3,7 +3,6 @@
     "minVersion": "0.7",
     "package": "su.plo.voice.client.mixin",
     "client": [
-        "MixinFeatureRenderDispatcher",
         "MixinLevelRenderer"
     ],
     "injectors": {

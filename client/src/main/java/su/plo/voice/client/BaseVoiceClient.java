@@ -50,7 +50,6 @@ import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.cape.DeveloperCapeManager;
 import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
-import su.plo.voice.client.render.voice.SourceIconRenderer;
 import su.plo.voice.client.render.voice.VoiceDistanceVisualizer;
 import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
@@ -91,6 +90,8 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
     @Getter
     protected VoiceClientConfig config;
+    @Getter
+    private PlayerVolumeAction volumeAction;
     @Getter
     protected final Map<String, AddonConfig> addonConfigs = Maps.newHashMap();
 
@@ -158,13 +159,13 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
 
         // hotkey actions
         new HotkeyActions(this, getHotkeys(), config).register();
-        PlayerVolumeAction volumeAction = new PlayerVolumeAction(this, config);
+        this.volumeAction = new PlayerVolumeAction(this, config);
         eventBus.register(this, volumeAction);
 
         // render
         eventBus.register(this, distanceVisualizer);
         HudRenderEvent.INSTANCE.registerListener(new HudIconRenderer(this, config));
-        eventBus.register(this, new SourceIconRenderer(this, config, volumeAction));
+//        eventBus.register(this, new SourceIconRenderer(this, config, volumeAction));
         HudRenderEvent.INSTANCE.registerListener(new OverlayRenderer(this, config));
 
         // addons

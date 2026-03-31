@@ -1,15 +1,23 @@
 package su.plo.lib.mod.client.render
 
-import com.mojang.blaze3d.vertex.BufferBuilder
 import com.mojang.blaze3d.vertex.PoseStack
+import com.mojang.blaze3d.vertex.VertexConsumer
 
-class VertexBuilder private constructor(private val buffer: BufferBuilder) {
+class VertexBuilder private constructor(private val buffer: VertexConsumer) {
 
     fun position(stack: PoseStack, x: Float, y: Float, z: Float) = apply {
         //#if MC>=12100
         //$$ buffer.addVertex(stack.last().pose(), x, y, z)
         //#else
         buffer.vertex(stack.last().pose(), x, y, z)
+        //#endif
+    }
+
+    fun position(pose: PoseStack.Pose, x: Float, y: Float, z: Float) = apply {
+        //#if MC>=12100
+        //$$ buffer.addVertex(pose, x, y, z)
+        //#else
+        buffer.vertex(pose.pose(), x, y, z)
         //#endif
     }
 
@@ -71,6 +79,16 @@ class VertexBuilder private constructor(private val buffer: BufferBuilder) {
         //#endif
     }
 
+    fun normal(pose: PoseStack.Pose, x: Float, y: Float, z: Float) = apply {
+        //#if MC>=12100
+        //$$ buffer.setNormal(pose, x, y, z)
+        //#elseif MC>=12005
+        //$$ buffer.normal(pose.normal(), x, y, z)
+        //#else
+        buffer.normal(pose.normal(), x, y, z)
+        //#endif
+    }
+
     fun end() = apply { 
         //#if MC<12100
         buffer.endVertex()
@@ -79,8 +97,7 @@ class VertexBuilder private constructor(private val buffer: BufferBuilder) {
     
     companion object {
         @JvmStatic
-        fun create(buffer: BufferBuilder): VertexBuilder =
+        fun create(buffer: VertexConsumer): VertexBuilder =
             VertexBuilder(buffer)
     }
-
 }

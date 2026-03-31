@@ -132,8 +132,7 @@ dependencies {
             12104 -> "0.110.5+1.21.4"
             12105 -> "0.119.5+1.21.5"
             12106 -> "0.127.0+1.21.6"
-            12109 -> "0.133.14+1.21.9"
-            12111 -> "0.139.1+1.21.11"
+            12111 -> "0.141.3+1.21.11"
             260100 -> "0.143.14+26.1"
             else -> throw GradleException("Unsupported platform $platform")
         }
@@ -291,14 +290,14 @@ tasks {
         if (isMainProject) {
             dependsOn("crowdinDownload")
         } else {
-            dependsOn(mainProject.tasks.findByName("crowdinDownload"))
+            dependsOn(mainProject.tasks.findByName("crowdinDownload") as Any)
         }
     }
 
     if (isMainProject) {
         findByName("preprocessResources")?.dependsOn("crowdinDownload")
     } else {
-        findByName("preprocessResources")?.dependsOn(mainProject.tasks.findByName("crowdinDownload"))
+        findByName("preprocessResources")?.dependsOn(mainProject.tasks.findByName("crowdinDownload") as Any)
     }
 
     jar {

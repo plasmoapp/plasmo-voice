@@ -124,7 +124,7 @@ public final class ModPlayerSkins {
         //#endif
         //$$ return () -> {
         //#if MC>=12109
-        //$$     ResourceLocation skinLocation = skinSupplier.get().body().texturePath();
+        //$$     Identifier skinLocation = skinSupplier.get().body().texturePath();
         //#else
         //$$     ResourceLocation skinLocation = skinSupplier.get().texture();
         //#endif

@@ -26,3 +26,5 @@ net.minecraft.client.renderer.entity.EntityRenderer submit() submit()
 net.minecraft.client.renderer.entity.EntityRenderer submit() submit()
 
 net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement extractRenderState() render()
+
+net.minecraft.util.LightCoordsUtil net.minecraft.client.renderer.LightTexture
