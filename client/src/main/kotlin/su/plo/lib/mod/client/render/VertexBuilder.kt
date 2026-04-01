@@ -82,8 +82,6 @@ class VertexBuilder private constructor(private val buffer: VertexConsumer) {
     fun normal(pose: PoseStack.Pose, x: Float, y: Float, z: Float) = apply {
         //#if MC>=12100
         //$$ buffer.setNormal(pose, x, y, z)
-        //#elseif MC>=12005
-        //$$ buffer.normal(pose.normal(), x, y, z)
         //#else
         buffer.normal(pose.normal(), x, y, z)
         //#endif
