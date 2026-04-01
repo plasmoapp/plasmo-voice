@@ -30,7 +30,6 @@ import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.connection.UdpClientManager;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
-import su.plo.voice.api.client.render.DistanceVisualizer;
 import su.plo.voice.api.client.time.SystemTimeSupplier;
 import su.plo.voice.api.client.time.TimeSupplier;
 import su.plo.voice.api.event.EventSubscribe;
@@ -46,13 +45,19 @@ import su.plo.voice.client.config.hotkey.HotkeyActions;
 import su.plo.voice.client.connection.VoiceUdpClientManager;
 import su.plo.voice.client.crowdin.PlasmoCrowdinMod;
 import su.plo.voice.client.event.HudRenderEvent;
+import su.plo.voice.client.event.LevelExtractRenderStateEvent;
+import su.plo.voice.client.event.LevelRenderEvent;
 import su.plo.voice.client.gui.PlayerVolumeAction;
 import su.plo.voice.client.render.cape.DeveloperCapeManager;
+import su.plo.voice.client.render.level.DistanceVisualizeOnJoinListener;
+import su.plo.voice.client.render.level.DistanceVisualizeRenderer;
+import su.plo.voice.client.render.level.DistanceVisualizeStateExtractor;
+import su.plo.voice.client.render.level.StaticSourceIconRenderer;
+import su.plo.voice.client.render.level.StaticSourceIconStateExtractor;
 import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
-import su.plo.voice.client.render.voice.VoiceDistanceVisualizer;
-import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
+import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.SemanticVersion;
 
 import java.io.File;
@@ -82,7 +87,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     private ClientSourceManager sourceManager;
     @Getter
-    private DistanceVisualizer distanceVisualizer;
+    private DistanceVisualizeStateExtractor distanceVisualizer;
 
     @Getter
     @Setter
@@ -147,7 +152,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
             );
         }
 
-        this.distanceVisualizer = new VoiceDistanceVisualizer(this, config);
+        this.distanceVisualizer = new DistanceVisualizeStateExtractor(this, config);
 
         this.deviceManager = new VoiceDeviceManager(this, config);
         this.sourceLineManager = new VoiceClientSourceLineManager(config);
@@ -163,10 +168,16 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         eventBus.register(this, volumeAction);
 
         // render
-        eventBus.register(this, distanceVisualizer);
         HudRenderEvent.INSTANCE.registerListener(new HudIconRenderer(this, config));
-//        eventBus.register(this, new SourceIconRenderer(this, config, volumeAction));
         HudRenderEvent.INSTANCE.registerListener(new OverlayRenderer(this, config));
+
+        LevelExtractRenderStateEvent.INSTANCE.registerListener(distanceVisualizer);
+        LevelRenderEvent.INSTANCE.registerListener(new DistanceVisualizeRenderer());
+
+        LevelExtractRenderStateEvent.INSTANCE.registerListener(new StaticSourceIconStateExtractor(this, config));
+        LevelRenderEvent.INSTANCE.registerListener(new StaticSourceIconRenderer());
+
+        eventBus.register(this, new DistanceVisualizeOnJoinListener(this, config));
 
         // addons
         addons.initializeLoadedAddons();

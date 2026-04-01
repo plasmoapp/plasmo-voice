@@ -1,3 +1,5 @@
 com.mojang.authlib.GameProfile name() getName()
 com.mojang.authlib.GameProfile id() getId()
 com.mojang.authlib.GameProfile properties() getProperties()
+
+net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents

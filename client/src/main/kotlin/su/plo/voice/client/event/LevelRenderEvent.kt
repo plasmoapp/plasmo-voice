@@ -1,18 +1,18 @@
 package su.plo.voice.client.event
 
-import com.mojang.blaze3d.vertex.PoseStack
-import net.minecraft.client.multiplayer.ClientLevel
+import su.plo.lib.mod.client.render.level.LevelRenderContext
 import su.plo.slib.api.event.GlobalEvent
 
+// todo: context class?
 object LevelRenderEvent : GlobalEvent<LevelRenderEvent.Callback>(
     { callbacks ->
-        Callback { level, stack, delta ->
-            callbacks.forEach { it.onRender(level, stack, delta) }
+        Callback { context ->
+            callbacks.forEach { it.onRender(context) }
         }
     }
 ) {
 
     fun interface Callback {
-        fun onRender(level: ClientLevel, stack: PoseStack, delta: Float)
+        fun onRender(context: LevelRenderContext)
     }
 }

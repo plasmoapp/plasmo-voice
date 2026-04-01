@@ -1,4 +1,6 @@
 import gg.essential.gradle.util.setJvmDefault
+import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.test
 
 // Version
 val targetJavaVersion: String by rootProject
@@ -58,6 +60,7 @@ subprojects {
         testLogging {
             events("passed", "skipped", "failed")
         }
+        failOnNoDiscoveredTests = false
     }
 
     tasks {

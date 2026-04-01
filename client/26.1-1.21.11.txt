@@ -28,3 +28,14 @@ net.minecraft.client.renderer.entity.EntityRenderer submit() submit()
 net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement extractRenderState() render()
 
 net.minecraft.util.LightCoordsUtil net.minecraft.client.renderer.LightTexture
+
+net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext net.fabricmc.fabric.api.client.rendering.v1.world.WorldExtractionContext
+net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext level() world()
+net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext deltaTracker() tickCounter()
+net.fabricmc.fabric.api.client.rendering.v1.level.LevelExtractionContext poseStack() matrices()
+
+net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext poseStack() matrices()
+net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext submitNodeCollector() commandQueue()
+
+net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
+net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents COLLECT_SUBMITS AFTER_ENTITIES

@@ -4,8 +4,12 @@ import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.Inputs;
+import su.plo.lib.mod.client.render.level.LevelRenderContext;
+import su.plo.lib.mod.client.render.level.LevelRenderStateHolder;
 import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.slib.mod.logging.Log4jLogger;
+import su.plo.voice.client.event.LevelExtractRenderStateEvent;
+import su.plo.voice.client.event.LevelRenderEvent;
 import su.plo.voice.client.gui.settings.VoiceScreens;
 import net.minecraft.client.KeyMapping;
 import org.jetbrains.annotations.NotNull;
@@ -19,7 +23,6 @@ import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.connection.ModClientChannelHandler;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.render.ModHudRenderer;
-import su.plo.voice.client.render.ModLevelRenderer;
 import su.plo.voice.util.version.PlatformLoader;
 
 //#if FABRIC
@@ -32,9 +35,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-//#if MC<12109
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
-//#endif
 
 //#if MC>=1.21.6
 //$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
@@ -88,6 +89,10 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //$$ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 //$$ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 //$$ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+
+//#if MC>=1.21.11
+//$$ import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
+//#endif
 
 //#endif
 
@@ -185,17 +190,58 @@ public final class ModVoiceClient extends BaseVoiceClient
         HudRenderCallback.EVENT.register(ModHudRenderer::render);
         //#endif
 
-        //#if MC<12109
+        //#if MC>=1.21.11
+        //$$ WorldRenderEvents.END_EXTRACTION.register(
+        //$$         (context) ->
+        //$$                 LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
+        //$$                         context.world(),
+        //$$                         context.camera(),
+        //$$                         context.tickCounter().getRealtimeDeltaTicks(),
+        // idk why, but additional mappings doesn't want to remap worldState -> levelState
+        //#if MC>=26.1
+        //$$                         new LevelRenderStateHolder(context.levelState())
+        //#else
+        //$$                         new LevelRenderStateHolder(context.worldState())
+        //#endif
+        //$$                 )
+        //$$ );
+        //$$ WorldRenderEvents.END_MAIN.register(
+        //$$         (context) ->
+        //$$                 LevelRenderEvent.INSTANCE.getInvoker().onRender(
+        //$$                         new LevelRenderContext(
+        //$$                                 context.matrices(),
+        //#if MC>=26.1
+        //$$                                 new LevelRenderStateHolder(context.levelState())
+        //#else
+        //$$                                 new LevelRenderStateHolder(context.worldState())
+        //#endif
+        //$$                         )
+        //$$                 )
+        //$$ );
+        //#else
         WorldRenderEvents.LAST.register(
-                (context) -> ModLevelRenderer.render(
-                        context.world(),
-                        context.matrixStack(),
-                        //#if MC>=12100
-                        //$$ context.tickCounter().getRealtimeDeltaTicks()
-                        //#else
-                        context.tickDelta()
-                        //#endif
-                )
+                (context) -> {
+                    LevelRenderStateHolder state = new LevelRenderStateHolder();
+                    LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
+                            context.world(),
+                            context.camera(),
+                            //#if MC>=12100
+                            //$$ context.tickCounter().getRealtimeDeltaTicks(),
+                            //#else
+                            context.tickDelta(),
+                            //#endif,
+                            state
+                    );
+
+                    LevelRenderEvent.INSTANCE.getInvoker().onRender(
+                            new LevelRenderContext(
+                                    context.world(),
+                                    context.camera(),
+                                    context.matrixStack(),
+                                    state
+                            )
+                    );
+                }
         );
         //#endif
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
@@ -260,15 +306,27 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
     //$$             Minecraft.getInstance().level == null
     //$$     ) return;
-    //$$     ModLevelRenderer.render(
-    //$$             Minecraft.getInstance().level,
+    //$$ LevelRenderStateHolder state = new LevelRenderStateHolder();
+    //$$
+    //$$ LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
+    //$$         Minecraft.getInstance().level,
+    //$$         event.getCamera(),
+    //$$         event.getPartialTick(),
+    //$$         state
+    //$$ );
+    //$$
+    //$$ LevelRenderEvent.INSTANCE.getInvoker().onRender(
+    //$$         new LevelRenderContext(
+    //$$                 Minecraft.getInstance().level,
+    //$$                 event.getCamera(),
     //#if MC>=12100
-    //$$             new PoseStack(),
+    //$$                 new PoseStack(),
     //#else
-    //$$             event.getPoseStack(),
+    //$$                 event.getPoseStack(),
     //#endif
-    //$$             event.getPartialTick()
-    //$$     );
+    //$$                 state
+    //$$         )
+    //$$ );
     //$$ }
     //$$
     //$$ @Mod.EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
@@ -282,10 +340,24 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#else
     //$$ @SubscribeEvent
     //$$ public void onWorldRender(RenderLevelLastEvent event) {
-    //$$     ModLevelRenderer.render(
+    //$$     if (Minecraft.getInstance().level == null) return;
+    //$$
+    //$$     LevelRenderStateHolder state = new LevelRenderStateHolder();
+    //$$
+    //$$     LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
     //$$             Minecraft.getInstance().level,
-    //$$             event.getPoseStack(),
-    //$$             event.getPartialTick()
+    //$$             Minecraft.getInstance().gameRenderer.getMainCamera(),
+    //$$             event.getPartialTick(),
+    //$$             state
+    //$$     );
+    //$$
+    //$$     LevelRenderEvent.INSTANCE.getInvoker().onRender(
+    //$$             new LevelRenderContext(
+    //$$                     Minecraft.getInstance().level,
+    //$$                     Minecraft.getInstance().gameRenderer.getMainCamera(),
+    //$$                     event.getPoseStack(),
+    //$$                     state
+    //$$             )
     //$$     );
     //$$ }
     //#endif
@@ -316,28 +388,59 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     onServerDisconnect();
     //$$ }
     //$$
-    //#if MC<12109
+    //#if MC>=1.21.11
     //$$ @SubscribeEvent
-    //#if MC>=12106
-    //$$ public void onWorldRender(RenderLevelStageEvent.AfterParticles event) {
+    //$$ public void onWorldRenderExtractState(ExtractLevelRenderStateEvent event) {
+    //$$     LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
+    //$$             event.getLevel(),
+    //$$             event.getCamera(),
+    //$$             event.getDeltaTracker().getRealtimeDeltaTicks(),
+    //$$             new LevelRenderStateHolder(event.getRenderState())
+    //$$     );
+    //$$ }
+    //#endif
+    //$$
+    //$$ @SubscribeEvent
+    //#if MC>=26.1
+    //$$ public void onWorldRender(RenderLevelStageEvent.AfterTranslucentParticles event) {
+    //#elseif MC>=12106
+    //$$ public void onWorldRender(RenderLevelStageEvent.AfterTripwireBlocks event) {
     //#else
     //$$ public void onWorldRender(RenderLevelStageEvent event) {
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) return;
     //#endif
     //$$
-    //$$     if (Minecraft.getInstance().level == null) return;
-    //$$
-    //$$     ModLevelRenderer.render(
-    //$$            Minecraft.getInstance().level,
-    //$$            event.getPoseStack(),
-    //#if MC>=12100
-    //$$            event.getPartialTick().getRealtimeDeltaTicks()
+    //#if MC>=1.21.11
+    //$$ LevelRenderEvent.INSTANCE.getInvoker().onRender(
+    //$$         new LevelRenderContext(
+    //$$                 event.getPoseStack(),
+    //$$                 new LevelRenderStateHolder(event.getLevelRenderState())
+    //$$         )
+    //$$ );
     //#else
-    //$$            event.getPartialTick()
+    //$$    LevelRenderStateHolder state = new LevelRenderStateHolder();
+    //$$
+    //$$    LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
+    //$$            Minecraft.getInstance().level,
+    //$$            event.getCamera(),
+    //#if MC>=12100
+    //$$            event.getPartialTick().getRealtimeDeltaTicks(),
+    //#else
+    //$$            event.getPartialTick(),
+    //#endif,
+    //$$            state
+    //$$    );
+    //$$
+    //$$    LevelRenderEvent.INSTANCE.getInvoker().onRender(
+    //$$            new LevelRenderContext(
+    //$$                    Minecraft.getInstance().level,
+    //$$                    event.getCamera(),
+    //$$                    event.getPoseStack(),
+    //$$                    state
+    //$$            )
+    //$$    );
     //#endif
-    //$$     );
     //$$ }
-    //#endif
     //$$
     //$$ @EventBusSubscriber(
     //$$         modid = "plasmovoice",
