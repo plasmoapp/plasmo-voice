@@ -3,7 +3,6 @@ package su.plo.voice.client.event
 import su.plo.lib.mod.client.render.level.LevelRenderContext
 import su.plo.slib.api.event.GlobalEvent
 
-// todo: context class?
 object LevelRenderEvent : GlobalEvent<LevelRenderEvent.Callback>(
     { callbacks ->
         Callback { context ->

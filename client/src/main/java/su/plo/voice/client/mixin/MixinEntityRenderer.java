@@ -70,14 +70,14 @@ public class MixinEntityRenderer {
     //$$         int light,
     //$$         CallbackInfo ci
     //$$ ) {
-    //$$      EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) entityRenderState;
-    //$$      EntityVoiceIconState voiceIconState = entityRenderStateAccessor.plasmovoice_getEntityVoiceIconState();
+    //$$     EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) entityRenderState;
+    //$$     EntityVoiceIconState voiceIconState = entityRenderStateAccessor.plasmovoice_getEntityVoiceIconState();
     //$$
-    //$$      if (voiceIconState == null) return;
+    //$$     if (voiceIconState == null) return;
     //$$
-    //$$      LivingEntityRenderState livingEntityRenderState = new LivingEntityRenderState(entityRenderState, light);
+    //$$     LivingEntityRenderState livingEntityRenderState = new LivingEntityRenderState(entityRenderState, light);
     //$$
-    //$$      EntityIconRenderer.render(livingEntityRenderState, voiceIconState, poseStack);
+    //$$     EntityIconRenderer.render(livingEntityRenderState, voiceIconState, poseStack);
     //$$ }
     //#endif
 
