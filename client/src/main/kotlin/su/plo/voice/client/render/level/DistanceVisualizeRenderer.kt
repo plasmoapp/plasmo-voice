@@ -11,8 +11,8 @@ import su.plo.voice.client.extension.position
 import kotlin.math.cos
 import kotlin.math.sin
 
-const val SPHERE_STACK = 18
-const val SPHERE_SLICE = 36
+private const val SPHERE_STACK = 18
+private const val SPHERE_SLICE = 36
 
 class DistanceVisualizeRenderer : LevelRenderEvent.Callback {
 
