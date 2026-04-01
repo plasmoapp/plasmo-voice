@@ -186,8 +186,8 @@ dependencies {
             12106,
             12109,
             12111 -> "17.0.144"
-            else -> null
-        }?.let { clothConfigVersion ->
+            else -> "26.1.154"
+        }.let { clothConfigVersion ->
             modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
                 exclude("net.fabricmc.fabric-api")
             }
@@ -209,8 +209,8 @@ dependencies {
             12106,
             12109,
             12111 -> "13.0.2"
-            else -> null
-        }?.let { modMenuVersion ->
+            else -> "18.0.0-alpha.8"
+        }.let { modMenuVersion ->
             modImplementation("maven.modrinth:modmenu:$modMenuVersion")
         }
 

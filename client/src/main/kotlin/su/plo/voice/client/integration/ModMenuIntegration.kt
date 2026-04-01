@@ -1,5 +1,4 @@
-//#if FABRIC && MC<21.6
-// todo: update when available
+//#if FABRIC
 package su.plo.voice.client.integration
 
 import com.terraformersmc.modmenu.api.ConfigScreenFactory
