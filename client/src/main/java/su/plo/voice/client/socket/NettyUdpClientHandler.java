@@ -4,7 +4,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
-import su.plo.voice.api.client.PlasmoVoiceClient;
+import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.api.client.event.connection.UdpClientPacketReceivedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.client.BaseVoiceClient;
@@ -19,6 +19,7 @@ import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 import su.plo.voice.socket.NettyPacketUdp;
 
 import java.net.InetSocketAddress;
+import java.util.Optional;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
@@ -29,7 +30,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     private static final long MAX_KEEP_ALIVE_TIMEOUT = 30_000L;
     private static final long MAX_SOFT_KEEP_ALIVE_TIMEOUT = 7_000L;
 
-    private final PlasmoVoiceClient voiceClient;
+    private final BaseVoiceClient voiceClient;
     private final VoiceClientConfig config;
     private final NettyUdpClient client;
     private final ScheduledFuture<?> ticker;
@@ -80,14 +81,18 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     public void handle(@NotNull SourceAudioPacket packet) {
         if (config.getVoice().getDisabled().value()) return;
 
-        voiceClient.getSourceManager().getSourceById(packet.getSourceId())
-                .ifPresent(source -> {
-                    if (source.getSourceInfo().getState() != packet.getSourceState()) {
-                        voiceClient.getSourceManager().sendSourceInfoRequest(packet.getSourceId(), true);
-                    }
+        Optional<ClientAudioSource<?>> sourceOpt = voiceClient.getSourceManager()
+                .getSourceById(packet.getSourceId());
 
-                    source.process(packet);
-                });
+        if (sourceOpt.isPresent()) {
+            ClientAudioSource<?> source = sourceOpt.get();
+            if (source.getSourceInfo().getState() != packet.getSourceState()) {
+                voiceClient.getSourceManager().sendSourceInfoRequest(packet.getSourceId(), true);
+            }
+            source.process(packet);
+        } else {
+            voiceClient.getSourceManager().bufferPacket(packet.getSourceId(), packet);
+        }
     }
 
     @Override

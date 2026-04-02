@@ -12,10 +12,19 @@ import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.config.VoiceClientConfig
-import su.plo.voice.proto.data.audio.source.*
+import su.plo.voice.proto.data.audio.source.DirectSourceInfo
+import su.plo.voice.proto.data.audio.source.EntitySourceInfo
+import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
+import su.plo.voice.proto.data.audio.source.SelfSourceInfo
+import su.plo.voice.proto.data.audio.source.SourceInfo
+import su.plo.voice.proto.data.audio.source.StaticSourceInfo
+import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.tcp.serverbound.SourceInfoRequestPacket
-import java.util.*
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
+import java.util.Optional
+import java.util.UUID
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.TimeUnit
 
 class VoiceClientSourceManager(
     private val voiceClient: BaseVoiceClient,
@@ -40,13 +49,14 @@ class VoiceClientSourceManager(
     private val sourceById: MutableMap<UUID, ClientAudioSource<out SourceInfo>> = Maps.newConcurrentMap()
     private val sourceRequestById: MutableMap<UUID, Long> = Maps.newConcurrentMap()
     private val selfSourceInfoById: MutableMap<UUID, VoiceClientSelfSourceInfo> = Maps.newConcurrentMap()
+    private val pendingBufferById: MutableMap<UUID, PendingSourceBuffer> = Maps.newConcurrentMap()
 
-//    init {
-//        voiceClient.backgroundExecutor.scheduleAtFixedRate(
-//            { tickSelfSourceInfo() },
-//            0L, 5L, TimeUnit.SECONDS
-//        )
-//    }
+    init {
+        voiceClient.backgroundExecutor.scheduleAtFixedRate(
+            { cleanupStalePendingBuffers() },
+            0L, 5L, TimeUnit.SECONDS
+        )
+    }
 
     override fun createLoopbackSource(relative: Boolean) =
         ClientLoopbackSource(voiceClient, config, relative)
@@ -94,6 +104,7 @@ class VoiceClientSourceManager(
         sourcesByEntityId.clear()
         sourceRequestById.clear()
         selfSourceInfoById.clear()
+        pendingBufferById.clear()
     }
 
     override fun createOrUpdateSource(sourceInfo: SourceInfo): Unit = runBlocking {
@@ -102,6 +113,7 @@ class VoiceClientSourceManager(
                 val source = sourceById[sourceInfo.id]!!
                 if (source.isClosed()) {
                     sourceRequestById.remove(sourceInfo.id)
+                    pendingBufferById.remove(sourceInfo.id)
                     return@runBlocking
                 }
                 if (source.sourceInfo.lineId !== sourceInfo.lineId) {
@@ -110,38 +122,37 @@ class VoiceClientSourceManager(
                 }
 
                 source.updateUnchecked(sourceInfo)
+                pendingBufferById.remove(sourceInfo.id)?.drainTo(source, STALE_THRESHOLD_MS)
                 return@runBlocking
             }
 
-            when (sourceInfo) {
-                is PlayerSourceInfo -> {
-                    val source = createPlayerSource(sourceInfo)
-                    sourceById[sourceInfo.getId()] = source
-                    sourcesByLineId.put(sourceInfo.getLineId(), source)
-                    sourcesByPlayerId.put(sourceInfo.playerInfo.playerId, source)
+            val newSource = when (sourceInfo) {
+                is PlayerSourceInfo -> createPlayerSource(sourceInfo).apply {
+                    sourceById[sourceInfo.getId()] = this
+                    sourcesByLineId.put(sourceInfo.getLineId(), this)
+                    sourcesByPlayerId.put(sourceInfo.playerInfo.playerId, this)
                 }
 
-                is EntitySourceInfo -> {
-                    val source = createEntitySource(sourceInfo)
-                    sourceById[sourceInfo.getId()] = source
-                    sourcesByLineId.put(sourceInfo.getLineId(), source)
-                    sourcesByEntityId.put(sourceInfo.entityId, source)
+                is EntitySourceInfo -> createEntitySource(sourceInfo).apply {
+                    sourceById[sourceInfo.getId()] = this
+                    sourcesByLineId.put(sourceInfo.getLineId(), this)
+                    sourcesByEntityId.put(sourceInfo.entityId, this)
                 }
 
-                is StaticSourceInfo -> {
-                    val source = createStaticSource(sourceInfo)
-                    sourceById[sourceInfo.getId()] = source
-                    sourcesByLineId.put(sourceInfo.getLineId(), source)
+                is StaticSourceInfo -> createStaticSource(sourceInfo).apply {
+                    sourceById[sourceInfo.getId()] = this
+                    sourcesByLineId.put(sourceInfo.getLineId(), this)
                 }
 
-                is DirectSourceInfo -> {
-                    val source = createDirectSource(sourceInfo)
-                    sourceById[sourceInfo.getId()] = source
-                    sourcesByLineId.put(sourceInfo.getLineId(), source)
+                is DirectSourceInfo -> createDirectSource(sourceInfo).apply {
+                    sourceById[sourceInfo.getId()] = this
+                    sourcesByLineId.put(sourceInfo.getLineId(), this)
                 }
 
                 else -> throw IllegalArgumentException("Invalid source type")
             }
+
+            pendingBufferById.remove(sourceInfo.id)?.drainTo(newSource, STALE_THRESHOLD_MS)
             sourceRequestById.remove(sourceInfo.id)
         } catch (e: DeviceException) {
             throw IllegalStateException("Failed to initialize audio source", e)
@@ -188,14 +199,36 @@ class VoiceClientSourceManager(
         }
     }
 
-//    private fun tickSelfSourceInfo() {
-//        selfSourceInfoById.values
-//            .filter {
-//                System.currentTimeMillis() - it.lastUpdate > TIMEOUT_MS
-//            }
-//            .map { it.selfSourceInfo.sourceInfo.id }
-//            .forEach { selfSourceInfoById.remove(it) }
-//    }
+    fun bufferPacket(sourceId: UUID, packet: SourceAudioPacket) {
+        val buffer = pendingBufferById.computeIfAbsent(sourceId) {
+            PendingSourceBuffer(voiceClient.timeSupplier)
+        }
+
+        buffer.offer(packet)
+
+        sourceById[sourceId]?.let { source ->
+            buffer.drainTo(source, STALE_THRESHOLD_MS)
+            pendingBufferById.remove(sourceId)
+        }
+    }
+
+    fun bufferPacketIfPending(sourceId: UUID, packet: SourceAudioEndPacket) {
+        val buffer = pendingBufferById[sourceId] ?: return
+
+        buffer.offer(packet)
+
+        sourceById[sourceId]?.let { source ->
+            buffer.drainTo(source, STALE_THRESHOLD_MS)
+            pendingBufferById.remove(sourceId)
+        }
+    }
+
+    private fun cleanupStalePendingBuffers() {
+        val now = voiceClient.timeSupplier.currentTimeMillis
+        pendingBufferById.entries.removeIf { (_, buffer) ->
+            now - buffer.createdAt > PENDING_BUFFER_TIMEOUT_MS
+        }
+    }
 
     private fun createPlayerSource(sourceInfo: PlayerSourceInfo): ClientAudioSource<PlayerSourceInfo> {
         return ClientPlayerSource(
@@ -222,6 +255,7 @@ class VoiceClientSourceManager(
     }
 
     companion object {
-        private const val TIMEOUT_MS = 25000L
+        private const val STALE_THRESHOLD_MS = 500L
+        private const val PENDING_BUFFER_TIMEOUT_MS = 5000L
     }
 }

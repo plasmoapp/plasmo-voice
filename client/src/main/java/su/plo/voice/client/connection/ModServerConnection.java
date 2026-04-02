@@ -25,7 +25,9 @@ import su.plo.voice.api.client.event.socket.UdpClientConnectEvent;
 import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.api.client.audio.source.ClientAudioSource;
 import su.plo.voice.client.BaseVoiceClient;
+import su.plo.voice.client.audio.source.VoiceClientSourceManager;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.language.LanguageChangedEvent;
 import su.plo.voice.client.socket.NettyUdpClient;
@@ -47,7 +49,6 @@ import java.net.SocketAddress;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -76,7 +77,7 @@ public final class ModServerConnection implements ServerConnection {
     private final VoiceClientConfig config;
     private final ClientSourceLineManager sourceLines;
     private final ClientActivationManager activations;
-    private final ClientSourceManager sources;
+    private final VoiceClientSourceManager sources;
     @Getter
     private final Connection connection;
 
@@ -406,8 +407,12 @@ public final class ModServerConnection implements ServerConnection {
     public void handle(@NotNull SourceAudioEndPacket packet) {
         if (config.getVoice().getDisabled().value()) return;
 
-        sources.getSourceById(packet.getSourceId(), false)
-                .ifPresent(source -> source.process(packet));
+        Optional<ClientAudioSource<?>> sourceOpt = sources.getSourceById(packet.getSourceId(), false);
+        if (sourceOpt.isPresent()) {
+            sourceOpt.get().process(packet);
+        } else {
+            sources.bufferPacketIfPending(packet.getSourceId(), packet);
+        }
     }
 
     @Override

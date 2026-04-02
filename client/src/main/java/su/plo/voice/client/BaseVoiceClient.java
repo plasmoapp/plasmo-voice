@@ -85,7 +85,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
     @Getter
     private ClientSourceLineManager sourceLineManager;
     @Getter
-    private ClientSourceManager sourceManager;
+    private VoiceClientSourceManager sourceManager;
     @Getter
     private DistanceVisualizeStateExtractor distanceVisualizer;
 
