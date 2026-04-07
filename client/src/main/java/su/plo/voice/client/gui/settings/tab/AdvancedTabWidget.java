@@ -62,12 +62,6 @@ public final class AdvancedTabWidget extends TabWidget {
                 config.getAdvanced().getSourceTypesOverlap(),
                 false
         ));
-        addEntry(createToggleEntry(
-                McTextComponent.translatable("gui.plasmovoice.advanced.adaptive_jitter_buffer"),
-                McTextComponent.translatable("gui.plasmovoice.advanced.adaptive_jitter_buffer.tooltip"),
-                config.getAdvanced().getAdaptiveJitterBuffer(),
-                toggled -> voiceClient.getBackgroundExecutor().execute(voiceClient.getSourceManager()::clear)
-        ));
 
         addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")));
         addEntry(createToggleEntry(

@@ -23,4 +23,11 @@ class ClientStaticSource(
 
     override fun shouldCalculateDirectionalGain() =
         sourceInfo.angle > 0 && super.shouldCalculateDirectionalGain()
+
+    override fun toString(): String =
+        "ClientStaticSource{" +
+                "position=${sourceInfo.position}, " +
+                "sourceLine=${sourceLine.name}, " +
+                "lastSequenceNumber=${lastSequenceNumber}" +
+                "}"
 }

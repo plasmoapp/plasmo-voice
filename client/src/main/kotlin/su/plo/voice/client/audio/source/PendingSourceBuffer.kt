@@ -19,7 +19,7 @@ class PendingSourceBuffer(
             packets.poll()
         }
 
-        packets.offer(PendingAudioPacket(packet, timeSupplier.currentTimeMillis))
+        packets.offer(PendingAudioPacket(packet, timeSupplier.nanoTime))
     }
 
     fun offer(packet: SourceAudioEndPacket) {
@@ -27,34 +27,31 @@ class PendingSourceBuffer(
             packets.poll()
         }
 
-        packets.offer(PendingAudioEndPacket(packet, timeSupplier.currentTimeMillis))
+        packets.offer(PendingAudioEndPacket(packet, timeSupplier.nanoTime))
     }
 
-    fun drainTo(source: ClientAudioSource<*>, staleThresholdMillis: Long) {
-        val now = timeSupplier.currentTimeMillis
-
+    fun drainTo(source: ClientAudioSource<*>) {
         while (true) {
             val pending = packets.poll() ?: break
-            if (now - pending.arrivalTime > staleThresholdMillis) continue
 
             when (pending) {
-                is PendingAudioPacket -> source.process(pending.packet)
-                is PendingAudioEndPacket -> source.process(pending.packet)
+                is PendingAudioPacket -> source.process(pending.packet, pending.arrivalTimeNanos)
+                is PendingAudioEndPacket -> source.process(pending.packet, pending.arrivalTimeNanos)
             }
         }
     }
 }
 
 sealed interface PendingPacket {
-    val arrivalTime: Long
+    val arrivalTimeNanos: Long
 }
 
 data class PendingAudioPacket(
     val packet: SourceAudioPacket,
-    override val arrivalTime: Long,
+    override val arrivalTimeNanos: Long,
 ) : PendingPacket
 
 data class PendingAudioEndPacket(
     val packet: SourceAudioEndPacket,
-    override val arrivalTime: Long,
+    override val arrivalTimeNanos: Long,
 ) : PendingPacket

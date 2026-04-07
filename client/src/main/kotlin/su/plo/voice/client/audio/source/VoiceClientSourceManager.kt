@@ -122,7 +122,7 @@ class VoiceClientSourceManager(
                 }
 
                 source.updateUnchecked(sourceInfo)
-                pendingBufferById.remove(sourceInfo.id)?.drainTo(source, STALE_THRESHOLD_MS)
+                pendingBufferById.remove(sourceInfo.id)?.drainTo(source)
                 return@runBlocking
             }
 
@@ -152,7 +152,7 @@ class VoiceClientSourceManager(
                 else -> throw IllegalArgumentException("Invalid source type")
             }
 
-            pendingBufferById.remove(sourceInfo.id)?.drainTo(newSource, STALE_THRESHOLD_MS)
+            pendingBufferById.remove(sourceInfo.id)?.drainTo(newSource)
             sourceRequestById.remove(sourceInfo.id)
         } catch (e: DeviceException) {
             throw IllegalStateException("Failed to initialize audio source", e)
@@ -207,7 +207,7 @@ class VoiceClientSourceManager(
         buffer.offer(packet)
 
         sourceById[sourceId]?.let { source ->
-            buffer.drainTo(source, STALE_THRESHOLD_MS)
+            buffer.drainTo(source)
             pendingBufferById.remove(sourceId)
         }
     }
@@ -218,7 +218,7 @@ class VoiceClientSourceManager(
         buffer.offer(packet)
 
         sourceById[sourceId]?.let { source ->
-            buffer.drainTo(source, STALE_THRESHOLD_MS)
+            buffer.drainTo(source)
             pendingBufferById.remove(sourceId)
         }
     }
@@ -255,7 +255,6 @@ class VoiceClientSourceManager(
     }
 
     companion object {
-        private const val STALE_THRESHOLD_MS = 500L
         private const val PENDING_BUFFER_TIMEOUT_MS = 5000L
     }
 }

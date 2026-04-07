@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.source
 
 import su.plo.voice.api.client.time.TimeSupplier
+import su.plo.voice.client.extension.nanosToMillis
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import java.util.Queue
@@ -34,7 +35,7 @@ class AdaptiveJitterBuffer(
     private var jitterEstimate: Double = 0.0
     private var adaptiveDelayMillis: Long = packetDelayMillis
 
-    override fun offer(packet: SourceAudioPacket) {
+    override fun offer(packet: SourceAudioPacket, arrivalTimeMillis: Long) {
         if (endPacket != null && packet.sequenceNumber > endPacket!!.sequenceNumber) {
             endPacket = null
             firstPacketArrival = null
@@ -42,47 +43,43 @@ class AdaptiveJitterBuffer(
             lastPacketArrival = null
         }
 
-        val arrivalTime = timeSupplier.currentTimeMillis
-
         queue.offer(
             PacketWithArrivalTime(
-                JitterBuffer.SourceAudioPacketWrapper(packet, arrivalTime),
-                scheduledPlaybackTime(packet.sequenceNumber, arrivalTime)
+                JitterBuffer.SourceAudioPacketWrapper(packet, arrivalTimeMillis),
+                scheduledPlaybackTime(packet.sequenceNumber, arrivalTimeMillis)
             )
         )
     }
 
-    override fun offer(packet: SourceAudioEndPacket) {
+    override fun offer(packet: SourceAudioEndPacket, arrivalTimeMillis: Long) {
         endPacket = packet
 
-        val arrivalTime = timeSupplier.currentTimeMillis
-
         queue.offer(
             PacketWithArrivalTime(
-                JitterBuffer.SourceAudioEndPacketWrapper(packet, arrivalTime),
-                scheduledPlaybackTime(packet.sequenceNumber, arrivalTime)
+                JitterBuffer.SourceAudioEndPacketWrapper(packet, arrivalTimeMillis),
+                scheduledPlaybackTime(packet.sequenceNumber, arrivalTimeMillis)
             )
         )
     }
 
-    private fun scheduledPlaybackTime(sequenceNumber: Long, arrivalTime: Long): Long {
+    private fun scheduledPlaybackTime(sequenceNumber: Long, arrivalTimeMillis: Long): Long {
         lastPacketArrival?.let { last ->
-            val transit = arrivalTime - last
+            val transit = arrivalTimeMillis - last
             // I don't really want to get sender's timestamp here
             // so let's assume that packets are sent at 20 rate without fluctuations
             val delta = abs(transit - 20)
             jitterEstimate += (delta - jitterEstimate) / 16.0
             adaptiveDelayMillis = (round(jitterEstimate / 20.0) * 20).toLong()
         }
-        lastPacketArrival = arrivalTime
+        lastPacketArrival = arrivalTimeMillis
 
         if (firstSequenceNumber == null) {
-            firstPacketArrival = arrivalTime
+            firstPacketArrival = arrivalTimeMillis
             firstSequenceNumber = sequenceNumber
         }
 
         val sequenceOffset = sequenceNumber - (firstSequenceNumber ?: sequenceNumber)
-        val scheduledPlaybackTime = (firstPacketArrival ?: arrivalTime) + packetDelayMillis + sequenceOffset * 20
+        val scheduledPlaybackTime = (firstPacketArrival ?: arrivalTimeMillis) + packetDelayMillis + sequenceOffset * 20
 
         return scheduledPlaybackTime
     }
@@ -90,7 +87,7 @@ class AdaptiveJitterBuffer(
     override fun poll(): JitterBuffer.PacketWithSequenceNumber? {
         val next = queue.peek() ?: return null
 
-        if (timeSupplier.currentTimeMillis >= next.scheduledPlaybackTime + adaptiveDelayMillis) {
+        if (timeSupplier.nanoTime.nanosToMillis() >= next.scheduledPlaybackTime + adaptiveDelayMillis) {
             return queue.poll().packet
         }
 
@@ -103,6 +100,11 @@ class AdaptiveJitterBuffer(
     override fun reset() {
         firstSequenceNumber = null
         firstPacketArrival = null
+    }
+
+    override fun clear() {
+        reset()
+        queue.clear()
     }
 
     data class PacketWithArrivalTime(

@@ -23,6 +23,14 @@ class ClientEntitySource(
     override fun isPanningDisabled(): Boolean =
         sourceEntity == getListener() || super.isPanningDisabled()
 
+    override fun toString(): String =
+        "ClientEntitySource{" +
+                "entityId=${sourceInfo.entityId}, " +
+                "entityUuid=${sourceEntity?.uuid}, " +
+                "sourceLine=${sourceLine.name}, " +
+                "lastSequenceNumber=${lastSequenceNumber}" +
+                "}"
+
     private val sourceEntity: Entity?
         get() {
             return Minecraft.getInstance().level?.getEntity(sourceInfo.entityId)

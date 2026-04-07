@@ -95,6 +95,13 @@ class ClientDirectSource(
         return true
     }
 
+    override fun toString(): String =
+        "ClientDirectSource{" +
+                "sender=${sourceInfo.sender?.name}, " +
+                "sourceLine=${sourceLine.name}, " +
+                "lastSequenceNumber=${lastSequenceNumber}" +
+                "}"
+
     private fun createSourceMute(sourceInfo: DirectSourceInfo): BooleanConfigEntry? =
         sourceInfo.sender?.let {
             config.voice

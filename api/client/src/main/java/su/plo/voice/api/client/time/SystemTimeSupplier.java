@@ -6,4 +6,9 @@ public class SystemTimeSupplier implements TimeSupplier {
     public long getCurrentTimeMillis() {
         return System.currentTimeMillis();
     }
+
+    @Override
+    public long getNanoTime() {
+        return System.nanoTime();
+    }
 }

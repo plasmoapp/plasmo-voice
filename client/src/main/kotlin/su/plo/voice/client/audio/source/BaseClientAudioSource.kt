@@ -1,15 +1,17 @@
 package su.plo.voice.client.audio.source
 
-import kotlinx.coroutines.*
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.future
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.minecraft.client.Minecraft
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.phys.Vec3
-import org.apache.logging.log4j.LogManager
-import org.apache.logging.log4j.Logger
 import org.lwjgl.openal.AL10
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.DoubleConfigEntry
@@ -22,7 +24,6 @@ import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.device.source.AlSourceParams
 import su.plo.voice.api.client.audio.line.ClientSourceLine
 import su.plo.voice.api.client.audio.source.ClientAudioSource
-import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.api.client.connection.ServerInfo.VoiceInfo
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent
 import su.plo.voice.api.client.event.audio.device.source.AlStreamSourceStoppedEvent
@@ -30,6 +31,7 @@ import su.plo.voice.api.client.event.audio.source.AudioSourceClosedEvent
 import su.plo.voice.api.client.event.audio.source.AudioSourceInitializedEvent
 import su.plo.voice.api.client.event.audio.source.AudioSourceResetEvent
 import su.plo.voice.api.client.event.audio.source.AudioSourceWriteEvent
+import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.api.encryption.Encryption
 import su.plo.voice.api.encryption.EncryptionException
 import su.plo.voice.api.event.EventPriority
@@ -41,7 +43,9 @@ import su.plo.voice.client.audio.SoundOcclusion
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.extension.diff
 import su.plo.voice.client.extension.level
+import su.plo.voice.client.extension.nanosToMillis
 import su.plo.voice.client.extension.toFloatArray
+import su.plo.voice.client.logging.PrefixedLogger
 import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
@@ -56,8 +60,11 @@ import kotlin.math.pow
 abstract class BaseClientAudioSource<T>(
     protected val voiceClient: BaseVoiceClient,
     protected val config: VoiceClientConfig,
-    final override var sourceInfo: T
+    final override var sourceInfo: T,
 ) : ClientAudioSource<T> where T : SourceInfo {
+
+    private val logger = PrefixedLogger(BaseVoice.LOGGER, ::toString)
+    private val debugLogger = PrefixedLogger(BaseVoice.DEBUG_LOGGER, ::toString)
 
     private val timeSupplier: TimeSupplier
         get() = voiceClient.timeSupplier
@@ -78,16 +85,15 @@ abstract class BaseClientAudioSource<T>(
     private var decoder: AudioDecoder? = null
     private val frameSize: Int
 
-    private var endRequest: Job? = null
-    private var endSequenceNumber: Long = -1L
-
     override var closeTimeoutMs: Long = 500
         set(value) {
             source.setCloseTimeoutMs(value)
             field = value
         }
 
-    private var lastSequenceNumber: Long = -1L
+    protected var lastSequenceNumber: Long = -1L
+    private var endSequenceNumber: Long = -1L
+
     private var lastActivation = 0L
     private var lastOcclusion = -1.0
 
@@ -103,13 +109,7 @@ abstract class BaseClientAudioSource<T>(
     private val mutex = Mutex()
 
     private val buffer: JitterBuffer =
-        if (config.advanced.adaptiveJitterBuffer.value()) {
-            AdaptiveJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
-        } else {
-            StaticJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
-        }
-
-    private val job = startJob()
+        StaticJitterBuffer(timeSupplier, config.advanced.jitterPacketDelay.value())
 
     init {
         val serverInfo = voiceClient.serverInfo
@@ -128,17 +128,22 @@ abstract class BaseClientAudioSource<T>(
         }
 
         // initialize volumes
-        sourceLine = getSourceLine(sourceInfo)
-        lineVolume = getLineVolume(sourceLine)
-        lineMute = getLineMute(sourceLine)
-        BaseVoice.DEBUG_LOGGER.log(
-            "Source {} initialized in {}",
+        sourceLine = voiceClient.sourceLineManager.getLineById(sourceInfo.lineId)
+            .orElseThrow { IllegalStateException("Source line not found") }
+
+        lineVolume = getLineVolume()
+        lineMute = getLineMute()
+
+        debugLogger.info(
+            "{} initialized in {}",
             sourceInfo,
             if (isStereo(sourceInfo)) "stereo" else "mono"
         )
 
         voiceClient.eventBus.fire(AudioSourceInitializedEvent(this))
     }
+
+    private val job = startJob()
 
     override fun update(sourceInfo: T): Unit = runBlocking {
         mutex.withLock {
@@ -147,6 +152,7 @@ abstract class BaseClientAudioSource<T>(
 
             val voiceInfo = serverInfo.voiceInfo
             val stereoChanged = isStereo(this@BaseClientAudioSource.sourceInfo) != isStereo(sourceInfo)
+            val isNewStereo = isStereo(sourceInfo)
 
             // initialize sources
             if (stereoChanged) {
@@ -154,10 +160,10 @@ abstract class BaseClientAudioSource<T>(
                 source = createSource(sourceInfo)
                 oldSource.closeAsync()
 
-                BaseVoice.DEBUG_LOGGER.log(
-                    "Update device sources for {} in {}",
-                    sourceInfo,
-                    if (isStereo(sourceInfo)) "stereo" else "mono"
+                debugLogger.info(
+                    "Device source channels updated {} -> {}",
+                    if (isNewStereo) "mono" else "stereo",
+                    if (isNewStereo) "stereo" else "mono",
                 )
             }
 
@@ -170,7 +176,11 @@ abstract class BaseClientAudioSource<T>(
                 }
                 lastSequenceNumber = -1L
                 endSequenceNumber = -1L
-                BaseVoice.DEBUG_LOGGER.log("Update decoder for {}", sourceInfo)
+
+                debugLogger.info(
+                    "Decoder reinitialized in {}",
+                    if (isNewStereo) "stereo" else "mono",
+                )
             }
 
             // initialize encryption
@@ -180,40 +190,42 @@ abstract class BaseClientAudioSource<T>(
 
             // initialize volumes
             if (sourceInfo.lineId != this@BaseClientAudioSource.sourceInfo.lineId) {
-                sourceLine = getSourceLine(sourceInfo)
-                lineVolume = getLineVolume(sourceLine)
-                lineMute = getLineMute(sourceLine)
-                BaseVoice.DEBUG_LOGGER.log("Update source line for {}", sourceInfo)
+                sourceLine = voiceClient.sourceLineManager.getLineById(sourceInfo.lineId)
+                    .orElseThrow { IllegalStateException("Source line not found") }
+
+                lineVolume = getLineVolume()
+                lineMute = getLineMute()
+
+                debugLogger.info("Source line changed to ${sourceLine.name}")
             }
 
             this@BaseClientAudioSource.sourceInfo = sourceInfo
+
+            debugLogger.info("{} updated", sourceInfo)
 
             voiceClient.eventBus.fire(AudioSourceInitializedEvent(this@BaseClientAudioSource))
         }
     }
 
     override fun process(packet: SourceAudioPacket) {
+        process(packet, timeSupplier.nanoTime)
+    }
+
+    override fun process(packet: SourceAudioPacket, arrivalTimeNanos: Long) {
         if (isClosed() || lineMute.value()) return
 
-        buffer.offer(packet)
+        buffer.offer(packet, arrivalTimeNanos.nanosToMillis())
     }
 
     override fun process(packet: SourceAudioEndPacket) {
+        process(packet, timeSupplier.nanoTime)
+    }
+
+    override fun process(packet: SourceAudioEndPacket, arrivalTimeNanos: Long) {
         if (isClosed() || lineMute.value()) return
 
-        buffer.offer(packet)
-        endRequest?.cancel()
+        buffer.offer(packet, arrivalTimeNanos.nanosToMillis())
         endSequenceNumber = packet.sequenceNumber
-
-        // because SourceAudioEndPacket can be received BEFORE the end of the stream,
-        // we need to wait for some time to actually end the stream
-        endRequest = SCOPE.launch {
-            try {
-                delay(100L)
-                reset(AudioSourceResetEvent.Cause.VOICE_END)
-            } catch (_: CancellationException) {
-            }
-        }
     }
 
     override suspend fun close() = mutex.withLock {
@@ -228,7 +240,8 @@ abstract class BaseClientAudioSource<T>(
         source.closeAsync()
 
         voiceClient.eventBus.fire(AudioSourceClosedEvent(this@BaseClientAudioSource))
-        BaseVoice.DEBUG_LOGGER.log("Source {} closed", sourceInfo)
+
+        debugLogger.info("Source closed")
     }
 
     override fun closeAsync(): CompletableFuture<Void?> =
@@ -237,25 +250,11 @@ abstract class BaseClientAudioSource<T>(
             null
         }
 
-    override fun isActivated(): Boolean {
-        if (activated.get()) {
-            if (closeTimeoutMs > 0L && timeSupplier.currentTimeMillis - lastActivation > closeTimeoutMs) {
-                resetAsync(AudioSourceResetEvent.Cause.TIMED_OUT)
-            }
+    override fun isActivated(): Boolean = activated.get()
 
-            return true
-        }
+    override fun isClosed(): Boolean = closed.get()
 
-        return false
-    }
-
-    override fun isClosed(): Boolean {
-        return closed.get()
-    }
-
-    override fun canHear(): Boolean {
-        return canHear.get()
-    }
+    override fun canHear(): Boolean = canHear.get()
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
@@ -273,16 +272,15 @@ abstract class BaseClientAudioSource<T>(
         while (isActive) {
             val wrappedPacket = buffer.poll()
             if (wrappedPacket == null) {
-                // if playback time is reached, but buffer is not available
-                // we should do PLC
-                if (config.advanced.adaptiveJitterBuffer.value() &&
-                    activated.get() &&
-                    buffer.isNotEmpty() &&
-                    timeSupplier.currentTimeMillis - lastActivation > 20
+                val now = timeSupplier.currentTimeMillis
+
+                if (!resetted.get() &&
+                    buffer.isEmpty() &&
+                    lastSequenceNumber >= 0L && // don't time out before any audio arrived
+                    closeTimeoutMs > 0L &&
+                    now - lastActivation > closeTimeoutMs
                 ) {
-                    BaseVoice.DEBUG_LOGGER.warn("Playback time is reached, but packet is not available. PLC will be used to compensate lost packet. ($lastSequenceNumber)")
-                    processPlc()
-                    continue
+                    reset(AudioSourceResetEvent.Cause.TIMED_OUT)
                 }
 
                 delay(5L)
@@ -290,37 +288,63 @@ abstract class BaseClientAudioSource<T>(
             }
 
             when (wrappedPacket) {
-                is JitterBuffer.SourceAudioPacketWrapper ->
-                    processAudioPacket(wrappedPacket.packet)
+                is JitterBuffer.SourceAudioPacketWrapper -> processAudioPacket(wrappedPacket.packet, wrappedPacket.arrivalTimeMillis)
 
-                is JitterBuffer.SourceAudioEndPacketWrapper ->
-                    processAudioEndPacket(wrappedPacket.packet)
+                is JitterBuffer.SourceAudioEndPacketWrapper -> processAudioEndPacket(wrappedPacket.packet)
+
+                is JitterBuffer.PacketLost -> processPlc(wrappedPacket.sequenceNumber)
             }
         }
     }
 
-    private fun isAudioPacketValid(packet: SourceAudioPacket): Boolean {
+    private fun isAudioPacketValid(packet: SourceAudioPacket, arrivalTimeMillis: Long): Boolean {
         // drop packets if source state diff by more than 10
         if (sourceInfo.state.diff(packet.sourceState) >= 10) {
-            BaseVoice.DEBUG_LOGGER.warn("Drop packet with bad source state {}", sourceInfo)
+            debugLogger.warn(
+                "Drop packet #${packet.sequenceNumber} with bad source state: {} (sourceState={})",
+                packet.sourceState,
+                sourceInfo.state,
+            )
             return false
         }
 
-        // drop packet with bad order
-        if (lastSequenceNumber >= 0 && packet.sequenceNumber <= lastSequenceNumber) {
-            if (lastSequenceNumber - packet.sequenceNumber < 10L) {
-                BaseVoice.DEBUG_LOGGER.log("Drop packet with bad order ($lastSequenceNumber ${packet.sequenceNumber})")
-                return false
-            }
+        // senders can restart their counters (a new AudioSender, a restarted capture thread),
+        // and lastSequenceNumber survives VOICE_END, so a large backward jump is a new stream
+        if (lastSequenceNumber >= 0 &&
+            packet.sequenceNumber <= lastSequenceNumber &&
+            lastSequenceNumber - packet.sequenceNumber < SEQUENCE_RESTART_THRESHOLD
+        ) {
+            debugLogger.warn(
+                "Drop packet #{} with bad order (arrivalTime={}, playbackTime={})",
+                packet.sequenceNumber,
+                arrivalTimeMillis,
+                timeSupplier.nanoTime.nanosToMillis(),
+            )
+            return false
         }
 
         return true
     }
 
-    private suspend fun processPlc() = mutex.withLock {
-        val sequenceNumber = lastSequenceNumber + 1
+    private suspend fun processPlc(sequenceNumber: Long) = mutex.withLock {
+        if (sequenceNumber <= lastSequenceNumber) return@withLock
 
-        write((decoder as AudioDecoderPlc).decodePLC(), sequenceNumber)
+        debugLogger.warn(
+            "Compensating lost packet #{} (playbackTime={})",
+            sequenceNumber,
+            timeSupplier.currentTimeMillis,
+        )
+
+        if (decoder != null && decoder is AudioDecoderPlc && !sourceInfo.isStereo) {
+            try {
+                write((decoder as AudioDecoderPlc).decodePLC(), sequenceNumber)
+            } catch (e: CodecException) {
+                logger.warn("Failed to decode PLC", e)
+                return@withLock
+            }
+        } else {
+            write(ShortArray(frameSize * source.channels), sequenceNumber)
+        }
 
         lastSequenceNumber = sequenceNumber
         lastActivation = timeSupplier.currentTimeMillis
@@ -329,44 +353,20 @@ abstract class BaseClientAudioSource<T>(
         resetted.set(false)
     }
 
-    private suspend fun processAudioPacket(packet: SourceAudioPacket) = mutex.withLock {
-        if (!isAudioPacketValid(packet)) return
-
-        endRequest?.let {
-            it.cancel()
-            endRequest = null
-        }
+    private suspend fun processAudioPacket(
+        packet: SourceAudioPacket,
+        arrivalTimeMillis: Long,
+    ) = mutex.withLock {
+        if (!isAudioPacketValid(packet, arrivalTimeMillis)) return@withLock
 
         // update source volume & distance
         updateSource(packet.distance.toDouble())
 
         // after updating the source, source can be closed by reloading the device,
         // so we need to make sure that source is not closed rn
-        if (closed.get()) return
+        if (closed.get()) return@withLock
 
         if (shouldWrite()) {
-            // packet compensation
-            if (lastSequenceNumber >= 0) {
-                val packetsToCompensate = (packet.sequenceNumber - (lastSequenceNumber + 1)).toInt()
-                if (packetsToCompensate in 1..4) {
-                    BaseVoice.DEBUG_LOGGER.warn("Compensate {} lost packets ({} {})", packetsToCompensate, lastSequenceNumber, packet.sequenceNumber)
-                    for (i in 0 until packetsToCompensate) {
-                        val compensatedSequenceNumber = lastSequenceNumber + i + 1
-
-                        if (decoder != null && decoder is AudioDecoderPlc && !sourceInfo.isStereo) {
-                            try {
-                                write((decoder as AudioDecoderPlc).decodePLC(), compensatedSequenceNumber)
-                            } catch (e: CodecException) {
-                                LOGGER.warn("Failed to decode source audio", e)
-                                return
-                            }
-                        } else {
-                            write(ShortArray(frameSize * source.channels), compensatedSequenceNumber)
-                        }
-                    }
-                }
-            }
-
             // decrypt & decode samples
             try {
                 val decrypted = encryption?.decrypt(packet.data) ?: packet.data
@@ -378,9 +378,9 @@ abstract class BaseClientAudioSource<T>(
                     write(decoded, packet.sequenceNumber)
                 }
             } catch (e: EncryptionException) {
-                BaseVoice.DEBUG_LOGGER.warn("Failed to decrypt source audio", e)
+                debugLogger.warn("Failed to decrypt source audio", e)
             } catch (e: CodecException) {
-                BaseVoice.DEBUG_LOGGER.warn("Failed to decode source audio", e)
+                debugLogger.warn("Failed to decode source audio", e)
             }
         } else {
             source.updateLastBufferTime()
@@ -394,23 +394,12 @@ abstract class BaseClientAudioSource<T>(
     }
 
     private suspend fun processAudioEndPacket(packet: SourceAudioEndPacket) = mutex.withLock {
-        if (!activated.get()) return
         lastSequenceNumber = packet.sequenceNumber
+        resetSync(AudioSourceResetEvent.Cause.VOICE_END)
     }
 
     private suspend fun reset(cause: AudioSourceResetEvent.Cause) = mutex.withLock {
-        val event = AudioSourceResetEvent(this, cause)
-        if (!voiceClient.eventBus.fire(event)) return@withLock
-
-        if (!resetted.compareAndSet(false, true)) return
-        if (decoder != null) decoder!!.reset()
-        activated.set(false)
-        canHear.set(false)
-        effectiveVolume = 0f
-
-        if (cause == AudioSourceResetEvent.Cause.TIMED_OUT) {
-            LOGGER.debug("Voice end packet was not received")
-        }
+        resetSync(cause)
     }
 
     override fun resetAsync(cause: AudioSourceResetEvent.Cause): CompletableFuture<Void?> =
@@ -418,6 +407,29 @@ abstract class BaseClientAudioSource<T>(
             reset(cause)
             null
         }
+
+    private fun resetSync(cause: AudioSourceResetEvent.Cause) {
+        debugLogger.info("Reset $cause")
+
+        val event = AudioSourceResetEvent(this, cause)
+        if (!voiceClient.eventBus.fire(event)) return
+
+        activated.set(false)
+
+        if (cause == AudioSourceResetEvent.Cause.SOURCE_STOPPED) return
+
+        if (!resetted.compareAndSet(false, true)) return
+
+        decoder?.reset()
+        canHear.set(false)
+        effectiveVolume = 0f
+
+        if (cause != AudioSourceResetEvent.Cause.VOICE_END) {
+            buffer.clear()
+            lastSequenceNumber = -1L
+        }
+        endSequenceNumber = -1L
+    }
 
     protected fun getListener(): Entity? =
         if (config.advanced.cameraSoundListener.value()
@@ -577,16 +589,12 @@ abstract class BaseClientAudioSource<T>(
         )
     }
 
-    private fun getSourceLine(sourceInfo: T): ClientSourceLine =
-        voiceClient.sourceLineManager.getLineById(sourceInfo.lineId)
-            .orElseThrow { IllegalStateException("Source line not found") }
-
-    private fun getLineVolume(sourceLine: ClientSourceLine): DoubleConfigEntry =
+    private fun getLineVolume(): DoubleConfigEntry =
         config.voice
             .volumes
             .getVolume(sourceLine.name)
 
-    private fun getLineMute(sourceLine: ClientSourceLine): BooleanConfigEntry =
+    private fun getLineMute(): BooleanConfigEntry =
         config.voice
             .volumes
             .getMute(sourceLine.name)
@@ -611,8 +619,8 @@ abstract class BaseClientAudioSource<T>(
 
     companion object {
         private val OUTER_ANGLE: Double = 180.0
-        private val LOGGER: Logger = LogManager.getLogger(BaseClientAudioSource::class.java)
         private val POSITION_ZERO = floatArrayOf(0f, 0f, 0f)
+        private const val SEQUENCE_RESTART_THRESHOLD = 10L
 
         private val SCOPE = CoroutineScopes.DefaultSupervisor
     }

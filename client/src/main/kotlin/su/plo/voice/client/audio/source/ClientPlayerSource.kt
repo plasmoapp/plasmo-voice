@@ -53,6 +53,13 @@ class ClientPlayerSource(
         return true
     }
 
+    override fun toString(): String =
+        "ClientPlayerSource{" +
+                "nick=${sourceInfo.playerInfo.playerNick}, " +
+                "sourceLine=${sourceLine.name}, " +
+                "lastSequenceNumber=${lastSequenceNumber}" +
+                "}"
+
     private val sourceMute: BooleanConfigEntry
         get() {
             return config.voice

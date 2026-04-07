@@ -5,6 +5,7 @@ import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.line.ClientSourceLine
 import su.plo.voice.api.client.event.audio.source.AudioSourceResetEvent
+import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
@@ -87,11 +88,27 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
     fun process(packet: SourceAudioPacket)
 
     /**
+     * Processes an incoming audio packet and plays the audio.
+     *
+     * @param packet The audio packet to process.
+     * @param arrivalTimeNanos The time when packet was arrived, from [TimeSupplier.getNanoTime].
+     */
+    fun process(packet: SourceAudioPacket, arrivalTimeNanos: Long)
+
+    /**
      * Processes an audio end packet indicating the end of audio playback.
      *
      * @param packet The audio end packet to process.
      */
     fun process(packet: SourceAudioEndPacket)
+
+    /**
+     * Processes an audio end packet indicating the end of audio playback.
+     *
+     * @param packet The audio end packet to process.
+     * @param arrivalTimeNanos The time when packet was arrived, from [TimeSupplier.getNanoTime].
+     */
+    fun process(packet: SourceAudioEndPacket, arrivalTimeNanos: Long)
 
     /**
      * Checks if the audio source is closed.

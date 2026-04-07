@@ -5,9 +5,9 @@ import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 
 interface JitterBuffer {
 
-    fun offer(packet: SourceAudioPacket)
+    fun offer(packet: SourceAudioPacket, arrivalTimeMillis: Long)
 
-    fun offer(packet: SourceAudioEndPacket)
+    fun offer(packet: SourceAudioEndPacket, arrivalTimeMillis: Long)
 
     fun poll(): PacketWithSequenceNumber?
 
@@ -17,14 +17,16 @@ interface JitterBuffer {
 
     fun reset() {}
 
+    fun clear()
+
     sealed interface PacketWithSequenceNumber {
         val sequenceNumber: Long
-        val arrivalTime: Long
+        val arrivalTimeMillis: Long
     }
 
     data class SourceAudioPacketWrapper(
         val packet: SourceAudioPacket,
-        override val arrivalTime: Long
+        override val arrivalTimeMillis: Long
     ) : PacketWithSequenceNumber {
         override val sequenceNumber: Long
             get() = packet.sequenceNumber
@@ -32,9 +34,14 @@ interface JitterBuffer {
 
     data class SourceAudioEndPacketWrapper(
         val packet: SourceAudioEndPacket,
-        override val arrivalTime: Long
+        override val arrivalTimeMillis: Long
     ) : PacketWithSequenceNumber {
         override val sequenceNumber: Long
             get() = packet.sequenceNumber
     }
+
+    data class PacketLost(
+        override val sequenceNumber: Long,
+        override val arrivalTimeMillis: Long
+    ) : PacketWithSequenceNumber
 }
