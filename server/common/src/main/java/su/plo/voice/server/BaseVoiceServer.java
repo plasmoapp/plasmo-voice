@@ -42,6 +42,7 @@ import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.command.*;
 import su.plo.voice.server.config.VoiceServerConfig;
+import su.plo.voice.server.connection.ModRequiredKickHandler;
 import su.plo.voice.server.connection.PlayerInfoRequestScheduler;
 import su.plo.voice.server.connection.ServerChannelHandler;
 import su.plo.voice.server.connection.ServerServiceChannelHandler;
@@ -107,6 +108,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     private final ServerChannelHandler channelHandler = new ServerChannelHandler(this);
     private final ServerServiceChannelHandler serviceChannelHandler = new ServerServiceChannelHandler(this);
     private PlayerInfoRequestScheduler requestScheduler;
+    private ModRequiredKickHandler modRequiredKickHandler;
 
     protected BaseVoiceServer(@NotNull PlatformLoader loader) {
         super(loader);
@@ -132,6 +134,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         eventBus.register(this, playerManager);
         this.requestScheduler = new PlayerInfoRequestScheduler(this);
         eventBus.register(this, requestScheduler);
+        this.modRequiredKickHandler = new ModRequiredKickHandler(this);
+        eventBus.register(this, modRequiredKickHandler);
 
         this.activationManager = new VoiceServerActivationManager(
                 this,
@@ -188,6 +192,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         // cleanup
         requestScheduler.clear();
+        modRequiredKickHandler.clear();
         getMinecraftServer().getChannelManager().clear();
         sourceLineManager.clear();
         activationManager.clear();
