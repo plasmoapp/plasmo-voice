@@ -86,8 +86,9 @@ public final class VoiceTcpServerConnectionManager implements TcpServerPacketMan
         receiver.sendPacket(new PlayerInfoRequestPacket());
 
         BaseVoice.DEBUG_LOGGER.log(
-                "Sent player info request packet to {} (channels: {})",
+                "Sent player info request packet to {} (entityId: {}, channels: {})",
                 receiver.getInstance().getName(),
+                receiver.getInstance().getId(),
                 receiver.getInstance().getRegisteredChannels()
         );
     }

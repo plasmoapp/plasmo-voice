@@ -1,7 +1,6 @@
 package su.plo.voice.server.connection;
 
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.common.io.ByteStreams;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -17,10 +16,8 @@ import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.proto.packets.tcp.PacketTcpCodec;
 import su.plo.voice.server.BaseVoiceServer;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
@@ -32,8 +29,6 @@ public final class ServerChannelHandler implements McServerChannelHandler {
     private final Map<UUID, PlayerChannelHandler> channels = Maps.newConcurrentMap();
 
     private final Map<UUID, ScheduledFuture<?>> playerCheckFutures = Maps.newConcurrentMap();
-    private final Set<UUID> joinPacketSent = Sets.newConcurrentHashSet();
-    private final Set<UUID> channelRegisterPacketSent = Sets.newConcurrentHashSet();
 
     public ServerChannelHandler(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
@@ -71,46 +66,15 @@ public final class ServerChannelHandler implements McServerChannelHandler {
     public void onChannelsRegister(@NotNull McServerPlayer player, @NotNull List<String> channels) {
         VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(player.getInstance());
         BaseVoice.DEBUG_LOGGER.log(
-                "{} registered channels: {}. Response received: {}. Join packet sent: {}. Channel register packet sent: {}",
+                "{} registered channels: {}. Response received: {}",
                 player.getName(),
                 player.getRegisteredChannels(),
-                voicePlayer.getPublicKey().isPresent(),
-                joinPacketSent.contains(player.getUuid()),
-                channelRegisterPacketSent.contains(player.getUuid())
+                voicePlayer.getPublicKey().isPresent()
         );
-
-        if (!channels.contains(BaseVoiceServer.FLAG_CHANNEL_STRING)) return;
-        if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
-        // skip if requestPlayerInfo is not sent in onPlayerJoin
-        if (!joinPacketSent.contains(player.getUuid())) return;
-        if (channelRegisterPacketSent.contains(player.getUuid())) return;
-
-        // skip if requestPlayerInfo already received from onPlayerJoin request
-        if (voicePlayer.getPublicKey().isPresent()) return;
-
-        channelRegisterPacketSent.add(player.getUuid());
-        voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer);
     }
 
     public void onPlayerJoin(@NotNull McPlayer player) {
         if (!voiceServer.getUdpServer().isPresent() || voiceServer.getConfig() == null) return;
-
-        VoiceServerPlayer voicePlayer = voiceServer.getPlayerManager().getPlayerByInstance(player.getInstance());
-        joinPacketSent.add(player.getUuid());
-
-        // just send info request when player joins the server,
-        // because old method of checking for exact channels was causing some unpredictable behavior and bugs
-        // this solution should be (hopefully) more consistent
-        voiceServer.getBackgroundExecutor().execute(() ->
-            voiceServer.getMinecraftServer().executeInMainThread(() -> {
-                McServerPlayer serverPlayer = (McServerPlayer) player;
-                if (serverPlayer.getRegisteredChannels().contains(BaseVoiceServer.FLAG_CHANNEL_STRING)) {
-                    channelRegisterPacketSent.add(player.getUuid());
-                }
-
-                voiceServer.getTcpPacketManager().requestPlayerInfo(voicePlayer);
-            })
-        );
 
         if (shouldKick(player)) {
             cancelPlayerCheckFuture(player.getUuid());
@@ -123,8 +87,6 @@ public final class ServerChannelHandler implements McServerChannelHandler {
 
     public void onPlayerQuit(@NotNull McPlayer player) {
         channels.remove(player.getUuid());
-        joinPacketSent.remove(player.getUuid());
-        channelRegisterPacketSent.remove(player.getUuid());
         cancelPlayerCheckFuture(player.getUuid());
     }
 

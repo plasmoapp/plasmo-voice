@@ -42,6 +42,7 @@ import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
 import su.plo.voice.server.command.*;
 import su.plo.voice.server.config.VoiceServerConfig;
+import su.plo.voice.server.connection.PlayerInfoRequestScheduler;
 import su.plo.voice.server.connection.ServerChannelHandler;
 import su.plo.voice.server.connection.ServerServiceChannelHandler;
 import su.plo.voice.server.connection.VoiceTcpServerConnectionManager;
@@ -105,6 +106,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     private final ServerChannelHandler channelHandler = new ServerChannelHandler(this);
     private final ServerServiceChannelHandler serviceChannelHandler = new ServerServiceChannelHandler(this);
+    private PlayerInfoRequestScheduler requestScheduler;
 
     protected BaseVoiceServer(@NotNull PlatformLoader loader) {
         super(loader);
@@ -128,6 +130,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         this.playerManager = new VoiceServerPlayerManagerImpl(this, getMinecraftServer());
         playerManager.registerPermission("pv.allow_freecam");
         eventBus.register(this, playerManager);
+        this.requestScheduler = new PlayerInfoRequestScheduler(this);
+        eventBus.register(this, requestScheduler);
 
         this.activationManager = new VoiceServerActivationManager(
                 this,
@@ -183,6 +187,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         stopUdpServer();
 
         // cleanup
+        requestScheduler.clear();
         getMinecraftServer().getChannelManager().clear();
         sourceLineManager.clear();
         activationManager.clear();
