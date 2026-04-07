@@ -1,5 +1,6 @@
 ### Client
 - Added support for navigation using "Tab".
+- Added auto-focus on text field in "Volume" menu tab.
 - Fixed crash when switching servers on a proxy. ([#509](https://github.com/plasmoapp/plasmo-voice/issues/509))
 - Fixed percent rendering above player head breaks rendering on >1.21.1.
 

@@ -57,6 +57,8 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Setter
     private boolean preventEscClose;
 
+    private int renderCount;
+
     private final List<Runnable> deferredRenders = new ArrayList<>();
 
     public VoiceSettingsScreen(@NotNull BaseVoiceClient voiceClient) {
@@ -83,6 +85,8 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     @Override
     public void init() {
+        renderCount = 0;
+
         voiceClient.getEventBus().unregister(voiceClient, testController);
         voiceClient.getEventBus().register(voiceClient, testController);
 
@@ -168,6 +172,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     // GuiWidget impl
     @Override
     public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+        if (renderCount < 5) renderCount++;
         this.tooltip = null;
 
         //#if MC<12105
@@ -224,6 +229,14 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         }
 
         return false;
+    }
+
+    // MC leaks the charTyped event from the hotkey that opened the screen
+    // Ignore charTyped until a few frames have passed to avoid this
+    @Override
+    public boolean charTyped(char typedChar, int modifiers) {
+        if (renderCount < 5) return false;
+        return super.charTyped(typedChar, modifiers);
     }
 
     @Override

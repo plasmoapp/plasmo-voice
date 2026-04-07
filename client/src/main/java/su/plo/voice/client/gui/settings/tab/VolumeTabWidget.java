@@ -105,15 +105,31 @@ public final class VolumeTabWidget extends TabWidget {
                 McTextComponent.translatable("gui.plasmovoice.volume.players_search").withStyle(McTextStyle.GRAY)
         );
 
+        FullWidthEntry<TextFieldWidget> entry = new FullWidthEntry<>(textField, 26);
+
         textField.setResponder((value) -> {
             this.currentSearch = value.toLowerCase();
             refreshPlayerEntries();
+            scrollToEntry(entry);
         });
 
-        addEntry(new FullWidthEntry<>(
-                textField,
-                26
-        ));
+        addEntry(entry);
+
+        // Focus must be deferred because init() runs during the mouseClicked chain
+        // (tab button click), and GuiScreenListener.mouseClicked overrides focus
+        // after init() returns
+        parent.deferredRender(() -> {
+            boolean isActiveTab = parent.getNavigation().getActiveTab()
+                    .map(tab -> tab == this)
+                    .orElse(false);
+            if (!isActiveTab) return;
+
+            parent.setFocused(this);
+            double scrollBefore = scrollTop;
+            setFocused(entry);
+            setScrollTop(scrollBefore);
+            entry.setFocused(textField);
+        });
     }
 
     private void refreshPlayerEntries() {
