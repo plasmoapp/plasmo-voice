@@ -18,7 +18,7 @@ neoForgeVersion = "[21,)"
 mcVersions = "1.21.4"
 neoForgeVersion = "[21,)"
 
-[12100]
+[12101]
 mcVersions = ">=1.21.0 <=1.21.1"
 forgeVersion = "[51,)"
 neoForgeVersion = "[20,)"

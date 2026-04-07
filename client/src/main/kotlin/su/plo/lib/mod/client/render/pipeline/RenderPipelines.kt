@@ -118,30 +118,6 @@ object RenderPipelines {
                 )
         }
 
-    @JvmField
-    val GUI_PARTICLE_TEXTURE_COLOR =
-        renderPipeline(
-            ResourceLocationUtil.mod("pipeline/gui_particle_texture_color"),
-            @Suppress("DEPRECATION")
-            DefaultVertexFormat.POSITION_TEX_COLOR,
-            VertexFormatMode.QUADS,
-        ) {
-            samplers += "Sampler0"
-            depthTestFunc = AlphaFunc.ALWAYS
-        }
-
-    @JvmField
-    val TEXT_BACKGROUND =
-        renderPipeline(
-            ResourceLocationUtil.mod("pipeline/render_type_text_background"),
-            DefaultVertexFormat.POSITION_COLOR_LIGHTMAP,
-            VertexFormatMode.QUADS,
-        ) {
-            blendFunc = BlendFunc.TRANSLUCENT
-            depthMask = false
-            depthTestFunc = AlphaFunc.ALWAYS
-        }
-
     private val renderTypes: MutableMap<RenderType, RenderPipeline> = HashMap()
 
     @JvmStatic

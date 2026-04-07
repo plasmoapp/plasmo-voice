@@ -693,9 +693,17 @@ public class RenderUtil {
         return getStringX(formattedText, x, dropShadow);
     }
 
-    public static int drawStringLight(PoseStack stack, McTextComponent text, int x, int y, int color, int light,
-                                      boolean seeThrough,
-                                      boolean dropShadow) {
+    public static int drawStringLight(
+            PoseStack stack,
+            McTextComponent text,
+            int x,
+            int y,
+            int color,
+            int backgroundColor,
+            int light,
+            boolean seeThrough,
+            boolean dropShadow
+    ) {
         color = adjustColor(color);
 
         String formattedText = getFormattedString(text);
@@ -720,7 +728,7 @@ public class RenderUtil {
                 stack.last().pose(),
                 irendertypebuffer$impl,
                 displayMode,
-                0,
+                backgroundColor,
                 light
         );
         irendertypebuffer$impl.endBatch();

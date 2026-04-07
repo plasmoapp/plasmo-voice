@@ -119,40 +119,33 @@ object EntityIconRenderer {
             //$$             StringDecomposer.iterateFormatted(formattedString, Style.EMPTY, it)
             //$$         }
             //$$
-            //$$ collector.submitText(
-            //$$     stack,
-            //$$     xOffset.toFloat(), 0f,
-            //$$     charSequence,
-            //$$     false,
-            //$$     Font.DisplayMode.SEE_THROUGH,
-            //$$     entityState.light,
-            //$$     Colors.WHITE.withAlpha(0.5f).rgb,
-            //$$     backgroundColor,
-            //$$     0,
-            //$$ )
+            //$$ if (!entityState.isDiscrete) {
+            //$$    collector.submitText(
+            //$$        stack,
+            //$$        xOffset.toFloat(), 0f,
+            //$$        charSequence,
+            //$$        false,
+            //$$        Font.DisplayMode.NORMAL,
+            //$$        lightWithEmission,
+            //$$        -1,
+            //$$        0,
+            //$$        0,
+            //$$    )
+            //$$ }
             //$$
             //$$ collector.submitText(
             //$$     stack,
             //$$     xOffset.toFloat(), 0f,
             //$$     charSequence,
             //$$     false,
-            //$$     Font.DisplayMode.NORMAL,
-            //$$     lightWithEmission,
-            //$$     -1,
-            //$$     0,
+            //$$     if (entityState.isDiscrete) Font.DisplayMode.NORMAL else Font.DisplayMode.SEE_THROUGH,
+            //$$     entityState.light,
+            //$$     Colors.WHITE.withAlpha(0.5f).rgb,
+            //$$     backgroundColor,
             //$$     0,
             //$$ )
             //#else
-            RenderUtil.fillLight(
-                stack,
-                RenderPipelines.TEXT_BACKGROUND,
-                xOffset - 1,
-                -1,
-                xOffset + RenderUtil.getTextWidth(text) + 1,
-                8,
-                backgroundColor,
-                entityState.light,
-            )
+
             RenderUtil.drawStringLight(
                 stack,
                 text,
@@ -163,20 +156,25 @@ object EntityIconRenderer {
                 //#else
                 Colors.WHITE.withAlpha(0.13f).rgb,
                 //#endif
+                backgroundColor,
                 entityState.light,
-                true,
+                !entityState.isDiscrete,
                 false
             )
-            RenderUtil.drawStringLight(
-                stack,
-                text,
-                xOffset,
-                0,
-                -1,
-                lightWithEmission,
-                false,
-                false
-            )
+
+            if (!entityState.isDiscrete) {
+                RenderUtil.drawStringLight(
+                    stack,
+                    text,
+                    xOffset,
+                    0,
+                    -1,
+                    0,
+                    lightWithEmission,
+                    false,
+                    false,
+                )
+            }
             //#endif
         }
 
