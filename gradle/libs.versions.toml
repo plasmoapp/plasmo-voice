@@ -31,6 +31,7 @@ rnnoise-jni = "1.0.2"
 shadow = "9.2.2"
 grgit = "5.3.3"
 buildconfig = "5.7.1"
+runpaper = "3.0.2"
 
 asm = "9.9.1"
 
@@ -74,3 +75,4 @@ crowdin = { id = "su.plo.crowdin.plugin", version.ref = "crowdin" }
 dokka   = { id = "org.jetbrains.dokka", version.ref = "dokka" }
 grgit   = { id = "org.ajoberstar.grgit", version.ref = "grgit" }
 buildconfig = { id = "com.github.gmazzo.buildconfig", version.ref = "buildconfig" }
+runpaper = { id = "xyz.jpenilla.run-paper", version.ref = "runpaper" }

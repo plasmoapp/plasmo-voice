@@ -5,6 +5,7 @@ import su.plo.voice.extension.slibPlatform
 plugins {
     id("su.plo.voice.shadow")
     id("su.plo.voice.maven-publish")
+    alias(libs.plugins.runpaper)
 }
 
 group = "$group.server"
@@ -55,5 +56,13 @@ tasks {
             listOf("plugin.yml", "paper-plugin.yml"),
             "version" to version
         )
+    }
+
+    runServer {
+        minecraftVersion("1.21.11")
+
+        javaLauncher = project.javaToolchains.launcherFor {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
     }
 }
