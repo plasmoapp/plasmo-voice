@@ -163,6 +163,7 @@ public final class VoiceDeviceManager implements DeviceManager {
     }
 
     public void startJob() {
+        stopJob();
         this.job = voiceClient.getBackgroundExecutor().scheduleAtFixedRate(
                 () -> {
                     try {
