@@ -109,7 +109,8 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 // old java thing
                 new PlayerActivationDistancesPacket(new HashMap<UUID, Integer>() {{
                     put(clientActivation.getId(), clientActivation.getDistance());
-                }})
+                }}),
+                false
         ));
 
         if (parentActivation == null) {

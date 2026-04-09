@@ -34,8 +34,6 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
     private final NettyUdpClient client;
     private final ScheduledFuture<?> ticker;
 
-    private long keepAlive = System.currentTimeMillis();
-
     public NettyUdpClientHandler(@NotNull BaseVoiceClient voiceClient,
                                  @NotNull VoiceClientConfig config,
                                  @NotNull NettyUdpClient client) {
@@ -69,8 +67,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
 
     @Override
     public void handle(@NotNull PingPacket packet) {
-        client.setTimedOut(false);
-        this.keepAlive = System.currentTimeMillis();
+        client.setKeepAlive(System.currentTimeMillis());
         client.sendPacket(new PingPacket());
     }
 
@@ -114,7 +111,7 @@ public final class NettyUdpClientHandler extends SimpleChannelInboundHandler<Net
             client.sendPacket(new PingPacket(remoteAddress.getHostString(), remoteAddress.getPort()));
         }
 
-        long diff = System.currentTimeMillis() - keepAlive;
+        long diff = System.currentTimeMillis() - client.getKeepAlive();
         if (diff > MAX_KEEP_ALIVE_TIMEOUT) {
             BaseVoice.LOGGER.warn("UDP timed out. Disconnecting...");
             client.close(UdpClientClosedEvent.Reason.TIMED_OUT);

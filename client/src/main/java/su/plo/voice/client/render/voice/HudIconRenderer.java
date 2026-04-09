@@ -13,6 +13,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.IconPosition;
 import su.plo.voice.api.client.event.render.HudActivationRenderEvent;
+import su.plo.voice.api.client.socket.UdpClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.event.HudRenderEvent;
 
@@ -39,7 +40,7 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
     @Override
     public void onRender(@NotNull GuiRenderContext context, float delta) {
         if (!voiceClient.getServerInfo().isPresent() ||
-                !voiceClient.getUdpClientManager().getClient().isPresent() ||
+                !voiceClient.getUdpClientManager().getClient().map(UdpClient::isConnected).orElse(false) ||
                 Minecraft.getInstance().player == null ||
                 !config.getOverlay().getShowActivationIcon().value() ||
                 Minecraft.getInstance().options.hideGui

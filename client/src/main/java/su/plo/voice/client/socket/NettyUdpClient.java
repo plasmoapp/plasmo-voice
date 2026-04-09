@@ -14,13 +14,11 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
-import su.plo.voice.api.client.event.connection.ServerInfoInitializedEvent;
 import su.plo.voice.api.client.event.connection.UdpClientPacketSendEvent;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.client.socket.UdpClient;
-import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.packets.Packet;
@@ -48,9 +46,11 @@ public final class NettyUdpClient implements UdpClient {
     @Getter
     private boolean closed;
     @Getter
-    private boolean connected;
-    @Getter
     private boolean timedOut;
+    private boolean connected;
+
+    @Getter
+    private long keepAlive = System.currentTimeMillis();
 
     public NettyUdpClient(@NotNull BaseVoiceClient voiceClient,
                           @NotNull VoiceClientConfig config,
@@ -130,21 +130,29 @@ public final class NettyUdpClient implements UdpClient {
                 : Optional.empty();
     }
 
+    @Override
+    public boolean isConnected() {
+        return !closed && connected;
+    }
+
+    public void setKeepAlive(long keepAlive) {
+        boolean wasConnected = connected;
+
+        this.keepAlive = keepAlive;
+        setTimedOut(false);
+        this.connected = true;
+
+        if (!wasConnected) {
+            BaseVoice.LOGGER.info("Connected to {}", channel.remoteAddress());
+            voiceClient.getEventBus().fire(new UdpClientConnectedEvent(this));
+        }
+    }
+
     public void setTimedOut(boolean timedOut) {
         if (timedOut != this.timedOut) {
             voiceClient.getEventBus().fire(new UdpClientTimedOutEvent(this, timedOut));
         }
 
         this.timedOut = timedOut;
-    }
-
-    @EventSubscribe
-    public void onServerInfoUpdate(ServerInfoInitializedEvent event) {
-        if (this.connected) return;
-
-        BaseVoice.LOGGER.info("Connected to {}", channel.remoteAddress());
-        this.connected = true;
-
-        voiceClient.getEventBus().fire(new UdpClientConnectedEvent(this));
     }
 }

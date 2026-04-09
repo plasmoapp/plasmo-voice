@@ -17,7 +17,7 @@ object VoiceScreens {
             return
         }
 
-        if (!voiceClient.udpClientManager.isConnected) {
+        if (!voiceClient.udpClientManager.isConnected || !voiceClient.serverInfo.isPresent) {
             openNotAvailable(voiceClient)
             return
         }

@@ -30,6 +30,6 @@ public final class VoiceUdpClientManager implements UdpClientManager {
     @Override
     public boolean isConnected() {
         if (client == null) return false;
-        return !client.isClosed() && client.isConnected() && !client.isTimedOut();
+        return client.isConnected() && !client.isTimedOut();
     }
 }

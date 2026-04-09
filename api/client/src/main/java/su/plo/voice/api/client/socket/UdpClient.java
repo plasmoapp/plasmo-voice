@@ -70,4 +70,11 @@ public interface UdpClient {
      * @return {@code true} if the UDP client has timed out, {@code false} otherwise.
      */
     boolean isTimedOut();
+
+    /**
+     * Gets the timestamp of the last received keep-alive packet.
+     *
+     * @return The timestamp of the last received keep-alive packet.
+     */
+    long getKeepAlive();
 }

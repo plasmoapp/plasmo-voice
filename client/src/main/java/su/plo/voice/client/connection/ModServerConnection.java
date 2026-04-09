@@ -385,7 +385,7 @@ public final class ModServerConnection implements ServerConnection {
         voiceClient.getEventBus().fire(event);
 
         // request language
-        sendPacket(new LanguageRequestPacket(Minecraft.getInstance().options.languageCode));
+        sendPacket(new LanguageRequestPacket(Minecraft.getInstance().options.languageCode), false);
     }
 
     @Override
