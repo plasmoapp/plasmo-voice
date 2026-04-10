@@ -229,7 +229,7 @@ public final class ModVoiceClient extends BaseVoiceClient
                             //$$ context.tickCounter().getRealtimeDeltaTicks(),
                             //#else
                             context.tickDelta(),
-                            //#endif,
+                            //#endif
                             state
                     );
 
