@@ -47,7 +47,7 @@ jobs:
       run: ./gradlew publish
 
     - name: Publish Paper to Modrinth
-      uses: Apehum/mc-publish@v1.1
+      uses: apehum/mc-publish@master
       with:
         name: 'Plasmo Voice'
         split-releases: true
@@ -64,25 +64,14 @@ jobs:
           1.19.4
           1.20.1
           1.20.4
-          1.21
-          1.21.1
-          1.21.2
-          1.21.3
-          1.21.4
-          1.21.5
-          1.21.6
-          1.21.7
-          1.21.8
-          1.21.9
-          1.21.10
-          1.21.11
+          >=1.21
 
         modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
     - name: Publish Bungee/Velocity to Modrinth
-      uses: Apehum/mc-publish@v1.1
+      uses: apehum/mc-publish@master
       with:
         name: 'Plasmo Voice'
         split-releases: true
@@ -99,25 +88,14 @@ jobs:
           1.19.4
           1.20.1
           1.20.4
-          1.21
-          1.21.1
-          1.21.2
-          1.21.3
-          1.21.4
-          1.21.5
-          1.21.6
-          1.21.7
-          1.21.8
-          1.21.9
-          1.21.10
-          1.21.11
+          >=1.21
 
         modrinth-unfeature-mode: 'subset'
         modrinth-id: 1bZhdhsH
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
     - name: Publish Client to Modrinth/CurseForge
-      uses: Apehum/mc-publish@v1.1
+      uses: apehum/mc-publish@master
       with:
         name: 'Plasmo Voice'
         split-releases: true
@@ -134,7 +112,7 @@ jobs:
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
         
     - name: Publish to GitHub
-      uses: Apehum/mc-publish@v1.1
+      uses: apehum/mc-publish@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: false
