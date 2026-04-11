@@ -62,7 +62,6 @@ public final class ScreenWrapper
     private boolean ignoreFirstMove = true;
 
     //#if MC>=12000
-    //$$ private @Nullable GuiGraphics currentContext;
     //$$ private int lastMouseX;
     //$$ private int lastMouseY;
     //$$ private float lastPartialTicks;
@@ -120,34 +119,31 @@ public final class ScreenWrapper
     //#if MC<12105
     //$$     RenderUtil.preserveGlState();
     //#endif
-    //$$     currentContext = guiGraphics;
     //$$     lastMouseX = mouseX;
     //$$     lastMouseY = mouseY;
     //$$     lastPartialTicks = partialTicks;
     //$$     GuiRenderContext context = new GuiRenderContext(guiGraphics);
     //$$     screen.render(context, mouseX, mouseY, partialTicks);
-    //$$     currentContext = null;
     //#if MC<12105
     //$$     RenderUtil.restoreGlState();
     //#endif
     //$$ }
     //$$
     //$$ public void renderBackground(@NotNull GuiRenderContext context) {
-    //$$     if (currentContext == null) return;
     //#if MC>=12002
 
     //#if MC>=12106
     //$$     context.flush();
     //#endif
 
-    //$$     super.renderBackground(currentContext, lastMouseX, lastMouseY, lastPartialTicks);
+    //$$     super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
 
     //#if MC>=12102
     //$$     context.flush();
     //#endif
 
     //#else
-    //$$     super.renderBackground(currentContext);
+    //$$     super.renderBackground(context.getMcContext());
     //#if MC<12105
     //$$     RenderUtil.restoreGlState(true);
     //#endif
@@ -317,7 +313,7 @@ public final class ScreenWrapper
             @NotNull TooltipData tooltip
     ) {
         //#if MC>=12106
-        //$$ currentContext.setTooltipForNextFrame(
+        //$$ context.getMcContext().setTooltipForNextFrame(
         //$$         Language.getInstance().getVisualOrder(
         //$$                 new ArrayList<>(
         //$$                         RenderUtil.getTextConverter().convert(tooltip.getText())
