@@ -131,10 +131,9 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 20,
                 20,
                 (button) -> {
-                    boolean isVoiceDisabled = config.getVoice().getDisabled().value();
-
                     config.getVoice().getDisabled().invert();
 
+                    boolean isVoiceDisabled = config.getVoice().getDisabled().value();
                     if (isVoiceDisabled) {
                         voiceClient.getSourceManager().clear();
                     }
