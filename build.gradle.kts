@@ -53,6 +53,7 @@ subprojects {
         testImplementation(kotlin("test"))
         testImplementation(rootProject.libs.guava)
         testImplementation(rootProject.libs.gson)
+        testImplementation(rootProject.libs.fastutil)
     }
 
     tasks.test {

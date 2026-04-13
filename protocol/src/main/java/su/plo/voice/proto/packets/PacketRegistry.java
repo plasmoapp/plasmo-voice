@@ -30,7 +30,7 @@ public class PacketRegistry {
 
     public Packet<?> byType(int type, @NotNull PacketDirection direction) {
         PacketDirection packetDirection = packetDirectionById.get(type);
-        if (!packetDirection.accepts(direction)) {
+        if (packetDirection == null || !packetDirection.accepts(direction)) {
             return null;
         }
 
