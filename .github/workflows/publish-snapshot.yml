@@ -3,7 +3,7 @@ name: Publish Snapshot
 on:
   push:
     branches:
-      - v2.1.x
+      - main
 
 jobs:
   build:
