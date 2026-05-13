@@ -14,6 +14,7 @@ import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.mod.client.chat.ClientChatUtil;
+import su.plo.lib.mod.extensions.MinecraftKt;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -240,7 +241,7 @@ public final class VoiceClientActivation
     }
 
     private @NotNull Result handlePTT() {
-        Screen currentScreen = Minecraft.getInstance().screen;
+        Screen currentScreen = MinecraftKt.currentScreen(Minecraft.getInstance());
         boolean isScreenWithInput = currentScreen instanceof ChatScreen || currentScreen instanceof SignEditScreen;
 
         boolean pressed = getPttKey().isPressed() && !isScreenWithInput;

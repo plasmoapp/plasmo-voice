@@ -100,7 +100,20 @@ fun getStringSplitToWidth(
                     builder.append('§')
                     builder.append(colorCh)
 
-                    if (nextColor.isFormat) {
+                    //#if MC>=26.2
+                    //$$ val isFormat = when (nextColor) {
+                    //$$     ChatFormatting.OBFUSCATED,
+                    //$$     ChatFormatting.BOLD,
+                    //$$     ChatFormatting.STRIKETHROUGH,
+                    //$$     ChatFormatting.UNDERLINE,
+                    //$$     ChatFormatting.ITALIC -> true
+                    //$$     else -> false
+                    //$$ }
+                    //#else
+                    val isFormat = nextColor.isFormat
+                    //#endif
+
+                    if (isFormat) {
                         currChatFormatting = nextColor
                     } else {
                         currChatColor = nextColor

@@ -9,6 +9,7 @@ import lombok.Setter;
 import lombok.ToString;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.extensions.MinecraftKt;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.SerializableConfigEntry;
 import su.plo.voice.api.client.config.hotkey.Hotkey;
@@ -207,7 +208,7 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
         }
 
         hotkeys.values().forEach(entry -> {
-            if (entry.value().isAnyContext() || Minecraft.getInstance().screen == null) {
+            if (entry.value().isAnyContext() || MinecraftKt.currentScreen(Minecraft.getInstance()) == null) {
                 entry.value().updateState(event.getAction());
             }
         });

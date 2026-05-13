@@ -359,7 +359,12 @@ class AlOutputDevice
                     ?.get("pv.allow_freecam")
                     ?.orElse(true) == true
             ) {
-                val camera = Minecraft.getInstance().gameRenderer.mainCamera
+                val camera =
+                    //#if MC>=26.2
+                    //$$ Minecraft.getInstance().gameRenderer.mainCamera()
+                    //#else
+                    Minecraft.getInstance().gameRenderer.mainCamera
+                    //#endif
                 position = camera.position()
 
                 lookVector.set(camera.lookVector)

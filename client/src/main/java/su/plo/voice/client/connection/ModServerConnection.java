@@ -518,10 +518,17 @@ public final class ModServerConnection implements ServerConnection {
 
     @Override
     public void handle(@NotNull AnimatedActionBarPacket packet) {
+        //#if MC>=26.2
+        //$$ Minecraft.getInstance().gui.hud.setOverlayMessage(
+        //$$         RenderUtil.getTextConverter().convertFromJson(packet.getJsonComponent()),
+        //$$         true
+        //$$ );
+        //#else
         Minecraft.getInstance().gui.setOverlayMessage(
                 RenderUtil.getTextConverter().convertFromJson(packet.getJsonComponent()),
                 true
         );
+        //#endif
     }
 
     @EventSubscribe

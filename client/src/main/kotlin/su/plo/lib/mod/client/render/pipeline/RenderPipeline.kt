@@ -29,6 +29,12 @@ import net.minecraft.client.renderer.GameRenderer
 //$$ import java.util.Optional
 //#endif
 
+//#if MC>=26.2
+//$$ import com.mojang.blaze3d.GpuFormat
+//$$ import com.mojang.blaze3d.pipeline.BindGroupLayout
+//$$ import net.minecraft.client.renderer.BindGroupLayouts
+//#endif
+
 //#elseif MC>=11700
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -208,11 +214,24 @@ data class RenderPipeline(
             //$$     // uhhh
             //$$     // it's not correct and depends on the shader,
             //$$     // but it should be fine Clueless
-            //#if MC>=12106
+            //#if MC>=26.2
+            //$$     .withBindGroupLayout(BindGroupLayouts.GLOBALS)
+            //$$     .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
+            //$$     .apply {
+            //$$         if (samplers.isNotEmpty()) {
+            //$$             withBindGroupLayout(
+            //$$                 BindGroupLayout.builder()
+            //$$                     .apply { samplers.forEach(::withSampler) }
+            //$$                     .build()
+            //$$             )
+            //$$         }
+            //$$     }
+            //#elseif MC>=12106
             //$$     .withUniform("DynamicTransforms", UniformType.UNIFORM_BUFFER)
             //$$     .withUniform("Projection", UniformType.UNIFORM_BUFFER)
             //$$     .withUniform("Fog", UniformType.UNIFORM_BUFFER)
             //$$     .withUniform("Globals", UniformType.UNIFORM_BUFFER)
+            //$$     .apply { samplers.forEach(::withSampler) }
             //#else
             //$$     .withUniform("ModelViewMat", UniformType.MATRIX4X4)
             //$$     .withUniform("ProjMat", UniformType.MATRIX4X4)
@@ -221,16 +240,18 @@ data class RenderPipeline(
             //$$     .withUniform("FogShape", UniformType.INT)
             //$$     .withUniform("FogColor", UniformType.VEC4)
             //$$     .withUniform("ColorModulator", UniformType.VEC4)
+            //$$     .apply { samplers.forEach(::withSampler) }
             //#endif
-            //$$
-            //$$      .apply {
-            //$$          samplers.forEach(::withSampler)
-            //$$      }
             //$$
             //$$     .withLocation(location)
             //$$     .withVertexShader(vertexShader)
             //$$     .withFragmentShader(fragmentShader)
+            //#if MC>=26.2
+            //$$     .withVertexBinding(0, vertexFormat)
+            //$$     .withPrimitiveTopology(vertexFormatMode.toMc())
+            //#else
             //$$     .withVertexFormat(vertexFormat, vertexFormatMode.toMc())
+            //#endif
             //$$
             //#if MC>=260100
             //$$     .apply {
@@ -241,6 +262,9 @@ data class RenderPipeline(
             //$$     .withCull(cull)
             //$$     .withColorTargetState(ColorTargetState(
             //$$         Optional.ofNullable(if (blendFunc != null) blendFunc!!.mc() else null),
+            //#if MC>=26.2
+            //$$         GpuFormat.RGBA8_UNORM,
+            //#endif
             //$$         ColorTargetState.WRITE_COLOR or ColorTargetState.WRITE_ALPHA
             //$$     ))
             //#else

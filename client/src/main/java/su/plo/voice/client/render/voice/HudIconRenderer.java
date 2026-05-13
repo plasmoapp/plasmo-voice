@@ -6,6 +6,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.ResourceLocationUtil;
+import su.plo.lib.mod.extensions.MinecraftKt;
 import su.plo.lib.mod.client.render.LazyGlState;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
@@ -43,7 +44,7 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
                 !voiceClient.getUdpClientManager().getClient().map(UdpClient::isConnected).orElse(false) ||
                 Minecraft.getInstance().player == null ||
                 !config.getOverlay().getShowActivationIcon().value() ||
-                Minecraft.getInstance().options.hideGui
+                MinecraftKt.isHudHidden(Minecraft.getInstance())
         ) return;
 
         if (voiceClient.getUdpClientManager().getClient().get().isTimedOut()) {

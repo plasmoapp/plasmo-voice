@@ -84,6 +84,7 @@ fun slibArtifact(): String {
         11904 -> "1.19.3"
         12101 -> "1.21"
         12103, 12104 -> "1.21.2"
+        260200 -> "26.1"
         else -> platform.mcVersionStr
     }
 
@@ -114,6 +115,7 @@ dependencies {
     implementation(libs.opus.concentus)
 
     if (platform.isFabric) {
+        // todo: move that abomination to versions.toml
         val fabricApiVersion = when (platform.mcVersion) {
             11605 -> "0.42.0+1.16"
             11701 -> "0.46.1+1.17"
@@ -131,6 +133,7 @@ dependencies {
             12106 -> "0.127.0+1.21.6"
             12111 -> "0.141.3+1.21.11"
             260100 -> "0.143.14+26.1"
+            260200 -> "0.148.3+26.2"
             else -> throw GradleException("Unsupported platform $platform")
         }
 

@@ -205,6 +205,18 @@ public final class ModVoiceClient extends BaseVoiceClient
         //#endif
         //$$                 )
         //$$ );
+        //#if MC>=26.2
+        //$$ LevelRenderEvents.COLLECT_SUBMITS.register(
+        //$$         (context) ->
+        //$$                 LevelRenderEvent.INSTANCE.getInvoker().onRender(
+        //$$                         new LevelRenderContext(
+        //$$                                 context.poseStack(),
+        //$$                                 new LevelRenderStateHolder(context.levelState()),
+        //$$                                 context.submitNodeCollector()
+        //$$                         )
+        //$$                 )
+        //$$ );
+        //#else
         //$$ WorldRenderEvents.END_MAIN.register(
         //$$         (context) ->
         //$$                 LevelRenderEvent.INSTANCE.getInvoker().onRender(
@@ -218,6 +230,7 @@ public final class ModVoiceClient extends BaseVoiceClient
         //$$                         )
         //$$                 )
         //$$ );
+        //#endif
         //#else
         WorldRenderEvents.LAST.register(
                 (context) -> {

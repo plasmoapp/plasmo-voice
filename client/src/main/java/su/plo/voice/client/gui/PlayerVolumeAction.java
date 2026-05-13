@@ -2,6 +2,7 @@ package su.plo.voice.client.gui;
 
 import net.minecraft.client.Minecraft;
 import su.plo.lib.mod.extensions.AABBKt;
+import su.plo.lib.mod.extensions.MinecraftKt;
 import net.minecraft.client.multiplayer.ClientLevel;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
@@ -51,7 +52,7 @@ public final class PlayerVolumeAction {
     @EventSubscribe
     public void onScroll(@NotNull MouseScrollEvent event) {
 
-        if (focusedPlayer != null && Minecraft.getInstance().screen == null) {
+        if (focusedPlayer != null && MinecraftKt.currentScreen(Minecraft.getInstance()) == null) {
             this.lastScroll = System.currentTimeMillis();
 
             DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + focusedPlayer.getUUID());

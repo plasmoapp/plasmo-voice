@@ -19,6 +19,12 @@ import su.plo.voice.client.extension.position
 //$$ import net.minecraft.client.renderer.LightTexture
 //#endif
 
+//#if MC>=26.2
+//$$ import net.minecraft.client.renderer.SubmitNodeCollection
+//$$ import net.minecraft.client.renderer.SubmitNodeCollector
+//$$ import net.minecraft.client.renderer.feature.CustomFeatureRenderer
+//#endif
+
 class StaticSourceIconRenderer : LevelRenderEvent.Callback {
 
     override fun onRender(context: LevelRenderContext) {
@@ -64,13 +70,22 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
 
         stack.translate(-5.0, -5.0, 0.0)
 
+        //#if MC>=26.2
+        //$$ val collector = context.submitNodeCollector
+        //$$ vertices(collector, stack, 255, entry.light, entry, false)
+        //$$ vertices(collector, stack, 40, entry.light, entry, true)
+        //#else
         vertices(stack, 255, entry.light, entry, false)
         vertices(stack, 40, entry.light, entry, true)
+        //#endif
 
         stack.popPose()
     }
 
     private fun vertices(
+        //#if MC>=26.2
+        //$$ collector: SubmitNodeCollector,
+        //#endif
         stack: PoseStack,
         alpha: Int,
         light: Int,
@@ -87,6 +102,20 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
             else RenderType.text(entry.iconLocation)
         //#endif
 
+        //#if MC>=26.2
+        //$$ val collection = collector.order(0) as SubmitNodeCollection
+        //$$ collection.afterTerrain.submit(
+        //$$     CustomFeatureRenderer.Submit(
+        //$$         stack.last().copy(),
+        //$$         renderType,
+        //$$     ) { pose, buffer ->
+        //$$         vertex(pose, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
+        //$$         vertex(pose, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
+        //$$         vertex(pose, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
+        //$$         vertex(pose, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
+        //$$     }
+        //$$ )
+        //#else
         val renderPipeline = RenderPipelines.fromRenderType(
             if (seeThrough) "text_see_through" else "text",
             renderType,
@@ -106,10 +135,15 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
         //#else
         renderType.end(buffer, 0, 0, 0)
         //#endif
+        //#endif
     }
 
     private fun vertex(
+        //#if MC>=26.2
+        //$$ stack: PoseStack.Pose,
+        //#else
         stack: PoseStack,
+        //#endif
         buffer: VertexConsumer,
         x: Float, y: Float, z: Float,
         u: Float, v: Float,

@@ -1,5 +1,9 @@
+[260200]
+mcVersions = ">26.1"
+neoForgeVersion = "[21,)"
+
 [260100]
-mcVersions = ">1.21.11"
+mcVersions = ">1.21.11 <=26.1"
 neoForgeVersion = "[21,)"
 
 [12111]

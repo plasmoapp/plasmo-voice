@@ -11,6 +11,11 @@ import su.plo.voice.client.extension.position
 import kotlin.math.cos
 import kotlin.math.sin
 
+//#if MC>=26.2
+//$$ import net.minecraft.client.renderer.SubmitNodeCollection
+//$$ import net.minecraft.client.renderer.feature.CustomFeatureRenderer
+//#endif
+
 private const val SPHERE_STACK = 18
 private const val SPHERE_SLICE = 36
 
@@ -45,9 +50,20 @@ class DistanceVisualizeRenderer : LevelRenderEvent.Callback {
             entry.z - cameraPosition.z,
         )
 
+        //#if MC>=26.2
+        //$$ val collector = context.submitNodeCollector
+        //$$ val collection = collector.order(0) as SubmitNodeCollection
+        //$$ collection.afterTerrain.submit(
+        //$$     CustomFeatureRenderer.Submit(
+        //$$         stack.last().copy(),
+        //$$         RenderPipelines.DISTANCE_SPHERE.mcRenderType,
+        //$$     ) { pose, buffer -> buildVertices(entry, pose, buffer) }
+        //$$ )
+        //#else
         val buffer = RenderUtil.beginBuffer(RenderPipelines.DISTANCE_SPHERE)
         buildVertices(entry, stack.last(), buffer)
         RenderUtil.drawBuffer(buffer, RenderPipelines.DISTANCE_SPHERE)
+        //#endif
 
         stack.popPose()
     }

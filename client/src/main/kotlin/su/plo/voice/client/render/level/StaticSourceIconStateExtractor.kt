@@ -1,13 +1,14 @@
 package su.plo.voice.client.render.level
 
 import net.minecraft.client.Camera
+import net.minecraft.client.Minecraft
 import net.minecraft.client.multiplayer.ClientLevel
 import net.minecraft.client.renderer.LevelRenderer
 import net.minecraft.core.BlockPos
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import su.plo.lib.mod.client.render.level.LevelRenderStateHolder
-import su.plo.voice.api.client.audio.source.ClientAudioSource
+import su.plo.lib.mod.extensions.isHudHidden
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.audio.source.ClientStaticSource
 import su.plo.voice.client.config.VoiceClientConfig
@@ -102,6 +103,6 @@ class StaticSourceIconStateExtractor(
         if (!voiceClient.serverInfo.isPresent || !voiceClient.udpClientManager.isConnected) return true
 
         val showIcons = config.overlay.showSourceIcons.value()
-        return showIcons == 2 || (net.minecraft.client.Minecraft.getInstance().options.hideGui && showIcons == 0)
+        return showIcons == 2 || (Minecraft.getInstance().isHudHidden() && showIcons == 0)
     }
 }

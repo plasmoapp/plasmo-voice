@@ -12,10 +12,17 @@ import su.plo.lib.mod.client.render.RenderUtil;
 public class ClientChatUtil {
 
     public static void setActionBar(@NonNull Component component) {
+        //#if MC>=26.2
+        //$$ Minecraft.getInstance().gui.hud.setOverlayMessage(
+        //$$         component,
+        //$$         false
+        //$$ );
+        //#else
         Minecraft.getInstance().gui.setOverlayMessage(
                 component,
                 false
         );
+        //#endif
     }
 
     public static void setActionBar(@NonNull McTextComponent text) {

@@ -1,7 +1,6 @@
 package su.plo.voice.client.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
@@ -28,6 +27,8 @@ import su.plo.lib.mod.client.render.entity.LivingEntityRenderStateKt;
 //#if MC>=12109
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector;
 //$$ import net.minecraft.client.renderer.state.CameraRenderState;
+//#else
+import net.minecraft.client.renderer.MultiBufferSource;
 //#endif
 
 @Mixin(EntityRenderer.class)

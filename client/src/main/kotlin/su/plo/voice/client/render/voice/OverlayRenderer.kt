@@ -4,6 +4,7 @@ import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
+import su.plo.lib.mod.extensions.isHudHidden
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.Colors.withAlpha
@@ -40,7 +41,7 @@ class OverlayRenderer(
             !voiceClient.udpClientManager.client.isPresent ||
             Minecraft.getInstance().player == null ||
             !config.overlay.overlayEnabled.value() ||
-            Minecraft.getInstance().options.hideGui
+            Minecraft.getInstance().isHudHidden()
         ) return
 
         val position = config.overlay.overlayPosition.value()

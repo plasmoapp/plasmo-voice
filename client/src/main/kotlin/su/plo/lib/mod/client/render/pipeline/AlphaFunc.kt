@@ -18,7 +18,19 @@ enum class AlphaFunc {
     GEQUAL,
     ALWAYS;
 
-    //#if MC>=260100
+    //#if MC>=26.2
+    //$$ // 26.2 switched to reverse-Z depth (nearer = higher depth), so LEQUAL <-> GREATER_THAN_OR_EQUAL etc.
+    //$$ fun mcCompareOp() =
+    //$$     when (this) {
+    //$$         ALWAYS -> CompareOp.ALWAYS_PASS
+    //$$         EQUAL -> CompareOp.EQUAL
+    //$$         LEQUAL -> CompareOp.GREATER_THAN_OR_EQUAL
+    //$$         LESS -> CompareOp.GREATER_THAN
+    //$$         GEQUAL -> CompareOp.LESS_THAN_OR_EQUAL
+    //$$         GREATER -> CompareOp.LESS_THAN
+    //$$         else -> throw IllegalArgumentException("Unknown depth func $this")
+    //$$     }
+    //#elseif MC>=260100
     //$$ fun mcCompareOp() =
     //$$     when (this) {
     //$$         ALWAYS -> CompareOp.ALWAYS_PASS

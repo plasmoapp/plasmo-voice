@@ -1,0 +1,5 @@
+net.minecraft.client.renderer.rendertype.RenderType primitiveTopology() mode()
+
+net.minecraft.util.LightCoordsUtil net.minecraft.client.renderer.LevelRenderer
+
+net.minecraft.world.entity.EntityTypes net.minecraft.world.entity.EntityType

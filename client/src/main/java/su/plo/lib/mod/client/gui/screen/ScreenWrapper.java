@@ -6,8 +6,8 @@ import net.minecraft.network.chat.Component;
 import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.gui.TooltipData;
+import su.plo.lib.mod.extensions.MinecraftKt;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.ToString;
 import net.minecraft.client.gui.screens.Screen;
@@ -36,19 +36,20 @@ public final class ScreenWrapper
         extends Screen {
 
     public static void openScreen(@Nullable GuiScreen screen) {
+        Minecraft minecraft = Minecraft.getInstance();
         if (screen == null) {
-            Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(null));
+            minecraft.execute(() -> MinecraftKt.setCurrentScreen(minecraft, null));
             return;
         }
 
         ScreenWrapper wrapped = new ScreenWrapper(screen);
 
         wrapped.screen.screen = wrapped;
-        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(wrapped));
+        minecraft.execute(() -> MinecraftKt.setCurrentScreen(minecraft, wrapped));
     }
 
     public static Optional<ScreenWrapper> getCurrentWrappedScreen() {
-        Screen screen = Minecraft.getInstance().screen;
+        Screen screen = MinecraftKt.currentScreen(Minecraft.getInstance());
         if (screen instanceof ScreenWrapper) {
             return Optional.of((ScreenWrapper) screen);
         }
@@ -305,7 +306,8 @@ public final class ScreenWrapper
 
     @Override
     public void onClose() {
-        Minecraft.getInstance().execute(() -> Minecraft.getInstance().setScreen(null));
+        Minecraft minecraft = Minecraft.getInstance();
+        minecraft.execute(() -> MinecraftKt.setCurrentScreen(minecraft, null));
     }
 
     public void renderTooltipWrapped(

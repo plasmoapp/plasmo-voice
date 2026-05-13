@@ -9,6 +9,10 @@ import net.minecraft.client.Camera
 import net.minecraft.client.multiplayer.ClientLevel
 //#endif
 
+//#if MC>=26.2
+//$$ import net.minecraft.client.renderer.SubmitNodeCollector
+//#endif
+
 data class LevelRenderContext(
     //#if MC<1.21.11
     val level: ClientLevel,
@@ -16,6 +20,9 @@ data class LevelRenderContext(
     //#endif
     val stack: PoseStack,
     val state: LevelRenderStateHolder,
+    //#if MC>=26.2
+    //$$ val submitNodeCollector: SubmitNodeCollector,
+    //#endif
 ) {
     //#if MC>=1.21.11
     //$$ val camera: CameraRenderState

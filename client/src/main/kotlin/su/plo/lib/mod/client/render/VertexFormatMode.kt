@@ -3,6 +3,12 @@ package su.plo.lib.mod.client.render
 import com.mojang.blaze3d.vertex.VertexFormat
 import org.lwjgl.opengl.GL11
 
+//#if MC>=26.2
+//$$ typealias McVertexFormatMode = com.mojang.blaze3d.PrimitiveTopology
+//#elseif MC>=11700
+typealias McVertexFormatMode = VertexFormat.Mode
+//#endif
+
 enum class VertexFormatMode(
     val glMode: Int
 ) {
@@ -14,14 +20,14 @@ enum class VertexFormatMode(
     QUADS(GL11.GL_QUADS);
 
     //#if MC>=11700
-    fun toMc(): VertexFormat.Mode =
+    fun toMc(): McVertexFormatMode =
         when (this) {
-            LINES -> VertexFormat.Mode.DEBUG_LINES
-            LINE_STRIP -> VertexFormat.Mode.DEBUG_LINE_STRIP
-            TRIANGLES -> VertexFormat.Mode.TRIANGLES
-            TRIANGLE_STRIP -> VertexFormat.Mode.TRIANGLE_STRIP
-            TRIANGLE_FAN -> VertexFormat.Mode.TRIANGLE_FAN
-            QUADS -> VertexFormat.Mode.QUADS
+            LINES -> McVertexFormatMode.DEBUG_LINES
+            LINE_STRIP -> McVertexFormatMode.DEBUG_LINE_STRIP
+            TRIANGLES -> McVertexFormatMode.TRIANGLES
+            TRIANGLE_STRIP -> McVertexFormatMode.TRIANGLE_STRIP
+            TRIANGLE_FAN -> McVertexFormatMode.TRIANGLE_FAN
+            QUADS -> McVertexFormatMode.QUADS
         }
     //#endif
 
@@ -38,14 +44,14 @@ enum class VertexFormatMode(
             }
 
         //#if MC>=11700
-        fun from(mode: VertexFormat.Mode) =
+        fun from(mode: McVertexFormatMode) =
             when (mode) {
-                VertexFormat.Mode.DEBUG_LINES -> LINE_STRIP
-                VertexFormat.Mode.DEBUG_LINE_STRIP -> LINE_STRIP
-                VertexFormat.Mode.TRIANGLES -> TRIANGLES
-                VertexFormat.Mode.TRIANGLE_STRIP -> TRIANGLE_STRIP
-                VertexFormat.Mode.TRIANGLE_FAN -> TRIANGLE_FAN
-                VertexFormat.Mode.QUADS -> QUADS
+                McVertexFormatMode.DEBUG_LINES -> LINE_STRIP
+                McVertexFormatMode.DEBUG_LINE_STRIP -> LINE_STRIP
+                McVertexFormatMode.TRIANGLES -> TRIANGLES
+                McVertexFormatMode.TRIANGLE_STRIP -> TRIANGLE_STRIP
+                McVertexFormatMode.TRIANGLE_FAN -> TRIANGLE_FAN
+                McVertexFormatMode.QUADS -> QUADS
                 else -> throw IllegalArgumentException("Vertex format not supported")
             }
         //#endif

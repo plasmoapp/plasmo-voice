@@ -1,6 +1,7 @@
 package su.plo.voice.client.render.voice
 
 import net.minecraft.client.Minecraft
+import su.plo.lib.mod.extensions.isHudHidden
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.entity.EntityType
@@ -103,7 +104,7 @@ object EntityIconStateExtractor {
     private fun isIconHidden(voiceClient: PlasmoVoiceClient, config: VoiceClientConfig): Boolean {
         if (!voiceClient.serverInfo.isPresent || !voiceClient.udpClientManager.isConnected) return true
         val showIcons = config.overlay.showSourceIcons.value()
-        return showIcons == 2 || (minecraft.options.hideGui && showIcons == 0)
+        return showIcons == 2 || (minecraft.isHudHidden() && showIcons == 0)
     }
 
     private fun getPlayerIcon(
