@@ -1,0 +1,12 @@
+{
+    "required": true,
+    "minVersion": "0.8",
+    "package": "su.plo.voice.client.mixin.rtc",
+    "client": [
+        "MixinRtcHandshake",
+        "MixinRtcChannel"
+    ],
+    "injectors": {
+        "defaultRequire": 1
+    }
+}

@@ -56,6 +56,9 @@ import su.plo.voice.client.render.level.StaticSourceIconRenderer;
 import su.plo.voice.client.render.level.StaticSourceIconStateExtractor;
 import su.plo.voice.client.render.voice.HudIconRenderer;
 import su.plo.voice.client.render.voice.OverlayRenderer;
+//#if MC>=260200
+//$$ import su.plo.voice.client.rtc.RtcVoiceBridge;
+//#endif
 import su.plo.voice.util.version.ModrinthVersion;
 import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.SemanticVersion;
@@ -178,6 +181,10 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         LevelRenderEvent.INSTANCE.registerListener(new StaticSourceIconRenderer());
 
         eventBus.register(this, new DistanceVisualizeOnJoinListener(this, config));
+
+        //#if MC>=260200
+        //$$ eventBus.register(this, RtcVoiceBridge.INSTANCE);
+        //#endif
 
         // addons
         addons.initializeLoadedAddons();
