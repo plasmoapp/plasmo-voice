@@ -3,6 +3,7 @@ package su.plo.voice.client.audio.device
 import com.google.common.base.Preconditions
 import com.google.common.collect.Sets
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExecutorCoroutineDispatcher
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.Runnable
 import kotlinx.coroutines.asCoroutineDispatcher
@@ -46,6 +47,7 @@ import java.nio.Buffer
 import java.nio.IntBuffer
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.Executors
+import java.util.concurrent.atomic.AtomicBoolean
 import javax.sound.sampled.AudioFormat
 
 class AlOutputDevice
@@ -57,7 +59,14 @@ class AlOutputDevice
     BaseAudioDevice(voiceClient, name, format),
     AlContextOutputDevice {
 
-    val coroutineScope: CoroutineScope
+    private val dispatcher: ExecutorCoroutineDispatcher = Executors.newSingleThreadScheduledExecutor { r ->
+        Thread(null, r, "Al Output Device $name", 0).apply {
+            isDaemon = true
+            priority = Thread.NORM_PRIORITY
+        }
+    }.asCoroutineDispatcher()
+
+    val coroutineScope: CoroutineScope = CoroutineScope(dispatcher)
 
     private val listener: AlListener = AlListener()
 
@@ -69,26 +78,20 @@ class AlOutputDevice
 
     private var hasDisconnectEXT = false
     private var disconnected = false
+    private val closed = AtomicBoolean(false)
 
     private val mutex = Mutex()
 
     init {
-        coroutineScope = CoroutineScope(Executors.newSingleThreadScheduledExecutor { r ->
-            val thread = Thread(
-                null,
-                r,
-                "Al Output Device $name",
-                0
-            )
-            if (thread.isDaemon) thread.isDaemon = false
-            if (thread.priority != Thread.NORM_PRIORITY) thread.priority = Thread.NORM_PRIORITY
-            thread
-        }.asCoroutineDispatcher())
-
         open()
     }
 
+    private fun checkNotClosed() {
+        if (closed.get()) throw DeviceException("Device is closed")
+    }
+
     override fun reload() {
+        checkNotClosed()
         if (!isOpen()) return
 
         runBlocking(coroutineScope.coroutineContext) {
@@ -100,13 +103,17 @@ class AlOutputDevice
     }
 
     override fun close() {
-        if (!isOpen() && !disconnected) return
+        if (!closed.compareAndSet(false, true)) return
 
-        runBlocking(coroutineScope.coroutineContext) {
-            mutex.withLock {
-                closeSync()
+        if (devicePointer != 0L) {
+            runBlocking(coroutineScope.coroutineContext) {
+                mutex.withLock {
+                    closeSync()
+                }
             }
         }
+
+        dispatcher.close()
     }
 
     override fun isOpen(): Boolean {
@@ -120,6 +127,7 @@ class AlOutputDevice
     @Throws(DeviceException::class)
     override fun createSource(stereo: Boolean, params: DeviceSourceParams): AlSource {
         Preconditions.checkNotNull(params, "params cannot be null")
+        checkNotClosed()
         if (!isOpen()) throw DeviceException("Device is not open")
 
         val numBuffers = (params as? AlSourceParams)?.numBuffers ?: 0
@@ -153,40 +161,43 @@ class AlOutputDevice
         }
     }
 
-    override fun closeSourcesAsync(): CompletableFuture<Void?> =
-        coroutineScope.future {
+    override fun closeSourcesAsync(): CompletableFuture<Void?> {
+        checkNotClosed()
+
+        return coroutineScope.future {
             closeSources()
             null
         }
-
-    override suspend fun runInContext(runnable: suspend () -> Unit) {
-        coroutineScope.launch { runnable() }.join()
-//        try {
-////            if (AlUtil.sameDeviceContext(this)) {
-////                runnable()
-////                return
-////            }
-//
-//
-//        } catch (e: Exception) {
-//            throw RuntimeException(e)
-//        }
     }
 
-    override fun runInContextAsync(runnable: Runnable): CompletableFuture<Void?> =
-        coroutineScope.future {
+    override suspend fun runInContext(runnable: suspend () -> Unit) {
+        checkNotClosed()
+
+        coroutineScope.launch { runnable() }.join()
+    }
+
+    override fun runInContextAsync(runnable: Runnable): CompletableFuture<Void?> {
+        checkNotClosed()
+
+        return coroutineScope.future {
             runnable.run()
             null
         }
+    }
 
-    override fun open(): Unit = runBlocking(coroutineScope.coroutineContext) {
-        mutex.withLock {
-            openSync()
+    override fun open() {
+        checkNotClosed()
+
+        runBlocking(coroutineScope.coroutineContext) {
+            mutex.withLock {
+                openSync()
+            }
         }
     }
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
+        if (closed.get()) return
         coroutineScope.launch {
             mutex.withLock {
                 sources.remove(event.source)
