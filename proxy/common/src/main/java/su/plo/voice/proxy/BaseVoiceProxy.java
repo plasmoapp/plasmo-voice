@@ -37,8 +37,8 @@ import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceProxySourceLineManager;
 import su.plo.voice.server.language.VoiceServerLanguages;
 import su.plo.voice.server.player.LuckPermsListener;
-import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
+import su.plo.voice.util.version.PlatformLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -251,6 +251,10 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
     }
 
     private void startUdpServer() {
+        if (this.udpProxyServer != null) {
+            stopUdpServer();
+        }
+
         UdpProxyServer server = new NettyUdpProxyServer(this);
 
         UdpProxyServerCreateEvent createUdpServerEvent = new UdpProxyServerCreateEvent(server);
@@ -269,6 +273,13 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             this.udpProxyServer = server;
         } catch (Exception e) {
             LOGGER.error("Failed to start the udp server", e);
+        }
+    }
+
+    private void stopUdpServer() {
+        if (this.udpProxyServer != null) {
+            this.udpProxyServer.stop();
+            this.udpProxyServer = null;
         }
     }
 

@@ -1,0 +1,1 @@
+- Fixed proxy reload command (`/greload` or `/velocity reload`) not stopping existing UDP server, causing voice proxy to break.
