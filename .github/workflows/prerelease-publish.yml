@@ -47,30 +47,11 @@ jobs:
         github-prerelease: true
 
     - name: Upload to Registry
-      run: |
-        for file in build/libs/*; do
-          echo "Uploading $(basename $file)..."
-        
-          if curl -X POST "${{ secrets.REGISTRY_URL }}/upload" \
-            -H "Authorization: Bearer ${{ secrets.REGISTRY_UPLOAD_TOKEN }}" \
-            -F "repoUrl=${{ github.server_url }}/${{ github.repository }}" \
-            -F "project=${{ github.event.repository.name  }}" \
-            -F "branch=${{ github.ref_name }}" \
-            -F "commit=${{ github.sha }}" \
-            -F "message=${{ github.event.head_commit.message }}" \
-            -F "file=@$file" \
-            --retry 5 \
-            --retry-delay 2 \
-            --retry-all-errors \
-            --fail-with-body \
-            --show-error; then
-            echo "✓ Uploaded $(basename $file)"
-          else
-            echo "✗ Failed to upload $(basename $file) after retries"
-            exit 1
-          fi
-        done
-
+      uses: plasmoapp/actions/.github/actions/upload-to-registry@main
+      with:
+        registry_url: ${{ secrets.REGISTRY_URL }}
+        upload_token: ${{ secrets.REGISTRY_UPLOAD_TOKEN }}
+        message: ${{ github.event.head_commit.message }}
 
     - name: Restore previous doc versions
       run: |
