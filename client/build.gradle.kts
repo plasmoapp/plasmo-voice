@@ -2,7 +2,6 @@ import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.noServerRunConfigs
 import net.fabricmc.loom.task.RemapJarTask
-import su.plo.config.toml.Toml
 import su.plo.crowdin.CrowdinParams
 import su.plo.voice.extension.expandMatching
 import su.plo.voice.extension.slibPlatform
@@ -83,16 +82,13 @@ if (isMainProject) {
 
 val shadowCommon by configurations.creating
 
-fun slibArtifact(): String {
-    val minecraftVersion = when (platform.mcVersion) {
-        11904 -> "1.19.3"
-        12101 -> "1.21"
-        12103, 12104 -> "1.21.2"
-        260200 -> "26.1"
-        else -> platform.mcVersionStr
-    }
+val mcVersionsRange = project.property("mod.minecraft_versions") as String
+val forgeVersionRange = project.findProperty("mod.forge_version") as String? ?: ""
+val neoForgeVersionRange = project.findProperty("mod.neoforge_version") as String? ?: ""
 
-    return "${minecraftVersion}-${platform.loaderStr}"
+fun slibArtifact(): String {
+    val mcSlug = project.findProperty("deps.slib") as String? ?: platform.mcVersionStr
+    return "$mcSlug-${platform.loaderStr}"
 }
 
 repositories {
@@ -119,27 +115,10 @@ dependencies {
     implementation(libs.opus.concentus)
 
     if (platform.isFabric) {
-        // todo: move that abomination to versions.toml
-        val fabricApiVersion = when (platform.mcVersion) {
-            11605 -> "0.42.0+1.16"
-            11701 -> "0.46.1+1.17"
-            11802 -> "0.76.0+1.18.2"
-            11902 -> "0.73.2+1.19.2"
-            11903 -> "0.76.1+1.19.3"
-            11904 -> "0.87.1+1.19.4"
-            12001 -> "0.84.0+1.20.1"
-            12004 -> "0.95.4+1.20.4"
-            12006 -> "0.97.7+1.20.6"
-            12101 -> "0.116.10+1.21.1"
-            12103 -> "0.110.0+1.21.3"
-            12104 -> "0.110.5+1.21.4"
-            12105 -> "0.119.5+1.21.5"
-            12106 -> "0.127.0+1.21.6"
-            12111 -> "0.141.3+1.21.11"
-            260100 -> "0.143.14+26.1"
-            260200 -> "0.148.3+26.2"
-            else -> throw GradleException("Unsupported platform $platform")
-        }
+        val fabricApiVersion = project.property("deps.fabric_api") as String
+        val fabricPermissionsApiVersion = project.property("deps.fabric_permissions_api") as String
+        val clothConfigVersion = project.property("deps.cloth_config") as String
+        val modMenuVersion = project.property("deps.modmenu") as String
 
         fun fabricApiModules(vararg module: String) {
             module.forEach {
@@ -161,66 +140,17 @@ dependencies {
             modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
         }
 
-        val fabricPermissionsApi =
-            if (platform.mcVersion >= 260100) {
-                "me.lucko:fabric-permissions-api:0.6.3+26.1-SNAPSHOT"
-            } else if (platform.mcVersion >= 12106) {
-                "me.lucko:fabric-permissions-api:0.4.1"
-            } else if (platform.mcVersion >= 12102) {
-                "me.lucko:fabric-permissions-api:0.3.3"
-            } else {
-                "me.lucko:fabric-permissions-api:0.3.1"
-            }
+        val fabricPermissionsApi = "me.lucko:fabric-permissions-api:$fabricPermissionsApiVersion"
         "include"(fabricPermissionsApi)
         modImplementation(fabricPermissionsApi) {
             isTransitive = false
         }
 
-        // build times go _/
-
-        when (platform.mcVersion) {
-            11605 -> "4.17.101"
-            11701 -> "5.3.63"
-            11802 -> "6.5.102"
-            11902 -> "8.3.134"
-            11903 -> "9.1.104"
-            11904 -> "10.1.135"
-            12001 -> "11.1.136"
-            12004 -> "13.0.138"
-            12101 -> "15.0.140"
-            12103 -> "16.0.143"
-            12104,
-            12105,
-            12106,
-            12109,
-            12111 -> "17.0.144"
-            else -> "26.1.154"
-        }.let { clothConfigVersion ->
-            modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
-                exclude("net.fabricmc.fabric-api")
-            }
+        modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {
+            exclude("net.fabricmc.fabric-api")
         }
 
-        when (platform.mcVersion) {
-            11605 -> "1.16.23"
-            11701 -> "2.0.17"
-            11802 -> "3.2.5"
-            11902 -> "4.1.2"
-            11903 -> "5.1.0"
-            11904 -> "6.3.1"
-            12001 -> "7.2.2"
-            12004 -> "9.2.0"
-            12101 -> "11.0.4"
-            12103 -> "12.0.0"
-            12104,
-            12105,
-            12106,
-            12109,
-            12111 -> "13.0.2"
-            else -> "18.0.0-alpha.8"
-        }.let { modMenuVersion ->
-            modImplementation("maven.modrinth:modmenu:$modMenuVersion")
-        }
+        modImplementation("maven.modrinth:modmenu:$modMenuVersion")
 
         if (platform.mcVersion < 12105) {
             modCompileOnly("maven.modrinth:vulkanmod:0.5.5-fabric,1.21.1")
@@ -272,14 +202,12 @@ tasks {
     }
 
     processResources {
-        val versionInfo = readVersionInfo()
-
         expandMatching(
             listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml"),
             "version" to version,
-            "neoForgeVersion" to versionInfo.neoForgeVersion,
-            "forgeVersion" to versionInfo.forgeVersion,
-            "mcVersions" to versionInfo.forgeMcVersions,
+            "neoForgeVersion" to neoForgeVersionRange,
+            "forgeVersion" to forgeVersionRange,
+            "mcVersions" to mcVersionsRange,
             "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\""),
         )
 
@@ -287,7 +215,7 @@ tasks {
             listOf("fabric.mod.json"),
             "version" to version,
             "fabricDependencyName" to if (platform.mcVersion >= 260100) "fabric-api" else "fabric",
-            "mcVersions" to versionInfo.fabricMcVersions,
+            "mcVersions" to mcVersionsRange,
             "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\""),
         )
 
@@ -382,61 +310,3 @@ tasks {
         }
     }
 }
-
-data class VersionInfo(
-    val neoForgeVersion: String,
-    val forgeVersion: String,
-    val mcVersions: String,
-    val mcVersionsNeoForge: String?,
-) {
-
-    val forgeMcVersions: String
-        get() {
-            val split = (mcVersionsNeoForge ?: mcVersions).split(" ")
-
-            fun versionBounds(version: String): Triple<String, String, String>? =
-                when {
-                    version.startsWith(">=") -> Triple(
-                        "[", version.substringAfter(">="), ",)"
-                    )
-                    version.startsWith(">") -> Triple(
-                        "(", version.substringAfter(">"), ",)"
-                    )
-                    version.startsWith("<=") -> Triple(
-                        "(,", version.substringAfter("<="), "]"
-                    )
-                    version.startsWith("<") -> Triple(
-                        "(,", version.substringAfter("<"), ")"
-                    )
-                    else -> null
-                }
-
-            if (split.size == 1) {
-                val version = split.first()
-                val bounds = versionBounds(version)
-
-                return if (bounds == null) {
-                    "[$version]"
-                } else {
-                    "${bounds.first}${bounds.second}${bounds.third}"
-                }
-            } else if (split.size == 2) {
-                val bounds = split.map { versionBounds(it)!! }
-                val first = bounds[0]
-                val second = bounds[1]
-
-                return "${first.first}${first.second},${second.second}${second.third}"
-            } else {
-                throw IllegalStateException("Invalid version")
-            }
-        }
-
-    val fabricMcVersions
-        get() = mcVersions
-}
-
-fun readVersionInfo(): VersionInfo = Toml()
-    .read(file("../versions.toml"))
-    .getTable(platform.mcVersion.toString())?.let {
-        it.to(VersionInfo::class.java)
-    } ?: throw GradleException("Unsupported version ${platform.mcVersion}")
