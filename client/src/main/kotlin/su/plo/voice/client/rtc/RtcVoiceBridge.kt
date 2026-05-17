@@ -80,13 +80,6 @@ package su.plo.voice.client.rtc
 //$$     }
 //$$
 //$$     @JvmStatic
-//$$     fun onServerDisconnect() {
-//$$         voiceChannel.getAndSet(null)
-//$$             ?.udpClient
-//$$             ?.close(UdpClientClosedEvent.Reason.DISCONNECT)
-//$$     }
-//$$
-//$$     @JvmStatic
 //$$     fun onPeerConnectionClosed(peerConnection: RTCPeerConnection) {
 //$$         voiceChannels.remove(peerConnection)?.close()
 //$$
