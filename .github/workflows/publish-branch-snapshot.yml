@@ -1,0 +1,42 @@
+name: Publish Branch Snapshot
+
+on:
+  push:
+    branches:
+      - feat/**
+      - fix/**
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v6
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        distribution: temurin
+        java-version: |
+          8
+          16
+          17
+          21
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-read-only: false
+
+    - name: Build with Gradle
+      run: ./gradlew build --stacktrace -Psnapshot=true
+
+    - name: Upload to Registry
+      uses: plasmoapp/actions/.github/actions/upload-to-registry@main
+      with:
+        registry_url: ${{ secrets.REGISTRY_URL }}
+        upload_token: ${{ secrets.REGISTRY_UPLOAD_TOKEN }}
+        message: ${{ github.event.head_commit.message }}

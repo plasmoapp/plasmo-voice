@@ -1,11 +1,9 @@
-name: Publish
+name: Publish Snapshot
 
 on:
   push:
     branches:
       - v2.1.x
-      - feat/**
-      - fix/**
 
 jobs:
   build:
