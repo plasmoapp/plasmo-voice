@@ -41,13 +41,6 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
       run: ./gradlew publish --stacktrace -Psnapshot=true
 
-    - name: Publish to GitHub
-      uses: apehum/mc-publish@master
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-        github-generate-changelog: false
-        github-prerelease: true
-
     - name: Upload to Registry
       uses: plasmoapp/actions/.github/actions/upload-to-registry@main
       with:
