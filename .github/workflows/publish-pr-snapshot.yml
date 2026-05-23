@@ -1,10 +1,12 @@
-name: Publish Branch Snapshot
+name: Publish PR Snapshot
 
 on:
-  push:
-    branches:
-      - feat/**
-      - fix/**
+  pull_request:
+    types:
+      - synchronize
+      - opened
+      - ready_for_review
+      - reopened
 
 jobs:
   build:
@@ -35,6 +37,7 @@ jobs:
       run: ./gradlew build --stacktrace -Psnapshot=true
 
     - name: Upload to Registry
+      if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
       uses: plasmoapp/actions/.github/actions/upload-to-registry@main
       with:
         registry_url: ${{ secrets.REGISTRY_URL }}
