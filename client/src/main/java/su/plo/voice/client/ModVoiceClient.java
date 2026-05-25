@@ -27,6 +27,7 @@ import su.plo.voice.util.version.PlatformLoader;
 
 //#if FABRIC
 
+import su.plo.voice.client.logging.PrefixedLogger;
 import su.plo.voice.server.ModVoiceServer;
 
 import net.fabricmc.api.ClientModInitializer;
@@ -181,6 +182,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#if FABRIC
     @Override
     public void onInitializeClient() {
+        McLoggerFactory.supplier = name -> new PrefixedLogger(new Log4jLogger(name), () -> name);
         super.onInitialize();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());
