@@ -105,7 +105,7 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         if (byRemoteSecret != null) byRemoteSecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
-        BaseVoice.DEBUG_LOGGER.log(
+        BaseVoice.LOGGER.info(
                 "{} ({}) connected",
                 connection.getPlayer().getInstance().getName(),
                 connection.getRemoteAddress()
@@ -175,7 +175,7 @@ public final class VoiceUdpProxyConnectionManager implements UdpProxyConnectionM
         playerIdByProxySecret.remove(connection.getRemoteSecret());
         playerIdByRemoteSecret.remove(connection.getSecret());
 
-        BaseVoice.DEBUG_LOGGER.log("{} disconnected {}", connection.getPlayer().getInstance().getName(), reason);
+        BaseVoice.LOGGER.info("{} disconnected {}", connection.getPlayer().getInstance().getName(), reason);
         voiceProxy.getEventBus().fire(new UdpClientDisconnectedEvent(connection, reason));
     }
 

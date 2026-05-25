@@ -70,7 +70,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
         if (bySecret != null) bySecret.disconnect();
         if (byPlayer != null) byPlayer.disconnect();
 
-        BaseVoice.DEBUG_LOGGER.log("{} ({}) connected", connection.getPlayer().getInstance().getName(), connection.getRemoteAddress());
+        BaseVoice.LOGGER.info("{} ({}) connected", connection.getPlayer().getInstance().getName(), connection.getRemoteAddress());
         voiceServer.getEventBus().fire(new UdpClientConnectedEvent(connection));
     }
 
@@ -133,7 +133,7 @@ public final class VoiceUdpServerConnectionManager implements UdpServerConnectio
         connectionByPlayerId.remove(player.getInstance().getUuid());
         connectionBySecret.remove(connection.getSecret());
 
-        BaseVoice.DEBUG_LOGGER.log("{} disconnected {}", connection.getPlayer().getInstance().getName(), reason);
+        BaseVoice.LOGGER.info("{} disconnected {}", connection.getPlayer().getInstance().getName(), reason);
         voiceServer.getEventBus().fire(new UdpClientDisconnectedEvent(connection, reason));
     }
 
