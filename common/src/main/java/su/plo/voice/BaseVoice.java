@@ -27,6 +27,10 @@ public abstract class BaseVoice implements PlasmoVoice {
     public static final McLogger LOGGER = McLoggerFactory.createLogger("PlasmoVoice");
     public static final DebugLogger DEBUG_LOGGER = new DebugLogger(LOGGER);
 
+    public static McLogger createLogger(String name) {
+        return McLoggerFactory.createLogger(LOGGER, name);
+    }
+
     protected final PlatformLoader loader;
 
     protected final EventBus eventBus = new VoiceEventBus(this);

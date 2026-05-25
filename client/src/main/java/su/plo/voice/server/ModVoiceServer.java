@@ -8,6 +8,7 @@ import su.plo.slib.mod.ModServerLib;
 import su.plo.slib.mod.event.ModServerEvents;
 import su.plo.slib.mod.event.server.ServerStartedEvent;
 import su.plo.slib.mod.event.server.ServerStoppingEvent;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.util.version.PlatformLoader;
 
 import java.io.File;
@@ -41,6 +42,7 @@ public final class ModVoiceServer extends BaseVoiceServer {
     @Override
     public void onInitialize() {
         ModServerEvents.initialize();
+        ModServerLib.INSTANCE.setBaseLoggerName(BaseVoice.LOGGER.getName());
 
         ServerStartedEvent.INSTANCE.registerListener(this::onMinecraftServerInitialize);
         ServerStoppingEvent.INSTANCE.registerListener(this::onMinecraftServerShutdown);

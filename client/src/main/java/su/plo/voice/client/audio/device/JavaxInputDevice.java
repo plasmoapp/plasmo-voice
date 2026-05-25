@@ -1,9 +1,9 @@
 package su.plo.voice.client.audio.device;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.slib.api.logging.McLogger;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -12,11 +12,16 @@ import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
 import su.plo.voice.api.util.AudioUtil;
 
-import javax.sound.sampled.*;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
+import javax.sound.sampled.TargetDataLine;
 
 public final class JavaxInputDevice extends BaseAudioDevice implements InputDevice {
 
-    private static final Logger LOGGER = LogManager.getLogger(JavaxInputDevice.class);
+    private static final McLogger LOGGER = BaseVoice.createLogger("JavaxInputDevice");
 
     private volatile TargetDataLine device;
 

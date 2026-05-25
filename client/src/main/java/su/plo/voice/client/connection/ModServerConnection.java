@@ -1,6 +1,5 @@
 package su.plo.voice.client.connection;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.local.LocalAddress;
@@ -9,12 +8,12 @@ import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
 import net.minecraft.network.FriendlyByteBuf;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import su.plo.slib.api.logging.McLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
 import su.plo.voice.api.client.audio.device.AlContextOutputDevice;
@@ -86,7 +85,7 @@ import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
 public final class ModServerConnection implements ServerConnection {
 
-    private static final Logger LOGGER = LogManager.getLogger(ModServerConnection.class);
+    private static final McLogger LOGGER = BaseVoice.createLogger("ModServerConnection");
 
     private final BaseVoiceClient voiceClient;
     private final VoiceClientConfig config;

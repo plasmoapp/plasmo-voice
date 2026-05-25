@@ -8,7 +8,7 @@ import su.plo.slib.api.chat.style.McTextClickEvent;
 import su.plo.slib.api.chat.style.McTextHoverEvent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.slib.api.logging.McLogger;
-import su.plo.slib.api.logging.McLoggerFactory;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 
 public final class ServerVersionUtil {
 
-    private static final McLogger LOGGER = McLoggerFactory.createLogger("ServerVersionUtil");
+    private static final McLogger LOGGER = BaseVoice.createLogger("ServerVersionUtil");
 
     private static final Cache<String, String> LINKS_CACHE = CacheBuilder
             .newBuilder()

@@ -1,11 +1,11 @@
 package su.plo.voice.client.audio;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.EXTThreadLocalContext;
+import su.plo.slib.api.logging.McLogger;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
 import su.plo.voice.util.version.SemanticVersion;
 
@@ -14,7 +14,7 @@ import javax.sound.sampled.AudioFormat.Encoding;
 
 public final class AlUtil {
 
-    private static final Logger LOGGER = LogManager.getLogger(AlUtil.class);
+    private static final McLogger LOGGER = BaseVoice.createLogger("AlUtil");
 
     private static boolean alSoftVersionResolved = false;
     private static SemanticVersion alSoftVersion = null;

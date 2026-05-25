@@ -2,8 +2,8 @@ package su.plo.voice.client.crowdin
 
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.launch
-import org.apache.logging.log4j.LogManager
 import su.plo.crowdin.CrowdinLib
+import su.plo.voice.BaseVoice
 import su.plo.voice.BuildConstants
 import su.plo.voice.util.CoroutineScopes
 import java.io.File
@@ -13,7 +13,7 @@ object PlasmoCrowdinMod {
 
     val folderName = ".crowdin"
 
-    private val logger = LogManager.getLogger("Plasmo Voice Crowdin")
+    private val logger = BaseVoice.createLogger("Crowdin")
 
     fun downloadTranslations(crowdinFolder: File) {
         if (!translationsOutdated(crowdinFolder)) return

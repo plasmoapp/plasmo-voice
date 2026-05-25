@@ -15,11 +15,12 @@ class PaperVoiceServer(
     private val plugin: JavaPlugin
 ) : BaseVoiceServer(PlatformLoader.PAPER), Listener {
 
-    private val minecraftServerLib = SpigotServerLib(plugin)
+    private val minecraftServerLib = SpigotServerLib(plugin, LOGGER)
 
     private lateinit var metrics: Metrics
 
     public override fun onInitialize() {
+        minecraftServerLib.commandManager.commandNamespace = "plasmovoice"
         minecraftServerLib.onInitialize()
 
         super.onInitialize()

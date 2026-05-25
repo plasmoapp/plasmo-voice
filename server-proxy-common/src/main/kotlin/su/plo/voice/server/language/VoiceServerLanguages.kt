@@ -9,7 +9,7 @@ import su.plo.config.toml.Toml
 import su.plo.config.toml.TomlWriter
 import su.plo.crowdin.CrowdinLib
 import su.plo.slib.api.language.ServerTranslator
-import su.plo.slib.api.logging.McLoggerFactory
+import su.plo.voice.BaseVoice
 import su.plo.voice.api.server.resource.ResourceLoader
 import su.plo.voice.api.server.language.ServerLanguages
 import su.plo.voice.util.CoroutineScopes
@@ -469,6 +469,6 @@ class VoiceServerLanguages(
 
     companion object {
         private const val FALLBACK_LANGUAGE = "en_us"
-        private val LOGGER = McLoggerFactory.createLogger("VoiceServerLanguages")
+        private val LOGGER = BaseVoice.createLogger("ServerLanguages")
     }
 }

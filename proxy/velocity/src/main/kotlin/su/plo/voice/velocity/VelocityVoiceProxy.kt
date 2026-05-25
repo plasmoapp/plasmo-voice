@@ -43,7 +43,7 @@ class VelocityVoiceProxy @Inject constructor(
 
     @Subscribe
     fun onProxyInitialization(event: ProxyInitializeEvent) {
-        minecraftProxy = VelocityProxyLib(proxyServer, this)
+        minecraftProxy = VelocityProxyLib(proxyServer, this, LOGGER)
 
         super.onInitialize()
 

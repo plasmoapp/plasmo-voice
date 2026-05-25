@@ -6,8 +6,7 @@ import com.sun.jna.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.Synchronized;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import su.plo.slib.api.logging.McLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.chat.ClientChatUtil;
@@ -15,6 +14,7 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextClickEvent;
 import su.plo.slib.api.chat.style.McTextHoverEvent;
 import su.plo.slib.api.chat.style.McTextStyle;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -51,7 +51,7 @@ import java.util.UUID;
 
 public final class VoiceAudioCapture implements AudioCapture {
 
-    private static final Logger LOGGER = LogManager.getLogger(VoiceAudioCapture.class);
+    private static final McLogger LOGGER = BaseVoice.createLogger("VoiceAudioCapture");
 
     private final PlasmoVoiceClient voiceClient;
     private final DeviceManager devices;

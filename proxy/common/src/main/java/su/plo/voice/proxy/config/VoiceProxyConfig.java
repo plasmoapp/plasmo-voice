@@ -12,7 +12,7 @@ import su.plo.config.ConfigField;
 import su.plo.config.ConfigValidator;
 import su.plo.config.entry.SerializableConfigEntry;
 import su.plo.slib.api.logging.McLogger;
-import su.plo.slib.api.logging.McLoggerFactory;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.config.ProxyConfig;
 import su.plo.voice.proxy.util.AddressUtil;
 
@@ -26,7 +26,7 @@ import java.util.function.Predicate;
 @Accessors(fluent = true)
 public final class VoiceProxyConfig implements ProxyConfig {
 
-    private static final McLogger LOGGER = McLoggerFactory.createLogger("VoiceProxyConfig");
+    private static final McLogger LOGGER = BaseVoice.createLogger("VoiceProxyConfig");
 
     private byte[] aesEncryptionKey = null;
     private UUID forwardingSecret = null;

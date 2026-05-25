@@ -4,7 +4,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.launch
-import org.apache.logging.log4j.LogManager
 import org.lwjgl.openal.AL11
 import org.lwjgl.system.MemoryUtil
 import su.plo.voice.BaseVoice
@@ -316,7 +315,7 @@ class StreamAlSource private constructor(
 
     companion object {
 
-        private val LOGGER = LogManager.getLogger(StreamAlSource::class.java)
+        private val LOGGER = BaseVoice.createLogger("StreamAlSource")
 
         @JvmStatic
         fun create(device: AlOutputDevice, client: PlasmoVoiceClient, stereo: Boolean, numBuffers: Int): AlSource {

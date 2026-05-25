@@ -1,9 +1,11 @@
 package su.plo.voice.client.audio.device;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.openal.*;
+import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.ALC10;
+import org.lwjgl.openal.ALC11;
+import su.plo.slib.api.logging.McLogger;
+import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.InputDevice;
@@ -17,7 +19,7 @@ import javax.sound.sampled.AudioFormat;
 
 public final class AlInputDevice extends BaseAudioDevice implements InputDevice {
 
-    private static final Logger LOGGER = LogManager.getLogger(AlInputDevice.class);
+    private static final McLogger LOGGER = BaseVoice.createLogger("AlInputDevice");
 
     private volatile long devicePointer;
     private boolean hasDisconnectEXT;

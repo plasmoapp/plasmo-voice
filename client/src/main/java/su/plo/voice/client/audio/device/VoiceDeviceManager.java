@@ -6,7 +6,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.slib.api.logging.McLogger;
-import su.plo.slib.api.logging.McLoggerFactory;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlContextOutputDevice;
@@ -30,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public final class VoiceDeviceManager implements DeviceManager {
 
-    private static final McLogger LOGGER = McLoggerFactory.createLogger("VoiceDeviceManager");
+    private static final McLogger LOGGER = BaseVoice.createLogger("VoiceDeviceManager");
 
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;

@@ -22,7 +22,7 @@ class BungeeVoiceProxy(
     override fun getMinecraftServer() = minecraftServer
 
     fun onEnable() {
-        minecraftServer = BungeeProxyLib(plugin)
+        minecraftServer = BungeeProxyLib(plugin, LOGGER)
 
         super.onInitialize()
 

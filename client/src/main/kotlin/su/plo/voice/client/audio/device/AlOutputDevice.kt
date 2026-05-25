@@ -15,7 +15,7 @@ import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import net.minecraft.client.Minecraft
 import net.minecraft.world.phys.Vec3
-import org.apache.logging.log4j.LogManager
+import su.plo.voice.BaseVoice
 import org.joml.Quaternionf
 import org.joml.Vector3f
 import org.lwjgl.BufferUtils
@@ -421,6 +421,6 @@ class AlOutputDevice
     }
 
     companion object {
-        private val LOGGER = LogManager.getLogger(AlOutputDevice::class.java)
+        private val LOGGER = BaseVoice.createLogger("AlOutputDevice")
     }
 }

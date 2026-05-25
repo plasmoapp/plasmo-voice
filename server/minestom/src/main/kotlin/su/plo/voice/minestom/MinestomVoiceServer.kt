@@ -9,7 +9,7 @@ class MinestomVoiceServer(
     private val dataDirectory: File
 ) : BaseVoiceServer(PlatformLoader.MINESTOM) {
 
-    private val minecraftServerLib = MinestomServerLib(dataDirectory)
+    private val minecraftServerLib = MinestomServerLib(dataDirectory, LOGGER)
 
     public override fun onInitialize() {
         minecraftServerLib.onInitialize()
