@@ -13,11 +13,5 @@ dependencies:
     PlaceholderAPI:
       load: BEFORE
       required: false
-    SuperVanish:
-      load: BEFORE
-      required: false
-    PremiumVanish:
-      load: BEFORE
-      required: false
 
 folia-supported: true

@@ -17,7 +17,6 @@ mcdsl = "2.3.0"
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
-supervanish = "6.2.18-3"
 
 hkdf = "2.0.0"
 
@@ -59,7 +58,6 @@ crowdin      = { module = "su.plo.crowdin:lib", version.ref = "crowdin" }
 config       = { module = "su.plo.config:config", version.ref = "config" }
 luckperms    = { module = "net.luckperms:api", version.ref = "luckperms" }
 papi         = { module = "me.clip:placeholderapi", version.ref = "papi" }
-supervanish  = { module = "com.github.LeonMangler:SuperVanish", version.ref = "supervanish" }
 
 hkdf = { module = "at.favre.lib:hkdf", version.ref= "hkdf" }
 

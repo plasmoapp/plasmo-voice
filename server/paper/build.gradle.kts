@@ -21,7 +21,6 @@ repositories {
 dependencies {
     compileOnly(libs.paper)
     compileOnly(libs.papi)
-    compileOnly(libs.supervanish)
 
     compileOnly("org.bstats:bstats-bukkit:${libs.versions.bstats.get()}")
 

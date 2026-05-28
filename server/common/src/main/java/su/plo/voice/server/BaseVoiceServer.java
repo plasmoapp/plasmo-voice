@@ -73,6 +73,7 @@ import static su.plo.voice.server.command.VoiceMuteListCommandKt.voiceMuteListCo
 import static su.plo.voice.server.command.VoiceReconnectCommandKt.voiceReconnectCommand;
 import static su.plo.voice.server.command.VoiceReloadCommandKt.voiceReloadCommand;
 import static su.plo.voice.server.command.VoiceUnmuteCommandKt.voiceUnmuteCommand;
+import static su.plo.voice.server.integration.VanishListenerKt.registerVanishListener;
 
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
@@ -179,6 +180,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
         // check for updates
         checkForUpdates();
+
+        registerVanishListener(this);
     }
 
     @Override

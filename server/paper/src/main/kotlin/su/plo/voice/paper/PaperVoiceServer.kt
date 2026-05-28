@@ -5,8 +5,6 @@ import org.bukkit.Bukkit
 import org.bukkit.event.Listener
 import org.bukkit.plugin.java.JavaPlugin
 import su.plo.slib.paper.PaperServerLib
-import su.plo.voice.paper.integration.SpigotVanishIntegration
-import su.plo.voice.paper.integration.SuperVanishIntegration
 import su.plo.voice.paper.integration.VoicePlaceholder
 import su.plo.voice.server.BaseVoiceServer
 import su.plo.voice.util.version.PlatformLoader
@@ -38,25 +36,6 @@ class PaperVoiceServer : BaseVoiceServer(PlatformLoader.PAPER), Listener {
         // Initialize integrations
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             VoicePlaceholder(this).register()
-        }
-
-        val visibilityEventsSupported =
-            try {
-                Class.forName("org.bukkit.event.player.PlayerHideEntityEvent")
-                Class.forName("org.bukkit.event.player.PlayerShowEntityEvent")
-                true
-            } catch (ignored: ClassNotFoundException) {
-                false
-            }
-
-        if (Bukkit.getPluginManager().getPlugin("SuperVanish") != null ||
-            Bukkit.getPluginManager().getPlugin("PremiumVanish") != null
-        ) {
-            plugin.server.pluginManager.registerEvents(SuperVanishIntegration(this), plugin)
-            LOGGER.info("SuperVanish event listener attached")
-        } else if (visibilityEventsSupported) {
-            plugin.server.pluginManager.registerEvents(SpigotVanishIntegration(this), plugin)
-            LOGGER.info("Spigot vanish PlayerHideEntityEvent/PlayerShowEntityEvent event listener attached")
         }
     }
 
