@@ -31,7 +31,7 @@ publishing {
             from(components["java"])
 
             if (rootProject.properties.containsKey("snapshot")) {
-                version = "${rootProject.version}-SNAPSHOT" // removes a build version
+                version = "${rootProject.version.toString().substringBefore("+")}-SNAPSHOT" // removes a build version
             }
 
             artifactId = platform.artifactId ?: artifactId
