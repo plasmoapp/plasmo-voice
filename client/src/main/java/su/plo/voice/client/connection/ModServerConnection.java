@@ -219,6 +219,10 @@ public final class ModServerConnection implements ServerConnection {
 
     @Override
     public void close() {
+        //#if MC>=260200
+        //$$ su.plo.voice.client.rtc.RtcVoiceBridge.onServerDisconnect();
+        //#endif
+
         // cleanup server connection
         voiceClient.setServerInfo(null);
         playerById.clear();
