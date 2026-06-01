@@ -57,10 +57,6 @@ if (platform.mcVersion >= 12111) {
     mixins.add("plasmovoice-1.21.11.mixins.json")
 }
 
-if (platform.mcVersion >= 260200) {
-    mixins.add("plasmovoice-26.2.mixins.json")
-}
-
 loom {
     runs {
         getByName("client") {
