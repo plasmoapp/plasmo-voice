@@ -21,3 +21,4 @@ classes/
 *_key.txt
 previousDocVersions/
 test-client/
+.kotlin/
