@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 
 @Config
 public final class VoiceClientActivation
@@ -63,6 +64,11 @@ public final class VoiceClientActivation
 
     private @Nullable AudioEncoder monoEncoder;
     private @Nullable AudioEncoder stereoEncoder;
+
+    private final Consumer<Integer> distanceListener = this::onDistanceChange;
+    private final Hotkey.OnPress toggleListener = this::onToggle;
+    private final Hotkey.OnPress distanceIncreaseListener = this::onDistanceIncrease;
+    private final Hotkey.OnPress distanceDecreaseListener = this::onDistanceDecrease;
 
     public VoiceClientActivation(@NotNull PlasmoVoiceClient voiceClient,
                                  @NotNull VoiceClientConfig config,
@@ -98,17 +104,11 @@ public final class VoiceClientActivation
         this.distanceIncreaseKey = createHotKey(hotKeys, activation, "distance_increase", false);
         this.distanceDecreaseKey = createHotKey(hotKeys, activation, "distance_decrease", false);
 
-        toggleKey.value().clearPressListener();
-        toggleKey.value().addPressListener(this::onToggle);
+        toggleKey.value().addPressListener(toggleListener);
+        distanceIncreaseKey.value().addPressListener(distanceIncreaseListener);
+        distanceDecreaseKey.value().addPressListener(distanceDecreaseListener);
 
-        distanceIncreaseKey.value().clearPressListener();
-        distanceIncreaseKey.value().addPressListener(this::onDistanceIncrease);
-
-        distanceDecreaseKey.value().clearPressListener();
-        distanceDecreaseKey.value().addPressListener(this::onDistanceDecrease);
-
-        configDistance.clearChangeListeners();
-        configDistance.addChangeListener(this::onDistanceChange);
+        configDistance.addChangeListener(distanceListener);
 
         if (encoderInfo != null) {
             CaptureInfo captureInfo = voiceClient.getServerInfo()
@@ -230,10 +230,10 @@ public final class VoiceClientActivation
         getMonoEncoder().ifPresent(AudioEncoder::close);
         getStereoEncoder().ifPresent(AudioEncoder::close);
 
-        toggleKey.value().clearPressListener();
-        distanceIncreaseKey.value().clearPressListener();
-        distanceDecreaseKey.value().clearPressListener();
-        configDistance.clearChangeListeners();
+        toggleKey.value().removePressListener(toggleListener);
+        distanceIncreaseKey.value().removePressListener(distanceIncreaseListener);
+        distanceDecreaseKey.value().removePressListener(distanceDecreaseListener);
+        configDistance.removeChangeListener(distanceListener);
 
         this.monoEncoder = null;
         this.stereoEncoder = null;

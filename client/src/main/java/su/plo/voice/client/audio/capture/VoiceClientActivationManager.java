@@ -30,6 +30,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     private final VoiceClientConfig config;
 
     private ClientActivation parentActivation;
+    private VoiceClientActivation fallbackParent;
 
     private final List<ClientActivation> activations = new CopyOnWriteArrayList<ClientActivation>() {
 
@@ -70,6 +71,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);
             }
 
+            removeFallbackParent();
             this.parentActivation = activation;
         }
 
@@ -114,7 +116,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         ));
 
         if (parentActivation == null) {
-            this.parentActivation = createParentActivation(serverConfig);
+            useFallbackParent();
         }
 
         return clientActivation;
@@ -149,7 +151,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
             activation.cleanup();
 
             if (id.equals(VoiceActivation.PROXIMITY_ID)) {
-                this.parentActivation = createParentActivation(getServerConfig());
+                useFallbackParent();
             }
 
             boolean removed = activations.remove(activation);
@@ -173,7 +175,9 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     @Override
     public void clear() {
         activations.forEach(ClientActivation::cleanup);
-        
+        removeFallbackParent();
+        this.parentActivation = null;
+
         activations.clear();
         activationById.clear();
     }
@@ -186,7 +190,20 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         ).orElseThrow(() -> new IllegalStateException("Server config is empty"));
     }
 
-    private VoiceClientActivation createParentActivation(@NotNull VoiceClientConfig.Server serverConfig) {
+    private void useFallbackParent() {
+        removeFallbackParent();
+        this.fallbackParent = createParentActivation();
+        this.parentActivation = fallbackParent;
+    }
+
+    private void removeFallbackParent() {
+        if (fallbackParent != null) {
+            fallbackParent.cleanup();
+            this.fallbackParent = null;
+        }
+    }
+
+    private VoiceClientActivation createParentActivation() {
         Activation serverActivation = new VoiceActivation(
                 VoiceActivation.PROXIMITY_NAME,
                 "pv.activation.parent",
@@ -201,9 +218,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         );
 
         ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
-        IntConfigEntry activationDistance = serverConfig.getActivationDistance(serverActivation.getId(), serverActivation);
-        activationDistance.setDefault(0, 0, 0);
-        activationDistance.set(serverActivation.calculateAllowedDistance(activationDistance.value()));
+        IntConfigEntry activationDistance = new IntConfigEntry(0, 0, 0);
         if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
             BaseVoice.LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
             activationConfig.getConfigType().set(ClientActivation.Type.PUSH_TO_TALK);

@@ -21,7 +21,7 @@ class DistanceVisualizeOnJoinListener(
             config.advanced.visualizeVoiceDistance.value() &&
             config.advanced.visualizeVoiceDistanceOnJoin.value()
         ) {
-            voiceClient.getDistanceVisualizer().render(
+            voiceClient.distanceVisualizer.render(
                 activation.getDistance(),
                 0x00a000,
                 null
