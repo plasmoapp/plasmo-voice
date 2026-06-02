@@ -40,9 +40,9 @@ import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.audio.codec.AudioDecoderPlc
 import su.plo.voice.client.BaseVoiceClient
 import su.plo.voice.client.audio.SoundOcclusion
+import su.plo.voice.client.audio.line.VoiceClientSourceLine
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.extension.diff
-import su.plo.voice.client.extension.level
 import su.plo.voice.client.extension.nanosToMillis
 import su.plo.voice.client.extension.toFloatArray
 import su.plo.voice.client.logging.PrefixedLogger
@@ -348,6 +348,7 @@ abstract class BaseClientAudioSource<T>(
 
         lastSequenceNumber = sequenceNumber
         lastActivation = timeSupplier.currentTimeMillis
+        (sourceLine as? VoiceClientSourceLine)?.setLastActivationTime(lastActivation)
 
         activated.set(true)
         resetted.set(false)
@@ -388,6 +389,7 @@ abstract class BaseClientAudioSource<T>(
 
         lastSequenceNumber = packet.sequenceNumber
         lastActivation = timeSupplier.currentTimeMillis
+        (sourceLine as? VoiceClientSourceLine)?.setLastActivationTime(lastActivation)
 
         activated.set(true)
         resetted.set(false)

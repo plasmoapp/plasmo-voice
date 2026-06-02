@@ -1,6 +1,7 @@
 package su.plo.voice.client.audio.line;
 
 import com.google.common.collect.Sets;
+import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.slib.api.entity.player.McGameProfile;
@@ -13,6 +14,9 @@ import java.util.UUID;
 public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSourceLine {
 
     private final DoubleConfigEntry volumeEntry;
+
+    @Setter
+    private volatile long lastActivationTime = 0L;
 
     public VoiceClientSourceLine(@NotNull DoubleConfigEntry volumeEntry,
                                  @NotNull SourceLine line,
@@ -41,6 +45,11 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
 
     public DoubleConfigEntry getVolumeConfigEntry() {
         return volumeEntry;
+    }
+
+    @Override
+    public long getLastActivationTime() {
+        return lastActivationTime;
     }
 
     @Override

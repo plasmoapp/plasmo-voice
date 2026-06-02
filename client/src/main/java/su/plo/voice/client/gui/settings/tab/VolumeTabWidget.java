@@ -11,12 +11,14 @@ import su.plo.slib.api.entity.player.McGameProfile;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.components.TextFieldWidget;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
+import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -30,6 +32,7 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.UpdatableWidget;
 import su.plo.voice.client.gui.settings.widget.VolumeSliderWidget;
+import su.plo.voice.proto.data.audio.line.VoiceSourceLine;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
 
@@ -37,6 +40,12 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public final class VolumeTabWidget extends TabWidget {
+
+    private static final ResourceLocation SHOW_ALL_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/eye.png");
+    private static final ResourceLocation SHOW_RECENT_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/eye_disabled.png");
+
+    private static final long RECENT_THRESHOLD_MS = 5 * 60 * 1000L;
+    private static final int ALWAYS_SHOWN_SOURCE_LINES_LIMIT = 3;
 
     private final PlasmoVoiceClient voiceClient;
     private final ClientSourceLineManager sourceLines;
@@ -55,15 +64,7 @@ public final class VolumeTabWidget extends TabWidget {
     @Override
     public void init() {
         super.init();
-
-        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.volume.sources"), 24));
-
-        List<ClientSourceLine> sourceLines = Lists.newArrayList(this.sourceLines.getLines());
-        Collections.reverse(sourceLines);
-        sourceLines.forEach(this::createSourceLineVolume);
-
-        createPlayersSearch();
-        refreshPlayerEntries();
+        buildEntries(true);
     }
 
     @EventSubscribe
@@ -74,6 +75,43 @@ public final class VolumeTabWidget extends TabWidget {
     @EventSubscribe
     public void onPlayerDisconnected(@NotNull VoicePlayerDisconnectedEvent event) {
         Minecraft.getInstance().execute(this::refreshPlayerEntries);
+    }
+
+    private void buildEntries(boolean focusSearch) {
+        List<ClientSourceLine> sourceLines = Lists.newArrayList(this.sourceLines.getLines());
+        Collections.reverse(sourceLines);
+
+        McTextComponent sourcesTitle = McTextComponent.translatable("gui.plasmovoice.volume.sources");
+        boolean filterable = sourceLines.size() > ALWAYS_SHOWN_SOURCE_LINES_LIMIT;
+        if (filterable) {
+            addEntry(new SourceLineHeaderEntry(sourcesTitle, 24));
+        } else {
+            addEntry(new CategoryEntry(sourcesTitle, 24));
+        }
+
+        boolean showAll = !filterable || config.getVoice().getShowAllSourceLines().value();
+        long now = voiceClient.getTimeSupplier().getCurrentTimeMillis();
+
+        sourceLines.stream()
+                .filter(line -> showAll || isAlwaysShown(line) || isRecentlyUsed(line, now))
+                .forEach(this::createSourceLineVolume);
+
+        createPlayersSearch(focusSearch);
+        refreshPlayerEntries();
+    }
+
+    private void rebuild() {
+        clearEntries();
+        buildEntries(false);
+    }
+
+    private boolean isAlwaysShown(@NotNull ClientSourceLine sourceLine) {
+        return VoiceSourceLine.PROXIMITY_NAME.equals(sourceLine.getName());
+    }
+
+    private boolean isRecentlyUsed(@NotNull ClientSourceLine sourceLine, long now) {
+        long lastActivation = sourceLine.getLastActivationTime();
+        return lastActivation > 0 && now - lastActivation <= RECENT_THRESHOLD_MS;
     }
 
     private void createSourceLineVolume(@NotNull ClientSourceLine sourceLine) {
@@ -95,7 +133,7 @@ public final class VolumeTabWidget extends TabWidget {
         ));
     }
 
-    private void createPlayersSearch() {
+    private void createPlayersSearch(boolean focusSearch) {
         CategoryEntry categoryEntry = new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.volume.players"), 24);
         addEntry(categoryEntry);
 
@@ -107,10 +145,12 @@ public final class VolumeTabWidget extends TabWidget {
                 McTextComponent.translatable("gui.plasmovoice.volume.players_search").withStyle(McTextStyle.GRAY)
         );
 
+        textField.setValue(currentSearch);
+
         FullWidthEntry<TextFieldWidget> entry = new FullWidthEntry<>(textField, 26);
 
         textField.setResponder((value) -> {
-            this.currentSearch = value.toLowerCase();
+            this.currentSearch = value;
             refreshPlayerEntries();
 
             int sourcesHeight = getEntryTop(categoryEntry);
@@ -122,6 +162,8 @@ public final class VolumeTabWidget extends TabWidget {
         });
 
         addEntry(entry);
+
+        if (!focusSearch) return;
 
         // Focus must be deferred because init() runs during the mouseClicked chain
         // (tab button click), and GuiScreenListener.mouseClicked overrides focus
@@ -148,13 +190,14 @@ public final class VolumeTabWidget extends TabWidget {
         clearEntries();
         entries.forEach(this::addEntry);
 
+        String search = currentSearch.toLowerCase();
         voiceClient.getServerConnection()
                 .ifPresent((connection) -> {
                     Map<UUID, McGameProfile> players = Maps.newHashMap();
 
                     joinMap(players, connection.getPlayers()
                             .stream()
-                            .filter(player -> player.getPlayerNick().toLowerCase().contains(currentSearch))
+                            .filter(player -> player.getPlayerNick().toLowerCase().contains(search))
                             .map(VoicePlayerInfo::toGameProfile)
                             .collect(Collectors.toList())
                     );
@@ -274,6 +317,59 @@ public final class VolumeTabWidget extends TabWidget {
         buttons.add(unmuteButton);
 
         return buttons;
+    }
+
+    class SourceLineHeaderEntry extends Entry {
+
+        private final McTextComponent text;
+        private final IconButton toggleButton;
+
+        SourceLineHeaderEntry(@NotNull McTextComponent text, int height) {
+            super(height);
+
+            this.text = text;
+
+            BooleanConfigEntry showAll = config.getVoice().getShowAllSourceLines();
+            this.toggleButton = new IconButton(
+                    0,
+                    0,
+                    20,
+                    20,
+                    (button) -> {
+                        showAll.invert();
+                        rebuild();
+                    },
+                    (button, mouseX, mouseY) -> setTooltip(
+                            McTextComponent.translatable(showAll.value()
+                                    ? "gui.plasmovoice.volume.sources.show_recent"
+                                    : "gui.plasmovoice.volume.sources.show_all"),
+                            mouseX,
+                            mouseY
+                    ),
+                    () -> showAll.value() ? SHOW_ALL_ICON : SHOW_RECENT_ICON,
+                    true
+            );
+        }
+
+        @Override
+        public void updatePosition(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            toggleButton.setX(x + entryWidth - 20);
+            toggleButton.setY(y + height / 2 - 10);
+        }
+
+        @Override
+        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
+            int textX = x + (containerWidth / 2) - (RenderUtil.getTextWidth(text) / 2);
+            int textY = y + (height / 2) - (RenderUtil.getFontHeight() / 2);
+
+            context.drawString(text, textX, textY, Colors.WHITE);
+            toggleButton.render(context, mouseX, mouseY, delta);
+        }
+
+        @Override
+        public List<? extends GuiWidgetListener> widgets() {
+            return Collections.singletonList(toggleButton);
+        }
     }
 
     class SourceLineVolumeEntry<W extends GuiAbstractWidget> extends ButtonOptionEntry<W> {

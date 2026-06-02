@@ -94,6 +94,8 @@
     "gui.plasmovoice.volume": "Volume",
 
     "gui.plasmovoice.volume.sources": "Sources Volume",
+    "gui.plasmovoice.volume.sources.show_all": "Show all source lines",
+    "gui.plasmovoice.volume.sources.show_recent": "Show only recently used source lines",
     "gui.plasmovoice.volume.players": "Players Volume",
     "gui.plasmovoice.volume.players_search": "Search...",
 

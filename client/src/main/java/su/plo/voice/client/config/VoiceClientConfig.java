@@ -297,6 +297,9 @@ public final class VoiceClientConfig implements ClientConfig {
         private BooleanConfigEntry stereoCapture = new BooleanConfigEntry(false);
 
         @ConfigField
+        private BooleanConfigEntry showAllSourceLines = new BooleanConfigEntry(false);
+
+        @ConfigField
         private SourceLineVolumes volumes = new SourceLineVolumes();
 
         @Data

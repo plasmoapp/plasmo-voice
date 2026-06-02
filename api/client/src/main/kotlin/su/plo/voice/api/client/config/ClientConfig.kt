@@ -54,6 +54,8 @@ interface ClientConfig {
 
         val stereoCapture: BooleanConfigEntry
 
+        val showAllSourceLines: BooleanConfigEntry
+
         val volumes: Volumes
 
         /**

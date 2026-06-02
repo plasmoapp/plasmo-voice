@@ -16,6 +16,15 @@ interface ClientSourceLine : SourceLine, ClientPlayerSet {
     var volume: Double
 
     /**
+     * Gets the last time an audio source on this line was activated.
+     *
+     * In-memory and per-session: it resets to `0` when the client reconnects.
+     *
+     * @return The last activation time in epoch milliseconds.
+     */
+    val lastActivationTime: Long
+
+    /**
      * Gets the translation component associated with this source line.
      *
      * @return The translation component.
