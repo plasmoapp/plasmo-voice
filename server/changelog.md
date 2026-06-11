@@ -1,0 +1,1 @@
+- Fixed addon translations being shown as translation keys when `default_language`/`forced_language` is set to a language an addon doesn't fully translate (missing keys now fall back to `en_us`).

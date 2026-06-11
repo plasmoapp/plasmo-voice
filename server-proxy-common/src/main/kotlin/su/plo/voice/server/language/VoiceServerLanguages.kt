@@ -196,6 +196,13 @@ class VoiceServerLanguages(
             VoiceServerLanguage(Toml(), null)
         )
 
+        val fallbackLanguage = languages[FALLBACK_LANGUAGE]?.takeIf { it !== defaultLanguage }
+
+        fun fillMissing(language: VoiceServerLanguage) {
+            language.merge(defaultLanguage)
+            fallbackLanguage?.let { language.merge(it) }
+        }
+
         // load from languagesFolder if not found in list and use default language as defaults
         languagesFolder.mkdirs()
 
@@ -210,7 +217,7 @@ class VoiceServerLanguages(
             if (languages.containsKey(languageName)) continue
 
             val language = loadLanguage(file, null)
-            language.merge(defaultLanguage)
+            fillMissing(language)
 
             languages[languageName] = language
         }
@@ -225,12 +232,12 @@ class VoiceServerLanguages(
         for ((languageName, value) in languages) {
             val language = this.languages.computeIfAbsent(languageName) { value }
             language.merge(value, replace = true)
-            language.merge(defaultLanguage)
+            fillMissing(language)
         }
 
         this.languages.forEach { (languageName, language) ->
             if (languages.containsKey(languageName)) return@forEach
-            language.merge(defaultLanguage)
+            fillMissing(language)
         }
 
         this.languages.forEach { (languageName, language) ->
@@ -461,6 +468,7 @@ class VoiceServerLanguages(
     }
 
     companion object {
+        private const val FALLBACK_LANGUAGE = "en_us"
         private val LOGGER = McLoggerFactory.createLogger("VoiceServerLanguages")
     }
 }
