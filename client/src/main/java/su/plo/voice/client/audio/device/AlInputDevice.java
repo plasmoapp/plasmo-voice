@@ -10,6 +10,7 @@ import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
+import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.audio.AlUtil;
 
 import javax.sound.sampled.AudioFormat;
@@ -23,6 +24,9 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
     private volatile boolean started = false;
     private volatile boolean disconnected = false;
+
+    private int captureChannels;
+    private boolean downmixToMono;
 
     public AlInputDevice(PlasmoVoiceClient client,
                          @NotNull String name,
@@ -78,8 +82,8 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         started = false;
 
         int available = available();
-        short[] data = new short[available];
-        ALC11.alcCaptureSamples(devicePointer, data, data.length);
+        short[] data = new short[available * captureChannels];
+        ALC11.alcCaptureSamples(devicePointer, data, available);
         AlUtil.checkAlcErrors(devicePointer, "Capture available samples");
     }
 
@@ -102,11 +106,11 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
     public short[] read(int frameSize) {
         if (!isOpen() || frameSize > available()) return null;
 
-        short[] shorts = new short[frameSize * getFormat().getChannels()];
+        short[] shorts = new short[frameSize * captureChannels];
         ALC11.alcCaptureSamples(devicePointer, shorts, frameSize);
         AlUtil.checkAlcErrors(devicePointer, "Capture samples");
 
-        return shorts;
+        return downmixToMono ? AudioUtil.convertToMonoShorts(shorts) : shorts;
     }
 
     @Override
@@ -133,7 +137,15 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         AudioFormat format = getFormat();
         String deviceName = getName();
 
-        int alFormat = format.getChannels() == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
+        int channels = format.getChannels();
+        this.captureChannels = (channels == 1 && AlUtil.isCaptureMonoDownmixBroken()) ? 2 : channels;
+        this.downmixToMono = captureChannels != channels;
+
+        if (downmixToMono) {
+            LOGGER.info("Working around broken OpenAL Soft mono capture, capturing {} in stereo", deviceName);
+        }
+
+        int alFormat = captureChannels == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
 
         long devicePointer = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getFrameSize());
 

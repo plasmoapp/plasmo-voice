@@ -2,10 +2,12 @@ package su.plo.voice.client.audio;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALC11;
 import org.lwjgl.openal.EXTThreadLocalContext;
 import su.plo.voice.api.client.audio.device.AlContextAudioDevice;
+import su.plo.voice.util.version.SemanticVersion;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioFormat.Encoding;
@@ -13,6 +15,59 @@ import javax.sound.sampled.AudioFormat.Encoding;
 public final class AlUtil {
 
     private static final Logger LOGGER = LogManager.getLogger(AlUtil.class);
+
+    private static boolean alSoftVersionResolved = false;
+    private static SemanticVersion alSoftVersion = null;
+
+    /**
+     * OpenAL Soft 1.25.0 and 1.25.1 corrupt the multichannel to mono downmix on capture,
+     * producing crackling/noise:
+     * <a href="https://github.com/kcat/openal-soft/pull/1246">kcat/openal-soft#1246</a>,
+     * fixed in 1.25.2.
+     */
+    public static boolean isCaptureMonoDownmixBroken() {
+        SemanticVersion version = getAlSoftVersion();
+        if (version == null) return false;
+
+        SemanticVersion firstBroken = new SemanticVersion("1.25.0", 1, 25, 0, SemanticVersion.Branch.RELEASE);
+        SemanticVersion firstFixed = new SemanticVersion("1.25.2", 1, 25, 2, SemanticVersion.Branch.RELEASE);
+
+        return !version.isOutdated(firstBroken) && version.isOutdated(firstFixed);
+    }
+
+    public static synchronized SemanticVersion getAlSoftVersion() {
+        if (alSoftVersionResolved) return alSoftVersion;
+        alSoftVersionResolved = true;
+
+        alSoftVersion = parseAlSoftVersion(AL10.alGetString(AL10.AL_VERSION));
+
+        if (alSoftVersion != null) {
+            LOGGER.info("Detected OpenAL Soft {}", alSoftVersion);
+        }
+
+        return alSoftVersion;
+    }
+
+    // version string looks like "1.1 ALSOFT 1.25.1"
+    private static SemanticVersion parseAlSoftVersion(String version) {
+        if (version == null) return null;
+
+        String[] alVersionStringParts = version.split(" ");
+        String alVersion = alVersionStringParts[alVersionStringParts.length - 1];
+        String[] alVersionParts = alVersion.split("\\.");
+
+        if (alVersionParts.length < 2) return null;
+
+        try {
+            int major = Integer.parseInt(alVersionParts[0]);
+            int minor = Integer.parseInt(alVersionParts[1]);
+            int patch = alVersionParts.length >= 3 ? Integer.parseInt(alVersionParts[2]) : 0;
+
+            return new SemanticVersion(alVersion, major, minor, patch, SemanticVersion.Branch.RELEASE);
+        } catch (NumberFormatException e) {
+            return null;
+        }
+    }
 
     private static String getErrorMessage(int errorCode) {
         switch (errorCode) {
