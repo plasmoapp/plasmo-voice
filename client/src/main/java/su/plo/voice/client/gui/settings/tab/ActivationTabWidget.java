@@ -145,7 +145,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                         Hotkey higherKey = higherVoice.getPttConfigEntry().value();
                         Hotkey currentKey = currentVoice.getPttConfigEntry().value();
 
-                        if (higherKey.getKeys().equals(currentKey.getKeys())) {
+                        if (!higherKey.getKeys().isEmpty() && higherKey.getKeys().equals(currentKey.getKeys())) {
                             currentConflicts.add(higher.getId());
                         }
                     } else if (
