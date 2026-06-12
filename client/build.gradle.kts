@@ -379,12 +379,13 @@ tasks {
 data class VersionInfo(
     val neoForgeVersion: String,
     val forgeVersion: String,
-    val mcVersions: String
+    val mcVersions: String,
+    val mcVersionsNeoForge: String?,
 ) {
 
     val forgeMcVersions: String
         get() {
-            val split = mcVersions.split(" ")
+            val split = (mcVersionsNeoForge ?: mcVersions).split(" ")
 
             fun versionBounds(version: String): Triple<String, String, String>? =
                 when {
