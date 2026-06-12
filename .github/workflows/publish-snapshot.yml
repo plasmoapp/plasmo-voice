@@ -61,7 +61,7 @@ jobs:
         # archive the currently deployed version (skip if same as current)
         if [ -f "$WORK/version.json" ]; then
           PREV_VERSION=$(jq -r '.version' "$WORK/version.json")
-          CURRENT_VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
+          CURRENT_VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)-SNAPSHOT
           if [ -n "$PREV_VERSION" ] && [ "$PREV_VERSION" != "$CURRENT_VERSION" ]; then
             mkdir -p "previousDocVersions/$PREV_VERSION"
             rsync -a --exclude='older/' "$WORK/" "previousDocVersions/$PREV_VERSION/"
@@ -71,7 +71,7 @@ jobs:
         git worktree remove "$WORK"
 
     - name: Build dokka
-      run: ./gradlew dokkaGeneratePublicationHtml
+      run: ./gradlew dokkaGeneratePublicationHtml -Psnapshot=true
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4

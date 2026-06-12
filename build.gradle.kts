@@ -92,6 +92,10 @@ dependencies {
 }
 
 dokka {
+    if (properties.containsKey("snapshot")) {
+        moduleVersion.set("${version.toString().substringBefore("+")}-SNAPSHOT")
+    }
+
     pluginsConfiguration {
         versioning {
             olderVersionsDir.set(projectDir.resolve("previousDocVersions"))
