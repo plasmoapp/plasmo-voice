@@ -40,7 +40,20 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build
 
+    - name: Check if already published
+      id: maven-check
+      run: |
+        VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
+        URL="https://repo.plasmoverse.com/releases/su/plo/voice/common/${VERSION}/common-${VERSION}.jar"
+        if [ "$(curl -s -o /dev/null -w '%{http_code}' -I "$URL")" = "200" ]; then
+          echo "$VERSION is already published, skipping maven publication"
+          echo "published=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "published=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Publish to releases maven repository
+      if: steps.maven-check.outputs.published != 'true'
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
