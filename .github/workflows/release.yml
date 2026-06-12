@@ -208,12 +208,27 @@ jobs:
         name: build-libs
         path: build/libs/
 
+    - name: Aggregate changelog
+      run: |
+        {
+          sed -e 's|^### Client$|### Client (Fabric/Forge/NeoForge)|' \
+              -e 's|^### Server$|### Server (Paper/Minestom/Fabric/Forge/NeoForge)|' \
+              client/changelog.md
+          if [ -s proxy/changelog.md ]; then
+            echo
+            echo "### Proxy (Velocity/BungeeCord)"
+            cat proxy/changelog.md
+          fi
+        } > release-changelog.md
+        cat release-changelog.md
+
     - name: Publish to GitHub
       uses: apehum/mc-publish@master
       with:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: false
         github-prerelease: ${{ inputs.release-type != 'release' }}
+        changelog-file: release-changelog.md
 
   dokka:
     needs: build-maven-publish
