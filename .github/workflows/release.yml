@@ -11,6 +11,26 @@ on:
           - release
           - beta
           - alpha
+      publish-maven:
+        description: 'Publish to Maven repository'
+        type: boolean
+        default: true
+      publish-modrinth:
+        description: 'Publish to Modrinth'
+        type: boolean
+        default: true
+      publish-curseforge:
+        description: 'Publish to CurseForge'
+        type: boolean
+        default: true
+      publish-github:
+        description: 'Publish to GitHub Releases'
+        type: boolean
+        default: true
+      publish-dokka:
+        description: 'Deploy Dokka docs to GitHub Pages'
+        type: boolean
+        default: true
 
 jobs:
   build-maven-publish:
@@ -52,7 +72,7 @@ jobs:
         fi
 
     - name: Publish to releases maven repository
-      if: steps.maven-check.outputs.published != 'true'
+      if: ${{ inputs.publish-maven && steps.maven-check.outputs.published != 'true' }}
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
@@ -66,7 +86,8 @@ jobs:
         retention-days: 7
 
   modrinth:
-    needs: build
+    needs: build-maven-publish
+    if: ${{ inputs.publish-modrinth }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -143,7 +164,8 @@ jobs:
         modrinth-token: ${{ secrets.MODRINTH_TOKEN }}
 
   curseforge:
-    needs: modrinth
+    needs: build-maven-publish
+    if: ${{ inputs.publish-curseforge }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -171,7 +193,8 @@ jobs:
         curseforge-token: ${{ secrets.CURSEFORGE_TOKEN }}
 
   github:
-    needs: curseforge
+    needs: build-maven-publish
+    if: ${{ inputs.publish-github }}
     runs-on: ubuntu-latest
 
     permissions:
@@ -193,7 +216,8 @@ jobs:
         github-prerelease: ${{ inputs.release-type != 'release' }}
 
   dokka:
-    needs: github
+    needs: build-maven-publish
+    if: ${{ inputs.publish-dokka }}
     runs-on: ubuntu-latest
 
     permissions:
