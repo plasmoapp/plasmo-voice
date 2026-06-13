@@ -71,8 +71,6 @@ public final class VoiceSettingsAboutFeature {
             BlockDustParticle2D particle = new BlockDustParticle2D(
                     14 + RandomUtil.randomInt(parent.getTitleWidth()),
                     15 + RandomUtil.randomInt(RenderUtil.getFontHeight()),
-                    0D,
-                    0D,
                     Blocks.DIRT.defaultBlockState()
             );
             particle.setMaxAge(10 + RandomUtil.randomInt(25));
@@ -85,9 +83,7 @@ public final class VoiceSettingsAboutFeature {
 
     public void render(@NotNull GuiRenderContext context, float delta) {
         for (BlockDustParticle2D particle : particles) {
-            ResourceLocation textureLocation = particle.getSprite().atlasLocation();
-
-            particle.render(context, textureLocation, delta);
+            particle.render(context, delta);
         }
     }
 }
