@@ -65,18 +65,6 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
                 .group(loopGroup)
                 .channel(channelClass);
 
-        bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
-            @Override
-            protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
-                ChannelPipeline pipeline = ch.pipeline();
-
-                pipeline.addLast("flush_consolidation", new FlushConsolidationHandler(256, true));
-                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
-                pipeline.addLast("handler", new NettyPacketHandler(voiceProxy, loopGroup, channelClass));
-                pipeline.addLast("exception_handler", new NettyExceptionHandler());
-            }
-        });
-
         boolean reusePortEnabled = false;
         if (useEpoll && voiceProxy.getConfig().reusePort().enabled()) {
             try {
@@ -87,15 +75,29 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             }
         }
 
+        int channelCount = reusePortEnabled
+                ? voiceProxy.getConfig().reusePort().channels()
+                : 1;
+        if (channelCount <= 0) {
+            channelCount = ((MultithreadEventLoopGroup) loopGroup).executorCount();
+        }
+
+        boolean pinConnectionToChannel = reusePortEnabled && channelCount > 1;
+
+        bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
+            @Override
+            protected void initChannel(@NotNull DatagramChannel ch) {
+                ChannelPipeline pipeline = ch.pipeline();
+
+                pipeline.addLast("flush_consolidation", new FlushConsolidationHandler(256, true));
+                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
+                pipeline.addLast("handler", new NettyPacketHandler(voiceProxy, loopGroup, channelClass, pinConnectionToChannel));
+                pipeline.addLast("exception_handler", new NettyExceptionHandler());
+            }
+        });
+
         BaseVoice.LOGGER.info("UDP proxy server is starting on {}:{}", ip, port);
         try {
-            int channelCount = reusePortEnabled
-                    ? voiceProxy.getConfig().reusePort().channels()
-                    : 1;
-            if (channelCount <= 0) {
-                channelCount = ((MultithreadEventLoopGroup) loopGroup).executorCount();
-            }
-
             for (int i = 0; i < channelCount; i++) {
                 ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
                 Channel channel = channelFuture.channel();
