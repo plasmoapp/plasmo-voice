@@ -29,6 +29,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
     private final BaseVoiceProxy voiceProxy;
     private final EventLoopGroup loopGroup;
     private final Class<? extends DatagramChannel> channelClass;
+    private final boolean pinConnectionToChannelLoop;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket) throws Exception {
@@ -88,7 +89,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 (DatagramChannel) ctx.channel(),
                 player.get(),
                 secret,
-                loopGroup,
+                pinConnectionToChannelLoop ? ctx.channel().eventLoop() : loopGroup,
                 channelClass
         );
         connection.setRemoteSecret(remoteSecret.get());
