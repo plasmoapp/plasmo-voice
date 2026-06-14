@@ -98,7 +98,7 @@ public final class OverlayTabWidget extends TabWidget {
 
         if (!sourceLine.hasPlayers()) {
             BooleanConfigEntry booleanConfigEntry = new BooleanConfigEntry(false);
-            booleanConfigEntry.set(configEntry.value().toBoolean());
+            booleanConfigEntry.set(isShown(configEntry.value()));
             booleanConfigEntry.addChangeListener(state -> configEntry.set(OverlaySourceState.fromBoolean(state)));
 
             ToggleButton widget = new ToggleButton(
@@ -124,7 +124,7 @@ public final class OverlayTabWidget extends TabWidget {
                     0,
                     ELEMENT_WIDTH,
                     20,
-                    OVERLAY_DISPLAYS.get(configEntry.value().ordinal() - 2),
+                    OVERLAY_DISPLAYS.get(overlayDisplayIndex(configEntry.value())),
                     OVERLAY_DISPLAYS,
                     true,
                     (index) -> {
@@ -150,6 +150,24 @@ public final class OverlayTabWidget extends TabWidget {
                     ResourceLocation.tryParse(sourceLine.getIcon()),
                     (button, element) -> element.setText(OVERLAY_DISPLAYS.get(0))
             ));
+        }
+    }
+
+    private static boolean isShown(@NotNull OverlaySourceState state) {
+        return state != OverlaySourceState.OFF && state != OverlaySourceState.NEVER;
+    }
+
+    private static int overlayDisplayIndex(@NotNull OverlaySourceState state) {
+        switch (state) {
+            case ALWAYS:
+                return 1;
+            case NEVER:
+            case OFF:
+                return 2;
+            case ON:
+            case WHEN_TALKING:
+            default:
+                return 0;
         }
     }
 

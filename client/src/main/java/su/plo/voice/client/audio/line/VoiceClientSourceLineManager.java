@@ -96,17 +96,7 @@ public final class VoiceClientSourceLineManager implements ClientSourceLineManag
         unregister(line.getId());
 
         EnumConfigEntry<OverlaySourceState> stateEntry = config.getOverlay().getSourceStates().getState(line);
-        if (line.hasPlayers()) {
-            if (stateEntry.value().isProximityOnly()) {
-                stateEntry.set(OverlaySourceState.WHEN_TALKING);
-            }
-            stateEntry.setDefault(OverlaySourceState.WHEN_TALKING);
-        } else {
-            if (!stateEntry.value().isProximityOnly()) {
-                stateEntry.set(OverlaySourceState.OFF);
-            }
-            stateEntry.setDefault(OverlaySourceState.OFF);
-        }
+        stateEntry.setDefault(line.hasPlayers() ? OverlaySourceState.WHEN_TALKING : OverlaySourceState.OFF);
 
         String icon = VoiceIconUtil.INSTANCE.getIcon(
                 line.getIcon(),
