@@ -10,6 +10,17 @@ object Colors {
     @JvmField
     val GRAY = Color(0xA0A0A0)
 
+    @JvmField
+    val TEXT = Color(0xE0E0E0)
+    @JvmField
+    val TEXT_DISABLED = Color(0x707070)
+    @JvmField
+    val TEXT_MUTED = Color(0x808080)
+    @JvmField
+    val BACKGROUND = Color(0x404040)
+    @JvmField
+    val WARNING = Color(0xFAC653)
+
     @JvmStatic
     fun Color.withAlpha(alpha: Int): Color =
         Color(red, green, blue, alpha)

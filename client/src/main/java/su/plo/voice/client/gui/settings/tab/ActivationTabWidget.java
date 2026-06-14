@@ -38,7 +38,7 @@ import su.plo.voice.client.gui.settings.widget.NumberTextFieldWidget;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
-import java.awt.Color;
+import su.plo.lib.mod.client.render.Colors;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -283,7 +283,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 false
         );
 
-        icon.setIconColor(new Color(0xFAC653));
+        icon.setIconColor(Colors.WARNING);
         return icon;
     }
 

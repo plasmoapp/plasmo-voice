@@ -39,6 +39,12 @@ object EntityIconRenderer {
 
     private val glState = LazyGlState()
 
+    //#if MC>=12103
+    //$$ private val PERCENT_TEXT_COLOR = Colors.WHITE.withAlpha(0.5f).rgb
+    //#else
+    private val PERCENT_TEXT_COLOR = Colors.WHITE.withAlpha(0.13f).rgb
+    //#endif
+
     //#if MC>=1.21.11
     //$$ @JvmStatic
     //$$ fun render(
@@ -136,7 +142,7 @@ object EntityIconRenderer {
             //$$     false,
             //$$     if (entityState.isDiscrete) Font.DisplayMode.NORMAL else Font.DisplayMode.SEE_THROUGH,
             //$$     entityState.light,
-            //$$     Colors.WHITE.withAlpha(0.5f).rgb,
+            //$$     PERCENT_TEXT_COLOR,
             //$$     backgroundColor,
             //$$     0,
             //$$ )
@@ -147,11 +153,7 @@ object EntityIconRenderer {
                 text,
                 xOffset,
                 0,
-                //#if MC>=12103
-                //$$ Colors.WHITE.withAlpha(0.5f).rgb,
-                //#else
-                Colors.WHITE.withAlpha(0.13f).rgb,
-                //#endif
+                PERCENT_TEXT_COLOR,
                 backgroundColor,
                 entityState.light,
                 !entityState.isDiscrete,

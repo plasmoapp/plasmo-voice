@@ -28,6 +28,8 @@ import net.minecraft.client.Minecraft;
 
 public final class AboutTabWidget extends TabWidget {
 
+    private static final Color GRAY_TEXT_COLOR = new Color(0xAAAAAA);
+
     public AboutTabWidget(@NotNull VoiceSettingsScreen parent,
                           @NotNull PlasmoVoiceClient voiceClient,
                           @NotNull VoiceClientConfig config) {
@@ -160,7 +162,7 @@ public final class AboutTabWidget extends TabWidget {
             context.blit(skinLocation, x + 4, y + 4, 32, 32, 40.0F, 8.0F, 8, 8, 64, 64);
 
             context.drawString(developer.getName(), x + 40, y + 11, Colors.WHITE);
-            context.drawString(developer.getRole().getTranslatable(), x + 40, y + 21, new Color(0xAAAAAA));
+            context.drawString(developer.getRole().getTranslatable(), x + 40, y + 21, GRAY_TEXT_COLOR);
 
             if (link != null) {
                 link.setX(x + entryWidth - 62);
@@ -217,7 +219,7 @@ public final class AboutTabWidget extends TabWidget {
                     tier,
                     x + entryWidth - RenderUtil.getTextWidth(tier) - 6,
                     y + 6,
-                    new Color(0xAAAAAA)
+                    GRAY_TEXT_COLOR
             );
         }
 
@@ -302,7 +304,7 @@ public final class AboutTabWidget extends TabWidget {
                     text,
                     x,
                     y,
-                    new Color(0x808080),
+                    Colors.TEXT_MUTED,
                     entryWidth
             );
 

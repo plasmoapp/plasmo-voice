@@ -27,6 +27,10 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     private static final ResourceLocation START_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png");
     private static final McTextComponent NOT_AVAILABLE = McTextComponent.translatable("gui.plasmovoice.devices.not_available");
 
+    private static final Color LEVEL_HIGH_COLOR = new Color(0xFF0000);
+    private static final Color LEVEL_MEDIUM_COLOR = new Color(0xFFFF00);
+    private static final Color LEVEL_LOW_COLOR = new Color(0x00FF00);
+
     private final DoubleConfigEntry entry;
     private final MicrophoneTestController controller;
 
@@ -120,11 +124,11 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     private void renderMicrophoneValue(@NotNull GuiRenderContext context, int sliderWidth, float delta) {
         Color color;
         if (controller.getMicrophoneValue() > 0.95D) {
-            color = new Color(255, 0, 0);
+            color = LEVEL_HIGH_COLOR;
         } else if (controller.getMicrophoneValue() > 0.7D) {
-            color = new Color(255, 255, 0);
+            color = LEVEL_MEDIUM_COLOR;
         } else {
-            color = new Color(0, 255, 0);
+            color = LEVEL_LOW_COLOR;
         }
 
         context.blitColorSprite(

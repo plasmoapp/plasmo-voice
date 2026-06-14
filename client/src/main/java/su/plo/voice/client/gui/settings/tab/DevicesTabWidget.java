@@ -26,7 +26,7 @@ import su.plo.voice.client.gui.settings.widget.ToggleButton;
 import su.plo.voice.client.mac.AVAuthorizationStatus;
 import su.plo.voice.client.mac.AVCaptureDevice;
 
-import java.awt.Color;
+import su.plo.lib.mod.client.render.Colors;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -203,7 +203,7 @@ public final class DevicesTabWidget extends TabWidget {
                     ResourceLocationUtil.mod("textures/icons/warning.png"),
                     false
             );
-            inputNotAvailable.setIconColor(new Color(0xFAC653));
+            inputNotAvailable.setIconColor(Colors.WARNING);
         }
 
         DropDownWidget dropdown = new DropDownWidget(

@@ -29,6 +29,9 @@ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 
 public class TextFieldWidget extends GuiAbstractWidget {
 
+    private static final Color CURSOR_COLOR = new Color(0xD0D0D0);
+    private static final Color HIGHLIGHT_COLOR = new Color(0x4B4BFF);
+
     @Setter
     @Nullable
     private Consumer<String> responder;
@@ -78,8 +81,8 @@ public class TextFieldWidget extends GuiAbstractWidget {
         this.bordered = true;
         this.canLoseFocus = true;
         this.editable = true;
-        this.textColor = new Color(0xE0E0E0);
-        this.textColorUneditable = new Color(0x707070);
+        this.textColor = Colors.TEXT;
+        this.textColorUneditable = Colors.TEXT_DISABLED;
         this.filter = Objects::nonNull;
         this.formatter = (string, integer) -> McTextComponent.literal(string);
     }
@@ -276,7 +279,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
         }
 
         if (!shouldDrawCursor && suggestion != null) {
-            context.drawString(suggestion, selectionX - 1, textY, new Color(0x808080));
+            context.drawString(suggestion, selectionX - 1, textY, Colors.TEXT_MUTED);
         }
 
         if (text.isEmpty() && !isFocused()) {
@@ -290,7 +293,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
                         textY - 1,
                         selectionX + 1,
                         textY + 1 + 9,
-                        new Color(0xD0D0D0)
+                        CURSOR_COLOR
                 );
             } else {
                 context.drawString("_", selectionX, textY, color);
@@ -325,7 +328,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
             x0 = x + width;
         }
 
-        context.fill(x0, y0, x1, y1, new Color(0x4B4BFF));
+        context.fill(x0, y0, x1, y1, HIGHLIGHT_COLOR);
     }
 
     public boolean canConsumeInput() {

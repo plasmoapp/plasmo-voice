@@ -9,7 +9,6 @@ import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
-import java.awt.Color;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -152,7 +151,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
                 active ? (width - 23) : (width - 5),
                 x + 5,
                 y + (height / 2) - (RenderUtil.getFontHeight() / 2),
-                active ? new Color(0xE0E0E0) : new Color(0x707070)
+                active ? Colors.TEXT : Colors.TEXT_DISABLED
         );
     }
 

@@ -11,6 +11,7 @@ import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.ScissorState;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
@@ -25,6 +26,8 @@ import java.util.Optional;
 //#endif
 
 public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScreenListener implements GuiWidget {
+
+    private static final Color THUMB_COLOR = new Color(0xC0C0C0);
 
     protected final List<Entry> entries = Lists.newCopyOnWriteArrayList();
     protected final List<EntryPosition> entryPositions = Lists.newCopyOnWriteArrayList();
@@ -97,10 +100,10 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             }
 
             if (shouldRenderScrollbarBackground()) {
-                context.fill(trackX0, scrollbarY0, trackX1, scrollbarY1, new Color(0, 0, 0));
+                context.fill(trackX0, scrollbarY0, trackX1, scrollbarY1, Colors.BLACK);
             }
-            context.fill(trackX0, trackTop, trackX1, trackTop + trackBottom, new Color(128, 128, 128));
-            context.fill(trackX0, trackTop, trackX1 - 1, trackTop + trackBottom - 1, new Color(192, 192, 192));
+            context.fill(trackX0, trackTop, trackX1, trackTop + trackBottom, Colors.TEXT_MUTED);
+            context.fill(trackX0, trackTop, trackX1 - 1, trackTop + trackBottom - 1, THUMB_COLOR);
         }
 
         //#if MC>=12109

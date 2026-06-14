@@ -165,7 +165,7 @@ class OverlayRenderer(
         //#endif
 
 //        int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
-        val backgroundColor = Color.BLACK.withAlpha(0.25f)
+        val backgroundColor = BACKGROUND_COLOR
 
         // render helm
         if (overlayStyle.hasSkin) {
@@ -333,6 +333,8 @@ class OverlayRenderer(
     companion object {
         private const val ENTRY_HEIGHT = 16
         private const val MAX_TEXT_WIDTH = 40
+
+        private val BACKGROUND_COLOR = Color.BLACK.withAlpha(0.25f)
     }
 }
 

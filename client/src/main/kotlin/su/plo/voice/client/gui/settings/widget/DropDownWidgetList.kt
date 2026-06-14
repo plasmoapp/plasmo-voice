@@ -56,7 +56,7 @@ class DropDownWidgetList(
                     lineY - 1,
                     containerX1,
                     lineY,
-                    Color(0x464646),
+                    frameColor,
                 )
             }
 
@@ -119,7 +119,7 @@ class DropDownWidgetList(
         ) {
             val yOffset = if (shouldRenderToTop()) 1 else 0
 
-            context.fill(x, y, x + entryWidth, y + height, Color(0x464646))
+            context.fill(x, y, x + entryWidth, y + height, frameColor)
             context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, Colors.BLACK)
 
             val hasScroll = maxScroll > 0
@@ -135,7 +135,7 @@ class DropDownWidgetList(
                         parent.setTooltip(element, x, y + height * 2)
                     }
                 }
-                context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, Color(0x323232))
+                context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, hoverColor)
             }
 
             context.drawOrderedString(
@@ -143,7 +143,7 @@ class DropDownWidgetList(
                     entryWidth - entryPaddingRight,
                     x + 5,
                     y + height / 2 - RenderUtil.getFontHeight() / 2 + yOffset,
-                    Color(0xE0E0E0)
+                    Colors.TEXT
             )
         }
     }
@@ -151,5 +151,8 @@ class DropDownWidgetList(
     companion object {
         private val elementHeight = 17
         private val maxElements = 5
+
+        private val frameColor = Color(0x464646)
+        private val hoverColor = Color(0x323232)
     }
 }
