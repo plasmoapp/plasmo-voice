@@ -13,6 +13,7 @@ import io.netty.channel.group.ChannelGroup;
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
+import io.netty.channel.socket.InternetProtocolFamily;
 import io.netty.channel.socket.nio.NioDatagramChannel;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
@@ -23,7 +24,10 @@ import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
 
+import java.net.Inet6Address;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
+import java.net.UnknownHostException;
 import java.util.Optional;
 
 public final class NettyUdpServer implements UdpServer {
@@ -52,6 +56,17 @@ public final class NettyUdpServer implements UdpServer {
     public void start(String ip, int port) {
         this.keepAlive = new NettyUdpKeepAlive(voiceServer);
 
+        InetAddress bindAddress;
+        try {
+            bindAddress = InetAddress.getByName(ip);
+        } catch (UnknownHostException e) {
+            BaseVoice.LOGGER.error("Failed to resolve UDP server bind host {}:{}", ip, port);
+            throw new RuntimeException(e);
+        }
+        InternetProtocolFamily bindAddressFamily = bindAddress instanceof Inet6Address
+                ? InternetProtocolFamily.IPv6
+                : InternetProtocolFamily.IPv4;
+
         Class<? extends DatagramChannel> channelClass = useEpoll
                 ? EpollDatagramChannel.class
                 : NioDatagramChannel.class;
@@ -59,7 +74,10 @@ public final class NettyUdpServer implements UdpServer {
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
                 .group(loopGroup)
-                .channel(channelClass);
+                .channelFactory(() -> useEpoll
+                        ? new EpollDatagramChannel(bindAddressFamily)
+                        : new NioDatagramChannel(bindAddressFamily)
+                );
 
         bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
             @Override
@@ -73,15 +91,23 @@ public final class NettyUdpServer implements UdpServer {
         });
 
         try {
-            ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
+            ChannelFuture channelFuture = bootstrap.bind(bindAddress, port).sync();
             Channel channel = channelFuture.channel();
             channelGroup.add(channel);
             keepAlive.start(channel);
             this.socketAddress = (InetSocketAddress) channelFuture.channel().localAddress();
         } catch (InterruptedException e) {
+            BaseVoice.LOGGER.warn(
+                    "Interrupted while starting the {} UDP server on {}:{} (family: {})",
+                    channelClass.getSimpleName(), ip, port, bindAddressFamily
+            );
             stop();
             return;
         } catch (Exception e) {
+            BaseVoice.LOGGER.error(
+                    "Failed to start the {} UDP server on {}:{} (family: {})",
+                    channelClass.getSimpleName(), ip, port, bindAddressFamily
+            );
             stop();
             throw e;
         }

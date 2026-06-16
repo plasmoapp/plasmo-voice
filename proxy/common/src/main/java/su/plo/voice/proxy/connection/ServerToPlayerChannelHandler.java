@@ -275,6 +275,11 @@ public final class ServerToPlayerChannelHandler implements ClientPacketTcpHandle
         String ip = host.ip();
         if (hostPublic != null) ip = hostPublic.ip();
 
+        // clients only treat the IPv4 wildcard ("0.0.0.0") as
+        // "connect to the address you reached the server on",
+        // so replace the IPv6 wildcard to it
+        if (ip.equals("::") || ip.equals("0:0:0:0:0:0:0:0")) ip = "0.0.0.0";
+
         int port = hostPublic != null ? hostPublic.port() : host.port();
         if (port == 0) {
             port = host.port();
