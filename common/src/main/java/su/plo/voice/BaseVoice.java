@@ -48,7 +48,11 @@ public abstract class BaseVoice implements PlasmoVoice {
     }
 
     protected void onInitialize() {
-        this.backgroundExecutor = Executors.newSingleThreadScheduledExecutor();
+        this.backgroundExecutor = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "Plasmo Voice Background Executor");
+            thread.setDaemon(true);
+            return thread;
+        });
         eventBus.register(this, this);
     }
 
