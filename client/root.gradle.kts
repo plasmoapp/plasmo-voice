@@ -8,6 +8,7 @@ preprocess {
     strictExtraMappings.set(false)
 
     val fabric260200 = createNode("26.2-fabric", 260200, "official")
+    val neoForge260200 = createNode("26.2-neoforge", 260200, "official")
 
     val fabric260100 = createNode("26.1-fabric", 260100, "official")
     val neoForge260100 = createNode("26.1-neoforge", 260100, "official")
@@ -52,6 +53,7 @@ preprocess {
     val fabric11605 = createNode("1.16.5-fabric", 11605, "official")
 
     fabric260200.link(fabric260100, file("26.2-26.1.txt"))
+    neoForge260200.link(neoForge260100, file("26.2-26.1.txt"))
 
     fabric260100.link(fabric12111, file("26.1-1.21.11.txt"))
     neoForge260100.link(neoForge12111, file("26.1-1.21.11.txt"))

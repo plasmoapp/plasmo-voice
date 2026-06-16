@@ -10,7 +10,11 @@ import su.plo.voice.server.ModVoiceServer;
 @Mixin(IntegratedServer.class)
 public class MixinIntegratedServer {
 
+    //#if MC>=26.2
+    //$$ @Inject(method = "publishServer(Lnet/minecraft/server/MinecraftServer$MultiplayerScope;I)Z", at = @At("RETURN"))
+    //#else
     @Inject(method = "publishServer", at = @At("RETURN"))
+    //#endif
     private void publishServer(CallbackInfoReturnable<Boolean> cir) {
         boolean published = cir.getReturnValue();
         if (!published) return;

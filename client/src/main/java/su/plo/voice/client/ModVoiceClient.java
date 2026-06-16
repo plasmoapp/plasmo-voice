@@ -87,8 +87,13 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //$$ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
 //$$ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 //$$ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
-//$$ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 //$$ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
+
+//#if MC>=26.2
+//$$ import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
+//#else
+//$$ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
+//#endif
 
 //#if MC>=1.21.11
 //$$ import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
@@ -413,6 +418,22 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ }
     //#endif
     //$$
+
+    //#if MC>=26.2
+
+    //$$ @SubscribeEvent
+    //$$ public void onWorldSubmitGeometry(SubmitCustomGeometryEvent event) {
+    //$$     LevelRenderEvent.INSTANCE.getInvoker().onRender(
+    //$$             new LevelRenderContext(
+    //$$                     event.getPoseStack(),
+    //$$                     new LevelRenderStateHolder(event.getLevelRenderState()),
+    //$$                     event.getSubmitNodeCollector()
+    //$$             )
+    //$$     );
+    //$$ }
+
+    //#else
+
     //$$ @SubscribeEvent
     //#if MC>=26.1
     //$$ public void onWorldRender(RenderLevelStageEvent.AfterTranslucentParticles event) {
@@ -454,6 +475,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$    );
     //#endif
     //$$ }
+
+    //#endif
+
     //$$
     //$$ @EventBusSubscriber(
     //$$         modid = "plasmovoice",
