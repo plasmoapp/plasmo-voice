@@ -94,15 +94,6 @@ repositories {
     maven("https://maven.shedaniel.me/")
     maven("https://maven.nucleoid.xyz/")
 
-    maven {
-        name = "Maven for PR #3198" // https://github.com/neoforged/NeoForge/pull/3198
-        url = uri("https://prmaven.neoforged.net/NeoForge/pr3198")
-        content {
-            includeModule("net.neoforged", "neoforge")
-            includeModule("net.neoforged", "testframework")
-        }
-    }
-
     exclusiveContent {
         forRepository {
             maven("https://api.modrinth.com/maven")
