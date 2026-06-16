@@ -133,7 +133,7 @@ public final class VoiceProxyConfig implements ProxyConfig {
     @Accessors(fluent = true)
     public static class VoiceHost implements Host {
 
-        @ConfigField(comment = "IP address for the voice server to bind to\n0.0.0.0 = bind to all available interfaces")
+        @ConfigField(comment = "IP address for the voice server to bind to\n0.0.0.0 = all IPv4 interfaces\n:: = all IPv6 interfaces (also IPv4 on most systems)")
         private String ip = "0.0.0.0";
 
         @ConfigField(comment = "UDP port for the voice server\n0 = same port as Minecraft proxy server")
