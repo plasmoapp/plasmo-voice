@@ -64,12 +64,23 @@ jobs:
       run: |
         VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
         URL="https://repo.plasmoverse.com/releases/su/plo/voice/common/${VERSION}/common-${VERSION}.jar"
-        if [ "$(curl -s -o /dev/null -w '%{http_code}' -I "$URL")" = "200" ]; then
-          echo "$VERSION is already published, skipping maven publication"
-          echo "published=true" >> "$GITHUB_OUTPUT"
-        else
-          echo "published=false" >> "$GITHUB_OUTPUT"
-        fi
+        CODE=$(curl -s -o /dev/null -w '%{http_code}' -I \
+          --connect-timeout 10 --max-time 30 \
+          --retry 3 --retry-delay 2 --retry-all-errors "$URL" || true)
+        echo "HTTP $CODE for $URL"
+        case "$CODE" in
+          200)
+            echo "$VERSION is already published, skipping maven publication"
+            echo "published=true" >> "$GITHUB_OUTPUT"
+            ;;
+          404)
+            echo "published=false" >> "$GITHUB_OUTPUT"
+            ;;
+          *)
+            echo "::error::unexpected HTTP $CODE checking $URL"
+            exit 1
+            ;;
+        esac
 
     - name: Publish to releases maven repository
       if: ${{ inputs.publish-maven && steps.maven-check.outputs.published != 'true' }}
