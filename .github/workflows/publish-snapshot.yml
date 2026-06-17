@@ -33,7 +33,20 @@ jobs:
     - name: Build with Gradle
       run: ./gradlew build --stacktrace -Psnapshot=true
 
+    - name: Check if already released
+      id: release-check
+      run: |
+        VERSION=$(grep "^version=" gradle.properties | cut -d'=' -f2)
+        URL="https://repo.plasmoverse.com/releases/su/plo/voice/common/${VERSION}/common-${VERSION}.jar"
+        if [ "$(curl -s -o /dev/null -w '%{http_code}' -I "$URL")" = "200" ]; then
+          echo "$VERSION is already released, skipping snapshot maven publication and docs"
+          echo "released=true" >> "$GITHUB_OUTPUT"
+        else
+          echo "released=false" >> "$GITHUB_OUTPUT"
+        fi
+
     - name: Publish to snapshots maven repository
+      if: ${{ steps.release-check.outputs.released != 'true' }}
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
@@ -47,6 +60,7 @@ jobs:
         message: ${{ github.event.head_commit.message }}
 
     - name: Restore previous doc versions
+      if: ${{ steps.release-check.outputs.released != 'true' }}
       run: |
         mkdir -p previousDocVersions
         git fetch origin gh-pages --depth=1 || exit 0
@@ -71,9 +85,11 @@ jobs:
         git worktree remove "$WORK"
 
     - name: Build dokka
+      if: ${{ steps.release-check.outputs.released != 'true' }}
       run: ./gradlew dokkaGeneratePublicationHtml -Psnapshot=true
 
     - name: Deploy to GitHub Pages
+      if: ${{ steps.release-check.outputs.released != 'true' }}
       uses: peaceiris/actions-gh-pages@v4
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
