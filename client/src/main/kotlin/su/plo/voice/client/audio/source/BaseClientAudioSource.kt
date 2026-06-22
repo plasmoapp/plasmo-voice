@@ -89,6 +89,10 @@ abstract class BaseClientAudioSource<T>(
     private val activated = AtomicBoolean(false)
     private val canHear = AtomicBoolean(false)
 
+    @Volatile
+    final override var effectiveVolume: Float = 0f
+        private set
+
     private val mutex = Mutex()
 
     private val buffer: JitterBuffer =
@@ -208,6 +212,7 @@ abstract class BaseClientAudioSource<T>(
         activated.set(false)
         canHear.set(false)
         closed.set(true)
+        effectiveVolume = 0f
 
         decoder?.close()
         source.closeAsync()
@@ -391,6 +396,7 @@ abstract class BaseClientAudioSource<T>(
         if (decoder != null) decoder!!.reset()
         activated.set(false)
         canHear.set(false)
+        effectiveVolume = 0f
 
         if (cause == AudioSourceResetEvent.Cause.TIMED_OUT) {
             LOGGER.debug("Voice end packet was not received")
@@ -513,8 +519,11 @@ abstract class BaseClientAudioSource<T>(
 
         volume *= distanceGain
 
+        val finalVolume = volume.coerceAtLeast(0.0).toFloat()
+        effectiveVolume = finalVolume
+
         source.device.runInContext {
-            source.volume = volume.coerceAtLeast(0.0).toFloat()
+            source.volume = finalVolume
 
             if (isPanningDisabled()) {
                 source.setInt(
