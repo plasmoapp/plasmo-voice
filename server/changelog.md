@@ -1,0 +1,1 @@
+- Fixed API dependency resolution by preferring instead of hard-requiring specific guava/gson/fastutil versions.
