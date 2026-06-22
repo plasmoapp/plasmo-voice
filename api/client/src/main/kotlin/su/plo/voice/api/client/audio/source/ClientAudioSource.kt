@@ -42,6 +42,22 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
     val sourceLine: ClientSourceLine
 
     /**
+     * The effective gain last applied to the underlying [source], folding in master, source and line
+     * volumes, occlusion, directional and distance gain.
+     *
+     * Unlike [AlSource.getVolume], this can be read from any thread without the device context.
+     * It is `0` while the source is reset or closed, so `isActivated() && effectiveVolume > 0`
+     * is the actual "is this hearable right now" predicate (which [canHear] is not, as it only
+     * accounts for distance).
+     *
+     * `0` is silent and `1` is unattenuated; values can exceed `1` when the volume sliders are
+     * boosted past 100%.
+     *
+     * @return The effective volume, never negative.
+     */
+    val effectiveVolume: Float
+
+    /**
      * Updates the audio source with new source information.
      *
      * @param sourceInfo The new source information to update.
@@ -97,22 +113,6 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
      * @return `true` if the audio source can be heard, `false` otherwise.
      */
     fun canHear(): Boolean
-
-    /**
-     * The effective gain last applied to the underlying [source], folding in master, source and line
-     * volumes, occlusion, directional and distance gain.
-     *
-     * Unlike [AlSource.getVolume], this can be read from any thread without the device context.
-     * It is `0` while the source is reset or closed, so `isActivated() && effectiveVolume > 0`
-     * is the actual "is this hearable right now" predicate (which [canHear] is not, as it only
-     * accounts for distance).
-     *
-     * `0` is silent and `1` is unattenuated; values can exceed `1` when the volume sliders are
-     * boosted past 100%.
-     *
-     * @return The effective volume, never negative.
-     */
-    val effectiveVolume: Float
 
     /**
      * Closes the audio source.
