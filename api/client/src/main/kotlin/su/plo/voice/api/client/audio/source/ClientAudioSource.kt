@@ -3,11 +3,11 @@ package su.plo.voice.api.client.audio.source
 import su.plo.voice.api.audio.source.AudioSource
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
+import su.plo.voice.api.client.audio.line.ClientSourceLine
 import su.plo.voice.api.client.event.audio.source.AudioSourceResetEvent
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
-import java.util.*
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -33,6 +33,13 @@ interface ClientAudioSource<S : SourceInfo> : AudioSource<S> {
      * @return The source group.
      */
     val source: AlSource
+
+    /**
+     * The source line this audio source is currently assigned to, resolved from [SourceInfo.getLineId].
+     *
+     * @return The current source line.
+     */
+    val sourceLine: ClientSourceLine
 
     /**
      * Updates the audio source with new source information.

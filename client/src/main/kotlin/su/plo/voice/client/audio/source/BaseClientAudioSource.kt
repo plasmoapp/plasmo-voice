@@ -20,6 +20,7 @@ import su.plo.voice.api.audio.codec.CodecException
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
 import su.plo.voice.api.client.audio.device.source.AlSourceParams
+import su.plo.voice.api.client.audio.line.ClientSourceLine
 import su.plo.voice.api.client.audio.source.ClientAudioSource
 import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.api.client.connection.ServerInfo.VoiceInfo
@@ -61,6 +62,10 @@ abstract class BaseClientAudioSource<T>(
         get() = voiceClient.timeSupplier
 
     override var source: AlSource = runBlocking { createSource(sourceInfo) }
+
+    @Volatile
+    final override var sourceLine: ClientSourceLine
+        private set
 
     private var lineVolume: DoubleConfigEntry
     private var lineMute: BooleanConfigEntry
@@ -120,8 +125,9 @@ abstract class BaseClientAudioSource<T>(
         }
 
         // initialize volumes
-        lineVolume = getLineVolume(sourceInfo)
-        lineMute = getLineMute(sourceInfo)
+        sourceLine = getSourceLine(sourceInfo)
+        lineVolume = getLineVolume(sourceLine)
+        lineMute = getLineMute(sourceLine)
         BaseVoice.DEBUG_LOGGER.log(
             "Source {} initialized in {}",
             sourceInfo,
@@ -171,8 +177,9 @@ abstract class BaseClientAudioSource<T>(
 
             // initialize volumes
             if (sourceInfo.lineId != this@BaseClientAudioSource.sourceInfo.lineId) {
-                lineVolume = getLineVolume(sourceInfo)
-                lineMute = getLineMute(sourceInfo)
+                sourceLine = getSourceLine(sourceInfo)
+                lineVolume = getLineVolume(sourceLine)
+                lineMute = getLineMute(sourceLine)
                 BaseVoice.DEBUG_LOGGER.log("Update source line for {}", sourceInfo)
             }
 
@@ -567,23 +574,19 @@ abstract class BaseClientAudioSource<T>(
         )
     }
 
-    private fun getLineVolume(sourceInfo: T): DoubleConfigEntry {
-        val sourceLine = voiceClient.sourceLineManager.getLineById(sourceInfo.lineId)
+    private fun getSourceLine(sourceInfo: T): ClientSourceLine =
+        voiceClient.sourceLineManager.getLineById(sourceInfo.lineId)
             .orElseThrow { IllegalStateException("Source line not found") }
 
-        return config.voice
+    private fun getLineVolume(sourceLine: ClientSourceLine): DoubleConfigEntry =
+        config.voice
             .volumes
             .getVolume(sourceLine.name)
-    }
 
-    private fun getLineMute(sourceInfo: T): BooleanConfigEntry {
-        val sourceLine = voiceClient.sourceLineManager.getLineById(sourceInfo.lineId)
-            .orElseThrow { IllegalStateException("Source line not found") }
-
-        return config.voice
+    private fun getLineMute(sourceLine: ClientSourceLine): BooleanConfigEntry =
+        config.voice
             .volumes
             .getMute(sourceLine.name)
-    }
 
     protected open fun isPanningDisabled(): Boolean =
         !config.advanced.panning.value()
