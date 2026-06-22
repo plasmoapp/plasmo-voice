@@ -71,7 +71,7 @@ object EntityIconStateExtractor {
         }
 
         val percentText = if (volumeAction.isShown(entity.uuid)) {
-            val volume = config.voice.volumes.getVolume("source_${entity.uuid}")
+            val volume = config.voice.volumes.getPlayerVolume(entity.uuid)
             val percent = (volume.value() * 100.0).roundToInt()
             McTextComponent.literal("$percent%")
         } else null
@@ -126,7 +126,7 @@ object EntityIconStateExtractor {
         }
 
         // client mute
-        if (config.voice.volumes.getMute("source_${playerInfo.playerId}").value()) {
+        if (config.voice.volumes.getPlayerMute(playerInfo.playerId).value()) {
             return iconOrNull(
                 iconVisibility,
                 PlayerIconVisibility.HIDE_CLIENT_MUTED,

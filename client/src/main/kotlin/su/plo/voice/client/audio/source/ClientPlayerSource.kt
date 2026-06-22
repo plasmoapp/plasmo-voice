@@ -21,7 +21,7 @@ class ClientPlayerSource(
 
     override var sourceVolume: DoubleConfigEntry = config.voice
         .volumes
-        .getVolume("source_${sourceInfo.playerInfo.playerId}")
+        .getPlayerVolume(sourceInfo.playerInfo.playerId)
 
     override fun process(packet: SourceAudioPacket) {
         if (sourceMute.value()) return
@@ -57,7 +57,7 @@ class ClientPlayerSource(
         get() {
             return config.voice
                 .volumes
-                .getMute("source_" + sourceInfo.playerInfo.playerId)
+                .getPlayerMute(sourceInfo.playerInfo.playerId)
         }
 
     private val sourcePlayer: Player?

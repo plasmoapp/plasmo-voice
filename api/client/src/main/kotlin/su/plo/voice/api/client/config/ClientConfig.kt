@@ -4,6 +4,7 @@ import su.plo.config.entry.*
 import su.plo.voice.api.client.config.overlay.OverlayPosition
 import su.plo.voice.api.client.config.overlay.OverlaySourceState
 import su.plo.voice.api.client.config.overlay.OverlayStyle
+import java.util.UUID
 
 /**
  * Client configuration for Plasmo Voice.
@@ -55,16 +56,75 @@ interface ClientConfig {
 
         val volumes: Volumes
 
+        /**
+         * Per-line volume and mute settings.
+         *
+         * Each entry is keyed by a line name. Per-player volumes are stored under
+         * the `"source_<playerId>"` line name; the `player*` methods are shorthands
+         * that build this key for you, so e.g. [getPlayerVolume] is equivalent to
+         * `getVolume("source_" + playerId)`.
+         */
         interface Volumes {
 
+            /**
+             * Sets the volume for the given player.
+             *
+             * Shorthand for [setVolume] with the `"source_<playerId>"` line name.
+             *
+             * @param volume in range `0.0..2.0`, where `1.0` is the original volume.
+             */
+            fun setPlayerVolume(playerId: UUID, volume: Double)
+
+            /**
+             * Returns the volume entry for the given player, creating it with the
+             * default value if absent.
+             *
+             * Shorthand for [getVolume] with the `"source_<playerId>"` line name.
+             */
+            fun getPlayerVolume(playerId: UUID): DoubleConfigEntry
+
+            /**
+             * Mutes or unmutes the given player.
+             *
+             * Shorthand for [setMute] with the `"source_<playerId>"` line name.
+             */
+            fun setPlayerMute(playerId: UUID, muted: Boolean)
+
+            /**
+             * Returns the mute entry for the given player, creating it with the
+             * default value if absent.
+             *
+             * Shorthand for [getMute] with the `"source_<playerId>"` line name.
+             */
+            fun getPlayerMute(playerId: UUID): BooleanConfigEntry
+
+            /**
+             * Sets the volume for the given line.
+             *
+             * @param volume in range `0.0..2.0`, where `1.0` is the original volume.
+             */
             fun setVolume(lineName: String, volume: Double)
 
+            /**
+             * Returns the volume entry for the given line, creating it with the
+             * default value if absent.
+             */
             fun getVolume(lineName: String): DoubleConfigEntry
 
+            /**
+             * Returns `true` if a volume entry exists for the given line.
+             */
             fun hasVolume(lineName: String): Boolean
 
+            /**
+             * Mutes or unmutes the given line.
+             */
             fun setMute(lineName: String, muted: Boolean)
 
+            /**
+             * Returns the mute entry for the given line, creating it with the
+             * default value if absent.
+             */
             fun getMute(lineName: String): BooleanConfigEntry
         }
     }

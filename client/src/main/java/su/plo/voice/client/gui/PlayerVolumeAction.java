@@ -55,7 +55,7 @@ public final class PlayerVolumeAction {
         if (focusedPlayer != null && MinecraftKt.currentScreen(Minecraft.getInstance()) == null) {
             this.lastScroll = System.currentTimeMillis();
 
-            DoubleConfigEntry volume = config.getVoice().getVolumes().getVolume("source_" + focusedPlayer.getUUID());
+            DoubleConfigEntry volume = config.getVoice().getVolumes().getPlayerVolume(focusedPlayer.getUUID());
 
             double value = volume.value() + (event.getVertical() > 0 ? 0.05D : -0.05D);
             volume.set((Math.round((value * volume.getMax() * 100D) / 5) * 5) / (volume.getMax() * 100D));

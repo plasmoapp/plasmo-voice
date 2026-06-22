@@ -294,6 +294,8 @@ public final class VoiceClientConfig implements ClientConfig {
         @Data
         public static class SourceLineVolumes implements SerializableConfigEntry, Volumes {
 
+            private static final String SOURCE_VOLUME_PREFIX = "source_";
+
             private Map<String, DoubleConfigEntry> volumeByLineName = Maps.newHashMap();
             private Map<String, BooleanConfigEntry> muteByLineName = Maps.newHashMap();
 
@@ -360,7 +362,7 @@ public final class VoiceClientConfig implements ClientConfig {
                 volumeByLineName.forEach((key, entry) -> {
                     Map<String, Object> value = Maps.newTreeMap();
 
-                    if (!entry.isDefault() || !key.startsWith("source_")) {
+                    if (!entry.isDefault() || !key.startsWith(SOURCE_VOLUME_PREFIX)) {
                         value.put("volume", entry.value());
                         serialized.put(key, value);
                     }
@@ -376,6 +378,26 @@ public final class VoiceClientConfig implements ClientConfig {
                 });
 
                 return serialized;
+            }
+
+            @Override
+            public void setPlayerVolume(@NotNull UUID playerId, double volume) {
+                setVolume(SOURCE_VOLUME_PREFIX + playerId, volume);
+            }
+
+            @Override
+            public @NotNull DoubleConfigEntry getPlayerVolume(@NotNull UUID playerId) {
+                return getVolume(SOURCE_VOLUME_PREFIX + playerId);
+            }
+
+            @Override
+            public void setPlayerMute(@NotNull UUID playerId, boolean muted) {
+                setMute(SOURCE_VOLUME_PREFIX + playerId, muted);
+            }
+
+            @Override
+            public @NotNull BooleanConfigEntry getPlayerMute(@NotNull UUID playerId) {
+                return getMute(SOURCE_VOLUME_PREFIX + playerId);
             }
         }
     }

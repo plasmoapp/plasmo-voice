@@ -192,8 +192,8 @@ public final class VolumeTabWidget extends TabWidget {
     }
 
     private void createPlayerVolume(@NotNull McGameProfile player) {
-        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getVolume("source_" + player.getId().toString());
-        ConfigEntry<Boolean> muteEntry = config.getVoice().getVolumes().getMute("source_" + player.getId().toString());
+        DoubleConfigEntry volumeEntry = config.getVoice().getVolumes().getPlayerVolume(player.getId());
+        ConfigEntry<Boolean> muteEntry = config.getVoice().getVolumes().getPlayerMute(player.getId());
 
         List<Button> buttons = Lists.newArrayList();
         Runnable updateButtons = createMuteButtonAction(buttons, muteEntry);

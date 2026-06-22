@@ -99,14 +99,14 @@ class ClientDirectSource(
         sourceInfo.sender?.let {
             config.voice
                 .volumes
-                .getMute("source_" + it.id)
+                .getPlayerMute(it.id)
         }
 
     private fun createSourceVolume(sourceInfo: DirectSourceInfo) =
         sourceInfo.sender?.let {
             config.voice
                 .volumes
-                .getVolume("source_${it.id}")
+                .getPlayerVolume(it.id)
         } ?: super.sourceVolume
 
     private fun getAbsoluteSourcePosition(): Vec3 {
