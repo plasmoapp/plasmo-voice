@@ -280,7 +280,9 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             throw new IllegalStateException("Failed to load config", e);
         }
 
-        DEBUG_LOGGER.enabled(config.debug() || System.getProperty("plasmovoice.debug") != null);
+        boolean debugLogging = config.debug() || System.getProperty("plasmovoice.debug") != null;
+        DEBUG_LOGGER.enabled(debugLogging);
+        getMinecraftServer().getCommandManager().setLogRegisteredCommands(debugLogging);
 
         // register proximity activation
         proximityActivation.register(config);
