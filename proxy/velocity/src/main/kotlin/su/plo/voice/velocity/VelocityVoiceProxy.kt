@@ -23,7 +23,11 @@ import java.nio.file.Path
     name = "PlasmoVoice",
     version = BuildConstants.VERSION,
     authors = ["Apehum"],
-    dependencies = [Dependency(id = "luckperms", optional = true)]
+    dependencies = [
+        Dependency(id = "luckperms", optional = true),
+        Dependency(id = "sayanvanish", optional = true),
+        Dependency(id = "premiumvanish", optional = true),
+    ]
 )
 class VelocityVoiceProxy @Inject constructor(
     private val proxyServer: ProxyServer,

@@ -4,3 +4,5 @@ main: su.plo.voice.bungee.BungeeVoiceLoader
 author: Apehum
 softDepends:
   - LuckPerms
+  - PremiumVanish
+  - SayanVanish

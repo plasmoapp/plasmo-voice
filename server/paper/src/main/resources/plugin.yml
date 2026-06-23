@@ -7,7 +7,7 @@ authors: [ Apehum ]
 softdepend:
   - LuckPerms
   - PlaceholderAPI
-#depend:
-#  - kotlin-stdlib
+  - SuperVanish
+  - PremiumVanish
 
 folia-supported: true
