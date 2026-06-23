@@ -19,6 +19,7 @@ val excludedDependencies = listOf(
     "com.google.j2objc:j2objc-annotations",
     "it.unimi.dsi:fastutil",
     "org.checkerframework:checker-qual",
+    "com.mojang:brigadier",
 //    "org.slf4j:slf4j-api",
 )
 

@@ -1,2 +1,1 @@
-- Fixed API dependency resolution by preferring instead of hard-requiring specific guava/gson/fastutil versions.
-- Connection logs are now always logged instead of being gated by debug logging.
+- Fixed conflicts with other plugins caused by brigadier being bundled into the jar. [#520](https://github.com/plasmoapp/plasmo-voice/issues/520)
