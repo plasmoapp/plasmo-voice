@@ -2,6 +2,7 @@ package su.plo.voice
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import su.plo.voice.util.DeduplicatingLicenseTransformer
+import java.util.zip.ZipFile
 
 plugins {
     java
@@ -21,6 +22,13 @@ val excludedDependencies = listOf(
     "org.checkerframework:checker-qual",
     "com.mojang:brigadier",
 //    "org.slf4j:slf4j-api",
+)
+
+// Class namespaces allowed in the final jar.
+// Preventive step to avoid https://github.com/plasmoapp/plasmo-voice/issues/520 to happen again.
+val allowedClassPrefixes = listOf(
+    "su/plo/",          // own code + relocated libraries (su.plo.voice.libs.*)
+    "com/plasmoverse/", // native JNI bindings
 )
 
 tasks {
@@ -141,7 +149,40 @@ tasks {
         transform(DeduplicatingLicenseTransformer::class.java)
     }
 
+    val verifyShadedJar = register("verifyShadedJar") {
+        dependsOn(finalJar)
+
+        doLast {
+            val jarFile = finalJar.get().archiveFile.get().asFile
+            val offenders = ZipFile(jarFile).use { zip ->
+                zip.entries().asSequence()
+                    .map { it.name }
+                    .filter { it.endsWith(".class") && !it.endsWith("module-info.class") }
+                    .filter { name -> allowedClassPrefixes.none { name.startsWith(it) } }
+                    .map { it.substringBeforeLast('/', "(default package)") }
+                    .toSortedSet()
+            }
+
+            if (offenders.isNotEmpty()) {
+                throw GradleException(
+                    buildString {
+                        appendLine("Unexpected packages shaded into ${jarFile.name}:")
+                        offenders.forEach { appendLine("  $it") }
+                        appendLine(
+                            """
+                                Relocate them under su.plo.voice.libs.* or exclude them in shadow.gradle.kts,
+                                or add the package to allowedClassPrefixes if it is intentional.
+                            """.trimIndent()
+                        )
+                    },
+                )
+            }
+        }
+    }
+
     val copyTask = register<Copy>("copyJarToRootProject") {
+        dependsOn(verifyShadedJar)
+        
         from(finalJar)
         into(rootProject.layout.buildDirectory.dir("libs"))
     }
