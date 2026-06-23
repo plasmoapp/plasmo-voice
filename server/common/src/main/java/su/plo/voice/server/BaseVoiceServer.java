@@ -366,6 +366,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
             @NotNull McCommandManager<McCommand> commandManager,
             @NotNull McServerLib minecraftServer
     ) {
+        commandManager.setCommandNamespace("plasmovoice");
+
         // register permissions
         PermissionManager permissions = minecraftServer.getPermissionManager();
 
