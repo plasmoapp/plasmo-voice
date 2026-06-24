@@ -1,1 +1,0 @@
-- Fixed conflicts with other plugins caused by brigadier being bundled into the jar. [#520](https://github.com/plasmoapp/plasmo-voice/issues/520)
