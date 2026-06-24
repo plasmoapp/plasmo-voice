@@ -1,0 +1,772 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ServerActivation</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    PlasmoVoice
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;su.plo.voice.api.server.audio.capture/-server-activation/index.html&quot;}"><div class="dropdown versions-dropdown" data-role="dropdown">
+  <div class="button button_dropdown versions-dropdown-button" role="combobox" data-role="dropdown-toggle" aria-controls="versions-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select version" tabindex="0" title="2.1.12"><span class="versions-dropdown-button-text">2.1.12</span></div>
+  <div class="dropdown--list dropdown--list_positioned_left versions-dropdown-data" role="listbox" data-role="dropdown-listbox" aria-label="Versions" id="versions-listbox">
+    <div class="dropdown--header" data-remove-style="true" style="display: none"><span>Select version</span><button class="button" data-role="dropdown-toggle" aria-label="Close versions selection"><i class="ui-kit-icon ui-kit-icon_cross"></i></button></div>
+<a href="../../../../../server-proxy-common/su.plo.voice.api.server.audio.capture/-server-activation/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13-SNAPSHOT</span></a><a href="index.html" class="dropdown--option dropdown--option_active dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12"><span class="dropdown--option-icon dropdown--option-icon_selected"></span><span class="dropdown--option-text">2.1.12</span></a><a href="../../../../2.1.12-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.capture/-server-activation/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12-SNAPSHOT</span></a><a href="../../../../2.1.11/server-proxy-common/su.plo.voice.api.server.audio.capture/-server-activation/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11</span></a><a href="../../../../2.1.11-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.capture/-server-activation/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11-SNAPSHOT</span></a><a href="../../../../2.1.10/server-proxy-common/su.plo.voice.api.server.audio.capture/-server-activation/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.10"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.10</span></a><a href="../../../../2.1.9/server-proxy-common/su.plo.voice.api.server.audio.capture/-server-activation/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.9"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.9</span></a></div>
+  <div class="dropdown--overlay"></div>
+</div>
+</dokka-template-command>        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":api:server-proxy-common/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":api:server-proxy-common/main" data-filter=":api:server-proxy-common/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    PlasmoVoice
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="server-proxy-common::su.plo.voice.api.server.audio.capture/ServerActivation///PointingToDeclaration//1142928706">
+  <div class="breadcrumbs"><a href="../../index.html">server-proxy-common</a><span class="delimiter">/</span><a href="../index.html">su.plo.voice.api.server.audio.capture</a><span class="delimiter">/</span><span class="current">ServerActivation</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Server</span><wbr><span><span>Activation</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ServerActivation</a> : <a href="../../../protocol/su.plo.voice.proto.data.audio.capture/-activation/index.html">Activation</a></div><p class="paragraph">Represents a server activation.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="TYPE">
+        <h2 class="tableheader">Types</h2>
+        <div class="table"><a data-name="535580534%2FClasslikes%2F1142928706" anchor-label="Builder" id="535580534%2FClasslikes%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-builder/index.html"><span><span>Builder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="535580534%2FClasslikes%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-builder/index.html">Builder</a></div><div class="brief ">Builder interface for creating server activations.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1893850713%2FClasslikes%2F1142928706" anchor-label="PlayerActivationEndListener" id="1893850713%2FClasslikes%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-player-activation-end-listener/index.html"><span>Player</span><wbr><span>Activation</span><wbr><span>End</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1893850713%2FClasslikes%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html"><span class="token annotation builtin">FunctionalInterface</span></a></div></div><span class="token keyword">interface </span><a href="-player-activation-end-listener/index.html">PlayerActivationEndListener</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2133279590%2FClasslikes%2F1142928706" anchor-label="PlayerActivationListener" id="2133279590%2FClasslikes%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-player-activation-listener/index.html"><span>Player</span><wbr><span>Activation</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2133279590%2FClasslikes%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html"><span class="token annotation builtin">FunctionalInterface</span></a></div></div><span class="token keyword">interface </span><a href="-player-activation-listener/index.html">PlayerActivationListener</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1330295310%2FClasslikes%2F1142928706" anchor-label="PlayerActivationStartListener" id="-1330295310%2FClasslikes%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-player-activation-start-listener/index.html"><span>Player</span><wbr><span>Activation</span><wbr><span>Start</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1330295310%2FClasslikes%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/FunctionalInterface.html"><span class="token annotation builtin">FunctionalInterface</span></a></div></div><span class="token keyword">interface </span><a href="-player-activation-start-listener/index.html">PlayerActivationStartListener</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1183381727%2FClasslikes%2F1142928706" anchor-label="Requirements" id="-1183381727%2FClasslikes%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-requirements/index.html"><span><span>Requirements</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1183381727%2FClasslikes%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="-requirements/index.html">Requirements</a></div><div class="brief ">Interface for defining activation requirements.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2117225420%2FClasslikes%2F1142928706" anchor-label="Result" id="-2117225420%2FClasslikes%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="-result/index.html"><span><span>Result</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2117225420%2FClasslikes%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">enum </span><a href="-result/index.html">Result</a></div><div class="brief ">Result for activation event handlers.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="-945289564%2FProperties%2F1142928706" anchor-label="NAME_PATTERN" id="-945289564%2FProperties%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-945289564%2FProperties%2F1142928706"><span>NAME_</span><wbr><span>PATTERN</span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-945289564%2FProperties%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">val </span><a href="index.html#-945289564%2FProperties%2F1142928706">NAME_PATTERN</a><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/regex/Pattern.html">Pattern</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-846240247%2FFunctions%2F1142928706" anchor-label="addPermission" id="-846240247%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-permission.html"><span>add</span><wbr><span><span>Permission</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-846240247%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="add-permission.html"><span class="token function">addPermission</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>permission<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Adds a permission to the activation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1691610506%2FFunctions%2F1142928706" anchor-label="calculateAllowedDistance" id="1691610506%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1691610506%2FFunctions%2F1142928706"><span>calculate</span><wbr><span>Allowed</span><wbr><span><span>Distance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1691610506%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1691610506%2FFunctions%2F1142928706"><span class="token function">calculateAllowedDistance</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">distance<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="684882774%2FFunctions%2F1142928706" anchor-label="checkDistance" id="684882774%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#684882774%2FFunctions%2F1142928706"><span>check</span><wbr><span><span>Distance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="684882774%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#684882774%2FFunctions%2F1142928706"><span class="token function">checkDistance</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">distance<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1622157672%2FFunctions%2F1142928706" anchor-label="checkPermissions" id="-1622157672%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="check-permissions.html"><span>check</span><wbr><span><span>Permissions</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1622157672%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="check-permissions.html"><span class="token function">checkPermissions</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>serverPlayer<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://slib.plasmoverse.com/api-common/su.plo.slib.api.entity.player/-mc-player/index.html">McPlayer</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Checks if a player has any of the required permissions for the activation.</div><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="check-permissions.html"><span class="token function">checkPermissions</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>player<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.server.player/-voice-player/index.html">VoicePlayer</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Checks if a voice player has any of the required permissions for the activation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1341916662%2FFunctions%2F1142928706" anchor-label="clearListeners" id="-1341916662%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-listeners.html"><span>clear</span><wbr><span><span>Listeners</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1341916662%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="clear-listeners.html"><span class="token function">clearListeners</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Clears all activation listeners.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="788284517%2FFunctions%2F1142928706" anchor-label="clearPermissions" id="788284517%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-permissions.html"><span>clear</span><wbr><span><span>Permissions</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="788284517%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="clear-permissions.html"><span class="token function">clearPermissions</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Clears all permissions.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="478023894%2FFunctions%2F1142928706" anchor-label="clearPlayerActivationEndListeners" id="478023894%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-player-activation-end-listeners.html"><span>clear</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span>End</span><wbr><span><span>Listeners</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="478023894%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="clear-player-activation-end-listeners.html"><span class="token function">clearPlayerActivationEndListeners</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Clears all player activation end listeners.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1380891457%2FFunctions%2F1142928706" anchor-label="clearPlayerActivationListeners" id="1380891457%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-player-activation-listeners.html"><span>clear</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span><span>Listeners</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1380891457%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="clear-player-activation-listeners.html"><span class="token function">clearPlayerActivationListeners</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Clears all player activation listeners.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2041082019%2FFunctions%2F1142928706" anchor-label="clearPlayerActivationStartListeners" id="-2041082019%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-player-activation-start-listeners.html"><span>clear</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span>Start</span><wbr><span><span>Listeners</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2041082019%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="clear-player-activation-start-listeners.html"><span class="token function">clearPlayerActivationStartListeners</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Clears all player activation start listeners.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="368839218%2FFunctions%2F1142928706" anchor-label="getAddon" id="368839218%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-addon.html"><span>get</span><wbr><span><span>Addon</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="368839218%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-addon.html"><span class="token function">getAddon</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../common/su.plo.voice.api.addon/-addon-container/index.html">AddonContainer</a></div><div class="brief ">Gets the addon associated with the activation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="581764992%2FFunctions%2F1142928706" anchor-label="getDefaultDistance" id="581764992%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#581764992%2FFunctions%2F1142928706"><span>get</span><wbr><span>Default</span><wbr><span><span>Distance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="581764992%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#581764992%2FFunctions%2F1142928706"><span class="token function">getDefaultDistance</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="638128504%2FFunctions%2F1142928706" anchor-label="getDistances" id="638128504%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#638128504%2FFunctions%2F1142928706"><span>get</span><wbr><span><span>Distances</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="638128504%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#638128504%2FFunctions%2F1142928706"><span class="token function">getDistances</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1608642540%2FFunctions%2F1142928706" anchor-label="getEncoderInfo" id="1608642540%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1608642540%2FFunctions%2F1142928706"><span>get</span><wbr><span>Encoder</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1608642540%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#1608642540%2FFunctions%2F1142928706"><span class="token function">getEncoderInfo</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a><span class="token operator">&lt;</span><a href="../../../protocol/su.plo.voice.proto.data.audio.codec/-codec-info/index.html">CodecInfo</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="810459819%2FFunctions%2F1142928706" anchor-label="getIcon" id="810459819%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#810459819%2FFunctions%2F1142928706"><span>get</span><wbr><span><span>Icon</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="810459819%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#810459819%2FFunctions%2F1142928706"><span class="token function">getIcon</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="444207625%2FFunctions%2F1142928706" anchor-label="getId" id="444207625%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#444207625%2FFunctions%2F1142928706"><span>get</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="444207625%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#444207625%2FFunctions%2F1142928706"><span class="token function">getId</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1723138755%2FFunctions%2F1142928706" anchor-label="getMaxDistance" id="-1723138755%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1723138755%2FFunctions%2F1142928706"><span>get</span><wbr><span>Max</span><wbr><span><span>Distance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1723138755%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1723138755%2FFunctions%2F1142928706"><span class="token function">getMaxDistance</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1825788431%2FFunctions%2F1142928706" anchor-label="getMinDistance" id="1825788431%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1825788431%2FFunctions%2F1142928706"><span>get</span><wbr><span>Min</span><wbr><span><span>Distance</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1825788431%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#1825788431%2FFunctions%2F1142928706"><span class="token function">getMinDistance</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1711932199%2FFunctions%2F1142928706" anchor-label="getName" id="-1711932199%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1711932199%2FFunctions%2F1142928706"><span>get</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1711932199%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1711932199%2FFunctions%2F1142928706"><span class="token function">getName</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1049022290%2FFunctions%2F1142928706" anchor-label="getPermissions" id="-1049022290%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-permissions.html"><span>get</span><wbr><span><span>Permissions</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1049022290%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-permissions.html"><span class="token function">getPermissions</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a><span class="token operator">&gt;</span></div><div class="brief ">Gets the permissions associated with the activation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1719055064%2FFunctions%2F1142928706" anchor-label="getRequirements" id="1719055064%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-requirements.html"><span>get</span><wbr><span><span>Requirements</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1719055064%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-requirements.html"><span class="token function">getRequirements</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a><span class="token operator">&lt;</span><a href="-requirements/index.html">ServerActivation.Requirements</a><span class="token operator">&gt;</span></div><div class="brief ">Gets the optional requirements associated with the activation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1829614843%2FFunctions%2F1142928706" anchor-label="getTranslation" id="-1829614843%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1829614843%2FFunctions%2F1142928706"><span>get</span><wbr><span><span>Translation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1829614843%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1829614843%2FFunctions%2F1142928706"><span class="token function">getTranslation</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="644928460%2FFunctions%2F1142928706" anchor-label="getWeight" id="644928460%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#644928460%2FFunctions%2F1142928706"><span>get</span><wbr><span><span>Weight</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="644928460%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#644928460%2FFunctions%2F1142928706"><span class="token function">getWeight</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1970196837%2FFunctions%2F1142928706" anchor-label="isProximity" id="1970196837%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1970196837%2FFunctions%2F1142928706"><span>is</span><wbr><span><span>Proximity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1970196837%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#1970196837%2FFunctions%2F1142928706"><span class="token function">isProximity</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1726158062%2FFunctions%2F1142928706" anchor-label="isStereoSupported" id="1726158062%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1726158062%2FFunctions%2F1142928706"><span>is</span><wbr><span>Stereo</span><wbr><span><span>Supported</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1726158062%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#1726158062%2FFunctions%2F1142928706"><span class="token function">isStereoSupported</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1937613009%2FFunctions%2F1142928706" anchor-label="isTransitive" id="1937613009%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1937613009%2FFunctions%2F1142928706"><span>is</span><wbr><span><span>Transitive</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1937613009%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#1937613009%2FFunctions%2F1142928706"><span class="token function">isTransitive</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-470588592%2FFunctions%2F1142928706" anchor-label="onPlayerActivation" id="-470588592%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-player-activation.html"><span>on</span><wbr><span>Player</span><wbr><span><span>Activation</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-470588592%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="on-player-activation.html"><span class="token function">onPlayerActivation</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>activationListener<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="-player-activation-listener/index.html">ServerActivation.PlayerActivationListener</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Adds a new listener that will be invoked when a player uses the activation and meets all requirements: <ul><li><a href="check-permissions.html">checkPermissions</a></li><li><a href="index.html#684882774%2FFunctions%2F1142928706">checkDistance</a></li><li><a href="get-requirements.html">getRequirements</a></li></ul></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="984160162%2FFunctions%2F1142928706" anchor-label="onPlayerActivationEnd" id="984160162%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-player-activation-end.html"><span>on</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span><span>End</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="984160162%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="on-player-activation-end.html"><span class="token function">onPlayerActivationEnd</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>activationEndListener<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="-player-activation-end-listener/index.html">ServerActivation.PlayerActivationEndListener</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Adds a new listener that will be invoked when a player sends <a href="../../../protocol/su.plo.voice.proto.packets.tcp.serverbound/-player-audio-end-packet/index.html">PlayerAudioEndPacket</a> and meets all requirements: <ul><li><a href="check-permissions.html">checkPermissions</a></li><li><a href="index.html#684882774%2FFunctions%2F1142928706">checkDistance</a></li><li><a href="get-requirements.html">getRequirements</a></li><li>activation is in <a href="../../su.plo.voice.api.server.player/-voice-player/get-active-activations.html">getActiveActivations</a></li></ul></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2118026580%2FFunctions%2F1142928706" anchor-label="onPlayerActivationStart" id="2118026580%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="on-player-activation-start.html"><span>on</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span><span>Start</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2118026580%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="on-player-activation-start.html"><span class="token function">onPlayerActivationStart</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>activationStartListener<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="-player-activation-start-listener/index.html">ServerActivation.PlayerActivationStartListener</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Adds a new listener that will be invoked when a player starts using the activation and meets all requirements: <ul><li><a href="check-permissions.html">checkPermissions</a></li><li><a href="index.html#684882774%2FFunctions%2F1142928706">checkDistance</a></li><li><a href="get-requirements.html">getRequirements</a></li></ul></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1215921764%2FFunctions%2F1142928706" anchor-label="removePermission" id="1215921764%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-permission.html"><span>remove</span><wbr><span><span>Permission</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1215921764%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="remove-permission.html"><span class="token function">removePermission</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>permission<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Removes a permission from the activation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-638867277%2FFunctions%2F1142928706" anchor-label="removePlayerActivationEndListener" id="-638867277%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-player-activation-end-listener.html"><span>remove</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span>End</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-638867277%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="remove-player-activation-end-listener.html"><span class="token function">removePlayerActivationEndListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>activationListener<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="-player-activation-end-listener/index.html">ServerActivation.PlayerActivationEndListener</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Removes a player activation end listener.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2010234039%2FFunctions%2F1142928706" anchor-label="removePlayerActivationListener" id="-2010234039%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-player-activation-listener.html"><span>remove</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2010234039%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="remove-player-activation-listener.html"><span class="token function">removePlayerActivationListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>activationListener<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="-player-activation-listener/index.html">ServerActivation.PlayerActivationListener</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Removes a player activation listener.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1117206501%2FFunctions%2F1142928706" anchor-label="removePlayerActivationStartListener" id="1117206501%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-player-activation-start-listener.html"><span>remove</span><wbr><span>Player</span><wbr><span>Activation</span><wbr><span>Start</span><wbr><span><span>Listener</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1117206501%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="remove-player-activation-start-listener.html"><span class="token function">removePlayerActivationStartListener</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>activationListener<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="-player-activation-start-listener/index.html">ServerActivation.PlayerActivationStartListener</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Removes a player activation start listener.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1770929924%2FFunctions%2F1142928706" anchor-label="setDistances" id="1770929924%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-distances.html"><span>set</span><wbr><span><span>Distances</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1770929924%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-distances.html"><span class="token function">setDistances</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>distances<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Integer.html">Integer</a><span class="token operator">&gt;</span><span class="token punctuation">, </span></span><span class="parameter ">defaultDistance<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets the available distances for the activation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1763699419%2FFunctions%2F1142928706" anchor-label="setProximity" id="1763699419%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-proximity.html"><span>set</span><wbr><span><span>Proximity</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1763699419%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-proximity.html"><span class="token function">setProximity</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">proximity<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets whether the activation has proximity output.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1953690845%2FFunctions%2F1142928706" anchor-label="setTransitive" id="-1953690845%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-transitive.html"><span>set</span><wbr><span><span>Transitive</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1953690845%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-transitive.html"><span class="token function">setTransitive</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">transitive<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets whether the activation is transitive.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

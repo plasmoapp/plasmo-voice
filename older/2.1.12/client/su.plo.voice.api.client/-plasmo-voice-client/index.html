@@ -1,0 +1,494 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>PlasmoVoiceClient</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    PlasmoVoice
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;su.plo.voice.api.client/-plasmo-voice-client/index.html&quot;}"><div class="dropdown versions-dropdown" data-role="dropdown">
+  <div class="button button_dropdown versions-dropdown-button" role="combobox" data-role="dropdown-toggle" aria-controls="versions-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select version" tabindex="0" title="2.1.12"><span class="versions-dropdown-button-text">2.1.12</span></div>
+  <div class="dropdown--list dropdown--list_positioned_left versions-dropdown-data" role="listbox" data-role="dropdown-listbox" aria-label="Versions" id="versions-listbox">
+    <div class="dropdown--header" data-remove-style="true" style="display: none"><span>Select version</span><button class="button" data-role="dropdown-toggle" aria-label="Close versions selection"><i class="ui-kit-icon ui-kit-icon_cross"></i></button></div>
+<a href="../../../../../client/su.plo.voice.api.client/-plasmo-voice-client/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13-SNAPSHOT</span></a><a href="index.html" class="dropdown--option dropdown--option_active dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12"><span class="dropdown--option-icon dropdown--option-icon_selected"></span><span class="dropdown--option-text">2.1.12</span></a><a href="../../../../2.1.12-SNAPSHOT/client/su.plo.voice.api.client/-plasmo-voice-client/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12-SNAPSHOT</span></a><a href="../../../../2.1.11/client/su.plo.voice.api.client/-plasmo-voice-client/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11</span></a><a href="../../../../2.1.11-SNAPSHOT/client/su.plo.voice.api.client/-plasmo-voice-client/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11-SNAPSHOT</span></a><a href="../../../../2.1.10/client/su.plo.voice.api.client/-plasmo-voice-client/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.10"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.10</span></a><a href="../../../../2.1.9/client/su.plo.voice.api.client/-plasmo-voice-client/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.9"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.9</span></a></div>
+  <div class="dropdown--overlay"></div>
+</div>
+</dokka-template-command>        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":api:client/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":api:client/main" data-filter=":api:client/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    PlasmoVoice
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="client::su.plo.voice.api.client/PlasmoVoiceClient///PointingToDeclaration//2003273835">
+  <div class="breadcrumbs"><a href="../../index.html">client</a><span class="delimiter">/</span><a href="../index.html">su.plo.voice.api.client</a><span class="delimiter">/</span><span class="current">PlasmoVoiceClient</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Plasmo</span><wbr><span>Voice</span><wbr><span><span>Client</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">PlasmoVoiceClient</a> : <a href="../../../common/su.plo.voice.api/-plasmo-voice/index.html">PlasmoVoice</a></div><p class="paragraph">The Plasmo Voice Client API.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-752134067%2FFunctions%2F2003273835" anchor-label="getActivationManager" id="-752134067%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-activation-manager.html"><span>get</span><wbr><span>Activation</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-752134067%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-activation-manager.html"><span class="token function">getActivationManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.audio.capture/-client-activation-manager/index.html">ClientActivationManager</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.audio.capture/-client-activation-manager/index.html">ClientActivationManager</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-645214449%2FFunctions%2F2003273835" anchor-label="getAddonConfig" id="-645214449%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-addon-config.html"><span>get</span><wbr><span>Addon</span><wbr><span><span>Config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-645214449%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-addon-config.html"><span class="token function">getAddonConfig</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>addon<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.config.addon/-addon-config/index.html">AddonConfig</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.config.addon/-addon-config/index.html">AddonConfig</a> for the specified addon.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1724516255%2FFunctions%2F2003273835" anchor-label="getAddonManager" id="1724516255%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1724516255%2FFunctions%2F2003273835"><span>get</span><wbr><span>Addon</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1724516255%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#1724516255%2FFunctions%2F2003273835"><span class="token function">getAddonManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../common/su.plo.voice.api.addon/-addon-manager/index.html">AddonManager</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-870253680%2FFunctions%2F2003273835" anchor-label="getAddonsLoader" id="-870253680%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-addons-loader.html"><span>get</span><wbr><span>Addons</span><wbr><span><span>Loader</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-870253680%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-addons-loader.html"><span class="token function">getAddonsLoader</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../common/su.plo.voice.api.addon/-addons-loader/index.html">AddonsLoader</a></div><div class="brief ">Gets the client's addons loaders.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1576398746%2FFunctions%2F2003273835" anchor-label="getAudioCapture" id="-1576398746%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-audio-capture.html"><span>get</span><wbr><span>Audio</span><wbr><span><span>Capture</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1576398746%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-audio-capture.html"><span class="token function">getAudioCapture</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.audio.capture/-audio-capture/index.html">AudioCapture</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.audio.capture/-audio-capture/index.html">AudioCapture</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="97636363%2FFunctions%2F2003273835" anchor-label="getBackgroundExecutor" id="97636363%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#97636363%2FFunctions%2F2003273835"><span>get</span><wbr><span>Background</span><wbr><span><span>Executor</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="97636363%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#97636363%2FFunctions%2F2003273835"><span class="token function">getBackgroundExecutor</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/ScheduledExecutorService.html">ScheduledExecutorService</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1051828875%2FFunctions%2F2003273835" anchor-label="getCodecManager" id="-1051828875%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1051828875%2FFunctions%2F2003273835"><span>get</span><wbr><span>Codec</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1051828875%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1051828875%2FFunctions%2F2003273835"><span class="token function">getCodecManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../common/su.plo.voice.api.audio.codec/-codec-manager/index.html">CodecManager</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1938858316%2FFunctions%2F2003273835" anchor-label="getConfig" id="-1938858316%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-config.html"><span>get</span><wbr><span><span>Config</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1938858316%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-config.html"><span class="token function">getConfig</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.config/-client-config/index.html">ClientConfig</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.config/-client-config/index.html">ClientConfig</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1963602948%2FFunctions%2F2003273835" anchor-label="getConfigFolder" id="-1963602948%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-1963602948%2FFunctions%2F2003273835"><span>get</span><wbr><span>Config</span><wbr><span><span>Folder</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1963602948%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-1963602948%2FFunctions%2F2003273835"><span class="token function">getConfigFolder</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/io/File.html">File</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="70260971%2FFunctions%2F2003273835" anchor-label="getDebugLogger" id="70260971%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#70260971%2FFunctions%2F2003273835"><span>get</span><wbr><span>Debug</span><wbr><span><span>Logger</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="70260971%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#70260971%2FFunctions%2F2003273835"><span class="token function">getDebugLogger</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../common/su.plo.voice.api.logging/-debug-logger/index.html">DebugLogger</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1443308835%2FFunctions%2F2003273835" anchor-label="getDeviceFactoryManager" id="-1443308835%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-device-factory-manager.html"><span>get</span><wbr><span>Device</span><wbr><span>Factory</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1443308835%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-device-factory-manager.html"><span class="token function">getDeviceFactoryManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.audio.device/-device-factory-manager/index.html">DeviceFactoryManager</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.audio.device/-device-factory-manager/index.html">DeviceFactoryManager</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1965179149%2FFunctions%2F2003273835" anchor-label="getDeviceManager" id="1965179149%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-device-manager.html"><span>get</span><wbr><span>Device</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1965179149%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-device-manager.html"><span class="token function">getDeviceManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.audio.device/-device-manager/index.html">DeviceManager</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.audio.device/-device-manager/index.html">DeviceManager</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2016668957%2FFunctions%2F2003273835" anchor-label="getDistanceVisualizer" id="-2016668957%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-distance-visualizer.html"><span>get</span><wbr><span>Distance</span><wbr><span><span>Visualizer</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2016668957%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-distance-visualizer.html"><span class="token function">getDistanceVisualizer</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.render/-distance-visualizer/index.html">DistanceVisualizer</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.render/-distance-visualizer/index.html">DistanceVisualizer</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="406677796%2FFunctions%2F2003273835" anchor-label="getEncryptionManager" id="406677796%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#406677796%2FFunctions%2F2003273835"><span>get</span><wbr><span>Encryption</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="406677796%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#406677796%2FFunctions%2F2003273835"><span class="token function">getEncryptionManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../common/su.plo.voice.api.encryption/-encryption-manager/index.html">EncryptionManager</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="506892550%2FFunctions%2F2003273835" anchor-label="getEventBus" id="506892550%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#506892550%2FFunctions%2F2003273835"><span>get</span><wbr><span>Event</span><wbr><span><span>Bus</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="506892550%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#506892550%2FFunctions%2F2003273835"><span class="token function">getEventBus</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../common/su.plo.voice.api.event/-event-bus/index.html">EventBus</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="517171779%2FFunctions%2F2003273835" anchor-label="getHotkeys" id="517171779%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-hotkeys.html"><span>get</span><wbr><span><span>Hotkeys</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="517171779%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-hotkeys.html"><span class="token function">getHotkeys</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.config.hotkey/-hotkeys/index.html">Hotkeys</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.config.hotkey/-hotkeys/index.html">Hotkeys</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1129824533%2FFunctions%2F2003273835" anchor-label="getServerConnection" id="1129824533%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-server-connection.html"><span>get</span><wbr><span>Server</span><wbr><span><span>Connection</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1129824533%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-server-connection.html"><span class="token function">getServerConnection</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a><span class="token operator">&lt;</span><a href="../../su.plo.voice.api.client.connection/-server-connection/index.html">ServerConnection</a><span class="token operator">&gt;</span></div><div class="brief ">Gets the current <a href="../../su.plo.voice.api.client.connection/-server-connection/index.html">ServerConnection</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-785017403%2FFunctions%2F2003273835" anchor-label="getServerInfo" id="-785017403%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-server-info.html"><span>get</span><wbr><span>Server</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-785017403%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-server-info.html"><span class="token function">getServerInfo</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a><span class="token operator">&lt;</span><a href="../../su.plo.voice.api.client.connection/-server-info/index.html">ServerInfo</a><span class="token operator">&gt;</span></div><div class="brief ">Gets the current <a href="../../su.plo.voice.api.client.connection/-server-info/index.html">ServerInfo</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1713817114%2FFunctions%2F2003273835" anchor-label="getSourceLineManager" id="-1713817114%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-source-line-manager.html"><span>get</span><wbr><span>Source</span><wbr><span>Line</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1713817114%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-source-line-manager.html"><span class="token function">getSourceLineManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.audio.line/-client-source-line-manager/index.html">ClientSourceLineManager</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.audio.line/-client-source-line-manager/index.html">ClientSourceLineManager</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="384251602%2FFunctions%2F2003273835" anchor-label="getSourceManager" id="384251602%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-source-manager.html"><span>get</span><wbr><span>Source</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="384251602%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-source-manager.html"><span class="token function">getSourceManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.audio.source/-client-source-manager/index.html">ClientSourceManager</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.audio.source/-client-source-manager/index.html">ClientSourceManager</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-138456227%2FFunctions%2F2003273835" anchor-label="getTimeSupplier" id="-138456227%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-time-supplier.html"><span>get</span><wbr><span>Time</span><wbr><span><span>Supplier</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-138456227%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-time-supplier.html"><span class="token function">getTimeSupplier</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.time/-time-supplier/index.html">TimeSupplier</a></div><div class="brief ">Gets the current time supplier.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-548171659%2FFunctions%2F2003273835" anchor-label="getUdpClientManager" id="-548171659%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-udp-client-manager.html"><span>get</span><wbr><span>Udp</span><wbr><span>Client</span><wbr><span><span>Manager</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-548171659%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-udp-client-manager.html"><span class="token function">getUdpClientManager</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.connection/-udp-client-manager/index.html">UdpClientManager</a></div><div class="brief ">Gets the <a href="../../su.plo.voice.api.client.connection/-udp-client-manager/index.html">UdpClientManager</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1264929782%2FFunctions%2F2003273835" anchor-label="getVersion" id="1264929782%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1264929782%2FFunctions%2F2003273835"><span>get</span><wbr><span><span>Version</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1264929782%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#1264929782%2FFunctions%2F2003273835"><span class="token function">getVersion</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-219519709%2FFunctions%2F2003273835" anchor-label="setTimeSupplier" id="-219519709%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-time-supplier.html"><span>set</span><wbr><span>Time</span><wbr><span><span>Supplier</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-219519709%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-time-supplier.html"><span class="token function">setTimeSupplier</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>timeSupplier<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.client.time/-time-supplier/index.html">TimeSupplier</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets the time supplier.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
