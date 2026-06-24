@@ -40,10 +40,6 @@ if (platform.mcVersion in 12106..12108) {
 }
 
 if (platform.isForge) {
-    if (platform.mcVersion < 12002) {
-        mixins.add("slib-forge.mixins.json")
-    }
-
     if (platform.mcVersion >= 12100) {
         mixins.add("plasmovoice-forge.mixins.json")
     }
