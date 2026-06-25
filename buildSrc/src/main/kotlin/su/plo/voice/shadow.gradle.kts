@@ -2,6 +2,7 @@ package su.plo.voice
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import su.plo.voice.util.DeduplicatingLicenseTransformer
+import java.util.jar.Manifest
 import java.util.zip.ZipFile
 
 plugins {
@@ -180,9 +181,74 @@ tasks {
         }
     }
 
+    // Verifies that every mixin config referenced in the loader metadata is actually bundled in the jar.
+    // Preventive step to avoid the slib-forge.mixins.json crash from happening again.
+    // (mixin was referenced in metadata, but the file was no longer shaded)
+    val verifyMixinConfigs = register("verifyMixinConfigs") {
+        dependsOn(finalJar)
+
+        doLast {
+            val jarFile = finalJar.get().archiveFile.get().asFile
+            val missing = sortedSetOf<String>()
+
+            ZipFile(jarFile).use { zip ->
+                fun entryText(name: String): String? =
+                    zip.getEntry(name)?.let { zip.getInputStream(it).bufferedReader().use { reader -> reader.readText() } }
+
+                // source -> config
+                val referenced = mutableListOf<Pair<String, String>>()
+
+                // Fabric: "mixins": ["a.json", { "config": "b.json", "environment": "client" }]
+                entryText("fabric.mod.json")?.let { json ->
+                    Regex(""""mixins"\s*:\s*\[(.*?)]""", RegexOption.DOT_MATCHES_ALL)
+                        .find(json)?.groupValues?.get(1)
+                        ?.let { array ->
+                            Regex(""""([^"]+\.json)"""").findAll(array).forEach {
+                                referenced += "fabric.mod.json" to it.groupValues[1]
+                            }
+                        }
+                }
+
+                // NeoForge / Forge: [[mixins]] config="x.json"
+                listOf("META-INF/neoforge.mods.toml", "META-INF/mods.toml").forEach { toml ->
+                    entryText(toml)?.let { content ->
+                        Regex("""config\s*=\s*"([^"]+)"""").findAll(content).forEach {
+                            referenced += toml to it.groupValues[1]
+                        }
+                    }
+                }
+
+                // Forge: MixinConfigs manifest attribute (comma-separated)
+                zip.getEntry("META-INF/MANIFEST.MF")?.let { entry ->
+                    val manifest = zip.getInputStream(entry).use(::Manifest)
+                    manifest.mainAttributes.getValue("MixinConfigs")
+                        ?.split(",")
+                        ?.map(String::trim)
+                        ?.filter(String::isNotEmpty)
+                        ?.forEach { referenced += "META-INF/MANIFEST.MF (MixinConfigs)" to it }
+                }
+
+                referenced
+                    .filter { (_, config) -> zip.getEntry(config) == null }
+                    .forEach { (source, config) -> missing += "$config (declared in $source)" }
+            }
+
+            if (missing.isNotEmpty()) {
+                throw GradleException(
+                    buildString {
+                        appendLine("Mixin configs declared in metadata but missing from ${jarFile.name}:")
+                        missing.forEach { appendLine("  $it") }
+                        appendLine("  -> add the json to resources, stop excluding it, or drop the reference.")
+                    },
+                )
+            }
+        }
+    }
+
     val copyTask = register<Copy>("copyJarToRootProject") {
         dependsOn(verifyShadedJar)
-        
+        dependsOn(verifyMixinConfigs)
+
         from(finalJar)
         into(rootProject.layout.buildDirectory.dir("libs"))
     }

@@ -232,6 +232,9 @@ tasks {
     shadowJar {
         configurations = listOf(shadowCommon)
 
+        // drop mixin configs that aren't referenced for this version
+        exclude { it.name.endsWith(".mixins.json") && it.name !in mixins }
+
         if (platform.mcVersion >= 260100) {
             exclude("fabric.mod.json")
 
@@ -252,14 +255,6 @@ tasks {
                 relocate("org.slf4j", "su.plo.voice.libs.org.slf4j")
             } else {
                 exclude(dependency("org.slf4j:slf4j-api"))
-            }
-
-            if (platform.mcVersion < 12102) {
-                exclude("plasmovoice-1.21.2.mixins.json")
-            }
-
-            if (platform.mcVersion < 12106) {
-                exclude("plasmovoice-1.21.6.mixins.json")
             }
 
             if (platform.mcVersion >= 12106) {
