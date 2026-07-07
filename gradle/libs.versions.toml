@@ -25,7 +25,7 @@ paper = "1.18.2-R0.1-SNAPSHOT"
 minestom = "39d445482f"
 
 opus-jni = "1.0.3"
-opus-concentus = "acaadf2075"
+opus-concentus = "1.0.0"
 rnnoise-jni = "1.0.2"
 
 shadow = "9.2.2"
@@ -62,7 +62,7 @@ paper        = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
 minestom = { module = "net.minestom:minestom-snapshots", version.ref = "minestom" }
 
 opus-jni     = { module = "com.plasmoverse:opus-jni-rust", version.ref = "opus-jni" }
-opus-concentus = { module = "com.github.lostromb.concentus:Concentus", version.ref = "opus-concentus" }
+opus-concentus = { module = "com.plasmoverse:concentus", version.ref = "opus-concentus" }
 rnnoise-jni  = { module = "com.plasmoverse:rnnoise-jni-rust", version.ref = "rnnoise-jni" }
 
 shadow = { module = "com.gradleup.shadow:shadow-gradle-plugin", version.ref = "shadow" }
