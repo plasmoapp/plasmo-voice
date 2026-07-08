@@ -26,6 +26,15 @@ public interface ServerConfig {
 
     @NotNull Voice voice();
 
+    @NotNull Notifications notifications();
+
+    interface Notifications {
+
+        boolean muted();
+
+        boolean unmuted();
+    }
+
     interface Host {
 
         @NotNull String ip();

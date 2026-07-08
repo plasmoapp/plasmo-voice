@@ -73,7 +73,7 @@ public final class VoiceMuteManager implements MuteManager {
             }
         }
 
-        ServerMuteInfo muteInfo = new ServerMuteInfo(playerId, mutedById, System.currentTimeMillis(), duration, reason);
+        ServerMuteInfo muteInfo = new ServerMuteInfo(playerId, mutedById, System.currentTimeMillis(), duration, reason, silent);
 
         muteStorage.putPlayerMute(player.getInstance().getUuid(), muteInfo);
 
@@ -138,7 +138,9 @@ public final class VoiceMuteManager implements MuteManager {
     private void tick() {
         muteStorage.getMutedPlayers().forEach((muteInfo) -> {
             if (!isMuteValid(muteInfo)) {
-                unmute(muteInfo.getPlayerUUID(), false);
+                boolean silent = Boolean.TRUE.equals(muteInfo.getSilent())
+                        || !voiceServer.getConfig().notifications().unmuted();
+                unmute(muteInfo.getPlayerUUID(), silent);
             }
         });
     }

@@ -110,7 +110,7 @@ public final class VoiceMuteCommand implements McCommand {
                 duration,
                 durationUnit,
                 reason,
-                false
+                !voiceServer.getConfig().notifications().muted()
         );
     }
 

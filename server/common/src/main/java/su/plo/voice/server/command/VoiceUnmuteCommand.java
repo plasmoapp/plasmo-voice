@@ -42,7 +42,7 @@ public final class VoiceUnmuteCommand implements McCommand {
 
         MuteManager muteManager = voiceServer.getMuteManager();
 
-        if (!muteManager.unmute(player.getId(), false).isPresent()) {
+        if (!muteManager.unmute(player.getId(), !voiceServer.getConfig().notifications().unmuted()).isPresent()) {
             source.sendMessage(
                     McTextComponent.translatable("pv.command.unmute.not_muted", player.getName())
             );
