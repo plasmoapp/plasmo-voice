@@ -8,11 +8,11 @@
     <span> | </span>
     <a href="https://www.curseforge.com/minecraft/mc-mods/plasmo-voice">CurseForge</a>
     <span> | </span>
-    <a href="https://www.spigotmc.org/resources/plasmo-voice-server.91064/">Spigot</a>
-    <span> | </span>
     <a href="https://github.com/plasmoapp/plasmo-voice">GitHub</a>
     <span> | </span>
     <a href="https://plasmovoice.com">Documentation</a>
+    <span> | </span>
+    <a href="https://plasmovoice.com/docs/addons/">Addons</a>
     <span> | </span>
     <a href="https://discord.com/invite/uueEqzwCJJ">Discord</a>
   </div>
@@ -103,34 +103,14 @@ working.*
 
 - Encrypted voice communication
 
-## Server-side add-ons
+## Addons
 
-Universal add-ons work on Fabric, Forge, NeoForge and Paper.
-
-*Also read: [Types of Add-ons](https://plasmovoice.com/docs/addons/types).*
-
-| Icon                                                                                     | Link                                                                        | Description                                                                                                                     |
-|------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------|
-| [![](https://i.imgur.com/mKJDsiC.png)](https://modrinth.com/mod/pv-addon-groups/)        | [pv-addon-groups](https://modrinth.com/mod/pv-addon-groups)                 | Create group voice chat channels. Keep talking with players far away                                                            |
-| [![](https://i.imgur.com/enqKs5d.png)](https://modrinth.com/mod/pv-addon-sculk)          | [pv-addon-sculk](https://modrinth.com/mod/pv-addon-sculk)                   | With this add-on, warden and sculk sensors are triggered with proximity voice chat                                              |
-| [![](https://i.imgur.com/DZU7wrI.png)](https://modrinth.com/mod/pv-addon-broadcast)      | [pv-addon-broadcast](https://modrinth.com/mod/pv-addon-broadcast)           | Broadcast your voice to all players in the radius, world, server, or proxy                                                      |
-| [![](https://i.imgur.com/tI24pN7.png)](https://modrinth.com/mod/pv-addon-spectator)      | [pv-addon-spectator](https://modrinth.com/mod/pv-addon-spectator)           | With this add-on, all players can hear spectators                                                                               |
-| [![](https://i.imgur.com/qswCndF.png)](https://modrinth.com/mod/pv-addon-whisper)        | [pv-addon-whisper](https://modrinth.com/mod/pv-addon-whisper)               | By default, the whisper distance is half the current proximity distance                                                         |
-| [![](https://i.imgur.com/lRQ0ZEY.png)](https://modrinth.com/mod/pv-addon-priority)       | [pv-addon-priority](https://modrinth.com/mod/pv-addon-priority)             | Voice activation with a greater and configurable distance                                                                       |
-| [![](https://i.imgur.com/GNfK81A.png)](https://modrinth.com/mod/pv-addon-lavaplayer-lib) | [pv-addon-lavaplayer-lib](https://modrinth.com/mod/pv-addon-lavaplayer-lib) | Add-on bundled with LavaPlayer fork library required for some Plasmo Voice add-ons                                              |
-| [![](https://i.imgur.com/LB320On.png)](https://modrinth.com/mod/pv-addon-discs)          | [pv-addon-discs](https://modrinth.com/mod/pv-addon-discs)                   | Play audio from YouTube and other sources in Minecraft using music discs. Supports streaming and live streams (YouTube, Twitch) |
-
-## Client add-ons
-
-| Icon                                                                                   | Link                                                                    | Description                                                                                                         |
-|----------------------------------------------------------------------------------------|-------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------|
-| [![](https://i.imgur.com/NjGmgGA.png)](https://modrinth.com/mod/pv-addon-soundphysics) | [pv-addon-soundphysics](https://modrinth.com/mod/pv-addon-soundphysics) | Adds compatibility with Sound Physics Remastered. Plasmo Voice is affected by sound physics                         |
-| [![](https://i.imgur.com/VTndchu.png)](https://modrinth.com/mod/pv-addon-replaymod)    | [pv-addon-replaymod](https://modrinth.com/mod/pv-addon-replaymod)       | Fork of Replay Voice Chat that works with Plasmo Voice and allows recording voice chat with ReplayMod               |
-| [<img src="https://raw.githubusercontent.com/ZipeStudio/TalkingHeads/refs/heads/master/src/main/resources/icon/icon.png?raw=true" width="96">](https://modrinth.com/mod/talkingheads)          | [Talking Heads](https://modrinth.com/mod/talkingheads)                  | Scales player heads when they’re talking. Third-party add-on. Issues should be reported on the Talking Heads GitHub |
+[![Click to browse addons](.github/assets/addons.png)](https://plasmovoice.com/docs/addons/)
 
 ## Download
 
 - [Plasmo Voice on Modrinth](https://modrinth.com/mod/plasmo-voice)
+- [Plasmo Voice on CurseForge](https://www.curseforge.com/minecraft/mc-mods/plasmo-voice)
 - [Releases](https://github.com/plasmoapp/plasmo-voice/releases/)
 
 ## Documentation
