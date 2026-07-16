@@ -26,21 +26,21 @@ To use voice chat, players must install the client-side mod for **Fabric**, **Fo
 Players without the mod can still join the server and play as usual – they just won't have access to voice chat
 features.
 
-![](https://i.imgur.com/lNWuwnA.png)
+![](https://plasmovoice.com/landing/compatability-chart.png)
 
 *Assuming Plasmo Voice is installed on both client and the server.*
 
 ## Features
 
-![](https://i.imgur.com/I6zEXw9.png)
+![](https://plasmovoice.com/landing/hud-icons.png)
 
-![](https://i.imgur.com/JbWCjLK.png)
+![](https://plasmovoice.com/landing/player-icons.png)
 
-![](https://i.imgur.com/A031m8M.png)
+![](https://plasmovoice.com/landing/voice-settings.png)
 
-<img src="https://i.imgur.com/mSp133m.gif" width="1280px" alt="Voice chat proximity and settings demonstration" />
+<img src="https://plasmovoice.com/landing/visualise-distance.gif" width="1280px" alt="Voice chat proximity and settings demonstration" />
 
-<img src="https://i.imgur.com/3AL6qTq.gif" width="1280px" alt="Voice chat interface and controls demonstration" />
+<img src="https://plasmovoice.com/landing/rmb-scroll.gif" width="1280px" alt="Voice chat interface and controls demonstration" />
 
 ## Client features
 
@@ -70,7 +70,7 @@ features.
 - Toggle player icon visibility
 - Discord-like in-game overlay
 
-![](https://i.imgur.com/Ufnvpg7.png)
+![](https://plasmovoice.com/landing/keybindings.png)
 
 Check out voice settings by pressing `V`. *Make sure you have the right devices selected and your microphone is
 working.*
