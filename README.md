@@ -2,7 +2,7 @@
 [![Discord](http://img.shields.io/discord/833693644501286993?label=Discord&style=flat&logo=discord)](https://discord.gg/uueEqzwCJJ)
 
 <div align="center">
-  <img src="https://imgur.com/3ccgCRz.png" alt="Plasmo Voice Logo"> 
+  <img src="https://imgur.com/3ccgCRz.png" alt="Plasmo Voice Logo">
   <div>
     <a href="https://modrinth.com/mod/plasmo-voice">Modrinth</a>
     <span> | </span>
@@ -15,6 +15,8 @@
     <a href="https://plasmovoice.com/docs/addons/">Addons</a>
     <span> | </span>
     <a href="https://discord.com/invite/uueEqzwCJJ">Discord</a>
+    <span> | </span>
+    <a href="https://www.patreon.com/plasmomc">Patreon</a>
   </div>
 </div>
 
