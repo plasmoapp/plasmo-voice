@@ -10,6 +10,7 @@ import net.fabricmc.api.ModInitializer;
 //#elseif FORGE
 
 //$$ import su.plo.voice.client.ModVoiceClient;
+//$$ import su.plo.slib.mod.ModServerLib;
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
 //$$
 //$$ import net.minecraft.resources.ResourceLocation;
@@ -85,6 +86,7 @@ public final class ModVoice
     //$$
     //$$ public ModVoice() {
     //$$     FMLJavaModLoadingContext.get().getModEventBus().register(this);
+    //$$     FMLJavaModLoadingContext.get().getModEventBus().register(ModServerLib.INSTANCE.getChannelManager());
     //$$ }
     //$$
     //$$ @SubscribeEvent
