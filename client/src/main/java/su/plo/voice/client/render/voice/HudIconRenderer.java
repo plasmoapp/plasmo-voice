@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.Window;
 import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.extensions.MinecraftKt;
@@ -92,11 +93,21 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
         context.getStack().translate(0f, 0f, 1000f);
         //#endif
 
+        int offsetY;
+        if (iconPosition == IconPosition.BOTTOM_CENTER &&
+                Minecraft.getInstance().gameMode != null &&
+                Minecraft.getInstance().gameMode.getPlayerMode() == GameType.CREATIVE
+        ) {
+            offsetY = -10;
+        } else {
+            offsetY = 0;
+        }
+
         glState.withState(() ->
             context.blit(
                     iconLocation,
                     calcIconX(iconPosition.getX()),
-                    calcIconY(iconPosition.getY()),
+                    calcIconY(iconPosition.getY()) + offsetY,
                     0,
                     0,
                     16,

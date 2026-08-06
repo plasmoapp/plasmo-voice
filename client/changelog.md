@@ -1,7 +1,5 @@
 ### Client
-- Fixed invalid supported version ranges on 26.1 build. [#521](https://github.com/plasmoapp/plasmo-voice/issues/521)
-- Fixed crash on Forge due to missing `slib-forge.mixins.json`.
+- Moved "Bottom Center" hud icon higher in Creative, so it no longer overlaps item names: https://i.imgur.com/3nYWeAN.png.
+  - In other game modes, it was also moved slightly lower: https://i.imgur.com/CUpcIdc.png.
 
 ### Server
-- Fixed invalid supported version ranges on 26.1 build. [#521](https://github.com/plasmoapp/plasmo-voice/issues/521)
-- Fixed crash on Forge due to missing `slib-forge.mixins.json`.
