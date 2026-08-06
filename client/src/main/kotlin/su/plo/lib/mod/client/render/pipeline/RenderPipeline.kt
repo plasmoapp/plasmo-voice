@@ -8,6 +8,7 @@ import su.plo.lib.mod.client.render.VertexFormatMode
 //#if MC<12105
 
 import su.plo.lib.mod.client.render.GlState
+import su.plo.lib.mod.client.render.shader.ShadersCache
 
 //#if MC>=12102
 //$$ import net.minecraft.client.Minecraft
@@ -112,6 +113,29 @@ fun renderPipeline(
         .apply(builder)
         .build()
 }
+
+fun renderPipeline(
+    location: ResourceLocation,
+    shader: ResourceLocation,
+    vertexFormat: VertexFormat,
+    vertexFormatMode: VertexFormatMode,
+    builder: RenderPipeline.Builder.() -> Unit = {},
+) = RenderPipeline
+    .Builder(
+        location,
+        //#if MC>=12105
+        //$$ shader,
+        //$$ shader,
+        //#elseif MC>=11700
+        { ShadersCache.getOrLoad(shader, vertexFormat) },
+        //#else
+        //$$ ShadersCache.getOrLoad(shader, vertexFormat),
+        //#endif
+        vertexFormat,
+        vertexFormatMode,
+    )
+    .apply(builder)
+    .build()
 
 fun renderPipeline(
     location: ResourceLocation,

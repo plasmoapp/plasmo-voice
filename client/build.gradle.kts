@@ -263,10 +263,6 @@ tasks {
                 exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
             }
 
-            if (platform.mcVersion >= 11700) {
-                exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_16.*")
-            }
-
             if (platform.isForge) {
                 exclude("fabric.mod.json")
                 exclude("META-INF/neoforge.mods.toml")

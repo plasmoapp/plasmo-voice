@@ -6,6 +6,7 @@ import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.DestFactor
 import su.plo.lib.mod.client.render.SourceFactor
 import su.plo.lib.mod.client.render.VertexFormatMode
+import su.plo.lib.mod.client.render.shader.SolidColorShader
 
 //#if MC>=12106 && MC<12109
 //$$ import su.plo.voice.client.mixin.accessor.CompositeRenderTypeAccessor
@@ -14,7 +15,6 @@ import su.plo.lib.mod.client.render.VertexFormatMode
 //#if MC>=12105
 //$$ import net.minecraft.resources.ResourceLocation
 //#else
-import su.plo.lib.mod.client.render.shader.SolidColorShader
 import com.mojang.blaze3d.vertex.VertexFormatElement
 //#endif
 
@@ -45,20 +45,7 @@ object RenderPipelines {
     val GUI_TEXTURE_SOLID_COLOR =
         renderPipeline(
             ResourceLocationUtil.mod("pipeline/gui_texture_solid_color"),
-            //#if MC>=12106
-            //$$ ResourceLocationUtil.mod("position_tex_solid_color_1_21_6"),
-            //$$ ResourceLocationUtil.mod("position_tex_solid_color_1_21_6"),
-            //#elseif MC>=12105
-            //$$ ResourceLocationUtil.mod("position_tex_solid_color"),
-            //$$ ResourceLocationUtil.mod("position_tex_solid_color"),
-            //#elseif MC>=11700
-            {
-                val shader = SolidColorShader.getShader() as gg.essential.universal.shader.MCShader
-                shader.mc
-            },
-            //#else
-            //$$ SolidColorShader.getShader(),
-            //#endif
+            SolidColorShader.LOCATION,
             @Suppress("DEPRECATION")
             DefaultVertexFormat.POSITION_TEX_COLOR,
             VertexFormatMode.QUADS,
