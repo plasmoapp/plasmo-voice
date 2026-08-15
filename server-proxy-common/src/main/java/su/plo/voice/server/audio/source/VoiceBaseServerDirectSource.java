@@ -7,16 +7,21 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.slib.api.position.Pos3d;
 import su.plo.voice.api.addon.AddonContainer;
 import su.plo.voice.api.server.PlasmoBaseVoiceServer;
+import su.plo.voice.api.server.audio.capture.PlayerActivationInfo;
 import su.plo.voice.api.server.audio.line.BaseServerSourceLine;
 import su.plo.voice.api.server.audio.provider.AudioFrameProvider;
 import su.plo.voice.api.server.audio.source.AudioSender;
 import su.plo.voice.api.server.audio.source.BaseServerDirectSource;
 import su.plo.voice.api.server.connection.UdpConnectionManager;
+import su.plo.voice.api.server.event.audio.source.ServerSourceAudioPacketEvent;
+import su.plo.voice.api.server.event.audio.source.ServerSourcePacketEvent;
 import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.socket.UdpConnection;
 import su.plo.voice.proto.data.audio.codec.CodecInfo;
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo;
+import su.plo.voice.proto.packets.Packet;
 import su.plo.voice.proto.packets.tcp.clientbound.SourceInfoPacket;
+import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket;
 
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
@@ -113,6 +118,38 @@ public abstract class VoiceBaseServerDirectSource
                 lookAngle,
                 cameraRelative
         );
+    }
+
+    @Override
+    public boolean sendAudioPacket(@NotNull SourceAudioPacket packet, @Nullable PlayerActivationInfo activationInfo) {
+        ServerSourceAudioPacketEvent event = new ServerSourceAudioPacketEvent(this, packet, activationInfo);
+        if (!voiceServer.getEventBus().fire(event)) return false;
+        if (event.getResult() == ServerSourceAudioPacketEvent.Result.HANDLED) return true;
+
+        packet.setSourceState((byte) state.get());
+
+        if (dirty.compareAndSet(true, false)) {
+            updateSourceInfo();
+        }
+
+        for (UdpConnection connection : getListeners()) {
+            connection.sendPacket(packet);
+        }
+
+        return true;
+    }
+
+    @Override
+    public boolean sendPacket(@NotNull Packet<?> packet) {
+        ServerSourcePacketEvent event = new ServerSourcePacketEvent(this, packet);
+        if (!voiceServer.getEventBus().fire(event)) return false;
+        if (event.getResult() == ServerSourcePacketEvent.Result.HANDLED) return true;
+
+        for (UdpConnection connection : getListeners()) {
+            connection.getPlayer().sendPacket(packet);
+        }
+
+        return true;
     }
 
     @Override

@@ -4,6 +4,7 @@ import su.plo.slib.api.server.position.ServerPos3d
 import su.plo.voice.api.server.audio.capture.PlayerActivationInfo
 import su.plo.voice.api.server.audio.line.ServerSourceLine
 import su.plo.voice.api.server.audio.provider.AudioFrameProvider
+import su.plo.voice.api.server.socket.UdpServerConnection
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.Packet
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
@@ -126,4 +127,14 @@ interface ServerProximitySource<S : SourceInfo> : ServerAudioSource<S> {
      * @return The source line.
      */
     override fun getLine(): ServerSourceLine
+
+    /**
+     * Gets the connections of the players that currently receive this source's packets.
+     *
+     * Players that do not match the source [filters] are not included.
+     *
+     * @param distance The maximum distance at which players can receive packets.
+     * @return The current listeners of this source.
+     */
+    fun getListeners(distance: Short): Iterable<UdpServerConnection>
 }

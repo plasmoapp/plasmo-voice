@@ -4,6 +4,7 @@ import su.plo.slib.api.position.Pos3d
 import su.plo.voice.api.server.audio.capture.PlayerActivationInfo
 import su.plo.voice.api.server.audio.provider.AudioFrameProvider
 import su.plo.voice.api.server.player.VoicePlayer
+import su.plo.voice.api.server.socket.UdpConnection
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.packets.Packet
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
@@ -124,4 +125,13 @@ interface BaseServerDirectSource : ServerAudioSource<DirectSourceInfo> {
      * @return An audio sender.
      */
     fun createAudioSender(frameProvider: AudioFrameProvider): AudioSender
+
+    /**
+     * Gets the connections of the players that currently receive this source's packets.
+     *
+     * Players that do not match the source [filters] are not included.
+     *
+     * @return The current listeners of this source.
+     */
+    fun getListeners(): Iterable<UdpConnection>
 }

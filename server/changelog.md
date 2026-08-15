@@ -1,0 +1,1 @@
+- Added `BaseServerDirectSource#getListeners` and `ServerProximitySource#getListeners` to API to resolve current source's listeners.
