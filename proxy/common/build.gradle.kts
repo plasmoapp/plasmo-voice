@@ -8,5 +8,7 @@ dependencies {
     api(project(":api:proxy"))
     api(project(":server-proxy-common"))
 
+    implementation(libs.hkdf)
+
     compileOnly(libs.netty)
 }

@@ -18,6 +18,8 @@ luckperms = "5.4"
 papi = "2.11.6"
 supervanish = "6.2.18-3"
 
+hkdf = "2.0.0"
+
 bungeecord = "1.21-R0.5-SNAPSHOT"
 velocity = "3.1.1"
 paper = "1.18.2-R0.1-SNAPSHOT"
@@ -54,6 +56,8 @@ config       = { module = "su.plo.config:config", version.ref = "config" }
 luckperms    = { module = "net.luckperms:api", version.ref = "luckperms" }
 papi         = { module = "me.clip:placeholderapi", version.ref = "papi" }
 supervanish  = { module = "com.github.LeonMangler:SuperVanish", version.ref = "supervanish" }
+
+hkdf = { module = "at.favre.lib:hkdf", version.ref= "hkdf" }
 
 bungeecord   = { module = "net.md-5:bungeecord-api", version.ref = "bungeecord"}
 velocity     = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }

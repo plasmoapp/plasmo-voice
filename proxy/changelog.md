@@ -1,0 +1,1 @@
+- AES key is now derived from forwarding key via HKDF, so it's no longer necessary to specify `PLASMO_VOICE_AES_KEY` for multi-proxy setups.

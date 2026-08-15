@@ -78,6 +78,8 @@ tasks {
 
         reloc("org.concentus", "concentus")
 
+        reloc("at.favre.lib.hkdf", "hkdf")
+
         dependencies {
             excludedDependencies.forEach { exclude(dependency(it)) }
         }

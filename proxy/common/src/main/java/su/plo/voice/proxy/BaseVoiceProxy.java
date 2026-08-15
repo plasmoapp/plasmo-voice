@@ -1,7 +1,6 @@
 package su.plo.voice.proxy;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
+import at.favre.lib.hkdf.HKDF;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
@@ -24,6 +23,7 @@ import su.plo.voice.api.server.audio.line.ProxySourceLineManager;
 import su.plo.voice.proto.data.audio.codec.opus.OpusDecoderInfo;
 import su.plo.voice.proto.data.audio.codec.opus.OpusEncoderInfo;
 import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
+import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proxy.config.VoiceProxyConfig;
 import su.plo.voice.proxy.connection.ProxyChannelHandler;
 import su.plo.voice.proxy.connection.ProxyServiceChannelHandler;
@@ -182,23 +182,23 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
             if (oldConfig != null && oldConfig.aesEncryptionKey() != null) {
                 aesKey = oldConfig.aesEncryptionKey();
             } else {
-                UUID aesEncryptionKey;
                 File aesEncryptionKeyFile = System.getenv().containsKey("PLASMO_VOICE_AES_KEY_FILE")
                         ? new File(System.getenv("PLASMO_VOICE_AES_KEY_FILE"))
                         : new File(getConfigFolder(), "aes-key");
                 if (System.getenv("PLASMO_VOICE_AES_KEY") != null) {
-                    aesEncryptionKey = UUID.fromString(System.getenv("PLASMO_VOICE_AES_KEY"));
+                    UUID aesEncryptionKey = UUID.fromString(System.getenv("PLASMO_VOICE_AES_KEY"));
+                    aesKey = PacketUtil.getUUIDBytes(aesEncryptionKey);
                 } else if (aesEncryptionKeyFile.exists()) {
-                    aesEncryptionKey = UUID.fromString(new String(Files.readAllBytes(aesEncryptionKeyFile.toPath())));
+                    UUID aesEncryptionKey = UUID.fromString(new String(Files.readAllBytes(aesEncryptionKeyFile.toPath())));
+                    aesKey = PacketUtil.getUUIDBytes(aesEncryptionKey);
                 } else {
-                    aesEncryptionKey = UUID.randomUUID();
+                    aesKey = HKDF.fromHmacSha256().extractAndExpand(
+                            (byte[]) null,
+                            PacketUtil.getUUIDBytes(forwardingSecret),
+                            "plasmo-voice/aes-key".getBytes(StandardCharsets.UTF_8),
+                            16
+                    );
                 }
-
-                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                out.writeLong(aesEncryptionKey.getMostSignificantBits());
-                out.writeLong(aesEncryptionKey.getLeastSignificantBits());
-
-                aesKey = out.toByteArray();
             }
 
             updateAesEncryptionKey(aesKey);
