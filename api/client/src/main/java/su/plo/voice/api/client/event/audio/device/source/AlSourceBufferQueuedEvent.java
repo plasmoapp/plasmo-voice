@@ -10,6 +10,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This event is fired once the byte buffer has been queued to the AL source.
+ * <br>
+ * The buffer is owned by the source and is recycled as soon as this event returns, so listeners must not retain it.
+ * Copy its contents if they are needed later.
  */
 public final class AlSourceBufferQueuedEvent extends AlSourceEvent {
 
