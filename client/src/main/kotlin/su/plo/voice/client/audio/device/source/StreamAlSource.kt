@@ -14,8 +14,6 @@ import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.AlOutputDevice
-import java.nio.Buffer
-import java.nio.ByteBuffer
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicBoolean
@@ -34,10 +32,9 @@ class StreamAlSource private constructor(
     private var closeTimeoutMs = 25000L
 
     private val numBuffers: Int
-    private val queue = LinkedBlockingQueue<ByteBuffer>()
-    private val bufferPool = ByteBufferPool(MAX_POOLED_BUFFERS)
+    private val queue = LinkedBlockingQueue<ShortArray>()
     private val isStreaming = AtomicBoolean(false)
-    private val emptyBuffer: ByteArray
+    private val emptyBuffer: ShortArray
 
     private var job: Job? = null
     private lateinit var buffers: IntArray
@@ -47,7 +44,7 @@ class StreamAlSource private constructor(
 
     init {
         this.numBuffers = if (numBuffers == 0) client.config.advanced.alPlaybackBuffers.value() else numBuffers
-        this.emptyBuffer = ByteArray(device.frameSize)
+        this.emptyBuffer = ShortArray(device.frameSize / 2)
     }
 
     override fun play() {
@@ -80,7 +77,7 @@ class StreamAlSource private constructor(
         AlUtil.checkErrors("Source stop")
         isStreaming.set(false)
 
-        recycleQueuedBuffers()
+        clearBuffer()
     }
 
     override fun pause() {
@@ -103,19 +100,16 @@ class StreamAlSource private constructor(
     }
 
     override fun write(samples: ShortArray, applyFilters: Boolean) {
-        val processedSamples = if (applyFilters) {
-            device.processFilters(samples)
-        } else {
-            samples
-        }
+        val processedSamples =
+            if (applyFilters) {
+                device.processFilters(samples)
+            } else {
+                samples
+            }
 
-        write(AudioUtil.shortsToBytes(processedSamples))
-    }
-
-    override fun write(samples: ByteArray) {
         if (!isStreaming.get()) return
-        if (samples.isEmpty()) {
-            write(emptyBuffer)
+        if (processedSamples.isEmpty()) {
+            write(emptyBuffer, false)
             return
         }
 
@@ -124,25 +118,25 @@ class StreamAlSource private constructor(
             return
         }
 
-        val writeEvent = AlSourceWriteEvent(this, samples)
+        val writeEvent = AlSourceWriteEvent(this, processedSamples)
         if (!client.eventBus.fire(writeEvent)) return
 
-        val newSamples = writeEvent.samples
+        val newSamples = writeEvent.samplesShorts
 
-        val buffer = bufferPool.acquire(newSamples.size)
-        buffer.put(newSamples)
-        (buffer as Buffer).flip()
-
-        queue.offer(buffer)
-        if (newSamples != emptyBuffer) {
+        queue.offer(newSamples)
+        if (newSamples !== emptyBuffer) {
             emptyFilled.set(false)
             lastBufferTime = timeSupplier.currentTimeMillis
         }
     }
 
+    override fun write(samples: ByteArray) {
+        write(AudioUtil.bytesToShorts(samples), false)
+    }
+
     override fun clearBuffer() {
         if (queue.isEmpty()) return
-        recycleQueuedBuffers()
+        queue.clear()
     }
 
     override suspend fun close() {
@@ -192,8 +186,7 @@ class StreamAlSource private constructor(
 
         pointer = 0
 
-        recycleQueuedBuffers()
-        bufferPool.free()
+        clearBuffer()
     }
 
     private fun startStreamThread() {
@@ -277,7 +270,7 @@ class StreamAlSource private constructor(
 
     private fun queueWithEmptyBuffers() {
         for (i in 0 until numBuffers) {
-            write(emptyBuffer)
+            write(emptyBuffer, false)
         }
         emptyFilled.set(true)
     }
@@ -289,28 +282,17 @@ class StreamAlSource private constructor(
     }
 
     private fun fillAndPushBuffer(buffer: Int): Boolean {
-        val byteBuffer = queue.poll() ?: return false
+        val samples = queue.poll() ?: return false
 
-        try {
-            AL11.alBufferData(buffer, format, byteBuffer, device.format.sampleRate.toInt())
-            if (AlUtil.checkErrors("Assigning buffer data")) return false
+        AL11.alBufferData(buffer, format, samples, device.format.sampleRate.toInt())
+        if (AlUtil.checkErrors("Assigning buffer data")) return false
 
-            AL11.alSourceQueueBuffers(pointer, intArrayOf(buffer))
-            if (AlUtil.checkErrors("Queue buffer data")) return false
+        AL11.alSourceQueueBuffers(pointer, intArrayOf(buffer))
+        if (AlUtil.checkErrors("Queue buffer data")) return false
 
-            client.eventBus.fire(AlSourceBufferQueuedEvent(this, byteBuffer, buffer))
+        client.eventBus.fire(AlSourceBufferQueuedEvent(this, samples, buffer))
 
-            return true
-        } finally {
-            bufferPool.release(byteBuffer)
-        }
-    }
-
-    private fun recycleQueuedBuffers() {
-        while (true) {
-            val buffer = queue.poll() ?: break
-            bufferPool.release(buffer)
-        }
+        return true
     }
 
     private fun removeProcessedBuffers() {
@@ -328,8 +310,6 @@ class StreamAlSource private constructor(
     }
 
     companion object {
-        private const val MAX_POOLED_BUFFERS = 128
-
         private val LOGGER = BaseVoice.createLogger("StreamAlSource")
 
         @JvmStatic

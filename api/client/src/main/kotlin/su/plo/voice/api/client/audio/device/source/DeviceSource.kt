@@ -16,6 +16,9 @@ interface DeviceSource {
     /**
      * Writes audio samples to the source.
      *
+     * The source keeps a reference to [samples] until they have been uploaded to the device,
+     * so the array must not be reused or modified after this call.
+     *
      * @param samples The audio samples to write.
      * @param applyFilters Whether the audio filters from [device] should be applied.
      */
