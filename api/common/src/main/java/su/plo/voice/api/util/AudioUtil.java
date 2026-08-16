@@ -29,10 +29,10 @@ public final class AudioUtil {
     public static byte[] shortsToBytes(short[] shorts) {
         byte[] bytes = new byte[shorts.length * 2];
 
-        for (int i = 0; i < bytes.length; i += 2) {
-            byte[] sample = shortToBytes(shorts[i / 2]);
-            bytes[i] = sample[0];
-            bytes[i + 1] = sample[1];
+        for (int i = 0; i < shorts.length; i++) {
+            short sample = shorts[i];
+            bytes[i * 2] = (byte) (sample & 0xFF);
+            bytes[i * 2 + 1] = (byte) ((sample >> 8) & 0xFF);
         }
 
         return bytes;
