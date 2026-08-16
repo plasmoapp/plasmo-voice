@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.render.shader
 
 import net.minecraft.resources.ResourceLocation
+import su.plo.lib.mod.client.ResourceLocationUtil
 
 //#if MC<12105
 import com.mojang.blaze3d.vertex.VertexFormat
@@ -78,12 +79,7 @@ object ShadersCache {
         namespace: String,
         path: String,
     ): InputStream? {
-        val resourceLocation =
-            //#if MC>=12100
-            //$$ ResourceLocation.fromNamespaceAndPath(namespace, path)
-            //#else
-            ResourceLocation(namespace, path)
-            //#endif
+        val resourceLocation = ResourceLocationUtil.build(namespace, path)
 
         val resourceManager = Minecraft.getInstance()?.resourceManager ?: return null
 
