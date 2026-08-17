@@ -75,3 +75,7 @@ file("proxy").listFilesOrdered {
 }.forEach {
     include("proxy:${it.name}")
 }
+
+// macOS microphone helper
+include("macos:helper")
+include("macos:probe")
