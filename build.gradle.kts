@@ -15,6 +15,7 @@ plugins {
     kotlin("jvm") version(libs.versions.kotlin.get())
     kotlin("plugin.lombok") version(libs.versions.kotlin.get())
     kotlin("kapt") version(libs.versions.kotlin.get())
+    kotlin("multiplatform") version(libs.versions.kotlin.get()) apply(false)
 
     id("gg.essential.multi-version.root") apply(false)
 }
@@ -26,6 +27,12 @@ if (properties.containsKey("snapshot")) {
 
 subprojects {
     if (project.buildFile.name.equals("root.gradle.kts")) return@subprojects
+
+    // None of the jvm defaults below apply to it
+    if (project.path.startsWith(":macos")) {
+        version = rootProject.version
+        return@subprojects
+    }
 
     apply(plugin = "java")
     apply(plugin = "idea")
