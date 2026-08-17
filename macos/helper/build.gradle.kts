@@ -23,7 +23,6 @@ kotlin {
 }
 
 abstract class BundleMacApp : DefaultTask() {
-
     @get:InputFiles
     abstract val binaries: ConfigurableFileCollection
 
@@ -74,7 +73,7 @@ val releaseBinaries = kotlin.targets.withType(KotlinNativeTarget::class.java)
     .filter { it.buildType == NativeBuildType.RELEASE }
 
 val bundleApp = tasks.register<BundleMacApp>("bundleApp") {
-    // lipo and codesign only exist on the host that can link these binaries anyway
+    description = "Bundles macOS app."
     onlyIf { System.getProperty("os.name").startsWith("Mac") }
 
     dependsOn(releaseBinaries.map { it.linkTaskName })
