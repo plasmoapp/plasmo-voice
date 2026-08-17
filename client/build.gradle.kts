@@ -72,7 +72,7 @@ if (isMainProject) {
     }
 }
 
-val shadowCommon by configurations.creating
+val shadowCommon = configurations.create("shadowCommon")
 
 val mcVersionsRange = project.property("mod.minecraft_versions") as String
 val forgeVersionRange = project.findProperty("mod.forge_version") as String? ?: ""
