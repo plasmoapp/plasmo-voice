@@ -9,11 +9,7 @@ object ResourceLocationUtil {
         namespace: String,
         location: String,
     ): ResourceLocation? =
-        //#if MC>11802
         ResourceLocation.tryBuild(namespace, location)
-        //#else
-        //$$ ResourceLocation(namespace, location)
-        //#endif
 
     @JvmStatic
     @Throws(ResourceLocationException::class)

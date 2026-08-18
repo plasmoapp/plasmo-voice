@@ -41,14 +41,8 @@ public class ClientChatUtil {
             //$$ player.sendSystemMessage(message);
             //#elseif MC>=12102
             //$$ player.displayClientMessage(message, false);
-            //#elseif MC>=11900
-            player.sendSystemMessage(message);
-            //#elseif MC>=11602
-            //$$ player.sendMessage(message, null);
-            //#elseif MC>=11202
-            //$$ player.sendMessage(message);
             //#else
-            //$$ player.addChatMessage(message);
+            player.sendSystemMessage(message);
             //#endif
         });
     }

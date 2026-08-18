@@ -22,7 +22,7 @@ hkdf = "2.0.0"
 
 bungeecord = "1.21-R0.5-SNAPSHOT"
 velocity = "3.1.1"
-paper = "1.18.2-R0.1-SNAPSHOT"
+paper = "1.20.1-R0.1-SNAPSHOT"
 
 minestom = "39d445482f"
 

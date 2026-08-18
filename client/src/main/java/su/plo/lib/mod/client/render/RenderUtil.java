@@ -1,8 +1,6 @@
 package su.plo.lib.mod.client.render;
 
-//#if MC>=11904
 import net.minecraft.client.gui.Font;
-//#endif
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
@@ -25,20 +23,6 @@ import su.plo.lib.mod.client.chat.ClientTextConverter;
 import java.util.Iterator;
 import java.util.List;
 
-//#if MC>=11700
-
-//#else
-//$$ import static org.lwjgl.opengl.GL13.GL_ACTIVE_TEXTURE;
-//$$ import static org.lwjgl.opengl.GL13.GL_TEXTURE0;
-//$$
-//$$ import com.mojang.blaze3d.platform.GlStateManager;
-//$$ import net.minecraft.client.renderer.texture.AbstractTexture;
-//$$ import net.minecraft.client.renderer.texture.SimpleTexture;
-//$$ import net.minecraft.client.renderer.texture.TextureManager;
-//$$
-//$$ import org.lwjgl.opengl.GL11;
-//#endif
-
 //#if MC>=12106
 //$$ import org.joml.Vector4f;
 //#endif
@@ -58,12 +42,7 @@ import java.util.List;
 
 @UtilityClass
 public class RenderUtil {
-
-    //#if MC>=11904
     private static final Font.DisplayMode TEXT_LAYER_TYPE = Font.DisplayMode.NORMAL;
-    //#else
-    //$$ private static final boolean TEXT_LAYER_TYPE = false;
-    //#endif
 
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
 
@@ -72,10 +51,7 @@ public class RenderUtil {
     //#endif
 
     public static void enableScissor(int x, int y, int width, int height) {
-        //#if MC<11502
-        //$$ GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        //$$ GL11.glScissor(x, y, width, height);
-        //#elseif MC>=12106
+        //#if MC>=12106
         //$$ SCISSOR_STATE = new ScissorState(x, y, width, height);
         //#else
         RenderSystem.enableScissor(x, y, width, height);
@@ -83,16 +59,12 @@ public class RenderUtil {
     }
 
     public static void disableScissor() {
-        //#if MC<11502
-        //$$ GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        //#elseif MC>=12106
+        //#if MC>=12106
         //$$ SCISSOR_STATE = null;
         //#else
         RenderSystem.disableScissor();
         //#endif
     }
-
-    //#if MC>=11700
 
     public static void clearShader() {
         //#if MC>=12105
@@ -102,8 +74,6 @@ public class RenderUtil {
         RenderSystem.setShader(() -> null);
         //#endif
     }
-
-    //#endif
 
     public static @NotNull BufferBuilder beginBuffer(@NotNull RenderPipeline pipeline) {
         //#if MC>=26.2
@@ -116,11 +86,7 @@ public class RenderUtil {
 
         BufferBuilder buffer = tesselator.getBuilder();
 
-        //#if MC>=11700
         buffer.begin(pipeline.getVertexFormatMode().toMc(), pipeline.getVertexFormat());
-        //#else
-        //$$ buffer.begin(pipeline.getVertexFormatMode().getGlMode(), pipeline.getVertexFormat());
-        //#endif
 
         return buffer;
         //#endif
@@ -160,12 +126,8 @@ public class RenderUtil {
     private static void applyRenderPipeline(@NotNull RenderPipeline renderPipeline) {
         //#if MC>=12103
         //$$ RenderSystem.setShader(renderPipeline.getShader().invoke());
-        //#elseif MC>=11700
-        RenderSystem.setShader(renderPipeline.getShader()::invoke);
         //#else
-        //$$ if (renderPipeline.getShader() != null) {
-        //$$     renderPipeline.getShader().bind();
-        //$$ }
+        RenderSystem.setShader(renderPipeline.getShader()::invoke);
         //#endif
 
         if (CURRENT_GL_STATE == null) {
@@ -186,15 +148,6 @@ public class RenderUtil {
         applyRenderPipeline(renderPipeline);
         //#endif
 
-        //#if MC<11700
-        //$$ if (renderPipeline.getBlendFunc() != null) {
-        //$$     RenderSystem.shadeModel(GL11.GL_SMOOTH);
-        //$$ }
-        //$$
-        //$$ if (renderPipeline.getSamplers().isEmpty()) {
-        //$$     RenderSystem.disableTexture();
-        //$$ }
-        //#endif
 
         //#if MC>=26.2
         //$$ throw new UnsupportedOperationException("drawBuffer is no longer supported in 26.2");
@@ -202,11 +155,8 @@ public class RenderUtil {
         //$$ try (MeshData meshData = buffer.build()) {
         //$$     renderPipeline.getMcRenderType().draw(meshData);
         //$$ }
-        //#elseif MC>11802
-        BufferUploader.drawWithShader(buffer.end());
         //#else
-        //$$ buffer.end();
-        //$$ BufferUploader.end(buffer);
+        BufferUploader.drawWithShader(buffer.end());
         //#endif
 
         //#if MC<12105
@@ -216,67 +166,22 @@ public class RenderUtil {
         //#endif
 
         //#if MC>=26.2
-        //#elseif MC>=11700
-        clearShader();
         //#else
-        //$$ if (renderPipeline.getShader() != null) {
-        //$$     renderPipeline.getShader().unbind();
-        //$$ }
+        clearShader();
         //#endif
 
-        //#if MC<11700
-        //$$ if (renderPipeline.getBlendFunc() != null) {
-        //$$     RenderSystem.shadeModel(GL11.GL_FLAT);
-        //$$ }
-        //$$
-        //$$ if (renderPipeline.getSamplers().isEmpty()) {
-        //$$     RenderSystem.enableTexture();
-        //$$ }
-        //#endif
     }
 
     //#if MC<12106
     public static void bindTexture(int index, @NotNull ResourceLocation location) {
         //#if MC>=12105
         //$$ RenderSystem.setShaderTexture(index, Minecraft.getInstance().getTextureManager().getTexture(location).getTexture());
-        //#elseif MC>=11700
-        RenderSystem.setShaderTexture(index, location);
         //#else
-        //$$ int glTextureId = getOrLoadTextureId(location);
-        //$$ configureTextureUnit(index, () -> RenderSystem.bindTexture(glTextureId));
+        RenderSystem.setShaderTexture(index, location);
         //#endif
     }
     //#endif
 
-    //#if MC<11700
-    //$$ public static void configureTextureUnit(int index, Runnable block) {
-    //$$     int prevActiveTexture = getActiveTexture();
-    //$$     setActiveTexture(GL_TEXTURE0 + index);
-    //$$
-    //$$     block.run();
-    //$$
-    //$$     setActiveTexture(prevActiveTexture);
-    //$$ }
-    //$$
-    //$$ public static int getActiveTexture() {
-    //$$     return GL11.glGetInteger(GL_ACTIVE_TEXTURE);
-    //$$ }
-    //$$
-    //$$ public static void setActiveTexture(int glId) {
-    //$$     GlStateManager._activeTexture(glId);
-    //$$ }
-    //$$
-    //$$ public static int getOrLoadTextureId(ResourceLocation resourceLocation) {
-    //$$     TextureManager textureManager = Minecraft.getInstance().getTextureManager();
-    //$$     AbstractTexture texture = textureManager.getTexture(resourceLocation);
-    //$$     if (texture == null) {
-    //$$         texture = new SimpleTexture(resourceLocation);
-    //$$         textureManager.register(resourceLocation, (AbstractTexture)texture);
-    //$$     }
-    //$$
-    //$$     return ((AbstractTexture)texture).getId();
-    //$$ }
-    //#endif
 
     public static void fill(PoseStack stack, int x0, int y0, int x1, int y1, int color) {
         fill(stack, RenderPipelines.GUI_COLOR, x0, y0, x1, y1, color);
@@ -721,11 +626,7 @@ public class RenderUtil {
 
         String formattedText = getFormattedString(text);
 
-        //#if MC>=11904
         Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;
-        //#else
-        //$$ boolean displayMode = seeThrough;
-        //#endif
 
         //#if MC>=26.2
         //$$ throw new UnsupportedOperationException("drawStringLight is no longer supported in 26.2");

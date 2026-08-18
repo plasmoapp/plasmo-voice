@@ -9,9 +9,6 @@ import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.event.language.LanguageChangedEvent;
 import su.plo.voice.client.meta.PlasmoVoiceMeta;
 
-//#if MC<11904
-//$$ import net.minecraft.client.resources.language.LanguageInfo;
-//#endif
 
 //#if MC>=12100
 //$$ import net.minecraft.client.resources.language.ClientLanguage;
@@ -38,7 +35,6 @@ public abstract class MixinLanguageManager {
         PlasmoVoiceMeta.Companion.fetch(string);
     }
 
-    //#if MC>=11904
     @Inject(method = "setSelected", at = @At("HEAD"))
     public void setSelected(String languageCode, CallbackInfo ci) {
         if (ModVoiceClient.INSTANCE == null) return;
@@ -48,15 +44,4 @@ public abstract class MixinLanguageManager {
                 new LanguageChangedEvent(languageCode)
         );
     }
-    //#else
-    //$$ @Inject(method = "setSelected", at = @At("HEAD"))
-    //$$ public void setSelected(LanguageInfo languageInfo, CallbackInfo ci) {
-    //$$     if (ModVoiceClient.INSTANCE == null) return;
-    //$$
-    //$$     PlasmoVoiceMeta.Companion.fetch(languageInfo.getCode());
-    //$$     ModVoiceClient.INSTANCE.getEventBus().fire(
-    //$$             new LanguageChangedEvent(languageInfo.getCode())
-    //$$     );
-    //$$ }
-    //#endif
 }

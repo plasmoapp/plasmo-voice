@@ -17,11 +17,7 @@ object Inputs {
 
     @JvmStatic
     fun isLastInputKeyboard(): Boolean =
-        //#if MC<=11903
-        //$$ lastPressedKey?.type == Hotkey.Type.KEYSYM
-        //#else
         Minecraft.getInstance().lastInputType.isKeyboard
-        //#endif
 
     @JvmStatic
     @JvmOverloads

@@ -15,9 +15,7 @@ import su.plo.voice.client.event.HudRenderEvent;
 //$$ import net.minecraft.client.DeltaTracker;
 //#endif
 
-//#if MC>=12000
-//$$ import net.minecraft.client.gui.GuiGraphics;
-//#endif
+import net.minecraft.client.gui.GuiGraphics;
 
 //#if MC>=1.21.6 && FABRIC
 //$$ public final class ModHudRenderer implements HudElement {
@@ -39,13 +37,9 @@ public final class ModHudRenderer {
     //$$ public static void render(@NotNull GuiGraphics graphics, float delta) {
     //$$     HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
     //$$ }
-    //#elseif MC>=12000
-    //$$ public static void render(@NotNull GuiGraphics graphics, float delta) {
-    //$$     HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
-    //$$ }
     //#else
-    public static void render(@NotNull PoseStack poseStack, float delta) {
-        HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(poseStack), delta);
+    public static void render(@NotNull GuiGraphics graphics, float delta) {
+        HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
     }
     //#endif
 }

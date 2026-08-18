@@ -1,6 +1,5 @@
-// MC 1.17+
 package gg.essential.universal.shader
-//#if MC>11700 && MC<12105
+//#if MC<12105
 
 import com.google.common.collect.ImmutableMap
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
@@ -10,17 +9,9 @@ import net.minecraft.resources.ResourceLocation
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.FileNotFoundException
 import kotlin.NoSuchElementException
-
-//#if MC>=11903
 import gg.essential.universal.DummyPack
-//#endif
-
-//#if MC>=11900
 import net.minecraft.server.packs.resources.Resource
 import java.util.Optional
-//#else
-//$$ import net.minecraft.server.packs.resources.SimpleResource
-//#endif
 
 //#if MC>=12100
 //$$ import com.mojang.blaze3d.vertex.VertexFormatElement
@@ -98,13 +89,7 @@ internal class MCShader(
                     id.path.endsWith(".fsh") -> transformedFragSource
                     else -> throw FileNotFoundException(id.toString())
                 }
-                //#if MC>=11903
                 Optional.of(Resource(DummyPack, content::byteInputStream))
-                //#elseif MC>=11900
-                //$$ Optional.of(Resource("__generated__", content::byteInputStream))
-                //#else
-                //$$ SimpleResource("__generated__", id, content.byteInputStream(), null)
-                //#endif
             }
 
             val shaderVertexFormat = if (vertexFormat != null) {
