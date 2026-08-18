@@ -40,9 +40,9 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.1
     - name: Set up JDK
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v5.7.0
       with:
         distribution: temurin
         java-version: |
@@ -52,7 +52,7 @@ jobs:
           21
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
+      uses: gradle/actions/setup-gradle@v6.3.0
       with:
         cache-read-only: false
 
@@ -90,7 +90,7 @@ jobs:
       run: ./gradlew publish
 
     - name: Upload build artifacts
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7.0.1
       with:
         name: build-libs
         path: build/libs/
@@ -105,9 +105,9 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.0
     - name: Download build artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8.0.1
       with:
         name: build-libs
         path: build/libs/
@@ -185,9 +185,9 @@ jobs:
       contents: read
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.0
     - name: Download build artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8.0.1
       with:
         name: build-libs
         path: build/libs/
@@ -216,9 +216,9 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.0
     - name: Download build artifacts
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8.0.1
       with:
         name: build-libs
         path: build/libs/
@@ -254,9 +254,9 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7.0.0
     - name: Set up JDK
-      uses: actions/setup-java@v5
+      uses: actions/setup-java@v5.7.0
       with:
         distribution: temurin
         java-version: |
@@ -266,7 +266,7 @@ jobs:
           21
 
     - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v5
+      uses: gradle/actions/setup-gradle@v6.3.0
       with:
         cache-read-only: false
 
@@ -298,7 +298,7 @@ jobs:
       run: ./gradlew dokkaGeneratePublicationHtml
 
     - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
+      uses: peaceiris/actions-gh-pages@v4.1.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         publish_dir: ./build/dokka/html
