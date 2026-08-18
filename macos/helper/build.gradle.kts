@@ -9,6 +9,7 @@ plugins {
 val appName = "Plasmo Voice Microphone"
 val appExecutable = "PVMicHelper"
 val appIdentifier = "com.plasmoverse.plasmovoice.mic"
+val appArchive = "$appExecutable.zip"
 
 kotlin {
     listOf(macosX64(), macosArm64()).forEach { target: KotlinNativeTarget ->
@@ -88,6 +89,37 @@ val bundleApp = tasks.register<BundleMacApp>("bundleApp") {
     executableName.set(appExecutable)
     identifier.set(appIdentifier)
     bundle.set(layout.buildDirectory.dir("bundle/$appName.app"))
+}
+
+val bundleZip = tasks.register<Exec>("bundleZip") {
+    description = "Packs the macOS app into a zip the mod can ship."
+    onlyIf { org.gradle.internal.os.OperatingSystem.current().isMacOsX }
+
+    dependsOn(bundleApp)
+
+    val app = bundleApp.flatMap { it.bundle }
+    val archive = layout.buildDirectory.file("distributions/$appArchive")
+
+    inputs.dir(app)
+    outputs.file(archive)
+
+    commandLine("/usr/bin/ditto", "-c", "-k", "--keepParent")
+    argumentProviders.add(CommandLineArgumentProvider {
+        listOf(app.get().asFile.absolutePath, archive.get().asFile.absolutePath)
+    })
+
+    doFirst { archive.get().asFile.parentFile.mkdirs() }
+}
+
+val macHelperBundle: Configuration by configurations.creating {
+    isCanBeResolved = false
+    isCanBeConsumed = true
+}
+
+artifacts.add(macHelperBundle.name, bundleZip.map { it.outputs.files.singleFile }) {
+    builtBy(bundleZip)
+    type = "zip"
+    extension = "zip"
 }
 
 tasks.named("build") {
