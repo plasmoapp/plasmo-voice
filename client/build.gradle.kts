@@ -165,7 +165,8 @@ dependencies {
         ":server:common",
         ":server-proxy-common",
         ":common",
-        ":protocol"
+        ":protocol",
+        ":macos:protocol"
     )
 
     includedProjects.forEach {
