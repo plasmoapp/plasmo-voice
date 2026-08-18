@@ -12,6 +12,8 @@ import javax.sound.sampled.AudioFormat
 
 const val COREAUDIO_INPUT = "COREAUDIO_INPUT"
 private val LOGGER = BaseVoice.createLogger("CoreAudioInputDeviceFactory")
+private const val MANUAL_GRANT_POLL_MS = 1_500L
+private const val MANUAL_GRANT_TIMEOUT_MS = 5 * 60_000L
 
 class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : DeviceFactory {
     private val supervisor = HelperSupervisor(::cache)
@@ -45,18 +47,25 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
 
     fun openSettings() = supervisor.session().openSettings()
 
-    /**
-     * Prompts for access if macOS is still willing to ask, otherwise sends the player to
-     * System Settings, since a decided answer can't be re-prompted.
-     *
-     * Blocks the calling thread until the player answers, so never call this from the render thread.
-     */
     fun resolvePermission(): AuthStatus {
         val status = permission(prompt = false)
         val resolved = if (status == AuthStatus.NOT_DETERMINED) permission(prompt = true) else status
+        if (resolved == AuthStatus.AUTHORIZED) return resolved
 
-        if (resolved != AuthStatus.AUTHORIZED) openSettings()
-        return resolved
+        openSettings()
+        return awaitManualGrant()
+    }
+
+    private fun awaitManualGrant(): AuthStatus {
+        val deadline = System.currentTimeMillis() + MANUAL_GRANT_TIMEOUT_MS
+        var status = permission(prompt = false)
+
+        while (status != AuthStatus.AUTHORIZED && System.currentTimeMillis() < deadline) {
+            Thread.sleep(MANUAL_GRANT_POLL_MS)
+            status = permission(prompt = false)
+        }
+
+        return status
     }
 
     private fun defaultDeviceName(): String {
