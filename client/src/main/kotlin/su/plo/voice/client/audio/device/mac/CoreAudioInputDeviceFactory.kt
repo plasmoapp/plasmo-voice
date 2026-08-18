@@ -35,6 +35,20 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
 
     fun openSettings() = supervisor.session().openSettings()
 
+    /**
+     * Prompts for access if macOS is still willing to ask, otherwise sends the player to
+     * System Settings, since a decided answer can't be re-prompted.
+     *
+     * Blocks the calling thread until the player answers, so never call this from the render thread.
+     */
+    fun resolvePermission(): AuthStatus {
+        val status = permission(prompt = false)
+        val resolved = if (status == AuthStatus.NOT_DETERMINED) permission(prompt = true) else status
+
+        if (resolved != AuthStatus.AUTHORIZED) openSettings()
+        return resolved
+    }
+
     private fun defaultDeviceName(): String {
         val devices = refresh()
         return devices.firstOrNull { it.id == defaultId }?.name
