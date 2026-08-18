@@ -44,6 +44,9 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
     var onAudio: (ShortArray) -> Unit = {}
 
     @Volatile
+    var onDevices: (Downstream.Devices) -> Unit = {}
+
+    @Volatile
     var alive = true; private set
 
     val pid: Int
@@ -60,19 +63,30 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
     }
 
     /** @return how many samples every audio frame carries. */
-    fun openMicrophone(format: CaptureFormat): Int =
-        expect<Downstream.Opened>(request(Upstream.Open(format), REPLY_TIMEOUT_MS)).frameSamples
+    fun openMicrophone(format: CaptureFormat, deviceId: String?): Int =
+        expect<Downstream.Opened>(request(Upstream.Open(format, deviceId), REPLY_TIMEOUT_MS)).frameSamples
 
     /** Closes the microphone. */
     fun closeMicrophone() {
         expect<Downstream.Closed>(request(Upstream.Close, REPLY_TIMEOUT_MS))
     }
 
+    fun listDevices(): Downstream.Devices =
+        expect(request(Upstream.ListDevices, REPLY_TIMEOUT_MS))
+
     /** Asking with [prompt] may put a system dialog in front of the player. */
     fun permission(prompt: Boolean): AuthStatus =
         expect<Downstream.Permission>(
             request(Upstream.Permission(prompt), if (prompt) PROMPT_TIMEOUT_MS else REPLY_TIMEOUT_MS)
         ).status
+
+    /** Makes sure the microphone is actually usable before anything tries to open it. */
+    fun grantPermission() {
+        val status = permission(prompt = false)
+        val granted = if (status == AuthStatus.NOT_DETERMINED) permission(prompt = true) else status
+
+        if (granted != AuthStatus.AUTHORIZED) throw DeviceException("Microphone access is $granted.")
+    }
 
     /** Opens settings. */
     fun openSettings() = send(Upstream.OpenSettings.toFrame())
@@ -88,7 +102,13 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
                 val frame = frames.read() ?: break
                 when (frame.type) {
                     FrameType.AUDIO -> onAudio(AudioUtil.bytesToShorts(frame.payload))
-                    FrameType.CONTROL -> pending.getAndSet(null)?.complete(frame.toDownstream())
+                    FrameType.CONTROL -> {
+                        val message = frame.toDownstream()
+                        val waiter = pending.getAndSet(null)
+
+                        if (waiter != null) waiter.complete(message)
+                        else if (message is Downstream.Devices) onDevices(message)
+                    }
                     FrameType.PING -> send(frame)
                 }
             }

@@ -22,6 +22,7 @@ internal class CoreAudioInputDevice(
     name: String,
     format: AudioFormat,
     private val supervisor: HelperSupervisor,
+    private val deviceId: String?,
 ) : BaseAudioDevice(client, name, format), InputDevice {
     private val channels = format.channels
     private val samples = ShortRingBuffer(format.sampleRate.toInt() / 1000 * BUFFER_MILLIS * channels)
@@ -42,8 +43,9 @@ internal class CoreAudioInputDevice(
         if (preOpen.isCancelled) throw DeviceException("Device opening has been canceled.")
 
         val session = supervisor.session()
+        session.grantPermission()
         session.onAudio = { if (started) samples.write(it) }
-        val frameSamples = session.openMicrophone(CaptureFormat(format.sampleRate.toInt(), channels))
+        val frameSamples = session.openMicrophone(CaptureFormat(format.sampleRate.toInt(), channels), deviceId)
         this.session = session
 
         LOGGER.info("Device {} initialized, {} samples per frame.", name, frameSamples)

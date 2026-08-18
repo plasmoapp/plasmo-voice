@@ -1,6 +1,7 @@
 package su.plo.voice.mac.helper
 
 import platform.posix.getpid
+import su.plo.voice.mac.helper.capture.DeviceRegistry
 import su.plo.voice.mac.helper.capture.Microphone
 import su.plo.voice.mac.helper.connection.FrameSink
 import su.plo.voice.mac.helper.exception.MicrophoneException
@@ -30,7 +31,8 @@ internal class HelperSession(
      * Guarantees that [microphone] resources are cleaned up when the loop finishes or fails.
      */
     fun run() = try {
-        send(Downstream.Hello(token, getpid()))
+        send(Downstream.Hello(token, getpid(), PROTOCOL_VERSION))
+        DeviceRegistry.onChange(::sendDevices)
         generateSequence { reader.read() }.forEach(::dispatch)
     } finally {
         microphone.close()
@@ -44,8 +46,9 @@ internal class HelperSession(
 
     private fun dispatch(message: Upstream) = when (message) {
         is Upstream.Permission -> permission(message.prompt)
-        is Upstream.Open -> open(message.format)
+        is Upstream.Open -> open(message.format, message.deviceId)
         Upstream.OpenSettings -> access.settings()
+        Upstream.ListDevices -> sendDevices()
         Upstream.Close -> close()
     }
 
@@ -55,16 +58,19 @@ internal class HelperSession(
         send(Downstream.Permission(access.status))
     }
 
-    private fun open(format: CaptureFormat) {
+    private fun sendDevices() =
+        send(Downstream.Devices(DeviceRegistry.devices(), DeviceRegistry.defaultId()))
+
+    private fun open(format: CaptureFormat, deviceId: String?) {
         if (access.status != AuthStatus.AUTHORIZED) {
             return fail(FailureCode.PERMISSION_DENIED, "Microphone access is ${access.status}.")
         }
 
         try {
-            val frameSamples = microphone.open(format) { sink.send(Frame(FrameType.AUDIO, it)) }
+            val frameSamples = microphone.open(format, deviceId) { sink.send(Frame(FrameType.AUDIO, it)) }
             send(Downstream.Opened(format, frameSamples))
         } catch (e: MicrophoneException) {
-            fail(FailureCode.INTERNAL, e.message)
+            fail(e.error.code, e.message)
         }
     }
 

@@ -3,6 +3,7 @@ package su.plo.voice.mac.protocol.message
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import su.plo.voice.mac.protocol.audio.CaptureFormat
+import su.plo.voice.mac.protocol.audio.DeviceInfo
 
 /**
  * Everything the helper can say back.
@@ -20,7 +21,7 @@ sealed interface Downstream {
      */
     @Serializable
     @SerialName("hello")
-    data class Hello(val token: String, val pid: Int, val version: Int = PROTOCOL_VERSION) : Downstream
+    data class Hello(val token: String, val pid: Int, val version: Int) : Downstream
 
     /**
      * Decides what the settings screen offers the player: a button that asks, a link into system
@@ -29,6 +30,16 @@ sealed interface Downstream {
     @Serializable
     @SerialName("permission")
     data class Permission(val status: AuthStatus) : Downstream
+
+    /**
+     * The inputs the player can choose from, sent on request and again whenever macOS reports a
+     * device being plugged in or pulled out.
+     *
+     * [defaultId] is the system default, so the mod can mark it without guessing.
+     */
+    @Serializable
+    @SerialName("devices")
+    data class Devices(val devices: List<DeviceInfo>, val defaultId: String?) : Downstream
 
     /**
      * Audio is on its way.

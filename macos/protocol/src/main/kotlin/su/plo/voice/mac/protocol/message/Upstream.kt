@@ -32,10 +32,23 @@ sealed interface Upstream {
     @SerialName("settings")
     data object OpenSettings : Upstream
 
-    /** Starts the microphone. Audio keeps coming until [Close] or until the connection drops. */
+    /**
+     * Asks for the current input list.
+     *
+     * The helper also sends it unprompted when it changes.
+     */
+    @Serializable
+    @SerialName("devices")
+    data object ListDevices : Upstream
+
+    /**
+     * Starts the microphone.
+     *
+     * Audio keeps coming until [Close] or until the connection drops.
+     */
     @Serializable
     @SerialName("open")
-    data class Open(val format: CaptureFormat) : Upstream
+    data class Open(val format: CaptureFormat, val deviceId: String? = null) : Upstream
 
     /**
      * Releases the microphone without shutting the helper down.

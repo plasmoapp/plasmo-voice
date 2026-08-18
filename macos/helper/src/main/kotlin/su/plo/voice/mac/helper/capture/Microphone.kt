@@ -12,9 +12,11 @@ internal interface Microphone {
      * Starts capturing in [format] and calls [onFrame] once per frame, on whichever thread the
      * audio system uses.
      *
+     * A null [deviceId] means the current system default input.
+     *
      * @return how many samples each frame carries.
      */
-    fun open(format: CaptureFormat, onFrame: (ByteArray) -> Unit): Int
+    fun open(format: CaptureFormat, deviceId: String?, onFrame: (ByteArray) -> Unit): Int
 
     /**
      * Closes capturing.
