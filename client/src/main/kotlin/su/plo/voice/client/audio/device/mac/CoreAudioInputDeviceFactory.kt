@@ -58,14 +58,22 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
 
     private fun awaitManualGrant(): AuthStatus {
         val deadline = System.currentTimeMillis() + MANUAL_GRANT_TIMEOUT_MS
-        var status = permission(prompt = false)
+        var status = restartAndCheck()
 
         while (status != AuthStatus.AUTHORIZED && System.currentTimeMillis() < deadline) {
             Thread.sleep(MANUAL_GRANT_POLL_MS)
-            status = permission(prompt = false)
+            status = restartAndCheck()
         }
 
         return status
+    }
+
+    private fun restartAndCheck(): AuthStatus = try {
+        supervisor.restart()
+        permission(prompt = false)
+    } catch (e: Exception) {
+        LOGGER.warn("Failed to restart the macOS microphone helper while waiting for permission.", e)
+        AuthStatus.UNKNOWN
     }
 
     private fun defaultDeviceName(): String {
