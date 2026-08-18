@@ -29,8 +29,8 @@ if (properties.containsKey("snapshot")) {
 subprojects {
     if (project.buildFile.name.equals("root.gradle.kts")) return@subprojects
 
-    // None of the jvm defaults below apply to it
     if (project.path.startsWith(":macos")) {
+        group = "${rootProject.group}.mac"
         version = rootProject.version
         return@subprojects
     }
@@ -97,6 +97,7 @@ dependencies {
     dokka(project(":api"))
     dokka(project(":protocol"))
     dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin")
+    testImplementation(kotlin("test"))
 }
 
 dokka {
@@ -130,4 +131,10 @@ tasks {
     jar {
         enabled = false
     }
+}
+repositories {
+    mavenCentral()
+}
+kapt {
+    keepJavacAnnotationProcessors = true
 }

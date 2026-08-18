@@ -14,6 +14,7 @@ import su.plo.voice.api.client.audio.device.DeviceFactory;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerInfo;
+import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactoryKt;
 import su.plo.voice.client.audio.filter.GainFilter;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
@@ -109,16 +110,19 @@ public final class VoiceDeviceManager implements DeviceManager {
             );
         }
 
-        InputDevice device;
-        if (config.getVoice().getUseJavaxInput().value()) {
-            device = openJavaxInputDevice(format);
-        } else {
-            try {
-                device = openAlInputDevice(format);
-            } catch (Exception e) {
-                BaseVoice.LOGGER.error("Failed to open OpenAL input device, falling back to Javax input device", e);
+        InputDevice device = openCoreAudioInputDevice(format);
 
+        if (device == null) {
+            if (config.getVoice().getUseJavaxInput().value()) {
                 device = openJavaxInputDevice(format);
+            } else {
+                try {
+                    device = openAlInputDevice(format);
+                } catch (Exception e) {
+                    BaseVoice.LOGGER.error("Failed to open OpenAL input device, falling back to JavaX input device", e);
+
+                    device = openJavaxInputDevice(format);
+                }
             }
         }
 
@@ -243,6 +247,19 @@ public final class VoiceDeviceManager implements DeviceManager {
         } else if (!inputDevice.isOpen()) {
             inputDevice.close();
             setInputDevice(null);
+        }
+    }
+
+    private @Nullable InputDevice openCoreAudioInputDevice(@NotNull AudioFormat format) {
+        Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager()
+                .getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT);
+        if (deviceFactory.isEmpty()) return null;
+
+        try {
+            return (InputDevice) deviceFactory.get().openDevice(format, null);
+        } catch (Exception e) {
+            LOGGER.error("Failed to open the macOS microphone helper, falling back", e);
+            return null;
         }
     }
 
