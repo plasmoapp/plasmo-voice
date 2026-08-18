@@ -13,6 +13,7 @@ import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
 import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.InputDevice;
+import su.plo.voice.api.client.config.InputBackend;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactoryKt;
 import su.plo.voice.client.audio.filter.GainFilter;
@@ -88,14 +89,9 @@ public final class VoiceDeviceManager implements DeviceManager {
 
     @Override
     public @NotNull InputDevice openInputDevice(@Nullable AudioFormat format) throws DeviceException {
-        // Use javax for mac by default
-        if (MacVersionKt.isMac() && !config.getVoice().getUseJavaxInput().value()) {
-            config.getVoice().getUseJavaxInput().set(true);
-            config.save(true);
-        }
-
         // todo: javax stereo
-        if (config.getVoice().getUseJavaxInput().value() && config.getVoice().getStereoCapture().value()) {
+        if (InputBackendsKt.inputBackends(config.getVoice()).get(0) == InputBackend.JAVAX
+                && config.getVoice().getStereoCapture().value()) {
             config.getVoice().getStereoCapture().set(false);
             config.getVoice().getStereoCapture().setDisabled(true);
             config.save(true);
@@ -110,21 +106,7 @@ public final class VoiceDeviceManager implements DeviceManager {
             );
         }
 
-        InputDevice device = openCoreAudioInputDevice(format);
-
-        if (device == null) {
-            if (config.getVoice().getUseJavaxInput().value()) {
-                device = openJavaxInputDevice(format);
-            } else {
-                try {
-                    device = openAlInputDevice(format);
-                } catch (Exception e) {
-                    BaseVoice.LOGGER.error("Failed to open OpenAL input device, falling back to JavaX input device", e);
-
-                    device = openJavaxInputDevice(format);
-                }
-            }
-        }
+        InputDevice device = openByBackend(format);
 
         // apply default filters
         device.addFilter(new StereoToMonoFilter(config.getVoice().getStereoCapture()));
@@ -194,13 +176,9 @@ public final class VoiceDeviceManager implements DeviceManager {
         DeviceFactory outputFactory = voiceClient.getDeviceFactoryManager().getDeviceFactory("AL_OUTPUT")
                 .orElseThrow(() -> new DeviceException("OpenAL output device factory is not registered"));
 
-        String inputFactoryName = config.getVoice().getUseJavaxInput().value()
-                ? "JAVAX_INPUT"
-                : "AL_INPUT";
-        DeviceFactory inputFactory = voiceClient
-                .getDeviceFactoryManager()
-                .getDeviceFactory(inputFactoryName)
-                .orElseThrow(() -> new IllegalStateException("OpenAL input factory is not registered"));;
+        DeviceFactory inputFactory = InputBackendsKt.inputFactory(
+                voiceClient.getDeviceFactoryManager(), config.getVoice()
+        );
 
         if (outputDevice == null) {
             List<String> deviceNames = outputFactory.getDeviceNames();
@@ -248,6 +226,28 @@ public final class VoiceDeviceManager implements DeviceManager {
             inputDevice.close();
             setInputDevice(null);
         }
+    }
+
+    private @NotNull InputDevice openByBackend(@NotNull AudioFormat format) throws DeviceException {
+        Exception lastError = null;
+
+        for (InputBackend backend : InputBackendsKt.inputBackends(config.getVoice())) {
+            try {
+                if (backend == InputBackend.COREAUDIO) {
+                    InputDevice device = openCoreAudioInputDevice(format);
+                    if (device != null) return device;
+                } else if (backend == InputBackend.JAVAX) {
+                    return openJavaxInputDevice(format);
+                } else if (backend == InputBackend.OPEN_AL) {
+                    return openAlInputDevice(format);
+                }
+            } catch (Exception e) {
+                lastError = e;
+                LOGGER.error("Failed to open the {} input device, falling back", backend, e);
+            }
+        }
+
+        throw new DeviceException("No input backend could open a device", lastError);
     }
 
     private @Nullable InputDevice openCoreAudioInputDevice(@NotNull AudioFormat format) {

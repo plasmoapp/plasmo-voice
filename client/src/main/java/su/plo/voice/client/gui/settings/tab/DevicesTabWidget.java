@@ -16,6 +16,7 @@ import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.client.audio.device.InputBackendsKt;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -145,15 +146,7 @@ public final class DevicesTabWidget extends TabWidget {
 
     private OptionEntry<CompositeRowWidget> createMicrophoneEntry() {
         Optional<DeviceFactory> deviceFactory;
-
-        if (config.getVoice().getUseJavaxInput().value()) {
-            deviceFactory = deviceFactories.getDeviceFactory("JAVAX_INPUT");
-            if (!deviceFactory.isPresent())
-                throw new IllegalStateException("Javax Input device factory not initialized");
-        } else {
-            deviceFactory = deviceFactories.getDeviceFactory("AL_INPUT");
-            if (!deviceFactory.isPresent()) throw new IllegalStateException("Al Input device factory not initialized");
-        }
+        deviceFactory = Optional.of(InputBackendsKt.inputFactory(deviceFactories, config.getVoice()));
 
         ImmutableList<String> inputDeviceNames = deviceFactory.get().getDeviceNames();
         Optional<InputDevice> inputDevice = this.devices.getInputDevice();
