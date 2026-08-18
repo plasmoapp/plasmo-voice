@@ -63,6 +63,22 @@ public final class VoiceServerConfig implements ServerConfig {
     @ConfigField
     private Voice voice = new Voice();
 
+    @ConfigField
+    private Notifications notifications = new Notifications();
+
+    @Config
+    @Data
+    @Accessors(fluent = true)
+    @EqualsAndHashCode
+    public static class Notifications implements ServerConfig.Notifications {
+
+        @ConfigField(comment = "Notify a player when their voice chat is muted (\"You've been muted ...\" message)")
+        private boolean muted = true;
+
+        @ConfigField(comment = "Notify a player when their voice chat is unmuted (\"You've been unmuted\" message)")
+        private boolean unmuted = true;
+    }
+
     @Config
     @Data
     @Accessors(fluent = true)

@@ -17,6 +17,21 @@ public class ServerMuteInfo {
     private final long mutedAtTime;
     private final long mutedToTime;
     private final @Nullable String reason;
+    private final @Nullable Boolean silent;
+
+    /**
+     * Backward-compatible constructor that leaves {@link #getSilent()} unspecified (null).
+     *
+     * @deprecated use {@link #ServerMuteInfo(UUID, UUID, long, long, String, Boolean)}.
+     */
+    @Deprecated
+    public ServerMuteInfo(@NotNull UUID playerUUID,
+                          @Nullable UUID mutedByPlayerUUID,
+                          long mutedAtTime,
+                          long mutedToTime,
+                          @Nullable String reason) {
+        this(playerUUID, mutedByPlayerUUID, mutedAtTime, mutedToTime, reason, null);
+    }
 
     /**
      * Gets the UUID of the player who is muted.
@@ -61,5 +76,17 @@ public class ServerMuteInfo {
      */
     public @Nullable String getReason() {
         return reason;
+    }
+
+    /**
+     * Gets whether the player was muted silently, i.e. without receiving a notification.
+     *
+     * @return {@code true}/{@code false} if specified at mute time,
+     * or {@code null} if unspecified (e.g. mutes stored before this field existed).
+     * The expiry ticker treats {@code null} by falling back to the server's
+     * {@code notifications.unmuted} config value.
+     */
+    public @Nullable Boolean getSilent() {
+        return silent;
     }
 }
