@@ -35,6 +35,9 @@ abstract class BundleMacApp : DefaultTask() {
     @get:InputFile
     abstract val infoPlist: RegularFileProperty
 
+    @get:InputFile
+    abstract val iconFile: RegularFileProperty
+
     @get:Input
     abstract val executableName: Property<String>
 
@@ -55,11 +58,14 @@ abstract class BundleMacApp : DefaultTask() {
     fun bundle() {
         val app = bundle.get().asFile
         val macOs = app.resolve("Contents/MacOS")
+        val resources = app.resolve("Contents/Resources")
 
         app.deleteRecursively()
         macOs.mkdirs()
+        resources.mkdirs()
 
         infoPlist.get().asFile.copyTo(app.resolve("Contents/Info.plist"))
+        iconFile.get().asFile.copyTo(resources.resolve("AppIcon.icns"))
 
         val executable = macOs.resolve(executableName.get())
         exec.exec {
@@ -95,6 +101,7 @@ val bundleApp = tasks.register<BundleMacApp>("bundleApp") {
 
     binaries.from(releaseBinaries.map { it.outputFile })
     infoPlist.set(layout.projectDirectory.file("src/bundle/Info.plist"))
+    iconFile.set(layout.projectDirectory.file("src/bundle/AppIcon.icns"))
     executableName.set(appExecutable)
     identifier.set(appIdentifier)
     signingIdentity.set(providers.gradleProperty("pv.mac.signIdentity"))

@@ -10,6 +10,8 @@
     <string>Plasmo Voice Microphone</string>
     <key>CFBundleDisplayName</key>
     <string>Plasmo Voice Microphone</string>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
