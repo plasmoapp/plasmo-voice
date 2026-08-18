@@ -253,10 +253,13 @@ public final class VoiceDeviceManager implements DeviceManager {
     private @Nullable InputDevice openCoreAudioInputDevice(@NotNull AudioFormat format) {
         Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager()
                 .getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT);
-        if (deviceFactory.isEmpty()) return null;
+        if (!deviceFactory.isPresent()) return null;
 
         try {
-            return (InputDevice) deviceFactory.get().openDevice(format, null);
+            String configured = config.getVoice().getInputDevice().value();
+            String deviceName = deviceFactory.get().getDeviceNames().contains(configured) ? configured : null;
+
+            return (InputDevice) deviceFactory.get().openDevice(format, deviceName);
         } catch (Exception e) {
             LOGGER.error("Failed to open the macOS microphone helper, falling back", e);
             return null;

@@ -1,0 +1,128 @@
+package su.plo.voice.mac.helper.capture
+
+import kotlinx.cinterop.*
+import platform.CoreAudio.*
+import platform.CoreAudioTypes.AudioBufferList
+import platform.CoreFoundation.*
+import platform.darwin.OSStatus
+import su.plo.voice.mac.protocol.audio.DeviceInfo
+
+/**
+ * The input devices `CoreAudio` knows about.
+ */
+@OptIn(ExperimentalForeignApi::class)
+internal object DeviceRegistry {
+    private var listener: StableRef<() -> Unit>? = null
+
+    fun devices(): List<DeviceInfo> = deviceIds()
+        .filter { it.inputChannels() > 0 }
+        .mapNotNull { id ->
+            val uid = id.stringProperty(kAudioDevicePropertyDeviceUID) ?: return@mapNotNull null
+            DeviceInfo(uid, id.stringProperty(kAudioObjectPropertyName) ?: uid)
+        }
+
+    /** The input macOS would pick on its own, so the mod does not have to guess. */
+    fun defaultId(): String? {
+        val device = memScoped {
+            val value = alloc<AudioDeviceIDVar>()
+            val size = alloc<UIntVar>().apply { this.value = sizeOf<AudioDeviceIDVar>().convert() }
+
+            val status = AudioObjectGetPropertyData(
+                kAudioObjectSystemObject.convert(),
+                address(kAudioHardwarePropertyDefaultInputDevice).ptr,
+                0u, null, size.ptr, value.ptr,
+            )
+            if (status != 0) return null
+
+            value.value
+        }
+
+        return device.takeIf { it != 0u }?.stringProperty(kAudioDevicePropertyDeviceUID)
+    }
+
+    /** Fires on a system thread whenever a device is plugged in or pulled out. */
+    fun onChange(onChanged: () -> Unit) {
+        val reference = StableRef.create(onChanged)
+        listener = reference
+
+        memScoped {
+            AudioObjectAddPropertyListener(
+                kAudioObjectSystemObject.convert(),
+                address(kAudioHardwarePropertyDevices).ptr,
+                devicesChanged,
+                reference.asCPointer(),
+            )
+        }
+    }
+
+    private fun deviceIds(): List<AudioDeviceID> = memScoped {
+        val property = address(kAudioHardwarePropertyDevices)
+        val size = alloc<UIntVar>()
+
+        val system: AudioObjectID = kAudioObjectSystemObject.convert()
+        if (AudioObjectGetPropertyDataSize(system, property.ptr, 0u, null, size.ptr) != 0) return emptyList()
+
+        val count = (size.value.toLong() / sizeOf<AudioDeviceIDVar>()).toInt()
+        if (count <= 0) return emptyList()
+
+        val ids = allocArray<AudioDeviceIDVar>(count)
+        if (AudioObjectGetPropertyData(system, property.ptr, 0u, null, size.ptr, ids) != 0) return emptyList()
+
+        (0 until count).map { ids[it] }
+    }
+
+    /// Zero means the device can only play, so the player has no business seeing it in the list
+    private fun AudioDeviceID.inputChannels(): Int = memScoped {
+        val property = address(kAudioDevicePropertyStreamConfiguration, kAudioObjectPropertyScopeInput)
+        val size = alloc<UIntVar>()
+        if (AudioObjectGetPropertyDataSize(this@inputChannels, property.ptr, 0u, null, size.ptr) != 0) return 0
+
+        val bytes = allocArray<ByteVar>(size.value.toInt())
+        if (AudioObjectGetPropertyData(this@inputChannels, property.ptr, 0u, null, size.ptr, bytes) != 0) return 0
+
+        val list = bytes.reinterpret<AudioBufferList>().pointed
+        val buffers = list.mBuffers
+        (0 until list.mNumberBuffers.toInt()).sumOf { buffers[it].mNumberChannels.toInt() }
+    }
+
+    private fun AudioObjectID.stringProperty(selector: AudioObjectPropertySelector): String? = memScoped {
+        val value = alloc<CFStringRefVar>()
+        val size = alloc<UIntVar>().apply { this.value = sizeOf<CFStringRefVar>().convert() }
+
+        if (AudioObjectGetPropertyData(this@stringProperty, address(selector).ptr, 0u, null, size.ptr, value.ptr) != 0) {
+            return null
+        }
+
+        value.value?.asString()
+    }
+
+    private fun MemScope.address(
+        selector: AudioObjectPropertySelector,
+        scope: AudioObjectPropertyScope = kAudioObjectPropertyScopeGlobal,
+    ) = alloc<AudioObjectPropertyAddress>().apply {
+        mSelector = selector
+        mScope = scope
+        mElement = kAudioObjectPropertyElementMain
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun CFStringRef.asString(): String = memScoped {
+    val length = CFStringGetLength(this@asString)
+    val capacity = length * 4 + 1 // Worst case
+    val bytes = allocArray<ByteVar>(capacity)
+
+    if (CFStringGetCString(this@asString, bytes, capacity, kCFStringEncodingUTF8)) bytes.toKString() else ""
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private val devicesChanged = staticCFunction<
+        AudioObjectID,
+        UInt,
+        CPointer<AudioObjectPropertyAddress>?,
+        COpaquePointer?,
+        OSStatus,
+        > { _, _, _, clientData ->
+    clientData?.asStableRef<() -> Unit>()?.get()?.invoke()
+    0
+}

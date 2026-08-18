@@ -5,7 +5,8 @@ package su.plo.voice.mac.protocol.message
  */
 enum class FailureCode {
     PERMISSION_DENIED,
+    DEVICE_NOT_FOUND,
     INTERNAL
 
-    // TODO: add DEVICE_NOT_FOUND, DEVICE_BUSY, FORMAT_UNSUPPORTED in future
+    // TODO: add DEVICE_BUSY, FORMAT_UNSUPPORTED in future
 }

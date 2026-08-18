@@ -3,6 +3,7 @@ package su.plo.voice.mac.helper.capture
 import kotlinx.cinterop.*
 import platform.AudioToolbox.*
 import platform.CoreAudioTypes.*
+import platform.CoreFoundation.*
 import platform.darwin.OSStatus
 import su.plo.voice.mac.helper.exception.MicrophoneError
 import su.plo.voice.mac.protocol.audio.CaptureFormat
@@ -20,7 +21,7 @@ internal class AudioQueueMicrophone : Microphone {
     private var reference: StableRef<AudioQueueMicrophone>? = null
     private var slicer: FrameSlicer? = null
 
-    override fun open(format: CaptureFormat, onFrame: (ByteArray) -> Unit): Int = runCatching {
+    override fun open(format: CaptureFormat, deviceId: String?, onFrame: (ByteArray) -> Unit): Int = runCatching {
         close()
 
         val frameSamples = format.frameSamples()
@@ -46,6 +47,8 @@ internal class AudioQueueMicrophone : Microphone {
 
             val audioQueue = created.value ?: throw MicrophoneError.QUEUE_CREATION_FAILED.exception()
             queue = audioQueue
+
+            deviceId?.let { selectDevice(audioQueue, it) }
 
             repeat(BUFFER_COUNT) {
                 val buffer = alloc<AudioQueueBufferRefVar>()
@@ -82,6 +85,23 @@ internal class AudioQueueMicrophone : Microphone {
         if (size > 0) {
             slicer?.write(data.readBytes(size))
         }
+    }
+}
+
+@OptIn(ExperimentalForeignApi::class)
+private fun selectDevice(queue: AudioQueueRef, deviceId: String) = memScoped {
+    val uid = CFStringCreateWithCString(null, deviceId, kCFStringEncodingUTF8)
+        ?: throw MicrophoneError.DEVICE_NOT_FOUND.exception(deviceId)
+
+    try {
+        val value = alloc<CFStringRefVar>().apply { this.value = uid }
+        verify(
+            AudioQueueSetProperty(
+                queue, kAudioQueueProperty_CurrentDevice, value.ptr, sizeOf<CFStringRefVar>().convert()
+            )
+        )
+    } finally {
+        CFRelease(uid)
     }
 }
 
