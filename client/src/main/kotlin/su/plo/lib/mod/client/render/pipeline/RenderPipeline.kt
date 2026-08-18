@@ -36,11 +36,9 @@ import net.minecraft.client.renderer.GameRenderer
 //$$ import net.minecraft.client.renderer.BindGroupLayouts
 //#endif
 
-//#elseif MC>=11700
+//#else
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
-//#else
-//$$ import gg.essential.universal.shader.UShader
 //#endif
 
 //#if MC>=12111
@@ -72,7 +70,7 @@ import net.minecraft.client.renderer.ShaderInstance
 //$$             else -> null
 //$$         }
 //$$     }
-//#elseif MC>=11700
+//#else
 private fun defaultShader(vertexFormat: VertexFormat): (() -> ShaderInstance)? =
     when (vertexFormat) {
         DefaultVertexFormat.POSITION -> ({ GameRenderer.getPositionShader()!! })
@@ -91,12 +89,8 @@ fun renderPipeline(
     vertexFormatMode: VertexFormatMode,
     builder: RenderPipeline.Builder.() -> Unit = {},
 ): RenderPipeline {
-    //#if MC>=11700
     val shader = defaultShader(vertexFormat)
         ?: throw IllegalArgumentException("Shader not found")
-    //#else
-    //$$ val shader: UShader? = null
-    //#endif
 
     return RenderPipeline
         .Builder(
@@ -126,10 +120,8 @@ fun renderPipeline(
         //#if MC>=12105
         //$$ shader,
         //$$ shader,
-        //#elseif MC>=11700
-        { ShadersCache.getOrLoad(shader, vertexFormat) },
         //#else
-        //$$ ShadersCache.getOrLoad(shader, vertexFormat),
+        { ShadersCache.getOrLoad(shader, vertexFormat) },
         //#endif
         vertexFormat,
         vertexFormatMode,
@@ -142,10 +134,8 @@ fun renderPipeline(
     //#if MC>=12105
     //$$ vertexShader: ResourceLocation,
     //$$ fragmentShader: ResourceLocation,
-    //#elseif MC>=11700
-    shader: () -> ShaderInstance,
     //#else
-    //$$ shader: UShader?,
+    shader: () -> ShaderInstance,
     //#endif
     vertexFormat: VertexFormat,
     vertexFormatMode: VertexFormatMode,
@@ -171,10 +161,8 @@ data class RenderPipeline(
     //$$ val vertexShader: ResourceLocation,
     //$$ val fragmentShader: ResourceLocation,
     //$$ val mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline,
-    //#elseif MC>=11700
-    val shader: () -> ShaderInstance,
     //#else
-    //$$ val shader: UShader?,
+    val shader: () -> ShaderInstance,
     //#endif
     //#if MC>=12105
     //$$ val mcRenderType: RenderType,
@@ -212,10 +200,8 @@ data class RenderPipeline(
         //#if MC>=12105
         //$$ val vertexShader: ResourceLocation,
         //$$ val fragmentShader: ResourceLocation,
-        //#elseif MC>=11700
-        val shader: () -> ShaderInstance,
         //#else
-        //$$ val shader: UShader?,
+        val shader: () -> ShaderInstance,
         //#endif
         var vertexFormat: VertexFormat,
         var vertexFormatMode: VertexFormatMode,

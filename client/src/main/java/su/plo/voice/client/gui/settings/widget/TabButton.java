@@ -9,14 +9,7 @@ import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
-
 import java.awt.Color;
-
-//#if MC>=11701
-
-//#else
-//$$ import com.mojang.blaze3d.platform.GlStateManager;
-//#endif
 
 public final class TabButton extends Button {
 

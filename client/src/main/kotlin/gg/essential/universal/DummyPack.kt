@@ -1,6 +1,6 @@
 package gg.essential.universal
 
-//#if MC>=11903 && MC<12105
+//#if MC<12105
 import gg.essential.universal.shader.MCShader
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.packs.PackResources
@@ -20,7 +20,7 @@ import net.minecraft.server.packs.metadata.MetadataSectionSerializer
 
 /**
  * A dummy resource pack for use in [MCShader], since the [Resource] constructor
- * on 1.19.3+ requires a [PackResources] instead of a String name.
+ * on newer Minecraft versions require a [PackResources] instead of a String name.
  */
 object DummyPack : PackResources {
 

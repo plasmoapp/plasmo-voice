@@ -10,13 +10,8 @@ import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
-
 import java.awt.Color;
 import java.util.function.Supplier;
-
-//#if MC<11701
-//$$ import com.mojang.blaze3d.platform.GlStateManager;
-//#endif
 
 public final class IconButton extends Button {
 

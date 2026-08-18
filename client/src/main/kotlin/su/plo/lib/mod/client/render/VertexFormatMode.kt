@@ -5,7 +5,7 @@ import org.lwjgl.opengl.GL11
 
 //#if MC>=26.2
 //$$ typealias McVertexFormatMode = com.mojang.blaze3d.PrimitiveTopology
-//#elseif MC>=11700
+//#else
 typealias McVertexFormatMode = VertexFormat.Mode
 //#endif
 
@@ -19,7 +19,6 @@ enum class VertexFormatMode(
     TRIANGLE_FAN(GL11.GL_TRIANGLE_FAN),
     QUADS(GL11.GL_QUADS);
 
-    //#if MC>=11700
     fun toMc(): McVertexFormatMode =
         when (this) {
             LINES -> McVertexFormatMode.DEBUG_LINES
@@ -29,7 +28,6 @@ enum class VertexFormatMode(
             TRIANGLE_FAN -> McVertexFormatMode.TRIANGLE_FAN
             QUADS -> McVertexFormatMode.QUADS
         }
-    //#endif
 
     companion object {
         fun from(glMode: Int) =
@@ -43,7 +41,6 @@ enum class VertexFormatMode(
                 else -> throw IllegalArgumentException("Unsupported gl mode $glMode")
             }
 
-        //#if MC>=11700
         fun from(mode: McVertexFormatMode) =
             when (mode) {
                 McVertexFormatMode.DEBUG_LINES -> LINE_STRIP
@@ -54,6 +51,5 @@ enum class VertexFormatMode(
                 McVertexFormatMode.QUADS -> QUADS
                 else -> throw IllegalArgumentException("Vertex format not supported")
             }
-        //#endif
     }
 }

@@ -386,13 +386,8 @@ class AlOutputDevice
 
                 rotation.set(0.0f, 0.0f, 0.0f, 1.0f)
 
-                //#if MC>=11903
                 rotation.rotateAxis(Math.toRadians(-player.yRot.toDouble()).toFloat(), yp)
                 rotation.rotateAxis(Math.toRadians(player.xRot.toDouble()).toFloat(), xp)
-                //#else
-                //$$ rotation.mul(yp.rotationDegrees(-player.yRot));
-                //$$ rotation.mul(xp.rotationDegrees(player.xRot));
-                //#endif
 
                 lookVector.set(forwards)
                 lookVector.rotate(rotation)
@@ -413,11 +408,6 @@ class AlOutputDevice
             )
         }
 
-        //#if MC<11903
-        //$$ private fun Vector3f.set(other: Vector3f) {
-        //$$     set(other.x(), other.y(), other.z())
-        //$$ }
-        //#endif
     }
 
     companion object {

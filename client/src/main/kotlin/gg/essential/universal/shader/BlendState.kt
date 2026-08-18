@@ -2,10 +2,7 @@ package gg.essential.universal.shader
 
 import org.lwjgl.opengl.GL11
 import org.lwjgl.opengl.GL14
-
-//#if MC>=11500
 import org.lwjgl.opengl.GL20
-//#endif
 
 data class BlendState(
     val equation: Equation,
@@ -35,11 +32,7 @@ data class BlendState(
 
         @JvmStatic
         fun active() = BlendState(
-            //#if MC>=11500
             Equation.fromGl(GL11.glGetInteger(GL20.GL_BLEND_EQUATION_RGB)) ?: Equation.ADD,
-            //#else
-            //$$ Equation.fromGl(GL11.glGetInteger(GL14.GL_BLEND_EQUATION)) ?: Equation.ADD,
-            //#endif
             Param.fromGl(GL11.glGetInteger(GL14.GL_BLEND_SRC_RGB)) ?: Param.ONE,
             Param.fromGl(GL11.glGetInteger(GL14.GL_BLEND_DST_RGB)) ?: Param.ZERO,
             Param.fromGl(GL11.glGetInteger(GL14.GL_BLEND_SRC_ALPHA)) ?: Param.ONE,

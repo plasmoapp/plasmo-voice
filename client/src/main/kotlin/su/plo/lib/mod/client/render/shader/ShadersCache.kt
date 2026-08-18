@@ -12,10 +12,8 @@ import su.plo.voice.BaseVoice
 import su.plo.voice.client.ModVoiceClient
 import java.io.InputStream
 
-//#if MC>=11700
 import gg.essential.universal.shader.MCShader
 import net.minecraft.client.renderer.ShaderInstance
-//#endif
 
 //#endif
 
@@ -30,13 +28,8 @@ object ShadersCache {
     fun getOrLoad(
         location: ResourceLocation,
         vertexFormat: VertexFormat,
-    //#if MC>=11700
     ): ShaderInstance =
         (load(location, vertexFormat).getOrThrow() as MCShader).mc
-    //#else
-    //$$ ): UShader =
-    //$$     load(location, vertexFormat).getOrThrow()
-    //#endif
 
     @JvmStatic
     @Synchronized
@@ -84,11 +77,7 @@ object ShadersCache {
         val resourceManager = Minecraft.getInstance()?.resourceManager ?: return null
 
         return runCatching {
-            //#if MC>=11900
             resourceManager.getResource(resourceLocation).orElse(null)?.open()
-            //#else
-            //$$ resourceManager.getResource(resourceLocation)?.inputStream
-            //#endif
         }.getOrNull()
     }
 

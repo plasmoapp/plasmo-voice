@@ -197,11 +197,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
         SoundManager soundManager = Minecraft.getInstance().getSoundManager();
         soundManager.play(
                 SimpleSoundInstance.forUI(
-                        //#if MC>=11903
                         SoundEvents.UI_BUTTON_CLICK.value(),
-                        //#else
-                        //$$ SoundEvents.UI_BUTTON_CLICK,
-                        //#endif
                         1.0f,
                         0.25f
                 )

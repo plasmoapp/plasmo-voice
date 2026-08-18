@@ -102,10 +102,8 @@ public final class PlayerVolumeAction {
 
             //#if MC>=12102
             //$$ boolean isSolid = state.isSolidRender();
-            //#elseif MC>=12000
-            //$$ boolean isSolid = state.isSolidRender(level, blockPos);
             //#else
-            boolean isSolid = state.getMaterial().isSolid();
+            boolean isSolid = state.isSolidRender(level, blockPos);
             //#endif
             if (!state.isAir() && isSolid) {
                 break;

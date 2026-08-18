@@ -63,7 +63,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
 //#endif
 
-//#if MC>=11900
 //$$ import net.minecraftforge.fml.common.Mod;
 //$$ import net.minecraftforge.api.distmarker.Dist;
 //$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
@@ -71,11 +70,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 
 //#if MC<12100
 //$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-//#endif
-
-//#else
-//$$ import net.minecraftforge.client.ClientRegistry;
-//$$ import net.minecraftforge.client.event.RenderLevelLastEvent;
 //#endif
 
 //#elseif NEOFORGE
@@ -284,9 +278,6 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     //$$ public void onInitialize(EventNetworkChannel channel) {
     //$$     channel.addListener(handler::receive);
-             //#if MC<11900
-             //$$ ClientRegistry.registerKeyBinding(MENU_KEY);
-             //#endif
     //$$     super.onInitialize();
     //$$ }
     //$$
@@ -299,17 +290,9 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     //$$ @SubscribeEvent
     //$$ public void onOverlayRender(RenderGuiOverlayEvent.Post event) {
-    //#if MC>=11900
     //$$     if (!event.getOverlay().id().equals(VanillaGuiOverlay.CHAT_PANEL.id())) return;
-    //#else
-    //$$     if (event.getType() != RenderGameOverlayEvent.ElementType.CHAT) return;
-    //#endif
     //$$
-    //#if MC>=12000
     //$$     ModHudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
-    //#else
-    //$$     ModHudRenderer.render(event.getPoseStack(), event.getPartialTick());
-    //#endif
     //$$ }
 
     //#endif
@@ -320,7 +303,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     onServerDisconnect();
     //$$ }
     //$$
-    //#if MC>=11900
     //$$ @SubscribeEvent
     //$$ public void onWorldRender(RenderLevelStageEvent event) {
     //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
@@ -357,30 +339,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$         event.register(MENU_KEY);
     //$$     }
     //$$ }
-    //#else
-    //$$ @SubscribeEvent
-    //$$ public void onWorldRender(RenderLevelLastEvent event) {
-    //$$     if (Minecraft.getInstance().level == null) return;
-    //$$
-    //$$     LevelRenderStateHolder state = new LevelRenderStateHolder();
-    //$$
-    //$$     LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
-    //$$             Minecraft.getInstance().level,
-    //$$             Minecraft.getInstance().gameRenderer.getMainCamera(),
-    //$$             event.getPartialTick(),
-    //$$             state
-    //$$     );
-    //$$
-    //$$     LevelRenderEvent.INSTANCE.getInvoker().onRender(
-    //$$             new LevelRenderContext(
-    //$$                     Minecraft.getInstance().level,
-    //$$                     Minecraft.getInstance().gameRenderer.getMainCamera(),
-    //$$                     event.getPoseStack(),
-    //$$                     state
-    //$$             )
-    //$$     );
-    //$$ }
-    //#endif
 
     //#elseif NEOFORGE
 

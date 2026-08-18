@@ -39,11 +39,6 @@ class DistanceVisualizeRenderer : LevelRenderEvent.Callback {
 
         stack.pushPose()
 
-        //#if MC<11800
-        //$$ stack.last().pose().setIdentity()
-        //$$ stack.last().normal().setIdentity()
-        //#endif
-
         stack.translate(
             entry.x - cameraPosition.x,
             entry.y - cameraPosition.y,

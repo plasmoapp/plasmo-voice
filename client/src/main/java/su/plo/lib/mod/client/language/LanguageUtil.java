@@ -24,11 +24,7 @@ public class LanguageUtil {
     }
 
     public static String getSelectedLanguage() {
-        //#if MC>=11904
         return Minecraft.getInstance().getLanguageManager().getSelected();
-        //#else
-        //$$ return Minecraft.getInstance().getLanguageManager().getSelected().getCode();
-        //#endif
     }
 
     public @NotNull McTextComponent getKeyDisplayName(@NonNull Hotkey.Key key) {
@@ -45,7 +41,6 @@ public class LanguageUtil {
         }
 
         Component displayName = inputKey.getDisplayName();
-        //#if MC>=11900
         if (displayName.getContents() instanceof TranslatableContents) {
             TranslatableContents translatable = (TranslatableContents) displayName.getContents();
             return McTextComponent.translatable(translatable.getKey(), translatable.getArgs());
@@ -55,16 +50,5 @@ public class LanguageUtil {
         } else {
             return McTextComponent.translatable("gui.none");
         }
-        //#else
-        //$$ if (displayName instanceof TranslatableComponent) {
-        //$$     TranslatableComponent translatable = (TranslatableComponent) displayName;
-        //$$     return McTextComponent.translatable(translatable.getKey(), translatable.getArgs());
-        //$$ } else if (displayName instanceof TextComponent) {
-        //$$     TextComponent literal = (TextComponent) displayName;
-        //$$     return McTextComponent.translatable(literal.getText());
-        //$$ } else {
-        //$$     return McTextComponent.translatable("gui.none");
-        //$$ }
-        //#endif
     }
 }
