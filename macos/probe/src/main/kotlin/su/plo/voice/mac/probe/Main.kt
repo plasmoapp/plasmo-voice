@@ -1,33 +1,81 @@
 package su.plo.voice.mac.probe
 
+import su.plo.voice.mac.protocol.audio.*
+import su.plo.voice.mac.protocol.frame.*
+import su.plo.voice.mac.protocol.message.*
+import java.io.ByteArrayOutputStream
 import java.io.File
+import kotlin.time.Duration.Companion.seconds
+
+private val CAPTURE_FORMAT = CaptureFormat(sampleRate = 48_000, channels = 1)
+private const val BYTES_PER_SAMPLE = 2
+
+private const val USAGE = """
+Usage:
+  probe <Plasmo Voice Microphone.app> permission [prompt]
+  probe <Plasmo Voice Microphone.app> record <seconds> <out.wav>
+"""
 
 /**
- * Stands in for Minecraft and starts the helper the two ways that matter.
- *
- * - `open` lets the helper answer for itself
- * - `exec` makes macOS blame whoever started the JVM
+ * CLI for exercising the macOS microphone helper without launching Minecraft.
  */
 fun main(args: Array<String>) {
-    val app = File(args.getOrNull(0) ?: error("Usage: probe <Plasmo Voice Microphone.app> [open|exec] [helper args]"))
-    val report = File.createTempFile("pvmic", ".txt").also { it.delete() }
-    val helper = listOf("--report", report.absolutePath) + args.drop(2)
+    val appPath = args.getOrNull(0) ?: error(USAGE)
+    val action = args.getOrNull(1)
 
-    val command = when (args.getOrNull(1) ?: "open") {
-        "open" -> listOf("/usr/bin/open", "-n", "-g", "-a", app.absolutePath, "--args") + helper
-        "exec" -> listOf(app.resolve("Contents/MacOS/PVMicHelper").absolutePath) + helper
-        else -> error("Unknown mode.")
+    HelperHost(File(appPath)).connect().use { helper ->
+        println("Helper connected. PID: ${helper.pid}.")
+
+        when (action) {
+            "permission" -> helper.permission(prompt = args.getOrNull(2) == "prompt")
+            "record" -> {
+                val seconds = args.getOrNull(2)?.toIntOrNull() ?: error(USAGE)
+                val file = File(args.getOrNull(3) ?: error(USAGE))
+                helper.record(seconds, file)
+            }
+            else -> error(USAGE)
+        }
     }
-
-    val start = System.currentTimeMillis()
-    ProcessBuilder(command).inheritIO().start()
-
-    while (System.currentTimeMillis() - start < TIMEOUT_MS) {
-        if (report.length() > 0L) return println("${report.readText()}, elapsed = ${System.currentTimeMillis() - start} ms")
-        Thread.sleep(50L)
-    }
-
-    error("Helper never answered.")
 }
 
-private const val TIMEOUT_MS = 120_000L
+private fun HelperConnection.permission(prompt: Boolean) {
+    timeout = (if (prompt) 120 else 10).seconds
+    send(Upstream.Permission(prompt))
+
+    println(await<Downstream.Permission>())
+}
+
+private fun HelperConnection.record(seconds: Int, file: File) {
+    timeout = 10.seconds
+    send(Upstream.Open(CAPTURE_FORMAT))
+    println("${await<Downstream.Opened>()}, recording $seconds s")
+
+    val targetBytes = CAPTURE_FORMAT.sampleRate * CAPTURE_FORMAT.channels * BYTES_PER_SAMPLE * seconds
+    val samples = ByteArrayOutputStream(targetBytes)
+    var frames = 0
+
+    while (samples.size() < targetBytes) {
+        val frame = read() ?: error("The helper went away mid recording.")
+        if (frame.type != FrameType.AUDIO) continue
+
+        samples.write(frame.payload)
+        frames++
+    }
+
+    send(Upstream.Close)
+    WavFile.write(file, CAPTURE_FORMAT, samples.toByteArray())
+    println("Wrote $frames frames to $file.")
+}
+
+private inline fun <reified T : Downstream> HelperConnection.await(): T {
+    while (true) {
+        val frame = read() ?: error("The helper went away.")
+        if (frame.type != FrameType.CONTROL) continue
+
+        when (val message = frame.toDownstream()) {
+            is T -> return message
+            is Downstream.Failure -> error("${message.code}: ${message.message}")
+            else -> Unit
+        }
+    }
+}

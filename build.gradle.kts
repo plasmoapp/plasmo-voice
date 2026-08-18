@@ -16,6 +16,7 @@ plugins {
     kotlin("plugin.lombok") version(libs.versions.kotlin.get())
     kotlin("kapt") version(libs.versions.kotlin.get())
     kotlin("multiplatform") version(libs.versions.kotlin.get()) apply(false)
+    kotlin("plugin.serialization") version(libs.versions.kotlin.get()) apply(false)
 
     id("gg.essential.multi-version.root") apply(false)
 }

@@ -3,6 +3,7 @@ kotlin = "2.3.0"
 dokka = "2.1.0"
 kotlinx-json = "1.10.0"
 kotlinx-coroutines = "1.10.2"
+kotlinx-io = "0.9.1"
 
 lombok = "1.18.44"
 annotations = "23.0.0"
@@ -44,6 +45,7 @@ mockito = "4.1.0"
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
+kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 
 lombok       = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 annotations  = { module = "org.jetbrains:annotations", version.ref = "annotations" }

@@ -19,7 +19,12 @@ kotlin {
     }
 
     applyDefaultHierarchyTemplate()
-    sourceSets["macosMain"].kotlin.setSrcDirs(listOf("src/main/kotlin"))
+    sourceSets["macosMain"].apply {
+        kotlin.setSrcDirs(listOf("src/main/kotlin"))
+        dependencies {
+            implementation(project(":macos:protocol"))
+        }
+    }
 }
 
 abstract class BundleMacApp : DefaultTask() {
