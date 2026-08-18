@@ -22,8 +22,18 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
     @Volatile
     private var defaultId: String? = null
 
-    override fun openDevice(format: AudioFormat, deviceName: String?): AudioDevice =
-        CoreAudioInputDevice(client, deviceName ?: defaultDeviceName(), format, supervisor, idOf(deviceName))
+    @Volatile
+    var lastError: Throwable? = null
+        private set
+
+    override fun openDevice(format: AudioFormat, deviceName: String?): AudioDevice = try {
+        val device = CoreAudioInputDevice(client, deviceName ?: defaultDeviceName(), format, supervisor, idOf(deviceName))
+        lastError = null
+        device
+    } catch (e: Exception) {
+        lastError = e
+        throw e
+    }
 
     override fun getDefaultDeviceName() = defaultDeviceName()
 

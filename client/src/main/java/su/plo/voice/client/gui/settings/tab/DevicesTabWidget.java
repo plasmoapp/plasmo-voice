@@ -155,7 +155,7 @@ public final class DevicesTabWidget extends TabWidget {
         Optional<InputDevice> inputDevice = this.devices.getInputDevice();
 
         IconButton inputNotAvailable = null;
-        if (devices.getInputDeviceError().isPresent()) {
+        if (devices.getInputDeviceError().isPresent() || hasMacMicrophoneError()) {
             inputNotAvailable = new IconButton(
                     0,
                     0,
@@ -373,6 +373,14 @@ public final class DevicesTabWidget extends TabWidget {
         } catch (Exception e) {
             BaseVoice.LOGGER.error("Failed to open input device", e);
         }
+    }
+
+    private boolean hasMacMicrophoneError() {
+        if (!Platform.isMac()) return false;
+
+        DeviceFactory factory = deviceFactories.getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT).orElse(null);
+        return factory instanceof CoreAudioInputDeviceFactory
+                && ((CoreAudioInputDeviceFactory) factory).getLastError() != null;
     }
 
     private void resolveMacMicrophonePermission() {
