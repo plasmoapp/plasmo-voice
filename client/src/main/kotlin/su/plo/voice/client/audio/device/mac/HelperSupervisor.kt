@@ -24,6 +24,12 @@ internal class HelperSupervisor(private val onDevices: (Downstream.Devices) -> U
     private var retryAt = 0L
 
     @Synchronized
+    fun restart() {
+        session?.close()
+        session = null
+    }
+
+    @Synchronized
     fun session(): HelperSession {
         session?.takeIf { it.alive }?.let { return it }
 
