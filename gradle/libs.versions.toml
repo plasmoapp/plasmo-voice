@@ -3,6 +3,7 @@ kotlin = "2.4.20"
 dokka = "2.2.0"
 kotlinx-serialization = "1.11.0"
 kotlinx-coroutines = "1.11.0"
+kotlinx-io = "0.9.1"
 
 lombok = "1.18.44"
 annotations = "23.0.0"
@@ -45,6 +46,7 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
+kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
 
 mcdsl-brigadier = { module = "dev.apehum.mcdsl:brigadier", version.ref = "mcdsl" }
 

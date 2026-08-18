@@ -6,6 +6,7 @@ plugins {
 }
 
 dependencies {
+    implementation(project(":macos:protocol"))
     implementation(kotlin("stdlib-jdk8"))
 }
 
