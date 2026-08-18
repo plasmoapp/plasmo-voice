@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.render.gui
 
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.client.gui.GuiGraphics
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.ScissorState
@@ -24,24 +25,15 @@ import java.awt.Color
 import com.mojang.blaze3d.vertex.PoseStack
 //#endif
 
-//#if MC>=12000
-//$$ import net.minecraft.client.gui.GuiGraphics;
-//#endif
-
 class GuiRenderContext(
-    //#if MC>=12000
-    //$$ val mcContext: GuiGraphics,
-    //#else
-    val stack: PoseStack,
-    //#endif
+    val mcContext: GuiGraphics,
 ) {
-
     //#if MC>=12106
     //$$ val stack: Matrix3x2fStack
     //$$     get() = mcContext.pose()
-    //#elseif MC>=12000
-    //$$ val stack: PoseStack
-    //$$     get() = mcContext.pose()
+    //#elseif MC>=12001
+    val stack: PoseStack
+        get() = mcContext.pose()
     //#endif
 
     private val scissorStack: ArrayDeque<ScissorState> = ArrayDeque()

@@ -29,9 +29,7 @@ import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines.fromRenderType
 import su.plo.lib.mod.extensions.rotate
 
-//#if MC>=12000
 //$$ import com.mojang.blaze3d.systems.RenderSystem
-//#endif
 
 //#endif
 
@@ -333,10 +331,8 @@ object EntityIconRenderer {
 
         //#if MC>=12100
         //$$ renderType.draw(buffer.build())
-        //#elseif MC>=12000
-        //$$ renderType.end(buffer, RenderSystem.getVertexSorting())
         //#else
-        renderType.end(buffer, 0, 0, 0)
+        //$$ renderType.end(buffer, RenderSystem.getVertexSorting())
         //#endif
 
         //#endif

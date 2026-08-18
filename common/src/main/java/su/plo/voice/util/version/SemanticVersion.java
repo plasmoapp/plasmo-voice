@@ -13,9 +13,8 @@ import java.util.regex.Pattern;
 @Accessors(fluent = true)
 @RequiredArgsConstructor
 public final class SemanticVersion {
-
-    // forge-1.19.3-2.0.0+ALPHA => 2.0.0 alpha
-    // fabric-1.19.x-2.0.0 => 2.0.0
+    // forge-1.20.1-2.0.0+ALPHA => 2.0.0 alpha
+    // fabric-1.20.x-2.0.0 => 2.0.0
     // 2.0.0+ALPHA => 2.0.0 alpha
     // 2.0.0-SNAPSHOT.build => 2.0.0 alpha
     // 2.0.0-SNAPSHOT => 2.0.0 alpha
@@ -104,9 +103,7 @@ public final class SemanticVersion {
     }
 
     public enum Branch {
-
         RELEASE,
         ALPHA
     }
 }
-

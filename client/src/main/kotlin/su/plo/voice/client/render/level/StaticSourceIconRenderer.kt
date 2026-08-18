@@ -45,14 +45,6 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
 
         stack.pushPose()
 
-        // we have different hook points for forge and fabric
-        // and for fabric for some reason we need to reset pose/normal to identity
-        // on older versions to make everything work
-        //#if MC<11800 && FABRIC
-        //$$ stack.last().pose().setIdentity()
-        //$$ stack.last().normal().setIdentity()
-        //#endif
-
         stack.translate(
             entry.x - cameraPosition.x,
             entry.y - cameraPosition.y,
@@ -130,10 +122,8 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
 
         //#if MC>=12100
         //$$ renderType.draw(buffer.buildOrThrow())
-        //#elseif MC>=12000
-        //$$ renderType.end(buffer, com.mojang.blaze3d.systems.RenderSystem.getVertexSorting())
         //#else
-        renderType.end(buffer, 0, 0, 0)
+        //$$ renderType.end(buffer, com.mojang.blaze3d.systems.RenderSystem.getVertexSorting())
         //#endif
         //#endif
     }

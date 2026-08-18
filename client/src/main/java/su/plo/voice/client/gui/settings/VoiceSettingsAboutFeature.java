@@ -50,11 +50,7 @@ public final class VoiceSettingsAboutFeature {
             SoundManager soundManager = Minecraft.getInstance().getSoundManager();
             soundManager.play(
                     SimpleSoundInstance.forUI(
-                            //#if MC>=11903
                             SoundEvents.UI_BUTTON_CLICK.value(),
-                            //#else
-                            //$$ SoundEvents.UI_BUTTON_CLICK,
-                            //#endif
                             1.0f,
                             0.25f
                     )
@@ -89,11 +85,7 @@ public final class VoiceSettingsAboutFeature {
 
     public void render(@NotNull GuiRenderContext context, float delta) {
         for (BlockDustParticle2D particle : particles) {
-            //#if MC>=11903
             ResourceLocation textureLocation = particle.getSprite().atlasLocation();
-            //#else
-            //$$ ResourceLocation textureLocation = particle.getSprite().atlas().location();
-            //#endif
 
             particle.render(context, textureLocation, delta);
         }

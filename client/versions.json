@@ -111,90 +111,11 @@
     "project": "1.20.1-forge",
     "mcVersion": 12001,
     "mappings": "official",
-    "parent": "1.19.4-forge"
+    "parent": "1.20.1-fabric"
   },
   {
     "project": "1.20.1-fabric",
     "mcVersion": 12001,
-    "mappings": "official",
-    "parent": "1.19.4-fabric"
-  },
-  {
-    "project": "1.19.4-forge",
-    "mcVersion": 11904,
-    "mappings": "official",
-    "parent": "1.19.4-fabric"
-  },
-  {
-    "project": "1.19.4-fabric",
-    "mcVersion": 11904,
     "mappings": "official"
-  },
-  {
-    "project": "1.19.3-forge",
-    "mcVersion": 11903,
-    "mappings": "official",
-    "parent": "1.19.4-forge"
-  },
-  {
-    "project": "1.19.3-fabric",
-    "mcVersion": 11903,
-    "mappings": "official",
-    "parent": "1.19.4-fabric"
-  },
-  {
-    "project": "1.19.2-forge",
-    "mcVersion": 11902,
-    "mappings": "official",
-    "parent": "1.19.3-forge",
-    "extraMappings": "1.19.2-1.19.3.txt"
-  },
-  {
-    "project": "1.19.2-fabric",
-    "mcVersion": 11902,
-    "mappings": "official",
-    "parent": "1.19.3-fabric",
-    "extraMappings": "1.19.2-1.19.3.txt"
-  },
-  {
-    "project": "1.18.2-forge",
-    "mcVersion": 11802,
-    "mappings": "official",
-    "parent": "1.19.2-forge",
-    "extraMappings": "1.18.2-1.19.2.txt"
-  },
-  {
-    "project": "1.18.2-fabric",
-    "mcVersion": 11802,
-    "mappings": "official",
-    "parent": "1.19.2-fabric"
-  },
-  {
-    "project": "1.17.1-forge",
-    "mcVersion": 11701,
-    "mappings": "official",
-    "parent": "1.18.2-forge",
-    "extraMappings": "1.17.1-1.18.2.txt"
-  },
-  {
-    "project": "1.17.1-fabric",
-    "mcVersion": 11701,
-    "mappings": "official",
-    "parent": "1.18.2-fabric",
-    "extraMappings": "1.17.1-1.18.2.txt"
-  },
-  {
-    "project": "1.16.5-forge",
-    "mcVersion": 11605,
-    "mappings": "official",
-    "parent": "1.17.1-forge",
-    "extraMappings": "1.16.5-1.17.1.txt"
-  },
-  {
-    "project": "1.16.5-fabric",
-    "mcVersion": 11605,
-    "mappings": "official",
-    "parent": "1.17.1-fabric",
-    "extraMappings": "1.16.5-1.17.1.txt"
   }
 ]

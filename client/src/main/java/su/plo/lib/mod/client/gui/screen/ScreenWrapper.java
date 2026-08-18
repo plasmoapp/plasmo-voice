@@ -26,10 +26,8 @@ import java.util.Optional;
 //$$ import net.minecraft.client.input.MouseButtonEvent;
 //#endif
 
-//#if MC>=12000
-//$$ import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphics;
 //$$ import net.minecraft.locale.Language;
-//#endif
 
 @ToString
 public final class ScreenWrapper
@@ -62,11 +60,9 @@ public final class ScreenWrapper
 
     private boolean ignoreFirstMove = true;
 
-    //#if MC>=12000
-    //$$ private int lastMouseX;
-    //$$ private int lastMouseY;
-    //$$ private float lastPartialTicks;
-    //#endif
+    private int lastMouseX;
+    private int lastMouseY;
+    private float lastPartialTicks;
 
     private ScreenWrapper(@NotNull GuiScreen screen) {
         super(RenderUtil.getTextConverter().convert(screen.getTitle()));
@@ -114,7 +110,7 @@ public final class ScreenWrapper
         screen.removed();
     }
 
-    //#if MC>=12000
+    //#if MC>=12106
     //$$ @Override
     //$$ public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
     //#if MC<12105
@@ -152,22 +148,23 @@ public final class ScreenWrapper
     //$$ }
     //#else
     @Override
-    public void render(PoseStack matrixStack, int mouseX, int mouseY, float partialTicks) {
-        //#if MC<12105
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         RenderUtil.preserveGlState();
-        //#endif
-
-        GuiRenderContext context = new GuiRenderContext(matrixStack);
-
+        lastMouseX = mouseX;
+        lastMouseY = mouseY;
+        lastPartialTicks = partialTicks;
+        GuiRenderContext context = new GuiRenderContext(guiGraphics);
         screen.render(context, mouseX, mouseY, partialTicks);
-
-        //#if MC<12105
         RenderUtil.restoreGlState();
-        //#endif
     }
 
     public void renderBackground(@NotNull GuiRenderContext context) {
-        super.renderBackground(context.getStack());
+        //#if MC>=12002
+        //$$ super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
+        //#else
+        super.renderBackground(context.getMcContext());
+        //#endif
+        RenderUtil.restoreGlState(true);
     }
     //#endif
 
@@ -324,7 +321,7 @@ public final class ScreenWrapper
         //$$         tooltip.getX(),
         //$$         tooltip.getY()
         //$$ );
-        //#elseif MC>=12000
+        //#else
         //$$ setTooltipForNextRenderPass(
         //$$         Language.getInstance().getVisualOrder(
         //$$                 new ArrayList<>(
@@ -332,15 +329,6 @@ public final class ScreenWrapper
         //$$                 )
         //$$         )
         //$$ );
-        //#else
-        renderComponentTooltip(
-                context.getStack(),
-                new ArrayList<>(
-                        RenderUtil.getTextConverter().convert(tooltip.getText())
-                ),
-                tooltip.getX(),
-                tooltip.getY()
-        );
         //#endif
     }
 
