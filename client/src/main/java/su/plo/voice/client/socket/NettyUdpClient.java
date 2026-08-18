@@ -10,6 +10,7 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramPacket;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -39,7 +40,10 @@ public final class NettyUdpClient implements UdpClient {
     @Getter
     private final UUID secret;
 
-    private final EventLoopGroup workGroup = new NioEventLoopGroup();
+    private final EventLoopGroup workGroup = new NioEventLoopGroup(
+            0,
+            new DefaultThreadFactory("plasmo-voice-udp", Thread.MAX_PRIORITY)
+    );
     private final NettyUdpClientHandler handler;
     private NioDatagramChannel channel;
 

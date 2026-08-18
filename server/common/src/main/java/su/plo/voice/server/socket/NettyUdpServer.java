@@ -14,6 +14,7 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -25,6 +26,7 @@ import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+import java.util.concurrent.ThreadFactory;
 
 public final class NettyUdpServer implements UdpServer {
 
@@ -43,9 +45,11 @@ public final class NettyUdpServer implements UdpServer {
     public NettyUdpServer(@NotNull BaseVoiceServer voiceServer) {
         this.voiceServer = voiceServer;
 
+        ThreadFactory factory = new DefaultThreadFactory("plasmo-voice-udp", Thread.MAX_PRIORITY);
+
         this.loopGroup = useEpoll
-                ? new EpollEventLoopGroup()
-                : new NioEventLoopGroup();
+                ? new EpollEventLoopGroup(0, factory)
+                : new NioEventLoopGroup(0, factory);
     }
 
     @Override

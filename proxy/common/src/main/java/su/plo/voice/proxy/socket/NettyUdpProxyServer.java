@@ -11,6 +11,7 @@ import io.netty.channel.epoll.EpollEventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.util.concurrent.DefaultThreadFactory;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.event.socket.UdpProxyServerStoppedEvent;
@@ -22,6 +23,7 @@ import su.plo.voice.socket.NettyPacketUdpDecoder;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
+import java.util.concurrent.ThreadFactory;
 
 public final class NettyUdpProxyServer implements UdpProxyServer {
 
@@ -38,9 +40,11 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
     public NettyUdpProxyServer(@NotNull BaseVoiceProxy voiceServer) {
         this.voiceProxy = voiceServer;
 
+        ThreadFactory factory = new DefaultThreadFactory("plasmo-voice-udp", Thread.MAX_PRIORITY);
+
         this.loopGroup = useEpoll
-                ? new EpollEventLoopGroup()
-                : new NioEventLoopGroup();
+                ? new EpollEventLoopGroup(0, factory)
+                : new NioEventLoopGroup(0, factory);
     }
 
     @Override
