@@ -41,6 +41,10 @@ abstract class BundleMacApp : DefaultTask() {
     @get:Input
     abstract val identifier: Property<String>
 
+    @get:Input
+    @get:Optional
+    abstract val signingIdentity: Property<String>
+
     @get:OutputDirectory
     abstract val bundle: DirectoryProperty
 
@@ -64,9 +68,14 @@ abstract class BundleMacApp : DefaultTask() {
         }
         executable.setExecutable(true, false)
 
+        val identity = signingIdentity.orNull?.takeIf { it.isNotBlank() } ?: "-"
+        if (identity == "-") {
+            logger.lifecycle("Signing ${app.name} ad-hoc, the microphone grant will not survive an update.")
+        }
+
         exec.exec {
             commandLine(
-                "/usr/bin/codesign", "--force", "--sign", "-",
+                "/usr/bin/codesign", "--force", "--sign", identity,
                 "--identifier", identifier.get(),
                 app.absolutePath,
             )
@@ -88,6 +97,7 @@ val bundleApp = tasks.register<BundleMacApp>("bundleApp") {
     infoPlist.set(layout.projectDirectory.file("src/bundle/Info.plist"))
     executableName.set(appExecutable)
     identifier.set(appIdentifier)
+    signingIdentity.set(providers.gradleProperty("pv.mac.signIdentity"))
     bundle.set(layout.buildDirectory.dir("bundle/$appName.app"))
 }
 

@@ -39,6 +39,9 @@ concurrency:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
+    secrets: inherit
+    with:
+      require-signing: true
 
   maven-publish:
     runs-on: ubuntu-latest
