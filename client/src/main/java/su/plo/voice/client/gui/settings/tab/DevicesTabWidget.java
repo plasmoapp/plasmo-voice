@@ -26,8 +26,6 @@ import su.plo.voice.client.gui.settings.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.settings.widget.CompositeRowWidget;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
-import su.plo.voice.client.mac.AVAuthorizationStatus;
-import su.plo.voice.client.mac.AVCaptureDevice;
 import su.plo.voice.mac.protocol.message.AuthStatus;
 
 import java.awt.Color;
@@ -171,21 +169,6 @@ public final class DevicesTabWidget extends TabWidget {
                         }
                     },
                     (button, mouseX, mouseY) -> {
-                        if (Platform.isMac()) {
-                            AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
-                            if (authorizationStatus == AVAuthorizationStatus.RESTRICTED) {
-                                parent.setTooltip(
-                                        McTextComponent.translatable(
-                                                "message.plasmovoice.macos_incompatible_launcher",
-                                                McTextComponent.literal("Prism Launcher")
-                                        ),
-                                        mouseX,
-                                        mouseY
-                                );
-                                return;
-                            }
-                        }
-
                         String configInputDevice = config.getVoice().getInputDevice().value();
 
                         McTextComponent currentDeviceName = GuiUtil.formatDeviceName(
