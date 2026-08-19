@@ -1,5 +1,12 @@
 package su.plo.voice.mac.helper
 
+import kotlinx.io.RawSink
+import kotlinx.io.RawSource
+import kotlinx.io.buffered
+import platform.AppKit.NSApplication
+import platform.AppKit.NSApplicationActivationPolicy
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_queue_create
 import su.plo.voice.mac.helper.capture.AudioQueueMicrophone
 import su.plo.voice.mac.helper.connection.SerialWriter
 import su.plo.voice.mac.helper.connection.connectToLoopback
@@ -7,9 +14,6 @@ import su.plo.voice.mac.helper.connection.readToken
 import su.plo.voice.mac.helper.permission.SystemMicrophoneAccess
 import su.plo.voice.mac.protocol.frame.FrameReader
 import su.plo.voice.mac.protocol.frame.FrameWriter
-import kotlinx.io.RawSink
-import kotlinx.io.RawSource
-import kotlinx.io.buffered
 import kotlin.system.exitProcess
 
 /**
@@ -22,17 +26,30 @@ fun main(args: Array<String>) {
     val token = readToken(tokenFile) ?: quit("Cannot read the token from $tokenFile.")
     val socket = connectToLoopback(port) ?: quit("Nothing is listening on port $port.")
 
-    try {
-        HelperSession(
-            token = token,
-            reader = FrameReader((socket as RawSource).buffered()),
-            sink = SerialWriter(FrameWriter((socket as RawSink).buffered())),
-            access = SystemMicrophoneAccess,
-            microphone = AudioQueueMicrophone(),
-        ).run()
-    } finally {
-        socket.close()
+    // Accessory keeps the helper out of the Dock and the switcher, while still leaving it an app
+    // macOS is willing to put a permission dialog in front of.
+    val application = NSApplication.sharedApplication()
+    application.setActivationPolicy(NSApplicationActivationPolicy.NSApplicationActivationPolicyAccessory)
+
+    val writer = SerialWriter(FrameWriter((socket as RawSink).buffered()), onLost = socket::shutdown)
+    val session = HelperSession(
+        token = token,
+        reader = FrameReader((socket as RawSource).buffered()),
+        sink = writer,
+        access = SystemMicrophoneAccess,
+        microphone = AudioQueueMicrophone(),
+    )
+
+    dispatch_async(dispatch_queue_create("com.plasmoverse.plasmovoice.mic.session", null)) {
+        try {
+            session.run()
+        } finally {
+            socket.close()
+            exitProcess(0)
+        }
     }
+
+    application.run()
 }
 
 /** Value that follows [name] in the arguments, or null when the flag is absent. */

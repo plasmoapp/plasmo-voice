@@ -1,5 +1,6 @@
 package su.plo.voice.mac.helper.connection
 
+import kotlin.concurrent.Volatile
 import platform.darwin.dispatch_async
 import platform.darwin.dispatch_queue_create
 import su.plo.voice.mac.helper.exception.ConnectionLostException
@@ -21,14 +22,26 @@ internal interface FrameSink {
  *
  * Permission answers arrive on a system thread and audio on the render thread.
  */
-internal class SerialWriter(private val writer: FrameWriter) : FrameSink {
+internal class SerialWriter(
+    private val writer: FrameWriter,
+    private val onLost: () -> Unit,
+) : FrameSink {
     private val queue = dispatch_queue_create("com.plasmoverse.plasmovoice.mic.writer", null)
 
+    @Volatile
+    private var lost = false
+
     override fun send(frame: Frame) {
+        if (lost) return
+
         dispatch_async(queue) {
+            if (lost) return@dispatch_async
+
             try {
                 writer.write(frame)
             } catch (_: ConnectionLostException) {
+                lost = true
+                onLost()
             }
         }
     }
