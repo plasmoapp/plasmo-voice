@@ -15,14 +15,27 @@ private const val MAX_TOKEN_SIZE = 128
  */
 @OptIn(ExperimentalForeignApi::class)
 internal fun readToken(path: String): String? {
+    /*
+     * fopen()
+     * https://pubs.opengroup.org/onlinepubs/9699919799/functions/fopen.html
+     */
     val file = fopen(path, "r") ?: return null
 
     try {
         val buffer = ByteArray(MAX_TOKEN_SIZE)
+
+        /*
+         * fread()
+         * https://pubs.opengroup.org/onlinepubs/9699919799/functions/fread.html
+         */
         val read = buffer.usePinned { fread(it.addressOf(0), 1.convert(), buffer.size.convert(), file) }
 
         return buffer.decodeToString(0, read.toInt()).trim().ifEmpty { null }
     } finally {
+        /*
+         * fclose()
+         * https://pubs.opengroup.org/onlinepubs/9699919799/functions/fclose.html
+         */
         fclose(file)
     }
 }

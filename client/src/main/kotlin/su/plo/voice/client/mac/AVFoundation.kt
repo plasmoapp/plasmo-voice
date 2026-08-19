@@ -8,16 +8,28 @@ import com.sun.jna.Pointer
 // https://stackoverflow.com/questions/13719269/calling-objective-c-method-from-java
 interface AVFoundation : Library {
 
-    // https://developer.apple.com/documentation/objectivec/1418952-objc_getclass?language=objc
+    /*
+     * objc_getClass()
+     * https://developer.apple.com/documentation/objectivec/objc_getclass(_:)
+     */
     fun objc_getClass(className: String): Pointer
 
-    // https://developer.apple.com/documentation/objectivec/1418557-sel_registername?language=objc
+    /*
+     * sel_registerName()
+     * https://developer.apple.com/documentation/objectivec/sel_registername(_:)
+     */
     fun sel_registerName(selectorName: String): Pointer
 
-    // https://developer.apple.com/documentation/objectivec/1456712-objc_msgsend?language=objc
+    /*
+     * objc_msgSend()
+     * https://developer.apple.com/documentation/objectivec/objc_msgsend
+     */
     fun objc_msgSend(receiver: Pointer, selector: Pointer, pointer: NativeLong): NativeLong
 
-    // https://developer.apple.com/documentation/objectivec/1456712-objc_msgsend?language=objc
+    /*
+     * objc_msgSend()
+     * https://developer.apple.com/documentation/objectivec/objc_msgsend
+     */
     fun objc_msgSend(receiver: Pointer, selector: Pointer, pointer1: NativeLong, pointer2: Pointer?): NativeLong
 
     companion object {

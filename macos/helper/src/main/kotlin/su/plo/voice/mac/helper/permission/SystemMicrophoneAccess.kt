@@ -16,10 +16,12 @@ private const val MICROPHONE_SETTINGS = "x-apple.systempreferences:com.apple.pre
  * macOS grants the microphone to a signed bundle that declares `NSMicrophoneUsageDescription`.
  * Minecraft doesn't have this permission, so here we are.
  */
-// AVAuthorizationStatus
-// su.plo.voice.client.mac
 internal object SystemMicrophoneAccess : MicrophoneAccess {
     override val status: AuthStatus
+        /*
+         * authorizationStatusForMediaType()
+         * https://developer.apple.com/documentation/avfoundation/avcapturedevice/authorizationstatus(for:)
+         */
         get() = when (AVCaptureDevice.authorizationStatusForMediaType(AVMediaTypeAudio)) {
             AVAuthorizationStatusNotDetermined -> AuthStatus.NOT_DETERMINED
             AVAuthorizationStatusRestricted -> AuthStatus.RESTRICTED
@@ -35,8 +37,16 @@ internal object SystemMicrophoneAccess : MicrophoneAccess {
         }
 
         onMainThread {
-            NSApplication.sharedApplication.activateIgnoringOtherApps(true)
+            /*
+             * activateIgnoringOtherApps()
+             * https://developer.apple.com/documentation/appkit/nsapplication/activate(ignoringotherapps:)
+             */
+            NSApplication.sharedApplication.activateIgnoringOtherApps(true) // TODO: deprecated, change in future
 
+            /*
+             * requestAccessForMediaType()
+             * https://developer.apple.com/documentation/avfoundation/avcapturedevice/requestaccess(for:completionhandler:)
+             */
             AVCaptureDevice.requestAccessForMediaType(AVMediaTypeAudio) { _ ->
                 onResult(status)
             }
@@ -44,8 +54,25 @@ internal object SystemMicrophoneAccess : MicrophoneAccess {
     }
 
     override fun settings() = onMainThread {
-        NSURL.URLWithString(MICROPHONE_SETTINGS)?.let(NSWorkspace.sharedWorkspace::openURL)
+        /*
+         * URLWithString()
+         * https://developer.apple.com/documentation/foundation/nsurl/urlwithstring:?language=objc
+         */
+        NSURL.URLWithString(MICROPHONE_SETTINGS)?.let(
+            /*
+             * openURL()
+             * https://developer.apple.com/documentation/appkit/nsworkspace/open(_:)
+             */
+            NSWorkspace.sharedWorkspace::openURL
+        )
     }
 }
 
+/*
+ * dispatch_async()
+ * https://developer.apple.com/documentation/dispatch/dispatch_async
+ *
+ * dispatch_get_main_queue()
+ * https://developer.apple.com/documentation/dispatch/dispatch_get_main_queue
+ */
 private fun onMainThread(block: () -> Unit) = dispatch_async(dispatch_get_main_queue(), block)

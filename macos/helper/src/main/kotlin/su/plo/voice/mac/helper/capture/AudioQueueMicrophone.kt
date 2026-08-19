@@ -43,6 +43,11 @@ internal class AudioQueueMicrophone : Microphone {
             }
 
             val created = alloc<AudioQueueRefVar>()
+
+            /*
+             * AudioQueueNewInput()
+             * https://developer.apple.com/documentation/audiotoolbox/audioqueuenewinput(_:_:_:_:_:_:_:)
+             */
             verify(AudioQueueNewInput(description.ptr, inputCallback, owner.asCPointer(), null, null, 0u, created.ptr))
 
             val audioQueue = created.value ?: throw MicrophoneError.QUEUE_CREATION_FAILED.exception()
@@ -52,10 +57,24 @@ internal class AudioQueueMicrophone : Microphone {
 
             repeat(BUFFER_COUNT) {
                 val buffer = alloc<AudioQueueBufferRefVar>()
+
+                /*
+                 * AudioQueueAllocateBuffer()
+                 * https://developer.apple.com/documentation/audiotoolbox/audioqueueallocatebuffer(_:_:_:)
+                 */
                 verify(AudioQueueAllocateBuffer(audioQueue, frameBytes.toUInt(), buffer.ptr))
+
+                /*
+                 * AudioQueueEnqueueBuffer()
+                 * https://developer.apple.com/documentation/audiotoolbox/audioqueueenqueuebuffer(_:_:_:_:)
+                 */
                 verify(AudioQueueEnqueueBuffer(audioQueue, buffer.value, 0u, null))
             }
 
+            /*
+             * AudioQueueStart()
+             * https://developer.apple.com/documentation/audiotoolbox/audioqueuestart(_:_:)
+             */
             verify(AudioQueueStart(audioQueue, null))
         }
 
@@ -67,7 +86,16 @@ internal class AudioQueueMicrophone : Microphone {
 
     override fun close() {
         queue?.let {
+            /*
+             * AudioQueueStop()
+             * https://developer.apple.com/documentation/audiotoolbox/audioqueuestop(_:_:)
+             */
+
             AudioQueueStop(it, true)
+            /*
+             * AudioQueueDispose()
+             * https://developer.apple.com/documentation/audiotoolbox/audioqueuedispose(_:_:)
+             */
             AudioQueueDispose(it, true)
         }
         queue = null
@@ -90,17 +118,31 @@ internal class AudioQueueMicrophone : Microphone {
 
 @OptIn(ExperimentalForeignApi::class)
 private fun selectDevice(queue: AudioQueueRef, deviceId: String) = memScoped {
+    /*
+     * CFStringCreateWithCString()
+     * https://developer.apple.com/documentation/corefoundation/cfstringcreatewithcstring(_:_:_:)
+     */
     val uid = CFStringCreateWithCString(null, deviceId, kCFStringEncodingUTF8)
         ?: throw MicrophoneError.DEVICE_NOT_FOUND.exception(deviceId)
 
     try {
         val value = alloc<CFStringRefVar>().apply { this.value = uid }
+
+        /*
+         * AudioQueueSetProperty()
+         * https://developer.apple.com/documentation/audiotoolbox/audioqueuesetproperty(_:_:_:_:)
+         */
         verify(
             AudioQueueSetProperty(
                 queue, kAudioQueueProperty_CurrentDevice, value.ptr, sizeOf<CFStringRefVar>().convert()
             )
         )
     } finally {
+
+        /*
+         * CFRelease()
+         * https://developer.apple.com/documentation/corefoundation/cfrelease
+         */
         CFRelease(uid)
     }
 }
@@ -121,6 +163,11 @@ private val inputCallback = staticCFunction<
         > { userData, queue, buffer, _, _, _ ->
     if (userData != null && buffer != null) {
         userData.asStableRef<AudioQueueMicrophone>().get().receive(buffer)
+
+        /*
+         * AudioQueueEnqueueBuffer()
+         * https://developer.apple.com/documentation/audiotoolbox/audioqueueenqueuebuffer(_:_:_:_:)
+         */
         AudioQueueEnqueueBuffer(queue, buffer, 0u, null)
     }
 }

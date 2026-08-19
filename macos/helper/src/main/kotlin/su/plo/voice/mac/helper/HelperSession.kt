@@ -33,6 +33,10 @@ internal class HelperSession(
      * Guarantees that [microphone] resources are cleaned up when the loop finishes or fails.
      */
     fun run() = try {
+        /*
+         * getpid()
+         * https://pubs.opengroup.org/onlinepubs/9699919799/functions/getpid.html
+         */
         send(Downstream.Hello(token, getpid(), PROTOCOL_VERSION))
         DeviceRegistry.onChange(::sendDevices)
         generateSequence { reader.read() }.forEach(::dispatch)
