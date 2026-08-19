@@ -33,6 +33,7 @@ import su.plo.voice.mac.protocol.message.AuthStatus;
 import java.awt.Color;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public final class DevicesTabWidget extends TabWidget {
@@ -40,6 +41,7 @@ public final class DevicesTabWidget extends TabWidget {
     private final MicrophoneTestController testController;
     private final DeviceManager devices;
     private final DeviceFactoryManager deviceFactories;
+    private final AtomicBoolean resolvingMacPermission = new AtomicBoolean(false);
 
     private ActivationThresholdWidget threshold;
 
@@ -390,6 +392,8 @@ public final class DevicesTabWidget extends TabWidget {
             return;
         }
 
+        if (!resolvingMacPermission.compareAndSet(false, true)) return;
+
         CoreAudioInputDeviceFactory coreAudio = (CoreAudioInputDeviceFactory) factory;
         new Thread(() -> {
             try {
@@ -398,6 +402,8 @@ public final class DevicesTabWidget extends TabWidget {
                 }
             } catch (Exception e) {
                 BaseVoice.LOGGER.error("Failed to resolve the macOS microphone permission", e);
+            } finally {
+                resolvingMacPermission.set(false);
             }
         }, "Plasmo Voice Permission").start();
     }
