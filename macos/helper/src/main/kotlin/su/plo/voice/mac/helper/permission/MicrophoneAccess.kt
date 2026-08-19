@@ -10,8 +10,10 @@ internal interface MicrophoneAccess {
     val status: AuthStatus
 
     /**
-     * May put a dialog in front of the player, so this can take minutes or never finish at all.
-     * [onResult] arrives on a system.
+     * Returns immediately, having at most put a dialog in front of the player, which they may sit
+     * on for minutes or never answer at all.
+     *
+     * [onResult] arrives later, on a system thread.
      */
     fun request(onResult: (AuthStatus) -> Unit)
 

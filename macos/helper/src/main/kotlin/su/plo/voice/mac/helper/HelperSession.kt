@@ -37,6 +37,7 @@ internal class HelperSession(
         DeviceRegistry.onChange(::sendDevices)
         generateSequence { reader.read() }.forEach(::dispatch)
     } finally {
+        DeviceRegistry.stopListening()
         microphone.close()
     }
 

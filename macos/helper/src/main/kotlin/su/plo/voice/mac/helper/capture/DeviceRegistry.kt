@@ -7,6 +7,8 @@ import platform.CoreFoundation.*
 import platform.darwin.OSStatus
 import su.plo.voice.mac.protocol.audio.DeviceInfo
 
+private val WATCHED = listOf(kAudioHardwarePropertyDevices, kAudioHardwarePropertyDefaultInputDevice)
+
 /**
  * The input devices `CoreAudio` knows about.
  */
@@ -14,6 +16,7 @@ import su.plo.voice.mac.protocol.audio.DeviceInfo
 internal object DeviceRegistry {
     private var listener: StableRef<() -> Unit>? = null
 
+    /** List of devices. */
     fun devices(): List<DeviceInfo> = deviceIds()
         .filter { it.inputChannels() > 0 }
         .mapNotNull { id ->
@@ -40,19 +43,45 @@ internal object DeviceRegistry {
         return device.takeIf { it != 0u }?.stringProperty(kAudioDevicePropertyDeviceUID)
     }
 
-    /** Fires on a system thread whenever a device is plugged in or pulled out. */
+    /** Fires on a system thread whenever a device is plugged in, pulled out, or becomes the default. */
     fun onChange(onChanged: () -> Unit) {
+        stopListening()
+
         val reference = StableRef.create(onChanged)
         listener = reference
 
         memScoped {
-            AudioObjectAddPropertyListener(
-                kAudioObjectSystemObject.convert(),
-                address(kAudioHardwarePropertyDevices).ptr,
-                devicesChanged,
-                reference.asCPointer(),
-            )
+            WATCHED.forEach { selector ->
+                AudioObjectAddPropertyListener(
+                    kAudioObjectSystemObject.convert(),
+                    address(selector).ptr,
+                    devicesChanged,
+                    reference.asCPointer(),
+                )
+            }
         }
+    }
+
+    /**
+     * `CoreAudio` holds on to the listener until it is told otherwise, so the callback has to outlive
+     * nothing: unregister first, then the reference behind it is safe to drop.
+     */
+    fun stopListening() {
+        val reference = listener ?: return
+        listener = null
+
+        memScoped {
+            WATCHED.forEach { selector ->
+                AudioObjectRemovePropertyListener(
+                    kAudioObjectSystemObject.convert(),
+                    address(selector).ptr,
+                    devicesChanged,
+                    reference.asCPointer(),
+                )
+            }
+        }
+
+        reference.dispose()
     }
 
     private fun deviceIds(): List<AudioDeviceID> = memScoped {

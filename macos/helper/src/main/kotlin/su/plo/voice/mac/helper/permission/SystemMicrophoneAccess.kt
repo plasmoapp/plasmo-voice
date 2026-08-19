@@ -1,8 +1,11 @@
 package su.plo.voice.mac.helper.permission
 
 import platform.AVFoundation.*
+import platform.AppKit.NSApplication
 import platform.AppKit.NSWorkspace
 import platform.Foundation.NSURL
+import platform.darwin.dispatch_async
+import platform.darwin.dispatch_get_main_queue
 import su.plo.voice.mac.protocol.message.status.AuthStatus
 
 private const val MICROPHONE_SETTINGS = "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
@@ -31,12 +34,18 @@ internal object SystemMicrophoneAccess : MicrophoneAccess {
             return
         }
 
-        AVCaptureDevice.requestAccessForMediaType(AVMediaTypeAudio) { _ ->
-            onResult(status)
+        onMainThread {
+            NSApplication.sharedApplication.activateIgnoringOtherApps(true)
+
+            AVCaptureDevice.requestAccessForMediaType(AVMediaTypeAudio) { _ ->
+                onResult(status)
+            }
         }
     }
 
-    override fun settings() {
+    override fun settings() = onMainThread {
         NSURL.URLWithString(MICROPHONE_SETTINGS)?.let(NSWorkspace.sharedWorkspace::openURL)
     }
 }
+
+private fun onMainThread(block: () -> Unit) = dispatch_async(dispatch_get_main_queue(), block)

@@ -16,10 +16,14 @@ import su.plo.voice.mac.helper.exception.ConnectionLostException
 @OptIn(ExperimentalForeignApi::class, UnsafeIoApi::class)
 internal class PosixSocket(private val descriptor: Int) : RawSource, RawSink {
     override fun readAtMostTo(sink: Buffer, byteCount: Long): Long {
+        require(byteCount >= 0) { "byteCount ($byteCount) cannot be negative." }
+        if (byteCount == 0L) return 0
+
         var result = -1L // EoS
 
         UnsafeBufferOperations.writeToTail(sink, 1) { array, from, to ->
-            val received = array.usePinned { recv(descriptor, it.addressOf(from), (to - from).convert(), 0) }
+            val length = minOf((to - from).toLong(), byteCount).toInt()
+            val received = uninterrupted { array.usePinned { recv(descriptor, it.addressOf(from), length.convert(), 0) } }
             if (received > 0L) result = received
 
             if (received > 0L) received.toInt() else 0
@@ -34,7 +38,7 @@ internal class PosixSocket(private val descriptor: Int) : RawSource, RawSink {
         while (remaining > 0) {
             UnsafeBufferOperations.readFromHead(source) { array, from, to ->
                 val length = minOf((to - from).toLong(), remaining).toInt()
-                val sent = array.usePinned { send(descriptor, it.addressOf(from), length.convert(), 0) }
+                val sent = uninterrupted { array.usePinned { send(descriptor, it.addressOf(from), length.convert(), 0) } }
                 if (sent <= 0L) throw ConnectionLostException()
 
                 remaining -= sent
@@ -45,8 +49,25 @@ internal class PosixSocket(private val descriptor: Int) : RawSource, RawSink {
 
     override fun flush() = Unit
 
+    fun shutdown() {
+        shutdown(descriptor, SHUT_RDWR)
+    }
+
     override fun close() {
         close(descriptor)
+    }
+}
+
+/**
+ * A signal landing mid syscall is not the mod hanging up.
+ *
+ * Taking `EINTR` for the end of the stream would drop the connection, and with it the microphone,
+ * for no reason at all.
+ */
+private inline fun uninterrupted(transfer: () -> ssize_t): ssize_t {
+    while (true) {
+        val result = transfer()
+        if (result >= 0 || errno != EINTR) return result
     }
 }
 
@@ -65,6 +86,9 @@ internal fun connectToLoopback(port: Int): PosixSocket? = memScoped {
         close(descriptor)
         return null
     }
+
+    val enabled = alloc<IntVar>().apply { value = 1 }
+    setsockopt(descriptor, IPPROTO_TCP, TCP_NODELAY, enabled.ptr, sizeOf<IntVar>().convert())
 
     PosixSocket(descriptor)
 }
