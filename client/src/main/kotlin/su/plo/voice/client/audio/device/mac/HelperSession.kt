@@ -36,9 +36,11 @@ private const val PROMPT_TIMEOUT_MS = 120_000L
 internal class HelperSession(private val socket: Socket, token: String) : Closeable {
     private val frames = FrameReader(socket.getInputStream().asSource().buffered())
     private val writer = FrameWriter(socket.getOutputStream().asSink().buffered())
-    private val pending = AtomicReference<CompletableFuture<Downstream>?>()
+    private val pending = AtomicReference<Pending?>()
     private val writeLock = Any()
     private val requestLock = Any()
+
+    private class Pending(val expectsDevices: Boolean, val future: CompletableFuture<Downstream>)
 
     @Volatile
     var onAudio: (ShortArray) -> Unit = {}
@@ -104,10 +106,12 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
                     FrameType.AUDIO -> onAudio(AudioUtil.bytesToShorts(frame.payload))
                     FrameType.CONTROL -> {
                         val message = frame.toDownstream()
-                        val waiter = pending.getAndSet(null)
 
-                        if (waiter != null) waiter.complete(message)
-                        else if (message is Downstream.Devices) onDevices(message)
+                        if (message is Downstream.Devices && pending.get()?.expectsDevices != true) {
+                            onDevices(message)
+                        } else {
+                            pending.getAndSet(null)?.future?.complete(message)
+                        }
                     }
                     FrameType.PING -> send(frame)
                 }
@@ -115,22 +119,22 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
         } catch (_: Exception) {
         } finally {
             alive = false
-            pending.getAndSet(null)?.completeExceptionally(IOException("The helper is gone."))
+            pending.getAndSet(null)?.future?.completeExceptionally(IOException("The helper is gone."))
             runCatching { socket.close() }
         }
     }
 
     private fun request(message: Upstream, timeoutMs: Long): Downstream = synchronized(requestLock) {
-        val future = CompletableFuture<Downstream>()
-        pending.set(future)
+        val waiter = Pending(message is Upstream.ListDevices, CompletableFuture())
+        pending.set(waiter)
 
         try {
             send(message.toFrame())
-            future.get(timeoutMs, TimeUnit.MILLISECONDS)
+            waiter.future.get(timeoutMs, TimeUnit.MILLISECONDS)
         } catch (e: Exception) {
             throw DeviceException("The helper did not answer $message.", e)
         } finally {
-            pending.compareAndSet(future, null)
+            pending.compareAndSet(waiter, null)
         }
     }
 
