@@ -19,6 +19,7 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.device.InputBackendsKt;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactory;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactoryKt;
+import su.plo.voice.client.audio.device.mac.MicrophonePermissionException;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -169,23 +170,30 @@ public final class DevicesTabWidget extends TabWidget {
                         }
                     },
                     (button, mouseX, mouseY) -> {
-                        String configInputDevice = config.getVoice().getInputDevice().value();
+                        AuthStatus macPermission = macMicrophonePermissionStatus();
 
-                        McTextComponent currentDeviceName = GuiUtil.formatDeviceName(
-                                configInputDevice.isEmpty()
-                                        ? deviceFactory.get().getDefaultDeviceName()
-                                        : configInputDevice,
-                                deviceFactory.get()
-                        );
+                        McTextComponent tooltip;
+                        if (macPermission != null) {
+                            tooltip = McTextComponent.translatable(
+                                    "gui.plasmovoice.devices.mac_microphone_permission_denied.tooltip"
+                            );
+                        } else {
+                            String configInputDevice = config.getVoice().getInputDevice().value();
 
-                        parent.setTooltip(
-                                McTextComponent.translatable(
-                                        "gui.plasmovoice.devices.failed_to_initialize_microphone.tooltip",
-                                        currentDeviceName
-                                ),
-                                mouseX,
-                                mouseY
-                        );
+                            McTextComponent currentDeviceName = GuiUtil.formatDeviceName(
+                                    configInputDevice.isEmpty()
+                                            ? deviceFactory.get().getDefaultDeviceName()
+                                            : configInputDevice,
+                                    deviceFactory.get()
+                            );
+
+                            tooltip = McTextComponent.translatable(
+                                    "gui.plasmovoice.devices.failed_to_initialize_microphone.tooltip",
+                                    currentDeviceName
+                            );
+                        }
+
+                        parent.setTooltip(tooltip, mouseX, mouseY);
                     },
                     ResourceLocationUtil.mod("textures/icons/warning.png"),
                     false
@@ -366,6 +374,18 @@ public final class DevicesTabWidget extends TabWidget {
         DeviceFactory factory = deviceFactories.getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT).orElse(null);
         return factory instanceof CoreAudioInputDeviceFactory
                 && ((CoreAudioInputDeviceFactory) factory).getLastError() != null;
+    }
+
+    private AuthStatus macMicrophonePermissionStatus() {
+        if (!Platform.isMac()) return null;
+
+        DeviceFactory factory = deviceFactories.getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT).orElse(null);
+        if (!(factory instanceof CoreAudioInputDeviceFactory)) return null;
+
+        Throwable lastError = ((CoreAudioInputDeviceFactory) factory).getLastError();
+        return lastError instanceof MicrophonePermissionException
+                ? ((MicrophonePermissionException) lastError).getStatus()
+                : null;
     }
 
     private void resolveMacMicrophonePermission() {

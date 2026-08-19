@@ -30,6 +30,7 @@
     "gui.plasmovoice.devices.activation_threshold.tooltip": "Only relevant if the activation type is set to “Voice activation”.\n\nMove the slider to a point where volume only surpasses it when you are talking.\n\nYou can also press the icon to enable microphone testing and hear your voice",
     "gui.plasmovoice.devices.not_available": "Not Available",
     "gui.plasmovoice.devices.failed_to_initialize_microphone.tooltip": "Failed to initialize microphone\n%s\n\nTry selecting another device or click this button to visit our wiki for possible solutions",
+    "gui.plasmovoice.devices.mac_microphone_permission_denied.tooltip": "Plasmo Voice doesn't have permission to use the microphone.\n\nClick this button to grant access in System Settings",
     "gui.plasmovoice.devices.default": "System Default",
     "gui.plasmovoice.devices.microphone_volume": "Microphone Volume",
     "gui.plasmovoice.devices.noise_suppression": "Noise Suppression",
