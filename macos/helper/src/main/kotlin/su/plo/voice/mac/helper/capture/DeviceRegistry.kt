@@ -30,6 +30,10 @@ internal object DeviceRegistry {
             val value = alloc<AudioDeviceIDVar>()
             val size = alloc<UIntVar>().apply { this.value = sizeOf<AudioDeviceIDVar>().convert() }
 
+            /*
+             * AudioObjectGetPropertyData()
+             * https://developer.apple.com/documentation/coreaudio/audioobjectgetpropertydata(_:_:_:_:_:_:)
+             */
             val status = AudioObjectGetPropertyData(
                 kAudioObjectSystemObject.convert(),
                 address(kAudioHardwarePropertyDefaultInputDevice).ptr,
@@ -52,6 +56,10 @@ internal object DeviceRegistry {
 
         memScoped {
             WATCHED.forEach { selector ->
+                /*
+                 * AudioObjectAddPropertyListener()
+                 * https://developer.apple.com/documentation/coreaudio/audioobjectaddpropertylistener(_:_:_:_:)
+                 */
                 AudioObjectAddPropertyListener(
                     kAudioObjectSystemObject.convert(),
                     address(selector).ptr,
@@ -72,6 +80,10 @@ internal object DeviceRegistry {
 
         memScoped {
             WATCHED.forEach { selector ->
+                /*
+                 * AudioObjectRemovePropertyListener()
+                 * https://developer.apple.com/documentation/coreaudio/audioobjectremovepropertylistener(_:_:_:_:)
+                 */
                 AudioObjectRemovePropertyListener(
                     kAudioObjectSystemObject.convert(),
                     address(selector).ptr,
@@ -89,12 +101,20 @@ internal object DeviceRegistry {
         val size = alloc<UIntVar>()
 
         val system: AudioObjectID = kAudioObjectSystemObject.convert()
+        /*
+         * AudioObjectGetPropertyDataSize()
+         * https://developer.apple.com/documentation/coreaudio/audioobjectgetpropertydatasize(_:_:_:_:_:)
+         */
         if (AudioObjectGetPropertyDataSize(system, property.ptr, 0u, null, size.ptr) != 0) return emptyList()
 
         val count = (size.value.toLong() / sizeOf<AudioDeviceIDVar>()).toInt()
         if (count <= 0) return emptyList()
 
         val ids = allocArray<AudioDeviceIDVar>(count)
+        /*
+         * AudioObjectGetPropertyData()
+         * https://developer.apple.com/documentation/coreaudio/audioobjectgetpropertydata(_:_:_:_:_:_:)
+         */
         if (AudioObjectGetPropertyData(system, property.ptr, 0u, null, size.ptr, ids) != 0) return emptyList()
 
         (0 until count).map { ids[it] }
@@ -104,9 +124,17 @@ internal object DeviceRegistry {
     private fun AudioDeviceID.inputChannels(): Int = memScoped {
         val property = address(kAudioDevicePropertyStreamConfiguration, kAudioObjectPropertyScopeInput)
         val size = alloc<UIntVar>()
+        /*
+         * AudioObjectGetPropertyDataSize()
+         * https://developer.apple.com/documentation/coreaudio/audioobjectgetpropertydatasize(_:_:_:_:_:)
+         */
         if (AudioObjectGetPropertyDataSize(this@inputChannels, property.ptr, 0u, null, size.ptr) != 0) return 0
 
         val bytes = allocArray<ByteVar>(size.value.toInt())
+        /*
+         * AudioObjectGetPropertyData()
+         * https://developer.apple.com/documentation/coreaudio/audioobjectgetpropertydata(_:_:_:_:_:_:)
+         */
         if (AudioObjectGetPropertyData(this@inputChannels, property.ptr, 0u, null, size.ptr, bytes) != 0) return 0
 
         val list = bytes.reinterpret<AudioBufferList>().pointed
@@ -118,6 +146,10 @@ internal object DeviceRegistry {
         val value = alloc<CFStringRefVar>()
         val size = alloc<UIntVar>().apply { this.value = sizeOf<CFStringRefVar>().convert() }
 
+        /*
+         * AudioObjectGetPropertyData()
+         * https://developer.apple.com/documentation/coreaudio/audioobjectgetpropertydata(_:_:_:_:_:_:)
+         */
         if (AudioObjectGetPropertyData(this@stringProperty, address(selector).ptr, 0u, null, size.ptr, value.ptr) != 0) {
             return null
         }
@@ -137,10 +169,18 @@ internal object DeviceRegistry {
 
 @OptIn(ExperimentalForeignApi::class)
 private fun CFStringRef.asString(): String = memScoped {
+    /*
+     * CFStringGetLength()
+     * https://developer.apple.com/documentation/corefoundation/cfstringgetlength(_:)
+     */
     val length = CFStringGetLength(this@asString)
     val capacity = length * 4 + 1 // Worst case
     val bytes = allocArray<ByteVar>(capacity)
 
+    /*
+     * CFStringGetCString()
+     * https://developer.apple.com/documentation/corefoundation/cfstringgetcstring(_:_:_:_:)
+     */
     if (CFStringGetCString(this@asString, bytes, capacity, kCFStringEncodingUTF8)) bytes.toKString() else ""
 }
 

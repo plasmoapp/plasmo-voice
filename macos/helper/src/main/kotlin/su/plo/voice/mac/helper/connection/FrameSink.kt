@@ -26,6 +26,10 @@ internal class SerialWriter(
     private val writer: FrameWriter,
     private val onLost: () -> Unit,
 ) : FrameSink {
+    /*
+     * dispatch_queue_create()
+     * https://developer.apple.com/documentation/dispatch/dispatch_queue_create
+     */
     private val queue = dispatch_queue_create("com.plasmoverse.plasmovoice.mic.writer", null)
 
     @Volatile
@@ -34,6 +38,10 @@ internal class SerialWriter(
     override fun send(frame: Frame) {
         if (lost) return
 
+        /*
+         * dispatch_async()
+         * https://developer.apple.com/documentation/dispatch/dispatch_async
+         */
         dispatch_async(queue) {
             if (lost) return@dispatch_async
 

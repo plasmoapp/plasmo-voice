@@ -28,7 +28,16 @@ fun main(args: Array<String>) {
 
     // Accessory keeps the helper out of the Dock and the switcher, while still leaving it an app
     // macOS is willing to put a permission dialog in front of.
+
+    /*
+     * NSApplication.sharedApplication()
+     * https://developer.apple.com/documentation/appkit/nsapplication/shared
+     */
     val application = NSApplication.sharedApplication()
+    /*
+     * setActivationPolicy()
+     * https://developer.apple.com/documentation/appkit/nsapplication/setactivationpolicy(_:)
+     */
     application.setActivationPolicy(NSApplicationActivationPolicy.NSApplicationActivationPolicyAccessory)
 
     val writer = SerialWriter(FrameWriter((socket as RawSink).buffered()), onLost = socket::shutdown)
@@ -40,7 +49,17 @@ fun main(args: Array<String>) {
         microphone = AudioQueueMicrophone(),
     )
 
-    dispatch_async(dispatch_queue_create("com.plasmoverse.plasmovoice.mic.session", null)) {
+    /*
+     * dispatch_async()
+     * https://developer.apple.com/documentation/dispatch/dispatch_async
+     */
+    dispatch_async(
+        /*
+         * dispatch_queue_create()
+         * https://developer.apple.com/documentation/dispatch/dispatch_queue_create
+         */
+        dispatch_queue_create("com.plasmoverse.plasmovoice.mic.session", null)
+    ) {
         try {
             session.run()
         } finally {
@@ -49,6 +68,10 @@ fun main(args: Array<String>) {
         }
     }
 
+    /*
+     * run()
+     * https://developer.apple.com/documentation/appkit/nsapplication/run()
+     */
     application.run()
 }
 
