@@ -4,6 +4,8 @@ import su.plo.voice.api.client.audio.device.DeviceFactory
 import su.plo.voice.api.client.audio.device.DeviceFactoryManager
 import su.plo.voice.api.client.config.ClientConfig
 import su.plo.voice.api.client.config.InputBackend
+import su.plo.voice.client.mac.AVAuthorizationStatus
+import su.plo.voice.client.mac.AVCaptureDevice
 import su.plo.voice.util.isMac
 
 /**
@@ -16,10 +18,17 @@ fun ClientConfig.Voice.inputBackends(): List<InputBackend> {
     migrateJavaxInput()
 
     val preferred = inputBackend.value()
-    val fallbacks = if (isMac()) listOf(InputBackend.COREAUDIO, InputBackend.JAVAX) else listOf(InputBackend.OPEN_AL, InputBackend.JAVAX)
+    val fallbacks = if (isMac()) macFallbacks() else listOf(InputBackend.OPEN_AL, InputBackend.JAVAX)
 
     return (listOf(preferred) + fallbacks).filter { it != InputBackend.AUTO }.distinct()
 }
+
+private fun macFallbacks(): List<InputBackend> =
+    if (AVCaptureDevice.authorizationStatus == AVAuthorizationStatus.AUTHORIZED) {
+        listOf(InputBackend.JAVAX, InputBackend.COREAUDIO) // Don't run macOS mic helper then
+    } else {
+        listOf(InputBackend.COREAUDIO, InputBackend.JAVAX)
+    }
 
 /** The factory the player's choice points at. */
 fun DeviceFactoryManager.inputFactory(config: ClientConfig.Voice): DeviceFactory =
