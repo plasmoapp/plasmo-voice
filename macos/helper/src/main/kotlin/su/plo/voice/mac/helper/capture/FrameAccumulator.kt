@@ -1,11 +1,12 @@
 package su.plo.voice.mac.helper.capture
 
 /**
- * Cuts the stream into frames of one fixed size.
+ * Buffers arbitrarily-sized chunks of PCM bytes from audio queue and emits them as
+ * fixed-size frames once enough data has piled up.
  *
  * Be aware that it's only ever touched from the audio callback thread.
  */
-internal class FrameSlicer(private val frameBytes: Int, private val onFrame: (ByteArray) -> Unit) {
+internal class FrameAccumulator(private val frameBytes: Int, private val onFrame: (ByteArray) -> Unit) {
     private val pending = ByteArray(frameBytes)
     private var filled = 0
 

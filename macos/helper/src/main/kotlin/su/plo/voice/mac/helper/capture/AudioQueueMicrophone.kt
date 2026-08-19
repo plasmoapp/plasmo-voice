@@ -19,18 +19,25 @@ private const val BUFFER_COUNT = 3
 internal class AudioQueueMicrophone : Microphone {
     private var queue: AudioQueueRef? = null
     private var reference: StableRef<AudioQueueMicrophone>? = null
-    private var slicer: FrameSlicer? = null
+    private var accumulator: FrameAccumulator? = null
 
     override fun open(format: CaptureFormat, deviceId: String?, onFrame: (ByteArray) -> Unit): Int = runCatching {
         close()
 
         val frameSamples = format.frameSamples()
         val frameBytes = frameSamples * BYTES_PER_SAMPLE
-        slicer = FrameSlicer(frameBytes, onFrame)
-
+        accumulator = FrameAccumulator(frameBytes, onFrame)
         val owner = StableRef.create(this@AudioQueueMicrophone).also { reference = it }
 
         memScoped {
+            // This description is the contract we're asking CoreAudio to capture under, it's
+            // not negotiated or adjusted by the OS, so every field has to be internally
+            // consistent or AudioQueueNewInput below fails outright (or silently produces
+            // garbled audio, which, of course, is worse for us).
+            //
+            // We fix the format to signed 16-bit linear PCM, interleaved and packed (no padding
+            // between samples / frames), because that's what FrameAccumulator and the wire
+            // protocol both assume.
             val description = alloc<AudioStreamBasicDescription>().apply {
                 mSampleRate = format.sampleRate.toDouble()
                 mFormatID = kAudioFormatLinearPCM
@@ -55,6 +62,15 @@ internal class AudioQueueMicrophone : Microphone {
 
             deviceId?.let { selectDevice(audioQueue, it) }
 
+            // AudioQueue is like a producer / consumer pipeline: at any moment some buffers
+            // are "in flight" being filled by the hardware and others are sitting with us,
+            // already delivered to inputCallback but not yet handed back.
+            //
+            // With only one buffer, there'd be a gap between the OS finishing a fill and
+            // inputCallback  re-enqueueing it, during that gap CoreAudio has absolutely
+            // nowhere to write incoming samples and either drops audio or stalls the input
+            // stream. BUFFER_COUNT (3) gives enough slack that inputCallback can lag a buffer
+            // or two behind without the line ever running dry.
             repeat(BUFFER_COUNT) {
                 val buffer = alloc<AudioQueueBufferRefVar>()
 
@@ -102,7 +118,7 @@ internal class AudioQueueMicrophone : Microphone {
 
         reference?.dispose()
         reference = null
-        slicer = null
+        accumulator = null
     }
 
     fun receive(buffer: AudioQueueBufferRef) {
@@ -111,7 +127,7 @@ internal class AudioQueueMicrophone : Microphone {
         val data = pointed.mAudioData ?: return
 
         if (size > 0) {
-            slicer?.write(data.readBytes(size))
+            accumulator?.write(data.readBytes(size))
         }
     }
 }
@@ -138,7 +154,6 @@ private fun selectDevice(queue: AudioQueueRef, deviceId: String) = memScoped {
             )
         )
     } finally {
-
         /*
          * CFRelease()
          * https://developer.apple.com/documentation/corefoundation/cfrelease
@@ -151,6 +166,11 @@ private fun verify(status: OSStatus) {
     if (status != 0) throw MicrophoneError.CORE_AUDIO_STATUS.exception(status)
 }
 
+// The C function pointer AudioQueueNewInput() invokes whenever a buffer fills up with
+// captured audio.
+//
+// Signature mirrors AudioQueueInputCallback, read:
+// https://developer.apple.com/documentation/audiotoolbox/audioqueueinputcallback
 @OptIn(ExperimentalForeignApi::class)
 private val inputCallback = staticCFunction<
         COpaquePointer?,
