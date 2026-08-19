@@ -3,6 +3,7 @@ package su.plo.voice.mac.probe
 import su.plo.voice.mac.protocol.audio.*
 import su.plo.voice.mac.protocol.frame.*
 import su.plo.voice.mac.protocol.message.*
+import su.plo.voice.mac.protocol.message.wire.*
 import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.time.Duration.Companion.seconds

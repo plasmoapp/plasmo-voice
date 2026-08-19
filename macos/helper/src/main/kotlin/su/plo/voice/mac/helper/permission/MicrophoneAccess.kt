@@ -1,6 +1,6 @@
 package su.plo.voice.mac.helper.permission
 
-import su.plo.voice.mac.protocol.message.AuthStatus
+import su.plo.voice.mac.protocol.message.status.AuthStatus
 
 /**
  * The permission side of macOS, behind a door the session can knock on.

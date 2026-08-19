@@ -6,7 +6,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AudioDevice
 import su.plo.voice.api.client.audio.device.DeviceFactory
 import su.plo.voice.mac.protocol.audio.DeviceInfo
-import su.plo.voice.mac.protocol.message.AuthStatus
+import su.plo.voice.mac.protocol.message.status.AuthStatus
 import su.plo.voice.mac.protocol.message.Downstream
 import javax.sound.sampled.AudioFormat
 

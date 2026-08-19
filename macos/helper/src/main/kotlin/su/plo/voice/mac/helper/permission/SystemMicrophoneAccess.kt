@@ -3,7 +3,7 @@ package su.plo.voice.mac.helper.permission
 import platform.AVFoundation.*
 import platform.AppKit.NSWorkspace
 import platform.Foundation.NSURL
-import su.plo.voice.mac.protocol.message.AuthStatus
+import su.plo.voice.mac.protocol.message.status.AuthStatus
 
 private const val MICROPHONE_SETTINGS = "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
 

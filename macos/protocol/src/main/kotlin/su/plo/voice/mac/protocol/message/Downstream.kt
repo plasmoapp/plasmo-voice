@@ -4,6 +4,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import su.plo.voice.mac.protocol.audio.CaptureFormat
 import su.plo.voice.mac.protocol.audio.DeviceInfo
+import su.plo.voice.mac.protocol.message.status.AuthStatus
+import su.plo.voice.mac.protocol.message.status.FailureCode
 
 /**
  * Everything the helper can say back.

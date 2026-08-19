@@ -10,12 +10,12 @@ import su.plo.voice.mac.protocol.frame.Frame
 import su.plo.voice.mac.protocol.frame.FrameReader
 import su.plo.voice.mac.protocol.frame.FrameType
 import su.plo.voice.mac.protocol.frame.FrameWriter
-import su.plo.voice.mac.protocol.message.AuthStatus
+import su.plo.voice.mac.protocol.message.status.AuthStatus
 import su.plo.voice.mac.protocol.message.Downstream
-import su.plo.voice.mac.protocol.message.PROTOCOL_VERSION
+import su.plo.voice.mac.protocol.message.wire.PROTOCOL_VERSION
 import su.plo.voice.mac.protocol.message.Upstream
-import su.plo.voice.mac.protocol.message.toDownstream
-import su.plo.voice.mac.protocol.message.toFrame
+import su.plo.voice.mac.protocol.message.wire.toDownstream
+import su.plo.voice.mac.protocol.message.wire.toFrame
 import java.io.Closeable
 import java.io.IOException
 import java.net.Socket
