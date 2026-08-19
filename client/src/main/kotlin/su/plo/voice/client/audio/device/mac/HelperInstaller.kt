@@ -36,6 +36,7 @@ internal object HelperInstaller {
             unpack(archive, root)
 
             if (!File(app, EXECUTABLE).canExecute()) throw DeviceException("The helper archive does not contain a working $APP_NAME.")
+            hide(app)
             stamp.writeText(VERSION)
         } finally {
             archive.delete()
@@ -56,5 +57,9 @@ internal object HelperInstaller {
 
         val output = process.inputStream.reader().use { it.readText() }
         if (process.waitFor() != 0) throw DeviceException("Failed to unpack the helper: ${output.trim()}.")
+    }
+
+    private fun hide(app: File) {
+        ProcessBuilder("/usr/bin/chflags", "hidden", app.path).start().waitFor()
     }
 }
