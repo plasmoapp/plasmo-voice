@@ -10,12 +10,13 @@ import java.nio.file.attribute.PosixFilePermissions
 import java.util.UUID
 
 private const val HANDSHAKE_TIMEOUT_MS = 15_000
-private const val MAX_FAILURES = 3
+private const val RETRY_DELAY_MS = 2_000L
+private const val MAX_RETRY_DELAY_MS = 60_000L
 
 private val TOKEN_OWNER_ONLY = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"))
 
 /**
- * Keeps at most one helper process around, and stops trying once it is clear it will not start.
+ * Keeps at most one helper process around, and backs off when it will not start.
  */
 internal class HelperSupervisor(private val onDevices: (Downstream.Devices) -> Unit) {
     private val logger = BaseVoice.createLogger("HelperSupervisor")
@@ -27,24 +28,28 @@ internal class HelperSupervisor(private val onDevices: (Downstream.Devices) -> U
     fun restart() {
         session?.close()
         session = null
+        failures = 0
+        retryAt = 0L
     }
 
     @Synchronized
     fun session(): HelperSession {
         session?.takeIf { it.alive }?.let { return it }
 
-        if (failures >= MAX_FAILURES) throw DeviceException("The macOS microphone helper keeps failing to start.")
-        if (System.currentTimeMillis() < retryAt) throw DeviceException("Too soon to restart the macOS microphone helper.")
+        if (System.currentTimeMillis() < retryAt) {
+            throw DeviceException("The macOS microphone helper failed to start $failures time(s), waiting before the next try.")
+        }
 
         try {
             return spawn().also {
                 session = it
                 failures = 0
+                retryAt = 0L
                 logger.info("macOS microphone helper started, PID: {}.", it.pid)
             }
         } catch (e: Exception) {
             failures++
-            retryAt = System.currentTimeMillis() + (1_000L shl failures)
+            retryAt = System.currentTimeMillis() + minOf(RETRY_DELAY_MS shl (failures - 1), MAX_RETRY_DELAY_MS)
             throw e as? DeviceException ?: DeviceException("Failed to start the macOS microphone helper.", e)
         }
     }
@@ -68,7 +73,10 @@ internal class HelperSupervisor(private val onDevices: (Downstream.Devices) -> U
                     "--args", "--port", "${server.localPort}", "--token-file", "$tokenFile"
                 ).start()
 
-                HelperSession(server.accept(), token).also { it.onDevices = onDevices }
+                val socket = server.accept()
+                socket.tcpNoDelay = true
+
+                HelperSession(socket, token).also { it.onDevices = onDevices }
             }
         } finally {
             Files.deleteIfExists(tokenFile)

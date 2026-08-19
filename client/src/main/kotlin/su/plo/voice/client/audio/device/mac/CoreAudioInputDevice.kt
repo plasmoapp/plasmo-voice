@@ -9,6 +9,7 @@ import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent
 import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent
 import su.plo.voice.client.audio.device.BaseAudioDevice
 import su.plo.voice.mac.protocol.audio.CaptureFormat
+import su.plo.voice.mac.protocol.message.status.AuthStatus
 import javax.sound.sampled.AudioFormat
 
 private val LOGGER = BaseVoice.createLogger("CoreAudioInputDevice")
@@ -43,7 +44,9 @@ internal class CoreAudioInputDevice(
         if (preOpen.isCancelled) throw DeviceException("Device opening has been canceled.")
 
         val session = supervisor.session()
-        session.grantPermission()
+        val status = session.permission(prompt = false)
+        if (status != AuthStatus.AUTHORIZED) throw MicrophonePermissionException(status)
+
         session.onAudio = { if (started) samples.write(it) }
         val frameSamples = session.openMicrophone(CaptureFormat(format.sampleRate.toInt(), channels), deviceId)
         this.session = session

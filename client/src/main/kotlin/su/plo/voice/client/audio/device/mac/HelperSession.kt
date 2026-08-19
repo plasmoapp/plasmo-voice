@@ -10,10 +10,10 @@ import su.plo.voice.mac.protocol.frame.Frame
 import su.plo.voice.mac.protocol.frame.FrameReader
 import su.plo.voice.mac.protocol.frame.FrameType
 import su.plo.voice.mac.protocol.frame.FrameWriter
-import su.plo.voice.mac.protocol.message.status.AuthStatus
 import su.plo.voice.mac.protocol.message.Downstream
-import su.plo.voice.mac.protocol.message.wire.PROTOCOL_VERSION
 import su.plo.voice.mac.protocol.message.Upstream
+import su.plo.voice.mac.protocol.message.status.AuthStatus
+import su.plo.voice.mac.protocol.message.wire.PROTOCOL_VERSION
 import su.plo.voice.mac.protocol.message.wire.toDownstream
 import su.plo.voice.mac.protocol.message.wire.toFrame
 import java.io.Closeable
@@ -21,7 +21,6 @@ import java.io.IOException
 import java.net.Socket
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.TimeUnit
-import java.util.concurrent.atomic.AtomicReference
 import kotlin.concurrent.thread
 
 private const val REPLY_TIMEOUT_MS = 5_000L
@@ -36,11 +35,10 @@ private const val PROMPT_TIMEOUT_MS = 120_000L
 internal class HelperSession(private val socket: Socket, token: String) : Closeable {
     private val frames = FrameReader(socket.getInputStream().asSource().buffered())
     private val writer = FrameWriter(socket.getOutputStream().asSink().buffered())
-    private val pending = AtomicReference<Pending?>()
+    private val pending = ArrayDeque<Pending>()
     private val writeLock = Any()
-    private val requestLock = Any()
 
-    private class Pending(val expectsDevices: Boolean, val future: CompletableFuture<Downstream>)
+    private class Pending(val answers: (Downstream) -> Boolean, val future: CompletableFuture<Downstream>)
 
     @Volatile
     var onAudio: (ShortArray) -> Unit = {}
@@ -64,11 +62,9 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
         thread(name = "Plasmo Voice Microphone", isDaemon = true, block = ::pump)
     }
 
-    /** @return how many samples every audio frame carries. */
     fun openMicrophone(format: CaptureFormat, deviceId: String?): Int =
         expect<Downstream.Opened>(request(Upstream.Open(format, deviceId), REPLY_TIMEOUT_MS)).frameSamples
 
-    /** Closes the microphone. */
     fun closeMicrophone() {
         expect<Downstream.Closed>(request(Upstream.Close, REPLY_TIMEOUT_MS))
     }
@@ -76,21 +72,11 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
     fun listDevices(): Downstream.Devices =
         expect(request(Upstream.ListDevices, REPLY_TIMEOUT_MS))
 
-    /** Asking with [prompt] may put a system dialog in front of the player. */
     fun permission(prompt: Boolean): AuthStatus =
         expect<Downstream.Permission>(
             request(Upstream.Permission(prompt), if (prompt) PROMPT_TIMEOUT_MS else REPLY_TIMEOUT_MS)
         ).status
 
-    /** Makes sure the microphone is actually usable before anything tries to open it. */
-    fun grantPermission() {
-        val status = permission(prompt = false)
-        val granted = if (status == AuthStatus.NOT_DETERMINED) permission(prompt = true) else status
-
-        if (granted != AuthStatus.AUTHORIZED) throw DeviceException("Microphone access is $granted.")
-    }
-
-    /** Opens settings. */
     fun openSettings() = send(Upstream.OpenSettings.toFrame())
 
     override fun close() {
@@ -104,38 +90,49 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
                 val frame = frames.read() ?: break
                 when (frame.type) {
                     FrameType.AUDIO -> onAudio(AudioUtil.bytesToShorts(frame.payload))
-                    FrameType.CONTROL -> {
-                        val message = frame.toDownstream()
-
-                        if (message is Downstream.Devices && pending.get()?.expectsDevices != true) {
-                            onDevices(message)
-                        } else {
-                            pending.getAndSet(null)?.future?.complete(message)
-                        }
-                    }
+                    FrameType.CONTROL -> deliver(frame.toDownstream())
                     FrameType.PING -> send(frame)
                 }
             }
         } catch (_: Exception) {
         } finally {
             alive = false
-            pending.getAndSet(null)?.future?.completeExceptionally(IOException("The helper is gone."))
+            drainPending().forEach { it.future.completeExceptionally(IOException("The helper is gone.")) }
             runCatching { socket.close() }
         }
     }
 
-    private fun request(message: Upstream, timeoutMs: Long): Downstream = synchronized(requestLock) {
-        val waiter = Pending(message is Upstream.ListDevices, CompletableFuture())
-        pending.set(waiter)
+    private fun deliver(message: Downstream) {
+        val waiter = synchronized(pending) {
+            val match = pending.firstOrNull { it.answers(message) }
+                ?: pending.firstOrNull().takeIf { message is Downstream.Failure }
+
+            match?.also { pending.remove(it) }
+        }
+
+        when {
+            waiter != null -> waiter.future.complete(message)
+            message is Downstream.Devices -> onDevices(message)
+            else -> Unit
+        }
+    }
+
+    private fun request(message: Upstream, timeoutMs: Long): Downstream {
+        val waiter = Pending(message.answeredBy(), CompletableFuture())
+        synchronized(pending) { pending.addLast(waiter) }
 
         try {
             send(message.toFrame())
-            waiter.future.get(timeoutMs, TimeUnit.MILLISECONDS)
+            return waiter.future.get(timeoutMs, TimeUnit.MILLISECONDS)
         } catch (e: Exception) {
             throw DeviceException("The helper did not answer $message.", e)
         } finally {
-            pending.compareAndSet(waiter, null)
+            synchronized(pending) { pending.remove(waiter) }
         }
+    }
+
+    private fun drainPending(): List<Pending> = synchronized(pending) {
+        pending.toList().also { pending.clear() }
     }
 
     private fun send(frame: Frame) = synchronized(writeLock) { writer.write(frame) }
@@ -145,4 +142,12 @@ internal class HelperSession(private val socket: Socket, token: String) : Closea
         is Downstream.Failure -> throw DeviceException("${reply.code}: ${reply.message}.")
         else -> throw DeviceException("The helper answered with an unexpected $reply.")
     }
+}
+
+private fun Upstream.answeredBy(): (Downstream) -> Boolean = when (this) {
+    is Upstream.Open -> { reply -> reply is Downstream.Opened }
+    is Upstream.Close -> { reply -> reply is Downstream.Closed }
+    is Upstream.ListDevices -> { reply -> reply is Downstream.Devices }
+    is Upstream.Permission -> { reply -> reply is Downstream.Permission }
+    is Upstream.OpenSettings -> { _ -> false }
 }
