@@ -5,6 +5,7 @@ import kotlinx.io.asSource
 import kotlinx.io.buffered
 import su.plo.voice.mac.protocol.frame.*
 import su.plo.voice.mac.protocol.message.*
+import su.plo.voice.mac.protocol.message.wire.*
 import java.io.Closeable
 import java.net.Socket
 import kotlin.time.Duration

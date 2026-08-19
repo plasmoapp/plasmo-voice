@@ -1,4 +1,4 @@
-package su.plo.voice.mac.protocol.message
+package su.plo.voice.mac.protocol.message.status
 
 /**
  * Why capture could not happen, coarse enough that the mod can pick a screen without parsing text.

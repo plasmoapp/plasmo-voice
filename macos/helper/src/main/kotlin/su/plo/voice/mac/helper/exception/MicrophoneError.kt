@@ -1,6 +1,6 @@
 package su.plo.voice.mac.helper.exception
 
-import su.plo.voice.mac.protocol.message.FailureCode
+import su.plo.voice.mac.protocol.message.status.FailureCode
 
 /**
  * Every way [MicrophoneException] gets raised, with the wire code the mod should hear about it as.

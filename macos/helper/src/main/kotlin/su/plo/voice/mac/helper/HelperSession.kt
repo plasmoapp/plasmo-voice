@@ -11,6 +11,8 @@ import su.plo.voice.mac.protocol.frame.Frame
 import su.plo.voice.mac.protocol.frame.FrameReader
 import su.plo.voice.mac.protocol.frame.FrameType
 import su.plo.voice.mac.protocol.message.*
+import su.plo.voice.mac.protocol.message.status.*
+import su.plo.voice.mac.protocol.message.wire.*
 
 /**
  * One connection to the mod, from hello to close.

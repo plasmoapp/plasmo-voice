@@ -1,4 +1,4 @@
-package su.plo.voice.mac.protocol.message
+package su.plo.voice.mac.protocol.message.status
 
 /**
  * The macOS answer to "may this app use the microphone?".

@@ -28,7 +28,7 @@ import su.plo.voice.client.gui.settings.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.OptionWidget;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
-import su.plo.voice.mac.protocol.message.AuthStatus;
+import su.plo.voice.mac.protocol.message.status.AuthStatus;
 
 import su.plo.lib.mod.client.render.Colors;
 import java.util.Objects;

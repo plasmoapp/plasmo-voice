@@ -3,6 +3,7 @@ package su.plo.voice.mac.protocol.frame
 import kotlinx.io.Sink
 import kotlinx.io.Source
 import kotlinx.io.readByteArray
+import su.plo.voice.mac.protocol.exception.ProtocolError
 
 private const val HEADER_SIZE = 5
 private const val MAX_PAYLOAD_SIZE = 1 shl 20
@@ -11,13 +12,6 @@ private const val MAX_PAYLOAD_SIZE = 1 shl 20
  * One message on the wire.
  */
 class Frame(val type: FrameType, val payload: ByteArray)
-
-/**
- * Raised when the bytes arriving cannot be a frame at all.
- *
- * Better to fail loudly here than to hand the mod a megabyte of noise decoded as audio.
- */
-class ProtocolException(message: String) : RuntimeException(message)
 
 /**
  * Writes frames as `type (1 byte) | payload size, big endian (4 bytes) | payload`.
@@ -47,9 +41,9 @@ class FrameReader(private val source: Source) {
         if (!source.request(HEADER_SIZE.toLong())) return null
 
         val code = source.readByte()
-        val type = FrameType.byCode(code) ?: throw ProtocolException("Unknown frame type $code.")
+        val type = FrameType.byCode(code) ?: throw ProtocolError.UNKNOWN_FRAME_TYPE.exception(code)
         val size = source.readInt()
-        if (size !in 0..MAX_PAYLOAD_SIZE) throw ProtocolException("Frame size $size is out of bounds.")
+        if (size !in 0..MAX_PAYLOAD_SIZE) throw ProtocolError.FRAME_SIZE_OUT_OF_BOUNDS.exception(size)
 
         if (!source.request(size.toLong())) return null
 
