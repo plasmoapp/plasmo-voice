@@ -1,2 +1,0 @@
-- Added `BaseServerDirectSource#getListeners` and `ServerProximitySource#getListeners` to API to resolve current source's listeners.
-- Added config option to make vmute/vunmute commands and mute expirations silent. [#522](https://github.com/plasmoapp/plasmo-voice/pull/522)
