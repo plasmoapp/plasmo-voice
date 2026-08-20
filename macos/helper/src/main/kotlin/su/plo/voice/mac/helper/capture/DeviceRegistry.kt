@@ -154,7 +154,15 @@ internal object DeviceRegistry {
             return null
         }
 
-        value.value?.asString()
+        try {
+            value.value?.asString()
+        } finally {
+            /*
+             * CFRelease()
+             * https://developer.apple.com/documentation/corefoundation/cfrelease
+             */
+            value.value?.let { CFRelease(it) }
+        }
     }
 
     private fun MemScope.address(
@@ -184,6 +192,10 @@ private fun CFStringRef.asString(): String = memScoped {
     if (CFStringGetCString(this@asString, bytes, capacity, kCFStringEncodingUTF8)) bytes.toKString() else ""
 }
 
+/*
+ * AudioObjectPropertyListenerProc
+ * https://developer.apple.com/documentation/coreaudio/audioobjectpropertylistenerproc
+ */
 @OptIn(ExperimentalForeignApi::class)
 private val devicesChanged = staticCFunction<
         AudioObjectID,

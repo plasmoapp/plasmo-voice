@@ -20,7 +20,7 @@ sealed interface Upstream {
      */
     @Serializable
     @SerialName("permission")
-    data class Permission(val prompt: Boolean) : Upstream
+    data class Permission(val prompt: Boolean, val requestId: Int = 0) : Upstream
 
     /**
      * Sent when the player has already denied access once.
@@ -39,7 +39,7 @@ sealed interface Upstream {
      */
     @Serializable
     @SerialName("devices")
-    data object ListDevices : Upstream
+    data class ListDevices(val requestId: Int = 0) : Upstream
 
     /**
      * Starts the microphone.
@@ -48,7 +48,7 @@ sealed interface Upstream {
      */
     @Serializable
     @SerialName("open")
-    data class Open(val format: CaptureFormat, val deviceId: String? = null) : Upstream
+    data class Open(val format: CaptureFormat, val deviceId: String? = null, val requestId: Int = 0) : Upstream
 
     /**
      * Releases the microphone without shutting the helper down.
@@ -58,5 +58,5 @@ sealed interface Upstream {
      */
     @Serializable
     @SerialName("close")
-    data object Close : Upstream
+    data class Close(val requestId: Int = 0) : Upstream
 }

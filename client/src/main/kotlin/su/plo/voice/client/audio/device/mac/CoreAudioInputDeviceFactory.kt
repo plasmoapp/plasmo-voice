@@ -93,7 +93,7 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
         supervisor.restart()
         permission(prompt = false)
     } catch (e: Exception) {
-        LOGGER.warn("Failed to restart the macOS microphone helper while waiting for permission.", e)
+        LOGGER.warn("Failed to restart the macOS microphone helper while waiting for permission", e)
         AuthStatus.UNKNOWN
     }
 
@@ -102,7 +102,7 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
         devices.inputDevice.ifPresent(InputDevice::close)
         devices.setInputDevice(devices.openInputDevice(null))
     } catch (e: Exception) {
-        LOGGER.warn("Failed to reopen the input device after the microphone was granted.", e)
+        LOGGER.warn("Failed to reopen the input device after the microphone was granted", e)
     }
 
     private fun defaultDeviceName(): String {
@@ -128,7 +128,7 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
             try {
                 cache(supervisor.session().listDevices())
             } catch (e: Exception) {
-                LOGGER.warn("Failed to list macOS input devices.", e)
+                LOGGER.warn("Failed to list macOS input devices", e)
                 listedAt = System.currentTimeMillis()
             } finally {
                 listing.set(false)
@@ -148,7 +148,7 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
         return try {
             block()
         } catch (e: Exception) {
-            LOGGER.warn("Failed to resolve the macOS microphone permission.", e)
+            LOGGER.warn("Failed to resolve the macOS microphone permission", e)
             null
         } finally {
             resolving.set(false)

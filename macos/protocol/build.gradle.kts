@@ -17,7 +17,7 @@ kotlin {
     sourceSets["commonMain"].apply {
         kotlin.setSrcDirs(listOf("src/main/kotlin"))
         dependencies {
-            api(libs.kotlinx.json)
+            api(libs.kotlinx.msgpack)
             api(libs.kotlinx.io)
         }
     }

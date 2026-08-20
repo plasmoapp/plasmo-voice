@@ -37,7 +37,7 @@ fun DeviceFactoryManager.inputFactory(config: ClientConfig.Voice): DeviceFactory
 
 private fun ClientConfig.Voice.migrateJavaxInput() {
     @Suppress("DEPRECATION")
-    if (useJavaxInput.value() && inputBackend.value() == InputBackend.AUTO) {
+    if (!isMac() && useJavaxInput.value() && inputBackend.value() == InputBackend.AUTO) {
         inputBackend.set(InputBackend.JAVAX)
     }
 }

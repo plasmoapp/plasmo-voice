@@ -8,7 +8,7 @@ plugins {
 
 val appName = "Plasmo Voice Microphone"
 val appExecutable = "PVMicHelper"
-val appIdentifier = "com.plasmoverse.plasmovoice.mic"
+val appIdentifier = "com.plasmovoice.mic"
 val appArchive = "$appExecutable.zip"
 
 kotlin {

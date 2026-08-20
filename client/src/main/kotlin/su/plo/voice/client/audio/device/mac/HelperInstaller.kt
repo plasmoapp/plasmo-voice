@@ -28,14 +28,14 @@ internal object HelperInstaller {
         val archive = File.createTempFile("pvmic", ".zip")
         try {
             val resource = javaClass.getResourceAsStream(RESOURCE)
-                ?: throw DeviceException("The macOS microphone helper is not bundled in this build.")
+                ?: throw DeviceException("The macOS microphone helper is not bundled in this build")
             resource.use { input -> archive.outputStream().use(input::copyTo) }
 
             app.deleteRecursively()
             root.mkdirs()
             unpack(archive, root)
 
-            if (!File(app, EXECUTABLE).canExecute()) throw DeviceException("The helper archive does not contain a working $APP_NAME.")
+            if (!File(app, EXECUTABLE).canExecute()) throw DeviceException("The helper archive does not contain a working $APP_NAME")
             hide(app)
             stamp.writeText(VERSION)
         } finally {
@@ -56,7 +56,7 @@ internal object HelperInstaller {
             .start()
 
         val output = process.inputStream.reader().use { it.readText() }
-        if (process.waitFor() != 0) throw DeviceException("Failed to unpack the helper: ${output.trim()}.")
+        if (process.waitFor() != 0) throw DeviceException("Failed to unpack the helper: ${output.trim()}")
     }
 
     private fun hide(app: File) {

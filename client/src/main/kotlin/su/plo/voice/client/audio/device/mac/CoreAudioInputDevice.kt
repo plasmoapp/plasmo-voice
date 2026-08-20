@@ -2,11 +2,9 @@ package su.plo.voice.client.audio.device.mac
 
 import su.plo.voice.BaseVoice
 import su.plo.voice.api.client.PlasmoVoiceClient
-import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.InputDevice
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent
-import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent
 import su.plo.voice.client.audio.device.BaseAudioDevice
 import su.plo.voice.mac.protocol.audio.CaptureFormat
 import su.plo.voice.mac.protocol.message.status.AuthStatus
@@ -37,11 +35,7 @@ internal class CoreAudioInputDevice(
     }
 
     override fun open() {
-        if (isOpen()) throw DeviceException("Device is already open.")
-
-        val preOpen = DevicePreOpenEvent(this)
-        voiceClient.eventBus.fire(preOpen)
-        if (preOpen.isCancelled) throw DeviceException("Device opening has been canceled.")
+        guardOpen()
 
         val session = supervisor.session()
         val status = session.permission(prompt = false)
@@ -51,7 +45,7 @@ internal class CoreAudioInputDevice(
         val frameSamples = session.openMicrophone(CaptureFormat(format.sampleRate.toInt(), channels), deviceId)
         this.session = session
 
-        LOGGER.info("Device {} initialized, {} samples per frame.", name, frameSamples)
+        LOGGER.info("Device {} initialized, {} samples per frame", name, frameSamples)
         voiceClient.eventBus.fire(DeviceOpenEvent(this))
     }
 
@@ -63,7 +57,7 @@ internal class CoreAudioInputDevice(
         if (session.alive) runCatching { session.closeMicrophone() }
         samples.clear()
 
-        LOGGER.info("Device {} closed.", name)
+        LOGGER.info("Device {} closed", name)
         voiceClient.eventBus.fire(DeviceClosedEvent(this))
     }
 

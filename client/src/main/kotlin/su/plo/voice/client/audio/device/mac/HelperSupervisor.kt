@@ -37,7 +37,7 @@ internal class HelperSupervisor(private val onDevices: (Downstream.Devices) -> U
         session?.takeIf { it.alive }?.let { return it }
 
         if (System.currentTimeMillis() < retryAt) {
-            throw DeviceException("The macOS microphone helper failed to start $failures time(s), waiting before the next try.")
+            throw DeviceException("The macOS microphone helper failed to start $failures time(s), waiting before the next try")
         }
 
         try {
@@ -45,12 +45,12 @@ internal class HelperSupervisor(private val onDevices: (Downstream.Devices) -> U
                 session = it
                 failures = 0
                 retryAt = 0L
-                logger.info("macOS microphone helper started, PID: {}.", it.pid)
+                logger.info("macOS microphone helper started, PID: {}", it.pid)
             }
         } catch (e: Exception) {
             failures++
             retryAt = System.currentTimeMillis() + minOf(RETRY_DELAY_MS shl (failures - 1), MAX_RETRY_DELAY_MS)
-            throw e as? DeviceException ?: DeviceException("Failed to start the macOS microphone helper.", e)
+            throw e as? DeviceException ?: DeviceException("Failed to start the macOS microphone helper", e)
         }
     }
 
