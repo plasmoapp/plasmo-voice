@@ -10,4 +10,4 @@ import su.plo.voice.mac.protocol.message.status.AuthStatus
  * fails to open.
  */
 internal class MicrophonePermissionException(val status: AuthStatus) :
-    DeviceException("Microphone access is $status.")
+    DeviceException("Microphone access is $status")

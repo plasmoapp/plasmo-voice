@@ -58,7 +58,7 @@ fun main(args: Array<String>) {
          * dispatch_queue_create()
          * https://developer.apple.com/documentation/dispatch/dispatch_queue_create
          */
-        dispatch_queue_create("com.plasmoverse.plasmovoice.mic.session", null)
+        dispatch_queue_create("com.plasmovoice.mic.session", null)
     ) {
         try {
             session.run()

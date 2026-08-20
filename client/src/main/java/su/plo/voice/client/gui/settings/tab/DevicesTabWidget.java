@@ -149,8 +149,9 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private OptionEntry<CompositeRowWidget> createMicrophoneEntry() {
-        Optional<DeviceFactory> deviceFactory;
-        deviceFactory = Optional.of(InputBackendsKt.inputFactory(deviceFactories, config.getVoice()));
+        Optional<DeviceFactory> deviceFactory = Optional.of(
+                InputBackendsKt.inputFactory(deviceFactories, config.getVoice())
+        );
 
         ImmutableList<String> inputDeviceNames = deviceFactory.get().getDeviceNames();
         Optional<InputDevice> inputDevice = this.devices.getInputDevice();
@@ -398,7 +399,7 @@ public final class DevicesTabWidget extends TabWidget {
         if (!resolvingMacPermission.compareAndSet(false, true)) return;
 
         CoreAudioInputDeviceFactory coreAudio = (CoreAudioInputDeviceFactory) factory;
-        new Thread(() -> {
+        Thread thread = new Thread(() -> {
             try {
                 if (coreAudio.resolvePermission() == AuthStatus.AUTHORIZED) {
                     Minecraft.getInstance().execute(this::reloadInputDevice);
@@ -408,6 +409,8 @@ public final class DevicesTabWidget extends TabWidget {
             } finally {
                 resolvingMacPermission.set(false);
             }
-        }, "Plasmo Voice Permission").start();
+        }, "Plasmo Voice Permission");
+        thread.setDaemon(true);
+        thread.start();
     }
 }

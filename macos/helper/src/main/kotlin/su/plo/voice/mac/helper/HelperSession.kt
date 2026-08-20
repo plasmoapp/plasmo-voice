@@ -38,7 +38,7 @@ internal class HelperSession(
          * https://pubs.opengroup.org/onlinepubs/9699919799/functions/getpid.html
          */
         send(Downstream.Hello(token, getpid(), PROTOCOL_VERSION))
-        DeviceRegistry.onChange(::sendDevices)
+        DeviceRegistry.onChange { sendDevices() }
         generateSequence { reader.read() }.forEach(::dispatch)
     } finally {
         DeviceRegistry.stopListening()
@@ -52,42 +52,42 @@ internal class HelperSession(
     }
 
     private fun dispatch(message: Upstream) = when (message) {
-        is Upstream.Permission -> permission(message.prompt)
-        is Upstream.Open -> open(message.format, message.deviceId)
+        is Upstream.Permission -> permission(message.prompt, message.requestId)
+        is Upstream.Open -> open(message.format, message.deviceId, message.requestId)
         Upstream.OpenSettings -> access.settings()
-        Upstream.ListDevices -> sendDevices()
-        Upstream.Close -> close()
+        is Upstream.ListDevices -> sendDevices(message.requestId)
+        is Upstream.Close -> close(message.requestId)
     }
 
-    private fun permission(prompt: Boolean) = if (prompt) {
-        access.request { send(Downstream.Permission(it)) }
+    private fun permission(prompt: Boolean, requestId: Int) = if (prompt) {
+        access.request { send(Downstream.Permission(it, requestId)) }
     } else {
-        send(Downstream.Permission(access.status))
+        send(Downstream.Permission(access.status, requestId))
     }
 
-    private fun sendDevices() =
-        send(Downstream.Devices(DeviceRegistry.devices(), DeviceRegistry.defaultId()))
+    private fun sendDevices(requestId: Int? = null) =
+        send(Downstream.Devices(DeviceRegistry.devices(), DeviceRegistry.defaultId(), requestId))
 
-    private fun open(format: CaptureFormat, deviceId: String?) {
+    private fun open(format: CaptureFormat, deviceId: String?, requestId: Int) {
         if (access.status != AuthStatus.AUTHORIZED) {
-            return fail(FailureCode.PERMISSION_DENIED, "Microphone access is ${access.status}.")
+            return fail(FailureCode.PERMISSION_DENIED, "Microphone access is ${access.status}.", requestId)
         }
 
         try {
             val frameSamples = microphone.open(format, deviceId) { sink.send(Frame(FrameType.AUDIO, it)) }
-            send(Downstream.Opened(format, frameSamples))
+            send(Downstream.Opened(format, frameSamples, requestId))
         } catch (e: MicrophoneException) {
-            fail(e.error.code, e.message)
+            fail(e.error.code, e.message, requestId)
         }
     }
 
-    private fun close() {
+    private fun close(requestId: Int) {
         microphone.close()
-        send(Downstream.Closed)
+        send(Downstream.Closed(requestId))
     }
 
-    private fun fail(code: FailureCode, message: String) =
-        send(Downstream.Failure(code, message))
+    private fun fail(code: FailureCode, message: String, requestId: Int?) =
+        send(Downstream.Failure(code, message, requestId))
 
     private fun send(message: Downstream) =
         sink.send(message.toFrame())

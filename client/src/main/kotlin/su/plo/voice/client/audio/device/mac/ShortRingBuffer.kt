@@ -11,9 +11,8 @@ internal class ShortRingBuffer(private val capacity: Int) {
     private var size = 0
 
     val available: Int
-
-    @Synchronized
-    get() = size
+        @Synchronized
+        get() = size
 
     @Synchronized
     fun write(samples: ShortArray) {

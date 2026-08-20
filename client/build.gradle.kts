@@ -74,8 +74,7 @@ if (isMainProject) {
 
 val shadowCommon = configurations.create("shadowCommon")
 
-@Suppress("DEPRECATION")
-val macHelper: Configuration by configurations.creating
+val macHelper = configurations.create("macHelper")
 val macHelperZip: String? = providers.gradleProperty("pv.mac.helperZip").orNull
 val buildMacHelperLocally = providers.gradleProperty("pv.mac.buildLocal").isPresent ||
         org.gradle.internal.os.OperatingSystem.current().isMacOsX

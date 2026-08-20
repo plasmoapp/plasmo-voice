@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
     <key>CFBundleIdentifier</key>
-    <string>com.plasmoverse.plasmovoice.mic</string>
+    <string>com.plasmovoice.mic</string>
     <key>CFBundleExecutable</key>
     <string>PVMicHelper</string>
     <key>CFBundleName</key>

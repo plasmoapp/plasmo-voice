@@ -30,7 +30,7 @@ internal class SerialWriter(
      * dispatch_queue_create()
      * https://developer.apple.com/documentation/dispatch/dispatch_queue_create
      */
-    private val queue = dispatch_queue_create("com.plasmoverse.plasmovoice.mic.writer", null)
+    private val queue = dispatch_queue_create("com.plasmovoice.mic.writer", null)
 
     @Volatile
     private var lost = false

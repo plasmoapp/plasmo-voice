@@ -56,8 +56,8 @@ jobs:
         CERTIFICATE_PASSWORD: ${{ secrets.MACOS_SIGNING_PASSWORD }}
       run: |
         if [ -z "$CERTIFICATE" ]; then
-          echo "::warning::no signing certificate, the helper will be signed ad-hoc and the microphone grant will not survive an update."
-          exit 0
+          echo "::error::no signing certificate."
+          exit 1
         fi
 
         KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"

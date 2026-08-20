@@ -31,7 +31,7 @@ sealed interface Downstream {
      */
     @Serializable
     @SerialName("permission")
-    data class Permission(val status: AuthStatus) : Downstream
+    data class Permission(val status: AuthStatus, val requestId: Int? = null) : Downstream
 
     /**
      * The inputs the player can choose from, sent on request and again whenever macOS reports a
@@ -41,7 +41,7 @@ sealed interface Downstream {
      */
     @Serializable
     @SerialName("devices")
-    data class Devices(val devices: List<DeviceInfo>, val defaultId: String?) : Downstream
+    data class Devices(val devices: List<DeviceInfo>, val defaultId: String?, val requestId: Int? = null) : Downstream
 
     /**
      * Audio is on its way.
@@ -51,12 +51,12 @@ sealed interface Downstream {
      */
     @Serializable
     @SerialName("opened")
-    data class Opened(val format: CaptureFormat, val frameSamples: Int) : Downstream
+    data class Opened(val format: CaptureFormat, val frameSamples: Int, val requestId: Int? = null) : Downstream
 
     /** The microphone is released, and any headphones that dropped into call mode can recover. */
     @Serializable
     @SerialName("closed")
-    data object Closed : Downstream
+    data class Closed(val requestId: Int? = null) : Downstream
 
     /**
      * Said out loud on purpose.
@@ -66,5 +66,5 @@ sealed interface Downstream {
      */
     @Serializable
     @SerialName("failure")
-    data class Failure(val code: FailureCode, val message: String) : Downstream
+    data class Failure(val code: FailureCode, val message: String, val requestId: Int? = null) : Downstream
 }

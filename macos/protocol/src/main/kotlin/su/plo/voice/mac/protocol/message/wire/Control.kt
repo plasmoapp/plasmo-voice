@@ -1,12 +1,15 @@
 package su.plo.voice.mac.protocol.message.wire
 
-import kotlinx.serialization.json.Json
+import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPack
+import com.ensarsarajcic.kotlinx.serialization.msgpack.MsgPackConfiguration
+import kotlinx.serialization.decodeFromByteArray
+import kotlinx.serialization.encodeToByteArray
 import su.plo.voice.mac.protocol.frame.Frame
 import su.plo.voice.mac.protocol.frame.FrameType
 import su.plo.voice.mac.protocol.message.Downstream
 import su.plo.voice.mac.protocol.message.Upstream
 
-private val json = Json { ignoreUnknownKeys = true }
+private val msgPack = MsgPack(MsgPackConfiguration(ignoreUnknownKeys = true))
 
 /**
  * Wraps and unwraps [Upstream] / [Downstream] messages as [FrameType.CONTROL] frames, JSON-encoded.
@@ -20,7 +23,7 @@ fun Frame.toUpstream(): Upstream = decodeControlPayload()
 fun Frame.toDownstream(): Downstream = decodeControlPayload()
 
 private inline fun <reified T> T.encodeAsControlFrame(): Frame =
-    Frame(FrameType.CONTROL, json.encodeToString(this).encodeToByteArray())
+    Frame(FrameType.CONTROL, msgPack.encodeToByteArray(this))
 
 private inline fun <reified T> Frame.decodeControlPayload(): T =
-    json.decodeFromString(payload.decodeToString())
+    msgPack.decodeFromByteArray(payload)

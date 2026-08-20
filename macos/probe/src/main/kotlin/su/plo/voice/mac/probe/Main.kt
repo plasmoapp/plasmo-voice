@@ -63,7 +63,7 @@ private fun HelperConnection.record(seconds: Int, file: File) {
         frames++
     }
 
-    send(Upstream.Close)
+    send(Upstream.Close())
     WavFile.write(file, CAPTURE_FORMAT, samples.toByteArray())
     println("Wrote $frames frames to $file.")
 }

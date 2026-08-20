@@ -2,6 +2,7 @@
 kotlin = "2.3.0"
 dokka = "2.1.0"
 kotlinx-json = "1.10.0"
+kotlinx-msgpack = "0.6.1"
 kotlinx-coroutines = "1.10.2"
 kotlinx-io = "0.9.1"
 
@@ -43,6 +44,7 @@ mockito = "4.1.0"
 
 [libraries]
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
+kotlinx-msgpack = { module = "com.ensarsarajcic.kotlinx:serialization-msgpack", version.ref = "kotlinx-msgpack" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
 kotlinx-io = { module = "org.jetbrains.kotlinx:kotlinx-io-core", version.ref = "kotlinx-io" }
