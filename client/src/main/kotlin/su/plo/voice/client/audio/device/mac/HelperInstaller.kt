@@ -2,6 +2,7 @@ package su.plo.voice.client.audio.device.mac
 
 import su.plo.voice.api.client.audio.device.DeviceException
 import java.io.File
+import java.io.RandomAccessFile
 import java.util.zip.CRC32
 
 private const val APP_NAME = "Plasmo Voice Microphone.app"
@@ -18,6 +19,7 @@ private const val OVERRIDE_PROPERTY = "plasmovoice.mac.helper"
 internal object HelperInstaller {
     private val root = File(System.getProperty("user.home"), "Library/Application Support/PlasmoVoice")
 
+    @Synchronized
     fun ensureInstalled(): File {
         System.getProperty(OVERRIDE_PROPERTY)?.let { return File(it) }
 
@@ -30,12 +32,25 @@ internal object HelperInstaller {
 
         if (isHealthy(app, stamp, hash)) return app
 
+        root.mkdirs()
+        RandomAccessFile(File(root, ".helper-install.lock"), "rw").use { lockFile ->
+            val lock = lockFile.channel.lock()
+            try {
+                if (!isHealthy(app, stamp, hash)) install(app, stamp, bytes, hash)
+            } finally {
+                lock.release()
+            }
+        }
+
+        return app
+    }
+
+    private fun install(app: File, stamp: File, bytes: ByteArray, hash: String) {
         val archive = File.createTempFile("pvmic", ".zip")
         try {
             archive.writeBytes(bytes)
 
             app.deleteRecursively()
-            root.mkdirs()
             unpack(archive, root)
 
             if (!File(app, EXECUTABLE).canExecute()) throw DeviceException("The helper archive does not contain a working $APP_NAME")
@@ -44,8 +59,6 @@ internal object HelperInstaller {
         } finally {
             archive.delete()
         }
-
-        return app
     }
 
     private fun isHealthy(app: File, stamp: File, hash: String) =
