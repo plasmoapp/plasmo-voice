@@ -1,0 +1,314 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ClientSourceManager</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    PlasmoVoice
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;su.plo.voice.api.client.audio.source/-client-source-manager/index.html&quot;}"><div class="dropdown versions-dropdown" data-role="dropdown">
+  <div class="button button_dropdown versions-dropdown-button" role="combobox" data-role="dropdown-toggle" aria-controls="versions-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select version" tabindex="0" title="2.1.14"><span class="versions-dropdown-button-text">2.1.14</span></div>
+  <div class="dropdown--list dropdown--list_positioned_left versions-dropdown-data" role="listbox" data-role="dropdown-listbox" aria-label="Versions" id="versions-listbox">
+    <div class="dropdown--header" data-remove-style="true" style="display: none"><span>Select version</span><button class="button" data-role="dropdown-toggle" aria-label="Close versions selection"><i class="ui-kit-icon ui-kit-icon_cross"></i></button></div>
+<a href="../../../../../client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.15-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.15-SNAPSHOT</span></a><a href="index.html" class="dropdown--option dropdown--option_active dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.14"><span class="dropdown--option-icon dropdown--option-icon_selected"></span><span class="dropdown--option-text">2.1.14</span></a><a href="../../../../2.1.14-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.14-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.14-SNAPSHOT</span></a><a href="../../../../2.1.13/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13</span></a><a href="../../../../2.1.13-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13-SNAPSHOT</span></a><a href="../../../../2.1.12/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12</span></a><a href="../../../../2.1.12-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12-SNAPSHOT</span></a><a href="../../../../2.1.11/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11</span></a><a href="../../../../2.1.11-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11-SNAPSHOT</span></a><a href="../../../../2.1.10/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.10"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.10</span></a><a href="../../../../2.1.9/client/su.plo.voice.api.client.audio.source/-client-source-manager/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.9"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.9</span></a></div>
+  <div class="dropdown--overlay"></div>
+</div>
+</dokka-template-command>        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":api:client/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":api:client/main" data-filter=":api:client/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    PlasmoVoice
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="client::su.plo.voice.api.client.audio.source/ClientSourceManager///PointingToDeclaration//2003273835">
+  <div class="breadcrumbs"><a href="../../index.html">client</a><span class="delimiter">/</span><a href="../index.html">su.plo.voice.api.client.audio.source</a><span class="delimiter">/</span><span class="current">ClientSourceManager</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Client</span><wbr><span>Source</span><wbr><span><span>Manager</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ClientSourceManager</a> : <a href="../../../common/su.plo.voice.api.audio.source/-audio-source-manager/index.html">AudioSourceManager</a><span class="token operator">&lt;</span><a href="../-client-audio-source/index.html">ClientAudioSource</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator">&gt; </span></div><p class="paragraph">Manages client audio sources.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="1565534174%2FFunctions%2F2003273835" anchor-label="clear" id="1565534174%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#1565534174%2FFunctions%2F2003273835"><span><span>clear</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1565534174%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#1565534174%2FFunctions%2F2003273835"><span class="token function">clear</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-51337481%2FFunctions%2F2003273835" anchor-label="createLoopbackSource" id="-51337481%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-loopback-source.html"><span>create</span><wbr><span>Loopback</span><wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-51337481%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="create-loopback-source.html"><span class="token function">createLoopbackSource</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">relative<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../-loopback-source/index.html">LoopbackSource</a></div><div class="brief ">Creates a loopback source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1414201801%2FFunctions%2F2003273835" anchor-label="createOrUpdateSource" id="-1414201801%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="create-or-update-source.html"><span>create</span><wbr><span>Or</span><wbr><span>Update</span><wbr><span><span>Source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1414201801%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="create-or-update-source.html"><span class="token function">createOrUpdateSource</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>sourceInfo<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../protocol/su.plo.voice.proto.data.audio.source/-source-info/index.html">SourceInfo</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Creates or updates a client audio source based on the provided source information.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="222106466%2FFunctions%2F2003273835" anchor-label="getAllSelfSourceInfos" id="222106466%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-all-self-source-infos.html"><span>get</span><wbr><span>All</span><wbr><span>Self</span><wbr><span>Source</span><wbr><span><span>Infos</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="222106466%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-all-self-source-infos.html"><span class="token function">getAllSelfSourceInfos</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="../-client-self-source-info/index.html">ClientSelfSourceInfo</a><span class="token operator">&gt;</span></div><div class="brief ">Gets a collection of <a href="../-client-self-source-info/index.html">ClientSelfSourceInfo</a>.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1893374413%2FFunctions%2F2003273835" anchor-label="getEntitySources" id="1893374413%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-entity-sources.html"><span>get</span><wbr><span>Entity</span><wbr><span><span>Sources</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1893374413%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-entity-sources.html"><span class="token function">getEntitySources</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">entityId<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><a href="../-client-audio-source/index.html">ClientAudioSource</a><span class="token operator">&lt;</span><a href="../../../protocol/su.plo.voice.proto.data.audio.source/-entity-source-info/index.html">EntitySourceInfo</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief ">Gets all client audio sources associated with a specific entity.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1248329879%2FFunctions%2F2003273835" anchor-label="getPlayerSources" id="-1248329879%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-player-sources.html"><span>get</span><wbr><span>Player</span><wbr><span><span>Sources</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1248329879%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-player-sources.html"><span class="token function">getPlayerSources</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>playerId<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><a href="../-client-audio-source/index.html">ClientAudioSource</a><span class="token operator">&lt;</span><a href="../../../protocol/su.plo.voice.proto.data.audio.source/-player-source-info/index.html">PlayerSourceInfo</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief ">Gets all client audio sources associated with a specific player.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="865359727%2FFunctions%2F2003273835" anchor-label="getSelfSourceInfo" id="865359727%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-self-source-info.html"><span>get</span><wbr><span>Self</span><wbr><span>Source</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="865359727%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-self-source-info.html"><span class="token function">getSelfSourceInfo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>sourceId<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a><span class="token operator">&lt;</span><a href="../-client-self-source-info/index.html">ClientSelfSourceInfo</a><span class="token operator">&gt;</span></div><div class="brief ">Gets the client self source information for the specified source identifier.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="800873073%2FFunctions%2F2003273835" anchor-label="getSourceById" id="800873073%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#5894765%2FFunctions%2F2003273835"><span>get</span><wbr><span>Source</span><wbr><span>By</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="800873073%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#5894765%2FFunctions%2F2003273835"><span class="token function">getSourceById</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">p<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a><span class="token operator">&lt;</span><a href="../../../common/su.plo.voice.api.audio.source/-audio-source-manager/index.html">T</a><span class="token operator">&gt;</span></div><br><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-source-by-id.html"><span class="token function">getSourceById</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>sourceId<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Optional.html">Optional</a><span class="token operator">&lt;</span><a href="../-client-audio-source/index.html">ClientAudioSource</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief ">Gets a client audio source by its unique identifier.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="773609837%2FFunctions%2F2003273835" anchor-label="getSources" id="773609837%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#773609837%2FFunctions%2F2003273835"><span>get</span><wbr><span><span>Sources</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="773609837%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#773609837%2FFunctions%2F2003273835"><span class="token function">getSources</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><a href="../../../common/su.plo.voice.api.audio.source/-audio-source-manager/index.html">T</a><span class="token operator">&gt;</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1674042466%2FFunctions%2F2003273835" anchor-label="getSourcesByLineId" id="1674042466%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-sources-by-line-id.html"><span>get</span><wbr><span>Sources</span><wbr><span>By</span><wbr><span>Line</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1674042466%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-sources-by-line-id.html"><span class="token function">getSourcesByLineId</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>lineId<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><a href="../-client-audio-source/index.html">ClientAudioSource</a><span class="token operator">&lt;</span><span class="token keyword">out </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-any/index.html">Any</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief ">Gets all client audio sources associated with a specified line identifier.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-305639311%2FFunctions%2F2003273835" anchor-label="sendSourceInfoRequest" id="-305639311%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="send-source-info-request.html"><span>send</span><wbr><span>Source</span><wbr><span>Info</span><wbr><span><span>Request</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-305639311%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="send-source-info-request.html"><span class="token function">sendSourceInfoRequest</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>sourceId<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a></span></span><span class="token punctuation">)</span></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="send-source-info-request.html"><span class="token function">sendSourceInfoRequest</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>sourceId<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a><span class="token punctuation">, </span></span><span class="parameter ">requestIfExist<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sends a source information request for the specified source identifier.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="432250214%2FFunctions%2F2003273835" anchor-label="updateSelfSourceInfo" id="432250214%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-self-source-info.html"><span>update</span><wbr><span>Self</span><wbr><span>Source</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="432250214%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="update-self-source-info.html"><span class="token function">updateSelfSourceInfo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>selfSourceInfo<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../protocol/su.plo.voice.proto.data.audio.source/-self-source-info/index.html">SelfSourceInfo</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Updates the client self source information.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
