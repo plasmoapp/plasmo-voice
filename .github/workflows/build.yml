@@ -1,0 +1,82 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      snapshot:
+        type: boolean
+        default: false
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      client-variants: ${{ steps.list.outputs.variants }}
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: List client variants
+      id: list
+      run: |
+        variants=$(jq -c 'map(.project)' client/versions.json)
+        echo "variants=$variants" >> "$GITHUB_OUTPUT"
+
+  build-client:
+    needs: discover
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        variant: ${{ fromJson(needs.discover.outputs.client-variants) }}
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: ./.github/actions/setup-build
+
+    - name: Build ${{ matrix.variant }} with Gradle
+      env:
+        SNAPSHOT_ARG: ${{ inputs.snapshot && '-Psnapshot=true' || '' }}
+      run: ./gradlew ":client:${{ matrix.variant }}:build" --stacktrace -Pproject.client.only=${{ matrix.variant }} $SNAPSHOT_ARG
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v7.0.1
+      with:
+        path: build/libs/*.jar
+        archive: false
+        retention-days: 7
+        if-no-files-found: error
+
+  build-server-proxy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    strategy:
+      fail-fast: false
+      matrix:
+        target:
+          - server:paper
+          - proxy:velocity
+          - proxy:bungee
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - uses: ./.github/actions/setup-build
+
+    - name: Build ${{ matrix.target }} with Gradle
+      env:
+        SNAPSHOT_ARG: ${{ inputs.snapshot && '-Psnapshot=true' || '' }}
+      run: ./gradlew ":${{ matrix.target }}:build" --stacktrace -Pproject.client.disable=true $SNAPSHOT_ARG
+
+    - name: Upload build artifact
+      uses: actions/upload-artifact@v7.0.1
+      with:
+        path: build/libs/*.jar
+        archive: false
+        retention-days: 7
+        if-no-files-found: error
