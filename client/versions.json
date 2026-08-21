@@ -1,0 +1,200 @@
+[
+  {
+    "project": "26.2-fabric",
+    "mcVersion": 260200,
+    "mappings": "official",
+    "parent": "26.1-fabric",
+    "extraMappings": "26.2-26.1.txt"
+  },
+  {
+    "project": "26.2-neoforge",
+    "mcVersion": 260200,
+    "mappings": "official",
+    "parent": "26.1-neoforge",
+    "extraMappings": "26.2-26.1.txt"
+  },
+  {
+    "project": "26.1-fabric",
+    "mcVersion": 260100,
+    "mappings": "official",
+    "parent": "1.21.11-fabric",
+    "extraMappings": "26.1-1.21.11.txt"
+  },
+  {
+    "project": "26.1-neoforge",
+    "mcVersion": 260100,
+    "mappings": "official",
+    "parent": "1.21.11-neoforge",
+    "extraMappings": "26.1-1.21.11.txt"
+  },
+  {
+    "project": "1.21.11-neoforge",
+    "mcVersion": 12111,
+    "mappings": "official",
+    "parent": "1.21.7-neoforge",
+    "extraMappings": "1.21.9-1.21.8.txt"
+  },
+  {
+    "project": "1.21.11-fabric",
+    "mcVersion": 12111,
+    "mappings": "official",
+    "parent": "1.21.6-fabric",
+    "extraMappings": "1.21.9-1.21.8.txt"
+  },
+  {
+    "project": "1.21.7-neoforge",
+    "mcVersion": 12106,
+    "mappings": "official",
+    "parent": "1.21.6-neoforge"
+  },
+  {
+    "project": "1.21.6-neoforge",
+    "mcVersion": 12106,
+    "mappings": "official",
+    "parent": "1.21.4-neoforge",
+    "extraMappings": "1.21.6-1.21.5.txt"
+  },
+  {
+    "project": "1.21.6-fabric",
+    "mcVersion": 12106,
+    "mappings": "official",
+    "parent": "1.21.4-fabric",
+    "extraMappings": "1.21.6-1.21.5.txt"
+  },
+  {
+    "project": "1.21.4-neoforge",
+    "mcVersion": 12104,
+    "mappings": "official",
+    "parent": "1.21.1-neoforge"
+  },
+  {
+    "project": "1.21.4-fabric",
+    "mcVersion": 12104,
+    "mappings": "official",
+    "parent": "1.21.1-fabric"
+  },
+  {
+    "project": "1.21.1-neoforge",
+    "mcVersion": 12101,
+    "mappings": "official",
+    "parent": "1.21.1-fabric"
+  },
+  {
+    "project": "1.21.1-fabric",
+    "mcVersion": 12101,
+    "mappings": "official",
+    "parent": "1.20.4-fabric",
+    "extraMappings": "1.21-1.20.6.txt"
+  },
+  {
+    "project": "1.21.1-forge",
+    "mcVersion": 12101,
+    "mappings": "official",
+    "parent": "1.20.4-forge",
+    "extraMappings": "1.21-1.20.6.txt"
+  },
+  {
+    "project": "1.20.4-forge",
+    "mcVersion": 12004,
+    "mappings": "official",
+    "parent": "1.20.1-forge",
+    "extraMappings": "1.20.4-1.20.1.txt"
+  },
+  {
+    "project": "1.20.4-fabric",
+    "mcVersion": 12004,
+    "mappings": "official",
+    "parent": "1.20.1-fabric",
+    "extraMappings": "1.20.4-1.20.1.txt"
+  },
+  {
+    "project": "1.20.1-forge",
+    "mcVersion": 12001,
+    "mappings": "official",
+    "parent": "1.19.4-forge"
+  },
+  {
+    "project": "1.20.1-fabric",
+    "mcVersion": 12001,
+    "mappings": "official",
+    "parent": "1.19.4-fabric"
+  },
+  {
+    "project": "1.19.4-forge",
+    "mcVersion": 11904,
+    "mappings": "official",
+    "parent": "1.19.4-fabric"
+  },
+  {
+    "project": "1.19.4-fabric",
+    "mcVersion": 11904,
+    "mappings": "official"
+  },
+  {
+    "project": "1.19.3-forge",
+    "mcVersion": 11903,
+    "mappings": "official",
+    "parent": "1.19.4-forge"
+  },
+  {
+    "project": "1.19.3-fabric",
+    "mcVersion": 11903,
+    "mappings": "official",
+    "parent": "1.19.4-fabric"
+  },
+  {
+    "project": "1.19.2-forge",
+    "mcVersion": 11902,
+    "mappings": "official",
+    "parent": "1.19.3-forge",
+    "extraMappings": "1.19.2-1.19.3.txt"
+  },
+  {
+    "project": "1.19.2-fabric",
+    "mcVersion": 11902,
+    "mappings": "official",
+    "parent": "1.19.3-fabric",
+    "extraMappings": "1.19.2-1.19.3.txt"
+  },
+  {
+    "project": "1.18.2-forge",
+    "mcVersion": 11802,
+    "mappings": "official",
+    "parent": "1.19.2-forge",
+    "extraMappings": "1.18.2-1.19.2.txt"
+  },
+  {
+    "project": "1.18.2-fabric",
+    "mcVersion": 11802,
+    "mappings": "official",
+    "parent": "1.19.2-fabric"
+  },
+  {
+    "project": "1.17.1-forge",
+    "mcVersion": 11701,
+    "mappings": "official",
+    "parent": "1.18.2-forge",
+    "extraMappings": "1.17.1-1.18.2.txt"
+  },
+  {
+    "project": "1.17.1-fabric",
+    "mcVersion": 11701,
+    "mappings": "official",
+    "parent": "1.18.2-fabric",
+    "extraMappings": "1.17.1-1.18.2.txt"
+  },
+  {
+    "project": "1.16.5-forge",
+    "mcVersion": 11605,
+    "mappings": "official",
+    "parent": "1.17.1-forge",
+    "extraMappings": "1.16.5-1.17.1.txt"
+  },
+  {
+    "project": "1.16.5-fabric",
+    "mcVersion": 11605,
+    "mappings": "official",
+    "parent": "1.17.1-fabric",
+    "extraMappings": "1.16.5-1.17.1.txt"
+  }
+]

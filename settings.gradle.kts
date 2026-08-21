@@ -1,6 +1,8 @@
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
 pluginManagement {
+    includeBuild("build-logic")
+
     repositories {
         gradlePluginPortal()
         mavenLocal()
@@ -24,6 +26,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("su.plo.voice.client-projects")
+}
+
 rootProject.name = "PlasmoVoice"
 
 // Protocol
@@ -38,22 +44,6 @@ file("api").listFilesOrdered {
 
 // Common
 include("common")
-
-include("client")
-project(":client").apply {
-    projectDir = file("client/")
-    buildFileName = "root.gradle.kts"
-}
-
-file("client").listFilesOrdered {
-    return@listFilesOrdered it.isDirectory && it.name.contains("-")
-}.forEach {
-    include("client:${it.name}")
-    project(":client:${it.name}").apply {
-        projectDir = file("client/${it.name}")
-        buildFileName = "../build.gradle.kts"
-    }
-}
 
 // Server-Proxy Common (Module for common code between server and proxy implementations)
 include("server-proxy-common")
