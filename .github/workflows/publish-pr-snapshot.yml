@@ -8,30 +8,24 @@ on:
       - ready_for_review
       - reopened
 
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
 jobs:
   build:
+    uses: ./.github/workflows/build.yml
+    with:
+      snapshot: true
 
+  build-rest:
     runs-on: ubuntu-latest
     permissions:
-      contents: write
-      packages: write
+      contents: read
 
     steps:
-    - uses: actions/checkout@v6
-    - name: Set up JDK
-      uses: actions/setup-java@v5.7.0
-      with:
-        distribution: temurin
-        java-version: |
-          8
-          16
-          17
-          21
+    - uses: actions/checkout@v7.0.1
+    - uses: ./.github/actions/setup-build
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v6.3.0
-      with:
-        cache-read-only: false
-
-    - name: Build with Gradle
-      run: ./gradlew build --stacktrace -Psnapshot=true
+    - name: Build with Gradle (everything except client)
+      run: ./gradlew build --stacktrace -Pproject.client.disable=true -Psnapshot=true
