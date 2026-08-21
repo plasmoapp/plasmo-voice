@@ -35,11 +35,3 @@ jobs:
 
     - name: Build with Gradle
       run: ./gradlew build --stacktrace -Psnapshot=true
-
-    - name: Upload to Registry
-      if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
-      uses: plasmoapp/actions/.github/actions/upload-to-registry@main
-      with:
-        registry_url: ${{ secrets.REGISTRY_URL }}
-        upload_token: ${{ secrets.REGISTRY_UPLOAD_TOKEN }}
-        message: ${{ github.event.head_commit.message }}

@@ -64,13 +64,6 @@ jobs:
         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
       run: ./gradlew publish --stacktrace -Psnapshot=true
 
-    - name: Upload to Registry
-      uses: plasmoapp/actions/.github/actions/upload-to-registry@main
-      with:
-        registry_url: ${{ secrets.REGISTRY_URL }}
-        upload_token: ${{ secrets.REGISTRY_UPLOAD_TOKEN }}
-        message: ${{ github.event.head_commit.message }}
-
     - name: Restore previous doc versions
       if: ${{ steps.release-check.outputs.released != 'true' }}
       run: |
