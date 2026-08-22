@@ -1,0 +1,348 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ClientAudioSource</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    PlasmoVoice
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;su.plo.voice.api.client.audio.source/-client-audio-source/index.html&quot;}"><div class="dropdown versions-dropdown" data-role="dropdown">
+  <div class="button button_dropdown versions-dropdown-button" role="combobox" data-role="dropdown-toggle" aria-controls="versions-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select version" tabindex="0" title="2.1.15"><span class="versions-dropdown-button-text">2.1.15</span></div>
+  <div class="dropdown--list dropdown--list_positioned_left versions-dropdown-data" role="listbox" data-role="dropdown-listbox" aria-label="Versions" id="versions-listbox">
+    <div class="dropdown--header" data-remove-style="true" style="display: none"><span>Select version</span><button class="button" data-role="dropdown-toggle" aria-label="Close versions selection"><i class="ui-kit-icon ui-kit-icon_cross"></i></button></div>
+<a href="../../../../../client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.2.0-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.2.0-SNAPSHOT</span></a><a href="index.html" class="dropdown--option dropdown--option_active dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.15"><span class="dropdown--option-icon dropdown--option-icon_selected"></span><span class="dropdown--option-text">2.1.15</span></a><a href="../../../../2.1.15-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.15-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.15-SNAPSHOT</span></a><a href="../../../../2.1.14/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.14"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.14</span></a><a href="../../../../2.1.14-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.14-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.14-SNAPSHOT</span></a><a href="../../../../2.1.13/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13</span></a><a href="../../../../2.1.13-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13-SNAPSHOT</span></a><a href="../../../../2.1.12/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12</span></a><a href="../../../../2.1.12-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12-SNAPSHOT</span></a><a href="../../../../2.1.11/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11</span></a><a href="../../../../2.1.11-SNAPSHOT/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11-SNAPSHOT</span></a><a href="../../../../2.1.10/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.10"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.10</span></a><a href="../../../../2.1.9/client/su.plo.voice.api.client.audio.source/-client-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.9"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.9</span></a></div>
+  <div class="dropdown--overlay"></div>
+</div>
+</dokka-template-command>        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":api:client/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":api:client/main" data-filter=":api:client/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    PlasmoVoice
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="client::su.plo.voice.api.client.audio.source/ClientAudioSource///PointingToDeclaration//2003273835">
+  <div class="breadcrumbs"><a href="../../index.html">client</a><span class="delimiter">/</span><a href="../index.html">su.plo.voice.api.client.audio.source</a><span class="delimiter">/</span><span class="current">ClientAudioSource</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Client</span><wbr><span>Audio</span><wbr><span><span>Source</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ClientAudioSource</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator"> : </span><a href="../../../protocol/su.plo.voice.proto.data.audio.source/-source-info/index.html">SourceInfo</a><span class="token operator">&gt;</span> : <a href="../../../common/su.plo.voice.api.audio.source/-audio-source/index.html">AudioSource</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt; </span></div><p class="paragraph">Represents a client-side audio source used for playing audio.</p></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="PROPERTY">
+        <h2 class="tableheader">Properties</h2>
+        <div class="table"><a data-name="1912100597%2FProperties%2F2003273835" anchor-label="closeTimeoutMs" id="1912100597%2FProperties%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="close-timeout-ms.html"><span>close</span><wbr><span>Timeout</span><wbr><span><span>Ms</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1912100597%2FProperties%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">var </span><a href="close-timeout-ms.html">closeTimeoutMs</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-long/index.html">Long</a></div><div class="brief "><p class="paragraph">Gets or sets the timeout duration in milliseconds for closing this audio source. If the source remains inactive for this duration, it will be automatically closed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-665365515%2FProperties%2F2003273835" anchor-label="effectiveVolume" id="-665365515%2FProperties%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="effective-volume.html"><span>effective</span><wbr><span><span>Volume</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-665365515%2FProperties%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="effective-volume.html">effectiveVolume</a><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-float/index.html">Float</a></div><div class="brief "><p class="paragraph">The effective gain last applied to the underlying <a href="source.html">source</a>, folding in master, source and line volumes, occlusion, directional and distance gain.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-520343767%2FProperties%2F2003273835" anchor-label="source" id="-520343767%2FProperties%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source.html"><span><span>source</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-520343767%2FProperties%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="source.html">source</a><span class="token operator">: </span><a href="../../su.plo.voice.api.client.audio.device.source/-al-source/index.html">AlSource</a></div><div class="brief "><p class="paragraph">Gets or sets the source group to which this audio source belongs.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-869196815%2FProperties%2F2003273835" anchor-label="sourceInfo" id="-869196815%2FProperties%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-869196815%2FProperties%2F2003273835"><span>source</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-869196815%2FProperties%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="index.html#-869196815%2FProperties%2F2003273835">sourceInfo</a><span class="token operator">: </span><a href="index.html">S</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1061719147%2FProperties%2F2003273835" anchor-label="sourceLine" id="-1061719147%2FProperties%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="source-line.html"><span>source</span><wbr><span><span>Line</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1061719147%2FProperties%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">val </span><a href="source-line.html">sourceLine</a><span class="token operator">: </span><a href="../../su.plo.voice.api.client.audio.line/-client-source-line/index.html">ClientSourceLine</a></div><div class="brief "><p class="paragraph">The source line this audio source is currently assigned to, resolved from <a href="../../../protocol/su.plo.voice.proto.data.audio.source/-source-info/get-line-id.html">SourceInfo.getLineId</a>.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="584463704%2FFunctions%2F2003273835" anchor-label="canHear" id="584463704%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="can-hear.html"><span>can</span><wbr><span><span>Hear</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="584463704%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="can-hear.html"><span class="token function">canHear</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the audio source can be heard, meaning it is within reach and activated.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2116895554%2FFunctions%2F2003273835" anchor-label="close" id="-2116895554%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="close.html"><span><span>close</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2116895554%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">suspend </span><span class="token keyword">fun </span><a href="close.html"><span class="token function">close</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Closes the audio source.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1761537920%2FFunctions%2F2003273835" anchor-label="closeAsync" id="-1761537920%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="close-async.html"><span>close</span><wbr><span><span>Async</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1761537920%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="close-async.html"><span class="token function">closeAsync</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html">Void</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Closes the audio source asynchronously.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1271150833%2FFunctions%2F2003273835" anchor-label="isActivated" id="-1271150833%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-activated.html"><span>is</span><wbr><span><span>Activated</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1271150833%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="is-activated.html"><span class="token function">isActivated</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the audio source is currently playing audio.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="937736878%2FFunctions%2F2003273835" anchor-label="isClosed" id="937736878%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-closed.html"><span>is</span><wbr><span><span>Closed</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="937736878%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="is-closed.html"><span class="token function">isClosed</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief "><p class="paragraph">Checks if the audio source is closed.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1473827355%2FFunctions%2F2003273835" anchor-label="process" id="-1473827355%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="process.html"><span><span>process</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1473827355%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="process.html"><span class="token function">process</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">packet<span class="token operator">: </span><a href="../../../protocol/su.plo.voice.proto.packets.tcp.clientbound/-source-audio-end-packet/index.html">SourceAudioEndPacket</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Processes an audio end packet indicating the end of audio playback.</p></div><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="process.html"><span class="token function">process</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">packet<span class="token operator">: </span><a href="../../../protocol/su.plo.voice.proto.packets.udp.clientbound/-source-audio-packet/index.html">SourceAudioPacket</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Processes an incoming audio packet and plays the audio.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="85950939%2FFunctions%2F2003273835" anchor-label="resetAsync" id="85950939%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="reset-async.html"><span>reset</span><wbr><span><span>Async</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="85950939%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="reset-async.html"><span class="token function">resetAsync</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">cause<span class="token operator">: </span><a href="../../su.plo.voice.api.client.event.audio.source/-audio-source-reset-event/-cause/index.html">AudioSourceResetEvent.Cause</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/Void.html">Void</a><span class="token operator">?</span><span class="token operator">&gt;</span></div><div class="brief "><p class="paragraph">Resets the audio source state asynchronously.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1071034566%2FFunctions%2F2003273835" anchor-label="update" id="-1071034566%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update.html"><span><span>update</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1071034566%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="update.html"><span class="token function">update</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sourceInfo<span class="token operator">: </span><a href="index.html">S</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Updates the audio source with new source information.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1320995592%2FFunctions%2F2003273835" anchor-label="updateUnchecked" id="1320995592%2FFunctions%2F2003273835" data-filterable-set=":api:client/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:client/main" data-filterable-set=":api:client/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-unchecked.html"><span>update</span><wbr><span><span>Unchecked</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1320995592%2FFunctions%2F2003273835"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:client/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="update-unchecked.html"><span class="token function">updateUnchecked</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">sourceInfo<span class="token operator">: </span><a href="../../../protocol/su.plo.voice.proto.data.audio.source/-source-info/index.html">SourceInfo</a></span></span><span class="token punctuation">)</span></div><div class="brief "><p class="paragraph">Updates the audio source with new source information, performing unchecked type casting.</p></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
