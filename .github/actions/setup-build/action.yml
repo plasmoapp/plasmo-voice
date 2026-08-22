@@ -18,3 +18,26 @@ runs:
     uses: gradle/actions/setup-gradle@v6.3.0
     with:
       add-job-summary: on-failure
+      cache-disabled: true
+
+  - name: Compute gradle home cache key
+    shell: bash
+    id: gradle-cache-key
+    run: |
+      wrapper=${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+      deps=${{ hashFiles('gradle/libs.versions.toml', 'gradle.properties', '**/*.gradle.kts', 'client/versions.json') }}
+      wrapper_version=$(grep "^distributionUrl=" gradle/wrapper/gradle-wrapper.properties | cut -d '-' -f2)
+  
+      echo "wrapper_version=$wrapper_version" >> "$GITHUB_OUTPUT"
+      echo "key=gradle-home-$wrapper-$deps" >> "$GITHUB_OUTPUT"
+
+  - name: Restore gradle home cache
+    uses: actions/cache/restore@v6.1.0
+    with:
+      path: |
+        ~/.gradle/caches/${{ steps.gradle-cache-key.outputs.wrapper_version }}/generated-gradle-jars
+        ~/.gradle/caches/${{ steps.gradle-cache-key.outputs.wrapper_version }}/kotlin-dsl
+        ~/.gradle/caches/modules-2
+        ~/.gradle/wrapper
+      key: ${{ steps.gradle-cache-key.outputs.key }}
+      restore-keys: gradle-home-

@@ -13,18 +13,69 @@ jobs:
     permissions:
       contents: read
     outputs:
-      client-variants: ${{ steps.list.outputs.variants }}
+      client-chains: ${{ steps.list.outputs.chains }}
 
     steps:
     - uses: actions/checkout@v7.0.1
-    - name: List client variants
+    - name: List client chains
       id: list
       run: |
-        variants=$(jq -c 'map(.project)' client/versions.json)
-        echo "variants=$variants" >> "$GITHUB_OUTPUT"
+        chains=$(python3 .github/scripts/client-chains.py)
+        echo "chains=$chains" >> "$GITHUB_OUTPUT"
+
+  build-shared-cache:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Compute gradle home cache key
+        id: key
+        run: |
+          wrapper=${{ hashFiles('gradle/wrapper/gradle-wrapper.properties') }}
+          deps=${{ hashFiles('gradle/libs.versions.toml', 'gradle.properties', '**/*.gradle.kts', 'client/versions.json') }}
+          wrapper_version=$(grep "^distributionUrl=" gradle/wrapper/gradle-wrapper.properties | cut -d '-' -f2)
+          
+          echo "wrapper_version=$wrapper_version" >> "$GITHUB_OUTPUT"
+          echo "key=gradle-home-$wrapper-$deps" >> "$GITHUB_OUTPUT"
+
+      - name: Check gradle home cache
+        id: probe
+        uses: actions/cache/restore@v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches/${{ steps.key.outputs.wrapper_version }}/generated-gradle-jars
+            ~/.gradle/caches/${{ steps.key.outputs.wrapper_version }}/kotlin-dsl
+            ~/.gradle/caches/modules-2
+            ~/.gradle/wrapper
+          key: ${{ steps.key.outputs.key }}
+          lookup-only: true
+
+      - uses: ./.github/actions/setup-build
+        if: steps.probe.outputs.cache-hit != 'true' && github.ref_name == github.event.repository.default_branch
+
+      - name: Seed gradle home cache
+        if: steps.probe.outputs.cache-hit != 'true' && github.ref_name == github.event.repository.default_branch
+        run: |
+          ./gradlew help :common:assemble --stacktrace -Pproject.client.disable=true
+          ./gradlew --stop
+
+      - name: Save gradle home cache
+        if: steps.probe.outputs.cache-hit != 'true' && github.ref_name == github.event.repository.default_branch
+        continue-on-error: true
+        uses: actions/cache/save@v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches/${{ steps.key.outputs.wrapper_version }}/generated-gradle-jars
+            ~/.gradle/caches/${{ steps.key.outputs.wrapper_version }}/kotlin-dsl
+            ~/.gradle/caches/modules-2
+            ~/.gradle/wrapper
+          key: ${{ steps.key.outputs.key }}
 
   build-client:
-    needs: discover
+    needs: [discover, build-shared-cache]
+    name: build-client (${{ matrix.chain.leaf }})
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -32,26 +83,54 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        variant: ${{ fromJson(needs.discover.outputs.client-variants) }}
+        chain: ${{ fromJson(needs.discover.outputs.client-chains) }}
 
     steps:
     - uses: actions/checkout@v7.0.1
     - uses: ./.github/actions/setup-build
 
-    - name: Build ${{ matrix.variant }} with Gradle
+    - name: Compute essential loom cache key
+      id: key
+      run: |
+        deps=${{ hashFiles('gradle/libs.versions.toml', 'gradle.properties', '**/*.gradle.kts', 'client/versions.json') }}
+        
+        echo "key=gradle-loom[${{ matrix.chain.leaf }}]-$deps" >> "$GITHUB_OUTPUT"
+        echo "restore_key=gradle-loom[${{ matrix.chain.leaf }}]-" >> "$GITHUB_OUTPUT"
+
+    - name: Restore Essential loom cache
+      uses: actions/cache/restore@v6.1.0
+      with:
+        path: |
+          ~/.gradle/caches/essential-loom
+          !~/.gradle/caches/essential-loom/minecraftMaven
+        key: ${{ steps.key.outputs.key }}
+        restore-keys: ${{ steps.key.outputs.restore_key }}
+
+    - name: Build ${{ matrix.chain.leaf }} chain with Gradle
       env:
         SNAPSHOT_ARG: ${{ inputs.snapshot && '-Psnapshot=true' || '' }}
-      run: ./gradlew ":client:${{ matrix.variant }}:build" --stacktrace -Pproject.client.only=${{ matrix.variant }} $SNAPSHOT_ARG
+      run: ./gradlew ${{ matrix.chain.tasks }} --stacktrace -Pproject.client.only=${{ matrix.chain.leaf }} $SNAPSHOT_ARG
+
+    - name: Save Essential loom cache
+      if: github.ref_name == github.event.repository.default_branch
+      uses: actions/cache/save@v6.1.0
+      with:
+        path: |
+          ~/.gradle/caches/essential-loom
+          !~/.gradle/caches/essential-loom/minecraftMaven
+        key: ${{ steps.key.outputs.key }}
 
     - name: Upload build artifact
-      uses: actions/upload-artifact@v7.0.1
+      uses: plasmoapp/actions/.github/actions/upload-artifacts@main
       with:
-        path: build/libs/*.jar
+        files_glob: build/libs/*.jar
         archive: false
-        retention-days: 7
-        if-no-files-found: error
+        retention_days: 7
+        if_no_files_found: error
+        summary: false
 
   build-server-proxy:
+    needs: build-shared-cache
     runs-on: ubuntu-latest
     permissions:
       contents: read
