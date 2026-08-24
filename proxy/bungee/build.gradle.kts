@@ -10,7 +10,7 @@ plugins {
 group = "$group.proxy"
 
 base.archivesName.set("${rootProject.name}-BungeeCord")
-javaVersion = 11
+javaVersion = 17
 
 repositories {
     maven("https://repo.codemc.org/repository/maven-public/")
