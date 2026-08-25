@@ -24,6 +24,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
@@ -34,12 +35,12 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     private final TcpServerPacketManager tcpConnections;
     private final VoiceServerPlayer player;
 
-    private long lastStateBroadcast;
-    private boolean stateBroadcastScheduled;
+    private final AtomicBoolean stateBroadcastScheduled = new AtomicBoolean();
+    private volatile long lastStateBroadcast;
 
-    private long lastLanguageResponse;
-    private boolean languageResponseScheduled;
-    private String requestedLanguage;
+    private final AtomicBoolean languageResponseScheduled = new AtomicBoolean();
+    private volatile long lastLanguageResponse;
+    private volatile String requestedLanguage;
 
     public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
                                 @NotNull VoiceServerPlayer player) {
@@ -119,8 +120,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
             return;
         }
 
-        if (stateBroadcastScheduled) return;
-        this.stateBroadcastScheduled = true;
+        if (!stateBroadcastScheduled.compareAndSet(false, true)) return;
 
         scheduleInMainThread(this::flushPlayerState, STATE_BROADCAST_INTERVAL_MS - elapsed);
     }
@@ -182,8 +182,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
             return;
         }
 
-        if (languageResponseScheduled) return;
-        this.languageResponseScheduled = true;
+        if (!languageResponseScheduled.compareAndSet(false, true)) return;
 
         scheduleInMainThread(this::flushLanguage, LANGUAGE_RESPONSE_INTERVAL_MS - elapsed);
     }
@@ -195,7 +194,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     }
 
     private void flushPlayerState() {
-        this.stateBroadcastScheduled = false;
+        stateBroadcastScheduled.set(false);
         if (!player.hasVoiceChat()) return;
 
         broadcastPlayerState();
@@ -214,7 +213,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
     }
 
     private void flushLanguage() {
-        this.languageResponseScheduled = false;
+        languageResponseScheduled.set(false);
 
         sendLanguage();
     }
