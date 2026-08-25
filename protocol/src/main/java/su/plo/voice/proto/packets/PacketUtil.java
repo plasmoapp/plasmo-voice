@@ -22,6 +22,14 @@ public class PacketUtil {
         return value;
     }
 
+    public static String readSafeUTF(ByteArrayDataInput in, int maxLength) throws IOException {
+        String value = in.readUTF();
+        if (value.length() > maxLength) {
+            throw new IOException("Invalid string length (max: " + maxLength + ", length: " + value.length() + ")");
+        }
+        return value;
+    }
+
     public static void writeBytes(ByteArrayDataOutput out, byte[] bytes) {
         out.writeInt(bytes.length);
         out.write(bytes);

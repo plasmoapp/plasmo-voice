@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketUtil;
 import su.plo.voice.proto.packets.udp.PacketUdpHandler;
 
 import java.io.IOException;
@@ -33,7 +34,7 @@ public class PingPacket implements Packet<PacketUdpHandler> {
         this.time = in.readLong();
 
         try {
-            this.serverIp = in.readUTF();
+            this.serverIp = PacketUtil.readSafeUTF(in, 255);
             this.serverPort = in.readUnsignedShort();
         } catch (Exception ignored) {
             // ignore exceptions here, because it's optional
