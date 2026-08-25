@@ -33,7 +33,64 @@ on:
         default: true
 
 jobs:
+  mic-helper:
+    runs-on: macos-26
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: Set up JDK
+      uses: actions/setup-java@v5.7.0
+      with:
+        distribution: temurin
+        java-version: 21
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v6.3.0
+
+    - name: Import the signing certificate
+      id: signing
+      env:
+        CERTIFICATE: ${{ secrets.MACOS_SIGNING_P12 }}
+        CERTIFICATE_PASSWORD: ${{ secrets.MACOS_SIGNING_PASSWORD }}
+      run: |
+        if [ -z "$CERTIFICATE" ]; then
+          echo "::error::no signing certificate."
+          exit 1
+        fi
+
+        KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+        CERTIFICATE_FILE="$RUNNER_TEMP/certificate.p12"
+        trap 'rm -f "$CERTIFICATE_FILE"' EXIT
+
+        echo "$CERTIFICATE" | base64 -d > "$CERTIFICATE_FILE"
+        security create-keychain -p "" "$KEYCHAIN"
+        security set-keychain-settings "$KEYCHAIN"
+        security unlock-keychain -p "" "$KEYCHAIN"
+        security import "$CERTIFICATE_FILE" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" "$KEYCHAIN" > /dev/null
+        security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+
+        IDENTITY=$(security find-identity -p codesigning "$KEYCHAIN" | grep -o '[0-9A-F]\{40\}' | head -1)
+        if [ -z "$IDENTITY" ]; then
+          echo "::error::the certificate holds no code signing identity."
+          exit 1
+        fi
+        echo "identity=$IDENTITY" >> "$GITHUB_OUTPUT"
+
+    - name: Build the microphone helper
+      run: ./gradlew :macos:helper:bundleZip --stacktrace -Ppv.mac.signIdentity="${{ steps.signing.outputs.identity }}"
+
+    - name: Upload the bundle
+      uses: actions/upload-artifact@v7.0.1
+      with:
+        name: mic-helper
+        path: macos/helper/build/distributions/PVMicHelper.zip
+        if-no-files-found: error
+
   build-maven-publish:
+    needs: mic-helper
     runs-on: ubuntu-latest
 
     permissions:
@@ -56,8 +113,14 @@ jobs:
       with:
         cache-read-only: false
 
+    - name: Download the microphone helper
+      uses: actions/download-artifact@v8.0.1
+      with:
+        name: mic-helper
+        path: build/mic-helper
+
     - name: Build with Gradle
-      run: ./gradlew build
+      run: ./gradlew build -Ppv.mac.helperZip="$GITHUB_WORKSPACE/build/mic-helper/PVMicHelper.zip"
 
     - name: Check if already published
       id: maven-check
@@ -87,7 +150,7 @@ jobs:
       env:
         MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
         MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
-      run: ./gradlew publish
+      run: ./gradlew publish -Ppv.mac.helperZip="$GITHUB_WORKSPACE/build/mic-helper/PVMicHelper.zip"
 
     - name: Upload build artifacts
       uses: actions/upload-artifact@v7.0.1

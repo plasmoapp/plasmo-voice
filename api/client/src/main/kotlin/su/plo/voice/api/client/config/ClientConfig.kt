@@ -35,7 +35,10 @@ interface ClientConfig {
 
         val disableInputDevice: BooleanConfigEntry
 
+        @Deprecated("Superseded by inputBackend", ReplaceWith("inputBackend"))
         val useJavaxInput: BooleanConfigEntry
+
+        val inputBackend: EnumConfigEntry<InputBackend>
 
         val microphoneVolume: DoubleConfigEntry
 

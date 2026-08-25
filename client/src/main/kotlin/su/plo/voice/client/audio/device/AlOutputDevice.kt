@@ -36,7 +36,6 @@ import su.plo.voice.api.client.audio.device.source.AlSourceParams
 import su.plo.voice.api.client.audio.device.source.DeviceSourceParams
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent
-import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent
 import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent
 import su.plo.voice.api.event.EventPriority
 import su.plo.voice.api.event.EventSubscribe
@@ -206,11 +205,7 @@ class AlOutputDevice
     }
 
     private fun openSync() {
-        if (isOpen()) throw DeviceException("Device is already open")
-
-        DevicePreOpenEvent(this@AlOutputDevice).also {
-            if (!voiceClient.eventBus.fire(it)) throw DeviceException("Device opening has been canceled")
-        }
+        guardOpen()
 
         devicePointer = openDevice(name)
         hasDisconnectEXT = ALC10.alcIsExtensionPresent(devicePointer, "ALC_EXT_disconnect")

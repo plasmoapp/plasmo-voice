@@ -15,6 +15,8 @@ plugins {
     kotlin("jvm") version(libs.versions.kotlin.get())
     kotlin("plugin.lombok") version(libs.versions.kotlin.get())
     kotlin("kapt") version(libs.versions.kotlin.get())
+    kotlin("multiplatform") version(libs.versions.kotlin.get()) apply(false)
+    kotlin("plugin.serialization") version(libs.versions.kotlin.get()) apply(false)
 
     id("gg.essential.multi-version.root") apply(false)
 }
@@ -26,6 +28,12 @@ if (properties.containsKey("snapshot")) {
 
 subprojects {
     if (project.buildFile.name.equals("root.gradle.kts")) return@subprojects
+
+    if (project.path.startsWith(":macos")) {
+        group = "${rootProject.group}.mac"
+        version = rootProject.version
+        return@subprojects
+    }
 
     apply(plugin = "java")
     apply(plugin = "idea")
@@ -89,6 +97,7 @@ dependencies {
     dokka(project(":api"))
     dokka(project(":protocol"))
     dokkaHtmlPlugin("org.jetbrains.dokka:versioning-plugin")
+    testImplementation(kotlin("test"))
 }
 
 dokka {
@@ -122,4 +131,10 @@ tasks {
     jar {
         enabled = false
     }
+}
+repositories {
+    mavenCentral()
+}
+kapt {
+    keepJavacAnnotationProcessors = true
 }
