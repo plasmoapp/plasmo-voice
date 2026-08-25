@@ -49,13 +49,11 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
 
     @Override
     public boolean isVoiceDisabled() {
-        checkVoiceChat();
         return voiceDisabled;
     }
 
     @Override
     public boolean isMicrophoneMuted() {
-        checkVoiceChat();
         return microphoneMuted;
     }
 
