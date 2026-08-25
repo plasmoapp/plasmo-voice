@@ -1,0 +1,4 @@
+- Fixed log spam and voice chat not working on Spigot and versions below 1.20.1. [#532](https://github.com/plasmoapp/plasmo-voice/issues/532)
+- Fixed a server crash when player joins with an unsupported mod version.
+- Fixed voice chat and mute expirations breaking when the update check could not reach Modrinth.
+- Fixed some ways a modified client could overload the voice server with bad packets and log spam.

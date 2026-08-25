@@ -1,5 +1,7 @@
 ### Client
-- Support stereo audio in noise suppression filter. [#530](https://github.com/plasmoapp/plasmo-voice/pull/530)
+- Fixed the update check hanging when Modrinth is unreachable.
 
 ### Server
-- Fixed `Invalid player data` when joining the server with groups/broadcast addons installed.
+- Fixed a server crash when player joins with an unsupported mod version.
+- Fixed voice chat and mute expirations breaking when the update check could not reach Modrinth.
+- Fixed some ways a modified client could overload the voice server with bad packets and log spam.

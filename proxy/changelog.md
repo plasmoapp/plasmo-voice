@@ -1,0 +1,1 @@
+- Fixed some ways a modified client could overload the voice server with bad packets and log spam.
