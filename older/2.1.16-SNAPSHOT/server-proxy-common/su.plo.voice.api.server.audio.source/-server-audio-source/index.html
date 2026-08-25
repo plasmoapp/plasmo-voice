@@ -1,0 +1,404 @@
+<!doctype html>
+<html class="no-js" lang="en">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+    <title>ServerAudioSource</title>
+<link href="../../../images/logo-icon.svg" rel="icon" type="image/svg"><script>var pathToRoot = "../../../";</script>
+    <script>document.documentElement.classList.replace("no-js", "js");</script>
+    <script>const storage = localStorage.getItem("dokka-dark-mode")
+      if (storage == null) {
+        const osDarkSchemePreferred = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        if (osDarkSchemePreferred === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      } else {
+        const savedDarkMode = JSON.parse(storage)
+        if (savedDarkMode === true) {
+          document.getElementsByTagName("html")[0].classList.add("theme-dark")
+        }
+      }
+    </script>
+<script type="text/javascript" src="https://unpkg.com/kotlin-playground@1/dist/playground.min.js" async></script>
+<script type="text/javascript" src="../../../scripts/sourceset_dependencies.js" async></script>
+<link href="../../../styles/style.css" rel="Stylesheet">
+<link href="../../../styles/main.css" rel="Stylesheet">
+<link href="../../../styles/prism.css" rel="Stylesheet">
+<link href="../../../styles/logo-styles.css" rel="Stylesheet">
+<link href="../../../ui-kit/ui-kit.min.css" rel="Stylesheet">
+<script type="text/javascript" src="../../../scripts/safe-local-storage_blocking.js"></script>
+<script type="text/javascript" src="../../../scripts/navigation-loader.js" async></script>
+<script type="text/javascript" src="../../../scripts/platform-content-handler.js" async></script>
+<script type="text/javascript" src="../../../scripts/main.js" defer></script>
+<script type="text/javascript" src="../../../scripts/prism.js" async></script>
+<script type="text/javascript" src="../../../ui-kit/ui-kit.min.js" defer></script></head>
+<body>
+<div class="root">
+    <header class="navigation theme-dark" id="navigation-wrapper" role="banner">
+<a class="library-name--link" href="../../../index.html" tabindex="1">
+                    PlasmoVoice
+            </a>        <button class="navigation-controls--btn navigation-controls--btn_toc ui-kit_mobile-only" id="toc-toggle" type="button">Toggle table of contents
+        </button>
+        <div class="navigation-controls--break ui-kit_mobile-only"></div>
+        <div class="library-version" id="library-version">
+<dokka-template-command data="{&quot;@class&quot;:&quot;org.jetbrains.dokka.base.templating.ReplaceVersionsCommand&quot;,&quot;location&quot;:&quot;su.plo.voice.api.server.audio.source/-server-audio-source/index.html&quot;}"><div class="dropdown versions-dropdown" data-role="dropdown">
+  <div class="button button_dropdown versions-dropdown-button" role="combobox" data-role="dropdown-toggle" aria-controls="versions-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Select version" tabindex="0" title="2.1.16-SNAPSHOT"><span class="versions-dropdown-button-text">2.1.16-SNAPSHOT</span></div>
+  <div class="dropdown--list dropdown--list_positioned_left versions-dropdown-data" role="listbox" data-role="dropdown-listbox" aria-label="Versions" id="versions-listbox">
+    <div class="dropdown--header" data-remove-style="true" style="display: none"><span>Select version</span><button class="button" data-role="dropdown-toggle" aria-label="Close versions selection"><i class="ui-kit-icon ui-kit-icon_cross"></i></button></div>
+<a href="../../../../2.2.0-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.2.0-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.2.0-SNAPSHOT</span></a><a href="../../../../../server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.16"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.16</span></a><a href="index.html" class="dropdown--option dropdown--option_active dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.16-SNAPSHOT"><span class="dropdown--option-icon dropdown--option-icon_selected"></span><span class="dropdown--option-text">2.1.16-SNAPSHOT</span></a><a href="../../../../2.1.15/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.15"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.15</span></a><a href="../../../../2.1.15-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.15-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.15-SNAPSHOT</span></a><a href="../../../../2.1.14/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.14"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.14</span></a><a href="../../../../2.1.14-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.14-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.14-SNAPSHOT</span></a><a href="../../../../2.1.13/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13</span></a><a href="../../../../2.1.13-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.13-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.13-SNAPSHOT</span></a><a href="../../../../2.1.12/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12</span></a><a href="../../../../2.1.12-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.12-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.12-SNAPSHOT</span></a><a href="../../../../2.1.11/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11</span></a><a href="../../../../2.1.11-SNAPSHOT/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.11-SNAPSHOT"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.11-SNAPSHOT</span></a><a href="../../../../2.1.10/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.10"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.10</span></a><a href="../../../../2.1.9/server-proxy-common/su.plo.voice.api.server.audio.source/-server-audio-source/index.html" class="dropdown--option dropdown--option-link" style="display: block; padding: 5px; color: #fff" data-remove-style="true" role="option" title="2.1.9"><span class="dropdown--option-icon"></span><span class="dropdown--option-text">2.1.9</span></a></div>
+  <div class="dropdown--overlay"></div>
+</div>
+</dokka-template-command>        </div>
+        <div class="navigation-controls">
+        <ul class="filter-section filter-section_loading" id="filter-section" aria-label="Target filter">
+                <button class="platform-tag platform-selector jvm-like" data-active="" aria-pressed="true" data-filter=":api:server-proxy-common/main">jvm</button>
+            <div class="dropdown filter-section--dropdown" data-role="dropdown" id="filter-section-dropdown">
+                <button class="button button_dropdown filter-section--dropdown-toggle" role="combobox" data-role="dropdown-toggle" aria-controls="platform-tags-listbox" aria-haspopup="listbox" aria-expanded="false" aria-label="Toggle source sets"></button>
+                <ul role="listbox" id="platform-tags-listbox" class="dropdown--list" data-role="dropdown-listbox" aria-label="Target filter">
+                    <div class="dropdown--header"><span>Target filter</span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close target filter">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                        <li role="option" class="dropdown--option platform-selector-option jvm-like" tabindex="0">
+                            <label class="checkbox">
+                                <input type="checkbox" class="checkbox--input" id=":api:server-proxy-common/main" data-filter=":api:server-proxy-common/main">
+                                <span class="checkbox--icon"></span>
+                                jvm
+                            </label>
+                        </li>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </ul>
+            <button class="navigation-controls--btn navigation-controls--btn_theme" id="theme-toggle-button" type="button">Switch theme
+            </button>
+            <div class="navigation-controls--btn navigation-controls--btn_search" id="searchBar" role="button">Search in
+                API
+            </div>
+        </div>
+    </header>
+    <div id="container">
+        <nav id="leftColumn" class="sidebar" data-item-type="SECTION" data-item-config="{&quot;defaultSize&quot;: 280, &quot;minSize&quot;: 200, &quot;maxSize&quot;: 400}">
+            <a class="toc--skip-link" href="#main">Skip to content</a>
+            <div class="dropdown theme-dark_mobile" data-role="dropdown" id="toc-dropdown">
+                <ul role="listbox" id="toc-listbox" class="dropdown--list dropdown--list_toc-list" data-role="dropdown-listbox" aria-label="Table of contents">
+                    <div class="dropdown--header">
+                            <span>
+                                    PlasmoVoice
+                            </span>
+                        <button class="button" data-role="dropdown-toggle" aria-label="Close table of contents">
+                            <i class="ui-kit-icon ui-kit-icon_cross"></i>
+                        </button>
+                    </div>
+                    <div class="sidebar--inner" id="sideMenu"></div>
+                </ul>
+                <div class="dropdown--overlay"></div>
+            </div>
+        </nav>
+        <div id="resizer" class="resizer" data-item-type="BAR"></div>
+        <div id="main" data-item-type="SECTION" role="main">
+<div class="main-content" data-page-type="classlike" id="content" pageids="server-proxy-common::su.plo.voice.api.server.audio.source/ServerAudioSource///PointingToDeclaration//1142928706">
+  <div class="breadcrumbs"><a href="../../index.html">server-proxy-common</a><span class="delimiter">/</span><a href="../index.html">su.plo.voice.api.server.audio.source</a><span class="delimiter">/</span><span class="current">ServerAudioSource</span></div>
+  <div class="cover ">
+    <h1 class="cover"><span>Server</span><wbr><span>Audio</span><wbr><span><span>Source</span></span></h1>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">interface </span><a href="index.html">ServerAudioSource</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator"> : </span><a href="../../../protocol/su.plo.voice.proto.data.audio.source/-source-info/index.html">SourceInfo</a><span class="token operator">?</span><span class="token operator">&gt;</span> : <a href="../../../common/su.plo.voice.api.audio.source/-audio-source/index.html">AudioSource</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt; </span></div><p class="paragraph">Base interface for server audio sources. </p><p class="paragraph"><strong>Source states</strong> Some methods mark the source as "dirty" and increment its state. If a source is marked as "dirty", it will broadcast its updated information to the players before sending the next UDP packet.  If players go out of range and then return to the source's range, and if the state in the UDP packet differs from their source state, the players will request source information themselves.  If the source state is increased by more than 10 (e.g. in <a href="set-stereo.html">setStereo</a>), there may be delays in receiving certain UDP packets. This could result in packet drops and potential audio distortion. </p><h4 class="tableheader">Inheritors</h4><div class="table"><div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main"><div class="main-subrow keyValue "><div class=""><span class="inline-flex"><div><a href="../-base-server-direct-source/index.html">BaseServerDirectSource</a></div></span></div><div></div></div></div></div></div></div>
+  </div>
+  <div class="tabbedcontent">
+    <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
+    <div class="tabs-section-body">
+      <div data-togglable="FUNCTION">
+        <h2 class="tableheader">Functions</h2>
+        <div class="table"><a data-name="-2084830842%2FFunctions%2F1142928706" anchor-label="addFilter" id="-2084830842%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="add-filter.html"><span>add</span><wbr><span><span>Filter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2084830842%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="add-filter.html">P</a><span class="token operator"> : </span><a href="../../su.plo.voice.api.server.player/-voice-player/index.html">VoicePlayer</a><span class="token operator">?</span><span class="token operator">&gt; </span><a href="add-filter.html"><span class="token function">addFilter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>filter<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html">Predicate</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="add-filter.html">P</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief ">Adds a new player filter to the source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1619857286%2FFunctions%2F1142928706" anchor-label="clearFilters" id="1619857286%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="clear-filters.html"><span>clear</span><wbr><span><span>Filters</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1619857286%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="clear-filters.html"><span class="token function">clearFilters</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Clears all filters from the source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-355473686%2FFunctions%2F1142928706" anchor-label="getAddon" id="-355473686%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-addon.html"><span>get</span><wbr><span><span>Addon</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-355473686%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-addon.html"><span class="token function">getAddon</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../../common/su.plo.voice.api.addon/-addon-container/index.html">AddonContainer</a></div><div class="brief ">Gets the addon associated with this audio source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1453217359%2FFunctions%2F1142928706" anchor-label="getFilters" id="1453217359%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-filters.html"><span>get</span><wbr><span><span>Filters</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1453217359%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-filters.html"><span class="token function">getFilters</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/Collection.html">Collection</a><span class="token operator">&lt;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html">Predicate</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="../../su.plo.voice.api.server.player/-voice-player/index.html">VoicePlayer</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief ">Gets the collection of player filters associated with this source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1961452363%2FFunctions%2F1142928706" anchor-label="getId" id="-1961452363%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-id.html"><span>get</span><wbr><span><span>Id</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1961452363%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-id.html"><span class="token function">getId</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/UUID.html">UUID</a></div><div class="brief ">Gets the unique identifier of this audio source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1026289860%2FFunctions%2F1142928706" anchor-label="getLine" id="-1026289860%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-line.html"><span>get</span><wbr><span><span>Line</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1026289860%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-line.html"><span class="token function">getLine</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="../../su.plo.voice.api.server.audio.line/-base-server-source-line/index.html">BaseServerSourceLine</a></div><div class="brief ">Gets the server source line to which this audio source belongs.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-971399007%2FFunctions%2F1142928706" anchor-label="getSourceInfo" id="-971399007%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="index.html#-971399007%2FFunctions%2F1142928706"><span>get</span><wbr><span>Source</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-971399007%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="index.html#-971399007%2FFunctions%2F1142928706"><span class="token function">getSourceInfo</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="../../../common/su.plo.voice.api.audio.source/-audio-source/index.html">S</a></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-948923975%2FFunctions%2F1142928706" anchor-label="getState" id="-948923975%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-state.html"><span>get</span><wbr><span><span>State</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-948923975%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="get-state.html"><span class="token function">getState</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-int/index.html">Int</a></div><div class="brief ">Gets the state of this audio source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2066562647%2FFunctions%2F1142928706" anchor-label="isIconVisible" id="2066562647%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="is-icon-visible.html"><span>is</span><wbr><span>Icon</span><wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2066562647%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="is-icon-visible.html"><span class="token function">isIconVisible</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Checks if the icon for this audio source is visible in the world.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-639328140%2FFunctions%2F1142928706" anchor-label="matchFilters" id="-639328140%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="match-filters.html"><span>match</span><wbr><span><span>Filters</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-639328140%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="match-filters.html">P</a><span class="token operator"> : </span><a href="../../su.plo.voice.api.server.player/-voice-player/index.html">VoicePlayer</a><span class="token operator">?</span><span class="token operator">&gt; </span><a href="match-filters.html"><span class="token function">matchFilters</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>player<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="match-filters.html">P</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Checks if a player matches all filters associated with this source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="579625141%2FFunctions%2F1142928706" anchor-label="notMatchFilters" id="579625141%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="not-match-filters.html"><span>not</span><wbr><span>Match</span><wbr><span><span>Filters</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="579625141%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="not-match-filters.html">P</a><span class="token operator"> : </span><a href="../../su.plo.voice.api.server.player/-voice-player/index.html">VoicePlayer</a><span class="token operator">?</span><span class="token operator">&gt; </span><a href="not-match-filters.html"><span class="token function">notMatchFilters</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>player<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="not-match-filters.html">P</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></div><div class="brief ">Checks if a player does not match any of the filters associated with this source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1497287184%2FFunctions%2F1142928706" anchor-label="remove" id="-1497287184%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove.html"><span><span>remove</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1497287184%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="remove.html"><span class="token function">remove</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Removes the source from its associated source line.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="185710811%2FFunctions%2F1142928706" anchor-label="removeFilter" id="185710811%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="remove-filter.html"><span>remove</span><wbr><span><span>Filter</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="185710811%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><span class="token operator">&lt;</span><a href="remove-filter.html">P</a><span class="token operator"> : </span><a href="../../su.plo.voice.api.server.player/-voice-player/index.html">VoicePlayer</a><span class="token operator">?</span><span class="token operator">&gt; </span><a href="remove-filter.html"><span class="token function">removeFilter</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span>filter<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/function/Predicate.html">Predicate</a><span class="token operator">&lt;</span><span class="token keyword">in </span><a href="remove-filter.html">P</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span></div><div class="brief ">Removes a player filter from the source.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1543874479%2FFunctions%2F1142928706" anchor-label="resolveSourceInfo" id="-1543874479%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resolve-source-info.html"><span>resolve</span><wbr><span>Source</span><wbr><span><span>Info</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1543874479%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><div class="block"><div class="block"><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span></div></div><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="resolve-source-info.html"><span class="token function">resolveSourceInfo</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/NotNull///PointingToDeclaration/"><span class="token annotation builtin">NotNull</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="index.html">S</a><span class="token operator">&gt;</span></div><div class="brief ">Resolves the source info asynchronously.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2327132%2FFunctions%2F1142928706" anchor-label="setDirty" id="-2327132%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-dirty.html"><span>set</span><wbr><span><span>Dirty</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2327132%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-dirty.html"><span class="token function">setDirty</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Marks the source as "dirty".</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-651962723%2FFunctions%2F1142928706" anchor-label="setIconVisible" id="-651962723%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-icon-visible.html"><span>set</span><wbr><span>Icon</span><wbr><span><span>Visible</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-651962723%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-icon-visible.html"><span class="token function">setIconVisible</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">visible<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets whether the icon for this audio source is visible in the world.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1915560692%2FFunctions%2F1142928706" anchor-label="setName" id="1915560692%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-name.html"><span>set</span><wbr><span><span>Name</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1915560692%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-name.html"><span class="token function">setName</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter "><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span>name<span class="token operator">: </span><span><span class="token annotation builtin">@</span><span data-unresolved-link="org.jetbrains.annotations/Nullable///PointingToDeclaration/"><span class="token annotation builtin">Nullable</span></span>&nbsp;</span><a href="https://docs.oracle.com/javase/8/docs/api/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets the source name that will be visible in the overlay.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="718050862%2FFunctions%2F1142928706" anchor-label="setStereo" id="718050862%2FFunctions%2F1142928706" data-filterable-set=":api:server-proxy-common/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":api:server-proxy-common/main" data-filterable-set=":api:server-proxy-common/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="set-stereo.html"><span>set</span><wbr><span><span>Stereo</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="718050862%2FFunctions%2F1142928706"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":api:server-proxy-common/main"><div class="symbol monospace"><span class="token keyword">abstract </span><span class="token keyword">fun </span><a href="set-stereo.html"><span class="token function">setStereo</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">stereo<span class="token operator">: </span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-boolean/index.html">Boolean</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Sets the source mode to stereo.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    <div class="footer">
+        <div class="footer--container">
+            <a href="#content" id="go-to-top-link" class="footer--button footer--button_go-to-top"></a>
+            <div class="footer--content">
+                <div>
+                    <span>Generated by </span>
+                    <a class="footer--link footer--link_external" href="https://github.com/Kotlin/dokka">
+                        Dokka
+                    </a>
+                    <div>© 2026 Copyright</div>
+                </div>
+            </div>
+        </div>
+    </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
