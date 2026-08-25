@@ -158,12 +158,12 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         if (!source.isPresent()) return;
 
         if (source.get().notMatchFilters(player)) {
-            source.get().resolveSourceInfo().thenAccept(sourceInfo ->
-                    BaseVoice.DEBUG_LOGGER.warn(
-                            "{} tried to request a source {} to which he doesn't have access",
-                            player.getInstance().getName(), source.get().getSourceInfo()
-                    )
-            );
+            if (BaseVoice.DEBUG_LOGGER.enabled()) {
+                BaseVoice.DEBUG_LOGGER.warn(
+                        "{} tried to request a source {} to which he doesn't have access",
+                        player.getInstance().getName(), source.get().getSourceInfo()
+                );
+            }
             return;
         }
 
