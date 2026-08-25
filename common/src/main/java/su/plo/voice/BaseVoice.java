@@ -19,6 +19,7 @@ import su.plo.voice.event.VoiceEventBus;
 import su.plo.voice.util.version.PlatformLoader;
 
 import java.io.InputStream;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
@@ -41,6 +42,7 @@ public abstract class BaseVoice implements PlasmoVoice {
 
     @Getter
     protected ScheduledExecutorService backgroundExecutor;
+    protected ExecutorService httpExecutor;
 
     protected BaseVoice(@NotNull PlatformLoader loader) {
         this.loader = loader;
@@ -57,11 +59,17 @@ public abstract class BaseVoice implements PlasmoVoice {
             thread.setDaemon(true);
             return thread;
         });
+        this.httpExecutor = Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, "Plasmo Voice HTTP Executor");
+            thread.setDaemon(true);
+            return thread;
+        });
         eventBus.register(this, this);
     }
 
     protected void onShutdown() {
         backgroundExecutor.shutdown();
+        httpExecutor.shutdown();
         addons.clear();
     }
 
