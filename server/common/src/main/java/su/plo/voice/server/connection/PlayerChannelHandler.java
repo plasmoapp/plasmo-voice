@@ -23,12 +23,23 @@ import java.security.spec.EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 public final class PlayerChannelHandler implements ServerPacketTcpHandler {
+
+    private static final long STATE_BROADCAST_INTERVAL_MS = 250L;
+    private static final long LANGUAGE_RESPONSE_INTERVAL_MS = 1_000L;
 
     private final PlasmoVoiceServer voiceServer;
     private final TcpServerPacketManager tcpConnections;
     private final VoiceServerPlayer player;
+
+    private long lastStateBroadcast;
+    private boolean stateBroadcastScheduled;
+
+    private long lastLanguageResponse;
+    private boolean languageResponseScheduled;
+    private String requestedLanguage;
 
     public PlayerChannelHandler(@NotNull PlasmoVoiceServer voiceServer,
                                 @NotNull VoiceServerPlayer player) {
@@ -96,10 +107,22 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         if (!player.hasVoiceChat()) return;
 
         BaseVoicePlayer<?> voicePlayer = (BaseVoicePlayer<?>) player;
-        voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
-        voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
 
-        tcpConnections.broadcastPlayerInfoUpdate(player);
+        boolean voiceDisabledChanged = voicePlayer.setVoiceDisabled(packet.isVoiceDisabled());
+        boolean microphoneMutedChanged = voicePlayer.setMicrophoneMuted(packet.isMicrophoneMuted());
+
+        if (!voiceDisabledChanged && !microphoneMutedChanged) return;
+
+        long elapsed = System.currentTimeMillis() - lastStateBroadcast;
+        if (elapsed >= STATE_BROADCAST_INTERVAL_MS) {
+            broadcastPlayerState();
+            return;
+        }
+
+        if (stateBroadcastScheduled) return;
+        this.stateBroadcastScheduled = true;
+
+        scheduleInMainThread(this::flushPlayerState, STATE_BROADCAST_INTERVAL_MS - elapsed);
     }
 
     @Override
@@ -151,9 +174,56 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
 
     @Override
     public void handle(@NotNull LanguageRequestPacket packet) {
+        this.requestedLanguage = packet.getLanguage();
+
+        long elapsed = System.currentTimeMillis() - lastLanguageResponse;
+        if (elapsed >= LANGUAGE_RESPONSE_INTERVAL_MS) {
+            sendLanguage();
+            return;
+        }
+
+        if (languageResponseScheduled) return;
+        this.languageResponseScheduled = true;
+
+        scheduleInMainThread(this::flushLanguage, LANGUAGE_RESPONSE_INTERVAL_MS - elapsed);
+    }
+
+    private void broadcastPlayerState() {
+        this.lastStateBroadcast = System.currentTimeMillis();
+
+        tcpConnections.broadcastPlayerInfoUpdate(player);
+    }
+
+    private void flushPlayerState() {
+        this.stateBroadcastScheduled = false;
+        if (!player.hasVoiceChat()) return;
+
+        broadcastPlayerState();
+    }
+
+    private void sendLanguage() {
+        String language = requestedLanguage;
+        if (language == null) return;
+
+        this.lastLanguageResponse = System.currentTimeMillis();
+
         player.sendPacket(new LanguagePacket(
-                packet.getLanguage(),
-                voiceServer.getLanguages().getClientLanguage(packet.getLanguage())
+                language,
+                voiceServer.getLanguages().getClientLanguage(language)
         ));
+    }
+
+    private void flushLanguage() {
+        this.languageResponseScheduled = false;
+
+        sendLanguage();
+    }
+
+    private void scheduleInMainThread(@NotNull Runnable runnable, long delayMs) {
+        voiceServer.getBackgroundExecutor().schedule(
+                () -> voiceServer.getMinecraftServer().executeInMainThread(runnable),
+                delayMs,
+                TimeUnit.MILLISECONDS
+        );
     }
 }
