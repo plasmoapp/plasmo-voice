@@ -16,6 +16,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.Optional;
 
 @Data
@@ -95,11 +96,13 @@ public final class ModrinthVersion {
                                          @NonNull PlatformLoader loader) throws IOException {
         URL url = new URL(String.format(
                 "https://api.modrinth.com/v2/project/plasmo-voice/version?loaders=[%%22%s%%22]&game_versions=[%%22%s%%22]",
-                loader, minecraftVersion
+                URLEncoder.encode(loader.toString(), "UTF-8"),
+                URLEncoder.encode(minecraftVersion, "UTF-8")
         ));
 
         URLConnection connection = url.openConnection();
         connection.setConnectTimeout(10_000);
+        connection.setReadTimeout(10_000);
 
         try (InputStream in = connection.getInputStream();
              Reader reader = new InputStreamReader(in)

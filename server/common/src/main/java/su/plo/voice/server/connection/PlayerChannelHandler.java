@@ -57,7 +57,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         SemanticVersion clientVersion = SemanticVersion.parse(packet.getVersion());
 
         if (clientVersion.major() != serverVersion.major()) {
-            ServerVersionUtil.suggestSupportedVersion(player, serverVersion, packet.getMinecraftVersion());
+            ServerVersionUtil.suggestSupportedVersion(player, packet.getMinecraftVersion());
             return;
         }
 
@@ -68,7 +68,7 @@ public final class PlayerChannelHandler implements ServerPacketTcpHandler {
         }
 
         if (clientVersion.asInt() < minVersion.asInt()) {
-            ServerVersionUtil.suggestSupportedVersion(player, clientVersion, packet.getMinecraftVersion());
+            ServerVersionUtil.suggestSupportedVersion(player, packet.getMinecraftVersion());
             return;
         }
 

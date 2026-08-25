@@ -1,30 +1,20 @@
 package su.plo.voice.server.util.version;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import lombok.NonNull;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextClickEvent;
 import su.plo.slib.api.chat.style.McTextHoverEvent;
 import su.plo.slib.api.chat.style.McTextStyle;
-import su.plo.slib.api.logging.McLogger;
-import su.plo.voice.BaseVoice;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.util.version.PlatformLoader;
-import su.plo.voice.util.version.ModrinthVersion;
-import su.plo.voice.util.version.SemanticVersion;
 
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 public final class ServerVersionUtil {
 
-    private static final McLogger LOGGER = BaseVoice.createLogger("ServerVersionUtil");
+    private static final String MODRINTH_LINK = "https://modrinth.com/plugin/plasmo-voice";
 
-    private static final Cache<String, String> LINKS_CACHE = CacheBuilder
-            .newBuilder()
-            .expireAfterAccess(15L, TimeUnit.SECONDS)
-            .build();
+    private static final Pattern MINECRAFT_VERSION_PATTERN = Pattern.compile("[a-zA-Z0-9._-]{1,32}");
 
     public static PlatformLoader getPlayerModrinthLoader(@NonNull VoiceServerPlayer player) {
         boolean isForge = player.getInstance().getRegisteredChannels()
@@ -35,40 +25,25 @@ public final class ServerVersionUtil {
     }
 
     public static void suggestSupportedVersion(@NonNull VoiceServerPlayer player,
-                                               @NonNull SemanticVersion serverVersion,
                                                @NonNull String minecraftVersion) {
-        try {
-            String downloadLink = LINKS_CACHE.get(
-                    getVersionCacheKey(minecraftVersion, getPlayerModrinthLoader(player), serverVersion),
-                    () -> {
-                        if (!serverVersion.isRelease()) {
-                            return ModrinthVersion.from(serverVersion.string(), minecraftVersion, getPlayerModrinthLoader(player))
-                                    .map(ModrinthVersion::downloadLink)
-                                    .orElse("https://modrinth.com/plugin/plasmo-voice");
-                        } else {
-                            return ModrinthVersion.getLatest(minecraftVersion, getPlayerModrinthLoader(player), false, serverVersion)
-                                    .map(ModrinthVersion::downloadLink)
-                                    .orElse("https://modrinth.com/plugin/plasmo-voice");
-                        }
-                    }
-            );
+        String downloadLink = getVersionsLink(player, minecraftVersion);
 
-            player.getInstance().sendMessage(McTextComponent.translatable(
-                    "pv.error.version_not_supported",
-                    McTextComponent.translatable("pv.error.version_not_supported_click")
-                            .withStyle(McTextStyle.YELLOW)
-                            .clickEvent(McTextClickEvent.openUrl(downloadLink))
-                            .hoverEvent(McTextHoverEvent.showText(McTextComponent.translatable(
-                                    "pv.error.version_not_supported_hover", downloadLink
-                            )))
-            ));
-        } catch (ExecutionException e) {
-            LOGGER.error("Failed to get version from modrinth", e);
-        }
+        player.getInstance().sendMessage(McTextComponent.translatable(
+                "pv.error.version_not_supported",
+                McTextComponent.translatable("pv.error.version_not_supported_click")
+                        .withStyle(McTextStyle.YELLOW)
+                        .clickEvent(McTextClickEvent.openUrl(downloadLink))
+                        .hoverEvent(McTextHoverEvent.showText(McTextComponent.translatable(
+                                "pv.error.version_not_supported_hover", downloadLink
+                        )))
+        ));
     }
 
-    private static String getVersionCacheKey(String minecraftVersion, PlatformLoader loader, SemanticVersion serverVersion) {
-        return minecraftVersion + loader.name() + serverVersion.string();
+    private static String getVersionsLink(@NonNull VoiceServerPlayer player,
+                                          @NonNull String minecraftVersion) {
+        if (!MINECRAFT_VERSION_PATTERN.matcher(minecraftVersion).matches()) return MODRINTH_LINK;
+
+        return MODRINTH_LINK + "/versions?g=" + minecraftVersion + "&l=" + getPlayerModrinthLoader(player);
     }
 
     private ServerVersionUtil() {
