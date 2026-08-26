@@ -33,9 +33,7 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
     @Getter
     protected final @NotNull P instance;
 
-    @Setter
     protected boolean voiceDisabled;
-    @Setter
     protected boolean microphoneMuted;
     @Setter
     protected @Nullable String modVersion;
@@ -51,13 +49,11 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
 
     @Override
     public boolean isVoiceDisabled() {
-        checkVoiceChat();
         return voiceDisabled;
     }
 
     @Override
     public boolean isMicrophoneMuted() {
-        checkVoiceChat();
         return microphoneMuted;
     }
 
@@ -125,6 +121,20 @@ public abstract class BaseVoicePlayer<P extends McPlayer>
         distanceByActivationId.clear();
         activeActivations.clear();
         lastActivationSequenceNumber.clear();
+    }
+
+    public boolean setVoiceDisabled(boolean voiceDisabled) {
+        boolean oldVoiceDisabled = this.voiceDisabled;
+        this.voiceDisabled = voiceDisabled;
+
+        return oldVoiceDisabled != voiceDisabled;
+    }
+
+    public boolean setMicrophoneMuted(boolean microphoneMuted) {
+        boolean oldMicrophoneMuted = this.microphoneMuted;
+        this.microphoneMuted = microphoneMuted;
+
+        return oldMicrophoneMuted != microphoneMuted;
     }
 
     protected void checkVoiceChat() {

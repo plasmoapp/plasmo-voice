@@ -67,7 +67,7 @@ public final class PlayerToServerChannelHandler implements ServerPacketTcpHandle
         if (!source.isPresent()) return;
 
         if (source.get().notMatchFilters(player)) {
-            BaseVoice.LOGGER.warn(
+            BaseVoice.DEBUG_LOGGER.warn(
                     "{} tried to request a source {} to which he doesn't have access",
                     player.getInstance().getName(), source.get().getSourceInfo()
             );

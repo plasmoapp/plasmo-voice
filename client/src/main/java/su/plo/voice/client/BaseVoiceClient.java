@@ -113,7 +113,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         if (this.updatesChecked) return;
         this.updatesChecked = true;
 
-        backgroundExecutor.execute(() -> {
+        httpExecutor.execute(() -> {
             try {
                 // don't check for updates in dev/alpha builds or if it disabled in the config
                 if (!SemanticVersion.parse(getVersion()).isRelease() || !config.getCheckForUpdates().value()) return;

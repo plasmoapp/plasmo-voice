@@ -349,7 +349,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
 
     private void checkForUpdates() {
         if (config.checkForUpdates()) {
-            backgroundExecutor.execute(() -> {
+            httpExecutor.execute(() -> {
                 try {
                     ModrinthVersion.checkForUpdates(getVersion(), getMinecraftServer().getVersion(), loader)
                             .ifPresent(version -> LOGGER.warn(

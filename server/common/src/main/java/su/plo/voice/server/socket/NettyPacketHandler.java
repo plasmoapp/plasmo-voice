@@ -60,7 +60,7 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
         if (packet.getPacketUntyped() instanceof PingPacket) {
             PingPacket pingPacket = (PingPacket) packet.getPacketUntyped();
             if (pingPacket.getServerIp() != null) {
-                connection.setConnectionAddress(new InetSocketAddress(pingPacket.getServerIp(), pingPacket.getServerPort()));
+                connection.setConnectionAddress(InetSocketAddress.createUnresolved(pingPacket.getServerIp(), pingPacket.getServerPort()));
             }
         }
         voiceServer.getUdpConnectionManager().addConnection(connection);

@@ -50,8 +50,6 @@ public final class VoiceProxyPlayerConnection
     }
 
     public @NotNull VoicePlayerInfo createPlayerInfo() {
-        checkVoiceChat();
-
         VoicePlayerInfo voicePlayerInfo = new VoicePlayerInfo(
                 instance.getUuid(),
                 instance.getName(),

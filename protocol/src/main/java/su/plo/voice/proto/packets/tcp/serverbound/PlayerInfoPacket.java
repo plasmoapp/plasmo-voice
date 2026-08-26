@@ -39,8 +39,8 @@ public final class PlayerInfoPacket extends PlayerStatePacket {
     public void read(ByteArrayDataInput in) throws IOException {
         super.read(in);
 
-        this.minecraftVersion = in.readUTF();
-        this.version = in.readUTF();
+        this.minecraftVersion = PacketUtil.readSafeUTF(in, 64);
+        this.version = PacketUtil.readSafeUTF(in, 64);
 
         int length = PacketUtil.readSafeInt(in, 1, 2048);
         this.publicKey = new byte[length];

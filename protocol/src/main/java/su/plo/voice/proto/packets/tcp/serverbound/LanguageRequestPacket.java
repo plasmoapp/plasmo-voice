@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import su.plo.voice.proto.packets.Packet;
+import su.plo.voice.proto.packets.PacketUtil;
 
 import java.io.IOException;
 
@@ -22,7 +23,7 @@ public final class LanguageRequestPacket implements Packet<ServerPacketTcpHandle
 
     @Override
     public void read(ByteArrayDataInput in) throws IOException {
-        this.language = in.readUTF();
+        this.language = PacketUtil.readSafeUTF(in, 32);
     }
 
     @Override
