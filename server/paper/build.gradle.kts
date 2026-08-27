@@ -11,7 +11,7 @@ plugins {
 group = "$group.server"
 
 base.archivesName.set("${rootProject.name}-Paper")
-javaVersion = 17
+javaVersion = 21
 
 repositories {
     maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
