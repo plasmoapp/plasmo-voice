@@ -8,9 +8,7 @@ import net.minecraft.server.packs.PackType
 import net.minecraft.server.packs.resources.IoSupplier
 import java.io.InputStream
 
-//#if MC>=12005
-//$$ import net.minecraft.server.packs.PackLocationInfo
-//#endif
+import net.minecraft.server.packs.PackLocationInfo
 
 //#if MC>=12104
 //$$ import net.minecraft.server.packs.metadata.MetadataSectionType
@@ -61,10 +59,8 @@ object DummyPack : PackResources {
     }
     //#endif
 
-    //#if MC>=12005
-    //$$ override fun location(): PackLocationInfo {
-    //$$     throw UnsupportedOperationException()
-    //$$ }
-    //#endif
+    override fun location(): PackLocationInfo {
+        throw UnsupportedOperationException()
+    }
 }
 //#endif

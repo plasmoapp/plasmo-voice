@@ -218,7 +218,7 @@ public abstract class BaseVoiceProxy extends BaseVoice implements PlasmoVoicePro
         if (config.checkForUpdates()) {
             httpExecutor.execute(() -> {
                 try {
-                    ModrinthVersion.checkForUpdates(getVersion(), "1.20.1", loader)
+                    ModrinthVersion.checkForUpdates(getVersion(), "1.21.1", loader)
                             .ifPresent(version -> LOGGER.warn(
                                     "New version available {}: {}",
                                     version.version(),

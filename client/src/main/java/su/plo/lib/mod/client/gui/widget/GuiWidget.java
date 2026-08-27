@@ -6,15 +6,11 @@ import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
 public interface GuiWidget {
 
-    //#if MC>=12005
-    //$$ ResourceLocation MENU_LIST_BACKGROUND_LOCATION = ResourceLocation.tryParse("textures/gui/menu_list_background.png");
-    //$$ ResourceLocation INWORLD_MENU_LIST_BACKGROUND_LOCATION = ResourceLocation.tryParse("textures/gui/inworld_menu_list_background.png");
-    //$$
-    //$$ ResourceLocation FOOTER_SEPARATOR_LOCATION = ResourceLocation.tryParse("textures/gui/footer_separator.png");
-    //$$ ResourceLocation INWORLD_FOOTER_SEPARATOR_LOCATION = ResourceLocation.tryParse("textures/gui/inworld_footer_separator.png");
-    //#else
-    ResourceLocation BACKGROUND_LOCATION = ResourceLocation.tryParse("textures/gui/options_background.png");
-    //#endif
+    ResourceLocation MENU_LIST_BACKGROUND_LOCATION = ResourceLocation.tryParse("textures/gui/menu_list_background.png");
+    ResourceLocation INWORLD_MENU_LIST_BACKGROUND_LOCATION = ResourceLocation.tryParse("textures/gui/inworld_menu_list_background.png");
+
+    ResourceLocation FOOTER_SEPARATOR_LOCATION = ResourceLocation.tryParse("textures/gui/footer_separator.png");
+    ResourceLocation INWORLD_FOOTER_SEPARATOR_LOCATION = ResourceLocation.tryParse("textures/gui/inworld_footer_separator.png");
 
     int getWidth();
 

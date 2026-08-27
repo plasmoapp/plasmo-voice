@@ -1,21 +1,15 @@
 package gg.essential.universal.shader
 //#if MC<12105
 
-import com.google.common.collect.ImmutableMap
-import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import com.mojang.blaze3d.vertex.VertexFormat
+import com.mojang.blaze3d.vertex.VertexFormatElement
+import gg.essential.universal.DummyPack
 import net.minecraft.client.renderer.ShaderInstance
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.server.packs.resources.Resource
 import org.apache.commons.codec.digest.DigestUtils
 import java.io.FileNotFoundException
-import kotlin.NoSuchElementException
-import gg.essential.universal.DummyPack
-import net.minecraft.server.packs.resources.Resource
 import java.util.Optional
-
-//#if MC>=12100
-//$$ import com.mojang.blaze3d.vertex.VertexFormatElement
-//#endif
 
 //#if MC>=12102
 //$$ import com.mojang.blaze3d.shaders.CompiledShader
@@ -95,32 +89,22 @@ internal class MCShader(
             val shaderVertexFormat = if (vertexFormat != null) {
                 // Shader calls glBindAttribLocation using the names in the VertexFormat, not the shader json...
                 // Easiest way to work around this is to construct a custom VertexFormat with our prefixed names.
-                //#if MC>=12100
-                //$$ VertexFormat.builder()
-                //$$     .apply {
-                //$$         transformer.attributes.forEachIndexed { index, name ->
-                //$$             add(name, vertexFormat.elements[index])
-                //$$         }
-                //$$     }
-                //$$     .build()
-                //#else
-                VertexFormat(ImmutableMap.copyOf(
-                    transformer.attributes.withIndex()
-                        .associate { it.value to vertexFormat.elements[it.index] }))
-                //#endif
+                VertexFormat.builder()
+                    .apply {
+                        transformer.attributes.forEachIndexed { index, name ->
+                            add(name, vertexFormat.elements[index])
+                        }
+                    }
+                    .build()
             } else {
                 // Legacy fallback: The actual element doesn't matter here, Shader only cares about the names
-                //#if MC>=12100
-                //$$ VertexFormat.builder()
-                //$$     .apply {
-                //$$         transformer.attributes.forEachIndexed { index, name ->
-                //$$             add(name, VertexFormatElement.POSITION)
-                //$$         }
-                //$$     }
-                //$$     .build()
-                //#else
-                VertexFormat(ImmutableMap.copyOf(transformer.attributes.associateWith { DefaultVertexFormat.ELEMENT_POSITION }))
-                //#endif
+                VertexFormat.builder()
+                    .apply {
+                        transformer.attributes.forEachIndexed { index, name ->
+                            add(name, VertexFormatElement.POSITION)
+                        }
+                    }
+                    .build()
             }
 
 

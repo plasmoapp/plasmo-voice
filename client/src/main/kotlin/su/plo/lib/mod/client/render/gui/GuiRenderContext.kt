@@ -31,7 +31,7 @@ class GuiRenderContext(
     //#if MC>=12106
     //$$ val stack: Matrix3x2fStack
     //$$     get() = mcContext.pose()
-    //#elseif MC>=12001
+    //#else
     val stack: PoseStack
         get() = mcContext.pose()
     //#endif
@@ -47,7 +47,7 @@ class GuiRenderContext(
 
         //#if MC>=12106
         //$$ if (state != null) {
-        // I don't understand why, but mojang subtracts x and y from width and height respectively
+        //$$ // I don't understand why, but mojang subtracts x and y from width and height respectively
         //$$     mcContext.enableScissor(state.x, state.y, state.width + state.x, state.height + state.y)
         //$$ } else {
         //$$     mcContext.disableScissor()

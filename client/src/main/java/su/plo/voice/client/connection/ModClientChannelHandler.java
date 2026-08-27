@@ -17,40 +17,23 @@ import java.util.Optional;
 
 //#if FABRIC
 
-import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-//#if MC>=12005
-//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
-//#else
-import net.fabricmc.fabric.api.networking.v1.PacketSender;
-//#endif
-
-//#elseif FORGE
-
-//#if MC<12100
-//$$ import net.minecraftforge.network.NetworkDirection;
-//#endif
-
-//$$ import net.minecraftforge.network.NetworkEvent;
+import su.plo.slib.mod.channel.ByteArrayPayload;
 
 //#elseif NEOFORGE
-
+//$$
 //$$ import net.neoforged.neoforge.network.handling.IPayloadContext;
 //$$ import net.neoforged.neoforge.network.handling.IPayloadHandler;
 //$$ import su.plo.slib.mod.channel.ByteArrayPayload;
-
+//$$
 //#endif
 
 public final class ModClientChannelHandler
         //#if FABRIC
-        //#if MC>=12005
-        //$$ implements ClientPlayNetworking.PlayPayloadHandler<ByteArrayPayload>
-        //#else
-        implements ClientPlayNetworking.PlayChannelHandler
-        //#endif
+        implements ClientPlayNetworking.PlayPayloadHandler<ByteArrayPayload>
         //#endif
 
         //#if NEOFORGE
@@ -79,57 +62,20 @@ public final class ModClientChannelHandler
 
     //#if FABRIC
 
-    //#if MC>=12005
-    //$$ @Override
-    //$$ public void receive(ByteArrayPayload payload, ClientPlayNetworking.Context context) {
-    //$$     ClientPacketListener listener = context.client().getConnection();
-    //$$     if (listener == null) return;
-    //$$     receive(listener.getConnection(), payload.getData());
-    //$$ }
-    //#else
     @Override
-    public void receive(
-            Minecraft client,
-            ClientPacketListener handler,
-            FriendlyByteBuf buf,
-            PacketSender responseSender
-    ) {
-        receive(handler.getConnection(), buf);
+    public void receive(ByteArrayPayload payload, ClientPlayNetworking.Context context) {
+        ClientPacketListener listener = context.client().getConnection();
+        if (listener == null) return;
+        receive(listener.getConnection(), payload.getData());
     }
-    //#endif
-
-    //#elseif FORGE
-
-    //$$ public void receive(@NotNull NetworkEvent event) {
-
-    //#if MC>=12002
-    //$$     CustomPayloadEvent.Context context = event.getSource();
-    //#else
-    //$$     NetworkEvent.Context context = event.getSource().get();
-    //#endif
-
-    //#if MC>=12100
-    //$$     if (context.isServerSide() || event.getPayload() == null) return;
-    //#else
-    //$$     if (context.getDirection() != NetworkDirection.PLAY_TO_CLIENT || event.getPayload() == null) return;
-    //#endif
-
-    //#if MC>=12002
-    //$$     receive(context.getConnection(), event.getPayload());
-    //#else
-    //$$     receive(context.getNetworkManager(), event.getPayload());
-    //#endif
-
-    //$$     context.setPacketHandled(true);
-    //$$ }
 
     //#elseif NEOFORGE
-
+    //$$
     //$$ @Override
     //$$ public void handle(@NotNull ByteArrayPayload payload, @NotNull IPayloadContext context) {
     //$$     receive(context.connection(), payload.getData());
     //$$ }
-
+    //$$
     //#endif
 
     private void receive(Connection connection, Packet<PacketHandler> packet) {

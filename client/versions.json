@@ -82,40 +82,6 @@
   {
     "project": "1.21.1-fabric",
     "mcVersion": 12101,
-    "mappings": "official",
-    "parent": "1.20.4-fabric",
-    "extraMappings": "1.21-1.20.6.txt"
-  },
-  {
-    "project": "1.21.1-forge",
-    "mcVersion": 12101,
-    "mappings": "official",
-    "parent": "1.20.4-forge",
-    "extraMappings": "1.21-1.20.6.txt"
-  },
-  {
-    "project": "1.20.4-forge",
-    "mcVersion": 12004,
-    "mappings": "official",
-    "parent": "1.20.1-forge",
-    "extraMappings": "1.20.4-1.20.1.txt"
-  },
-  {
-    "project": "1.20.4-fabric",
-    "mcVersion": 12004,
-    "mappings": "official",
-    "parent": "1.20.1-fabric",
-    "extraMappings": "1.20.4-1.20.1.txt"
-  },
-  {
-    "project": "1.20.1-forge",
-    "mcVersion": 12001,
-    "mappings": "official",
-    "parent": "1.20.1-fabric"
-  },
-  {
-    "project": "1.20.1-fabric",
-    "mcVersion": 12001,
     "mappings": "official"
   }
 ]

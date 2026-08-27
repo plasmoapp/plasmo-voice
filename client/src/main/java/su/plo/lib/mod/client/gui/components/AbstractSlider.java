@@ -105,21 +105,9 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
     protected void renderTrack(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         int x0 = x + (int) (value * (double) (getSliderWidth() - 8));
 
-        //#if MC>=12002
-        //$$ GuiWidgetTexture sprite = isHoveredOrFocused() ? GuiWidgetTexture.SLIDER_HANDLE_ACTIVE : GuiWidgetTexture.SLIDER_HANDLE;
-        //$$
-        //$$ context.blitSprite(sprite, x0, y, 0, 0, 8, 20);
-        //#else
-        GuiWidgetTexture sprite;
-        if (isHoveredOrFocused()) {
-            sprite = GuiWidgetTexture.BUTTON_ACTIVE;
-        } else {
-            sprite = GuiWidgetTexture.BUTTON_DEFAULT;
-        }
+        GuiWidgetTexture sprite = isHoveredOrFocused() ? GuiWidgetTexture.SLIDER_HANDLE_ACTIVE : GuiWidgetTexture.SLIDER_HANDLE;
 
-        context.blitSprite(sprite, x0, y, 0, 0, 4, 20);
-        context.blitSprite(sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
-        //#endif
+        context.blitSprite(sprite, x0, y, 0, 0, 8, 20);
     }
 
     @Override

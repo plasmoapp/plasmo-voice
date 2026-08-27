@@ -17,20 +17,12 @@ object ResourceLocationUtil {
         namespace: String,
         location: String,
     ): ResourceLocation =
-    //#if MC>=12100
-    //$$ ResourceLocation.fromNamespaceAndPath(namespace, location)
-        //#else
-        ResourceLocation(namespace, location)
-    //#endif
+    ResourceLocation.fromNamespaceAndPath(namespace, location)
 
     @JvmStatic
     @Throws(ResourceLocationException::class)
     fun parse(location: String): ResourceLocation =
-        //#if MC>=12100
-        //$$ ResourceLocation.parse(location)
-        //#else
-        ResourceLocation(location)
-        //#endif
+        ResourceLocation.parse(location)
 
     @JvmStatic
     fun mod(location: String): ResourceLocation = tryBuild("plasmovoice", location)!!

@@ -23,19 +23,19 @@ import net.minecraft.client.renderer.GameRenderer
 //#if MC>=12105
 //$$ import com.mojang.blaze3d.shaders.UniformType
 //$$ import com.mojang.blaze3d.vertex.DefaultVertexFormat
-
+//$$
 //#if MC>=260100
 //$$ import com.mojang.blaze3d.pipeline.ColorTargetState
 //$$ import com.mojang.blaze3d.pipeline.DepthStencilState
 //$$ import java.util.Optional
 //#endif
-
+//$$
 //#if MC>=26.2
 //$$ import com.mojang.blaze3d.GpuFormat
 //$$ import com.mojang.blaze3d.pipeline.BindGroupLayout
 //$$ import net.minecraft.client.renderer.BindGroupLayouts
 //#endif
-
+//$$
 //#else
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
@@ -308,7 +308,7 @@ data class RenderPipeline(
             //$$         RenderType.CompositeState.builder().createCompositeState(false)
             //$$     )
             //#endif
-
+            //$$
             //#else
             val renderType = mcRenderType
             //#endif

@@ -41,35 +41,19 @@ public class BlockDustParticle2D extends SpriteBillboardParticle2D {
     }
 
     protected float getMinU() {
-        //#if MC>=12002
-        //$$ return this.sprite.getU((this.sampleU + 1.0F) / 4.0F);
-        //#else
-        return this.sprite.getU((this.sampleU + 1.0F) / 4.0F * 16.0F);
-        //#endif
+        return this.sprite.getU((this.sampleU + 1.0F) / 4.0F);
     }
 
     protected float getMaxU() {
-        //#if MC>=12002
-        //$$ return this.sprite.getU(this.sampleU / 4.0F);
-        //#else
-        return this.sprite.getU(this.sampleU / 4.0F * 16.0F);
-        //#endif
+        return this.sprite.getU(this.sampleU / 4.0F);
     }
 
     protected float getMinV() {
-        //#if MC>=12002
-        //$$ return this.sprite.getV(this.sampleV / 4.0F);
-        //#else
-        return this.sprite.getV(this.sampleV / 4.0F * 16.0F);
-        //#endif
+        return this.sprite.getV(this.sampleV / 4.0F);
     }
 
     protected float getMaxV() {
-        //#if MC>=12002
-        //$$ return this.sprite.getV((this.sampleV + 1.0F) / 4.0F);
-        //#else
-        return this.sprite.getV((this.sampleV + 1.0F) / 4.0F * 16.0F);
-        //#endif
+        return this.sprite.getV((this.sampleV + 1.0F) / 4.0F);
     }
 
     public int getBrightness(float tint) {

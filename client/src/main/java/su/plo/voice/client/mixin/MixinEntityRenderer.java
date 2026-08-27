@@ -43,7 +43,7 @@ public class MixinEntityRenderer {
     //$$     EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) cir.getReturnValue();
     //$$     entityRenderStateAccessor.plasmovoice_setEntityVoiceIcon(voiceIconState);
     //$$ }
-
+    //$$
     //#if MC>=12109
     //$$ @Inject(method = "submit", at = @At("RETURN"))
     //$$ public void submit(
@@ -81,7 +81,7 @@ public class MixinEntityRenderer {
     //$$     EntityIconRenderer.render(livingEntityRenderState, voiceIconState, poseStack);
     //$$ }
     //#endif
-
+    //$$
     //#else
     @Inject(method = "render", at = @At("RETURN"))
     public void render(

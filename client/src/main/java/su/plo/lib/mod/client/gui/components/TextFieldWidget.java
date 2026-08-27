@@ -21,9 +21,7 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-//#if MC>=12002
-//$$ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-//#endif
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 
 //#if MC>=12109
 //$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
@@ -221,22 +219,14 @@ public class TextFieldWidget extends GuiAbstractWidget {
     public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         if (!isVisible()) return;
 
-        Color color;
         if (isBordered()) {
-            color = isFocused() ? Colors.WHITE : Colors.GRAY;
+            GuiWidgetTexture sprite = isFocused() ? GuiWidgetTexture.TEXT_FIELD_ACTIVE : GuiWidgetTexture.TEXT_FIELD;
 
-            //#if MC>=12002
-            //$$ GuiWidgetTexture sprite = isFocused() ? GuiWidgetTexture.TEXT_FIELD_ACTIVE : GuiWidgetTexture.TEXT_FIELD;
-            //$$
-            //$$ context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
-            //$$ context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
-            //#else
-            context.fill(x, y, x + width, y + height, color);
-            context.fill(x + 1, y + 1, x + width - 1, y + height - 1, Colors.BLACK);
-            //#endif
+            context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
+            context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
         }
 
-        color = isEditable() ? textColor : textColorUneditable;
+        Color color = isEditable() ? textColor : textColorUneditable;
         int cursorIndex = cursorPosition - displayPosition;
         int selectionEnd = highlightPosition - displayPosition;
         String text = isFocused()

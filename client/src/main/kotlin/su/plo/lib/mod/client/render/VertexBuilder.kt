@@ -6,91 +6,46 @@ import com.mojang.blaze3d.vertex.VertexConsumer
 class VertexBuilder private constructor(private val buffer: VertexConsumer) {
 
     fun position(stack: PoseStack, x: Float, y: Float, z: Float) = apply {
-        //#if MC>=12100
-        //$$ buffer.addVertex(stack.last().pose(), x, y, z)
-        //#else
-        buffer.vertex(stack.last().pose(), x, y, z)
-        //#endif
+        buffer.addVertex(stack.last().pose(), x, y, z)
     }
 
     fun position(pose: PoseStack.Pose, x: Float, y: Float, z: Float) = apply {
-        //#if MC>=12100
-        //$$ buffer.addVertex(pose, x, y, z)
-        //#else
-        buffer.vertex(pose.pose(), x, y, z)
-        //#endif
+        buffer.addVertex(pose, x, y, z)
     }
 
     fun uv(u: Float, v: Float) = apply {
-        //#if MC>=12100
-        //$$ buffer.setUv(u, v)
-        //#else
-        buffer.uv(u, v)
-        //#endif
+        buffer.setUv(u, v)
     }
 
     fun overlay(u: Int) = apply {
-        //#if MC>=12100
-        //$$ buffer.setOverlay(u)
-        //#else
-        buffer.overlayCoords(u)
-        //#endif
+        buffer.setOverlay(u)
     }
 
     fun light(u: Int) = apply {
-        //#if MC>=12100
-        //$$ buffer.setLight(u)
-        //#else
-        buffer.uv2(u)
-        //#endif
+        buffer.setLight(u)
     }
 
     fun light(u: Int, v: Int) = apply {
-        //#if MC>=12100
-        //$$ buffer.setUv2(u, v)
-        //#else
-        buffer.uv2(u, v)
-        //#endif
+        buffer.setUv2(u, v)
     }
 
     fun color(r: Int, g: Int, b: Int, a: Int) = apply {
-        //#if MC>=12100
-        //$$ buffer.setColor(r, g, b, a)
-        //#else
-        buffer.color(r, g, b, a)
-        //#endif
+        buffer.setColor(r, g, b, a)
     }
 
     fun color(r: Float, g: Float, b: Float, a: Float) = apply { 
-        //#if MC>=12100
-        //$$ buffer.setColor(r, g, b, a)
-        //#else
-        buffer.color(r, g, b, a)
-        //#endif
+        buffer.setColor(r, g, b, a)
     }
 
     fun normal(stack: PoseStack, x: Float, y: Float, z: Float) = apply {
-        //#if MC>=12100
-        //$$ buffer.setNormal(stack.last(), x, y, z)
-        //#elseif MC>=12005
-        //$$ buffer.normal(stack.last(), x, y, z)
-        //#else
-        buffer.normal(stack.last().normal(), x, y, z)
-        //#endif
+        buffer.setNormal(stack.last(), x, y, z)
     }
 
     fun normal(pose: PoseStack.Pose, x: Float, y: Float, z: Float) = apply {
-        //#if MC>=12100
-        //$$ buffer.setNormal(pose, x, y, z)
-        //#else
-        buffer.normal(pose.normal(), x, y, z)
-        //#endif
+        buffer.setNormal(pose, x, y, z)
     }
 
     fun end() = apply { 
-        //#if MC<12100
-        buffer.endVertex()
-        //#endif
     }
     
     companion object {

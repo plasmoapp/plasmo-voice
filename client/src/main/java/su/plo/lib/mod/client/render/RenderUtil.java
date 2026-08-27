@@ -80,16 +80,7 @@ public class RenderUtil {
         //$$ throw new UnsupportedOperationException("beginBuffer is no longer supported in 26.2");
         //#else
         Tesselator tesselator = Tesselator.getInstance();
-        //#if MC>=12100
-        //$$ return tesselator.begin(pipeline.getVertexFormatMode().toMc(), pipeline.getVertexFormat());
-        //#else
-
-        BufferBuilder buffer = tesselator.getBuilder();
-
-        buffer.begin(pipeline.getVertexFormatMode().toMc(), pipeline.getVertexFormat());
-
-        return buffer;
-        //#endif
+        return tesselator.begin(pipeline.getVertexFormatMode().toMc(), pipeline.getVertexFormat());
         //#endif
     }
 
@@ -156,7 +147,7 @@ public class RenderUtil {
         //$$     renderPipeline.getMcRenderType().draw(meshData);
         //$$ }
         //#else
-        BufferUploader.drawWithShader(buffer.end());
+        BufferUploader.drawWithShader(buffer.build());
         //#endif
 
         //#if MC<12105
@@ -492,12 +483,8 @@ public class RenderUtil {
     public static void drawStringInBatch(PoseStack stack, String text, int x, int y, int color, boolean shadow) {
         //#if MC>=26.2
         //$$ throw new UnsupportedOperationException("drawStringInBatch is no longer supported in 26.2");
-        //#elseif MC>=12100
-        //$$ MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
-        //$$ Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, TEXT_LAYER_TYPE, 0, 15728880);
-        //$$ irendertypebuffer$impl.endBatch();
         //#else
-        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, TEXT_LAYER_TYPE, 0, 15728880);
         irendertypebuffer$impl.endBatch();
         //#endif
@@ -630,23 +617,8 @@ public class RenderUtil {
 
         //#if MC>=26.2
         //$$ throw new UnsupportedOperationException("drawStringLight is no longer supported in 26.2");
-        //#elseif MC>=12100
-        //$$ MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
-        //$$ Minecraft.getInstance().font.drawInBatch(
-        //$$         formattedText,
-        //$$         (float) x,
-        //$$         (float) y,
-        //$$         color,
-        //$$         dropShadow,
-        //$$         stack.last().pose(),
-        //$$         irendertypebuffer$impl,
-        //$$         displayMode,
-        //$$         backgroundColor,
-        //$$         light
-        //$$ );
-        //$$ irendertypebuffer$impl.endBatch();
         //#else
-        MultiBufferSource.BufferSource irendertypebuffer$impl = MultiBufferSource.immediate(Tesselator.getInstance().getBuilder());
+        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
         Minecraft.getInstance().font.drawInBatch(
                 formattedText,
                 (float) x,

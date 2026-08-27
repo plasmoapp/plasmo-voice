@@ -120,11 +120,7 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
         vertex(stack, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
         vertex(stack, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
 
-        //#if MC>=12100
-        //$$ renderType.draw(buffer.buildOrThrow())
-        //#else
-        //$$ renderType.end(buffer, com.mojang.blaze3d.systems.RenderSystem.getVertexSorting())
-        //#endif
+        renderType.draw(buffer.buildOrThrow())
         //#endif
     }
 

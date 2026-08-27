@@ -45,35 +45,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //#endif
 
-//#if MC>=12005
-//$$ import su.plo.slib.mod.channel.ByteArrayCodec;
-//$$ import su.plo.slib.mod.channel.ModChannelManager;
-//#endif
-
-//#elseif FORGE
-
-//$$ import net.minecraftforge.client.event.ClientPlayerNetworkEvent;
-//$$ import net.minecraftforge.eventbus.api.SubscribeEvent;
-//$$
-//$$ import net.minecraftforge.network.event.EventNetworkChannel;
-
-//#if MC>=12100
-//$$ import com.mojang.blaze3d.vertex.PoseStack;
-//#else
-//$$ import net.minecraftforge.client.event.RenderGuiOverlayEvent;
-//#endif
-
-//$$ import net.minecraftforge.fml.common.Mod;
-//$$ import net.minecraftforge.api.distmarker.Dist;
-//$$ import net.minecraftforge.client.event.RenderLevelStageEvent;
-//$$ import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
-
-//#if MC<12100
-//$$ import net.minecraftforge.client.gui.overlay.VanillaGuiOverlay;
-//#endif
+import su.plo.slib.mod.channel.ByteArrayCodec;
+import su.plo.slib.mod.channel.ModChannelManager;
 
 //#elseif NEOFORGE
-
+//$$
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
 //$$ import su.plo.voice.server.ModVoiceServer;
 //$$ import net.neoforged.api.distmarker.Dist;
@@ -83,17 +59,17 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //$$ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 //$$ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 //$$ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
-
+//$$
 //#if MC>=26.2
 //$$ import net.neoforged.neoforge.client.event.SubmitCustomGeometryEvent;
 //#else
 //$$ import net.neoforged.neoforge.client.event.RenderLevelStageEvent;
 //#endif
-
+//$$
 //#if MC>=1.21.11
 //$$ import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
 //#endif
-
+//$$
 //#endif
 
 //#if MC>=12109
@@ -128,8 +104,8 @@ public final class ModVoiceClient extends BaseVoiceClient
     private final ModClientChannelHandler handler = new ModClientChannelHandler(this);
 
     public ModVoiceClient() {
-        //#if FORGE
-        //$$ super(PlatformLoader.FORGE);
+        //#if NEOFORGE
+        //$$ super(PlatformLoader.NEO_FORGE);
         //#else
         super(PlatformLoader.FABRIC);
         //#endif
@@ -198,7 +174,7 @@ public final class ModVoiceClient extends BaseVoiceClient
         //$$                         context.world(),
         //$$                         context.camera(),
         //$$                         context.tickCounter().getRealtimeDeltaTicks(),
-        // idk why, but additional mappings doesn't want to remap worldState -> levelState
+        //$$ // idk why, but additional mappings doesn't want to remap worldState -> levelState
         //#if MC>=26.1
         //$$                         new LevelRenderStateHolder(context.levelState())
         //#else
@@ -239,11 +215,7 @@ public final class ModVoiceClient extends BaseVoiceClient
                     LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
                             context.world(),
                             context.camera(),
-                            //#if MC>=12100
-                            //$$ context.tickCounter().getRealtimeDeltaTicks(),
-                            //#else
-                            context.tickDelta(),
-                            //#endif
+                            context.tickCounter().getRealtimeDeltaTicks(),
                             state
                     );
 
@@ -260,88 +232,17 @@ public final class ModVoiceClient extends BaseVoiceClient
         //#endif
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> onServerDisconnect());
 
-        //#if MC>=12005
-        //$$ ByteArrayCodec voiceChannelCodec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
-        //$$ ByteArrayCodec flagChannelCodec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.FLAG_CHANNEL);
-        //$$
-        //$$ ClientPlayNetworking.registerGlobalReceiver(voiceChannelCodec.getType(), handler);
-        //$$ ClientPlayNetworking.registerGlobalReceiver(flagChannelCodec.getType(), (payload, context) -> {});
-        //#else
-        ClientPlayNetworking.registerGlobalReceiver(ModVoiceServer.CHANNEL, handler);
-        ClientPlayNetworking.registerGlobalReceiver(ModVoiceServer.FLAG_CHANNEL, (client, handler, buf, responseSender) -> {});
-        //#endif
+        ByteArrayCodec voiceChannelCodec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
+        ByteArrayCodec flagChannelCodec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.FLAG_CHANNEL);
+
+        ClientPlayNetworking.registerGlobalReceiver(voiceChannelCodec.getType(), handler);
+        ClientPlayNetworking.registerGlobalReceiver(flagChannelCodec.getType(), (payload, context) -> {});
 
         KeyBindingHelper.registerKeyBinding(MENU_KEY);
     }
 
-    //#elseif FORGE
-
-    //$$ public void onInitialize(EventNetworkChannel channel) {
-    //$$     channel.addListener(handler::receive);
-    //$$     super.onInitialize();
-    //$$ }
-    //$$
-    //$$ @Override
-    //$$ public void onShutdown() {
-    //$$     super.onShutdown();
-    //$$ }
-    //$$
-    //#if MC<12100
-
-    //$$ @SubscribeEvent
-    //$$ public void onOverlayRender(RenderGuiOverlayEvent.Post event) {
-    //$$     if (!event.getOverlay().id().equals(VanillaGuiOverlay.CHAT_PANEL.id())) return;
-    //$$
-    //$$     ModHudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
-    //$$ }
-
-    //#endif
-
-    //$$
-    //$$ @SubscribeEvent
-    //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
-    //$$     onServerDisconnect();
-    //$$ }
-    //$$
-    //$$ @SubscribeEvent
-    //$$ public void onWorldRender(RenderLevelStageEvent event) {
-    //$$     if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES ||
-    //$$             Minecraft.getInstance().level == null
-    //$$     ) return;
-    //$$ LevelRenderStateHolder state = new LevelRenderStateHolder();
-    //$$
-    //$$ LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
-    //$$         Minecraft.getInstance().level,
-    //$$         event.getCamera(),
-    //$$         event.getPartialTick(),
-    //$$         state
-    //$$ );
-    //$$
-    //$$ LevelRenderEvent.INSTANCE.getInvoker().onRender(
-    //$$         new LevelRenderContext(
-    //$$                 Minecraft.getInstance().level,
-    //$$                 event.getCamera(),
-    //#if MC>=12100
-    //$$                 new PoseStack(),
-    //#else
-    //$$                 event.getPoseStack(),
-    //#endif
-    //$$                 state
-    //$$         )
-    //$$ );
-    //$$ }
-    //$$
-    //$$ @Mod.EventBusSubscriber(modid = "plasmovoice", value = Dist.CLIENT, bus = Mod.EventBusSubscriber.Bus.MOD)
-    //$$ public static class ModBusEvents {
-    //$$
-    //$$     @SubscribeEvent
-    //$$     public static void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
-    //$$         event.register(MENU_KEY);
-    //$$     }
-    //$$ }
-
     //#elseif NEOFORGE
-
+    //$$
     //$$ public void onInitialize() {
     //$$     super.onInitialize();
     //#if NEOFORGE
@@ -378,9 +279,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ }
     //#endif
     //$$
-
+    //$$
     //#if MC>=26.2
-
+    //$$
     //$$ @SubscribeEvent
     //$$ public void onWorldSubmitGeometry(SubmitCustomGeometryEvent event) {
     //$$     LevelRenderEvent.INSTANCE.getInvoker().onRender(
@@ -391,9 +292,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$             )
     //$$     );
     //$$ }
-
+    //$$
     //#else
-
+    //$$
     //$$ @SubscribeEvent
     //#if MC>=26.1
     //$$ public void onWorldRender(RenderLevelStageEvent.AfterTranslucentParticles event) {
@@ -417,11 +318,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$    LevelExtractRenderStateEvent.INSTANCE.getInvoker().onExtract(
     //$$            Minecraft.getInstance().level,
     //$$            event.getCamera(),
-    //#if MC>=12100
     //$$            event.getPartialTick().getRealtimeDeltaTicks(),
-    //#else
-    //$$            event.getPartialTick(),
-    //#endif,
     //$$            state
     //$$    );
     //$$
@@ -435,9 +332,9 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$    );
     //#endif
     //$$ }
-
+    //$$
     //#endif
-
+    //$$
     //$$
     //$$ @EventBusSubscriber(
     //$$         modid = "plasmovoice",
@@ -455,6 +352,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$         event.register(MENU_KEY);
     //$$     }
     //$$ }
-
+    //$$
     //#endif
 }

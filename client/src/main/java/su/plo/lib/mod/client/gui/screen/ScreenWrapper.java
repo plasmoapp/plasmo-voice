@@ -27,7 +27,7 @@ import java.util.Optional;
 //#endif
 
 import net.minecraft.client.gui.GuiGraphics;
-//$$ import net.minecraft.locale.Language;
+import net.minecraft.locale.Language;
 
 @ToString
 public final class ScreenWrapper
@@ -127,24 +127,17 @@ public final class ScreenWrapper
     //$$ }
     //$$
     //$$ public void renderBackground(@NotNull GuiRenderContext context) {
-    //#if MC>=12002
-
+    //$$
     //#if MC>=12106
     //$$     context.flush();
     //#endif
-
+    //$$
     //$$     super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
-
+    //$$
     //#if MC>=12102
     //$$     context.flush();
     //#endif
-
-    //#else
-    //$$     super.renderBackground(context.getMcContext());
-    //#if MC<12105
-    //$$     RenderUtil.restoreGlState(true);
-    //#endif
-    //#endif
+    //$$
     //$$ }
     //#else
     @Override
@@ -159,11 +152,7 @@ public final class ScreenWrapper
     }
 
     public void renderBackground(@NotNull GuiRenderContext context) {
-        //#if MC>=12002
-        //$$ super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
-        //#else
-        super.renderBackground(context.getMcContext());
-        //#endif
+        super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
         RenderUtil.restoreGlState(true);
     }
     //#endif
@@ -213,11 +202,7 @@ public final class ScreenWrapper
     //#endif
 
     @Override
-    //#if MC>=12002
-    //$$ public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double delta) {
-    //#else
-    public boolean mouseScrolled(double mouseX, double mouseY, double delta) {
-    //#endif
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double delta) {
         screen.mouseScrolled(mouseX, mouseY, delta);
         return false;
     }
@@ -322,13 +307,13 @@ public final class ScreenWrapper
         //$$         tooltip.getY()
         //$$ );
         //#else
-        //$$ setTooltipForNextRenderPass(
-        //$$         Language.getInstance().getVisualOrder(
-        //$$                 new ArrayList<>(
-        //$$                         RenderUtil.getTextConverter().convert(tooltip.getText())
-        //$$                 )
-        //$$         )
-        //$$ );
+        setTooltipForNextRenderPass(
+                Language.getInstance().getVisualOrder(
+                        new ArrayList<>(
+                                RenderUtil.getTextConverter().convert(tooltip.getText())
+                        )
+                )
+        );
         //#endif
     }
 
