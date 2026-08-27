@@ -10,7 +10,7 @@ plugins {
 group = "$group.proxy"
 
 base.archivesName.set("${rootProject.name}-Velocity")
-javaVersion = 17
+javaVersion = 21
 
 dependencies {
     compileOnly(libs.velocity)
