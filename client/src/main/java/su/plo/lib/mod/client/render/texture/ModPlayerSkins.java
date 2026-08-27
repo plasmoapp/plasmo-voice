@@ -3,7 +3,6 @@ package su.plo.lib.mod.client.render.texture;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.authlib.GameProfile;
-import com.mojang.authlib.minecraft.MinecraftProfileTexture;
 import com.mojang.authlib.properties.Property;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.PlayerInfo;
@@ -18,12 +17,10 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Supplier;
 
-//#if MC>=12002
-//$$ import com.mojang.authlib.yggdrasil.ProfileResult;
-//$$ import net.minecraft.client.resources.PlayerSkin;
+import com.mojang.authlib.yggdrasil.ProfileResult;
+import net.minecraft.client.resources.PlayerSkin;
 
-//$$ import java.util.Optional;
-//#endif
+import java.util.Optional;
 
 //#if MC>=12109
 //$$ import com.mojang.authlib.properties.PropertyMap;
@@ -50,24 +47,18 @@ public final class ModPlayerSkins {
         if (skinLocation != null) return;
 
         backgroundExecutor.execute(() -> {
-            //#if MC>=12002
-            //$$ GameProfile profile = Optional.ofNullable(
-            //$$                 Minecraft.getInstance()
+            GameProfile profile = Optional.ofNullable(
+                            Minecraft.getInstance()
             //#if MC>=12109
             //$$                         .services()
             //$$                         .sessionService()
             //#else
-            //$$                         .getMinecraftSessionService()
+                                    .getMinecraftSessionService()
             //#endif
-            //$$                         .fetchProfile(playerId, false)
-            //$$         )
-            //$$         .map(ProfileResult::profile)
-            //$$         .orElse(new GameProfile(playerId, nick));
-            //#else
-            GameProfile profile = Minecraft.getInstance()
-                    .getMinecraftSessionService()
-                    .fillProfileProperties(new GameProfile(playerId, nick), false);
-            //#endif
+                                    .fetchProfile(playerId, false)
+                    )
+                    .map(ProfileResult::profile)
+                    .orElse(new GameProfile(playerId, nick));
 
             SKINS.put(profile.getId(), getInsecureSkinLocation(profile));
         });
@@ -116,36 +107,25 @@ public final class ModPlayerSkins {
     }
 
     private static Supplier<ResourceLocation> getInsecureSkinLocation(GameProfile gameProfile) {
-        //#if MC>=12002
         //#if MC>=12109
         //$$ Supplier<PlayerSkin> skinSupplier = Minecraft.getInstance().getSkinManager().createLookup(gameProfile, false);
         //#else
-        //$$ Supplier<PlayerSkin> skinSupplier = Minecraft.getInstance().getSkinManager().lookupInsecure(gameProfile);
+        Supplier<PlayerSkin> skinSupplier = Minecraft.getInstance().getSkinManager().lookupInsecure(gameProfile);
         //#endif
-        //$$ return () -> {
+        return () -> {
         //#if MC>=12109
         //$$     Identifier skinLocation = skinSupplier.get().body().texturePath();
         //#else
-        //$$     ResourceLocation skinLocation = skinSupplier.get().texture();
+            ResourceLocation skinLocation = skinSupplier.get().texture();
         //#endif
         //#if MC<12111
-        //$$     Minecraft.getInstance()
-        //$$             .getTextureManager()
-        //$$             .getTexture(skinLocation)
-        //$$             .setFilter(false, true);
+            Minecraft.getInstance()
+                    .getTextureManager()
+                    .getTexture(skinLocation)
+                    .setFilter(false, true);
         //#endif
-        //$$     return skinLocation;
-        //$$ };
-        //#else
-        MinecraftProfileTexture minecraftProfileTexture = Minecraft.getInstance()
-                .getSkinManager()
-                .getInsecureSkinInformation(gameProfile)
-                .get(MinecraftProfileTexture.Type.SKIN);
-
-        return minecraftProfileTexture != null
-                ? () -> Minecraft.getInstance().getSkinManager().registerTexture(minecraftProfileTexture, MinecraftProfileTexture.Type.SKIN)
-                : () -> getDefaultSkin(gameProfile.getId());
-        //#endif
+            return skinLocation;
+        };
     }
 
     public static synchronized @NotNull ResourceLocation getSkin(@NotNull UUID playerId, @NotNull String nick) {
@@ -153,10 +133,8 @@ public final class ModPlayerSkins {
         if (playerInfo != null) {
             //#if MC>=12109
             //$$ return playerInfo.getSkin().body().texturePath();
-            //#elseif MC>=12002
-            //$$ return playerInfo.getSkin().texture();
             //#else
-            return playerInfo.getSkinLocation();
+            return playerInfo.getSkin().texture();
             //#endif
         }
 
@@ -169,10 +147,8 @@ public final class ModPlayerSkins {
     public static @NotNull ResourceLocation getDefaultSkin(@NotNull UUID playerId) {
         //#if MC>=12109
         //$$ return DefaultPlayerSkin.get(playerId).body().texturePath();
-        //#elseif MC>=12002
-        //$$ return DefaultPlayerSkin.get(playerId).texture();
         //#else
-        return DefaultPlayerSkin.getDefaultSkin(playerId);
+        return DefaultPlayerSkin.get(playerId).texture();
         //#endif
     }
 

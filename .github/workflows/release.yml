@@ -110,8 +110,6 @@ jobs:
         version-type: ${{ inputs.release-type }}
 
         game-versions: |
-          1.20.1
-          1.20.4
           >=1.21
 
         modrinth-unfeature-mode: 'subset'
@@ -129,8 +127,6 @@ jobs:
         version-type: ${{ inputs.release-type }}
 
         game-versions: |
-          1.20.1
-          1.20.4
           >=1.21
 
         modrinth-unfeature-mode: 'subset'
@@ -142,7 +138,7 @@ jobs:
       with:
         name: 'Plasmo Voice'
         split-releases: true
-        files-primary: build/libs/*-@(forge|neoforge|fabric)-*.jar
+        files-primary: build/libs/*-@(neoforge|fabric)-*.jar
 
         environment: client_and_server
 
@@ -175,7 +171,7 @@ jobs:
       with:
         name: 'Plasmo Voice'
         split-releases: true
-        files-primary: build/libs/*-@(forge|neoforge|fabric)-*.jar
+        files-primary: build/libs/*-@(neoforge|fabric)-*.jar
 
         environment: client_and_server
 

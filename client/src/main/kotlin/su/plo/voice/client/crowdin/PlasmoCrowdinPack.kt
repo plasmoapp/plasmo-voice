@@ -9,12 +9,10 @@ import java.io.InputStream
 
 import net.minecraft.server.packs.resources.IoSupplier
 
-//#if MC>=12005
-//$$ import net.minecraft.server.packs.PackLocationInfo
-//$$ import net.minecraft.server.packs.repository.PackSource
-//$$ import net.minecraft.network.chat.Component
-//$$ import java.util.Optional
-//#endif
+import net.minecraft.server.packs.PackLocationInfo
+import net.minecraft.server.packs.repository.PackSource
+import net.minecraft.network.chat.Component
+import java.util.Optional
 
 //#if MC>=12104
 //$$ import net.minecraft.server.packs.metadata.MetadataSectionType
@@ -46,17 +44,13 @@ class PlasmoCrowdinPack(
         resourceOutput: PackResources.ResourceOutput
     ) {}
 
-    //#if MC>=12005
-    //$$ override fun location(): PackLocationInfo =
-    //$$     PackLocationInfo(
-    //$$         "plasmovoice_crowdin",
-    //$$         Component.literal("Plasmo Voice Crowdin"),
-    //$$         PackSource.BUILT_IN,
-    //$$         Optional.empty(),
-    //$$     )
-    //#else
-    override fun isBuiltin() = true
-    //#endif
+    override fun location(): PackLocationInfo =
+        PackLocationInfo(
+            "plasmovoice_crowdin",
+            Component.literal("Plasmo Voice Crowdin"),
+            PackSource.BUILT_IN,
+            Optional.empty(),
+        )
 
     override fun getNamespaces(packType: PackType): Set<String> = NAMESPACES
 

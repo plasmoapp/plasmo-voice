@@ -24,9 +24,7 @@ import java.awt.Color;
 import java.util.Collections;
 import java.util.List;
 
-//#if MC>=12005
-//$$ import net.minecraft.client.Minecraft;
-//#endif
+import net.minecraft.client.Minecraft;
 
 public final class AboutTabWidget extends TabWidget {
 
@@ -174,32 +172,17 @@ public final class AboutTabWidget extends TabWidget {
         public void renderBackground(@NotNull GuiRenderContext context, int x, int y, int entryWidth) {
             int height = this.height - 4;
 
-            //#if MC>=12005
-            //$$ context.blit(
-            //$$         Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
-            //$$         x,
-            //$$         y,
-            //$$         0.0F,
-            //$$         0.0F,
-            //$$         entryWidth,
-            //$$         height,
-            //$$         32,
-            //$$         32
-            //$$ );
-            //#else
-            context.blitColor(
-                    BACKGROUND_LOCATION,
+            context.blit(
+                    Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
                     x,
                     y,
                     0.0F,
                     0.0F,
                     entryWidth,
                     height,
-                    16,
-                    16,
-                    new Color(64, 64, 64)
+                    32,
+                    32
             );
-            //#endif
         }
 
         @Override
@@ -241,32 +224,17 @@ public final class AboutTabWidget extends TabWidget {
         public void renderBackground(@NotNull GuiRenderContext context, int x, int y, int entryWidth) {
             int height = this.height - 2;
 
-            //#if MC>=12005
-            //$$ context.blit(
-            //$$         Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
-            //$$         x,
-            //$$         y,
-            //$$         0.0F,
-            //$$         0.0F,
-            //$$         entryWidth,
-            //$$         height,
-            //$$         32,
-            //$$         32
-            //$$ );
-            //#else
-            context.blitColor(
-                    BACKGROUND_LOCATION,
+            context.blit(
+                    Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
                     x,
                     y,
                     0.0F,
                     0.0F,
                     entryWidth,
                     height,
-                    16,
-                    16,
-                    new Color(0x404040)
+                    32,
+                    32
             );
-            //#endif
         }
 
         @Override

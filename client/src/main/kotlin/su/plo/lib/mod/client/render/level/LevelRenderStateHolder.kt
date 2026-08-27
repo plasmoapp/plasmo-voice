@@ -45,7 +45,7 @@ import net.minecraft.resources.ResourceLocation
 //$$         state.getRenderData(renderStateKeys.getOrPut(key) { ContextKey(key) }) as T?
 //$$ }
 //#endif
-
+//$$
 //#else
 class LevelRenderStateHolder {
     private val states: MutableMap<ResourceLocation, Any> = HashMap()

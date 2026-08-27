@@ -24,9 +24,7 @@ import java.util.function.Supplier
 //$$ import java.util.Optional
 //#endif
 
-//#if MC>=12002
-//$$ import net.minecraft.client.resources.PlayerSkin
-//#endif
+import net.minecraft.client.resources.PlayerSkin
 
 //#if MC>=12104
 //$$ import net.minecraft.client.renderer.texture.SkinTextureDownloader
@@ -41,15 +39,14 @@ object DeveloperCapeManager {
         .expireAfterAccess(10L, TimeUnit.MINUTES)
         .build()
 
-    //#if MC>=12002
-    //$$ private val convertedSkins: Cache<String, PlayerSkin> = CacheBuilder.newBuilder()
-    //$$     .expireAfterAccess(10L, TimeUnit.MINUTES)
-    //$$     .build()
-    //$$
-    //$$ fun addCapeToSkin(playerName: String, capeTexture: ResourceLocation, skin: PlayerSkin): PlayerSkin {
-    //$$     var newSkin = convertedSkins.getIfPresent(playerName)
-    //$$
-    //$$     if (newSkin == null || skin.texture != newSkin.texture) {
+    private val convertedSkins: Cache<String, PlayerSkin> = CacheBuilder.newBuilder()
+        .expireAfterAccess(10L, TimeUnit.MINUTES)
+        .build()
+
+    fun addCapeToSkin(playerName: String, capeTexture: ResourceLocation, skin: PlayerSkin): PlayerSkin {
+        var newSkin = convertedSkins.getIfPresent(playerName)
+
+        if (newSkin == null || skin.texture != newSkin.texture) {
     //#if MC>=12109
     //$$         val capeAsset = ClientAsset.ResourceTexture(capeTexture, capeTexture)
     //$$         newSkin = skin.with(
@@ -61,21 +58,20 @@ object DeveloperCapeManager {
     //$$             ),
     //$$         )!!
     //#else
-    //$$         newSkin = PlayerSkin(
-    //$$             skin.texture(),
-    //$$             skin.textureUrl(),
-    //$$             capeTexture,
-    //$$             capeTexture,
-    //$$             skin.model(),
-    //$$             skin.secure()
-    //$$         )
+            newSkin = PlayerSkin(
+                skin.texture(),
+                skin.textureUrl(),
+                capeTexture,
+                capeTexture,
+                skin.model(),
+                skin.secure()
+            )
     //#endif
-    //$$         convertedSkins.put(playerName, newSkin)
-    //$$     }
-    //$$
-    //$$     return newSkin
-    //$$ }
-    //#endif
+            convertedSkins.put(playerName, newSkin)
+        }
+
+        return newSkin
+    }
 
     fun clearLoadedCapes() {
         loadedCapes.invalidateAll()

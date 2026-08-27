@@ -2,7 +2,7 @@ name: PlasmoVoice
 version: ${version}
 main: su.plo.voice.paper.PaperVoiceLoader
 load: STARTUP
-api-version: 1.20
+api-version: 1.21
 authors: [ Apehum ]
 softdepend:
   - LuckPerms

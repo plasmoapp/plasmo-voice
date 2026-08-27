@@ -11,9 +11,7 @@ import su.plo.voice.client.event.HudRenderEvent;
 //$$ import su.plo.lib.mod.client.ResourceLocationUtil;
 //#endif
 
-//#if MC>=12100
-//$$ import net.minecraft.client.DeltaTracker;
-//#endif
+import net.minecraft.client.DeltaTracker;
 
 import net.minecraft.client.gui.GuiGraphics;
 
@@ -29,18 +27,12 @@ import net.minecraft.client.gui.GuiGraphics;
 //#else
 public final class ModHudRenderer {
 
-    //#if MC>=12100
-    //$$ public static void render(@NotNull GuiGraphics graphics, DeltaTracker delta) {
-    //$$     render(graphics, delta.getRealtimeDeltaTicks());
-    //$$ }
-    //$$
-    //$$ public static void render(@NotNull GuiGraphics graphics, float delta) {
-    //$$     HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
-    //$$ }
-    //#else
+    public static void render(@NotNull GuiGraphics graphics, DeltaTracker delta) {
+        render(graphics, delta.getRealtimeDeltaTicks());
+    }
+
     public static void render(@NotNull GuiGraphics graphics, float delta) {
         HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
     }
-    //#endif
 }
 //#endif

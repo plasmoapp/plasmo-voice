@@ -11,7 +11,7 @@ import su.plo.lib.mod.client.render.VertexBuilder.Companion.create
 import su.plo.lib.mod.client.render.entity.LivingEntityRenderState
 
 //#if MC>=1.21.11
-
+//$$
 //$$ import net.minecraft.client.gui.Font
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector
 //$$ import net.minecraft.client.renderer.rendertype.RenderTypes
@@ -19,7 +19,7 @@ import su.plo.lib.mod.client.render.entity.LivingEntityRenderState
 //$$ import net.minecraft.network.chat.Style
 //$$ import net.minecraft.util.FormattedCharSequence
 //$$ import net.minecraft.util.StringDecomposer
-
+//$$
 //#else
 
 import net.minecraft.client.Camera
@@ -28,8 +28,6 @@ import net.minecraft.client.renderer.RenderType
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines.fromRenderType
 import su.plo.lib.mod.extensions.rotate
-
-//$$ import com.mojang.blaze3d.systems.RenderSystem
 
 //#endif
 
@@ -295,7 +293,7 @@ object EntityIconRenderer {
         seeThrough: Boolean,
     ) {
         //#if MC>=1.21.11
-
+        //$$
         //$$ val renderType =
         //$$     if (seeThrough)
         //$$         RenderTypes.textSeeThrough(iconLocation)
@@ -308,7 +306,7 @@ object EntityIconRenderer {
         //$$     vertex(stack, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
         //$$     vertex(stack, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
         //$$ }
-
+        //$$
         //#else
 
         val renderType =
@@ -329,11 +327,7 @@ object EntityIconRenderer {
         vertex(stack, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
         vertex(stack, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
 
-        //#if MC>=12100
-        //$$ renderType.draw(buffer.build())
-        //#else
-        //$$ renderType.end(buffer, RenderSystem.getVertexSorting())
-        //#endif
+        renderType.draw(buffer.build())
 
         //#endif
     }

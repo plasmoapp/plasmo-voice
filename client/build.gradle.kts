@@ -39,16 +39,6 @@ if (platform.mcVersion in 12106..12108) {
     mixins.add("plasmovoice-1.21.6-rendertype.mixins.json")
 }
 
-if (platform.isForge) {
-    if (platform.mcVersion >= 12100) {
-        mixins.add("plasmovoice-forge.mixins.json")
-    }
-
-    loom.forge.apply {
-        mixins.forEach(::mixinConfig)
-    }
-}
-
 if (platform.mcVersion >= 12111) {
     mixins.add("plasmovoice-1.21.11.mixins.json")
 }
@@ -75,7 +65,6 @@ if (isMainProject) {
 val shadowCommon = configurations.create("shadowCommon")
 
 val mcVersionsRange = project.property("mod.minecraft_versions") as String
-val forgeVersionRange = project.findProperty("mod.forge_version") as String? ?: ""
 val neoForgeVersionRange = project.findProperty("mod.neoforge_version") as String? ?: ""
 
 fun slibArtifact(): String {
@@ -168,24 +157,16 @@ dependencies {
     shadowCommon(libs.rnnoise.jni)
 
     // slib
-    if (platform.isForge && platform.mcVersion >= 12100) {
-        slibPlatform(
-            slibArtifact(),
-            libs.versions.slib.get(),
-            ::api
-        ) { name, action -> shadowCommon(name) { action.execute(this) } }
-    } else {
-        slibPlatform(
-            slibArtifact(),
-            libs.versions.slib.get(),
-            { module, action ->
-                modApi(module) {
-                    isTransitive = false
-                    action.execute(this)
-                }
+    slibPlatform(
+        slibArtifact(),
+        libs.versions.slib.get(),
+        { module, action ->
+            modApi(module) {
+                isTransitive = false
+                action.execute(this)
             }
-        ) { name, action -> shadowCommon(name) { action.execute(this) } }
-    }
+        }
+    ) { name, action -> shadowCommon(name) { action.execute(this) } }
 }
 
 tasks {
@@ -195,10 +176,9 @@ tasks {
 
     processResources {
         expandMatching(
-            listOf("META-INF/mods.toml", "META-INF/neoforge.mods.toml"),
+            listOf("META-INF/neoforge.mods.toml"),
             "version" to version,
             "neoForgeVersion" to neoForgeVersionRange,
-            "forgeVersion" to forgeVersionRange,
             "mcVersions" to mcVersionsRange,
             "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\""),
         )
@@ -247,15 +227,7 @@ tasks {
         dependencies {
             relocate("gg.essential.universal", "su.plo.voice.universal")
 
-            if (platform.mcVersion < 11700 || (platform.isForge && platform.mcVersion < 11800)) {
-                exclude(dependency("org.apache.logging.log4j:log4j-api"))
-                exclude(dependency("org.apache.logging.log4j:log4j-core"))
-
-                relocate("org.apache.logging.slf4j", "su.plo.voice.libs.org.apache.logging.slf4j")
-                relocate("org.slf4j", "su.plo.voice.libs.org.slf4j")
-            } else {
-                exclude(dependency("org.slf4j:slf4j-api"))
-            }
+            exclude(dependency("org.slf4j:slf4j-api"))
 
             if (platform.mcVersion >= 12106) {
                 exclude("assets/plasmovoice/shaders/position_tex_solid_color.*")
@@ -263,15 +235,10 @@ tasks {
                 exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
             }
 
-            if (platform.isForge) {
+            if (platform.isNeoForge) {
                 exclude("fabric.mod.json")
-                exclude("META-INF/neoforge.mods.toml")
-            } else if (platform.isNeoForge) {
-                exclude("fabric.mod.json")
-                exclude("META-INF/mods.toml")
             } else {
                 exclude("pack.mcmeta")
-                exclude("META-INF/mods.toml")
                 exclude("META-INF/neoforge.mods.toml")
             }
         }

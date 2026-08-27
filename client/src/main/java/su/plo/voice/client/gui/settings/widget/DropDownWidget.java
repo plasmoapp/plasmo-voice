@@ -13,9 +13,7 @@ import java.awt.Color;
 import java.util.List;
 import java.util.function.Consumer;
 
-//#if MC>=12002
-//$$ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-//#endif
+import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 
 //#if MC>=12109
 //$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
@@ -123,15 +121,10 @@ public final class DropDownWidget extends GuiAbstractWidget {
 
     @Override
     protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
-        //#if MC>=12002
-        //$$ GuiWidgetTexture sprite = isFocused() ? GuiWidgetTexture.TEXT_FIELD_ACTIVE : GuiWidgetTexture.TEXT_FIELD;
-        //$$
-        //$$ context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
-        //$$ context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
-        //#else
-        context.fill(x, y, x + width, y + height, isFocused() ? Colors.WHITE : Colors.GRAY);
-        context.fill(x + 1, y + 1, x + width - 1, y + height - 1, Colors.BLACK);
-        //#endif
+        GuiWidgetTexture sprite = isFocused() ? GuiWidgetTexture.TEXT_FIELD_ACTIVE : GuiWidgetTexture.TEXT_FIELD;
+
+        context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
+        context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
     }
 
     @Override

@@ -22,9 +22,9 @@
 
 ## Available for all popular platforms
 
-Paper, Folia, Fabric, Forge, and NeoForge servers are fully compatible with both Fabric and Forge clients.
+Paper, Folia, Fabric, and NeoForge servers are fully compatible with both Fabric and NeoForge clients.
 
-To use voice chat, players must install the client-side mod for **Fabric**, **Forge** or **NeoForge**.
+To use voice chat, players must install the client-side mod for **Fabric** or **NeoForge**.
 Players without the mod can still join the server and play as usual – they just won't have access to voice chat
 features.
 

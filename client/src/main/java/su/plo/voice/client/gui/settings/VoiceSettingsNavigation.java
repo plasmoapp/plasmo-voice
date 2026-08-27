@@ -21,19 +21,14 @@ import su.plo.voice.client.gui.settings.tab.AbstractHotKeysTabWidget;
 import su.plo.voice.client.gui.settings.tab.TabWidget;
 import su.plo.voice.client.gui.settings.widget.TabButton;
 
-import java.awt.Color;
 import java.util.List;
 import java.util.Optional;
 
-//#if MC>=12005
-//$$ import net.minecraft.client.Minecraft;
-//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.MENU_LIST_BACKGROUND_LOCATION;
-//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_MENU_LIST_BACKGROUND_LOCATION;
-//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.FOOTER_SEPARATOR_LOCATION;
-//$$ import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_FOOTER_SEPARATOR_LOCATION;
-//#else
-import static su.plo.lib.mod.client.gui.widget.GuiWidget.BACKGROUND_LOCATION;
-//#endif
+import net.minecraft.client.Minecraft;
+import static su.plo.lib.mod.client.gui.widget.GuiWidget.MENU_LIST_BACKGROUND_LOCATION;
+import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_MENU_LIST_BACKGROUND_LOCATION;
+import static su.plo.lib.mod.client.gui.widget.GuiWidget.FOOTER_SEPARATOR_LOCATION;
+import static su.plo.lib.mod.client.gui.widget.GuiWidget.INWORLD_FOOTER_SEPARATOR_LOCATION;
 
 public final class VoiceSettingsNavigation implements GuiWidgetListener {
 
@@ -212,53 +207,30 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         int width = parent.getWidth();
         int height = getHeight();
 
-        //#if MC>=12005
-        //$$ context.blit(
-        //$$         Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
-        //$$         0,
-        //$$         0,
-        //$$         0.0F,
-        //$$         0.0F,
-        //$$         width,
-        //$$         height,
-        //$$         32,
-        //$$         32
-        //$$ );
-        //$$
-        //$$ context.blit(
-        //$$         Minecraft.getInstance().level == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION,
-        //$$         0,
-        //$$         height,
-        //$$         0.0F,
-        //$$         0.0F,
-        //$$         width,
-        //$$         2,
-        //$$         32,
-        //$$         2,
-        //$$         RenderPipelines.GUI_TEXTURE_OVERLAY
-        //$$ );
-        //#else
-        context.blitColor(
-                BACKGROUND_LOCATION,
+        context.blit(
+                Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
                 0,
                 0,
                 0.0F,
                 0.0F,
                 width,
                 height,
-                16,
-                16,
-                new Color(64, 64, 64)
+                32,
+                32
         );
 
-        context.fillGradient(
-                width, height + 4, 0, height,
-                0, 0, 0, 0,
-                0, 0, 0, 255,
+        context.blit(
+                Minecraft.getInstance().level == null ? FOOTER_SEPARATOR_LOCATION : INWORLD_FOOTER_SEPARATOR_LOCATION,
                 0,
-                RenderPipelines.GUI_COLOR_OVERLAY
+                height,
+                0.0F,
+                0.0F,
+                width,
+                2,
+                32,
+                2,
+                RenderPipelines.GUI_TEXTURE_OVERLAY
         );
-        //#endif
     }
 
     public void openTab(int index) {

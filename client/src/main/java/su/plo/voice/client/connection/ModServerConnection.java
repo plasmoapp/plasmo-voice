@@ -1,13 +1,11 @@
 package su.plo.voice.client.connection;
 
 import com.google.common.collect.Maps;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.local.LocalAddress;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.Connection;
-import net.minecraft.network.FriendlyByteBuf;
 import su.plo.slib.api.logging.McLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -57,30 +55,17 @@ import java.util.UUID;
 //#if FABRIC
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 
-//#if MC>=12005
-//$$ import su.plo.slib.mod.channel.ByteArrayCodec;
-//$$ import su.plo.slib.mod.channel.ByteArrayPayload;
-//$$ import su.plo.slib.mod.channel.ModChannelManager;
-//#endif
-
-//#elseif FORGE
-
-//$$ import net.minecraftforge.network.NetworkDirection;
-//$$ import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
-
-//#if MC>=12100
-//$$ import net.minecraft.network.protocol.common.ServerCommonPacketListener;
-//$$ import net.minecraftforge.network.EventNetworkChannel;
-//$$ import su.plo.slib.mod.channel.ModChannelManager;
-//#endif
+import su.plo.slib.mod.channel.ByteArrayCodec;
+import su.plo.slib.mod.channel.ByteArrayPayload;
+import su.plo.slib.mod.channel.ModChannelManager;
 
 //#elseif NEOFORGE
-
+//$$
 //$$ import net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket;
 //$$ import su.plo.slib.mod.channel.ByteArrayCodec;
 //$$ import su.plo.slib.mod.channel.ByteArrayPayload;
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
-
+//$$
 //#endif
 
 public final class ModServerConnection implements ServerConnection {
@@ -122,9 +107,7 @@ public final class ModServerConnection implements ServerConnection {
     @Override
     public void sendPacket(@NotNull Packet<?> packet, boolean checkUdpConnection) {
         if (!connection.isConnected()) return;
-        //#if MC>12004
-        //$$ if (Minecraft.getInstance().getConnection() == null) return;
-        //#endif
+        if (Minecraft.getInstance().getConnection() == null) return;
 
         if (checkUdpConnection && !voiceClient.getUdpClientManager().isConnected())
             return;
@@ -132,44 +115,22 @@ public final class ModServerConnection implements ServerConnection {
         byte[] encoded = PacketTcpCodec.encode(packet);
         if (encoded == null) return;
 
-        //#if MC<12005
-        FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded));
-        //#endif
-
         //#if FABRIC
         // Use connection#send instead of ClientPlayNetworking#send,
         // because Minecraft.getInstance().getConnection() can be null and a packet will not be sent
 
-        //#if MC>=12005
-        //$$ ByteArrayCodec codec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
-        //$$ connection.send(ClientPlayNetworking.createC2SPacket(new ByteArrayPayload(codec.getType(), encoded)));
-        //#else
-        connection.send(ClientPlayNetworking.createC2SPacket(ModVoiceServer.CHANNEL, buf));
-        //#endif
-
-        //#elseif FORGE
-
-        //#if MC>=12100
-        //$$ EventNetworkChannel forgeChannel = ModChannelManager.getForgeChannel(ModVoiceServer.CHANNEL);
-        //$$ FriendlyByteBuf buf = new FriendlyByteBuf(Unpooled.wrappedBuffer(encoded));
-        //$$
-        //$$ net.minecraft.network.protocol.Packet<ServerCommonPacketListener> customPacket = NetworkDirection.PLAY_TO_SERVER.buildPacket(forgeChannel, buf);
-        //#elseif MC>=12002
-        //$$ ServerboundCustomPayloadPacket customPacket = NetworkDirection.PLAY_TO_SERVER.<ServerboundCustomPayloadPacket>buildPacket(buf, ModVoiceServer.CHANNEL).getThis();
-        //#else
-        //$$ ServerboundCustomPayloadPacket customPacket = new ServerboundCustomPayloadPacket(ModVoiceServer.CHANNEL, buf);
-        //#endif
-        //$$ connection.send(customPacket);
+        ByteArrayCodec codec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
+        connection.send(ClientPlayNetworking.createC2SPacket(new ByteArrayPayload(codec.getType(), encoded)));
 
         //#elseif NEOFORGE
-
+        //$$
         //$$ ByteArrayCodec codec = ModChannelManager.Companion.getOrRegisterCodec(ModVoiceServer.CHANNEL);
         //$$ connection.send(
         //$$         new ServerboundCustomPayloadPacket(
         //$$                 new ByteArrayPayload(codec.getType(), encoded)
         //$$         )
         //$$ );
-
+        //$$
         //#endif
     }
 

@@ -1,6 +1,5 @@
 package su.plo.lib.mod.client.render.entity
 
-
 import net.minecraft.network.chat.Component
 import net.minecraft.world.phys.Vec3
 //#if MC>=1.21.2
@@ -37,14 +36,10 @@ import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
+import net.minecraft.world.scores.DisplaySlot
 import net.minecraft.world.scores.Scoreboard
-import su.plo.lib.mod.extensions.level
 import su.plo.voice.client.extension.position
 import su.plo.voice.client.mixin.accessor.EntityRendererAccessor
-
-//#if MC>=12002
-//$$ import net.minecraft.world.scores.DisplaySlot
-//#endif
 
 data class LivingEntityRenderState(
     val distanceToCameraSquared: Double,
@@ -56,11 +51,7 @@ data class LivingEntityRenderState(
 )
 
 private fun Scoreboard.getObjectiveBelowName() =
-//#if MC>=12002
-//$$ getDisplayObjective(DisplaySlot.BELOW_NAME)
-//#else
-    getDisplayObjective(2)
-//#endif
+    getDisplayObjective(DisplaySlot.BELOW_NAME)
 
 fun EntityRenderer<*>.createEntityRenderState(
     entity: LivingEntity,
