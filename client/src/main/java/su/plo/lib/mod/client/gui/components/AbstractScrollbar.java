@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.ToString;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.gui.screen.GuiScreen;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidget;
@@ -136,7 +137,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        this.scrolling = button == 0 && isMouseOverScrollbar(mouseX, mouseY);
+        this.scrolling = button == GLFW.GLFW_MOUSE_BUTTON_1 && isMouseOverScrollbar(mouseX, mouseY);
         if (scrolling) {
             return true;
         }
@@ -179,7 +180,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
         if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
-        } else if (button == 0 && scrolling) {
+        } else if (button == GLFW.GLFW_MOUSE_BUTTON_1 && scrolling) {
             if (mouseY < y0) {
                 setScrollTop(0D);
             } else if (mouseY > y1) {

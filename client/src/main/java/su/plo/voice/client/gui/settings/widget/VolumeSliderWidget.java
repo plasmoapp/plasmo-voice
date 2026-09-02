@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -38,7 +39,7 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
 
     @Override
     protected void applyValue() {
-        if (!keyBindings.getPressedKeys().contains(Hotkey.Type.KEYSYM.getOrCreate(340))) { // GLFW_KEY_LEFT_SHIFT
+        if (!keyBindings.getPressedKeys().contains(Hotkey.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_SHIFT))) {
             this.value = calculateValue(value);
         }
         entry.set(value * entry.getMax());

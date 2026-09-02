@@ -13,7 +13,9 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 public class SolidColorShader {
 
     public static final ResourceLocation LOCATION =
-            //#if MC>=12106
+            //#if MC>=26.3
+            //$$ ResourceLocationUtil.mod("position_tex_solid_color_26_3");
+            //#elseif MC>=12106
             //$$ ResourceLocationUtil.mod("position_tex_solid_color_1_21_6");
             //#else
             ResourceLocationUtil.mod("position_tex_solid_color");

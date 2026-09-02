@@ -238,7 +238,20 @@ data class RenderPipeline(
             //$$     // uhhh
             //$$     // it's not correct and depends on the shader,
             //$$     // but it should be fine Clueless
-            //#if MC>=26.2
+            //#if MC>=26.3
+            //$$     .withBindGroupLayout(BindGroupLayouts.GLOBALS)
+            //$$     .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+            //$$     .withBindGroupLayout(BindGroupLayouts.PROJECTION)
+            //$$     .apply {
+            //$$         if (samplers.isNotEmpty()) {
+            //$$             withBindGroupLayout(
+            //$$                 BindGroupLayout.builder()
+            //$$                     .apply { samplers.forEach { withUniform(it, UniformType.COMBINED_IMAGE_SAMPLER) } }
+            //$$                     .build()
+            //$$             )
+            //$$         }
+            //$$     }
+            //#elseif MC>=26.2
             //$$     .withBindGroupLayout(BindGroupLayouts.GLOBALS)
             //$$     .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
             //$$     .apply {

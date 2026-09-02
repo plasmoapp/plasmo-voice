@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
@@ -67,8 +68,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     // GuiWidgetEventListener impl
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
-        if (keyCode == 256 // GLFW_KEY_ESCAPE
-                || keyCode == 258) { // GLFW_KEY_TAB
+        if (keyCode == GLFW.GLFW_KEY_ESCAPE
+                || keyCode == GLFW.GLFW_KEY_TAB) {
             Optional<TabWidget> tab = getActiveTab();
             if (!tab.isPresent()) return false;
 

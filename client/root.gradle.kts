@@ -7,6 +7,8 @@ group = "$group.client-root"
 preprocess {
     strictExtraMappings.set(false)
 
+    val fabric260300 = createNode("26.3-fabric", 260300, "official")
+
     val fabric260200 = createNode("26.2-fabric", 260200, "official")
     val neoForge260200 = createNode("26.2-neoforge", 260200, "official")
 
@@ -51,6 +53,8 @@ preprocess {
 
     val forge11605 = createNode("1.16.5-forge", 11605, "official")
     val fabric11605 = createNode("1.16.5-fabric", 11605, "official")
+
+    fabric260300.link(fabric260200, file("26.3-26.2.txt"))
 
     fabric260200.link(fabric260100, file("26.2-26.1.txt"))
     neoForge260200.link(neoForge260100, file("26.2-26.1.txt"))

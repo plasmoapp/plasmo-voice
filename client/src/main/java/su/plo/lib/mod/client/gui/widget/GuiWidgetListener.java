@@ -34,6 +34,10 @@ public interface GuiWidgetListener {
         return false;
     }
 
+    default boolean capturesInput() {
+        return false;
+    }
+
     default void applyFocus(boolean focused) {
     }
 

@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import org.lwjgl.glfw.GLFW;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
@@ -82,7 +83,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        this.scrolling = button == 0 &&
+        this.scrolling = button == GLFW.GLFW_MOUSE_BUTTON_1 &&
                 mouseX >= this.getScrollbarPosition() &&
                 mouseX < (this.getScrollbarPosition() + 6);
 

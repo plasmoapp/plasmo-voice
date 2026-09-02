@@ -1,0 +1,54 @@
+com.mojang.authlib.minecraft.SessionService com.mojang.authlib.minecraft.MinecraftSessionService
+com.mojang.authlib.services.ProfileResult com.mojang.authlib.yggdrasil.ProfileResult
+
+com.mojang.renderpearl.api.GpuFormat com.mojang.blaze3d.GpuFormat
+com.mojang.renderpearl.api.pipeline.PrimitiveTopology com.mojang.blaze3d.PrimitiveTopology
+
+com.mojang.renderpearl.api.buffers.GpuBuffer com.mojang.blaze3d.buffers.GpuBuffer
+com.mojang.renderpearl.api.commands.RenderPass com.mojang.blaze3d.systems.RenderPass
+
+com.mojang.renderpearl.api.pipeline.BindGroupLayout com.mojang.blaze3d.pipeline.BindGroupLayout
+com.mojang.renderpearl.api.pipeline.BlendFunction com.mojang.blaze3d.pipeline.BlendFunction
+com.mojang.renderpearl.api.pipeline.ColorTargetState com.mojang.blaze3d.pipeline.ColorTargetState
+com.mojang.renderpearl.api.pipeline.DepthStencilState com.mojang.blaze3d.pipeline.DepthStencilState
+com.mojang.renderpearl.api.pipeline.RenderPipeline com.mojang.blaze3d.pipeline.RenderPipeline
+
+com.mojang.renderpearl.api.pipeline.BlendFactor com.mojang.blaze3d.platform.BlendFactor
+com.mojang.renderpearl.api.pipeline.CompareOp com.mojang.blaze3d.platform.CompareOp
+
+com.mojang.renderpearl.api.pipeline.UniformType com.mojang.blaze3d.shaders.UniformType
+
+com.mojang.renderpearl.api.vertex.VertexFormat com.mojang.blaze3d.vertex.VertexFormat
+
+com.mojang.blaze3d.vertex.PoseStack rotate() mulPose()
+
+com.mojang.blaze3d.platform.InputConstants org.lwjgl.glfw.GLFW
+com.mojang.blaze3d.platform.InputConstants$Type KEYBOARD KEYSYM
+
+net.minecraft.client.input.KeyEvent keycode() scancode()
+
+com.mojang.blaze3d.platform.InputConstants KEY_A org.lwjgl.glfw.GLFW GLFW_KEY_A
+com.mojang.blaze3d.platform.InputConstants KEY_BACKSPACE org.lwjgl.glfw.GLFW GLFW_KEY_BACKSPACE
+com.mojang.blaze3d.platform.InputConstants KEY_C org.lwjgl.glfw.GLFW GLFW_KEY_C
+com.mojang.blaze3d.platform.InputConstants KEY_DELETE org.lwjgl.glfw.GLFW GLFW_KEY_DELETE
+com.mojang.blaze3d.platform.InputConstants KEY_DOWN org.lwjgl.glfw.GLFW GLFW_KEY_DOWN
+com.mojang.blaze3d.platform.InputConstants KEY_END org.lwjgl.glfw.GLFW GLFW_KEY_END
+com.mojang.blaze3d.platform.InputConstants KEY_RETURN org.lwjgl.glfw.GLFW GLFW_KEY_ENTER
+com.mojang.blaze3d.platform.InputConstants KEY_ESCAPE org.lwjgl.glfw.GLFW GLFW_KEY_ESCAPE
+com.mojang.blaze3d.platform.InputConstants KEY_HOME org.lwjgl.glfw.GLFW GLFW_KEY_HOME
+com.mojang.blaze3d.platform.InputConstants KEY_INSERT org.lwjgl.glfw.GLFW GLFW_KEY_INSERT
+com.mojang.blaze3d.platform.InputConstants KEY_NUMPADENTER org.lwjgl.glfw.GLFW GLFW_KEY_KP_ENTER
+com.mojang.blaze3d.platform.InputConstants KEY_LEFT org.lwjgl.glfw.GLFW GLFW_KEY_LEFT
+com.mojang.blaze3d.platform.InputConstants KEY_LALT org.lwjgl.glfw.GLFW GLFW_KEY_LEFT_ALT
+com.mojang.blaze3d.platform.InputConstants KEY_LSHIFT org.lwjgl.glfw.GLFW GLFW_KEY_LEFT_SHIFT
+com.mojang.blaze3d.platform.InputConstants KEY_M org.lwjgl.glfw.GLFW GLFW_KEY_M
+com.mojang.blaze3d.platform.InputConstants KEY_PAGEDOWN org.lwjgl.glfw.GLFW GLFW_KEY_PAGE_DOWN
+com.mojang.blaze3d.platform.InputConstants KEY_PAGEUP org.lwjgl.glfw.GLFW GLFW_KEY_PAGE_UP
+com.mojang.blaze3d.platform.InputConstants KEY_RIGHT org.lwjgl.glfw.GLFW GLFW_KEY_RIGHT
+com.mojang.blaze3d.platform.InputConstants KEY_SPACE org.lwjgl.glfw.GLFW GLFW_KEY_SPACE
+com.mojang.blaze3d.platform.InputConstants KEY_TAB org.lwjgl.glfw.GLFW GLFW_KEY_TAB
+com.mojang.blaze3d.platform.InputConstants KEY_UP org.lwjgl.glfw.GLFW GLFW_KEY_UP
+com.mojang.blaze3d.platform.InputConstants KEY_V org.lwjgl.glfw.GLFW GLFW_KEY_V
+com.mojang.blaze3d.platform.InputConstants KEY_X org.lwjgl.glfw.GLFW GLFW_KEY_X
+com.mojang.blaze3d.platform.InputConstants MOUSE_BUTTON_LEFT org.lwjgl.glfw.GLFW GLFW_MOUSE_BUTTON_1
+com.mojang.blaze3d.platform.InputConstants MOUSE_BUTTON_RIGHT org.lwjgl.glfw.GLFW GLFW_MOUSE_BUTTON_2

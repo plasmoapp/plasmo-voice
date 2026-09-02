@@ -9,6 +9,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.contents.LiteralContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.extensions.HotkeyKt;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.config.hotkey.Hotkey;
 
@@ -32,15 +33,8 @@ public class LanguageUtil {
     }
 
     public @NotNull McTextComponent getKeyDisplayName(@NonNull Hotkey.Key key) {
-        InputConstants.Key inputKey;
-
-        if (key.getType() == Hotkey.Type.KEYSYM) {
-            inputKey = InputConstants.Type.KEYSYM.getOrCreate(key.getCode());
-        } else if (key.getType() == Hotkey.Type.MOUSE) {
-            inputKey = InputConstants.Type.MOUSE.getOrCreate(key.getCode());
-        } else if (key.getType() == Hotkey.Type.SCANCODE) {
-            inputKey = InputConstants.Type.SCANCODE.getOrCreate(key.getCode());
-        } else {
+        InputConstants.Key inputKey = HotkeyKt.toMinecraft(key);
+        if (inputKey == null) {
             return McTextComponent.translatable("gui.none");
         }
 

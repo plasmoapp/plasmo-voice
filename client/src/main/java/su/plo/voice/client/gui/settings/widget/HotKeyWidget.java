@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableSet;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -69,7 +70,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         if (isActiveHotkey()
-                && !(button == 0 && pressedKeys.size() == 0) // GLFW_MOUSE_BUTTON_1
+                && !(button == GLFW.GLFW_MOUSE_BUTTON_1 && pressedKeys.size() == 0)
                 && pressedKeys.stream().anyMatch(key -> key.getType() == Hotkey.Type.MOUSE && key.getCode() == button)
         ) {
             keysReleased();
@@ -100,7 +101,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
         if (isActiveHotkey()) {
-            if (keyCode == 256) { // GLFW_KEY_ESCAPE
+            if (keyCode == GLFW.GLFW_KEY_ESCAPE) {
                 if (pressedKeys.size() > 0) {
                     keysReleased();
                 } else {

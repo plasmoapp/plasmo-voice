@@ -9,6 +9,8 @@ import lombok.Setter;
 import lombok.ToString;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
+import org.lwjgl.glfw.GLFW;
+import su.plo.lib.mod.extensions.HotkeyKt;
 import su.plo.lib.mod.extensions.MinecraftKt;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.config.entry.SerializableConfigEntry;
@@ -37,7 +39,7 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
         // proximity
         register(
                 "key.plasmovoice.proximity.ptt",
-                ImmutableList.of(Hotkey.Type.KEYSYM.getOrCreate(342)), // GLFW_KEY_LEFT_ALT
+                ImmutableList.of(Hotkey.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_LEFT_ALT)),
                 "hidden",
                 true
         );
@@ -45,7 +47,7 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
         // general
         register(
                 "key.plasmovoice.general.mute_microphone",
-                ImmutableList.of(Hotkey.Type.KEYSYM.getOrCreate(77)), // GLFW_KEY_M
+                ImmutableList.of(Hotkey.Type.KEYSYM.getOrCreate(GLFW.GLFW_KEY_M)),
                 "key.plasmovoice.general",
                 false
         );
@@ -57,7 +59,7 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
         );
         register(
                 "key.plasmovoice.general.action",
-                ImmutableList.of(Hotkey.Type.MOUSE.getOrCreate(1)), // GLFW_MOUSE_BUTTON_2
+                ImmutableList.of(Hotkey.Type.MOUSE.getOrCreate(GLFW.GLFW_MOUSE_BUTTON_2)),
                 "key.plasmovoice.general",
                 false
         );
@@ -138,13 +140,12 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
                 boolean anyContext = (Boolean) configKeyMap.get("any_context");
 
                 List<Hotkey.Key> keys = new ArrayList<>();
-                configKeys.forEach(serializedKey -> {
-                    Map<String, Object> configKey = (Map<String, Object>) serializedKey;
-                    Hotkey.Type keyType = Hotkey.Type.valueOf((String) configKey.get("type"));
-                    int keyCode = ((Long) configKey.get("code")).intValue();
+                for (Object serializedKey : configKeys) {
+                    if (!(serializedKey instanceof String)) return;
 
-                    keys.add(new Hotkey.Key(keyType, keyCode));
-                });
+                    Hotkey.Key key = HotkeyKt.toHotkeyKey((String) serializedKey);
+                    if (key != null) keys.add(key);
+                }
 
                 if (!hotkeys.containsKey(name)) {
                     register(name, ImmutableList.of(), category, anyContext);
@@ -181,13 +182,8 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
                         "keys",
                         hotkey.getKeys()
                                 .stream()
-                                .map((key) -> {
-                                    Map<String, Object> serializedKey = Maps.newHashMap();
-                                    serializedKey.put("type", key.getType().name());
-                                    serializedKey.put("code", key.getCode());
-
-                                    return serializedKey;
-                                })
+                                .map(HotkeyKt::serializedName)
+                                .filter(Objects::nonNull)
                                 .collect(Collectors.toList())
                 );
                 serializedHotkey.put("any_context", hotkey.isAnyContext());

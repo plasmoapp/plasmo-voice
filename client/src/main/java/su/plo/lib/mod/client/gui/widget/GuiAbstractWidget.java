@@ -4,6 +4,7 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
 import net.minecraft.sounds.SoundEvents;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
@@ -234,7 +235,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     }
 
     protected boolean isValidClickButton(int button) {
-        return button == 0;
+        return button == GLFW.GLFW_MOUSE_BUTTON_1;
     }
 
     protected boolean isClicked(double mouseX, double mouseY) {

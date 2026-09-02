@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.gui.screen;
 
 import org.jetbrains.annotations.Nullable;
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 
 import java.util.List;
@@ -25,7 +26,7 @@ public interface GuiScreenListener extends GuiWidgetListener {
         for (GuiWidgetListener widget : widgets()) {
             if (widget.mouseClicked(mouseX, mouseY, button)) {
                 setFocused(widget);
-                if (button == 0) setDragging(true);
+                if (button == GLFW.GLFW_MOUSE_BUTTON_1) setDragging(true);
                 return true;
             }
         }
@@ -61,7 +62,7 @@ public interface GuiScreenListener extends GuiWidgetListener {
     default boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
         return getFocused() != null &&
                 isDragging() &&
-                button == 0 &&
+                button == GLFW.GLFW_MOUSE_BUTTON_1 &&
                 getFocused().mouseDragged(mouseX, mouseY, button, deltaX, deltaY);
     }
 
@@ -78,6 +79,11 @@ public interface GuiScreenListener extends GuiWidgetListener {
     @Override
     default boolean keyReleased(int keyCode, char typedChar, int modifiers) {
         return getFocused() != null && getFocused().keyReleased(keyCode, typedChar, modifiers);
+    }
+
+    @Override
+    default boolean capturesInput() {
+        return getFocused() != null && getFocused().capturesInput();
     }
 
     default boolean changeFocus(boolean lookForwards) {

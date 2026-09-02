@@ -253,6 +253,13 @@ public final class ScreenWrapper
     }
     //#endif
 
+    //#if MC>=26.3
+    //$$ @Override
+    //$$ public boolean isInputCaptured() {
+    //$$     return screen.capturesInput();
+    //$$ }
+    //#endif
+
     private boolean innerKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 0) {
             return false;

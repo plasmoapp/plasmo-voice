@@ -29,6 +29,10 @@ import java.util.function.Predicate;
 //$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
 //#endif
 
+//#if MC>=26.3
+//$$ import com.mojang.blaze3d.platform.TextInputManager;
+//#endif
+
 public class TextFieldWidget extends GuiAbstractWidget {
 
     @Setter
@@ -210,6 +214,17 @@ public class TextFieldWidget extends GuiAbstractWidget {
     public void applyFocus(boolean focused) {
         super.applyFocus(focused);
         if (focused) this.frame = 0;
+
+        //#if MC>=26.3
+        //$$ if (!isEditable()) return;
+        //$$
+        //$$ TextInputManager textInputManager = Minecraft.getInstance().textInputManager();
+        //$$ if (focused) {
+        //$$     textInputManager.startTextInput(this);
+        //$$ } else {
+        //$$     textInputManager.stopTextInput(this);
+        //$$ }
+        //#endif
     }
 
     @Override
@@ -265,6 +280,14 @@ public class TextFieldWidget extends GuiAbstractWidget {
             selectionX = currentX - 1;
             --currentX;
         }
+
+        //#if MC>=26.3
+        //$$ if (canConsumeInput()) {
+        //$$     Minecraft.getInstance()
+        //$$             .textInputManager()
+        //$$             .setTextInputArea(selectionX, textY - 1, selectionX + 1, textY + 1 + 9);
+        //$$ }
+        //#endif
 
         if (selectionEnd != cursorIndex) {
             int selectionWidth = textX + RenderUtil.getStringWidth(text.substring(0, selectionEnd));
@@ -340,6 +363,11 @@ public class TextFieldWidget extends GuiAbstractWidget {
 
     public boolean canConsumeInput() {
         return isVisible() && isFocused() && isEditable();
+    }
+
+    @Override
+    public boolean capturesInput() {
+        return canConsumeInput();
     }
 
     public void tick() {

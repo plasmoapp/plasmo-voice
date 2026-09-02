@@ -18,14 +18,20 @@ import su.plo.voice.client.meta.PlasmoVoiceMeta;
 //$$ import java.util.function.Consumer;
 //#endif
 
+//#if MC>=26.3
+//$$ import net.minecraft.client.Minecraft;
+//#endif
+
 @Mixin(LanguageManager.class)
 public abstract class MixinLanguageManager {
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    //#if MC>=12100
-    //$$ private void init(String string, Consumer<ClientLanguage> reloadConsumer, CallbackInfo ci) {
+    //#if MC>=26.3
+    //$$ private void init(Minecraft minecraft, String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
+    //#elseif MC>=12100
+    //$$ private void init(String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
     //#else
-    private void init(String string, CallbackInfo ci) {
+    private void init(String languageCode, CallbackInfo ci) {
     //#endif
         //#if FORGE
         //$$ try {
@@ -35,7 +41,7 @@ public abstract class MixinLanguageManager {
         //$$ }
         //#endif
 
-        PlasmoVoiceMeta.Companion.fetch(string);
+        PlasmoVoiceMeta.Companion.fetch(languageCode);
     }
 
     //#if MC>=11904

@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings;
 
+import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.gui.TooltipData;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
@@ -241,7 +242,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        if (button == 0 && isTitleHovered(mouseX, mouseY) && navigation.getActive() >= 0) {
+        if (button == GLFW.GLFW_MOUSE_BUTTON_1 && isTitleHovered(mouseX, mouseY) && navigation.getActive() >= 0) {
             aboutFeature.titleClicked();
             return true;
         }
