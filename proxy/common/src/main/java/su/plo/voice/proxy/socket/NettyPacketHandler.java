@@ -1,25 +1,23 @@
 package su.plo.voice.proxy.socket;
 
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.channel.socket.DatagramChannel;
-import io.netty.channel.socket.DatagramPacket;
 import lombok.AllArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.proxy.connection.McProxyServerConnection;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.proxy.player.VoiceProxyPlayer;
 import su.plo.voice.api.proxy.server.RemoteServer;
 import su.plo.voice.api.proxy.socket.UdpProxyConnection;
 import su.plo.voice.proto.packets.udp.PacketUdp;
-import su.plo.voice.proto.packets.udp.PacketUdpCodec;
 import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.proxy.BaseVoiceProxy;
 import su.plo.voice.proxy.connection.CancelForwardingException;
 import su.plo.voice.proxy.server.VoiceRemoteServer;
 import su.plo.voice.socket.NettyPacketUdp;
 
-import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.util.Objects;
 import java.util.Optional;
@@ -29,6 +27,8 @@ import java.util.UUID;
 public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyPacketUdp> {
 
     private final BaseVoiceProxy voiceProxy;
+    private final EventLoopGroup loopGroup;
+    private final Class<? extends DatagramChannel> channelClass;
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket) throws Exception {
@@ -36,10 +36,13 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
 
         UUID secret = packet.getSecret();
 
-        if (voiceProxy.getUdpConnectionManager().getConnectionByAnySecret(secret)
-                .map(connection -> sendPacket(ctx, nettyPacket, connection))
-                .orElse(false)
-        ) return;
+        Optional<UdpProxyConnection> existingConnection = voiceProxy.getUdpConnectionManager().getConnectionBySecret(secret);
+        if (existingConnection.isPresent()) {
+            if (existingConnection.get() instanceof NettyUdpProxyConnection) {
+                forwardPacket(nettyPacket, (NettyUdpProxyConnection) existingConnection.get());
+            }
+            return;
+        }
 
         BaseVoice.DEBUG_LOGGER.log("Connection with secret {}", secret);
 
@@ -84,10 +87,11 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 voiceProxy,
                 (DatagramChannel) ctx.channel(),
                 player.get(),
-                secret
+                secret,
+                loopGroup,
+                channelClass
         );
         connection.setRemoteSecret(remoteSecret.get());
-        connection.setRemoteServer(remoteServer.get());
         connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
         if (packet.getPacketUntyped() instanceof PingPacket) {
             PingPacket pingPacket = (PingPacket) packet.getPacketUntyped();
@@ -95,62 +99,26 @@ public final class NettyPacketHandler extends SimpleChannelInboundHandler<NettyP
                 connection.setConnectionAddress(InetSocketAddress.createUnresolved(pingPacket.getServerIp(), pingPacket.getServerPort()));
             }
         }
+        connection.setRemoteServer(remoteServer.get());
         voiceProxy.getUdpConnectionManager().addConnection(connection);
 
-        sendPacket(ctx, nettyPacket, connection);
+        forwardPacket(nettyPacket, connection);
     }
 
-    private boolean sendPacket(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket, UdpProxyConnection connection) {
-        if (!connection.getRemoteServer().isPresent()) return false;
-
-        RemoteServer remoteServer = connection.getRemoteServer().get();
-
+    private void forwardPacket(@NotNull NettyPacketUdp nettyPacket, @NotNull NettyUdpProxyConnection connection) {
         InetSocketAddress sender = nettyPacket.getDatagramPacket().sender();
-        InetSocketAddress receiver;
-        UUID receiverSecret;
-
-        if (connection.getSecret().equals(nettyPacket.getPacketUdp().getSecret())) {
-            receiver = remoteServer.getAddress();
-            receiverSecret = connection.getRemoteSecret();
-
-            if (!Objects.equals(connection.getRemoteAddress(), sender)) {
-                connection.setRemoteAddress(nettyPacket.getDatagramPacket().sender());
-            }
-
-            // handle packet
-            try {
-                connection.handlePacket(nettyPacket.getPacketUdp().getPacket());
-            } catch (CancelForwardingException ignored) {
-                return true;
-            } catch (ClassCastException e) {
-                BaseVoice.DEBUG_LOGGER.log(
-                        "Packet {} was received from remote server: {}; connection remote server: {}",
-                        nettyPacket.getPacketUdp(),
-                        sender,
-                        remoteServer.getAddress()
-                );
-
-                if (BaseVoice.DEBUG_LOGGER.enabled()) {
-                    e.printStackTrace();
-                }
-            } catch (Throwable e) {
-                BaseVoice.DEBUG_LOGGER.log("Failed to decode packet", e);
-            }
-        } else {
-            receiver = connection.getRemoteAddress();
-            receiverSecret = connection.getSecret();
-
-            if (!connection.isConnected() || connection.getPlayer().getInstance().getServer() == null) return true;
+        if (!Objects.equals(connection.getRemoteAddress(), sender)) {
+            connection.setRemoteAddress(sender);
         }
 
-        // rewrite to backend server
-        ctx.channel().writeAndFlush(new DatagramPacket(
-                Unpooled.wrappedBuffer(PacketUdpCodec.replaceSecret(
-                        nettyPacket.getPacketData(),
-                        receiverSecret
-                )),
-                receiver
-        ));
-        return true;
+        try {
+            connection.handlePacket(nettyPacket.getPacketUdp().getPacket());
+        } catch (CancelForwardingException ignored) {
+            return;
+        } catch (Throwable e) {
+            BaseVoice.DEBUG_LOGGER.log("Failed to decode packet", e);
+        }
+
+        connection.sendPacketToRemoteServer(nettyPacket);
     }
 }

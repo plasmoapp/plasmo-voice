@@ -3,6 +3,7 @@ package su.plo.voice.proxy.socket;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.epoll.Epoll;
@@ -33,6 +34,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
     private final BaseVoiceProxy voiceProxy;
 
     private final EventLoopGroup loopGroup;
+    private final Class<? extends DatagramChannel> channelClass;
 
     private DatagramChannel channel;
     private InetSocketAddress socketAddress;
@@ -45,15 +47,13 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
         this.loopGroup = useEpoll
                 ? new EpollEventLoopGroup(0, factory)
                 : new NioEventLoopGroup(0, factory);
+        this.channelClass = useEpoll
+                ? EpollDatagramChannel.class
+                : NioDatagramChannel.class;
     }
 
     @Override
     public void start(String ip, int port) {
-
-        Class<? extends DatagramChannel> channelClass = useEpoll
-                ? EpollDatagramChannel.class
-                : NioDatagramChannel.class;
-
         Bootstrap bootstrap = new Bootstrap();
         bootstrap
                 .group(loopGroup)
@@ -64,8 +64,8 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             protected void initChannel(@NotNull DatagramChannel ch) throws Exception {
                 ChannelPipeline pipeline = ch.pipeline();
 
-                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.ANY));
-                pipeline.addLast("handler", new NettyPacketHandler(voiceProxy));
+                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.SERVER));
+                pipeline.addLast("handler", new NettyPacketHandler(voiceProxy, loopGroup, channelClass));
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
         });
@@ -87,6 +87,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
 
     @Override
     public void stop() {
+        voiceProxy.getUdpConnectionManager().clearConnections();
         if (channel != null) channel.close();
         loopGroup.shutdownGracefully();
         BaseVoice.LOGGER.info("UDP proxy server is stopped");
