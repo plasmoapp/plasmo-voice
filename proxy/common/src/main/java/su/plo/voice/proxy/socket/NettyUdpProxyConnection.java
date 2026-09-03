@@ -126,10 +126,15 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
 
     void sendPacketToRemoteServer(@NotNull NettyPacketUdp nettyPacket) {
         ChannelFuture channelFuture = remoteChannelFuture.get();
-        if (channelFuture == null || !connected || !channelFuture.isSuccess()) return;
+        if (channelFuture == null || !connected) return;
 
         UUID remoteSecret = this.remoteSecret;
         if (remoteSecret == null) return;
+
+        if (!channelFuture.isSuccess()) {
+            deferPingPacket(nettyPacket, channelFuture, remoteSecret);
+            return;
+        }
 
         ByteBuf buf = Unpooled.wrappedBuffer(
                 PacketUdpCodec.replaceSecret(nettyPacket.getPacketData(), remoteSecret)
@@ -173,6 +178,26 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
         if (!connected && remoteChannelFuture.compareAndSet(channelFuture, null)) {
             channelFuture.channel().close();
         }
+    }
+
+    private void deferPingPacket(
+            @NotNull NettyPacketUdp nettyPacket,
+            @NotNull ChannelFuture channelFuture,
+            @NotNull UUID remoteSecret
+    ) {
+        if (!nettyPacket.getPacketUdp().getPacketClass().equals(PingPacket.class)) return;
+
+        ByteBuf buf = Unpooled.wrappedBuffer(
+                PacketUdpCodec.replaceSecret(nettyPacket.getPacketData(), remoteSecret)
+        );
+
+        channelFuture.addListener((ChannelFutureListener) future -> {
+            if (!future.isSuccess() || !connected) {
+                buf.release();
+                return;
+            }
+            future.channel().writeAndFlush(buf);
+        });
     }
 
     private void closeChannel(@Nullable ChannelFuture channelFuture) {

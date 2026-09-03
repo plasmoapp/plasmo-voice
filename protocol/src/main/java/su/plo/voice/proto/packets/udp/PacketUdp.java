@@ -47,6 +47,10 @@ public class PacketUdp {
         this.read = true;
     }
 
+    public Class<?> getPacketClass() {
+        return packet.getClass();
+    }
+
     public Packet<?> getPacketUntyped() throws IOException {
         if (!read) readPacket();
 
