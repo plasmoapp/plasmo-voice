@@ -87,7 +87,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
 
         ByteBuf buf = channel.alloc().ioBuffer();
         try {
-            PacketUdpCodec.encode(packet, secret, new ByteBufDataOutput(buf));
+            PacketUdpCodec.encodeThrowing(packet, secret, new ByteBufDataOutput(buf));
         } catch (Throwable e) {
             buf.release();
             BaseVoice.DEBUG_LOGGER.log("Failed to encode packet", e);

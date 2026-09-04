@@ -42,7 +42,11 @@ public class PacketUdpCodec {
         return data;
     }
 
-    public static void encode(@NotNull Packet<?> packet, @NotNull UUID secret, @NotNull ByteArrayDataOutput out) throws IOException {
+    public static void encodeThrowing(
+            @NotNull Packet<?> packet,
+            @NotNull UUID secret,
+            @NotNull ByteArrayDataOutput out
+    ) throws IOException {
         int type = PACKETS.getType(packet);
         if (type < 0) throw new IOException("Unknown packet type");
 
@@ -57,7 +61,7 @@ public class PacketUdpCodec {
     public static byte[] encodeThrowing(@NotNull Packet<?> packet, @NotNull UUID secret) throws IOException {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
 
-        encode(packet, secret, out);
+        encodeThrowing(packet, secret, out);
 
         return out.toByteArray();
     }
