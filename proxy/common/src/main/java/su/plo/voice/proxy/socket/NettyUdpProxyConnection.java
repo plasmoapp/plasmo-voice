@@ -140,7 +140,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
             return;
         }
 
-        ByteBuf changedBuf = replaceSecret(nettyPacket, remoteSecret);
+        ByteBuf changedBuf = replaceSecret(nettyPacket.getDatagramPacket().content(), remoteSecret);
         channelFuture.channel().writeAndFlush(changedBuf, channelFuture.channel().voidPromise());
     }
 
@@ -162,7 +162,6 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
             protected void initChannel(@NotNull DatagramChannel ch) {
                 ChannelPipeline pipeline = ch.pipeline();
 
-                pipeline.addLast("decoder", new NettyPacketUdpDecoder(PacketDirection.CLIENT));
                 pipeline.addLast("handler", new RemoteServerPacketHandler());
                 pipeline.addLast("exception_handler", new NettyExceptionHandler());
             }
@@ -188,7 +187,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     ) {
         if (!nettyPacket.getPacketUdp().getPacketClass().equals(PingPacket.class)) return;
 
-        ByteBuf changedBuf = replaceSecret(nettyPacket, remoteSecret);
+        ByteBuf changedBuf = replaceSecret(nettyPacket.getDatagramPacket().content(), remoteSecret);
 
         channelFuture.addListener((ChannelFutureListener) future -> {
             if (!future.isSuccess() || !connected) {
@@ -203,9 +202,7 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
         if (channelFuture != null) channelFuture.channel().close();
     }
 
-    private ByteBuf replaceSecret(@NotNull NettyPacketUdp packet, @NotNull UUID newSecret) {
-        ByteBuf originalBuf = packet.getDatagramPacket().content();
-
+    private ByteBuf replaceSecret(@NotNull ByteBuf originalBuf, @NotNull UUID newSecret) {
         // Retain the ByteBuf here because:
         // - writeAndFlush will release after sending
         // - SimpleChannelInboundHandler will release after handling
@@ -217,12 +214,12 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
         return changedBuf;
     }
 
-    private final class RemoteServerPacketHandler extends SimpleChannelInboundHandler<NettyPacketUdp> {
+    private final class RemoteServerPacketHandler extends SimpleChannelInboundHandler<DatagramPacket> {
         @Override
-        protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket) {
+        protected void channelRead0(ChannelHandlerContext ctx, DatagramPacket packet) {
             if (!connected || player.getInstance().getServer() == null) return;
 
-            ByteBuf changedBuf = replaceSecret(nettyPacket, secret);
+            ByteBuf changedBuf = replaceSecret(packet.content(), secret);
             channel.writeAndFlush(new DatagramPacket(changedBuf, remoteAddress), channel.voidPromise());
         }
     }
