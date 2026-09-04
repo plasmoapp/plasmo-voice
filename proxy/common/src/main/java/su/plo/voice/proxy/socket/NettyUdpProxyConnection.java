@@ -2,7 +2,6 @@ package su.plo.voice.proxy.socket;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandlerContext;
@@ -31,6 +30,7 @@ import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 import su.plo.voice.proxy.connection.CancelForwardingException;
+import su.plo.voice.socket.ByteBufDataOutput;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdp;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
@@ -85,10 +85,14 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     public void sendPacket(Packet<?> packet) {
         if (!isConnected() || player.getInstance().getServer() == null) return;
 
-        byte[] encoded = PacketUdpCodec.encode(packet, secret);
-        if (encoded == null) return;
-
-        ByteBuf buf = Unpooled.wrappedBuffer(encoded);
+        ByteBuf buf = channel.alloc().ioBuffer();
+        try {
+            PacketUdpCodec.encodeThrowing(packet, secret, new ByteBufDataOutput(buf));
+        } catch (Throwable e) {
+            buf.release();
+            BaseVoice.DEBUG_LOGGER.log("Failed to encode packet", e);
+            return;
+        }
 
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
     }
@@ -136,11 +140,8 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
             return;
         }
 
-        ByteBuf buf = Unpooled.wrappedBuffer(
-                PacketUdpCodec.replaceSecret(nettyPacket.getPacketData(), remoteSecret)
-        );
-
-        channelFuture.channel().writeAndFlush(buf);
+        ByteBuf changedBuf = replaceSecret(nettyPacket, remoteSecret);
+        channelFuture.channel().writeAndFlush(changedBuf);
     }
 
     private void connectToRemoteServer(@NotNull InetSocketAddress address) {
@@ -187,16 +188,14 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
     ) {
         if (!nettyPacket.getPacketUdp().getPacketClass().equals(PingPacket.class)) return;
 
-        ByteBuf buf = Unpooled.wrappedBuffer(
-                PacketUdpCodec.replaceSecret(nettyPacket.getPacketData(), remoteSecret)
-        );
+        ByteBuf changedBuf = replaceSecret(nettyPacket, remoteSecret);
 
         channelFuture.addListener((ChannelFutureListener) future -> {
             if (!future.isSuccess() || !connected) {
-                buf.release();
+                changedBuf.release();
                 return;
             }
-            future.channel().writeAndFlush(buf);
+            future.channel().writeAndFlush(changedBuf);
         });
     }
 
@@ -204,15 +203,27 @@ public final class NettyUdpProxyConnection implements UdpProxyConnection, Server
         if (channelFuture != null) channelFuture.channel().close();
     }
 
+    private ByteBuf replaceSecret(@NotNull NettyPacketUdp packet, @NotNull UUID newSecret) {
+        ByteBuf originalBuf = packet.getDatagramPacket().content();
+
+        // Retain the ByteBuf here because:
+        // - writeAndFlush will release after sending
+        // - SimpleChannelInboundHandler will release after handling
+        // so ByteBuf is retained to keep it alive during write
+        ByteBuf changedBuf = originalBuf.retainedSlice(0, originalBuf.writerIndex());
+        changedBuf.setLong(5, newSecret.getMostSignificantBits());
+        changedBuf.setLong(13, newSecret.getLeastSignificantBits());
+
+        return changedBuf;
+    }
+
     private final class RemoteServerPacketHandler extends SimpleChannelInboundHandler<NettyPacketUdp> {
         @Override
         protected void channelRead0(ChannelHandlerContext ctx, NettyPacketUdp nettyPacket) {
             if (!connected || player.getInstance().getServer() == null) return;
 
-            channel.writeAndFlush(new DatagramPacket(
-                    Unpooled.wrappedBuffer(PacketUdpCodec.replaceSecret(nettyPacket.getPacketData(), secret)),
-                    remoteAddress
-            ));
+            ByteBuf changedBuf = replaceSecret(nettyPacket, secret);
+            channel.writeAndFlush(new DatagramPacket(changedBuf, remoteAddress));
         }
     }
 }

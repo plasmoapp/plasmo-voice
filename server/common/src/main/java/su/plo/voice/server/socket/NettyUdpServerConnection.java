@@ -1,7 +1,6 @@
 package su.plo.voice.server.socket;
 
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.DatagramPacket;
 import lombok.Getter;
@@ -22,6 +21,7 @@ import su.plo.voice.proto.packets.udp.bothbound.PingPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 import su.plo.voice.proto.packets.udp.serverbound.ServerPacketUdpHandler;
 import su.plo.voice.server.BaseVoiceServer;
+import su.plo.voice.socket.ByteBufDataOutput;
 
 import java.net.InetSocketAddress;
 import java.util.UUID;
@@ -76,10 +76,15 @@ public final class NettyUdpServerConnection implements UdpServerConnection, Serv
         UdpPacketSendEvent event = new UdpPacketSendEvent(this, packet);
         if (!voiceServer.getEventBus().fire(event)) return;
 
-        byte[] encoded = PacketUdpCodec.encode(event.getPacket(), secret);
-        if (encoded == null) return;
+        ByteBuf buf = channel.alloc().ioBuffer();
+        try {
+            PacketUdpCodec.encodeThrowing(event.getPacket(), secret, new ByteBufDataOutput(buf));
+        } catch (Throwable e) {
+            buf.release();
+            BaseVoice.DEBUG_LOGGER.log("Failed to encode packet", e);
+            return;
+        }
 
-        ByteBuf buf = Unpooled.wrappedBuffer(encoded);
         channel.writeAndFlush(new DatagramPacket(buf, remoteAddress));
 
         voiceServer.getEventBus().fire(new UdpPacketSentEvent(this, packet));
