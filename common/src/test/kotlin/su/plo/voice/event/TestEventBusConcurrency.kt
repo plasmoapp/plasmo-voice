@@ -1,11 +1,12 @@
 package su.plo.voice.event
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Test
-import su.plo.voice.addon.TestAddonKt
 import su.plo.voice.api.event.Event
 import su.plo.voice.api.event.EventBus
 import su.plo.voice.api.event.EventPriority
 import java.util.concurrent.CyclicBarrier
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
@@ -14,6 +15,13 @@ import kotlin.test.assertEquals
 
 class TestEventBusConcurrency {
     private val addon = Any()
+
+    private var executor: ExecutorService? = null
+
+    @AfterEach
+    fun tearDown() {
+        executor?.shutdownNow()
+    }
 
     class EventA : Event
     class EventB : Event
@@ -87,7 +95,8 @@ class TestEventBusConcurrency {
         assertEquals(THREADS * PER_THREAD, fired.get())
     }
 
-    private fun createBus() = VoiceEventBus(Executors.newSingleThreadExecutor())
+    private fun createBus(): EventBus =
+        VoiceEventBus(Executors.newSingleThreadExecutor().also { executor = it })
 
     companion object {
         private const val THREADS = 8

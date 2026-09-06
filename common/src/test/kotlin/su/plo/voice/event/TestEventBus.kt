@@ -1,11 +1,12 @@
 package su.plo.voice.event
 
+import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import su.plo.voice.addon.TestAddonKt
 import su.plo.voice.api.event.EventBus
 import su.plo.voice.api.event.EventHandler
 import su.plo.voice.api.event.EventPriority
+import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -14,13 +15,20 @@ import kotlin.test.assertTrue
 class TestEventBus {
     private val addon = Any()
 
+    private lateinit var executor: ExecutorService
     private lateinit var bus: EventBus
     private lateinit var calls: MutableList<String>
 
     @BeforeEach
     fun setUp() {
-        bus = VoiceEventBus(Executors.newSingleThreadExecutor())
+        executor = Executors.newSingleThreadExecutor()
+        bus = VoiceEventBus(executor)
         calls = mutableListOf()
+    }
+
+    @AfterEach
+    fun tearDown() {
+        executor.shutdownNow()
     }
 
     private fun recording(name: String) =
