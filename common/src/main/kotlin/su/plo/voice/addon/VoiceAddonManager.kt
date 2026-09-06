@@ -124,7 +124,7 @@ class VoiceAddonManager(
                 addonInstance.onAddonInitialize()
             } catch (e: Exception) {
                 logger.warn(
-                    "Failed to initialized addon {} v{} by {}",
+                    "Failed to initialize addon {} v{} by {}",
                     addon.id,
                     addon.version,
                     addon.authors.joinToString(", "),
@@ -148,7 +148,18 @@ class VoiceAddonManager(
     private fun shutdownAddon(addon: AddonContainer) {
         val addonInstance = addon.instance.get()
         if (addonInstance is AddonInitializer) {
-            addonInstance.onAddonShutdown()
+            try {
+                addonInstance.onAddonShutdown()
+            } catch (e: Exception) {
+                logger.warn(
+                    "Failed to shutdown addon {} v{} by {}",
+                    addon.id,
+                    addon.version,
+                    addon.authors.joinToString(", "),
+                    e
+                )
+                return
+            }
         }
 
         eventBus.unregister(addon.instance.get())
