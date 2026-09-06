@@ -4,8 +4,10 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.slib.api.logging.McLogger;
 import su.plo.slib.api.logging.McLoggerFactory;
+import su.plo.voice.addon.PlasmoVoiceAddon;
 import su.plo.voice.addon.VoiceAddonManager;
 import su.plo.voice.api.PlasmoVoice;
+import su.plo.voice.api.addon.AddonLoaderScope;
 import su.plo.voice.api.addon.AddonManager;
 import su.plo.voice.api.audio.codec.CodecManager;
 import su.plo.voice.api.encryption.EncryptionManager;
@@ -22,6 +24,8 @@ import java.io.InputStream;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+
+import static su.plo.voice.addon.inject.PlasmoVoiceAnnotationInjectorKt.injectPlasmoVoiceInto;
 
 public abstract class BaseVoice implements PlasmoVoice {
 
@@ -48,14 +52,19 @@ public abstract class BaseVoice implements PlasmoVoice {
 
     protected final PlatformLoader loader;
 
-    protected final VoiceAddonManager addons = new VoiceAddonManager(this);
-
     protected final EventBus eventBus = new VoiceEventBus(backgroundExecutor);
+    protected final VoiceAddonManager addons = new VoiceAddonManager(
+            eventBus,
+            (addon) -> injectPlasmoVoiceInto(this, addon.getInstance().get())
+    );
+
     protected final EncryptionManager encryption = new VoiceEncryptionManager();
     protected final CodecManager codecs = new VoiceCodecManager();
 
     protected BaseVoice(@NotNull PlatformLoader loader) {
         this.loader = loader;
+
+        addons.loadInternalAddon(new PlasmoVoiceAddon(this, AddonLoaderScope.ANY));
 
         encryption.register(new AesEncryptionSupplier());
 

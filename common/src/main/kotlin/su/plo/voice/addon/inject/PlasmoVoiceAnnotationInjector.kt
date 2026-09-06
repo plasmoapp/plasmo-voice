@@ -4,43 +4,34 @@ import su.plo.voice.api.PlasmoVoice
 import su.plo.voice.api.addon.InjectPlasmoVoice
 import su.plo.voice.api.addon.InjectPlasmoVoiceDelegate
 
-class PlasmoVoiceAnnotationInjector<T : PlasmoVoice>(
-    private val instance: T
-) {
+fun injectPlasmoVoiceInto(voiceInstance: PlasmoVoice, target: Any) {
+    injectAnnotation(voiceInstance, target)
+    injectDelegate(voiceInstance, target)
+}
 
-    fun inject(obj: Any) {
-        injectAnnotation(obj)
-        injectDelegate(obj)
-    }
-
-    fun injectAnnotation(obj: Any) {
-        var clazz: Class<*>? = obj.javaClass
-        while (clazz != null) {
-            clazz.declaredFields
+private fun injectAnnotation(voiceInstance: PlasmoVoice, target: Any) {
+    generateSequence(target.javaClass) { it.superclass }
+        .forEach { targetClass ->
+            targetClass.declaredFields
                 .filter { PlasmoVoice::class.java.isAssignableFrom(it.type) }
                 .filter { it.isAnnotationPresent(InjectPlasmoVoice::class.java) }
                 .forEach {
                     it.isAccessible = true
-                    it.set(obj, instance)
+                    it.set(target, voiceInstance)
                 }
-
-            clazz = clazz.superclass
         }
-    }
+}
 
-    fun injectDelegate(obj: Any) {
-        var clazz: Class<*>? = obj.javaClass
-        while (clazz != null) {
-            clazz.declaredFields
+private fun injectDelegate(voiceInstance: PlasmoVoice, target: Any) {
+    generateSequence(target.javaClass) { it.superclass }
+        .forEach { targetClass ->
+            targetClass.declaredFields
                 .forEach {
                     it.isAccessible = true
-                    val fieldValue = it.get(obj)
+                    val fieldValue = it.get(target)
                     if (fieldValue !is InjectPlasmoVoiceDelegate<*>) return@forEach
 
-                    injectAnnotation(fieldValue)
+                    injectAnnotation(voiceInstance, fieldValue)
                 }
-
-            clazz = clazz.superclass
         }
-    }
 }
