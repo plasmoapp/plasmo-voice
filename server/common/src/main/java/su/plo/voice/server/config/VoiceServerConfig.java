@@ -200,7 +200,7 @@ public final class VoiceServerConfig implements ServerConfig {
 
             @ConfigField(
                     comment =
-                            "Amount of sockets that'll be open with SO_REUSEPORT enabled\n\n" +
+                            "Amount of sockets that'll be open with SO_REUSEPORT enabled\n" +
                             "When set to 0, amount of channel will match amount of available CPU cores * 2"
             )
             private int sockets = 4;
