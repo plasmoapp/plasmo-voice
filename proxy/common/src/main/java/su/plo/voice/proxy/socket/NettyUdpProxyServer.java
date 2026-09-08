@@ -6,7 +6,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.MultithreadEventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -75,14 +74,14 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
             }
         }
 
-        int channelCount = reusePortEnabled
-                ? voiceProxy.getConfig().reusePort().channels()
+        int socketsAmount = reusePortEnabled
+                ? voiceProxy.getConfig().reusePort().sockets()
                 : 1;
-        if (channelCount <= 0) {
-            channelCount = ((MultithreadEventLoopGroup) loopGroup).executorCount();
+        if (socketsAmount <= 0) {
+            socketsAmount = Runtime.getRuntime().availableProcessors() * 2;
         }
 
-        boolean pinConnectionToChannel = reusePortEnabled && channelCount > 1;
+        boolean pinConnectionToChannel = reusePortEnabled && socketsAmount > 1;
 
         bootstrap.handler(new ChannelInitializer<DatagramChannel>() {
             @Override
@@ -98,7 +97,7 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
 
         BaseVoice.LOGGER.info("UDP proxy server is starting on {}:{}", ip, port);
         try {
-            for (int i = 0; i < channelCount; i++) {
+            for (int i = 0; i < socketsAmount; i++) {
                 ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
                 Channel channel = channelFuture.channel();
                 channelGroup.add(channel);
@@ -106,10 +105,10 @@ public final class NettyUdpProxyServer implements UdpProxyServer {
                 this.socketAddress = (InetSocketAddress) channel.localAddress();
             }
 
-            if (reusePortEnabled && channelCount > 1) {
+            if (reusePortEnabled && socketsAmount > 1) {
                 BaseVoice.LOGGER.info(
                         "Bound {} {} UDP proxy instances with SO_REUSEPORT on {}",
-                        channelCount,
+                        socketsAmount,
                         channelClass.getSimpleName(),
                         socketAddress
                 );

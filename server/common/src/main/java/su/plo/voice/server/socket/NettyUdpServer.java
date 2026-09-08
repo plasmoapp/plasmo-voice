@@ -6,7 +6,6 @@ import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
-import io.netty.channel.MultithreadEventLoopGroup;
 import io.netty.channel.epoll.Epoll;
 import io.netty.channel.epoll.EpollDatagramChannel;
 import io.netty.channel.epoll.EpollEventLoopGroup;
@@ -15,9 +14,9 @@ import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.DatagramChannel;
 import io.netty.channel.socket.nio.NioDatagramChannel;
+import io.netty.channel.unix.UnixChannelOption;
 import io.netty.handler.flush.FlushConsolidationHandler;
 import io.netty.util.concurrent.DefaultThreadFactory;
-import io.netty.channel.unix.UnixChannelOption;
 import io.netty.util.concurrent.GlobalEventExecutor;
 import org.jetbrains.annotations.NotNull;
 import su.plo.voice.BaseVoice;
@@ -92,14 +91,14 @@ public final class NettyUdpServer implements UdpServer {
 
         try {
             Channel firstChannel = null;
-            int channelCount = reusePortEnabled
-                    ? voiceServer.getConfig().voice().reusePort().channels()
+            int socketsAmount = reusePortEnabled
+                    ? voiceServer.getConfig().voice().reusePort().sockets()
                     : 1;
-            if (channelCount <= 0) {
-                channelCount = ((MultithreadEventLoopGroup) loopGroup).executorCount();
+            if (socketsAmount <= 0) {
+                socketsAmount = Runtime.getRuntime().availableProcessors() * 2;
             }
 
-            for (int i = 0; i < channelCount; i++) {
+            for (int i = 0; i < socketsAmount; i++) {
                 ChannelFuture channelFuture = bootstrap.bind(ip, port).sync();
                 Channel channel = channelFuture.channel();
                 channelGroup.add(channel);
@@ -114,10 +113,10 @@ public final class NettyUdpServer implements UdpServer {
                 keepAlive.start(firstChannel);
             }
 
-            if (reusePortEnabled && channelCount > 1) {
+            if (reusePortEnabled && socketsAmount > 1) {
                 BaseVoice.LOGGER.info(
                         "Bound {} {} UDP server instances with SO_REUSEPORT on {}",
-                        channelCount,
+                        socketsAmount,
                         channelClass.getSimpleName(),
                         socketAddress
                 );
