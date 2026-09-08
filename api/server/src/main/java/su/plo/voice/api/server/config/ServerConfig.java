@@ -90,7 +90,7 @@ public interface ServerConfig {
         interface ReusePort {
             boolean enabled();
 
-            int channels();
+            int sockets();
         }
 
         interface PlayerIcon {

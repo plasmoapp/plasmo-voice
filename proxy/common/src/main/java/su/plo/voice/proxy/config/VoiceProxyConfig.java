@@ -85,19 +85,19 @@ public final class VoiceProxyConfig implements ProxyConfig {
         @ConfigField(
                 comment =
                         "Enables SO_REUSEPORT\n" +
-                                "Instead of using one single thread for all incoming connections,\n" +
-                                "multiple sockets will be bound on the same port\n" +
-                                "and distribute connections between multiple worker threads\n" +
-                                "Requires Linux or macOS"
+                        "Instead of using one single thread for all incoming connections,\n" +
+                        "multiple sockets will be bound on the same port\n" +
+                        "and distribute connections between multiple worker threads\n" +
+                        "Requires Linux or macOS"
         )
         private boolean enabled = false;
 
         @ConfigField(
                 comment =
-                        "Amount of sockets/threads that'll be open with SO_REUSEPORT enabled\n\n" +
-                                "0 means auto and will be derived from \"io.netty.eventLoopThreads\""
+                        "Amount of sockets that'll be open with SO_REUSEPORT enabled\n\n" +
+                        "When set to 0, amount of channel will match amount of available CPU cores * 2"
         )
-        private int channels = 0;
+        private int sockets = 4;
     }
 
     @NoArgsConstructor

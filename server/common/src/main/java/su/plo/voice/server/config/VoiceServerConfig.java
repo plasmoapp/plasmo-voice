@@ -1,7 +1,6 @@
 package su.plo.voice.server.config;
 
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -201,10 +200,10 @@ public final class VoiceServerConfig implements ServerConfig {
 
             @ConfigField(
                     comment =
-                            "Amount of sockets/threads that'll be open with SO_REUSEPORT enabled\n\n" +
-                            "0 means auto and will be derived from \"io.netty.eventLoopThreads\""
+                            "Amount of sockets that'll be open with SO_REUSEPORT enabled\n\n" +
+                            "When set to 0, amount of channel will match amount of available CPU cores * 2"
             )
-            private int channels = 0;
+            private int sockets = 4;
         }
 
         @Config

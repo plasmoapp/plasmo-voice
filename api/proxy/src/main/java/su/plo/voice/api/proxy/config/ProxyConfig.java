@@ -33,6 +33,6 @@ public interface ProxyConfig {
     interface ReusePort {
         boolean enabled();
 
-        int channels();
+        int sockets();
     }
 }
