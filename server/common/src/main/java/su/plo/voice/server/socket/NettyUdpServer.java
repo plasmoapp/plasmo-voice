@@ -25,12 +25,23 @@ import su.plo.voice.proto.packets.PacketDirection;
 import su.plo.voice.server.BaseVoiceServer;
 import su.plo.voice.socket.NettyExceptionHandler;
 import su.plo.voice.socket.NettyPacketUdpDecoder;
+import su.plo.voice.util.SystemPropertyKt;
 
 import java.net.InetSocketAddress;
 import java.util.Optional;
 import java.util.concurrent.ThreadFactory;
 
 public final class NettyUdpServer implements UdpServer {
+
+    // Spigot overwrites io.netty.eventLoopThreads with spigot.yml's netty-threads (default 4)
+    // so we have to avoid netty default amount of threads path
+    private static final int DEFAULT_THREADS = Math.max(
+            1,
+            SystemPropertyKt.getIntSystemProperty(
+                    "plasmovoice.udp_threads",
+                    Runtime.getRuntime().availableProcessors() * 2
+            )
+    );
 
     private final boolean useEpoll = System.getProperty("plasmovoice.use_epoll", "true").equals("true") &&
             Epoll.isAvailable();
@@ -50,8 +61,8 @@ public final class NettyUdpServer implements UdpServer {
         ThreadFactory factory = new DefaultThreadFactory("plasmo-voice-udp", Thread.MAX_PRIORITY);
 
         this.loopGroup = useEpoll
-                ? new EpollEventLoopGroup(0, factory)
-                : new NioEventLoopGroup(0, factory);
+                ? new EpollEventLoopGroup(DEFAULT_THREADS, factory)
+                : new NioEventLoopGroup(DEFAULT_THREADS, factory);
     }
 
     @Override
