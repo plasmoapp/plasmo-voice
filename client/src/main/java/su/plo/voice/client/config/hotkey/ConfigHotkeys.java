@@ -141,7 +141,16 @@ public final class ConfigHotkeys implements Hotkeys, SerializableConfigEntry {
 
                 List<Hotkey.Key> keys = new ArrayList<>();
                 for (Object serializedKey : configKeys) {
-                    if (!(serializedKey instanceof String)) return;
+                    if (!(serializedKey instanceof String)) {
+                        //#if MC<26.3
+                        Map<String, Object> configKey = (Map<String, Object>) serializedKey;
+                        Hotkey.Type keyType = Hotkey.Type.valueOf((String) configKey.get("type"));
+                        int keyCode = ((Long) configKey.get("code")).intValue();
+
+                        keys.add(new Hotkey.Key(keyType, keyCode));
+                        //#endif
+                        continue;
+                    }
 
                     Hotkey.Key key = HotkeyKt.toHotkeyKey((String) serializedKey);
                     if (key != null) keys.add(key);
