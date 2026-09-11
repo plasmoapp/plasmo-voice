@@ -46,11 +46,17 @@ public final class VoiceServerPlayerManagerImpl
     }
 
     private @NotNull VoiceServerPlayer wrap(@NotNull McServerPlayer serverPlayer) {
-        return playerById.computeIfAbsent(
+        return playerById.compute(
                 serverPlayer.getUuid(),
-                (playerId) -> {
+                (playerId, voicePlayer) -> {
+                    if (voicePlayer != null && voicePlayer.getInstance().getId() == serverPlayer.getId())
+                        return voicePlayer;
+
+                    if (voicePlayer != null)
+                        playerByName.remove(voicePlayer.getInstance().getName(), voicePlayer);
+
                     VoiceServerPlayer newPlayer = new VoiceServerPlayerEntity(voiceServer, serverPlayer);
-                    playerByName.put(newPlayer.getInstance().getName(), newPlayer);
+                    playerByName.put(serverPlayer.getName(), newPlayer);
                     return newPlayer;
                 }
         );
