@@ -49,7 +49,6 @@ public final class JsonMuteStorage implements MuteStorage {
     @Override
     public void close() throws Exception {
         save();
-        executor.shutdown();
         muteByPlayerId.clear();
     }
 
