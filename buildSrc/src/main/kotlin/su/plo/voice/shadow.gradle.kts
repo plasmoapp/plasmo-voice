@@ -72,6 +72,7 @@ tasks {
         reloc("kotlin")
         reloc("kotlinx.coroutines")
         reloc("kotlinx.serialization")
+        reloc("com.ensarsarajcic.kotlinx", "msgpack")
 
         reloc("su.plo.crowdin", "crowdin")
         reloc("org.bstats", "bstats")

@@ -11,7 +11,6 @@ import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
-import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent;
 import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.audio.AlUtil;
 
@@ -117,14 +116,7 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
     @Override
     protected synchronized void open() throws DeviceException {
-        if (isOpen()) throw new DeviceException("Device is already open");
-
-        DevicePreOpenEvent preOpenEvent = new DevicePreOpenEvent(this);
-        getVoiceClient().getEventBus().fire(preOpenEvent);
-
-        if (preOpenEvent.isCancelled()) {
-            throw new DeviceException("Device opening has been canceled");
-        }
+        guardOpen();
 
         this.devicePointer = openDevice();
         this.disconnected = false;

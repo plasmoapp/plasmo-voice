@@ -24,6 +24,10 @@ pluginManagement {
     }
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 rootProject.name = "PlasmoVoice"
 
 // Protocol
@@ -74,3 +78,8 @@ file("proxy").listFilesOrdered {
 }.forEach {
     include("proxy:${it.name}")
 }
+
+// macOS microphone helper
+include("macos:protocol")
+include("macos:helper")
+include("macos:probe")

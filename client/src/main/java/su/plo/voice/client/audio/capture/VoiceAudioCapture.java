@@ -2,18 +2,12 @@ package su.plo.voice.client.audio.capture;
 
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.sun.jna.Platform;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.Synchronized;
 import su.plo.slib.api.logging.McLogger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.mod.client.chat.ClientChatUtil;
-import su.plo.slib.api.chat.component.McTextComponent;
-import su.plo.slib.api.chat.style.McTextClickEvent;
-import su.plo.slib.api.chat.style.McTextHoverEvent;
-import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.audio.codec.AudioEncoder;
 import su.plo.voice.api.audio.codec.CodecException;
@@ -35,8 +29,6 @@ import su.plo.voice.api.util.AudioUtil;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
-import su.plo.voice.client.mac.AVAuthorizationStatus;
-import su.plo.voice.client.mac.AVCaptureDevice;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.player.VoicePlayerInfo;
@@ -101,22 +93,6 @@ public final class VoiceAudioCapture implements AudioCapture {
         AudioCaptureInitializeEvent event = new AudioCaptureInitializeEvent(this);
         voiceClient.getEventBus().fire(event);
         if (event.isCancelled()) return;
-
-        // check macos permissions
-        if (Platform.isMac()) {
-            AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
-            if (authorizationStatus == AVAuthorizationStatus.RESTRICTED) {
-                ClientChatUtil.sendChatMessage(
-                        McTextComponent.translatable(
-                                "message.plasmovoice.macos_incompatible_launcher",
-                                McTextComponent.literal("Prism Launcher")
-                                        .withStyle(McTextStyle.YELLOW)
-                                        .clickEvent(McTextClickEvent.clickEvent(McTextClickEvent.Action.OPEN_URL, "https://prismlauncher.org"))
-                                        .hoverEvent(McTextHoverEvent.showText(McTextComponent.literal("https://prismlauncher.org")))
-                        )
-                );
-            }
-        }
 
         // initialize input device
         AudioFormat format = serverInfo.getVoiceInfo().createFormat(

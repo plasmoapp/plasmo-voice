@@ -8,6 +8,7 @@ import su.plo.voice.api.client.audio.device.AudioDevice
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.filter.AudioFilter
 import su.plo.voice.api.client.audio.filter.AudioFilterContext
+import su.plo.voice.api.client.event.audio.device.DevicePreOpenEvent
 import java.util.function.Predicate
 import javax.sound.sampled.AudioFormat
 
@@ -67,4 +68,12 @@ abstract class BaseAudioDevice(
 
     @Throws(DeviceException::class)
     protected abstract fun open()
+
+    @Throws(DeviceException::class)
+    protected fun guardOpen() {
+        if (isOpen()) throw DeviceException("Device is already open")
+        if (!voiceClient.eventBus.fire(DevicePreOpenEvent(this))) {
+            throw DeviceException("Device opening has been canceled")
+        }
+    }
 }

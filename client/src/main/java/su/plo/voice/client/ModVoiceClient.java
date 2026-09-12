@@ -20,6 +20,8 @@ import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.device.AlInputDeviceFactory;
 import su.plo.voice.client.audio.device.AlOutputDeviceFactory;
 import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
+import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactory;
+import su.plo.voice.util.MacVersionKt;
 import su.plo.voice.client.connection.ModClientChannelHandler;
 import su.plo.voice.client.event.key.KeyPressedEvent;
 import su.plo.voice.client.render.ModHudRenderer;
@@ -150,6 +152,11 @@ public final class ModVoiceClient extends BaseVoiceClient
 
         // JavaX input
         getDeviceFactoryManager().registerDeviceFactory(new JavaxInputDeviceFactory(this));
+
+        // macOS microphone helper
+        if (MacVersionKt.isMac() && MacVersionKt.checkMacOsVersion(11, 0)) {
+            factoryManager.registerDeviceFactory(new CoreAudioInputDeviceFactory(this));
+        }
 
         INSTANCE = this;
         RenderUtil.getTextConverter().setLanguageSupplier(createLanguageSupplier());
