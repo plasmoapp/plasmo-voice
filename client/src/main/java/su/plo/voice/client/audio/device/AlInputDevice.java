@@ -140,42 +140,19 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
         String deviceName = getName();
 
         int channels = format.getChannels();
+        this.captureChannels = (channels == 1 && AlUtil.isCaptureMonoDownmixBroken()) ? 2 : channels;
+        this.downmixToMono = captureChannels != channels;
 
-        if (channels == 1 && AlUtil.isCaptureMonoDownmixBroken()) {
+        if (downmixToMono) {
             LOGGER.info("Working around broken OpenAL Soft mono capture, capturing {} in stereo", deviceName);
-
-            long devicePointer = tryOpenDevice(deviceName, format, 2);
-            if (devicePointer != 0L) {
-                this.captureChannels = 2;
-                this.downmixToMono = true;
-                return devicePointer;
-            }
-
-            LOGGER.warn("{} doesn't support stereo capture, falling back to mono", deviceName);
         }
 
-        long devicePointer = tryOpenDevice(deviceName, format, channels);
-        if (devicePointer == 0L) throw new DeviceException("Failed to open OpenAL device");
-
-        this.captureChannels = channels;
-        this.downmixToMono = false;
-
-        return devicePointer;
-    }
-
-    private long tryOpenDevice(@NotNull String deviceName, @NotNull AudioFormat format, int channels) {
-        int alFormat = channels == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
+        int alFormat = captureChannels == 2 ? AL11.AL_FORMAT_STEREO16 : AL11.AL_FORMAT_MONO16;
 
         long devicePointer = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getFrameSize());
 
-        if (devicePointer == 0L) {
-            AlUtil.checkAlcErrors(0L, "Open capture device");
-            return 0L;
-        }
-
-        if (AlUtil.checkAlcErrors(devicePointer, "Open capture device")) {
-            ALC11.alcCaptureCloseDevice(devicePointer);
-            return 0L;
+        if (devicePointer == 0L || AlUtil.checkAlcErrors(devicePointer, "Open device")) {
+            throw new DeviceException("Failed to open OpenAL device");
         }
 
         return devicePointer;
