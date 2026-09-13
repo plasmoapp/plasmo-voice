@@ -1,1 +1,2 @@
 - Update checker will no longer suggest an update when none of the newer versions have a changelog.
+- Fixed update checker never suggesting 2.1.x versions.
