@@ -210,6 +210,7 @@ tasks {
             "forgeVersion" to forgeVersionRange,
             "mcVersions" to mcVersionsRange,
             "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\""),
+            "iconKey" to if (platform.mcVersion >= 260300) "iconFile" else "logoFile",
         )
 
         expandMatching(
