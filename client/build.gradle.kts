@@ -98,6 +98,15 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+
+    maven {
+        name = "Maven for PR #3403" // https://github.com/neoforged/NeoForge/pull/3403
+        url = uri("https://prmaven.neoforged.net/NeoForge/pr3403")
+        content {
+            includeModule("net.neoforged", "neoforge")
+            includeModule("net.neoforged", "testframework")
+        }
+    }
 }
 
 dependencies {
