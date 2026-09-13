@@ -1,0 +1,1 @@
+- Fixed an issue when server can't send a packet to client on second join, causing "Plasmo Voice is not installed" for this client until server restart. To make this issue easier to debug in the future, new logs were added with `debug` enabled.
