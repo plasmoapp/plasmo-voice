@@ -1,0 +1,1 @@
+- Update checker will no longer suggest an update when none of the newer versions have a changelog.
