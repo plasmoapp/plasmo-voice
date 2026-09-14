@@ -13,6 +13,7 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.api.client.config.ClientConfig;
 import su.plo.voice.api.client.config.IconPosition;
+import su.plo.voice.api.client.config.InputBackend;
 import su.plo.voice.api.client.config.OverlappingSourceTypes;
 import su.plo.voice.api.client.config.overlay.OverlayPosition;
 import su.plo.voice.api.client.config.overlay.OverlaySourceState;
@@ -261,8 +262,15 @@ public final class VoiceClientConfig implements ClientConfig {
         @ConfigField
         private BooleanConfigEntry disableInputDevice = new BooleanConfigEntry(false);
 
+        @Deprecated
         @ConfigField
         private BooleanConfigEntry useJavaxInput = new BooleanConfigEntry(false);
+
+        @ConfigField
+        private EnumConfigEntry<InputBackend> inputBackend = new EnumConfigEntry<>(
+                InputBackend.class,
+                InputBackend.AUTO
+        );
 
         @ConfigField
         private DoubleConfigEntry microphoneVolume = new DoubleConfigEntry(1D, 0D, 2D);
