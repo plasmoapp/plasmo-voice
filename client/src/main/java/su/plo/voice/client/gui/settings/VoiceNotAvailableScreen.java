@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.gui.components.Button;
@@ -41,7 +42,7 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
         String formattedMessage = RenderUtil.getFormattedString(message);
         String[] messageLines = formattedMessage.split("\n");
 
-        if (messageLines.length == 3 && button == 0) {
+        if (messageLines.length == 3 && button == InputConstants.MOUSE_BUTTON_LEFT) {
             int lineWidth = RenderUtil.getStringWidth(messageLines[2]);
             int lineHeight = RenderUtil.getFontHeight();
             float x = (float) (getWidth() / 2 - lineWidth / 2);

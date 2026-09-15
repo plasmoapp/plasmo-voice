@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
@@ -38,7 +39,7 @@ public final class VolumeSliderWidget extends AbstractSlider implements Updatabl
 
     @Override
     protected void applyValue() {
-        if (!keyBindings.getPressedKeys().contains(Hotkey.Type.KEYSYM.getOrCreate(340))) { // GLFW_KEY_LEFT_SHIFT
+        if (!keyBindings.getPressedKeys().contains(Hotkey.Type.KEYSYM.getOrCreate(InputConstants.KEY_LSHIFT))) {
             this.value = calculateValue(value);
         }
         entry.set(value * entry.getMax());

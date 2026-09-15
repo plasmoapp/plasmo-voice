@@ -1,9 +1,9 @@
 package su.plo.lib.mod.client.gui.screen;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.gui.TooltipData;
 import su.plo.lib.mod.extensions.MinecraftKt;
@@ -235,6 +235,13 @@ public final class ScreenWrapper
     }
     //#endif
 
+    //#if MC>=26.3
+    //$$ @Override
+    //$$ public boolean isInputCaptured() {
+    //$$     return screen.capturesInput();
+    //$$ }
+    //#endif
+
     private boolean innerKeyPressed(int keyCode, int scanCode, int modifiers) {
         if (keyCode == 0) {
             return false;
@@ -244,12 +251,12 @@ public final class ScreenWrapper
             return true;
         }
 
-        if (shouldCloseOnEsc() && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (shouldCloseOnEsc() && keyCode == InputConstants.KEY_ESCAPE) {
             onClose();
             return true;
         }
 
-        if (keyCode == GLFW.GLFW_KEY_TAB) {
+        if (keyCode == InputConstants.KEY_TAB) {
             boolean shiftKeyDown = Inputs.hasShiftDown();
 
             return screen.changeFocus(!shiftKeyDown);

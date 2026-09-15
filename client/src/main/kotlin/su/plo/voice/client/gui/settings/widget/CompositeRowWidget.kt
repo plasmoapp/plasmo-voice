@@ -63,6 +63,9 @@ class CompositeRowWidget(
     override fun changeFocus(lookForwards: Boolean): Boolean =
         widgets.any { it.changeFocus(lookForwards) }
 
+    override fun capturesInput(): Boolean =
+        widgets.any { it.capturesInput() }
+
     override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
         widgets.any { it.isMouseOver(mouseX, mouseY) }
 

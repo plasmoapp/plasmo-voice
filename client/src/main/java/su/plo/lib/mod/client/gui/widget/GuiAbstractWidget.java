@@ -1,5 +1,6 @@
 package su.plo.lib.mod.client.gui.widget;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
@@ -230,7 +231,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     }
 
     protected boolean isValidClickButton(int button) {
-        return button == 0;
+        return button == InputConstants.MOUSE_BUTTON_LEFT;
     }
 
     protected boolean isClicked(double mouseX, double mouseY) {

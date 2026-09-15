@@ -1,12 +1,12 @@
 package su.plo.lib.mod.client.gui.components;
 
+import com.mojang.blaze3d.platform.InputConstants;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.client.Minecraft;
 import net.minecraft.util.Mth;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
@@ -25,6 +25,10 @@ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 
 //#if MC>=12109
 //$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
+//#endif
+
+//#if MC>=26.3
+//$$ import com.mojang.blaze3d.platform.TextInputManager;
 //#endif
 
 public class TextFieldWidget extends GuiAbstractWidget {
@@ -127,7 +131,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
         }
 
         switch (keyCode) {
-            case GLFW.GLFW_KEY_BACKSPACE:
+            case InputConstants.KEY_BACKSPACE:
                 if (isEditable()) {
                     shiftPressed = false;
                     deleteText(modifiers, -1);
@@ -135,14 +139,14 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case GLFW.GLFW_KEY_INSERT:
-            case GLFW.GLFW_KEY_DOWN:
-            case GLFW.GLFW_KEY_UP:
-            case GLFW.GLFW_KEY_PAGE_UP:
-            case GLFW.GLFW_KEY_PAGE_DOWN:
+            case InputConstants.KEY_INSERT:
+            case InputConstants.KEY_DOWN:
+            case InputConstants.KEY_UP:
+            case InputConstants.KEY_PAGEUP:
+            case InputConstants.KEY_PAGEDOWN:
             default:
                 return false;
-            case GLFW.GLFW_KEY_DELETE:
+            case InputConstants.KEY_DELETE:
                 if (isEditable()) {
                     this.shiftPressed = false;
                     this.deleteText(modifiers, 1);
@@ -150,7 +154,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case GLFW.GLFW_KEY_RIGHT:
+            case InputConstants.KEY_RIGHT:
                 if (Inputs.hasControlDown(modifiers)) {
                     moveCursorTo(getWordPosition(1));
                 } else {
@@ -158,7 +162,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case GLFW.GLFW_KEY_LEFT:
+            case InputConstants.KEY_LEFT:
                 if (Inputs.hasControlDown(modifiers)) {
                     moveCursorTo(this.getWordPosition(-1));
                 } else {
@@ -166,10 +170,10 @@ public class TextFieldWidget extends GuiAbstractWidget {
                 }
 
                 return true;
-            case GLFW.GLFW_KEY_HOME:
+            case InputConstants.KEY_HOME:
                 moveCursorToStart();
                 return true;
-            case GLFW.GLFW_KEY_END:
+            case InputConstants.KEY_END:
                 moveCursorToEnd();
                 return true;
         }
@@ -211,6 +215,17 @@ public class TextFieldWidget extends GuiAbstractWidget {
     public void applyFocus(boolean focused) {
         super.applyFocus(focused);
         if (focused) this.frame = 0;
+
+        //#if MC>=26.3
+        //$$ if (!isEditable()) return;
+        //$$
+        //$$ TextInputManager textInputManager = Minecraft.getInstance().textInputManager();
+        //$$ if (focused) {
+        //$$     textInputManager.startTextInput(this);
+        //$$ } else {
+        //$$     textInputManager.stopTextInput(this);
+        //$$ }
+        //#endif
     }
 
     @Override
@@ -258,6 +273,14 @@ public class TextFieldWidget extends GuiAbstractWidget {
             selectionX = currentX - 1;
             --currentX;
         }
+
+        //#if MC>=26.3
+        //$$ if (canConsumeInput()) {
+        //$$     Minecraft.getInstance()
+        //$$             .textInputManager()
+        //$$             .setTextInputArea(selectionX, textY - 1, selectionX + 1, textY + 1 + 9);
+        //$$ }
+        //#endif
 
         if (selectionEnd != cursorIndex) {
             int selectionWidth = textX + RenderUtil.getStringWidth(text.substring(0, selectionEnd));
@@ -333,6 +356,11 @@ public class TextFieldWidget extends GuiAbstractWidget {
 
     public boolean canConsumeInput() {
         return isVisible() && isFocused() && isEditable();
+    }
+
+    @Override
+    public boolean capturesInput() {
+        return canConsumeInput();
     }
 
     public void tick() {

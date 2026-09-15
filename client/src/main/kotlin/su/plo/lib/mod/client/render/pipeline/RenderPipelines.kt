@@ -12,6 +12,10 @@ import su.plo.lib.mod.client.render.shader.SolidColorShader
 //$$ import su.plo.voice.client.mixin.accessor.CompositeRenderTypeAccessor
 //#endif
 
+//#if MC>=26.3
+//$$ import com.mojang.renderpearl.api.pipeline.ShaderType
+//#endif
+
 //#if MC>=12105
 //$$ import net.minecraft.resources.ResourceLocation
 //#else
@@ -112,7 +116,10 @@ object RenderPipelines {
         renderTypes.computeIfAbsent(renderType) {
             renderPipeline(
                 ResourceLocationUtil.mod("pipeline/render_type_$name"),
-                //#if MC>=12105
+                //#if MC>=26.3
+                //$$ renderType.renderPipeline().shaders[ShaderType.VERTEX]!!,
+                //$$ renderType.renderPipeline().shaders[ShaderType.FRAGMENT]!!,
+                //#elseif MC>=12105
                 //$$ renderType.renderPipeline().vertexShader,
                 //$$ renderType.renderPipeline().fragmentShader,
                 //#endif

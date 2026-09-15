@@ -166,6 +166,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
         this.thread = new Thread(this::run);
         thread.setName("Voice Audio Capture");
+        thread.setDaemon(true);
         thread.start();
     }
 

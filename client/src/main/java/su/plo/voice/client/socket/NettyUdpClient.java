@@ -42,7 +42,7 @@ public final class NettyUdpClient implements UdpClient {
 
     private final EventLoopGroup workGroup = new NioEventLoopGroup(
             0,
-            new DefaultThreadFactory("plasmo-voice-udp", Thread.MAX_PRIORITY)
+             new DefaultThreadFactory("plasmo-voice-udp", true, Thread.MAX_PRIORITY)
     );
     private final NettyUdpClientHandler handler;
     private NioDatagramChannel channel;

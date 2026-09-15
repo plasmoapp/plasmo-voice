@@ -13,12 +13,20 @@ import su.plo.voice.client.meta.PlasmoVoiceMeta;
 import net.minecraft.client.resources.language.ClientLanguage;
 import java.util.function.Consumer;
 
+//#if MC>=26.3
+//$$ import net.minecraft.client.Minecraft;
+//#endif
+
 @Mixin(LanguageManager.class)
 public abstract class MixinLanguageManager {
 
     @Inject(method = "<init>", at = @At("RETURN"))
-    private void init(String string, Consumer<ClientLanguage> reloadConsumer, CallbackInfo ci) {
-        PlasmoVoiceMeta.Companion.fetch(string);
+    //#if MC>=26.3
+    //$$ private void init(Minecraft minecraft, String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
+    //#else
+    private void init(String languageCode, Consumer<ClientLanguage> reloadCallback, CallbackInfo ci) {
+    //#endif
+        PlasmoVoiceMeta.Companion.fetch(languageCode);
     }
 
     @Inject(method = "setSelected", at = @At("HEAD"))

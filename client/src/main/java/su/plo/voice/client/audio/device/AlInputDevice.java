@@ -151,7 +151,13 @@ public final class AlInputDevice extends BaseAudioDevice implements InputDevice 
 
         long devicePointer = ALC11.alcCaptureOpenDevice(deviceName, (int) format.getSampleRate(), alFormat, getFrameSize());
 
-        if (devicePointer == 0L || AlUtil.checkAlcErrors(devicePointer, "Open device")) {
+        if (devicePointer == 0L) {
+            AlUtil.checkAlcErrors(0L, "Open capture device");
+            throw new DeviceException("Failed to open OpenAL device");
+        }
+
+        if (AlUtil.checkAlcErrors(devicePointer, "Open capture device")) {
+            ALC11.alcCaptureCloseDevice(devicePointer);
             throw new DeviceException("Failed to open OpenAL device");
         }
 

@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.InputConstants;
 import lombok.Getter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -62,8 +63,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
     // GuiWidgetEventListener impl
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
-        if (keyCode == 256 // GLFW_KEY_ESCAPE
-                || keyCode == 258) { // GLFW_KEY_TAB
+        if (keyCode == InputConstants.KEY_ESCAPE
+                || keyCode == InputConstants.KEY_TAB) {
             Optional<TabWidget> tab = getActiveTab();
             if (!tab.isPresent()) return false;
 

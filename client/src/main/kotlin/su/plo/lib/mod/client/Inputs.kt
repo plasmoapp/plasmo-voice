@@ -4,8 +4,8 @@ import net.minecraft.client.Minecraft
 import su.plo.voice.api.client.config.hotkey.Hotkey
 
 //#if MC>=12109
+//$$ import com.mojang.blaze3d.platform.InputConstants
 //$$ import net.minecraft.client.input.InputQuirks
-//$$ import org.lwjgl.glfw.GLFW
 //#else
 import net.minecraft.client.gui.screens.Screen
 //#endif
@@ -51,7 +51,7 @@ object Inputs {
     @JvmStatic
     fun isSelectAll(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_A && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_A && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isSelectAll(keyCode)
         //#endif
@@ -59,7 +59,7 @@ object Inputs {
     @JvmStatic
     fun isCopy(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_C && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_C && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isCopy(keyCode)
         //#endif
@@ -67,7 +67,7 @@ object Inputs {
     @JvmStatic
     fun isPaste(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_V && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_V && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isPaste(keyCode)
         //#endif
@@ -75,7 +75,7 @@ object Inputs {
     @JvmStatic
     fun isCut(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_X && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_X && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isCut(keyCode)
         //#endif

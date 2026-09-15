@@ -87,6 +87,15 @@ repositories {
             includeGroup("maven.modrinth")
         }
     }
+
+    maven {
+        name = "Maven for PR #3403" // https://github.com/neoforged/NeoForge/pull/3403
+        url = uri("https://prmaven.neoforged.net/NeoForge/pr3403")
+        content {
+            includeModule("net.neoforged", "neoforge")
+            includeModule("net.neoforged", "testframework")
+        }
+    }
 }
 
 dependencies {
@@ -181,6 +190,7 @@ tasks {
             "neoForgeVersion" to neoForgeVersionRange,
             "mcVersions" to mcVersionsRange,
             "mixins" to mixins.joinToString("\n[[mixins]]\nconfig=") { "\"$it\"" }.removeSurrounding("\""),
+            "iconKey" to if (platform.mcVersion >= 260300) "iconFile" else "logoFile",
         )
 
         expandMatching(
@@ -228,6 +238,12 @@ tasks {
             relocate("gg.essential.universal", "su.plo.voice.universal")
 
             exclude(dependency("org.slf4j:slf4j-api"))
+
+            if (platform.mcVersion >= 260300) {
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
+            } else {
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color_26_3.*")
+            }
 
             if (platform.mcVersion >= 12106) {
                 exclude("assets/plasmovoice/shaders/position_tex_solid_color.*")

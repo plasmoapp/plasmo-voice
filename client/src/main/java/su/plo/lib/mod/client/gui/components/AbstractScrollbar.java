@@ -1,6 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
 import com.google.common.collect.Lists;
+import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.util.Mth;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -139,7 +140,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
-        this.scrolling = button == 0 && isMouseOverScrollbar(mouseX, mouseY);
+        this.scrolling = button == InputConstants.MOUSE_BUTTON_LEFT && isMouseOverScrollbar(mouseX, mouseY);
         if (scrolling) {
             return true;
         }
@@ -182,7 +183,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
         if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
             return true;
-        } else if (button == 0 && scrolling) {
+        } else if (button == InputConstants.MOUSE_BUTTON_LEFT && scrolling) {
             if (mouseY < y0) {
                 setScrollTop(0D);
             } else if (mouseY > y1) {

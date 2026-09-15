@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,69 +26,51 @@ public final class ModrinthVersion {
     private static final Gson GSON = new Gson();
 
     public static Optional<ModrinthVersion> checkForUpdates(@NonNull String voiceVersion,
-                                                   @NonNull String minecraftVersion,
-                                                   @NonNull PlatformLoader loader) throws IOException {
+                                                            @NonNull String minecraftVersion,
+                                                            @NonNull PlatformLoader loader) throws IOException {
         if (!loader.modrinthSupported()) return Optional.empty();
-        SemanticVersion version = SemanticVersion.parse(voiceVersion);
 
-        return ModrinthVersion.getLatest(minecraftVersion, loader, !version.isRelease(), null)
-                .filter(latestVersion ->
-                        (!version.isRelease() && !latestVersion.version().equals(version) && !latestVersion.version().isOutdated(version)) || // alpha check
-                        version.isOutdated(latestVersion.version())
-                );
+        return findUpdate(SemanticVersion.parse(voiceVersion), getVersions(minecraftVersion, loader));
     }
 
-    public static Optional<ModrinthVersion> from(@NonNull String stringVersion,
-                                                 @NonNull String minecraftVersion,
-                                                 @NonNull PlatformLoader loader) throws IOException {
-
-        JsonArray versions = getVersions(minecraftVersion, loader);
-
-        for (JsonElement jsonElement : versions) {
-            JsonObject version = jsonElement.getAsJsonObject();
-
-            String versionNumber = version.get("version_number").getAsString();
-
-            if (versionNumber.contains(stringVersion)) {
-                JsonArray files = version.get("files").getAsJsonArray();
-                if (files.size() == 0) continue;
-
-                return Optional.of(new ModrinthVersion(
-                        SemanticVersion.parse(versionNumber),
-                        files.get(0).getAsJsonObject().get("url").getAsString())
-                );
-            }
-        }
-
-        return Optional.empty();
-    }
-
-    public static Optional<ModrinthVersion> getLatest(@NonNull String minecraftVersion,
-                                                      @NonNull PlatformLoader loader,
-                                                      boolean alpha,
-                                                      @Nullable SemanticVersion targetVersion) throws IOException {
-        JsonArray versions = getVersions(minecraftVersion, loader);
+    public static Optional<ModrinthVersion> findUpdate(@NonNull SemanticVersion currentVersion,
+                                                       @NonNull JsonArray versions) {
+        ModrinthVersion latestVersion = null;
+        boolean anyNewerHasChangelog = false;
 
         for (JsonElement jsonElement : versions) {
             JsonObject version = jsonElement.getAsJsonObject();
 
             String versionType = version.get("version_type").getAsString();
-            if (versionType.equals("alpha") && !alpha) continue;
+            if (currentVersion.isRelease() && !versionType.equals("release")) continue;
 
-            String versionNumber = version.get("version_number").getAsString();
             JsonArray files = version.get("files").getAsJsonArray();
             if (files.size() == 0) continue;
 
-            SemanticVersion semanticVersion = SemanticVersion.parse(versionNumber);
-            if (targetVersion != null && semanticVersion.major() != targetVersion.major()) continue;
+            SemanticVersion semanticVersion = SemanticVersion.parse(version.get("version_number").getAsString());
+            if (!isNewer(currentVersion, semanticVersion)) continue;
 
-            return Optional.of(new ModrinthVersion(
-                    semanticVersion,
-                    files.get(0).getAsJsonObject().get("url").getAsString())
-            );
+            if (latestVersion == null || latestVersion.version().isOutdated(semanticVersion)) {
+                latestVersion = new ModrinthVersion(
+                        semanticVersion,
+                        files.get(0).getAsJsonObject().get("url").getAsString()
+                );
+            }
+
+            if (hasChangelog(version)) anyNewerHasChangelog = true;
         }
 
-        return Optional.empty();
+        return anyNewerHasChangelog ? Optional.ofNullable(latestVersion) : Optional.empty();
+    }
+
+    private static boolean isNewer(@NonNull SemanticVersion currentVersion, @NonNull SemanticVersion version) {
+        return currentVersion.isOutdated(version) ||
+                (!currentVersion.isRelease() && !version.equals(currentVersion) && !version.isOutdated(currentVersion));
+    }
+
+    private static boolean hasChangelog(@NonNull JsonObject version) {
+        JsonElement changelog = version.get("changelog");
+        return changelog != null && !changelog.isJsonNull() && !changelog.getAsString().trim().isEmpty();
     }
 
     private static JsonArray getVersions(@NonNull String minecraftVersion,
@@ -110,6 +91,7 @@ public final class ModrinthVersion {
             return GSON.fromJson(reader, JsonArray.class);
         }
     }
+
     private final SemanticVersion version;
     private final String downloadLink;
 }
