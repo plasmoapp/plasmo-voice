@@ -31,11 +31,23 @@ public class LanguageUtil {
         InputConstants.Key inputKey;
 
         if (key.getType() == Hotkey.Type.KEYSYM) {
+            //#if MC>=26.3
+            //$$ inputKey = InputConstants.Type.KEYBOARD.getOrCreate(su.plo.lib.mod.client.SdlInput.toMinecraftKey(key.getCode()));
+            //#else
             inputKey = InputConstants.Type.KEYSYM.getOrCreate(key.getCode());
+            //#endif
         } else if (key.getType() == Hotkey.Type.MOUSE) {
+            //#if MC>=26.3
+            //$$ inputKey = InputConstants.Type.MOUSE.getOrCreate(su.plo.lib.mod.client.SdlInput.toMinecraftMouseButton(key.getCode()));
+            //#else
             inputKey = InputConstants.Type.MOUSE.getOrCreate(key.getCode());
+            //#endif
         } else if (key.getType() == Hotkey.Type.SCANCODE) {
+            //#if MC>=26.3
+            //$$ inputKey = InputConstants.Type.KEYBOARD.getOrCreate(key.getCode());
+            //#else
             inputKey = InputConstants.Type.SCANCODE.getOrCreate(key.getCode());
+            //#endif
         } else {
             return McTextComponent.translatable("gui.none");
         }

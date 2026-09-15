@@ -3,7 +3,7 @@ package su.plo.lib.mod.client.gui.screen;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.network.chat.Component;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.gui.TooltipData;
 import su.plo.lib.mod.extensions.MinecraftKt;
@@ -166,19 +166,31 @@ public final class ScreenWrapper
     //#if MC>=12109
     //$$  @Override
     //$$ public boolean mouseClicked(@NotNull MouseButtonEvent event, boolean bl) {
+    //#if MC>=26.3
+    //$$     screen.mouseClicked(event.x(), event.y(), su.plo.lib.mod.client.SdlInput.toLegacyMouseButton(event.button()));
+    //#else
     //$$     screen.mouseClicked(event.x(), event.y(), event.button());
+    //#endif
     //$$     return false;
     //$$ }
     //$$
     //$$ @Override
     //$$ public boolean mouseReleased(@NotNull MouseButtonEvent event) {
+    //#if MC>=26.3
+    //$$     screen.mouseReleased(event.x(), event.y(), su.plo.lib.mod.client.SdlInput.toLegacyMouseButton(event.button()));
+    //#else
     //$$     screen.mouseReleased(event.x(), event.y(), event.button());
+    //#endif
     //$$     return false;
     //$$ }
     //$$
     //$$ @Override
     //$$ public boolean mouseDragged(@NotNull MouseButtonEvent event, double deltaX, double deltaY) {
+    //#if MC>=26.3
+    //$$     screen.mouseDragged(event.x(), event.y(), su.plo.lib.mod.client.SdlInput.toLegacyMouseButton(event.button()), deltaX, deltaY);
+    //#else
     //$$     screen.mouseDragged(event.x(), event.y(), event.button(), deltaX, deltaY);
+    //#endif
     //$$     return false;
     //$$ }
     //#else
@@ -226,16 +238,16 @@ public final class ScreenWrapper
     //#if MC>=12109
     //$$ @Override
     //$$ public boolean keyPressed(@NotNull KeyEvent event) {
-    //$$     return innerKeyPressed(event.key(), event.scancode(), event.modifiers());
+    //$$     return innerKeyPressed(event.key(), event.modifiers());
     //$$ }
     //#else
     @Override
     public boolean keyPressed(int keyCode, int scanCode, int modifiers) {
-        return innerKeyPressed(keyCode, scanCode, modifiers);
+        return innerKeyPressed(keyCode, modifiers);
     }
     //#endif
 
-    private boolean innerKeyPressed(int keyCode, int scanCode, int modifiers) {
+    private boolean innerKeyPressed(int keyCode, int modifiers) {
         if (keyCode == 0) {
             return false;
         }
@@ -244,12 +256,12 @@ public final class ScreenWrapper
             return true;
         }
 
-        if (shouldCloseOnEsc() && keyCode == GLFW.GLFW_KEY_ESCAPE) {
+        if (shouldCloseOnEsc() && keyCode == InputConstants.KEY_ESCAPE) {
             onClose();
             return true;
         }
 
-        if (keyCode == GLFW.GLFW_KEY_TAB) {
+        if (keyCode == InputConstants.KEY_TAB) {
             boolean shiftKeyDown = Inputs.hasShiftDown();
 
             return screen.changeFocus(!shiftKeyDown);

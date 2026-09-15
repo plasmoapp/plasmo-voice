@@ -1,7 +1,7 @@
 package su.plo.lib.mod.client.gui.components;
 
 import net.minecraft.util.Mth;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
@@ -73,8 +73,8 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
-        if (keyCode == GLFW.GLFW_KEY_RIGHT || keyCode == GLFW.GLFW_KEY_LEFT) {
-            float delta = keyCode == GLFW.GLFW_KEY_LEFT ? -1.0F : 1.0F;
+        if (keyCode == InputConstants.KEY_RIGHT || keyCode == InputConstants.KEY_LEFT) {
+            float delta = keyCode == InputConstants.KEY_LEFT ? -1.0F : 1.0F;
             setValue(value + (delta * minStep()));
         }
 

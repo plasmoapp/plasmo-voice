@@ -226,12 +226,21 @@ data class RenderPipeline(
             //$$     // but it should be fine Clueless
             //#if MC>=26.2
             //$$     .withBindGroupLayout(BindGroupLayouts.GLOBALS)
+            //#if MC>=26.3
+            //$$     .withBindGroupLayout(BindGroupLayouts.PROJECTION)
+            //$$     .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+            //#else
             //$$     .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
+            //#endif
             //$$     .apply {
             //$$         if (samplers.isNotEmpty()) {
             //$$             withBindGroupLayout(
             //$$                 BindGroupLayout.builder()
+            //#if MC>=26.3
+            //$$                     .apply { samplers.forEach { withUniform(it, UniformType.COMBINED_IMAGE_SAMPLER) } }
+            //#else
             //$$                     .apply { samplers.forEach(::withSampler) }
+            //#endif
             //$$                     .build()
             //$$             )
             //$$         }

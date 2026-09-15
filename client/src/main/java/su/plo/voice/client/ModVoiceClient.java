@@ -2,7 +2,6 @@ package su.plo.voice.client;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import net.minecraft.client.Minecraft;
-import org.lwjgl.glfw.GLFW;
 import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.render.level.LevelRenderContext;
 import su.plo.lib.mod.client.render.level.LevelRenderStateHolder;
@@ -92,8 +91,12 @@ public final class ModVoiceClient extends BaseVoiceClient
 
     public static final KeyMapping MENU_KEY = new KeyMapping(
             "key.plasmovoice.settings",
+            //#if MC>=26.3
+            //$$ InputConstants.Type.KEYBOARD,
+            //#else
             InputConstants.Type.KEYSYM,
-            GLFW.GLFW_KEY_V,
+            //#endif
+            InputConstants.KEY_V,
             //#if MC>=12109
             //$$ KeyMapping.Category.register(ResourceLocationUtil.mod("name"))
             //#else

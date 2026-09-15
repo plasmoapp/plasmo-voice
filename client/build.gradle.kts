@@ -229,10 +229,15 @@ tasks {
 
             exclude(dependency("org.slf4j:slf4j-api"))
 
-            if (platform.mcVersion >= 12106) {
+            if (platform.mcVersion >= 260300) {
                 exclude("assets/plasmovoice/shaders/position_tex_solid_color.*")
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
+            } else if (platform.mcVersion >= 12106) {
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color.*")
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color_26_3.*")
             } else {
                 exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
+                exclude("assets/plasmovoice/shaders/position_tex_solid_color_26_3.*")
             }
 
             if (platform.isNeoForge) {

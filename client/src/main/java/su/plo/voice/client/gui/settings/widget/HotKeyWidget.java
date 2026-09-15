@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import com.google.common.collect.ImmutableSet;
+import com.mojang.blaze3d.platform.InputConstants;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -100,7 +101,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
         if (isActiveHotkey()) {
-            if (keyCode == 256) { // GLFW_KEY_ESCAPE
+            if (keyCode == InputConstants.KEY_ESCAPE) {
                 if (pressedKeys.size() > 0) {
                     keysReleased();
                 } else {
@@ -111,7 +112,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
                 return true;
             }
 
-            Hotkey.Key key = Hotkey.Type.KEYSYM.getOrCreate(keyCode);
+            Hotkey.Key key = toHotkey(keyCode);
             if (pressedKeys.size() < 3 && !pressedKeys.contains(key)) {
                 pressedKeys.add(key);
             }
@@ -125,7 +126,7 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     @Override
     public boolean keyReleased(int keyCode, char typedChar, int modifiers) {
         if (isActiveHotkey()
-                && pressedKeys.stream().anyMatch(key -> key.getType() == Hotkey.Type.KEYSYM && key.getCode() == keyCode)
+                && pressedKeys.contains(toHotkey(keyCode))
         ) {
             keysReleased();
             updateValue();
@@ -133,6 +134,14 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
         }
 
         return super.keyReleased(keyCode, typedChar, modifiers);
+    }
+
+    private static Hotkey.Key toHotkey(int keyCode) {
+        //#if MC>=26.3
+        //$$ return Hotkey.Type.KEYSYM.getOrCreate(su.plo.lib.mod.client.SdlInput.toLegacyKey(keyCode));
+        //#else
+        return Hotkey.Type.KEYSYM.getOrCreate(keyCode);
+        //#endif
     }
 
     @Override

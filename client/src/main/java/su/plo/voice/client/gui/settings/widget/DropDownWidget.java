@@ -1,7 +1,7 @@
 package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -80,7 +80,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
     public boolean keyPressed(int keyCode, int modifiers) {
         if (!active || !visible) return false;
 
-        if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) return false;
+        if (keyCode != InputConstants.KEY_RETURN && keyCode != InputConstants.KEY_SPACE && keyCode != InputConstants.KEY_NUMPADENTER) return false;
 
         playDownSound();
         switchOpen();

@@ -30,7 +30,11 @@ public abstract class MixinKeyboardHandler {
     //$$     if (window != this.minecraft.getWindow().handle() || ModVoiceClient.INSTANCE == null) return;
     //$$
     //$$     KeyPressedEvent event = new KeyPressedEvent(
+    //#if MC>=26.3
+    //$$             Hotkey.Type.KEYSYM.getOrCreate(su.plo.lib.mod.client.SdlInput.toLegacyKey(keyEvent.key())),
+    //#else
     //$$             Hotkey.Type.KEYSYM.getOrCreate(keyEvent.key()),
+    //#endif
     //$$             Hotkey.Action.fromInt(action)
     //$$     );
     //$$

@@ -1,5 +1,12 @@
 [
   {
+    "project": "26.3-fabric",
+    "mcVersion": 260300,
+    "mappings": "official",
+    "parent": "26.2-fabric",
+    "extraMappings": "26.3-26.2.txt"
+  },
+  {
     "project": "26.2-fabric",
     "mcVersion": 260200,
     "mappings": "official",

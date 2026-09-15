@@ -2,7 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.lwjgl.glfw.GLFW;
+import com.mojang.blaze3d.platform.InputConstants;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
@@ -58,7 +58,7 @@ public final class ToggleButton extends GuiAbstractWidget {
     public boolean keyPressed(int keyCode, int modifiers) {
         if (!active || !visible) return false;
 
-        if (keyCode != GLFW.GLFW_KEY_ENTER && keyCode != GLFW.GLFW_KEY_SPACE && keyCode != GLFW.GLFW_KEY_KP_ENTER) return false;
+        if (keyCode != InputConstants.KEY_RETURN && keyCode != InputConstants.KEY_SPACE && keyCode != InputConstants.KEY_NUMPADENTER) return false;
 
         playDownSound();
         invertToggle();

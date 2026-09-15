@@ -378,8 +378,13 @@ class AlOutputDevice
                     //#endif
                 position = camera.position()
 
+                //#if MC>=26.3
+                //$$ lookVector.set(camera.forwardVector())
+                //$$ upVector.set(camera.upVector())
+                //#else
                 lookVector.set(camera.lookVector)
                 upVector.set(camera.upVector)
+                //#endif
             } else {
                 val player = Minecraft.getInstance().player ?: return
                 position = player.eyePosition()

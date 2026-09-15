@@ -5,7 +5,7 @@ import su.plo.voice.api.client.config.hotkey.Hotkey
 
 //#if MC>=12109
 //$$ import net.minecraft.client.input.InputQuirks
-//$$ import org.lwjgl.glfw.GLFW
+//$$ import com.mojang.blaze3d.platform.InputConstants
 //#else
 import net.minecraft.client.gui.screens.Screen
 //#endif
@@ -24,7 +24,11 @@ object Inputs {
     fun hasShiftDown(modifiers: Int? = null): Boolean =
         //#if MC>=12109
         //$$ if (modifiers != null) {
+        //#if MC>=26.3
+        //$$     (modifiers and InputConstants.MOD_SHIFT) != 0
+        //#else
         //$$     (modifiers and 1) != 0
+        //#endif
         //$$ } else {
         //$$     Minecraft.getInstance().hasShiftDown()
         //$$ }
@@ -42,7 +46,9 @@ object Inputs {
 
     @JvmStatic
     fun hasAltDown(modifiers: Int): Boolean =
-        //#if MC>=12109
+        //#if MC>=26.3
+        //$$ (modifiers and InputConstants.MOD_ALT) != 0
+        //#elseif MC>=12109
         //$$ (modifiers and 4) != 0
         //#else
         Screen.hasAltDown()
@@ -51,7 +57,7 @@ object Inputs {
     @JvmStatic
     fun isSelectAll(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_A && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_A && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isSelectAll(keyCode)
         //#endif
@@ -59,7 +65,7 @@ object Inputs {
     @JvmStatic
     fun isCopy(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_C && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_C && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isCopy(keyCode)
         //#endif
@@ -67,7 +73,7 @@ object Inputs {
     @JvmStatic
     fun isPaste(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_V && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_V && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isPaste(keyCode)
         //#endif
@@ -75,7 +81,7 @@ object Inputs {
     @JvmStatic
     fun isCut(keyCode: Int, modifiers: Int): Boolean =
         //#if MC>=12109
-        //$$ keyCode == GLFW.GLFW_KEY_X && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
+        //$$ keyCode == InputConstants.KEY_X && hasControlDown(modifiers) && !hasShiftDown(modifiers) && !hasAltDown(modifiers)
         //#else
         Screen.isCut(keyCode)
         //#endif

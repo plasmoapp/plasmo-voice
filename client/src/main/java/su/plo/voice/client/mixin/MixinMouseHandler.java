@@ -31,7 +31,11 @@ public abstract class MixinMouseHandler {
     //$$     if (window != this.minecraft.getWindow().handle() || ModVoiceClient.INSTANCE == null) return;
     //$$
     //$$     KeyPressedEvent event = new KeyPressedEvent(
+    //#if MC>=26.3
+    //$$             Hotkey.Type.MOUSE.getOrCreate(su.plo.lib.mod.client.SdlInput.toLegacyMouseButton(buttonInfo.button())),
+    //#else
     //$$             Hotkey.Type.MOUSE.getOrCreate(buttonInfo.button()),
+    //#endif
     //$$             Hotkey.Action.fromInt(action)
     //$$     );
     //$$

@@ -1,0 +1,20 @@
+com.mojang.renderpearl.api.GpuFormat com.mojang.blaze3d.GpuFormat
+com.mojang.renderpearl.api.buffers.GpuBuffer com.mojang.blaze3d.buffers.GpuBuffer
+com.mojang.renderpearl.api.commands.RenderPass com.mojang.blaze3d.systems.RenderPass
+com.mojang.renderpearl.api.pipeline.BindGroupLayout com.mojang.blaze3d.pipeline.BindGroupLayout
+com.mojang.renderpearl.api.pipeline.BlendFactor com.mojang.blaze3d.platform.BlendFactor
+com.mojang.renderpearl.api.pipeline.BlendFunction com.mojang.blaze3d.pipeline.BlendFunction
+com.mojang.renderpearl.api.pipeline.ColorTargetState com.mojang.blaze3d.pipeline.ColorTargetState
+com.mojang.renderpearl.api.pipeline.CompareOp com.mojang.blaze3d.platform.CompareOp
+com.mojang.renderpearl.api.pipeline.DepthStencilState com.mojang.blaze3d.pipeline.DepthStencilState
+com.mojang.renderpearl.api.pipeline.PrimitiveTopology com.mojang.blaze3d.PrimitiveTopology
+com.mojang.renderpearl.api.pipeline.RenderPipeline com.mojang.blaze3d.pipeline.RenderPipeline
+com.mojang.renderpearl.api.pipeline.ShaderType com.mojang.blaze3d.shaders.ShaderType
+com.mojang.renderpearl.api.pipeline.UniformType com.mojang.blaze3d.shaders.UniformType
+com.mojang.renderpearl.api.vertex.VertexFormat com.mojang.blaze3d.vertex.VertexFormat
+com.mojang.renderpearl.api.vertex.VertexFormatElement com.mojang.blaze3d.vertex.VertexFormatElement
+
+com.mojang.blaze3d.vertex.PoseStack rotate() mulPose()
+
+com.mojang.authlib.minecraft.SessionService com.mojang.authlib.minecraft.MinecraftSessionService
+com.mojang.authlib.services.ProfileResult com.mojang.authlib.yggdrasil.ProfileResult
