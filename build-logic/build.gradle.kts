@@ -8,6 +8,8 @@ dependencies {
     implementation(libs.shadow)
     implementation(libs.config)
     implementation(libs.asm)
+    // override dokka's serialization version
+    implementation(libs.kotlinx.serialization.core)
 }
 
 repositories {

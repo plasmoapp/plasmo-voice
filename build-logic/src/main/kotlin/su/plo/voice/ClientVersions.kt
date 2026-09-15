@@ -7,7 +7,7 @@ import java.io.File
 data class ClientVersion(
     val project: String,
     val mcVersion: Int,
-    val mappings: String,
+    val mappings: String?,
     val parent: String?,
     val extraMappings: String?,
 )

@@ -1,0 +1,23 @@
+name: PlasmoVoice
+version: ${version}
+main: su.plo.voice.paper.PaperVoiceLoader
+bootstrapper: su.plo.voice.paper.PaperVoiceBootstrap
+load: STARTUP
+api-version: 1.21
+authors: [ Apehum ]
+dependencies:
+  server:
+    LuckPerms:
+      load: BEFORE
+      required: false
+    PlaceholderAPI:
+      load: BEFORE
+      required: false
+    SuperVanish:
+      load: BEFORE
+      required: false
+    PremiumVanish:
+      load: BEFORE
+      required: false
+
+folia-supported: true

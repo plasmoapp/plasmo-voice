@@ -1,8 +1,8 @@
 [versions]
-kotlin = "2.3.0"
-dokka = "2.1.0"
-kotlinx-json = "1.10.0"
-kotlinx-coroutines = "1.10.2"
+kotlin = "2.4.20"
+dokka = "2.2.0"
+kotlinx-serialization = "1.11.0"
+kotlinx-coroutines = "1.11.0"
 
 lombok = "1.18.44"
 annotations = "23.0.0"
@@ -12,7 +12,7 @@ netty = "4.1.121.Final"
 fastutil = "8.5.18"
 crowdin = "1.2.1"
 config = "1.2.0"
-slib = "1.7.5"
+slib = "93c477202a5cd12b33bbdd518b7bd5a5def389a5"
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
@@ -33,7 +33,7 @@ rnnoise-jni = "1.0.2"
 shadow = "9.2.2"
 grgit = "5.3.3"
 buildconfig = "5.7.1"
-runpaper = "3.0.2"
+runpaper = "3.1.0"
 
 asm = "9.9.1"
 
@@ -41,7 +41,8 @@ asm = "9.9.1"
 mockito = "4.1.0"
 
 [libraries]
-kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-json" }
+kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serialization-core", version.ref = "kotlinx-serialization" }
+kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
 

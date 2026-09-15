@@ -280,9 +280,7 @@ object MockServerLib : McServerLib {
     override val configsFolder: File = File("./run")
 
     init {
-        McLoggerFactory.supplier = object : McLoggerFactory.Supplier {
-            override fun createLogger(name: String): McLogger = JavaLogger(name)
-        }
+        McLoggerFactory.overrideSupplier { JavaLogger(it) }
     }
 
     override fun executeInMainThread(runnable: Runnable) {

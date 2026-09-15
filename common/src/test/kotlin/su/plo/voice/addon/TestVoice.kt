@@ -9,7 +9,7 @@ import java.io.File
 object TestVoice : BaseVoice(PlatformLoader.FABRIC) {
 
     init {
-        McLoggerFactory.supplier = McLoggerFactory.Supplier { name -> JavaLogger(name) }
+        McLoggerFactory.overrideSupplier { JavaLogger(it) }
     }
 
     override fun getConfigFolder(): File {

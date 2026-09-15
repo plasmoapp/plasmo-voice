@@ -16,6 +16,9 @@ fun ProcessResources.expandMatching(
     match: List<String>,
     vararg properties: Pair<String, Any>,
 ) {
+    val scope = match.joinToString(",")
+    properties.forEach { (key, value) -> inputs.property("expand[$scope].$key", value.toString()) }
+
     doFirst {
         filesMatching(match) {
             expand(*properties)

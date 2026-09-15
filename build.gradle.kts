@@ -111,6 +111,7 @@ allprojects {
         maven("https://repo.plo.su")
         maven("https://repo.plasmoverse.com/snapshots")
         maven("https://repo.plasmoverse.com/releases")
+        maven("https://repo.plasmoverse.com/prs")
         maven("https://oss.sonatype.org/content/repositories/snapshots")
         maven("https://repo.papermc.io/repository/maven-public/")
         maven("https://jitpack.io/")

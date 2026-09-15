@@ -2,42 +2,42 @@
   {
     "project": "26.3-fabric",
     "mcVersion": 260300,
-    "mappings": "official",
+    "mappings": null,
     "parent": "26.2-fabric",
     "extraMappings": "26.3-26.2.txt"
   },
   {
     "project": "26.3-neoforge",
     "mcVersion": 260300,
-    "mappings": "official",
+    "mappings": null,
     "parent": "26.2-neoforge",
     "extraMappings": "26.3-26.2.txt"
   },
   {
     "project": "26.2-fabric",
     "mcVersion": 260200,
-    "mappings": "official",
+    "mappings": null,
     "parent": "26.1-fabric",
     "extraMappings": "26.2-26.1.txt"
   },
   {
     "project": "26.2-neoforge",
     "mcVersion": 260200,
-    "mappings": "official",
+    "mappings": null,
     "parent": "26.1-neoforge",
     "extraMappings": "26.2-26.1.txt"
   },
   {
     "project": "26.1-fabric",
     "mcVersion": 260100,
-    "mappings": "official",
+    "mappings": null,
     "parent": "1.21.11-fabric",
     "extraMappings": "26.1-1.21.11.txt"
   },
   {
     "project": "26.1-neoforge",
     "mcVersion": 260100,
-    "mappings": "official",
+    "mappings": null,
     "parent": "1.21.11-neoforge",
     "extraMappings": "26.1-1.21.11.txt"
   },

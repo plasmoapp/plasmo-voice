@@ -43,7 +43,7 @@ dependencies {
     shadow("org.bstats:bstats-bukkit:${libs.versions.bstats.get()}")
 
     slibPlatform(
-        "spigot",
+        "paper",
         libs.versions.slib.get(),
         implementation = ::compileOnly,
         shadow = ::shadow
@@ -53,7 +53,7 @@ dependencies {
 tasks {
     processResources {
         expandMatching(
-            listOf("plugin.yml", "paper-plugin.yml"),
+            listOf("paper-plugin.yml"),
             "version" to version
         )
     }

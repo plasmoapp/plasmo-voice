@@ -26,6 +26,10 @@ base.archivesName.set("plasmovoice-${platform.loaderStr}-${platform.mcVersionStr
 
 loom.noServerRunConfigs()
 
+// preprocessor's remap doesn't support 2.3.10+ kotlin
+configurations["remapKotlinCompilerClasspath"].resolutionStrategy
+    .force("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.3.10")
+
 val mixins = mutableListOf("plasmovoice.mixins.json", "slib.mixins.json")
 if (platform.mcVersion >= 12102) {
     mixins.add("plasmovoice-1.21.2.mixins.json")
