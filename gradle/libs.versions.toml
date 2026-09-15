@@ -12,7 +12,8 @@ netty = "4.1.121.Final"
 fastutil = "8.5.18"
 crowdin = "1.2.1"
 config = "1.2.0"
-slib = "93c477202a5cd12b33bbdd518b7bd5a5def389a5"
+slib = "2.0.0"
+mcdsl = "2.3.0"
 bstats = "3.0.2"
 luckperms = "5.4"
 papi = "2.11.6"
@@ -45,6 +46,8 @@ kotlinx-serialization-core = { module = "org.jetbrains.kotlinx:kotlinx-serializa
 kotlinx-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization" }
 kotlinx-coroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinx-coroutines" }
 kotlinx-coroutines-jdk8 = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8", version.ref = "kotlinx-coroutines" }
+
+mcdsl-brigadier = { module = "dev.apehum.mcdsl:brigadier", version.ref = "mcdsl" }
 
 lombok       = { module = "org.projectlombok:lombok", version.ref = "lombok" }
 annotations  = { module = "org.jetbrains:annotations", version.ref = "annotations" }

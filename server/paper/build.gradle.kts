@@ -64,5 +64,9 @@ tasks {
         javaLauncher = project.javaToolchains.launcherFor {
             languageVersion = JavaLanguageVersion.of(21)
         }
+
+        downloadPlugins {
+            modrinth("luckperms", "v5.5.17-bukkit")
+        }
     }
 }

@@ -43,6 +43,7 @@ import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.client.audio.AlUtil
 import su.plo.voice.client.audio.device.source.StreamAlSource.Companion.create
 import su.plo.voice.client.extension.position
+import su.plo.voice.server.command.Permission
 import java.nio.Buffer
 import java.nio.IntBuffer
 import java.util.concurrent.CompletableFuture
@@ -367,7 +368,7 @@ class AlOutputDevice
             if (voiceClient.config.advanced.cameraSoundListener.value()
                 && voiceClient.serverInfo.orElse(null)
                     ?.playerInfo
-                    ?.get("pv.allow_freecam")
+                    ?.get(Permission.ALLOW_FREECAM.key)
                     ?.orElse(true) == true
             ) {
                 val camera =

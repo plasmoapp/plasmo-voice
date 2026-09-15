@@ -109,8 +109,6 @@ public final class ModVoiceClient extends BaseVoiceClient
         super(PlatformLoader.FABRIC);
         //#endif
 
-        McLoggerFactory.supplier = Log4jLogger::new;
-
         DeviceFactoryManager factoryManager = getDeviceFactoryManager();
 
         // OpenAL
@@ -151,7 +149,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#if FABRIC
     @Override
     public void onInitializeClient() {
-        McLoggerFactory.supplier = name -> new PrefixedLogger(new Log4jLogger(name), () -> name);
+        McLoggerFactory.overrideSupplier(name -> new PrefixedLogger(new Log4jLogger(name), () -> name));
         super.onInitialize();
 
         ClientLifecycleEvents.CLIENT_STOPPING.register((minecraft) -> onShutdown());

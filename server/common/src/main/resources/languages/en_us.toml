@@ -23,13 +23,12 @@ unmuted = "You've been unmuted"
   weeks = "for %s w"
 
 [server.pv.command.mute]
-usage = "Usage: /vmute <player> [duration] [reason]"
+invalid_duration = "Invalid duration. Examples: 30s, 15m, 1h, 7d, 2w, permanent"
 already_muted = "%s already muted"
 temporarily_muted = "Muted %1$s %2$s. Reason: %3$s"
 permanently_muted = "%1$s is permanently muted. Reason: %2$s"
 
 [server.pv.command.unmute]
-usage = "Usage: /vunmute <player>"
 not_muted = "%s not muted"
 unmuted = "Unmuted %s"
 

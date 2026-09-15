@@ -46,6 +46,7 @@ import su.plo.voice.proto.data.audio.codec.CodecInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
+import su.plo.voice.server.command.Permission
 import su.plo.voice.util.CoroutineScopes
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.atomic.AtomicBoolean
@@ -420,7 +421,7 @@ abstract class BaseClientAudioSource<T>(
         if (config.advanced.cameraSoundListener.value()
             && voiceClient.serverInfo.orElse(null)
                 ?.playerInfo
-                ?.get("pv.allow_freecam")
+                ?.get(Permission.ALLOW_FREECAM.key)
                 ?.orElse(true) == true
         ) Minecraft.getInstance().cameraEntity
         else Minecraft.getInstance().player

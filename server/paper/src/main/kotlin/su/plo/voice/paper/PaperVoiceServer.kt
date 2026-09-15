@@ -11,14 +11,15 @@ import su.plo.voice.paper.integration.VoicePlaceholder
 import su.plo.voice.server.BaseVoiceServer
 import su.plo.voice.util.version.PlatformLoader
 
-class PaperVoiceServer(
-    private val plugin: JavaPlugin
-) : BaseVoiceServer(PlatformLoader.PAPER), Listener {
-    private val minecraftServerLib = PaperServerLib(plugin, LOGGER)
+class PaperVoiceServer : BaseVoiceServer(PlatformLoader.PAPER), Listener {
+    internal lateinit var plugin: JavaPlugin
 
+    private lateinit var minecraftServerLib: PaperServerLib
     private lateinit var metrics: Metrics
 
     public override fun onInitialize() {
+        this.minecraftServerLib = PaperServerLib(plugin, LOGGER)
+
         minecraftServerLib.onInitialize()
 
         super.onInitialize()
@@ -62,7 +63,7 @@ class PaperVoiceServer(
     public override fun onShutdown() {
         if (this::metrics.isInitialized) metrics.shutdown()
         super.onShutdown()
-        minecraftServerLib.onShutdown()
+        if (this::minecraftServerLib.isInitialized) minecraftServerLib.onShutdown()
     }
 
     override fun getConfigFolder() = plugin.dataFolder

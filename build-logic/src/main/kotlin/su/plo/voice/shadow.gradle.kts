@@ -80,6 +80,8 @@ tasks {
 
         reloc("at.favre.lib.hkdf", "hkdf")
 
+        reloc("dev.apehum.mcdsl", "mcdsl")
+
         dependencies {
             excludedDependencies.forEach { exclude(dependency(it)) }
         }

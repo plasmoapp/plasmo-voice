@@ -8,8 +8,9 @@ import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.slib.api.command.McCommand;
 import su.plo.slib.api.command.McCommandManager;
+import su.plo.slib.api.command.brigadier.McBrigadierRegistry;
+import su.plo.slib.api.event.command.McBrigadierCommandsRegisterEvent;
 import su.plo.slib.api.language.ServerTranslator;
-import su.plo.slib.api.permission.PermissionDefault;
 import su.plo.slib.api.permission.PermissionManager;
 import su.plo.slib.api.server.McServerLib;
 import su.plo.slib.api.server.channel.McServerChannelManager;
@@ -29,8 +30,8 @@ import su.plo.voice.api.server.event.config.VoiceServerConfigReloadedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerCreateEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStartedEvent;
 import su.plo.voice.api.server.event.socket.UdpServerStoppedEvent;
-import su.plo.voice.api.server.mute.MuteManager;
 import su.plo.voice.api.server.mute.storage.MuteStorage;
+import su.plo.voice.api.server.player.VoicePlayer;
 import su.plo.voice.api.server.player.VoiceServerPlayer;
 import su.plo.voice.api.server.socket.UdpServer;
 import su.plo.voice.api.server.socket.UdpServerConnection;
@@ -40,7 +41,7 @@ import su.plo.voice.proto.data.audio.codec.opus.OpusMode;
 import su.plo.voice.server.audio.capture.ProximityServerActivation;
 import su.plo.voice.server.audio.capture.VoiceServerActivationManager;
 import su.plo.voice.server.audio.line.VoiceServerSourceLineManager;
-import su.plo.voice.server.command.*;
+import su.plo.voice.server.command.Permission;
 import su.plo.voice.server.config.VoiceServerConfig;
 import su.plo.voice.server.connection.ModRequiredKickHandler;
 import su.plo.voice.server.connection.PlayerInfoRequestScheduler;
@@ -54,8 +55,8 @@ import su.plo.voice.server.mute.storage.MuteStorageFactory;
 import su.plo.voice.server.player.LuckPermsListener;
 import su.plo.voice.server.player.VoiceServerPlayerManagerImpl;
 import su.plo.voice.server.socket.NettyUdpServer;
-import su.plo.voice.util.version.PlatformLoader;
 import su.plo.voice.util.version.ModrinthVersion;
+import su.plo.voice.util.version.PlatformLoader;
 
 import java.io.File;
 import java.io.IOException;
@@ -65,6 +66,13 @@ import java.util.Collection;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
+
+import static su.plo.voice.server.command.VoiceListCommandKt.voiceListCommand;
+import static su.plo.voice.server.command.VoiceMuteCommandKt.voiceMuteCommand;
+import static su.plo.voice.server.command.VoiceMuteListCommandKt.voiceMuteListCommand;
+import static su.plo.voice.server.command.VoiceReconnectCommandKt.voiceReconnectCommand;
+import static su.plo.voice.server.command.VoiceReloadCommandKt.voiceReloadCommand;
+import static su.plo.voice.server.command.VoiceUnmuteCommandKt.voiceUnmuteCommand;
 
 public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceServer {
 
@@ -93,7 +101,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
     @Getter
     protected MuteStorage muteStorage;
     @Getter
-    protected MuteManager muteManager;
+    protected VoiceMuteManager muteManager;
 
     protected LuckPermsListener luckPermsListener;
 
@@ -114,7 +122,8 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         super(loader);
 
         ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
-        McServerCommandsRegisterEvent.INSTANCE.registerListener(this::registerDefaultCommandsAndPermissions);
+        McServerCommandsRegisterEvent.INSTANCE.registerListener(this::registerPermissions);
+        McBrigadierCommandsRegisterEvent.INSTANCE.registerListener(this::registerCommands);
     }
 
     @Override
@@ -130,7 +139,7 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         eventBus.register(this, proximityActivation);
 
         this.playerManager = new VoiceServerPlayerManagerImpl(this, getMinecraftServer());
-        playerManager.registerPermission("pv.allow_freecam");
+        playerManager.registerPermission(Permission.ALLOW_FREECAM.getKey());
         eventBus.register(this, playerManager);
         this.requestScheduler = new PlayerInfoRequestScheduler(this);
         eventBus.register(this, requestScheduler);
@@ -365,28 +374,16 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         }
     }
 
-    protected void registerDefaultCommandsAndPermissions(
+    protected void registerPermissions(
             @NotNull McCommandManager<McCommand> commandManager,
             @NotNull McServerLib minecraftServer
     ) {
         commandManager.setCommandNamespace("plasmovoice");
 
-        // register permissions
         PermissionManager permissions = minecraftServer.getPermissionManager();
-
-        permissions.register("pv.list", PermissionDefault.TRUE);
-        permissions.register("pv.reconnect", PermissionDefault.TRUE);
-
-        permissions.register("pv.allow_freecam", PermissionDefault.TRUE);
-
-        // register commands
-        commandManager.register("vlist", new VoiceListCommand(this));
-        commandManager.register("vrc", new VoiceReconnectCommand(this));
-        commandManager.register("vreload", new VoiceReloadCommand(this));
-
-        commandManager.register("vmute", new VoiceMuteCommand(this, getMinecraftServer()));
-        commandManager.register("vunmute", new VoiceUnmuteCommand(this, getMinecraftServer()));
-        commandManager.register("vmutelist", new VoiceMuteListCommand(this, getMinecraftServer()));
+        Permission.getEntries().forEach(permission ->
+                permissions.register(permission.getKey(), permission.getDefaultValue())
+        );
     }
 
     @Override
@@ -422,5 +419,36 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 stereo,
                 (sampleRate / 1_000) * 20
         );
+    }
+
+    private void registerCommands(@NotNull McBrigadierRegistry registry) {
+        registry.register(voiceListCommand(this::getPlayerManager));
+        registry.register(
+                voiceReconnectCommand(
+                        this::getPlayerManager,
+                        this::getUdpConnectionManager,
+                        this::getTcpPacketManager
+                )
+        );
+        registry.register(
+                voiceReloadCommand(() -> {
+                    loadConfig(true);
+
+                    playerManager.getPlayers()
+                            .stream()
+                            .filter(VoicePlayer::hasVoiceChat)
+                            .forEach(tcpPacketManager::sendConfigInfo);
+                })
+        );
+
+        registry.register(voiceMuteCommand(this::getMuteManager, this::getConfig));
+        registry.register(
+                voiceUnmuteCommand(
+                        this::getMuteManager,
+                        this::getMinecraftServer,
+                        this::getConfig
+                )
+        );
+        registry.register(voiceMuteListCommand(this::getMuteManager, this::getMinecraftServer, this::getLanguages));
     }
 }
