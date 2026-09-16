@@ -2,6 +2,7 @@
 build/
 *.ipr
 run/
+run-folia/
 *.iws
 out/
 *.iml

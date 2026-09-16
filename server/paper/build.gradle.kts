@@ -1,6 +1,7 @@
 import su.plo.voice.extension.expandMatching
 import su.plo.voice.extension.javaVersion
 import su.plo.voice.extension.slibPlatform
+import xyz.jpenilla.runpaper.task.RunServer
 
 plugins {
     id("su.plo.voice.shadow")
@@ -58,7 +59,7 @@ tasks {
         )
     }
 
-    runServer {
+    withType<RunServer>().configureEach {
         minecraftVersion("1.21.11")
 
         javaLauncher = project.javaToolchains.launcherFor {
@@ -69,4 +70,8 @@ tasks {
             modrinth("luckperms", "v5.5.17-bukkit")
         }
     }
+}
+
+runPaper.folia.registerTask {
+    runDirectory = project.layout.projectDirectory.dir("run-folia")
 }
