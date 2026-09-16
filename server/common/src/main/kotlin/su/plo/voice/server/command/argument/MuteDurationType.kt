@@ -53,11 +53,24 @@ class MuteDurationType : CustomArgumentType<MuteDuration, String> {
 
         val match = DURATION_PATTERN.find(input) ?: throw invalidDuration.createWithContext(reader)
 
-        val duration = match.groupValues[1].toLong()
+        val duration = match.groupValues[1].toLongOrNull() ?: throw invalidDuration.createWithContext(reader)
         val durationUnitString = match.groupValues[2]
 
         val durationUnit = parseDurationUnit(durationUnitString)
-        if (durationUnit == MuteDurationUnit.TIMESTAMP && duration * 1_000L <= System.currentTimeMillis()) {
+
+        val now = System.currentTimeMillis()
+        val mutedToTime =
+            try {
+                if (durationUnit == MuteDurationUnit.TIMESTAMP) {
+                    Math.multiplyExact(duration, 1_000L)
+                } else {
+                    Math.addExact(Math.multiplyExact(duration, durationUnit.multiply(1L)), now)
+                }
+            } catch (_: ArithmeticException) {
+                throw invalidDuration.createWithContext(reader)
+            }
+
+        if (durationUnit == MuteDurationUnit.TIMESTAMP && mutedToTime <= now) {
             throw timestampInPast.createWithContext(reader)
         }
 
