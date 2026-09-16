@@ -95,7 +95,9 @@ public final class VoiceMuteManager implements MuteManager {
             }
         }
 
-        voiceServer.getEventBus().fire(new PlayerVoiceMutedEvent(this, muteInfo));
+        voiceServer.getMinecraftServer()
+                .getScheduler()
+                .runTask(() -> voiceServer.getEventBus().fire(new PlayerVoiceMutedEvent(this, muteInfo)));
 
         return Optional.of(muteInfo);
     }
@@ -113,7 +115,9 @@ public final class VoiceMuteManager implements MuteManager {
                                 }
                             });
 
-                    voiceServer.getEventBus().fire(new PlayerVoiceUnmutedEvent(this, muteInfo));
+                    voiceServer.getMinecraftServer()
+                            .getScheduler()
+                            .runTask(() -> voiceServer.getEventBus().fire(new PlayerVoiceUnmutedEvent(this, muteInfo)));
 
                     return muteInfo;
                 });
