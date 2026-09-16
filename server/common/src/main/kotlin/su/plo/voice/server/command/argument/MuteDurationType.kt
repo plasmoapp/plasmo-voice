@@ -36,6 +36,12 @@ class MuteDurationType : CustomArgumentType<MuteDuration, String> {
         )
     )
 
+    private val timestampInPast = SimpleCommandExceptionType(
+        McTextMessage.of(
+            McTextComponent.translatable("pv.command.mute.timestamp_in_past")
+        )
+    )
+
     override val nativeType: ArgumentType<String> = StringArgumentType.word()
 
     override fun useNativeSuggestions(): Boolean = false
@@ -51,6 +57,9 @@ class MuteDurationType : CustomArgumentType<MuteDuration, String> {
         val durationUnitString = match.groupValues[2]
 
         val durationUnit = parseDurationUnit(durationUnitString)
+        if (durationUnit == MuteDurationUnit.TIMESTAMP && duration * 1_000L <= System.currentTimeMillis()) {
+            throw timestampInPast.createWithContext(reader)
+        }
 
         return MuteDuration.Time(duration, durationUnit)
     }

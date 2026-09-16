@@ -24,6 +24,7 @@ unmuted = "You've been unmuted"
 
 [server.pv.command.mute]
 invalid_duration = "Invalid duration. Examples: 30s, 15m, 1h, 7d, 2w, permanent"
+timestamp_in_past = "Timestamp must be in the future"
 already_muted = "%s already muted"
 temporarily_muted = "Muted %1$s %2$s. Reason: %3$s"
 permanently_muted = "%1$s is permanently muted. Reason: %2$s"
