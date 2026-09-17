@@ -16,7 +16,7 @@ import java.util.concurrent.CompletableFuture
 private const val PERMANENT = "permanent"
 
 private val DURATION_PATTERN = Regex("^([0-9]+)([mhdwsu])?$")
-private val DIGITS_PATTERN = Regex("^[0-9]+$")
+private val DIGITS_PATTERN = Regex("^[1-9][0-9]*$")
 
 private val SUGGESTED_UNITS = listOf("s", "m", "h", "d", "w")
 
@@ -53,7 +53,9 @@ class MuteDurationType : CustomArgumentType<MuteDuration, String> {
 
         val match = DURATION_PATTERN.find(input) ?: throw invalidDuration.createWithContext(reader)
 
-        val duration = match.groupValues[1].toLongOrNull() ?: throw invalidDuration.createWithContext(reader)
+        val duration = match.groupValues[1].toLongOrNull()
+            ?.takeIf { it > 0L }
+            ?: throw invalidDuration.createWithContext(reader)
         val durationUnitString = match.groupValues[2]
 
         val durationUnit = parseDurationUnit(durationUnitString)
