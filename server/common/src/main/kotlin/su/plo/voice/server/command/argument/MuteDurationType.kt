@@ -20,6 +20,18 @@ private val DIGITS_PATTERN = Regex("^[1-9][0-9]*$")
 
 private val SUGGESTED_UNITS = listOf("s", "m", "h", "d", "w")
 
+private val INVALID_DURATION = SimpleCommandExceptionType(
+    McTextMessage.of(
+        McTextComponent.translatable("pv.command.mute.invalid_duration")
+    )
+)
+
+private val TIMESTAMP_IN_PAST = SimpleCommandExceptionType(
+    McTextMessage.of(
+        McTextComponent.translatable("pv.command.mute.timestamp_in_past")
+    )
+)
+
 sealed interface MuteDuration {
     data object Permanent : MuteDuration
 
@@ -30,18 +42,6 @@ sealed interface MuteDuration {
 }
 
 class MuteDurationType : CustomArgumentType<MuteDuration, String> {
-    private val invalidDuration = SimpleCommandExceptionType(
-        McTextMessage.of(
-            McTextComponent.translatable("pv.command.mute.invalid_duration")
-        )
-    )
-
-    private val timestampInPast = SimpleCommandExceptionType(
-        McTextMessage.of(
-            McTextComponent.translatable("pv.command.mute.timestamp_in_past")
-        )
-    )
-
     override val nativeType: ArgumentType<String> = StringArgumentType.word()
 
     override fun useNativeSuggestions(): Boolean = false
@@ -51,11 +51,11 @@ class MuteDurationType : CustomArgumentType<MuteDuration, String> {
 
         if (input == PERMANENT) return MuteDuration.Permanent
 
-        val match = DURATION_PATTERN.find(input) ?: throw invalidDuration.createWithContext(reader)
+        val match = DURATION_PATTERN.find(input) ?: throw INVALID_DURATION.createWithContext(reader)
 
         val duration = match.groupValues[1].toLongOrNull()
             ?.takeIf { it > 0L }
-            ?: throw invalidDuration.createWithContext(reader)
+            ?: throw INVALID_DURATION.createWithContext(reader)
         val durationUnitString = match.groupValues[2]
 
         val durationUnit = parseDurationUnit(durationUnitString)
@@ -69,11 +69,11 @@ class MuteDurationType : CustomArgumentType<MuteDuration, String> {
                     Math.addExact(Math.multiplyExact(duration, durationUnit.multiply(1L)), now)
                 }
             } catch (_: ArithmeticException) {
-                throw invalidDuration.createWithContext(reader)
+                throw INVALID_DURATION.createWithContext(reader)
             }
 
         if (durationUnit == MuteDurationUnit.TIMESTAMP && mutedToTime <= now) {
-            throw timestampInPast.createWithContext(reader)
+            throw TIMESTAMP_IN_PAST.createWithContext(reader)
         }
 
         return MuteDuration.Time(duration, durationUnit)
