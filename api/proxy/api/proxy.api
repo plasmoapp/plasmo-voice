@@ -1,0 +1,145 @@
+public abstract interface class su/plo/voice/api/proxy/PlasmoVoiceProxy : su/plo/voice/api/server/PlasmoBaseVoiceServer {
+	public abstract fun createOpusDecoder (Z)Lsu/plo/voice/api/audio/codec/AudioDecoder;
+	public abstract fun createOpusEncoder (Z)Lsu/plo/voice/api/audio/codec/AudioEncoder;
+	public static fun getAddonsLoader ()Lsu/plo/voice/api/addon/AddonsLoader;
+	public abstract fun getConfig ()Lsu/plo/voice/api/proxy/config/ProxyConfig;
+	public synthetic fun getMinecraftServer ()Lsu/plo/slib/api/McLib;
+	public abstract fun getMinecraftServer ()Lsu/plo/slib/api/proxy/McProxyLib;
+	public synthetic fun getPlayerManager ()Lsu/plo/voice/api/server/player/VoicePlayerManager;
+	public abstract fun getPlayerManager ()Lsu/plo/voice/api/server/player/VoiceProxyPlayerManager;
+	public abstract fun getRemoteServerManager ()Lsu/plo/voice/api/proxy/server/RemoteServerManager;
+	public abstract fun getUdpConnectionManager ()Lsu/plo/voice/api/proxy/connection/UdpProxyConnectionManager;
+	public synthetic fun getUdpConnectionManager ()Lsu/plo/voice/api/server/connection/UdpConnectionManager;
+	public abstract fun getUdpProxyServer ()Ljava/util/Optional;
+}
+
+public abstract interface class su/plo/voice/api/proxy/config/ProxyConfig {
+	public abstract fun aesEncryptionKey ()[B
+	public abstract fun checkForUpdates ()Z
+	public abstract fun debug ()Z
+	public abstract fun defaultLanguage ()Ljava/lang/String;
+	public abstract fun host ()Lsu/plo/voice/api/proxy/config/ProxyConfig$Host;
+	public abstract fun mtuSize ()I
+	public abstract fun reusePort ()Lsu/plo/voice/api/proxy/config/ProxyConfig$ReusePort;
+	public abstract fun useCrowdinTranslations ()Z
+}
+
+public abstract interface class su/plo/voice/api/proxy/config/ProxyConfig$Host {
+	public abstract fun ip ()Ljava/lang/String;
+	public abstract fun port ()I
+}
+
+public abstract interface class su/plo/voice/api/proxy/config/ProxyConfig$ReusePort {
+	public abstract fun enabled ()Z
+	public abstract fun sockets ()I
+}
+
+public abstract interface class su/plo/voice/api/proxy/connection/UdpProxyConnectionManager : su/plo/voice/api/server/connection/UdpConnectionManager {
+	public abstract fun addConnection (Lsu/plo/voice/api/proxy/socket/UdpProxyConnection;)V
+	public abstract fun clearConnections ()V
+	public abstract fun getConnectionByAnySecret (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getConnectionByRemoteSecret (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getPlayerIdByAnySecret (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getPlayerIdByProxySecret (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getPlayerIdByRemoteSecret (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getProxySecretByPlayerId (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getRemoteSecretByPlayerId (Ljava/util/UUID;)Ljava/util/Optional;
+	public fun removeConnection (Lsu/plo/voice/api/proxy/player/VoiceProxyPlayer;)Z
+	public abstract fun removeConnection (Lsu/plo/voice/api/proxy/player/VoiceProxyPlayer;Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent$Reason;)Z
+	public fun removeConnection (Lsu/plo/voice/api/proxy/socket/UdpProxyConnection;)Z
+	public abstract fun removeConnection (Lsu/plo/voice/api/proxy/socket/UdpProxyConnection;Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent$Reason;)Z
+	public abstract fun setPlayerRemoteSecret (Ljava/util/UUID;Ljava/util/UUID;)Ljava/util/UUID;
+}
+
+public final class su/plo/voice/api/proxy/event/config/VoiceProxyConfigReloadedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/proxy/PlasmoVoiceProxy;Lsu/plo/voice/api/proxy/config/ProxyConfig;)V
+	public fun getConfig ()Lsu/plo/voice/api/proxy/config/ProxyConfig;
+	public fun getProxy ()Lsu/plo/voice/api/proxy/PlasmoVoiceProxy;
+}
+
+public final class su/plo/voice/api/proxy/event/connection/TcpPacketReceivedEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/server/player/VoicePlayer;Lsu/plo/voice/proto/packets/Packet;)V
+	public final fun component1 ()Lsu/plo/voice/api/server/player/VoicePlayer;
+	public final fun component2 ()Lsu/plo/voice/proto/packets/Packet;
+	public final fun copy (Lsu/plo/voice/api/server/player/VoicePlayer;Lsu/plo/voice/proto/packets/Packet;)Lsu/plo/voice/api/proxy/event/connection/TcpPacketReceivedEvent;
+	public static synthetic fun copy$default (Lsu/plo/voice/api/proxy/event/connection/TcpPacketReceivedEvent;Lsu/plo/voice/api/server/player/VoicePlayer;Lsu/plo/voice/proto/packets/Packet;ILjava/lang/Object;)Lsu/plo/voice/api/proxy/event/connection/TcpPacketReceivedEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+	public final fun getPlayer ()Lsu/plo/voice/api/server/player/VoicePlayer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/api/proxy/event/connection/TcpPacketSendEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/server/player/VoicePlayer;Lsu/plo/voice/proto/packets/Packet;)V
+	public final fun component1 ()Lsu/plo/voice/api/server/player/VoicePlayer;
+	public final fun component2 ()Lsu/plo/voice/proto/packets/Packet;
+	public final fun copy (Lsu/plo/voice/api/server/player/VoicePlayer;Lsu/plo/voice/proto/packets/Packet;)Lsu/plo/voice/api/proxy/event/connection/TcpPacketSendEvent;
+	public static synthetic fun copy$default (Lsu/plo/voice/api/proxy/event/connection/TcpPacketSendEvent;Lsu/plo/voice/api/server/player/VoicePlayer;Lsu/plo/voice/proto/packets/Packet;ILjava/lang/Object;)Lsu/plo/voice/api/proxy/event/connection/TcpPacketSendEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+	public final fun getPlayer ()Lsu/plo/voice/api/server/player/VoicePlayer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/api/proxy/event/socket/UdpProxyServerCreateEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/proxy/socket/UdpProxyServer;)V
+	public fun getServer ()Lsu/plo/voice/api/proxy/socket/UdpProxyServer;
+}
+
+public final class su/plo/voice/api/proxy/event/socket/UdpProxyServerStartedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/proxy/socket/UdpProxyServer;)V
+	public fun getServer ()Lsu/plo/voice/api/proxy/socket/UdpProxyServer;
+}
+
+public final class su/plo/voice/api/proxy/event/socket/UdpProxyServerStoppedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/proxy/socket/UdpProxyServer;)V
+	public fun getServer ()Lsu/plo/voice/api/proxy/socket/UdpProxyServer;
+}
+
+public abstract interface class su/plo/voice/api/proxy/player/VoiceProxyPlayer : su/plo/voice/api/server/player/VoicePlayer {
+	public synthetic fun getInstance ()Lsu/plo/slib/api/entity/player/McPlayer;
+	public abstract fun getInstance ()Lsu/plo/slib/api/proxy/player/McProxyPlayer;
+}
+
+public abstract interface class su/plo/voice/api/proxy/server/RemoteServer {
+	public fun getAddress ()Ljava/net/InetSocketAddress;
+	public abstract fun getAddress (Z)Ljava/net/InetSocketAddress;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun isAesEncryptionKeySet ()Z
+}
+
+public abstract interface class su/plo/voice/api/proxy/server/RemoteServerManager {
+	public abstract fun clear ()V
+	public abstract fun getServer (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun register (Lsu/plo/voice/api/proxy/server/RemoteServer;)V
+	public abstract fun unregister (Ljava/lang/String;)V
+	public abstract fun unregister (Lsu/plo/voice/api/proxy/server/RemoteServer;)V
+}
+
+public abstract interface class su/plo/voice/api/proxy/socket/UdpProxyConnection : su/plo/voice/api/server/socket/UdpConnection {
+	public abstract fun getPlayer ()Lsu/plo/voice/api/proxy/player/VoiceProxyPlayer;
+	public synthetic fun getPlayer ()Lsu/plo/voice/api/server/player/VoicePlayer;
+	public fun getProxySecret ()Ljava/util/UUID;
+	public abstract fun getRemoteSecret ()Ljava/util/UUID;
+	public abstract fun getRemoteServer ()Ljava/util/Optional;
+	public abstract fun setRemoteSecret (Ljava/util/UUID;)V
+	public abstract fun setRemoteServer (Lsu/plo/voice/api/proxy/server/RemoteServer;)V
+}
+
+public abstract interface class su/plo/voice/api/proxy/socket/UdpProxyServer {
+	public abstract fun getRemoteAddress ()Ljava/util/Optional;
+	public abstract fun start (Ljava/lang/String;I)V
+	public abstract fun stop ()V
+}
+
+public abstract interface class su/plo/voice/api/server/audio/line/ProxySourceLine : su/plo/voice/api/server/audio/line/BaseServerSourceLine {
+}
+
+public abstract interface class su/plo/voice/api/server/audio/line/ProxySourceLineManager : su/plo/voice/api/server/audio/line/BaseServerSourceLineManager {
+}
+
+public abstract interface class su/plo/voice/api/server/player/VoiceProxyPlayerManager : su/plo/voice/api/server/connection/PacketManager, su/plo/voice/api/server/player/VoicePlayerManager {
+}
+

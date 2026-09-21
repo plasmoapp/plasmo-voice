@@ -1,4 +1,7 @@
+@file:OptIn(ExperimentalAbiValidation::class)
+
 import org.jetbrains.dokka.gradle.DokkaExtension
+import org.jetbrains.kotlin.gradle.dsl.abi.ExperimentalAbiValidation
 import java.net.URI
 
 plugins {
@@ -10,6 +13,10 @@ subprojects {
 
     apply(plugin = "org.jetbrains.dokka")
     apply(plugin = "su.plo.voice.maven-publish")
+
+    kotlin {
+        abiValidation()
+    }
 
     configure<DokkaExtension> {
         modulePath.set(project.name)
@@ -28,6 +35,10 @@ subprojects {
         api("com.google.code.gson:gson") { version { prefer(rootProject.libs.versions.gson.get()) } }
         api(rootProject.libs.config)
         api(project(":protocol"))
+    }
+
+    tasks.named("check") {
+        dependsOn(tasks.named("checkLegacyAbi"))
     }
 }
 

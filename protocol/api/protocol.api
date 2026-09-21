@@ -1,0 +1,843 @@
+public abstract interface class su/plo/voice/proto/data/audio/capture/Activation {
+	public static final field NAME_PATTERN Ljava/util/regex/Pattern;
+	public fun calculateAllowedDistance (I)I
+	public fun checkDistance (I)Z
+	public abstract fun getDefaultDistance ()I
+	public abstract fun getDistances ()Ljava/util/List;
+	public abstract fun getEncoderInfo ()Ljava/util/Optional;
+	public abstract fun getIcon ()Ljava/lang/String;
+	public abstract fun getId ()Ljava/util/UUID;
+	public abstract fun getMaxDistance ()I
+	public abstract fun getMinDistance ()I
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getTranslation ()Ljava/lang/String;
+	public fun getWeight ()I
+	public abstract fun isProximity ()Z
+	public fun isStereoSupported ()Z
+	public abstract fun isTransitive ()Z
+}
+
+public final class su/plo/voice/proto/data/audio/capture/CaptureInfo : su/plo/voice/proto/packets/PacketSerializable {
+	public fun <init> ()V
+	public fun <init> (IILsu/plo/voice/proto/data/audio/codec/CodecInfo;)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getEncoderInfo ()Lsu/plo/voice/proto/data/audio/codec/CodecInfo;
+	public fun getMtuSize ()I
+	public fun getSampleRate ()I
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public class su/plo/voice/proto/data/audio/capture/VoiceActivation : su/plo/voice/proto/data/audio/capture/Activation, su/plo/voice/proto/packets/PacketSerializable {
+	public static final field PROXIMITY_ID Ljava/util/UUID;
+	public static final field PROXIMITY_NAME Ljava/lang/String;
+	protected field defaultDistance I
+	protected field distances Ljava/util/List;
+	protected field encoderInfo Lsu/plo/voice/proto/data/audio/codec/CodecInfo;
+	protected field icon Ljava/lang/String;
+	protected field id Ljava/util/UUID;
+	protected field name Ljava/lang/String;
+	protected field proximity Z
+	protected field stereoSupported Z
+	protected field transitive Z
+	protected field translation Ljava/lang/String;
+	protected field weight I
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;Ljava/util/List;IZZZLsu/plo/voice/proto/data/audio/codec/CodecInfo;I)V
+	protected fun canEqual (Ljava/lang/Object;)Z
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun generateId (Ljava/lang/String;)Ljava/util/UUID;
+	public fun getDefaultDistance ()I
+	public fun getDistances ()Ljava/util/List;
+	public fun getEncoderInfo ()Ljava/util/Optional;
+	public fun getIcon ()Ljava/lang/String;
+	public fun getId ()Ljava/util/UUID;
+	public fun getMaxDistance ()I
+	public fun getMinDistance ()I
+	public fun getName ()Ljava/lang/String;
+	public fun getTranslation ()Ljava/lang/String;
+	public fun getWeight ()I
+	public fun hashCode ()I
+	public fun isProximity ()Z
+	public fun isStereoSupported ()Z
+	public fun isTransitive ()Z
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+	protected static fun validateDefaultDistance (Ljava/util/List;I)I
+}
+
+public class su/plo/voice/proto/data/audio/codec/CodecInfo : su/plo/voice/proto/packets/PacketSerializable {
+	protected field name Ljava/lang/String;
+	protected field params Ljava/util/Map;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/util/Map;)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getName ()Ljava/lang/String;
+	public fun getParams ()Ljava/util/Map;
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/proto/data/audio/codec/opus/OpusDecoderInfo : su/plo/voice/proto/data/audio/codec/CodecInfo {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/audio/codec/CodecInfo;)V
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/data/audio/codec/opus/OpusEncoderInfo : su/plo/voice/proto/data/audio/codec/CodecInfo {
+	public fun <init> (Lsu/plo/voice/proto/data/audio/codec/CodecInfo;)V
+	public fun <init> (Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;I)V
+	public final fun getBitrate ()I
+	public final fun getMode ()Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;
+	public final fun setBitrate (I)V
+	public final fun setMode (Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;)V
+}
+
+public final class su/plo/voice/proto/data/audio/codec/opus/OpusMode : java/lang/Enum {
+	public static final field AUDIO Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;
+	public static final field RESTRICTED_LOWDELAY Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;
+	public static final field VOIP Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;
+	public final fun getApplication ()I
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;
+	public static fun values ()[Lsu/plo/voice/proto/data/audio/codec/opus/OpusMode;
+}
+
+public abstract interface class su/plo/voice/proto/data/audio/line/SourceLine {
+	public static final field NAME_PATTERN Ljava/util/regex/Pattern;
+	public abstract fun getDefaultVolume ()D
+	public abstract fun getIcon ()Ljava/lang/String;
+	public abstract fun getId ()Ljava/util/UUID;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getPlayers ()Ljava/util/Collection;
+	public abstract fun getTranslation ()Ljava/lang/String;
+	public fun getWeight ()I
+	public abstract fun hasPlayers ()Z
+}
+
+public class su/plo/voice/proto/data/audio/line/VoiceSourceLine : su/plo/voice/proto/data/audio/line/SourceLine, su/plo/voice/proto/packets/PacketSerializable {
+	public static final field PROXIMITY_ID Ljava/util/UUID;
+	public static final field PROXIMITY_NAME Ljava/lang/String;
+	protected field defaultVolume D
+	protected field icon Ljava/lang/String;
+	protected field id Ljava/util/UUID;
+	protected field name Ljava/lang/String;
+	protected field players Ljava/util/Set;
+	protected field translation Ljava/lang/String;
+	protected field weight I
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;DILjava/util/Set;)V
+	protected fun canEqual (Ljava/lang/Object;)Z
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public static fun generateId (Ljava/lang/String;)Ljava/util/UUID;
+	public fun getDefaultVolume ()D
+	public fun getIcon ()Ljava/lang/String;
+	public fun getId ()Ljava/util/UUID;
+	public fun getName ()Ljava/lang/String;
+	public fun getPlayers ()Ljava/util/Collection;
+	public fun getTranslation ()Ljava/lang/String;
+	public fun getWeight ()I
+	public fun hasPlayers ()Z
+	public fun hashCode ()I
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/proto/data/audio/source/DirectSourceInfo : su/plo/voice/proto/data/audio/source/SourceInfo {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/util/UUID;Ljava/lang/String;BLsu/plo/voice/proto/data/audio/codec/CodecInfo;ZZILsu/plo/slib/api/entity/player/McGameProfile;Lsu/plo/slib/api/position/Pos3d;Lsu/plo/slib/api/position/Pos3d;Z)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getLookAngle ()Lsu/plo/slib/api/position/Pos3d;
+	public fun getRelativePosition ()Lsu/plo/slib/api/position/Pos3d;
+	public fun getSender ()Lsu/plo/slib/api/entity/player/McGameProfile;
+	public fun getType ()Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public fun isCameraRelative ()Z
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/proto/data/audio/source/EntitySourceInfo : su/plo/voice/proto/data/audio/source/SourceInfo {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/util/UUID;Ljava/lang/String;BLsu/plo/voice/proto/data/audio/codec/CodecInfo;ZZII)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getEntityId ()I
+	public fun getType ()Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/proto/data/audio/source/PlayerSourceInfo : su/plo/voice/proto/data/audio/source/SourceInfo {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/util/UUID;Ljava/lang/String;BLsu/plo/voice/proto/data/audio/codec/CodecInfo;ZZILsu/plo/voice/proto/data/player/VoicePlayerInfo;)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getPlayerInfo ()Lsu/plo/voice/proto/data/player/VoicePlayerInfo;
+	public fun getType ()Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public class su/plo/voice/proto/data/audio/source/SelfSourceInfo : su/plo/voice/proto/packets/PacketSerializable {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/audio/source/SourceInfo;Ljava/util/UUID;Ljava/util/UUID;J)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getActivationId ()Ljava/util/UUID;
+	public fun getPlayerId ()Ljava/util/UUID;
+	public fun getSequenceNumber ()J
+	public fun getSourceInfo ()Lsu/plo/voice/proto/data/audio/source/SourceInfo;
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract class su/plo/voice/proto/data/audio/source/SourceInfo : su/plo/voice/proto/packets/PacketSerializable {
+	protected field addonId Ljava/lang/String;
+	protected field angle I
+	protected field decoderInfo Lsu/plo/voice/proto/data/audio/codec/CodecInfo;
+	protected field iconVisible Z
+	protected field id Ljava/util/UUID;
+	protected field lineId Ljava/util/UUID;
+	protected field name Ljava/lang/String;
+	protected field state B
+	protected field stereo Z
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/util/UUID;Ljava/lang/String;BLsu/plo/voice/proto/data/audio/codec/CodecInfo;ZZI)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getAddonId ()Ljava/lang/String;
+	public fun getAngle ()I
+	public fun getDecoderInfo ()Lsu/plo/voice/proto/data/audio/codec/CodecInfo;
+	public fun getId ()Ljava/util/UUID;
+	public fun getLineId ()Ljava/util/UUID;
+	public fun getName ()Ljava/lang/String;
+	public fun getState ()B
+	public abstract fun getType ()Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public fun isIconVisible ()Z
+	public fun isStereo ()Z
+	public static fun of (Lcom/google/common/io/ByteArrayDataInput;)Lsu/plo/voice/proto/data/audio/source/SourceInfo;
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/proto/data/audio/source/SourceInfo$Type : java/lang/Enum {
+	public static final field DIRECT Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public static final field ENTITY Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public static final field PLAYER Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public static final field STATIC Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public fun createSourceInfo ()Lsu/plo/voice/proto/data/audio/source/SourceInfo;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public static fun values ()[Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+}
+
+public final class su/plo/voice/proto/data/audio/source/StaticSourceInfo : su/plo/voice/proto/data/audio/source/SourceInfo {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/util/UUID;Ljava/util/UUID;Ljava/lang/String;BLsu/plo/voice/proto/data/audio/codec/CodecInfo;ZZILsu/plo/slib/api/position/Pos3d;Lsu/plo/slib/api/position/Pos3d;)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getLookAngle ()Lsu/plo/slib/api/position/Pos3d;
+	public fun getPosition ()Lsu/plo/slib/api/position/Pos3d;
+	public fun getType ()Lsu/plo/voice/proto/data/audio/source/SourceInfo$Type;
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/proto/data/config/PlayerIconConfig : su/plo/voice/proto/packets/PacketSerializable {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Set;)V
+	public fun <init> (Ljava/util/Set;Lsu/plo/slib/api/position/Pos3d;)V
+	public synthetic fun <init> (Ljava/util/Set;Lsu/plo/slib/api/position/Pos3d;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public final fun getIconOffset ()Lsu/plo/slib/api/position/Pos3d;
+	public final fun getIconVisibility ()Ljava/util/Set;
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/proto/data/config/PlayerIconVisibility : java/lang/Enum {
+	public static final field Companion Lsu/plo/voice/proto/data/config/PlayerIconVisibility$Companion;
+	public static final field HIDE_CLIENT_MUTED Lsu/plo/voice/proto/data/config/PlayerIconVisibility;
+	public static final field HIDE_NOT_INSTALLED Lsu/plo/voice/proto/data/config/PlayerIconVisibility;
+	public static final field HIDE_SERVER_MUTED Lsu/plo/voice/proto/data/config/PlayerIconVisibility;
+	public static final field HIDE_SOURCE_ICON Lsu/plo/voice/proto/data/config/PlayerIconVisibility;
+	public static final field HIDE_VOICE_CHAT_DISABLED Lsu/plo/voice/proto/data/config/PlayerIconVisibility;
+	public static final fun all ()Ljava/util/EnumSet;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static final fun none ()Ljava/util/EnumSet;
+	public static final fun of (Ljava/util/Collection;)Ljava/util/EnumSet;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/proto/data/config/PlayerIconVisibility;
+	public static fun values ()[Lsu/plo/voice/proto/data/config/PlayerIconVisibility;
+}
+
+public final class su/plo/voice/proto/data/config/PlayerIconVisibility$Companion {
+	public final fun all ()Ljava/util/EnumSet;
+	public final fun none ()Ljava/util/EnumSet;
+	public final fun of (Ljava/util/Collection;)Ljava/util/EnumSet;
+}
+
+public final class su/plo/voice/proto/data/encryption/EncryptionInfo : su/plo/voice/proto/packets/PacketSerializable {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;[B)V
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getAlgorithm ()Ljava/lang/String;
+	public fun getData ()[B
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun toString ()Ljava/lang/String;
+}
+
+public class su/plo/voice/proto/data/player/VoicePlayerInfo : su/plo/voice/proto/packets/PacketSerializable {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;Ljava/lang/String;ZZZ)V
+	protected fun canEqual (Ljava/lang/Object;)Z
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getPlayerId ()Ljava/util/UUID;
+	public fun getPlayerNick ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun isMicrophoneMuted ()Z
+	public fun isMuted ()Z
+	public fun isVoiceDisabled ()Z
+	public fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun setMicrophoneMuted (Z)V
+	public fun setMuted (Z)V
+	public fun setPlayerId (Ljava/util/UUID;)V
+	public fun setPlayerNick (Ljava/lang/String;)V
+	public fun setVoiceDisabled (Z)V
+	public fun toGameProfile ()Lsu/plo/slib/api/entity/player/McGameProfile;
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class su/plo/voice/proto/packets/Packet {
+	public abstract fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public abstract fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public abstract fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/PacketDirection : java/lang/Enum {
+	public static final field ANY Lsu/plo/voice/proto/packets/PacketDirection;
+	public static final field CLIENT Lsu/plo/voice/proto/packets/PacketDirection;
+	public static final field SERVER Lsu/plo/voice/proto/packets/PacketDirection;
+	public final fun accepts (Lsu/plo/voice/proto/packets/PacketDirection;)Z
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/proto/packets/PacketDirection;
+	public static fun values ()[Lsu/plo/voice/proto/packets/PacketDirection;
+}
+
+public abstract interface class su/plo/voice/proto/packets/PacketHandler {
+}
+
+public class su/plo/voice/proto/packets/PacketRegistry {
+	public fun <init> ()V
+	public fun byType (I)Lsu/plo/voice/proto/packets/Packet;
+	public fun byType (ILsu/plo/voice/proto/packets/PacketDirection;)Lsu/plo/voice/proto/packets/Packet;
+	public fun getType (Lsu/plo/voice/proto/packets/Packet;)I
+	public fun register (ILsu/plo/voice/proto/packets/PacketDirection;Ljava/lang/Class;Ljava/util/function/Supplier;)V
+}
+
+public abstract interface class su/plo/voice/proto/packets/PacketSerializable {
+	public abstract fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)V
+	public abstract fun serialize (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public class su/plo/voice/proto/packets/PacketUtil {
+	public static fun getUUIDBytes (Ljava/util/UUID;)[B
+	public static fun readBytes (Lcom/google/common/io/ByteArrayDataInput;I)[B
+	public static fun readIntList (Lcom/google/common/io/ByteArrayDataInput;)Ljava/util/List;
+	public static fun readIntList (Lcom/google/common/io/ByteArrayDataInput;I)Ljava/util/List;
+	public static fun readList (Lcom/google/common/io/ByteArrayDataInput;Lsu/plo/voice/proto/serializer/PacketSerializer;)Ljava/util/List;
+	public static fun readNullable (Lcom/google/common/io/ByteArrayDataInput;Lsu/plo/voice/proto/serializer/PacketSerializer;)Ljava/lang/Object;
+	public static fun readNullableString (Lcom/google/common/io/ByteArrayDataInput;)Ljava/lang/String;
+	public static fun readSafeInt (Lcom/google/common/io/ByteArrayDataInput;II)I
+	public static fun readSafeUTF (Lcom/google/common/io/ByteArrayDataInput;I)Ljava/lang/String;
+	public static fun readUUID (Lcom/google/common/io/ByteArrayDataInput;)Ljava/util/UUID;
+	public static fun readUUIDList (Lcom/google/common/io/ByteArrayDataInput;)Ljava/util/List;
+	public static fun writeBytes (Lcom/google/common/io/ByteArrayDataOutput;[B)V
+	public static fun writeIntList (Lcom/google/common/io/ByteArrayDataOutput;Ljava/util/List;)V
+	public static fun writeList (Lcom/google/common/io/ByteArrayDataOutput;Lsu/plo/voice/proto/serializer/PacketSerializer;Ljava/util/List;)V
+	public static fun writeNullable (Lcom/google/common/io/ByteArrayDataOutput;Lsu/plo/voice/proto/serializer/PacketSerializer;Ljava/lang/Object;)V
+	public static fun writeNullableString (Lcom/google/common/io/ByteArrayDataOutput;Ljava/lang/String;)V
+	public static fun writeUUID (Lcom/google/common/io/ByteArrayDataOutput;Ljava/util/UUID;)V
+	public static fun writeUUIDList (Lcom/google/common/io/ByteArrayDataOutput;Ljava/util/List;)V
+}
+
+public class su/plo/voice/proto/packets/tcp/PacketTcpCodec {
+	public static fun decode (Lcom/google/common/io/ByteArrayDataInput;)Ljava/util/Optional;
+	public static fun decode (Lcom/google/common/io/ByteArrayDataInput;Lsu/plo/voice/proto/packets/PacketDirection;)Ljava/util/Optional;
+	public static fun encode (Lsu/plo/voice/proto/packets/Packet;)[B
+}
+
+public abstract interface class su/plo/voice/proto/packets/tcp/PacketTcpHandler : su/plo/voice/proto/packets/PacketHandler {
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/ActivationRegisterPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/audio/capture/VoiceActivation;)V
+	public fun getActivation ()Lsu/plo/voice/proto/data/audio/capture/VoiceActivation;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/ActivationUnregisterPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;)V
+	public fun getActivationId ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public class su/plo/voice/proto/packets/tcp/clientbound/AnimatedActionBarPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public fun getJsonComponent ()Ljava/lang/String;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public abstract interface class su/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler : su/plo/voice/proto/packets/tcp/PacketTcpHandler {
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ActivationRegisterPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ActivationUnregisterPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/AnimatedActionBarPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ConfigPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ConfigPlayerInfoPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ConnectionPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/DistanceVisualizePacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/LanguagePacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/PlayerDisconnectPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/PlayerInfoRequestPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/PlayerInfoUpdatePacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/PlayerListPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SelfSourceInfoPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceAudioEndPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceInfoPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceLinePlayerAddPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceLinePlayerRemovePacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceLinePlayersListPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceLineRegisterPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceLineUnregisterPacket;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/ConfigPacket : su/plo/voice/proto/packets/tcp/clientbound/ConfigPlayerInfoPacket {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;Lsu/plo/voice/proto/data/audio/capture/CaptureInfo;Lsu/plo/voice/proto/data/encryption/EncryptionInfo;Ljava/util/Set;Ljava/util/Set;Ljava/util/Map;Lsu/plo/voice/proto/data/config/PlayerIconConfig;)V
+	public fun getActivations ()Ljava/util/Collection;
+	public fun getCaptureInfo ()Lsu/plo/voice/proto/data/audio/capture/CaptureInfo;
+	public fun getEncryption ()Lsu/plo/voice/proto/data/encryption/EncryptionInfo;
+	public fun getPlayerIconConfig ()Lsu/plo/voice/proto/data/config/PlayerIconConfig;
+	public fun getServerId ()Ljava/util/UUID;
+	public fun getSourceLines ()Ljava/util/Collection;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public class su/plo/voice/proto/packets/tcp/clientbound/ConfigPlayerInfoPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Map;)V
+	public fun getPermissions ()Ljava/util/Map;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/ConnectionPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;Ljava/lang/String;I)V
+	public fun getIp ()Ljava/lang/String;
+	public fun getPort ()I
+	public fun getSecret ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/DistanceVisualizePacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (IILsu/plo/slib/api/position/Pos3d;)V
+	public fun getHexColor ()I
+	public fun getPosition ()Lsu/plo/slib/api/position/Pos3d;
+	public fun getRadius ()I
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/LanguagePacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/util/Map;)V
+	public fun getLanguage ()Ljava/util/Map;
+	public fun getLanguageName ()Ljava/lang/String;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/PlayerDisconnectPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;)V
+	public fun getPlayerId ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/PlayerInfoRequestPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/player/VoicePlayerInfo;)V
+	public fun getPlayerInfo ()Lsu/plo/voice/proto/data/player/VoicePlayerInfo;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/PlayerInfoUpdatePacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/player/VoicePlayerInfo;)V
+	public fun getPlayerInfo ()Lsu/plo/voice/proto/data/player/VoicePlayerInfo;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/PlayerListPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/List;)V
+	public fun getPlayers ()Ljava/util/List;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SelfSourceInfoPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/audio/source/SelfSourceInfo;)V
+	public fun getSourceInfo ()Lsu/plo/voice/proto/data/audio/source/SelfSourceInfo;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SourceAudioEndPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;J)V
+	public fun getSequenceNumber ()J
+	public fun getSourceId ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SourceInfoPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/audio/source/SourceInfo;)V
+	public fun getSourceInfo ()Lsu/plo/voice/proto/data/audio/source/SourceInfo;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SourceLinePlayerAddPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;Lsu/plo/slib/api/entity/player/McGameProfile;)V
+	public fun getLineId ()Ljava/util/UUID;
+	public fun getPlayer ()Lsu/plo/slib/api/entity/player/McGameProfile;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SourceLinePlayerRemovePacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;Ljava/util/UUID;)V
+	public fun getLineId ()Ljava/util/UUID;
+	public fun getPlayerId ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SourceLinePlayersListPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;)V
+	public fun <init> (Ljava/util/UUID;Ljava/util/List;)V
+	public fun getLineId ()Ljava/util/UUID;
+	public fun getPlayers ()Ljava/util/List;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SourceLineRegisterPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Lsu/plo/voice/proto/data/audio/line/VoiceSourceLine;)V
+	public fun getSourceLine ()Lsu/plo/voice/proto/data/audio/line/VoiceSourceLine;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/clientbound/SourceLineUnregisterPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;)V
+	public fun getLineId ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/serverbound/LanguageRequestPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public fun getLanguage ()Ljava/lang/String;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/ServerPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/serverbound/PlayerActivationDistancesPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/Map;)V
+	public fun getDistanceByActivationId ()Ljava/util/Map;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/ServerPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/serverbound/PlayerAudioEndPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (JLjava/util/UUID;S)V
+	public fun getActivationId ()Ljava/util/UUID;
+	public fun getDistance ()S
+	public fun getSequenceNumber ()J
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/ServerPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/tcp/serverbound/PlayerInfoPacket : su/plo/voice/proto/packets/tcp/serverbound/PlayerStatePacket {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;Ljava/lang/String;[BZZ)V
+	public fun getMinecraftVersion ()Ljava/lang/String;
+	public fun getPublicKey ()[B
+	public fun getVersion ()Ljava/lang/String;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/ServerPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public class su/plo/voice/proto/packets/tcp/serverbound/PlayerStatePacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (ZZ)V
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/ServerPacketTcpHandler;)V
+	public fun isMicrophoneMuted ()Z
+	public fun isVoiceDisabled ()Z
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public abstract interface class su/plo/voice/proto/packets/tcp/serverbound/ServerPacketTcpHandler : su/plo/voice/proto/packets/tcp/PacketTcpHandler {
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/LanguageRequestPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/PlayerActivationDistancesPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/PlayerAudioEndPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/PlayerInfoPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/PlayerStatePacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/SourceInfoRequestPacket;)V
+}
+
+public class su/plo/voice/proto/packets/tcp/serverbound/SourceInfoRequestPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;)V
+	public fun getSourceId ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/tcp/serverbound/ServerPacketTcpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public class su/plo/voice/proto/packets/udp/PacketUdp {
+	public fun <init> (Ljava/util/UUID;JLsu/plo/voice/proto/packets/Packet;)V
+	public fun <init> (Ljava/util/UUID;JLsu/plo/voice/proto/packets/Packet;Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun getInput ()Lcom/google/common/io/ByteArrayDataInput;
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+	public fun getPacketClass ()Ljava/lang/Class;
+	public fun getPacketUntyped ()Lsu/plo/voice/proto/packets/Packet;
+	public fun getSecret ()Ljava/util/UUID;
+	public fun getTimestamp ()J
+	public fun isRead ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public class su/plo/voice/proto/packets/udp/PacketUdpCodec {
+	public static fun decode (Lcom/google/common/io/ByteArrayDataInput;)Ljava/util/Optional;
+	public static fun decode (Lcom/google/common/io/ByteArrayDataInput;Lsu/plo/voice/proto/packets/PacketDirection;)Ljava/util/Optional;
+	public static fun decodeThrowing (Lcom/google/common/io/ByteArrayDataInput;Lsu/plo/voice/proto/packets/PacketDirection;)Lsu/plo/voice/proto/packets/udp/PacketUdp;
+	public static fun encode (Lsu/plo/voice/proto/packets/Packet;Ljava/util/UUID;)[B
+	public static fun encodeThrowing (Lsu/plo/voice/proto/packets/Packet;Ljava/util/UUID;)[B
+	public static fun encodeThrowing (Lsu/plo/voice/proto/packets/Packet;Ljava/util/UUID;Lcom/google/common/io/ByteArrayDataOutput;)V
+	public static fun replaceSecret ([BLjava/util/UUID;)[B
+}
+
+public abstract interface class su/plo/voice/proto/packets/udp/PacketUdpHandler : su/plo/voice/proto/packets/PacketHandler {
+	public abstract fun handle (Lsu/plo/voice/proto/packets/udp/bothbound/CustomPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/udp/bothbound/PingPacket;)V
+}
+
+public abstract class su/plo/voice/proto/packets/udp/bothbound/BaseAudioPacket : su/plo/voice/proto/packets/Packet {
+	protected field data [B
+	protected field sequenceNumber J
+	public fun <init> ()V
+	public fun <init> (J[B)V
+	public fun getData ()[B
+	public fun getSequenceNumber ()J
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public class su/plo/voice/proto/packets/udp/bothbound/CustomPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;[B)V
+	public fun getAddonId ()Ljava/lang/String;
+	public fun getPayload ()[B
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/udp/PacketUdpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public class su/plo/voice/proto/packets/udp/bothbound/PingPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;I)V
+	public fun getServerIp ()Ljava/lang/String;
+	public fun getServerPort ()I
+	public fun getTime ()J
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/udp/PacketUdpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public abstract interface class su/plo/voice/proto/packets/udp/clientbound/ClientPacketUdpHandler : su/plo/voice/proto/packets/udp/PacketUdpHandler {
+	public abstract fun handle (Lsu/plo/voice/proto/packets/udp/clientbound/SelfAudioInfoPacket;)V
+	public abstract fun handle (Lsu/plo/voice/proto/packets/udp/clientbound/SourceAudioPacket;)V
+}
+
+public final class su/plo/voice/proto/packets/udp/clientbound/SelfAudioInfoPacket : su/plo/voice/proto/packets/Packet {
+	public fun <init> ()V
+	public fun <init> (Ljava/util/UUID;J[BS)V
+	public fun getData ()Ljava/util/Optional;
+	public fun getDistance ()S
+	public fun getSequenceNumber ()J
+	public fun getSourceId ()Ljava/util/UUID;
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/udp/clientbound/ClientPacketUdpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/udp/clientbound/SourceAudioPacket : su/plo/voice/proto/packets/udp/bothbound/BaseAudioPacket {
+	public fun <init> ()V
+	public fun <init> (JB[BLjava/util/UUID;S)V
+	public fun getDistance ()S
+	public fun getSourceId ()Ljava/util/UUID;
+	public fun getSourceState ()B
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/udp/clientbound/ClientPacketUdpHandler;)V
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun setDistance (S)V
+	public fun setSourceState (B)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/packets/udp/serverbound/PlayerAudioPacket : su/plo/voice/proto/packets/udp/bothbound/BaseAudioPacket {
+	public fun <init> ()V
+	public fun <init> (J[BLjava/util/UUID;SZ)V
+	public fun getActivationId ()Ljava/util/UUID;
+	public fun getDistance ()S
+	public synthetic fun handle (Lsu/plo/voice/proto/packets/PacketHandler;)V
+	public fun handle (Lsu/plo/voice/proto/packets/udp/serverbound/ServerPacketUdpHandler;)V
+	public fun isStereo ()Z
+	public fun read (Lcom/google/common/io/ByteArrayDataInput;)V
+	public fun toString ()Ljava/lang/String;
+	public fun write (Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public abstract interface class su/plo/voice/proto/packets/udp/serverbound/ServerPacketUdpHandler : su/plo/voice/proto/packets/udp/PacketUdpHandler {
+	public abstract fun handle (Lsu/plo/voice/proto/packets/udp/serverbound/PlayerAudioPacket;)V
+}
+
+public final class su/plo/voice/proto/serializer/McGameProfileSerializer : su/plo/voice/proto/serializer/PacketSerializer {
+	public static final field INSTANCE Lsu/plo/voice/proto/serializer/McGameProfileSerializer;
+	public synthetic fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)Ljava/lang/Object;
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)Lsu/plo/slib/api/entity/player/McGameProfile;
+	public synthetic fun serialize (Ljava/lang/Object;Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun serialize (Lsu/plo/slib/api/entity/player/McGameProfile;Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public abstract interface class su/plo/voice/proto/serializer/PacketSerializer {
+	public abstract fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)Ljava/lang/Object;
+	public abstract fun serialize (Ljava/lang/Object;Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+
+public final class su/plo/voice/proto/serializer/Pos3dSerializer : su/plo/voice/proto/serializer/PacketSerializer {
+	public static final field INSTANCE Lsu/plo/voice/proto/serializer/Pos3dSerializer;
+	public synthetic fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)Ljava/lang/Object;
+	public fun deserialize (Lcom/google/common/io/ByteArrayDataInput;)Lsu/plo/slib/api/position/Pos3d;
+	public synthetic fun serialize (Ljava/lang/Object;Lcom/google/common/io/ByteArrayDataOutput;)V
+	public fun serialize (Lsu/plo/slib/api/position/Pos3d;Lcom/google/common/io/ByteArrayDataOutput;)V
+}
+

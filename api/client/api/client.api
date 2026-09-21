@@ -1,0 +1,911 @@
+public final class su/plo/voice/api/addon/ClientAddonsLoader : su/plo/voice/api/addon/VoiceAddonsLoader {
+	public static final field INSTANCE Lsu/plo/voice/api/addon/ClientAddonsLoader;
+}
+
+public abstract interface class su/plo/voice/api/client/PlasmoVoiceClient : su/plo/voice/api/PlasmoVoice {
+	public abstract fun getActivationManager ()Lsu/plo/voice/api/client/audio/capture/ClientActivationManager;
+	public abstract fun getAddonConfig (Ljava/lang/Object;)Lsu/plo/voice/api/client/config/addon/AddonConfig;
+	public static fun getAddonsLoader ()Lsu/plo/voice/api/addon/AddonsLoader;
+	public abstract fun getAudioCapture ()Lsu/plo/voice/api/client/audio/capture/AudioCapture;
+	public abstract fun getConfig ()Lsu/plo/voice/api/client/config/ClientConfig;
+	public abstract fun getDeviceFactoryManager ()Lsu/plo/voice/api/client/audio/device/DeviceFactoryManager;
+	public abstract fun getDeviceManager ()Lsu/plo/voice/api/client/audio/device/DeviceManager;
+	public abstract fun getDistanceVisualizer ()Lsu/plo/voice/api/client/render/DistanceVisualizer;
+	public abstract fun getHotkeys ()Lsu/plo/voice/api/client/config/hotkey/Hotkeys;
+	public abstract fun getServerConnection ()Ljava/util/Optional;
+	public abstract fun getServerInfo ()Ljava/util/Optional;
+	public abstract fun getSourceLineManager ()Lsu/plo/voice/api/client/audio/line/ClientSourceLineManager;
+	public abstract fun getSourceManager ()Lsu/plo/voice/api/client/audio/source/ClientSourceManager;
+	public abstract fun getTimeSupplier ()Lsu/plo/voice/api/client/time/TimeSupplier;
+	public abstract fun getUdpClientManager ()Lsu/plo/voice/api/client/connection/UdpClientManager;
+	public abstract fun setTimeSupplier (Lsu/plo/voice/api/client/time/TimeSupplier;)V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/capture/AudioCapture {
+	public abstract fun getDefaultMonoEncoder ()Ljava/util/Optional;
+	public abstract fun getDefaultStereoEncoder ()Ljava/util/Optional;
+	public abstract fun getDevice ()Ljava/util/Optional;
+	public abstract fun getEncryption ()Ljava/util/Optional;
+	public abstract fun initialize (Lsu/plo/voice/api/client/connection/ServerInfo;)V
+	public abstract fun isActive ()Z
+	public abstract fun isServerMuted ()Z
+	public abstract fun start ()V
+	public abstract fun stop ()V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/capture/ClientActivation : su/plo/voice/proto/data/audio/capture/Activation {
+	public abstract fun cleanup ()V
+	public abstract fun getDistance ()I
+	public abstract fun getDistanceDecreaseKey ()Lsu/plo/voice/api/client/config/hotkey/Hotkey;
+	public abstract fun getDistanceIncreaseKey ()Lsu/plo/voice/api/client/config/hotkey/Hotkey;
+	public abstract fun getLastActivation ()J
+	public abstract fun getMonoEncoder ()Ljava/util/Optional;
+	public abstract fun getPttKey ()Lsu/plo/voice/api/client/config/hotkey/Hotkey;
+	public abstract fun getStereoEncoder ()Ljava/util/Optional;
+	public abstract fun getToggleKey ()Lsu/plo/voice/api/client/config/hotkey/Hotkey;
+	public abstract fun getType ()Lsu/plo/voice/api/client/audio/capture/ClientActivation$Type;
+	public abstract fun isActive ()Z
+	public abstract fun isDisabled ()Z
+	public abstract fun process ([SLsu/plo/voice/api/client/audio/capture/ClientActivation$Result;)Lsu/plo/voice/api/client/audio/capture/ClientActivation$Result;
+	public abstract fun reset ()V
+	public abstract fun setDisabled (Z)V
+}
+
+public final class su/plo/voice/api/client/audio/capture/ClientActivation$Result : java/lang/Enum {
+	public static final field ACTIVATED Lsu/plo/voice/api/client/audio/capture/ClientActivation$Result;
+	public static final field END Lsu/plo/voice/api/client/audio/capture/ClientActivation$Result;
+	public static final field NOT_ACTIVATED Lsu/plo/voice/api/client/audio/capture/ClientActivation$Result;
+	public fun isActivated ()Z
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/audio/capture/ClientActivation$Result;
+	public static fun values ()[Lsu/plo/voice/api/client/audio/capture/ClientActivation$Result;
+}
+
+public final class su/plo/voice/api/client/audio/capture/ClientActivation$Type : java/lang/Enum {
+	public static final field INHERIT Lsu/plo/voice/api/client/audio/capture/ClientActivation$Type;
+	public static final field PUSH_TO_TALK Lsu/plo/voice/api/client/audio/capture/ClientActivation$Type;
+	public static final field VOICE Lsu/plo/voice/api/client/audio/capture/ClientActivation$Type;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/audio/capture/ClientActivation$Type;
+	public static fun values ()[Lsu/plo/voice/api/client/audio/capture/ClientActivation$Type;
+}
+
+public abstract interface class su/plo/voice/api/client/audio/capture/ClientActivationManager : su/plo/voice/api/audio/capture/ActivationManager {
+	public abstract fun getParentActivation ()Ljava/util/Optional;
+	public abstract fun register (Ljava/util/Collection;)Ljava/util/Collection;
+	public abstract fun register (Lsu/plo/voice/api/client/audio/capture/ClientActivation;)Lsu/plo/voice/api/client/audio/capture/ClientActivation;
+	public abstract fun register (Lsu/plo/voice/proto/data/audio/capture/Activation;)Lsu/plo/voice/api/client/audio/capture/ClientActivation;
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/AlContextAudioDevice : su/plo/voice/api/client/audio/device/AudioDevice {
+	public abstract fun getContextPointer ()J
+	public abstract fun getDevicePointer ()J
+	public abstract synthetic fun runInContext (Lkotlin/jvm/functions/Function1;Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun runInContextAsync (Ljava/lang/Runnable;)Ljava/util/concurrent/CompletableFuture;
+	public fun runInContextBlocking (Ljava/lang/Runnable;)Ljava/lang/Void;
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/AlContextOutputDevice : su/plo/voice/api/client/audio/device/AlContextAudioDevice, su/plo/voice/api/client/audio/device/HrtfAudioDevice, su/plo/voice/api/client/audio/device/OutputDevice {
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/AudioDevice {
+	public fun addFilter (Lsu/plo/voice/api/client/audio/filter/AudioFilter;)V
+	public abstract fun addFilter (Lsu/plo/voice/api/client/audio/filter/AudioFilter;Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;)V
+	public abstract fun close ()V
+	public abstract fun getFilters ()Ljava/util/Collection;
+	public abstract fun getFormat ()Ljavax/sound/sampled/AudioFormat;
+	public abstract fun getFrameSize ()I
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getType ()Lsu/plo/voice/api/client/audio/device/DeviceType;
+	public abstract fun isOpen ()Z
+	public fun processFilters ([S)[S
+	public abstract fun processFilters ([SLjava/util/function/Predicate;)[S
+	public abstract fun reload ()V
+	public abstract fun removeFilter (Lsu/plo/voice/api/client/audio/filter/AudioFilter;)V
+}
+
+public class su/plo/voice/api/client/audio/device/DeviceException : java/lang/Exception {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public fun <init> (Ljava/lang/Throwable;)V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/DeviceFactory {
+	public abstract fun getDefaultDeviceName ()Ljava/lang/String;
+	public abstract fun getDeviceNames ()Lcom/google/common/collect/ImmutableList;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun openDevice (Ljavax/sound/sampled/AudioFormat;Ljava/lang/String;)Lsu/plo/voice/api/client/audio/device/AudioDevice;
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/DeviceFactoryManager {
+	public abstract fun getDeviceFactories ()Ljava/util/Collection;
+	public abstract fun getDeviceFactory (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun registerDeviceFactory (Lsu/plo/voice/api/client/audio/device/DeviceFactory;)V
+	public abstract fun unregisterDeviceFactory (Ljava/lang/String;)Z
+	public abstract fun unregisterDeviceFactory (Lsu/plo/voice/api/client/audio/device/DeviceFactory;)Z
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/DeviceManager {
+	public fun clear ()V
+	public abstract fun getInputDevice ()Ljava/util/Optional;
+	public abstract fun getInputDeviceError ()Ljava/util/Optional;
+	public abstract fun getOutputDevice ()Ljava/util/Optional;
+	public abstract fun openInputDevice (Ljavax/sound/sampled/AudioFormat;)Lsu/plo/voice/api/client/audio/device/InputDevice;
+	public abstract fun openOutputDevice (Ljavax/sound/sampled/AudioFormat;)Lsu/plo/voice/api/client/audio/device/AlContextOutputDevice;
+	public fun setInputDevice (Lsu/plo/voice/api/client/audio/device/InputDevice;)V
+	public abstract fun setInputDevice (Lsu/plo/voice/api/client/audio/device/InputDevice;Ljava/lang/Throwable;)V
+	public abstract fun setOutputDevice (Lsu/plo/voice/api/client/audio/device/AlContextOutputDevice;)V
+}
+
+public final class su/plo/voice/api/client/audio/device/DeviceType : java/lang/Enum {
+	public static final field INPUT Lsu/plo/voice/api/client/audio/device/DeviceType;
+	public static final field OUTPUT Lsu/plo/voice/api/client/audio/device/DeviceType;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/audio/device/DeviceType;
+	public static fun values ()[Lsu/plo/voice/api/client/audio/device/DeviceType;
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/HrtfAudioDevice {
+	public abstract fun disableHrtf ()V
+	public abstract fun enableHrtf ()V
+	public abstract fun isHrtfEnabled ()Z
+	public abstract fun isHrtfSupported ()Z
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/InputDevice : su/plo/voice/api/client/audio/device/AudioDevice {
+	public abstract fun available ()I
+	public fun getType ()Lsu/plo/voice/api/client/audio/device/DeviceType;
+	public abstract fun isStarted ()Z
+	public fun read ()[S
+	public abstract fun read (I)[S
+	public abstract fun start ()V
+	public abstract fun stop ()V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/OutputDevice : su/plo/voice/api/client/audio/device/AudioDevice {
+	public abstract synthetic fun closeSources (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun closeSourcesAsync ()Ljava/util/concurrent/CompletableFuture;
+	public abstract fun createSource (ZLsu/plo/voice/api/client/audio/device/source/DeviceSourceParams;)Lsu/plo/voice/api/client/audio/device/source/DeviceSource;
+	public fun getType ()Lsu/plo/voice/api/client/audio/device/DeviceType;
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/source/AlSource : su/plo/voice/api/client/audio/device/source/DeviceSource {
+	public abstract fun getChannels ()I
+	public abstract fun getDevice ()Lsu/plo/voice/api/client/audio/device/AlContextAudioDevice;
+	public synthetic fun getDevice ()Lsu/plo/voice/api/client/audio/device/AudioDevice;
+	public abstract fun getFloat (I)F
+	public abstract fun getFloatArray (I[F)V
+	public abstract fun getFormat ()I
+	public abstract fun getInt (I)I
+	public abstract fun getIntArray (I[I)V
+	public abstract fun getPitch ()F
+	public abstract fun getPointer ()J
+	public abstract fun getState ()Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+	public abstract fun getVolume ()F
+	public abstract fun isRelative ()Z
+	public abstract fun pause ()V
+	public abstract fun play ()V
+	public abstract fun setCloseTimeoutMs (J)V
+	public abstract fun setFloat (IF)V
+	public abstract fun setFloatArray (I[F)V
+	public abstract fun setInt (II)V
+	public abstract fun setIntArray (I[I)V
+	public abstract fun setPitch (F)V
+	public abstract fun setRelative (Z)V
+	public abstract fun setVolume (F)V
+	public abstract fun stop ()V
+	public abstract fun updateLastBufferTime ()V
+}
+
+public final class su/plo/voice/api/client/audio/device/source/AlSource$State : java/lang/Enum {
+	public static final field INITIAL Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+	public static final field PAUSED Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+	public static final field PLAYING Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+	public static final field STOPPED Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+	public static fun fromInt (I)Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+	public fun getValue ()I
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+	public static fun values ()[Lsu/plo/voice/api/client/audio/device/source/AlSource$State;
+}
+
+public final class su/plo/voice/api/client/audio/device/source/AlSourceParams : su/plo/voice/api/client/audio/device/source/DeviceSourceParams {
+	public static final field Companion Lsu/plo/voice/api/client/audio/device/source/AlSourceParams$Companion;
+	public static final field DEFAULT Lsu/plo/voice/api/client/audio/device/source/AlSourceParams;
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/Integer;)V
+	public synthetic fun <init> (Ljava/lang/Integer;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun component1 ()Ljava/lang/Integer;
+	public final fun copy (Ljava/lang/Integer;)Lsu/plo/voice/api/client/audio/device/source/AlSourceParams;
+	public static synthetic fun copy$default (Lsu/plo/voice/api/client/audio/device/source/AlSourceParams;Ljava/lang/Integer;ILjava/lang/Object;)Lsu/plo/voice/api/client/audio/device/source/AlSourceParams;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getNumBuffers ()Ljava/lang/Integer;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/api/client/audio/device/source/AlSourceParams$Companion {
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/source/DeviceSource {
+	public abstract fun clearBuffer ()V
+	public abstract synthetic fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun closeAsync ()Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getDevice ()Lsu/plo/voice/api/client/audio/device/AudioDevice;
+	public abstract fun isClosed ()Z
+	public abstract fun write ([B)V
+	public abstract fun write ([SZ)V
+	public static synthetic fun write$default (Lsu/plo/voice/api/client/audio/device/source/DeviceSource;[SZILjava/lang/Object;)V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/device/source/DeviceSourceParams {
+}
+
+public abstract interface class su/plo/voice/api/client/audio/filter/AudioFilter {
+	public abstract fun getName ()Ljava/lang/String;
+	public fun getSupportedChannels ()I
+	public abstract fun isEnabled ()Z
+	public abstract fun process (Lsu/plo/voice/api/client/audio/filter/AudioFilterContext;[S)[S
+}
+
+public final class su/plo/voice/api/client/audio/filter/AudioFilter$Priority : java/lang/Enum {
+	public static final field HIGH Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+	public static final field HIGHEST Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+	public static final field LOW Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+	public static final field LOWEST Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+	public static final field NORMAL Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+	public static fun byOrdinal (I)Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+	public static fun values ()[Lsu/plo/voice/api/client/audio/filter/AudioFilter$Priority;
+}
+
+public final class su/plo/voice/api/client/audio/filter/AudioFilterContext {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/AudioDevice;)V
+	public final fun getChannels ()I
+	public final fun getDevice ()Lsu/plo/voice/api/client/audio/device/AudioDevice;
+	public final fun setChannels (I)V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/line/ClientPlayerSet {
+	public abstract fun addPlayer (Lsu/plo/slib/api/entity/player/McGameProfile;)V
+	public abstract fun clearPlayers ()V
+	public abstract fun getPlayers ()Ljava/util/Collection;
+	public abstract fun removePlayer (Ljava/util/UUID;)Z
+}
+
+public abstract interface class su/plo/voice/api/client/audio/line/ClientSourceLine : su/plo/voice/api/client/audio/line/ClientPlayerSet, su/plo/voice/proto/data/audio/line/SourceLine {
+	public fun getTranslationComponent ()Lsu/plo/slib/api/chat/component/McTextComponent;
+	public abstract fun getVolume ()D
+	public abstract fun setVolume (D)V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/line/ClientSourceLineManager : su/plo/voice/api/audio/line/SourceLineManager {
+	public abstract fun register (Ljava/util/Collection;)Ljava/util/Collection;
+	public abstract fun register (Lsu/plo/voice/api/client/audio/line/ClientSourceLine;)Lsu/plo/voice/api/client/audio/line/ClientSourceLine;
+	public abstract fun register (Lsu/plo/voice/proto/data/audio/line/SourceLine;)Lsu/plo/voice/api/client/audio/line/ClientSourceLine;
+}
+
+public abstract interface class su/plo/voice/api/client/audio/source/ClientAudioSource : su/plo/voice/api/audio/source/AudioSource {
+	public abstract fun canHear ()Z
+	public abstract synthetic fun close (Lkotlin/coroutines/Continuation;)Ljava/lang/Object;
+	public abstract fun closeAsync ()Ljava/util/concurrent/CompletableFuture;
+	public abstract fun getCloseTimeoutMs ()J
+	public abstract fun getEffectiveVolume ()F
+	public abstract fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+	public abstract fun getSourceLine ()Lsu/plo/voice/api/client/audio/line/ClientSourceLine;
+	public abstract fun isActivated ()Z
+	public abstract fun isClosed ()Z
+	public abstract fun process (Lsu/plo/voice/proto/packets/tcp/clientbound/SourceAudioEndPacket;)V
+	public abstract fun process (Lsu/plo/voice/proto/packets/udp/clientbound/SourceAudioPacket;)V
+	public abstract fun resetAsync (Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;)Ljava/util/concurrent/CompletableFuture;
+	public abstract fun setCloseTimeoutMs (J)V
+	public abstract fun update (Lsu/plo/voice/proto/data/audio/source/SourceInfo;)V
+	public fun updateUnchecked (Lsu/plo/voice/proto/data/audio/source/SourceInfo;)V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/source/ClientSelfSourceInfo {
+	public abstract fun getDistance ()S
+	public abstract fun getLastUpdate ()J
+	public abstract fun getSelfSourceInfo ()Lsu/plo/voice/proto/data/audio/source/SelfSourceInfo;
+	public abstract fun getSequenceNumber ()J
+}
+
+public abstract interface class su/plo/voice/api/client/audio/source/ClientSourceManager : su/plo/voice/api/audio/source/AudioSourceManager {
+	public abstract fun createLoopbackSource (Z)Lsu/plo/voice/api/client/audio/source/LoopbackSource;
+	public abstract fun createOrUpdateSource (Lsu/plo/voice/proto/data/audio/source/SourceInfo;)V
+	public abstract fun getAllSelfSourceInfos ()Ljava/util/Collection;
+	public abstract fun getEntitySources (I)Ljava/util/Collection;
+	public abstract fun getPlayerSources (Ljava/util/UUID;)Ljava/util/Collection;
+	public abstract fun getSelfSourceInfo (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getSourceById (Ljava/util/UUID;Z)Ljava/util/Optional;
+	public abstract fun getSourcesByLineId (Ljava/util/UUID;)Ljava/util/Collection;
+	public fun sendSourceInfoRequest (Ljava/util/UUID;)V
+	public abstract fun sendSourceInfoRequest (Ljava/util/UUID;Z)V
+	public abstract fun updateSelfSourceInfo (Lsu/plo/voice/proto/data/audio/source/SelfSourceInfo;)V
+}
+
+public abstract interface class su/plo/voice/api/client/audio/source/LoopbackSource {
+	public abstract fun close ()V
+	public abstract fun getSource ()Ljava/util/Optional;
+	public abstract fun initialize (Z)V
+	public abstract fun isClosed ()Z
+	public abstract fun isStereo ()Z
+	public abstract fun setVolumeEntry (Lsu/plo/config/entry/DoubleConfigEntry;)V
+	public abstract fun write ([S)V
+}
+
+public abstract interface class su/plo/voice/api/client/config/ClientConfig {
+	public abstract fun getAdvanced ()Lsu/plo/voice/api/client/config/ClientConfig$Advanced;
+	public abstract fun getCheckForUpdates ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getDebug ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getDisableCrowdin ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getVoice ()Lsu/plo/voice/api/client/config/ClientConfig$Voice;
+}
+
+public abstract interface class su/plo/voice/api/client/config/ClientConfig$Advanced {
+	public abstract fun getAdaptiveJitterBuffer ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getAlPlaybackBuffers ()Lsu/plo/config/entry/IntConfigEntry;
+	public abstract fun getCameraSoundListener ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getDirectionalSourcesAngle ()Lsu/plo/config/entry/IntConfigEntry;
+	public abstract fun getExponentialDistanceGain ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getExponentialVolumeSlider ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getJitterPacketDelay ()Lsu/plo/config/entry/IntConfigEntry;
+	public abstract fun getPanning ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getSourceTypesOverlap ()Lsu/plo/config/entry/EnumConfigEntry;
+	public abstract fun getStereoSourcesToMono ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getVisualizeVoiceDistance ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getVisualizeVoiceDistanceOnJoin ()Lsu/plo/config/entry/BooleanConfigEntry;
+}
+
+public abstract interface class su/plo/voice/api/client/config/ClientConfig$Overlay {
+	public abstract fun getActivationIconPosition ()Lsu/plo/config/entry/EnumConfigEntry;
+	public abstract fun getOverlayEnabled ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getOverlayPosition ()Lsu/plo/config/entry/EnumConfigEntry;
+	public abstract fun getOverlayStyle ()Lsu/plo/config/entry/EnumConfigEntry;
+	public abstract fun getShowActivationIcon ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getShowSourceIcons ()Lsu/plo/config/entry/IntConfigEntry;
+	public abstract fun getShowStaticSourceIcons ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getSourceStates ()Lsu/plo/voice/api/client/config/ClientConfig$Overlay$SourceStates;
+}
+
+public abstract interface class su/plo/voice/api/client/config/ClientConfig$Overlay$SourceStates {
+	public abstract fun getState (Ljava/lang/String;)Lsu/plo/config/entry/EnumConfigEntry;
+	public abstract fun setState (Ljava/lang/String;Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;)V
+}
+
+public abstract interface class su/plo/voice/api/client/config/ClientConfig$Voice {
+	public abstract fun getActivationThreshold ()Lsu/plo/config/entry/DoubleConfigEntry;
+	public abstract fun getDirectionalSources ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getDisableInputDevice ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getDisabled ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getHrtf ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getInputDevice ()Lsu/plo/config/entry/ConfigEntry;
+	public abstract fun getMicrophoneDisabled ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getMicrophoneVolume ()Lsu/plo/config/entry/DoubleConfigEntry;
+	public abstract fun getNoiseSuppression ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getOutputDevice ()Lsu/plo/config/entry/ConfigEntry;
+	public abstract fun getSoundOcclusion ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getStereoCapture ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getUseJavaxInput ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getVolume ()Lsu/plo/config/entry/DoubleConfigEntry;
+	public abstract fun getVolumes ()Lsu/plo/voice/api/client/config/ClientConfig$Voice$Volumes;
+}
+
+public abstract interface class su/plo/voice/api/client/config/ClientConfig$Voice$Volumes {
+	public abstract fun getMute (Ljava/lang/String;)Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getPlayerMute (Ljava/util/UUID;)Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getPlayerVolume (Ljava/util/UUID;)Lsu/plo/config/entry/DoubleConfigEntry;
+	public abstract fun getVolume (Ljava/lang/String;)Lsu/plo/config/entry/DoubleConfigEntry;
+	public abstract fun hasVolume (Ljava/lang/String;)Z
+	public abstract fun setMute (Ljava/lang/String;Z)V
+	public abstract fun setPlayerMute (Ljava/util/UUID;Z)V
+	public abstract fun setPlayerVolume (Ljava/util/UUID;D)V
+	public abstract fun setVolume (Ljava/lang/String;D)V
+}
+
+public final class su/plo/voice/api/client/config/IconPosition : java/lang/Enum {
+	public static final field BOTTOM_CENTER Lsu/plo/voice/api/client/config/IconPosition;
+	public static final field BOTTOM_LEFT Lsu/plo/voice/api/client/config/IconPosition;
+	public static final field BOTTOM_RIGHT Lsu/plo/voice/api/client/config/IconPosition;
+	public static final field TOP_CENTER Lsu/plo/voice/api/client/config/IconPosition;
+	public static final field TOP_LEFT Lsu/plo/voice/api/client/config/IconPosition;
+	public static final field TOP_RIGHT Lsu/plo/voice/api/client/config/IconPosition;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getTranslation ()Ljava/lang/String;
+	public final fun getX ()Ljava/lang/Integer;
+	public final fun getY ()Ljava/lang/Integer;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/IconPosition;
+	public static fun values ()[Lsu/plo/voice/api/client/config/IconPosition;
+}
+
+public final class su/plo/voice/api/client/config/OverlappingSourceTypes : java/lang/Enum {
+	public static final field Companion Lsu/plo/voice/api/client/config/OverlappingSourceTypes$Companion;
+	public static final field MUTE_DIRECT Lsu/plo/voice/api/client/config/OverlappingSourceTypes;
+	public static final field MUTE_PROXIMITY Lsu/plo/voice/api/client/config/OverlappingSourceTypes;
+	public static final field OFF Lsu/plo/voice/api/client/config/OverlappingSourceTypes;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getText ()Lsu/plo/slib/api/chat/component/McTextComponent;
+	public static final fun getTextElements ()Ljava/util/List;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/OverlappingSourceTypes;
+	public static fun values ()[Lsu/plo/voice/api/client/config/OverlappingSourceTypes;
+}
+
+public final class su/plo/voice/api/client/config/OverlappingSourceTypes$Companion {
+	public final fun getTextElements ()Ljava/util/List;
+}
+
+public abstract interface class su/plo/voice/api/client/config/addon/AddonConfig {
+	public static final field ID_PATTERN Ljava/util/regex/Pattern;
+	public abstract fun addDropDown (Ljava/lang/String;Lsu/plo/slib/api/chat/component/McTextComponent;Lsu/plo/slib/api/chat/component/McTextComponent;Ljava/util/List;ZI)Lsu/plo/config/entry/IntConfigEntry;
+	public abstract fun addIntSlider (Ljava/lang/String;Lsu/plo/slib/api/chat/component/McTextComponent;Lsu/plo/slib/api/chat/component/McTextComponent;Ljava/lang/String;III)Lsu/plo/config/entry/IntConfigEntry;
+	public abstract fun addToggle (Ljava/lang/String;Lsu/plo/slib/api/chat/component/McTextComponent;Lsu/plo/slib/api/chat/component/McTextComponent;Z)Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun addVolumeSlider (Ljava/lang/String;Lsu/plo/slib/api/chat/component/McTextComponent;Lsu/plo/slib/api/chat/component/McTextComponent;Ljava/lang/String;DDD)Lsu/plo/config/entry/DoubleConfigEntry;
+	public abstract fun clear ()V
+	public abstract fun getWidgetConfigEntry (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun removeWidget (Ljava/lang/String;)Z
+}
+
+public abstract interface class su/plo/voice/api/client/config/hotkey/Hotkey {
+	public abstract fun addKeysChangeListener (Lsu/plo/voice/api/client/config/hotkey/Hotkey$OnKeysChange;)V
+	public abstract fun addPressListener (Lsu/plo/voice/api/client/config/hotkey/Hotkey$OnPress;)V
+	public abstract fun clearKeysChangeListeners ()V
+	public abstract fun clearPressListener ()V
+	public abstract fun getKeys ()Ljava/util/Set;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun isAnyContext ()Z
+	public abstract fun isPressed ()Z
+	public abstract fun removeKeysChangeListener (Lsu/plo/voice/api/client/config/hotkey/Hotkey$OnKeysChange;)V
+	public abstract fun removePressListener (Lsu/plo/voice/api/client/config/hotkey/Hotkey$OnPress;)V
+	public abstract fun resetState ()V
+	public abstract fun setKeys (Ljava/util/Set;)V
+	public abstract fun updateState (Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;)V
+}
+
+public final class su/plo/voice/api/client/config/hotkey/Hotkey$Action : java/lang/Enum {
+	public static final field DOWN Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;
+	public static final field UNKNOWN Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;
+	public static final field UP Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;
+	public static fun fromInt (I)Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;
+	public static fun values ()[Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;
+}
+
+public final class su/plo/voice/api/client/config/hotkey/Hotkey$Key {
+	public fun <init> (Lsu/plo/voice/api/client/config/hotkey/Hotkey$Type;I)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getCode ()I
+	public fun getType ()Lsu/plo/voice/api/client/config/hotkey/Hotkey$Type;
+	public fun hashCode ()I
+}
+
+public abstract interface class su/plo/voice/api/client/config/hotkey/Hotkey$OnKeysChange {
+	public abstract fun onKeysChange (Ljava/util/Set;)V
+}
+
+public abstract interface class su/plo/voice/api/client/config/hotkey/Hotkey$OnPress {
+	public abstract fun onPress (Lsu/plo/voice/api/client/config/hotkey/Hotkey$Action;)V
+}
+
+public final class su/plo/voice/api/client/config/hotkey/Hotkey$Type : java/lang/Enum {
+	public static final field KEYSYM Lsu/plo/voice/api/client/config/hotkey/Hotkey$Type;
+	public static final field MOUSE Lsu/plo/voice/api/client/config/hotkey/Hotkey$Type;
+	public static final field SCANCODE Lsu/plo/voice/api/client/config/hotkey/Hotkey$Type;
+	public fun getOrCreate (I)Lsu/plo/voice/api/client/config/hotkey/Hotkey$Key;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/hotkey/Hotkey$Type;
+	public static fun values ()[Lsu/plo/voice/api/client/config/hotkey/Hotkey$Type;
+}
+
+public abstract interface class su/plo/voice/api/client/config/hotkey/Hotkeys {
+	public abstract fun getCategories ()Ljava/util/Map;
+	public abstract fun getHotkey (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun getPressedKeys ()Ljava/util/Collection;
+	public abstract fun register (Ljava/lang/String;Ljava/util/List;Ljava/lang/String;Z)Lsu/plo/voice/api/client/config/hotkey/Hotkey;
+	public abstract fun resetPressedStates ()V
+}
+
+public final class su/plo/voice/api/client/config/overlay/OverlayPosition : java/lang/Enum {
+	public static final field BOTTOM_LEFT Lsu/plo/voice/api/client/config/overlay/OverlayPosition;
+	public static final field BOTTOM_RIGHT Lsu/plo/voice/api/client/config/overlay/OverlayPosition;
+	public static final field TOP_LEFT Lsu/plo/voice/api/client/config/overlay/OverlayPosition;
+	public static final field TOP_RIGHT Lsu/plo/voice/api/client/config/overlay/OverlayPosition;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getTranslation ()Ljava/lang/String;
+	public final fun getX ()I
+	public final fun getY ()I
+	public final fun isBottom ()Z
+	public final fun isRight ()Z
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/overlay/OverlayPosition;
+	public static fun values ()[Lsu/plo/voice/api/client/config/overlay/OverlayPosition;
+}
+
+public final class su/plo/voice/api/client/config/overlay/OverlaySourceState : java/lang/Enum {
+	public static final field ALWAYS Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+	public static final field Companion Lsu/plo/voice/api/client/config/overlay/OverlaySourceState$Companion;
+	public static final field NEVER Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+	public static final field OFF Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+	public static final field ON Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+	public static final field WHEN_TALKING Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+	public static final fun fromBoolean (Z)Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun isProximityOnly ()Z
+	public final fun toBoolean ()Z
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+	public static fun values ()[Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+}
+
+public final class su/plo/voice/api/client/config/overlay/OverlaySourceState$Companion {
+	public final fun fromBoolean (Z)Lsu/plo/voice/api/client/config/overlay/OverlaySourceState;
+}
+
+public final class su/plo/voice/api/client/config/overlay/OverlayStyle : java/lang/Enum {
+	public static final field Companion Lsu/plo/voice/api/client/config/overlay/OverlayStyle$Companion;
+	public static final field NAME Lsu/plo/voice/api/client/config/overlay/OverlayStyle;
+	public static final field NAME_SKIN Lsu/plo/voice/api/client/config/overlay/OverlayStyle;
+	public static final field SKIN Lsu/plo/voice/api/client/config/overlay/OverlayStyle;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getHasName ()Z
+	public final fun getHasSkin ()Z
+	public final fun getTranslatable ()Lsu/plo/slib/api/chat/component/McTranslatableText;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/overlay/OverlayStyle;
+	public static fun values ()[Lsu/plo/voice/api/client/config/overlay/OverlayStyle;
+}
+
+public final class su/plo/voice/api/client/config/overlay/OverlayStyle$Companion {
+	public final fun fromOrdinal (I)Lsu/plo/voice/api/client/config/overlay/OverlayStyle;
+}
+
+public abstract interface class su/plo/voice/api/client/connection/ServerConnection : su/plo/voice/proto/packets/tcp/clientbound/ClientPacketTcpHandler {
+	public abstract fun close ()V
+	public abstract fun getEncryptionInfo ()Ljava/util/Optional;
+	public abstract fun getKeyPair ()Ljava/security/KeyPair;
+	public abstract fun getLanguage ()Ljava/util/Map;
+	public abstract fun getLocalPlayer ()Ljava/util/Optional;
+	public abstract fun getPlayerById (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getPlayers ()Ljava/util/Collection;
+	public abstract fun getRemoteAddress ()Ljava/net/SocketAddress;
+	public abstract fun getRemoteIp ()Ljava/lang/String;
+	public fun sendPacket (Lsu/plo/voice/proto/packets/Packet;)V
+	public abstract fun sendPacket (Lsu/plo/voice/proto/packets/Packet;Z)V
+	public abstract fun setKeyPair (Ljava/security/KeyPair;)V
+}
+
+public abstract interface class su/plo/voice/api/client/connection/ServerInfo {
+	public abstract fun createOpusDecoder (Z)Lsu/plo/voice/api/audio/codec/AudioDecoder;
+	public abstract fun createOpusEncoder (Z)Lsu/plo/voice/api/audio/codec/AudioEncoder;
+	public abstract fun getEncryption ()Ljava/util/Optional;
+	public abstract fun getPlayerIconOffset ()Lsu/plo/slib/api/position/Pos3d;
+	public abstract fun getPlayerIconVisibility ()Ljava/util/Set;
+	public abstract fun getPlayerInfo ()Lsu/plo/voice/api/client/connection/ServerInfo$PlayerInfo;
+	public abstract fun getRemoteAddress ()Ljava/net/InetSocketAddress;
+	public abstract fun getSecret ()Ljava/util/UUID;
+	public abstract fun getServerId ()Ljava/util/UUID;
+	public abstract fun getVoiceInfo ()Lsu/plo/voice/api/client/connection/ServerInfo$VoiceInfo;
+}
+
+public abstract interface class su/plo/voice/api/client/connection/ServerInfo$PlayerInfo {
+	public abstract fun get (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun getPermissions ()Ljava/util/Map;
+}
+
+public abstract interface class su/plo/voice/api/client/connection/ServerInfo$VoiceInfo {
+	public abstract fun createFormat (Z)Ljavax/sound/sampled/AudioFormat;
+	public abstract fun getActivations ()Ljava/util/Collection;
+	public abstract fun getCaptureInfo ()Lsu/plo/voice/proto/data/audio/capture/CaptureInfo;
+	public abstract fun getFrameSize ()I
+	public abstract fun getSourceLines ()Ljava/util/Collection;
+}
+
+public abstract interface class su/plo/voice/api/client/connection/UdpClientManager {
+	public abstract fun getClient ()Ljava/util/Optional;
+	public abstract fun isConnected ()Z
+	public abstract fun removeClient (Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;)V
+	public abstract fun setClient (Lsu/plo/voice/api/client/socket/UdpClient;)V
+}
+
+public final class su/plo/voice/api/client/event/audio/capture/AudioCaptureEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/AudioCapture;Lsu/plo/voice/api/client/audio/device/InputDevice;[S)V
+	public fun getCapture ()Lsu/plo/voice/api/client/audio/capture/AudioCapture;
+	public fun getDevice ()Lsu/plo/voice/api/client/audio/device/InputDevice;
+	public fun getSamples ()[S
+	public fun isFlushActivations ()Z
+	public fun setFlushActivations (Z)V
+}
+
+public final class su/plo/voice/api/client/event/audio/capture/AudioCaptureInitializeEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/AudioCapture;)V
+	public fun getCapture ()Lsu/plo/voice/api/client/audio/capture/AudioCapture;
+}
+
+public final class su/plo/voice/api/client/event/audio/capture/AudioCaptureProcessedEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/AudioCapture;Lsu/plo/voice/api/client/audio/device/InputDevice;[SLsu/plo/voice/api/client/event/audio/capture/AudioCaptureProcessedEvent$ProcessedSamples;)V
+	public fun getCapture ()Lsu/plo/voice/api/client/audio/capture/AudioCapture;
+	public fun getDevice ()Lsu/plo/voice/api/client/audio/device/InputDevice;
+	public fun getProcessed ()Lsu/plo/voice/api/client/event/audio/capture/AudioCaptureProcessedEvent$ProcessedSamples;
+	public fun getRawSamples ()[S
+}
+
+public abstract interface class su/plo/voice/api/client/event/audio/capture/AudioCaptureProcessedEvent$ProcessedSamples {
+	public abstract fun getMono ()[S
+	public fun getSamples (Z)[S
+	public abstract fun getStereo ()[S
+}
+
+public final class su/plo/voice/api/client/event/audio/capture/AudioCaptureStartEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/AudioCapture;)V
+	public fun getCapture ()Lsu/plo/voice/api/client/audio/capture/AudioCapture;
+}
+
+public final class su/plo/voice/api/client/event/audio/capture/AudioCaptureStopEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/AudioCapture;)V
+	public fun getCapture ()Lsu/plo/voice/api/client/audio/capture/AudioCapture;
+}
+
+public final class su/plo/voice/api/client/event/audio/capture/ClientActivationRegisteredEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/ClientActivation;)V
+	public fun getActivation ()Lsu/plo/voice/api/client/audio/capture/ClientActivation;
+}
+
+public final class su/plo/voice/api/client/event/audio/capture/ClientActivationUnregisteredEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/ClientActivation;)V
+	public fun getActivation ()Lsu/plo/voice/api/client/audio/capture/ClientActivation;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/DeviceClosedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/AudioDevice;)V
+	public fun getDevice ()Lsu/plo/voice/api/client/audio/device/AudioDevice;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/DeviceOpenEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/AudioDevice;)V
+	public fun getDevice ()Lsu/plo/voice/api/client/audio/device/AudioDevice;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/DevicePreOpenEvent : su/plo/voice/api/event/EventCancellableBase, su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/AudioDevice;)V
+	public fun getDevice ()Lsu/plo/voice/api/client/audio/device/AudioDevice;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/DeviceSourceCreatedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/AudioDevice;Lsu/plo/voice/api/client/audio/device/source/DeviceSource;)V
+	public fun getDevice ()Lsu/plo/voice/api/client/audio/device/AudioDevice;
+	public fun getSource ()Lsu/plo/voice/api/client/audio/device/source/DeviceSource;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourceBufferQueuedEvent {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;Ljava/nio/ByteBuffer;I)V
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;[SI)V
+	public fun getBuffer ()Ljava/nio/ByteBuffer;
+	public fun getBufferId ()I
+	public fun getSamples ()[S
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourceBufferUnqueuedEvent {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;I)V
+	public fun getBufferId ()I
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourceClosedEvent {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;)V
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourceCreatedEvent {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;)V
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourcePauseEvent : su/plo/voice/api/event/EventCancellable {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;)V
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+	public fun isCancelled ()Z
+	public fun setCancelled (Z)V
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourcePlayEvent : su/plo/voice/api/event/EventCancellable {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;)V
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+	public fun isCancelled ()Z
+	public fun setCancelled (Z)V
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourceStopEvent : su/plo/voice/api/event/EventCancellable {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;)V
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+	public fun isCancelled ()Z
+	public fun setCancelled (Z)V
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourceUpdateParamEvent : su/plo/voice/api/event/EventCancellable {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;ILjava/lang/Object;)V
+	public fun getParam ()I
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+	public fun getValue ()Ljava/lang/Object;
+	public fun isCancelled ()Z
+	public fun setCancelled (Z)V
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlSourceWriteEvent : su/plo/voice/api/event/EventCancellable {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;[B)V
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;[S)V
+	public fun getSamples ()[B
+	public fun getSamplesShorts ()[S
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+	public fun isCancelled ()Z
+	public fun setCancelled (Z)V
+	public fun setSamples ([B)V
+	public fun setSamplesShorts ([S)V
+}
+
+public final class su/plo/voice/api/client/event/audio/device/source/AlStreamSourceStoppedEvent {
+	public fun <init> (Lsu/plo/voice/api/client/audio/device/source/AlSource;)V
+	public synthetic fun getSource ()Lsu/plo/voice/api/client/audio/device/source/AlSource;
+}
+
+public class su/plo/voice/api/client/event/audio/source/AudioSourceClosedEvent : su/plo/voice/api/event/Event {
+	protected final field source Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+	public fun <init> (Lsu/plo/voice/api/client/audio/source/ClientAudioSource;)V
+	public fun getSource ()Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+}
+
+public class su/plo/voice/api/client/event/audio/source/AudioSourceInitializedEvent : su/plo/voice/api/event/Event {
+	protected final field source Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+	public fun <init> (Lsu/plo/voice/api/client/audio/source/ClientAudioSource;)V
+	public fun getSource ()Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+}
+
+public final class su/plo/voice/api/client/event/audio/source/AudioSourceResetEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/source/ClientAudioSource;Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;)V
+	public final fun component1 ()Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+	public final fun component2 ()Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;
+	public final fun copy (Lsu/plo/voice/api/client/audio/source/ClientAudioSource;Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;)Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent;
+	public static synthetic fun copy$default (Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent;Lsu/plo/voice/api/client/audio/source/ClientAudioSource;Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;ILjava/lang/Object;)Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getCause ()Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;
+	public final fun getSource ()Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause : java/lang/Enum {
+	public static final field SOURCE_STOPPED Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;
+	public static final field TIMED_OUT Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;
+	public static final field VOICE_END Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;
+	public static fun values ()[Lsu/plo/voice/api/client/event/audio/source/AudioSourceResetEvent$Cause;
+}
+
+public final class su/plo/voice/api/client/event/audio/source/AudioSourceWriteEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/source/ClientAudioSource;J[S)V
+	public final fun component1 ()Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+	public final fun component2 ()J
+	public final fun component3 ()[S
+	public final fun copy (Lsu/plo/voice/api/client/audio/source/ClientAudioSource;J[S)Lsu/plo/voice/api/client/event/audio/source/AudioSourceWriteEvent;
+	public static synthetic fun copy$default (Lsu/plo/voice/api/client/event/audio/source/AudioSourceWriteEvent;Lsu/plo/voice/api/client/audio/source/ClientAudioSource;J[SILjava/lang/Object;)Lsu/plo/voice/api/client/event/audio/source/AudioSourceWriteEvent;
+	public fun equals (Ljava/lang/Object;)Z
+	public final fun getSamples ()[S
+	public final fun getSequenceNumber ()J
+	public final fun getSource ()Lsu/plo/voice/api/client/audio/source/ClientAudioSource;
+	public fun hashCode ()I
+	public fun toString ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/api/client/event/connection/ConnectionKeyPairGenerateEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Ljava/security/KeyPair;)V
+	public fun getKeyPair ()Ljava/security/KeyPair;
+	public fun setKeyPair (Ljava/security/KeyPair;)V
+}
+
+public final class su/plo/voice/api/client/event/connection/ServerInfoInitializedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/connection/ServerInfo;Lsu/plo/voice/proto/packets/tcp/clientbound/ConfigPacket;)V
+	public fun getPacket ()Lsu/plo/voice/proto/packets/tcp/clientbound/ConfigPacket;
+	public fun getServerInfo ()Lsu/plo/voice/api/client/connection/ServerInfo;
+}
+
+public final class su/plo/voice/api/client/event/connection/TcpClientPacketReceivedEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/connection/ServerConnection;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getConnection ()Lsu/plo/voice/api/client/connection/ServerConnection;
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+}
+
+public final class su/plo/voice/api/client/event/connection/UdpClientPacketReceivedEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/socket/UdpClient;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getClient ()Lsu/plo/voice/api/client/socket/UdpClient;
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+}
+
+public final class su/plo/voice/api/client/event/connection/UdpClientPacketSendEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/socket/UdpClient;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getClient ()Lsu/plo/voice/api/client/socket/UdpClient;
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+	public fun setPacket (Lsu/plo/voice/proto/packets/Packet;)V
+}
+
+public final class su/plo/voice/api/client/event/connection/VoicePlayerConnectedEvent : su/plo/voice/api/client/event/connection/VoicePlayerUpdateEvent {
+	public fun <init> (Lsu/plo/voice/proto/data/player/VoicePlayerInfo;)V
+}
+
+public final class su/plo/voice/api/client/event/connection/VoicePlayerDisconnectedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Ljava/util/UUID;)V
+	public fun getPlayerId ()Ljava/util/UUID;
+}
+
+public class su/plo/voice/api/client/event/connection/VoicePlayerUpdateEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/proto/data/player/VoicePlayerInfo;)V
+	public fun getPlayer ()Lsu/plo/voice/proto/data/player/VoicePlayerInfo;
+}
+
+public final class su/plo/voice/api/client/event/render/HudActivationRenderEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/audio/capture/ClientActivation;Z)V
+	public fun getActivation ()Lsu/plo/voice/api/client/audio/capture/ClientActivation;
+	public fun isRender ()Z
+	public fun setRender (Z)V
+}
+
+public final class su/plo/voice/api/client/event/render/VoiceDistanceRenderEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/render/DistanceVisualizer;II)V
+	public fun getColor ()I
+	public fun getRadius ()I
+	public fun getVisualizer ()Lsu/plo/voice/api/client/render/DistanceVisualizer;
+	public fun setColor (I)V
+	public fun setRadius (I)V
+}
+
+public final class su/plo/voice/api/client/event/socket/UdpClientClosedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/socket/UdpClient;Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;)V
+	public fun getClient ()Lsu/plo/voice/api/client/socket/UdpClient;
+	public fun getReason ()Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+}
+
+public final class su/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason : java/lang/Enum {
+	public static final field CUSTOM Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+	public static final field DISCONNECT Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+	public static final field FAILED_TO_CONNECT Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+	public static final field RECONNECT Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+	public static final field TIMED_OUT Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+	public static fun values ()[Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;
+}
+
+public final class su/plo/voice/api/client/event/socket/UdpClientConnectEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/client/socket/UdpClient;Lsu/plo/voice/proto/packets/tcp/clientbound/ConnectionPacket;)V
+	public fun getClient ()Lsu/plo/voice/api/client/socket/UdpClient;
+	public fun getConnectionPacket ()Lsu/plo/voice/proto/packets/tcp/clientbound/ConnectionPacket;
+	public fun setClient (Lsu/plo/voice/api/client/socket/UdpClient;)V
+}
+
+public final class su/plo/voice/api/client/event/socket/UdpClientConnectedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/socket/UdpClient;)V
+	public fun getClient ()Lsu/plo/voice/api/client/socket/UdpClient;
+}
+
+public final class su/plo/voice/api/client/event/socket/UdpClientTimedOutEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/client/socket/UdpClient;Z)V
+	public fun getClient ()Lsu/plo/voice/api/client/socket/UdpClient;
+	public fun isTimedOut ()Z
+}
+
+public abstract interface class su/plo/voice/api/client/render/DistanceVisualizer {
+	public abstract fun render (IILsu/plo/slib/api/position/Pos3d;)V
+}
+
+public abstract interface class su/plo/voice/api/client/socket/UdpClient {
+	public abstract fun close (Lsu/plo/voice/api/client/event/socket/UdpClientClosedEvent$Reason;)V
+	public abstract fun connect (Ljava/lang/String;I)V
+	public abstract fun getKeepAlive ()J
+	public abstract fun getRemoteAddress ()Ljava/util/Optional;
+	public abstract fun getSecret ()Ljava/util/UUID;
+	public abstract fun isClosed ()Z
+	public abstract fun isConnected ()Z
+	public abstract fun isTimedOut ()Z
+	public abstract fun sendPacket (Lsu/plo/voice/proto/packets/Packet;)V
+}
+
+public class su/plo/voice/api/client/time/SystemTimeSupplier : su/plo/voice/api/client/time/TimeSupplier {
+	public fun <init> ()V
+	public fun getCurrentTimeMillis ()J
+}
+
+public abstract interface class su/plo/voice/api/client/time/TimeSupplier {
+	public abstract fun getCurrentTimeMillis ()J
+}
+

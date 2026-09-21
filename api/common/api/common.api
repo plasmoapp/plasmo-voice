@@ -1,0 +1,284 @@
+public abstract interface class su/plo/voice/api/PlasmoVoice {
+	public abstract fun getAddonManager ()Lsu/plo/voice/api/addon/AddonManager;
+	public abstract fun getBackgroundExecutor ()Ljava/util/concurrent/ScheduledExecutorService;
+	public abstract fun getCodecManager ()Lsu/plo/voice/api/audio/codec/CodecManager;
+	public abstract fun getConfigFolder ()Ljava/io/File;
+	public abstract fun getDebugLogger ()Lsu/plo/voice/api/logging/DebugLogger;
+	public abstract fun getEncryptionManager ()Lsu/plo/voice/api/encryption/EncryptionManager;
+	public abstract fun getEventBus ()Lsu/plo/voice/api/event/EventBus;
+	public abstract fun getVersion ()Ljava/lang/String;
+}
+
+public abstract interface class su/plo/voice/api/addon/AddonContainer {
+	public static final field ID_PATTERN Ljava/util/regex/Pattern;
+	public abstract fun getAuthors ()Ljava/util/Collection;
+	public abstract fun getDependencies ()Ljava/util/Collection;
+	public abstract fun getId ()Ljava/lang/String;
+	public abstract fun getInstance ()Ljava/util/Optional;
+	public abstract fun getMainClass ()Ljava/lang/Class;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun getScope ()Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public abstract fun getVersion ()Ljava/lang/String;
+}
+
+public final class su/plo/voice/api/addon/AddonDependency {
+	public fun <init> (Ljava/lang/String;Z)V
+	public fun equals (Ljava/lang/Object;)Z
+	public fun getId ()Ljava/lang/String;
+	public fun hashCode ()I
+	public fun isOptional ()Z
+	public fun toString ()Ljava/lang/String;
+}
+
+public abstract interface class su/plo/voice/api/addon/AddonInitializer {
+	public abstract fun onAddonInitialize ()V
+	public fun onAddonShutdown ()V
+}
+
+public final class su/plo/voice/api/addon/AddonLoaderScope : java/lang/Enum {
+	public static final field ANY Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public static final field ANY_SERVER Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public static final field CLIENT Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public static final field PROXY Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public static final field SERVER Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public fun isClient ()Z
+	public fun isProxy ()Z
+	public fun isServer ()Z
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public static fun values ()[Lsu/plo/voice/api/addon/AddonLoaderScope;
+}
+
+public abstract interface class su/plo/voice/api/addon/AddonManager {
+	public abstract fun getAddon (Ljava/lang/Object;)Ljava/util/Optional;
+	public abstract fun getAddon (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun isLoaded (Ljava/lang/String;)Z
+	public abstract fun load (Ljava/lang/Object;)V
+	public abstract fun unload (Ljava/lang/Object;)V
+}
+
+public abstract interface class su/plo/voice/api/addon/AddonsLoader {
+	public abstract fun load (Ljava/lang/Object;)V
+	public abstract fun unload (Ljava/lang/Object;)V
+}
+
+public abstract interface annotation class su/plo/voice/api/addon/InjectPlasmoVoice : java/lang/annotation/Annotation {
+}
+
+public final class su/plo/voice/api/addon/InjectPlasmoVoiceDelegate : kotlin/properties/ReadOnlyProperty {
+	public fun <init> ()V
+	public synthetic fun getValue (Ljava/lang/Object;Lkotlin/reflect/KProperty;)Ljava/lang/Object;
+	public fun getValue (Ljava/lang/Object;Lkotlin/reflect/KProperty;)Lsu/plo/voice/api/PlasmoVoice;
+}
+
+public final class su/plo/voice/api/addon/InjectPlasmoVoiceDelegateKt {
+	public static final fun injectPlasmoVoice ()Lkotlin/properties/ReadOnlyProperty;
+}
+
+public abstract class su/plo/voice/api/addon/VoiceAddonsLoader : su/plo/voice/api/addon/AddonsLoader {
+	public fun <init> ()V
+	public fun load (Ljava/lang/Object;)V
+	public final fun setAddonManager (Lsu/plo/voice/api/addon/AddonManager;)V
+	public fun unload (Ljava/lang/Object;)V
+}
+
+public abstract interface annotation class su/plo/voice/api/addon/annotation/Addon : java/lang/annotation/Annotation {
+	public abstract fun authors ()[Ljava/lang/String;
+	public abstract fun dependencies ()[Lsu/plo/voice/api/addon/annotation/Dependency;
+	public abstract fun id ()Ljava/lang/String;
+	public abstract fun name ()Ljava/lang/String;
+	public abstract fun scope ()Lsu/plo/voice/api/addon/AddonLoaderScope;
+	public abstract fun version ()Ljava/lang/String;
+}
+
+public abstract interface annotation class su/plo/voice/api/addon/annotation/Dependency : java/lang/annotation/Annotation {
+	public abstract fun id ()Ljava/lang/String;
+	public abstract fun optional ()Z
+}
+
+public abstract interface class su/plo/voice/api/audio/capture/ActivationManager {
+	public abstract fun clear ()V
+	public abstract fun getActivationById (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getActivationByName (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun getActivations ()Ljava/util/Collection;
+	public fun unregister (Ljava/lang/String;)Z
+	public abstract fun unregister (Ljava/util/UUID;)Z
+	public fun unregister (Lsu/plo/voice/proto/data/audio/capture/Activation;)Z
+}
+
+public abstract interface class su/plo/voice/api/audio/codec/AudioDecoder : java/lang/AutoCloseable {
+	public abstract fun close ()V
+	public abstract fun decode ([B)[S
+	public abstract fun isOpen ()Z
+	public abstract fun open ()V
+	public abstract fun reset ()V
+}
+
+public abstract interface class su/plo/voice/api/audio/codec/AudioEncoder : java/lang/AutoCloseable {
+	public abstract fun close ()V
+	public abstract fun encode ([S)[B
+	public abstract fun isOpen ()Z
+	public abstract fun open ()V
+	public abstract fun reset ()V
+}
+
+public class su/plo/voice/api/audio/codec/CodecException : java/lang/Exception {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public fun <init> (Ljava/lang/Throwable;)V
+}
+
+public abstract interface class su/plo/voice/api/audio/codec/CodecManager {
+	public abstract fun createDecoder (Lsu/plo/voice/proto/data/audio/codec/CodecInfo;IZI)Lsu/plo/voice/api/audio/codec/AudioDecoder;
+	public abstract fun createEncoder (Lsu/plo/voice/proto/data/audio/codec/CodecInfo;IZI)Lsu/plo/voice/api/audio/codec/AudioEncoder;
+	public abstract fun getCodecs ()Ljava/util/Collection;
+	public abstract fun register (Lsu/plo/voice/api/audio/codec/CodecSupplier;)V
+	public abstract fun unregister (Ljava/lang/String;)Z
+	public abstract fun unregister (Lsu/plo/voice/api/audio/codec/CodecSupplier;)Z
+}
+
+public abstract interface class su/plo/voice/api/audio/codec/CodecSupplier {
+	public abstract fun createDecoder (Lsu/plo/voice/proto/data/audio/codec/CodecInfo;IZI)Lsu/plo/voice/api/audio/codec/AudioDecoder;
+	public abstract fun createEncoder (Lsu/plo/voice/proto/data/audio/codec/CodecInfo;IZI)Lsu/plo/voice/api/audio/codec/AudioEncoder;
+	public abstract fun getName ()Ljava/lang/String;
+}
+
+public abstract interface class su/plo/voice/api/audio/line/SourceLineManager {
+	public abstract fun clear ()V
+	public abstract fun getLineById (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getLineByName (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun getLines ()Ljava/util/Collection;
+	public abstract fun unregister (Ljava/lang/String;)Z
+	public abstract fun unregister (Ljava/util/UUID;)Z
+	public fun unregister (Lsu/plo/voice/proto/data/audio/line/SourceLine;)Z
+}
+
+public abstract interface class su/plo/voice/api/audio/source/AudioSource {
+	public abstract fun getSourceInfo ()Lsu/plo/voice/proto/data/audio/source/SourceInfo;
+}
+
+public abstract interface class su/plo/voice/api/audio/source/AudioSourceManager {
+	public abstract fun clear ()V
+	public abstract fun getSourceById (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getSources ()Ljava/util/Collection;
+}
+
+public abstract interface class su/plo/voice/api/context/PlasmoVoiceHolder {
+	public abstract fun getVoiceInstance ()Lsu/plo/voice/api/PlasmoVoice;
+}
+
+public abstract interface class su/plo/voice/api/encryption/Encryption {
+	public abstract fun decrypt ([B)[B
+	public abstract fun encrypt ([B)[B
+	public abstract fun getKey ()Ljavax/crypto/spec/SecretKeySpec;
+	public abstract fun getName ()Ljava/lang/String;
+	public abstract fun updateKeyData ([B)V
+}
+
+public class su/plo/voice/api/encryption/EncryptionException : java/lang/Exception {
+	public fun <init> ()V
+	public fun <init> (Ljava/lang/String;)V
+	public fun <init> (Ljava/lang/String;Ljava/lang/Throwable;)V
+	public fun <init> (Ljava/lang/Throwable;)V
+}
+
+public abstract interface class su/plo/voice/api/encryption/EncryptionManager {
+	public abstract fun create (Ljava/lang/String;[B)Lsu/plo/voice/api/encryption/Encryption;
+	public abstract fun getAlgorithms ()Ljava/util/Collection;
+	public abstract fun register (Lsu/plo/voice/api/encryption/EncryptionSupplier;)V
+	public abstract fun unregister (Ljava/lang/String;)Z
+	public abstract fun unregister (Lsu/plo/voice/api/encryption/EncryptionSupplier;)Z
+}
+
+public abstract interface class su/plo/voice/api/encryption/EncryptionSupplier {
+	public abstract fun create ([B)Lsu/plo/voice/api/encryption/Encryption;
+	public abstract fun getName ()Ljava/lang/String;
+}
+
+public abstract interface class su/plo/voice/api/event/Event {
+}
+
+public abstract interface class su/plo/voice/api/event/EventBus {
+	public abstract fun fire (Lsu/plo/voice/api/event/Event;)Z
+	public abstract fun fireAsync (Lsu/plo/voice/api/event/Event;)Ljava/util/concurrent/CompletableFuture;
+	public fun hasListener (Ljava/lang/Class;)Z
+	public abstract fun register (Ljava/lang/Object;Ljava/lang/Class;Lsu/plo/voice/api/event/EventPriority;Lsu/plo/voice/api/event/EventHandler;)V
+	public abstract fun register (Ljava/lang/Object;Ljava/lang/Object;)V
+	public abstract fun unregister (Ljava/lang/Object;)V
+	public abstract fun unregister (Ljava/lang/Object;Ljava/lang/Object;)V
+	public abstract fun unregister (Ljava/lang/Object;Lsu/plo/voice/api/event/EventHandler;)V
+}
+
+public abstract interface class su/plo/voice/api/event/EventCancellable {
+	public abstract fun isCancelled ()Z
+	public abstract fun setCancelled (Z)V
+}
+
+public abstract class su/plo/voice/api/event/EventCancellableBase : su/plo/voice/api/event/Event, su/plo/voice/api/event/EventCancellable {
+	public fun <init> ()V
+	public fun isCancelled ()Z
+	public fun setCancelled (Z)V
+}
+
+public abstract interface class su/plo/voice/api/event/EventHandler {
+	public abstract fun execute (Lsu/plo/voice/api/event/Event;)V
+}
+
+public final class su/plo/voice/api/event/EventPriority : java/lang/Enum {
+	public static final field HIGH Lsu/plo/voice/api/event/EventPriority;
+	public static final field HIGHEST Lsu/plo/voice/api/event/EventPriority;
+	public static final field LOW Lsu/plo/voice/api/event/EventPriority;
+	public static final field LOWEST Lsu/plo/voice/api/event/EventPriority;
+	public static final field NORMAL Lsu/plo/voice/api/event/EventPriority;
+	public static fun byOrdinal (I)Lsu/plo/voice/api/event/EventPriority;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/event/EventPriority;
+	public static fun values ()[Lsu/plo/voice/api/event/EventPriority;
+}
+
+public abstract interface annotation class su/plo/voice/api/event/EventSubscribe : java/lang/annotation/Annotation {
+	public abstract fun ignoreCancelled ()Z
+	public abstract fun priority ()Lsu/plo/voice/api/event/EventPriority;
+}
+
+public final class su/plo/voice/api/logging/DebugLogger {
+	public fun <init> (Lsu/plo/slib/api/logging/McLogger;)V
+	public fun enabled ()Z
+	public fun enabled (Z)Lsu/plo/voice/api/logging/DebugLogger;
+	public fun log (Ljava/lang/String;[Ljava/lang/Object;)V
+	public fun warn (Ljava/lang/String;[Ljava/lang/Object;)V
+}
+
+public final class su/plo/voice/api/util/AudioUtil {
+	public static fun audioLevelToDoubleRange (D)D
+	public static fun bytesToShort (BB)S
+	public static fun bytesToShorts ([B)[S
+	public static fun calculateAudioLevel ([BII)D
+	public static fun calculateAudioLevel ([SII)D
+	public static fun calculateAudioLevelFromRMS (DI)D
+	public static fun calculateHighestAudioLevel ([S)D
+	public static fun containsMinAudioLevel ([BD)Z
+	public static fun containsMinAudioLevel ([SD)Z
+	public static fun convertToMonoBytes ([S)[B
+	public static fun convertToMonoShorts ([S)[S
+	public static fun dbToMul (D)D
+	public static fun dbToMul (F)F
+	public static fun doubleRangeToAudioLevel (D)D
+	public static fun fadeIn ([SI)[S
+	public static fun fadeOut ([SI)[S
+	public static fun floatsRangeToShort ([F)[S
+	public static fun floatsToShorts ([F)[S
+	public static fun gainCoefficient (IF)F
+	public static fun getHighestAbsoluteSample ([S)S
+	public static fun mulToDB (F)F
+	public static fun shortToBytes (S)[B
+	public static fun shortsToBytes ([S)[B
+	public static fun shortsToFloats ([S)[F
+	public static fun shortsToFloatsRange ([S)[F
+}
+
+public final class su/plo/voice/api/util/CircularBuffer {
+	public fun <init> (ILjava/lang/Object;)V
+	public fun getCollection ()Ljava/util/Collection;
+	public fun put (Ljava/lang/Object;)V
+}
+

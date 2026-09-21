@@ -1,0 +1,307 @@
+public abstract interface class su/plo/voice/api/server/PlasmoVoiceServer : su/plo/voice/api/server/PlasmoBaseVoiceServer {
+	public abstract fun createOpusDecoder (Z)Lsu/plo/voice/api/audio/codec/AudioDecoder;
+	public abstract fun createOpusEncoder (Z)Lsu/plo/voice/api/audio/codec/AudioEncoder;
+	public static fun getAddonsLoader ()Lsu/plo/voice/api/addon/AddonsLoader;
+	public abstract fun getConfig ()Lsu/plo/voice/api/server/config/ServerConfig;
+	public synthetic fun getMinecraftServer ()Lsu/plo/slib/api/McLib;
+	public abstract fun getMinecraftServer ()Lsu/plo/slib/api/server/McServerLib;
+	public abstract fun getMuteManager ()Lsu/plo/voice/api/server/mute/MuteManager;
+	public synthetic fun getPlayerManager ()Lsu/plo/voice/api/server/player/VoicePlayerManager;
+	public abstract fun getPlayerManager ()Lsu/plo/voice/api/server/player/VoiceServerPlayerManager;
+	public synthetic fun getSourceLineManager ()Lsu/plo/voice/api/server/audio/line/BaseServerSourceLineManager;
+	public abstract fun getSourceLineManager ()Lsu/plo/voice/api/server/audio/line/ServerSourceLineManager;
+	public abstract fun getTcpPacketManager ()Lsu/plo/voice/api/server/connection/TcpServerPacketManager;
+	public synthetic fun getUdpConnectionManager ()Lsu/plo/voice/api/server/connection/UdpConnectionManager;
+	public abstract fun getUdpConnectionManager ()Lsu/plo/voice/api/server/connection/UdpServerConnectionManager;
+	public abstract fun getUdpServer ()Ljava/util/Optional;
+}
+
+public final class su/plo/voice/api/server/audio/capture/ProximityServerActivationHelper {
+	public fun <init> (Lsu/plo/voice/api/server/PlasmoVoiceServer;Lsu/plo/voice/api/server/audio/capture/ServerActivation;Lsu/plo/voice/api/server/audio/line/ServerSourceLine;)V
+	public fun <init> (Lsu/plo/voice/api/server/PlasmoVoiceServer;Lsu/plo/voice/api/server/audio/capture/ServerActivation;Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/voice/api/server/audio/capture/ProximityServerActivationHelper$DistanceSupplier;)V
+	public synthetic fun <init> (Lsu/plo/voice/api/server/PlasmoVoiceServer;Lsu/plo/voice/api/server/audio/capture/ServerActivation;Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/voice/api/server/audio/capture/ProximityServerActivationHelper$DistanceSupplier;ILkotlin/jvm/internal/DefaultConstructorMarker;)V
+	public final fun getActivation ()Lsu/plo/voice/api/server/audio/capture/ServerActivation;
+	public final fun getSourceLine ()Lsu/plo/voice/api/server/audio/line/ServerSourceLine;
+	public final fun getVoiceServer ()Lsu/plo/voice/api/server/PlasmoVoiceServer;
+	public final fun onClientDisconnected (Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent;)Lkotlin/Unit;
+	public final fun registerListeners (Ljava/lang/Object;)V
+	public final fun unregisterListeners (Ljava/lang/Object;)V
+}
+
+public abstract interface class su/plo/voice/api/server/audio/capture/ProximityServerActivationHelper$DistanceSupplier {
+	public abstract fun getDistance (Lsu/plo/voice/api/server/player/VoiceServerPlayer;Lsu/plo/voice/proto/packets/tcp/serverbound/PlayerAudioEndPacket;)S
+	public abstract fun getDistance (Lsu/plo/voice/api/server/player/VoiceServerPlayer;Lsu/plo/voice/proto/packets/udp/serverbound/PlayerAudioPacket;)S
+}
+
+public abstract interface class su/plo/voice/api/server/audio/line/ServerSourceLine : su/plo/voice/api/server/audio/line/BaseServerSourceLine {
+	public fun createEntitySource (Lsu/plo/slib/api/server/entity/McServerEntity;Z)Lsu/plo/voice/api/server/audio/source/ServerEntitySource;
+	public fun createEntitySource (Lsu/plo/slib/api/server/entity/McServerEntity;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;)Lsu/plo/voice/api/server/audio/source/ServerEntitySource;
+	public abstract fun createEntitySource (Lsu/plo/slib/api/server/entity/McServerEntity;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;Ljava/util/function/Consumer;)Lsu/plo/voice/api/server/audio/source/ServerEntitySource;
+	public static synthetic fun createEntitySource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/slib/api/server/entity/McServerEntity;ZILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerEntitySource;
+	public static synthetic fun createEntitySource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/slib/api/server/entity/McServerEntity;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;ILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerEntitySource;
+	public static synthetic fun createEntitySource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/slib/api/server/entity/McServerEntity;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;Ljava/util/function/Consumer;ILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerEntitySource;
+	public fun createPlayerSource (Lsu/plo/voice/api/server/player/VoiceServerPlayer;Z)Lsu/plo/voice/api/server/audio/source/ServerPlayerSource;
+	public fun createPlayerSource (Lsu/plo/voice/api/server/player/VoiceServerPlayer;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;)Lsu/plo/voice/api/server/audio/source/ServerPlayerSource;
+	public abstract fun createPlayerSource (Lsu/plo/voice/api/server/player/VoiceServerPlayer;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;Ljava/util/function/Consumer;)Lsu/plo/voice/api/server/audio/source/ServerPlayerSource;
+	public static synthetic fun createPlayerSource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/voice/api/server/player/VoiceServerPlayer;ZILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerPlayerSource;
+	public static synthetic fun createPlayerSource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/voice/api/server/player/VoiceServerPlayer;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;ILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerPlayerSource;
+	public static synthetic fun createPlayerSource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/voice/api/server/player/VoiceServerPlayer;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;Ljava/util/function/Consumer;ILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerPlayerSource;
+	public fun createStaticSource (Lsu/plo/slib/api/server/position/ServerPos3d;Z)Lsu/plo/voice/api/server/audio/source/ServerStaticSource;
+	public fun createStaticSource (Lsu/plo/slib/api/server/position/ServerPos3d;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;)Lsu/plo/voice/api/server/audio/source/ServerStaticSource;
+	public abstract fun createStaticSource (Lsu/plo/slib/api/server/position/ServerPos3d;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;Ljava/util/function/Consumer;)Lsu/plo/voice/api/server/audio/source/ServerStaticSource;
+	public static synthetic fun createStaticSource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/slib/api/server/position/ServerPos3d;ZILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerStaticSource;
+	public static synthetic fun createStaticSource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/slib/api/server/position/ServerPos3d;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;ILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerStaticSource;
+	public static synthetic fun createStaticSource$default (Lsu/plo/voice/api/server/audio/line/ServerSourceLine;Lsu/plo/slib/api/server/position/ServerPos3d;ZLsu/plo/voice/proto/data/audio/codec/CodecInfo;Ljava/util/function/Consumer;ILjava/lang/Object;)Lsu/plo/voice/api/server/audio/source/ServerStaticSource;
+}
+
+public abstract interface class su/plo/voice/api/server/audio/line/ServerSourceLineManager : su/plo/voice/api/server/audio/line/BaseServerSourceLineManager {
+}
+
+public abstract interface class su/plo/voice/api/server/audio/source/ServerEntitySource : su/plo/voice/api/server/audio/source/ServerProximitySource {
+	public abstract fun getEntity ()Lsu/plo/slib/api/server/entity/McServerEntity;
+}
+
+public abstract interface class su/plo/voice/api/server/audio/source/ServerPlayerSource : su/plo/voice/api/server/audio/source/ServerProximitySource {
+	public abstract fun getPlayer ()Lsu/plo/voice/api/server/player/VoiceServerPlayer;
+}
+
+public abstract interface class su/plo/voice/api/server/audio/source/ServerProximitySource : su/plo/voice/api/server/audio/source/ServerAudioSource {
+	public abstract fun createAudioSender (Lsu/plo/voice/api/server/audio/provider/AudioFrameProvider;Ljava/util/function/Supplier;)Lsu/plo/voice/api/server/audio/source/AudioSender;
+	public fun createAudioSender (Lsu/plo/voice/api/server/audio/provider/AudioFrameProvider;S)Lsu/plo/voice/api/server/audio/source/AudioSender;
+	public abstract fun getAngle ()I
+	public synthetic fun getLine ()Lsu/plo/voice/api/server/audio/line/BaseServerSourceLine;
+	public abstract fun getLine ()Lsu/plo/voice/api/server/audio/line/ServerSourceLine;
+	public abstract fun getListeners (S)Ljava/lang/Iterable;
+	public abstract fun getPosition ()Lsu/plo/slib/api/server/position/ServerPos3d;
+	public fun sendAudioEnd (JS)Z
+	public fun sendAudioFrame ([BJS)Z
+	public fun sendAudioFrame ([BJSLsu/plo/voice/api/server/audio/capture/PlayerActivationInfo;)Z
+	public fun sendAudioPacket (Lsu/plo/voice/proto/packets/udp/clientbound/SourceAudioPacket;S)Z
+	public abstract fun sendAudioPacket (Lsu/plo/voice/proto/packets/udp/clientbound/SourceAudioPacket;SLsu/plo/voice/api/server/audio/capture/PlayerActivationInfo;)Z
+	public abstract fun sendPacket (Lsu/plo/voice/proto/packets/Packet;S)Z
+	public abstract fun setAngle (I)V
+}
+
+public abstract interface class su/plo/voice/api/server/audio/source/ServerStaticSource : su/plo/voice/api/server/audio/source/ServerProximitySource {
+	public abstract fun getPosition ()Lsu/plo/slib/api/server/position/ServerPos3d;
+	public abstract fun setPosition (Lsu/plo/slib/api/server/position/ServerPos3d;)V
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig {
+	public abstract fun checkForUpdates ()Z
+	public abstract fun debug ()Z
+	public abstract fun defaultLanguage ()Ljava/lang/String;
+	public abstract fun host ()Lsu/plo/voice/api/server/config/ServerConfig$Host;
+	public abstract fun notifications ()Lsu/plo/voice/api/server/config/ServerConfig$Notifications;
+	public abstract fun serverId ()Ljava/lang/String;
+	public abstract fun useCrowdinTranslations ()Z
+	public abstract fun voice ()Lsu/plo/voice/api/server/config/ServerConfig$Voice;
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Host {
+	public abstract fun hostPublic ()Lsu/plo/voice/api/server/config/ServerConfig$Host$Public;
+	public abstract fun ip ()Ljava/lang/String;
+	public abstract fun port ()I
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Host$Public {
+	public abstract fun ip ()Ljava/lang/String;
+	public abstract fun port ()I
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Notifications {
+	public abstract fun muted ()Z
+	public abstract fun unmuted ()Z
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Voice {
+	public abstract fun aesEncryptionKey ()[B
+	public abstract fun clientModMinVersion ()Ljava/lang/String;
+	public abstract fun clientModRequired ()Z
+	public abstract fun clientModRequiredCheckTimeoutMs ()J
+	public abstract fun keepAliveTimeoutMs ()I
+	public abstract fun maxExtraAudioBroadcastDistance ()I
+	public abstract fun mtuSize ()I
+	public abstract fun opus ()Lsu/plo/voice/api/server/config/ServerConfig$Voice$Opus;
+	public abstract fun playerIcon ()Lsu/plo/voice/api/server/config/ServerConfig$Voice$PlayerIcon;
+	public abstract fun proximity ()Lsu/plo/voice/api/server/config/ServerConfig$Voice$Proximity;
+	public abstract fun reusePort ()Lsu/plo/voice/api/server/config/ServerConfig$Voice$ReusePort;
+	public abstract fun sampleRate ()I
+	public abstract fun weights ()Lsu/plo/voice/api/server/config/ServerConfig$Voice$Weights;
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Voice$Opus {
+	public abstract fun bitrate ()I
+	public abstract fun mode ()Ljava/lang/String;
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Voice$PlayerIcon {
+	public abstract fun visibility ()Ljava/util/Collection;
+	public abstract fun yOffset ()D
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Voice$Proximity {
+	public abstract fun defaultDistance ()I
+	public abstract fun distances ()Ljava/util/Collection;
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Voice$ReusePort {
+	public abstract fun enabled ()Z
+	public abstract fun sockets ()I
+}
+
+public abstract interface class su/plo/voice/api/server/config/ServerConfig$Voice$Weights {
+	public abstract fun getActivationWeight (Ljava/lang/String;)Ljava/util/Optional;
+	public abstract fun getSourceLineWeight (Ljava/lang/String;)Ljava/util/Optional;
+}
+
+public abstract interface class su/plo/voice/api/server/connection/TcpServerPacketManager : su/plo/voice/api/server/connection/PacketManager {
+	public abstract fun broadcastPlayerDisconnect (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)V
+	public abstract fun broadcastPlayerInfoUpdate (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)V
+	public abstract fun connect (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)V
+	public abstract fun requestPlayerInfo (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)V
+	public abstract fun sendConfigInfo (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)V
+	public abstract fun sendPlayerList (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)V
+}
+
+public abstract interface class su/plo/voice/api/server/connection/UdpServerConnectionManager : su/plo/voice/api/server/connection/UdpConnectionManager {
+	public abstract fun addConnection (Lsu/plo/voice/api/server/socket/UdpServerConnection;)V
+	public abstract fun clearConnections ()V
+	public abstract fun getPlayerIdBySecret (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getSecretByPlayerId (Ljava/util/UUID;)Ljava/util/UUID;
+	public fun removeConnection (Ljava/util/UUID;)Z
+	public abstract fun removeConnection (Ljava/util/UUID;Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent$Reason;)Z
+	public fun removeConnection (Lsu/plo/voice/api/server/player/VoiceServerPlayer;)Z
+	public abstract fun removeConnection (Lsu/plo/voice/api/server/player/VoiceServerPlayer;Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent$Reason;)Z
+	public fun removeConnection (Lsu/plo/voice/api/server/socket/UdpServerConnection;)Z
+	public abstract fun removeConnection (Lsu/plo/voice/api/server/socket/UdpServerConnection;Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent$Reason;)Z
+}
+
+public final class su/plo/voice/api/server/event/config/VoiceServerConfigReloadedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/server/PlasmoVoiceServer;Lsu/plo/voice/api/server/config/ServerConfig;)V
+	public fun getConfig ()Lsu/plo/voice/api/server/config/ServerConfig;
+	public fun getServer ()Lsu/plo/voice/api/server/PlasmoVoiceServer;
+}
+
+public final class su/plo/voice/api/server/event/connection/TcpPacketReceivedEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/server/player/VoiceServerPlayer;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+	public fun getPlayer ()Lsu/plo/voice/api/server/player/VoiceServerPlayer;
+}
+
+public final class su/plo/voice/api/server/event/connection/TcpPacketSendEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/server/player/VoiceServerPlayer;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+	public fun getPlayer ()Lsu/plo/voice/api/server/player/VoiceServerPlayer;
+}
+
+public final class su/plo/voice/api/server/event/connection/UdpPacketReceivedEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/server/socket/UdpServerConnection;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getConnection ()Lsu/plo/voice/api/server/socket/UdpServerConnection;
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+}
+
+public final class su/plo/voice/api/server/event/connection/UdpPacketSendEvent : su/plo/voice/api/event/EventCancellableBase {
+	public fun <init> (Lsu/plo/voice/api/server/socket/UdpServerConnection;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getConnection ()Lsu/plo/voice/api/server/socket/UdpServerConnection;
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+}
+
+public final class su/plo/voice/api/server/event/connection/UdpPacketSentEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/server/socket/UdpServerConnection;Lsu/plo/voice/proto/packets/Packet;)V
+	public fun getConnection ()Lsu/plo/voice/api/server/socket/UdpServerConnection;
+	public fun getPacket ()Lsu/plo/voice/proto/packets/Packet;
+}
+
+public final class su/plo/voice/api/server/event/mute/PlayerVoiceMutedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/server/mute/MuteManager;Lsu/plo/voice/api/server/mute/ServerMuteInfo;)V
+	public final fun getMuteInfo ()Lsu/plo/voice/api/server/mute/ServerMuteInfo;
+	public final fun getMuteManager ()Lsu/plo/voice/api/server/mute/MuteManager;
+}
+
+public final class su/plo/voice/api/server/event/mute/PlayerVoiceUnmutedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/server/mute/MuteManager;Lsu/plo/voice/api/server/mute/ServerMuteInfo;)V
+	public final fun getMuteInfo ()Lsu/plo/voice/api/server/mute/ServerMuteInfo;
+	public final fun getMuteManager ()Lsu/plo/voice/api/server/mute/MuteManager;
+}
+
+public class su/plo/voice/api/server/event/socket/UdpServerCreateEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/server/socket/UdpServer;)V
+	public fun getServer ()Lsu/plo/voice/api/server/socket/UdpServer;
+	public fun setServer (Lsu/plo/voice/api/server/socket/UdpServer;)V
+}
+
+public class su/plo/voice/api/server/event/socket/UdpServerStartedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/server/socket/UdpServer;)V
+	public fun getServer ()Lsu/plo/voice/api/server/socket/UdpServer;
+}
+
+public class su/plo/voice/api/server/event/socket/UdpServerStoppedEvent : su/plo/voice/api/event/Event {
+	public fun <init> (Lsu/plo/voice/api/server/socket/UdpServer;)V
+	public fun getServer ()Lsu/plo/voice/api/server/socket/UdpServer;
+}
+
+public final class su/plo/voice/api/server/mute/MuteDurationUnit : java/lang/Enum {
+	public static final field DAY Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+	public static final field HOUR Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+	public static final field MINUTE Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+	public static final field SECOND Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+	public static final field TIMESTAMP Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+	public static final field WEEK Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+	public fun multiply (J)J
+	public fun translate (J)Lsu/plo/slib/api/chat/component/McTextComponent;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+	public static fun values ()[Lsu/plo/voice/api/server/mute/MuteDurationUnit;
+}
+
+public abstract interface class su/plo/voice/api/server/mute/MuteManager {
+	public abstract fun getMute (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getMuteStorage ()Lsu/plo/voice/api/server/mute/storage/MuteStorage;
+	public abstract fun mute (Ljava/util/UUID;Ljava/util/UUID;JLsu/plo/voice/api/server/mute/MuteDurationUnit;Ljava/lang/String;Z)Ljava/util/Optional;
+	public abstract fun setMuteStorage (Lsu/plo/voice/api/server/mute/storage/MuteStorage;)V
+	public abstract fun unmute (Ljava/util/UUID;Z)Ljava/util/Optional;
+}
+
+public class su/plo/voice/api/server/mute/ServerMuteInfo {
+	public fun <init> (Ljava/util/UUID;Ljava/util/UUID;JJLjava/lang/String;)V
+	public fun <init> (Ljava/util/UUID;Ljava/util/UUID;JJLjava/lang/String;Ljava/lang/Boolean;)V
+	public fun getMutedAtTime ()J
+	public fun getMutedByPlayerUUID ()Ljava/util/UUID;
+	public fun getMutedToTime ()J
+	public fun getPlayerUUID ()Ljava/util/UUID;
+	public fun getReason ()Ljava/lang/String;
+	public fun getSilent ()Ljava/lang/Boolean;
+}
+
+public abstract interface class su/plo/voice/api/server/mute/storage/MuteStorage {
+	public fun close ()V
+	public abstract fun getMuteByPlayerId (Ljava/util/UUID;)Ljava/util/Optional;
+	public abstract fun getMutedPlayers ()Ljava/util/Collection;
+	public fun init ()V
+	public abstract fun putPlayerMute (Ljava/util/UUID;Lsu/plo/voice/api/server/mute/ServerMuteInfo;)V
+	public abstract fun removeMuteByPlayerId (Ljava/util/UUID;)Ljava/util/Optional;
+}
+
+public abstract interface class su/plo/voice/api/server/player/VoiceServerPlayer : su/plo/voice/api/server/player/VoicePlayer {
+	public synthetic fun getInstance ()Lsu/plo/slib/api/entity/player/McPlayer;
+	public abstract fun getInstance ()Lsu/plo/slib/api/server/entity/player/McServerPlayer;
+}
+
+public abstract interface class su/plo/voice/api/server/player/VoiceServerPlayerManager : su/plo/voice/api/server/player/VoicePlayerManager {
+}
+
+public abstract interface class su/plo/voice/api/server/socket/UdpServer {
+	public abstract fun getRemoteAddress ()Ljava/util/Optional;
+	public abstract fun start (Ljava/lang/String;I)V
+	public abstract fun stop ()V
+}
+
+public abstract interface class su/plo/voice/api/server/socket/UdpServerConnection : su/plo/voice/api/server/socket/UdpConnection {
+	public abstract fun getKeepAlive ()J
+	public abstract fun getLastReceivedPacketTimestamp ()J
+	public synthetic fun getPlayer ()Lsu/plo/voice/api/server/player/VoicePlayer;
+	public abstract fun getPlayer ()Lsu/plo/voice/api/server/player/VoiceServerPlayer;
+	public abstract fun getSentKeepAlive ()J
+	public abstract fun setSentKeepAlive (J)V
+}
+
