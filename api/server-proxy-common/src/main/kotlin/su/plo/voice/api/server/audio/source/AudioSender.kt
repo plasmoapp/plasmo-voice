@@ -23,10 +23,13 @@ class AudioSender(
      */
     @Deprecated(
         "kotlin classes are relocated and it's impossible to use this field without relocation",
-        replaceWith = ReplaceWith("use onStop and stop")
+        replaceWith = ReplaceWith("use onStop and stop"),
+        level = DeprecationLevel.HIDDEN,
     )
-    var job: Job? = null
-        private set
+    val job: Job?
+        get() = currentJob
+
+    private var currentJob: Job? = null
 
     private var onStop: Runnable? = null
 
@@ -106,14 +109,14 @@ class AudioSender(
             }
         }
 
-        this.job = job
+        this.currentJob = job
     }
 
     /**
      * Stops the sender coroutine job if its active.
      */
     fun stop() {
-        job?.cancel()
+        currentJob?.cancel()
     }
 
     /**

@@ -23,7 +23,7 @@ public final class su/plo/voice/api/server/audio/capture/ProximityServerActivati
 	public final fun getActivation ()Lsu/plo/voice/api/server/audio/capture/ServerActivation;
 	public final fun getSourceLine ()Lsu/plo/voice/api/server/audio/line/ServerSourceLine;
 	public final fun getVoiceServer ()Lsu/plo/voice/api/server/PlasmoVoiceServer;
-	public final fun onClientDisconnected (Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent;)Lkotlin/Unit;
+	public final fun onClientDisconnected (Lsu/plo/voice/api/server/event/connection/UdpClientDisconnectedEvent;)V
 	public final fun registerListeners (Ljava/lang/Object;)V
 	public final fun unregisterListeners (Ljava/lang/Object;)V
 }

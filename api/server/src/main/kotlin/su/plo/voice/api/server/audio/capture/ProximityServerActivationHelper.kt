@@ -12,7 +12,8 @@ import su.plo.voice.proto.packets.tcp.clientbound.SourceAudioEndPacket
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket
 import su.plo.voice.proto.packets.udp.clientbound.SourceAudioPacket
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket
-import java.util.*
+import java.util.UUID
+import kotlin.jvm.internal.DefaultConstructorMarker
 
 /**
  * Helper class for proximity activations.
@@ -26,12 +27,33 @@ import java.util.*
  * voiceServer.eventBus.register(voiceServer, proximityHelper);
  * ```
  */
-class ProximityServerActivationHelper @JvmOverloads constructor(
+class ProximityServerActivationHelper(
     val voiceServer: PlasmoVoiceServer,
     val activation: ServerActivation,
     val sourceLine: ServerSourceLine,
-    private val distanceSupplier: DistanceSupplier? = null
+    private val distanceSupplier: DistanceSupplier?,
 ) {
+
+    constructor(
+        voiceServer: PlasmoVoiceServer,
+        activation: ServerActivation,
+        sourceLine: ServerSourceLine
+    ) : this(voiceServer, activation, sourceLine, null)
+
+    @Deprecated("Binary compatibility", level = DeprecationLevel.HIDDEN)
+    constructor(
+        voiceServer: PlasmoVoiceServer,
+        activation: ServerActivation,
+        sourceLine: ServerSourceLine,
+        distanceSupplier: DistanceSupplier?,
+        defaultsMask: Int,
+        marker: DefaultConstructorMarker?
+    ) : this(
+        voiceServer,
+        activation,
+        sourceLine,
+        if (defaultsMask and 0x8 != 0) null else distanceSupplier
+    )
 
     private val sourceByPlayerId: MutableMap<UUID, ServerPlayerSource> = Maps.newConcurrentMap()
 
@@ -49,8 +71,9 @@ class ProximityServerActivationHelper @JvmOverloads constructor(
     }
 
     @EventSubscribe
-    fun onClientDisconnected(event: UdpClientDisconnectedEvent) =
+    fun onClientDisconnected(event: UdpClientDisconnectedEvent) {
         sourceByPlayerId.remove(event.connection.player.instance.uuid)?.remove()
+    }
 
     private fun onActivation(player: VoicePlayer, packet: PlayerAudioPacket): ServerActivation.Result {
         getPlayerSource(player as VoiceServerPlayer, packet.isStereo).also { source ->

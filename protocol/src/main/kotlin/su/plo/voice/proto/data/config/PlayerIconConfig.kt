@@ -6,6 +6,7 @@ import su.plo.slib.api.position.Pos3d
 import su.plo.voice.proto.packets.PacketSerializable
 import su.plo.voice.proto.packets.PacketUtil
 import su.plo.voice.proto.serializer.Pos3dSerializer
+import kotlin.jvm.internal.DefaultConstructorMarker
 
 class PlayerIconConfig : PacketSerializable {
     var iconVisibility: Set<PlayerIconVisibility>
@@ -14,14 +15,28 @@ class PlayerIconConfig : PacketSerializable {
     var iconOffset: Pos3d
         private set
 
-    @JvmOverloads
     constructor(
-        iconVisibility: Set<PlayerIconVisibility> = setOf(),
-        iconOffset: Pos3d = Pos3d(),
+        iconVisibility: Set<PlayerIconVisibility>,
+        iconOffset: Pos3d,
     ) {
         this.iconVisibility = HashSet(iconVisibility)
         this.iconOffset = iconOffset
     }
+
+    constructor(iconVisibility: Set<PlayerIconVisibility>) : this(iconVisibility, Pos3d())
+
+    constructor() : this(setOf())
+
+    @Deprecated("Binary compatibility", level = DeprecationLevel.HIDDEN)
+    constructor(
+        iconVisibility: Set<PlayerIconVisibility>?,
+        iconOffset: Pos3d?,
+        defaultsMask: Int,
+        marker: DefaultConstructorMarker?,
+    ) : this(
+        if (defaultsMask and 0x1 != 0) setOf() else iconVisibility!!,
+        if (defaultsMask and 0x2 != 0) Pos3d() else iconOffset!!,
+    )
 
     override fun deserialize(input: ByteArrayDataInput) {
         val iconVisibilitySize = PacketUtil.readSafeInt(input, 0, PlayerIconVisibility.entries.size)

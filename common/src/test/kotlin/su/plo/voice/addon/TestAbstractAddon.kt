@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package su.plo.voice.addon
 
 import su.plo.voice.api.PlasmoVoice
