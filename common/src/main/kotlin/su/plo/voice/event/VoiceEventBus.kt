@@ -97,9 +97,11 @@ class VoiceEventBus(
         priority: EventPriority,
         handler: EventHandler<E>,
     ) {
-        addHandler(eventClass, priority, handler.eraseEventType())
+        val catchingHandler = CatchingHandler(handler)
 
-        handlersByAddons.getOrPut(addon) { mutableListOf() }.add(handler)
+        addHandler(eventClass, priority, catchingHandler.eraseEventType())
+
+        handlersByAddons.getOrPut(addon) { mutableListOf() }.add(catchingHandler)
     }
 
     @Synchronized
@@ -131,10 +133,14 @@ class VoiceEventBus(
     @Synchronized
     override fun unregister(addon: Any, handler: EventHandler<*>) {
         val addonHandlers = handlersByAddons[addon] ?: return
-        addonHandlers.remove(handler)
+        val catchingHandler = addonHandlers.filterIsInstance<CatchingHandler<*>>()
+            .firstOrNull { it.delegate == handler }
+            ?: return
+
+        addonHandlers.remove(catchingHandler)
         if (addonHandlers.isEmpty()) handlersByAddons.remove(addon)
 
-        removeHandlers(listOf(handler))
+        removeHandlers(listOf(catchingHandler))
     }
 
     override fun hasListener(eventClass: Class<*>): Boolean =
@@ -193,6 +199,18 @@ class VoiceEventBus(
         companion object {
             fun of(priority: EventPriority, handler: EventHandler<Event>): HandlerList =
                 HandlerList(arrayOf(priority), arrayOf(handler))
+        }
+    }
+
+    private class CatchingHandler<E : Event>(
+        val delegate: EventHandler<E>,
+    ) : EventHandler<E> {
+        override fun execute(event: E) {
+            try {
+                delegate.execute(event)
+            } catch (e: Throwable) {
+                logger.warn("Failed to fire an event", e)
+            }
         }
     }
 }

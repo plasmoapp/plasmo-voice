@@ -3,6 +3,8 @@ package su.plo.voice.event
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import su.plo.slib.api.logging.McLoggerFactory
+import su.plo.voice.addon.logging.JavaLogger
 import su.plo.voice.api.event.EventBus
 import su.plo.voice.api.event.EventHandler
 import su.plo.voice.api.event.EventPriority
@@ -21,6 +23,7 @@ class TestEventBus {
 
     @BeforeEach
     fun setUp() {
+        McLoggerFactory.overrideSupplier { JavaLogger(it) }
         executor = Executors.newSingleThreadExecutor()
         bus = VoiceEventBus(executor)
         calls = mutableListOf()
@@ -71,6 +74,16 @@ class TestEventBus {
 
         bus.fire(TestEvent())
         assertEquals(listOf("normal", "highest"), listener.calls)
+    }
+
+    @Test
+    fun throwingHandlerDoesNotStopTheRest() {
+        bus.register(addon, TestEvent::class.java, EventPriority.LOWEST, recording("lowest"))
+        bus.register(addon, TestEvent::class.java, EventPriority.NORMAL) { throw IllegalStateException("test") }
+        bus.register(addon, TestEvent::class.java, EventPriority.HIGHEST, recording("highest"))
+
+        assertTrue(bus.fire(TestEvent()))
+        assertEquals(listOf("lowest", "highest"), calls)
     }
 
     @Test
