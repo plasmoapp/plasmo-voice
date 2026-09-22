@@ -36,7 +36,7 @@ public class VoiceClientSourceLine extends VoiceSourceLine implements ClientSour
 
     @Override
     public double getVolume() {
-        return volumeEntry.getMax();
+        return volumeEntry.value();
     }
 
     public DoubleConfigEntry getVolumeConfigEntry() {
