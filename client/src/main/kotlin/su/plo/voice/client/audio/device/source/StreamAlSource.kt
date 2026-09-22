@@ -1,15 +1,24 @@
 package su.plo.voice.client.audio.device.source
 
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.future.future
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import org.lwjgl.openal.AL11
 import su.plo.voice.BaseVoice
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.DeviceException
 import su.plo.voice.api.client.audio.device.source.AlSource
-import su.plo.voice.api.client.event.audio.device.source.*
+import su.plo.voice.api.client.event.audio.device.source.AlSourceBufferQueuedEvent
+import su.plo.voice.api.client.event.audio.device.source.AlSourceBufferUnqueuedEvent
+import su.plo.voice.api.client.event.audio.device.source.AlSourceClosedEvent
+import su.plo.voice.api.client.event.audio.device.source.AlSourceCreatedEvent
+import su.plo.voice.api.client.event.audio.device.source.AlSourcePauseEvent
+import su.plo.voice.api.client.event.audio.device.source.AlSourcePlayEvent
+import su.plo.voice.api.client.event.audio.device.source.AlSourceStopEvent
+import su.plo.voice.api.client.event.audio.device.source.AlSourceWriteEvent
+import su.plo.voice.api.client.event.audio.device.source.AlStreamSourceStoppedEvent
 import su.plo.voice.api.client.time.TimeSupplier
 import su.plo.voice.api.util.AudioUtil
 import su.plo.voice.client.audio.AlUtil
@@ -17,13 +26,14 @@ import su.plo.voice.client.audio.device.AlOutputDevice
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.math.max
 
 class StreamAlSource private constructor(
     client: PlasmoVoiceClient,
     device: AlOutputDevice,
     stereo: Boolean,
     numBuffers: Int,
-    pointer: Int
+    pointer: Int,
 ) : BaseAlSource(client, device, stereo, pointer) {
 
     private val timeSupplier: TimeSupplier
@@ -31,21 +41,21 @@ class StreamAlSource private constructor(
 
     private var closeTimeoutMs = 25000L
 
-    private val numBuffers: Int
+    // +1 for silence buffer
+    private val numBuffers: Int =
+        (if (numBuffers == 0) client.config.advanced.alPlaybackBuffers.value() else numBuffers) + 1
     private val queue = LinkedBlockingQueue<ShortArray>()
+    private val wakeUp = Channel<Unit>(Channel.CONFLATED)
     private val isStreaming = AtomicBoolean(false)
-    private val emptyBuffer: ShortArray
 
     private var job: Job? = null
     private lateinit var buffers: IntArray
-    private val availableBuffer = IntArray(1)
-    private val emptyFilled = AtomicBoolean(false)
     private var lastBufferTime: Long = 0
 
-    init {
-        this.numBuffers = if (numBuffers == 0) client.config.advanced.alPlaybackBuffers.value() else numBuffers
-        this.emptyBuffer = ShortArray(device.frameSize / 2)
-    }
+    private val freeBuffers = ArrayDeque<Int>()
+    private val unqueuedBuffer = IntArray(1)
+
+    private var currentlyPlaying = false
 
     override fun play() {
         AlUtil.checkDeviceContext(device)
@@ -76,6 +86,7 @@ class StreamAlSource private constructor(
         AL11.alSourceStop(pointer)
         AlUtil.checkErrors("Source stop")
         isStreaming.set(false)
+        currentlyPlaying = false
 
         clearBuffer()
     }
@@ -108,10 +119,7 @@ class StreamAlSource private constructor(
             }
 
         if (!isStreaming.get()) return
-        if (processedSamples.isEmpty()) {
-            write(emptyBuffer, false)
-            return
-        }
+        if (processedSamples.isEmpty()) return
 
         if (queue.size > 100) {
             BaseVoice.DEBUG_LOGGER.log("Queue overflow, dropping samples")
@@ -124,10 +132,9 @@ class StreamAlSource private constructor(
         val newSamples = writeEvent.samplesShorts
 
         queue.offer(newSamples)
-        if (newSamples !== emptyBuffer) {
-            emptyFilled.set(false)
-            lastBufferTime = timeSupplier.currentTimeMillis
-        }
+        lastBufferTime = timeSupplier.currentTimeMillis
+
+        wakeUp.trySend(Unit)
     }
 
     override fun write(samples: ByteArray) {
@@ -176,10 +183,12 @@ class StreamAlSource private constructor(
 
         client.eventBus.fire(AlSourceClosedEvent(this@StreamAlSource))
 
-        removeProcessedBuffers()
+        recycleProcessedBuffers(false)
 
         AL11.alDeleteBuffers(buffers)
         AlUtil.checkErrors("Delete buffers")
+
+        freeBuffers.clear()
 
         AL11.alDeleteSources(intArrayOf(pointer))
         AlUtil.checkErrors("Delete source")
@@ -193,68 +202,35 @@ class StreamAlSource private constructor(
         isStreaming.set(true)
         val alSource = this
 
+        job?.cancel()
         job = device.coroutineScope.launch {
-            buffers = IntArray(numBuffers)
-            AL11.alGenBuffers(buffers)
-            AlUtil.checkErrors("Source gen buffers")
+            // buffers outlive stop()
+            if (!::buffers.isInitialized) {
+                buffers = IntArray(numBuffers)
+                AL11.alGenBuffers(buffers)
+                AlUtil.checkErrors("Source gen buffers")
 
-            queueWithEmptyBuffers()
-            fillQueue()
+                for (buffer in buffers) {
+                    freeBuffers.addLast(buffer)
+                }
+            }
 
             updateLastBufferTime()
-            availableBuffer[0] = -1
 
             while (isStreaming.get()) {
-                val queueSize = queue.size
-
-                var processedBuffers = getInt(AL11.AL_BUFFERS_PROCESSED)
-                AlUtil.checkErrors("Get processed buffers")
-
-                while (processedBuffers > 0 || availableBuffer[0] != -1) {
-                    if (availableBuffer[0] == -1) {
-                        AL11.alSourceUnqueueBuffers(pointer, availableBuffer)
-                        AlUtil.checkErrors("Unqueue buffer")
-
-                        // Bits can be 0 if the format or parameters are corrupt, avoid division by zero
-                        val bits = AL11.alGetBufferi(availableBuffer[0], AL11.AL_BITS)
-                        AlUtil.checkErrors("Source get buffer int")
-                        if (bits == 0) {
-                            LOGGER.warn("Corrupted stream")
-                            continue
-                        }
-
-                        if (availableBuffer[0] != -1) {
-                            val unqueuedEvent = AlSourceBufferUnqueuedEvent(alSource, availableBuffer[0])
-                            client.eventBus.fire(unqueuedEvent)
-                        }
-                    }
-
-                    if (availableBuffer[0] != -1 && fillAndPushBuffer(availableBuffer[0])) {
-                        availableBuffer[0] = -1
-                        processedBuffers--
-                    } else {
-                        break
-                    }
-                }
-
                 val state = state
-                if (state == AlSource.State.STOPPED && queueSize == 0 && !emptyFilled.get()) {
-                    removeProcessedBuffers()
-                    availableBuffer[0] = -1
 
-                    queueWithEmptyBuffers()
+                recycleProcessedBuffers()
+
+                if (state == AlSource.State.PLAYING || state == AlSource.State.PAUSED) {
                     fillQueue()
-
-                    client.eventBus.fire(AlStreamSourceStoppedEvent(alSource))
-                    continue
-                } else if (state != AlSource.State.PLAYING && state != AlSource.State.PAUSED && queueSize > 0) {
-                    AL11.alSourcePlay(pointer)
-                    AlUtil.checkErrors("Source play")
-                    continue
-                } else if (state == AlSource.State.INITIAL) {
-                    AL11.alSourcePlay(pointer)
-                    AlUtil.checkErrors("Source play")
-                    continue
+                } else {
+                    if (queue.isNotEmpty()) {
+                        startPlayback()
+                    } else if (currentlyPlaying) {
+                        currentlyPlaying = false
+                        client.eventBus.fire(AlStreamSourceStoppedEvent(alSource))
+                    }
                 }
 
                 if (closeTimeoutMs > 0L && timeSupplier.currentTimeMillis - lastBufferTime > closeTimeoutMs) {
@@ -263,54 +239,80 @@ class StreamAlSource private constructor(
                     break
                 }
 
-                delay(5L)
+                withTimeoutOrNull(5L) { wakeUp.receive() }
             }
         }
     }
 
-    private fun queueWithEmptyBuffers() {
-        for (i in 0 until numBuffers) {
-            write(emptyBuffer, false)
+    private fun startPlayback() {
+        var pendingSamples = 0
+        var newestSamples = 0
+        for (samples in queue) {
+            newestSamples = samples.size
+            pendingSamples += samples.size
         }
-        emptyFilled.set(true)
+
+        val sampleRate = device.format.sampleRate.toInt()
+        val minQueuedSamples = (device.mixerUpdateSamples(sampleRate) + sampleRate * JITTER_MARGIN_MS / 1000) * channels
+        val backlogSamples = (pendingSamples - newestSamples)
+        val silenceSamples = max(MIN_SILENCE_FRAMES * channels, minQueuedSamples - backlogSamples)
+
+        val freeBuffer = freeBuffers.removeFirstOrNull() ?: return
+
+        if (!fillAndPushBuffer(ShortArray(silenceSamples - silenceSamples % channels), freeBuffer)) return
+        fillQueue()
+
+        AL11.alSourcePlay(pointer)
+        AlUtil.checkErrors("Source play")
+        currentlyPlaying = true
     }
 
     private fun fillQueue() {
-        for (i in 0 until numBuffers) {
-            fillAndPushBuffer(buffers[i])
+        while (freeBuffers.isNotEmpty() && queue.isNotEmpty()) {
+            val samples = queue.poll()
+            val freeBuffer = freeBuffers.removeFirst()
+
+            if (!fillAndPushBuffer(samples, freeBuffer)) return
         }
     }
 
-    private fun fillAndPushBuffer(buffer: Int): Boolean {
-        val samples = queue.poll() ?: return false
-
+    private fun fillAndPushBuffer(samples: ShortArray, buffer: Int): Boolean {
         AL11.alBufferData(buffer, format, samples, device.format.sampleRate.toInt())
-        if (AlUtil.checkErrors("Assigning buffer data")) return false
+        if (AlUtil.checkErrors("Assigning buffer data")) {
+            freeBuffers.addLast(buffer)
+            return false
+        }
 
         AL11.alSourceQueueBuffers(pointer, intArrayOf(buffer))
-        if (AlUtil.checkErrors("Queue buffer data")) return false
+        if (AlUtil.checkErrors("Queue buffer data")) {
+            freeBuffers.addLast(buffer)
+            return false
+        }
 
         client.eventBus.fire(AlSourceBufferQueuedEvent(this, samples, buffer))
 
         return true
     }
 
-    private fun removeProcessedBuffers() {
+    private fun recycleProcessedBuffers(fireEvent: Boolean = true) {
         var processedBuffers = getInt(AL11.AL_BUFFERS_PROCESSED)
-        AlUtil.checkErrors("Get processed buffers")
 
         while (processedBuffers > 0) {
-            val buffer = IntArray(1)
+            AL11.alSourceUnqueueBuffers(pointer, unqueuedBuffer)
+            if (AlUtil.checkErrors("Unqueue buffer")) return
 
-            AL11.alSourceUnqueueBuffers(pointer, buffer)
-            AlUtil.checkErrors("Unqueue buffer")
+            freeBuffers.addLast(unqueuedBuffer[0])
+            if (fireEvent) {
+                client.eventBus.fire(AlSourceBufferUnqueuedEvent(this, unqueuedBuffer[0]))
+            }
 
             processedBuffers--
         }
     }
 
     companion object {
-        private val LOGGER = BaseVoice.createLogger("StreamAlSource")
+        private const val JITTER_MARGIN_MS = 10
+        private const val MIN_SILENCE_FRAMES = 64
 
         @JvmStatic
         fun create(device: AlOutputDevice, client: PlasmoVoiceClient, stereo: Boolean, numBuffers: Int): AlSource {

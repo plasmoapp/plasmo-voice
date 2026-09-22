@@ -451,7 +451,7 @@ public final class VoiceClientConfig implements ClientConfig {
         private BooleanConfigEntry exponentialDistanceGain = new BooleanConfigEntry(true);
 
         @ConfigField
-        private IntConfigEntry jitterPacketDelay = new IntConfigEntry(3, 0, 16);
+        private IntConfigEntry jitterPacketDelay = new IntConfigEntry(2, 0, 16);
 
         @ConfigField
         private IntConfigEntry alPlaybackBuffers = new IntConfigEntry(5, 1, 32);

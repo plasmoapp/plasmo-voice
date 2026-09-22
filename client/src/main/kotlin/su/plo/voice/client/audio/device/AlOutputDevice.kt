@@ -196,6 +196,16 @@ class AlOutputDevice
         }
     }
 
+    fun mixerUpdateSamples(sampleRate: Int): Int {
+        val refresh = ALC10.alcGetInteger(devicePointer, ALC10.ALC_REFRESH)
+        if (refresh <= 0) {
+            ALC10.alcGetError(devicePointer)
+            return sampleRate / 50
+        }
+
+        return (sampleRate + refresh - 1) / refresh
+    }
+
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
         if (closed.get()) return

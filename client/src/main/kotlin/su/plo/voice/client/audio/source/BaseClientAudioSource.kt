@@ -76,6 +76,7 @@ abstract class BaseClientAudioSource<T>(
 
     private var encryption: Encryption? = null
     private var decoder: AudioDecoder? = null
+    private val frameSize: Int
 
     private var endRequest: Job? = null
     private var endSequenceNumber: Long = -1L
@@ -114,6 +115,7 @@ abstract class BaseClientAudioSource<T>(
         val serverInfo = voiceClient.serverInfo
             .orElseThrow { IllegalStateException("Not connected") }
         val voiceInfo = serverInfo.voiceInfo
+        frameSize = voiceInfo.frameSize
 
         // initialize decoder
         sourceInfo.decoderInfo?.let {
@@ -359,7 +361,7 @@ abstract class BaseClientAudioSource<T>(
                                 return
                             }
                         } else {
-                            write(ShortArray(0), compensatedSequenceNumber)
+                            write(ShortArray(frameSize * source.channels), compensatedSequenceNumber)
                         }
                     }
                 }
