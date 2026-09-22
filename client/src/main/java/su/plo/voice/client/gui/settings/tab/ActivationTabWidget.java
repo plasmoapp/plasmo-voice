@@ -124,12 +124,12 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
 
                 if (!higher.isTransitive()) {
                     ConfigClientActivation higherConfig = config.getActivations()
-                            .getActivation(higher.getId())
+                            .getActivation(higher.getName())
                             .orElse(null);
                     if (higherConfig == null) continue;
 
                     ConfigClientActivation currentConfig = config.getActivations()
-                            .getActivation(current.getId())
+                            .getActivation(current.getName())
                             .orElse(null);
                     if (currentConfig == null) continue;
 
@@ -171,7 +171,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         VoiceClientConfig.Server serverConfig = config.getServers().getById(serverInfo.getServerId())
                 .orElseThrow(() -> new IllegalStateException("Not connected"));
 
-        ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getId())
+        ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getName())
                 .orElseThrow(() -> new IllegalStateException("Activation config is empty"));
 
         IntConfigEntry activationDistance = serverConfig.getActivationDistance(activation.getId())

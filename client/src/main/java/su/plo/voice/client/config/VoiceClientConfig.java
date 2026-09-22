@@ -8,7 +8,12 @@ import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.Config;
 import su.plo.config.ConfigField;
-import su.plo.config.entry.*;
+import su.plo.config.entry.BooleanConfigEntry;
+import su.plo.config.entry.ConfigEntry;
+import su.plo.config.entry.DoubleConfigEntry;
+import su.plo.config.entry.EnumConfigEntry;
+import su.plo.config.entry.IntConfigEntry;
+import su.plo.config.entry.SerializableConfigEntry;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
 import su.plo.voice.api.client.config.ClientConfig;
@@ -20,6 +25,7 @@ import su.plo.voice.api.client.config.overlay.OverlayStyle;
 import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.hotkey.ConfigHotkeys;
 import su.plo.voice.proto.data.audio.capture.Activation;
+import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 import su.plo.voice.proto.data.audio.line.SourceLine;
 
 import java.io.File;
@@ -133,20 +139,27 @@ public final class VoiceClientConfig implements ClientConfig {
     public static class Activations implements SerializableConfigEntry {
 
         @Getter(AccessLevel.PRIVATE)
-        private Map<UUID, ConfigClientActivation> activationById = Maps.newConcurrentMap();
+        private Map<String, ConfigClientActivation> activationByName = Maps.newConcurrentMap();
 
-        public void put(UUID activationId, ConfigClientActivation activation) {
-            activationById.put(activationId, activation);
+        public void put(@NotNull String name, ConfigClientActivation activation) {
+            activationByName.put(name, activation);
         }
 
-        public Optional<ConfigClientActivation> getActivation(UUID id) {
-            return Optional.ofNullable(activationById.get(id));
+        public Optional<ConfigClientActivation> getActivation(@NotNull String name) {
+            ConfigClientActivation activation = activationByName.get(name);
+            if (activation != null) return Optional.of(activation);
+
+            // backward compat with legacy UUID keys
+            ConfigClientActivation legacy = activationByName.remove(VoiceActivation.generateId(name).toString());
+            if (legacy == null) return Optional.empty();
+
+            activationByName.put(name, legacy);
+            return Optional.of(legacy);
         }
 
-        public ConfigClientActivation getActivation(UUID id, Activation serverActivation) {
-            return activationById.computeIfAbsent(
-                    id,
-                    (activationId) -> new ConfigClientActivation()
+        public ConfigClientActivation getOrCreateActivation(@NotNull String name) {
+            return getActivation(name).orElseGet(
+                    () -> activationByName.computeIfAbsent(name, (n) -> new ConfigClientActivation())
             );
         }
 
@@ -155,10 +168,10 @@ public final class VoiceClientConfig implements ClientConfig {
         public void deserialize(Object o) {
             Map<String, Object> serialized = (Map<String, Object>) o;
 
-            serialized.forEach((id, serializedActivation) -> {
+            serialized.forEach((name, serializedActivation) -> {
                 ConfigClientActivation activation = new ConfigClientActivation();
                 toml.deserialize(activation, serializedActivation);
-                put(UUID.fromString(id), activation);
+                put(name, activation);
             });
         }
 
@@ -166,13 +179,8 @@ public final class VoiceClientConfig implements ClientConfig {
         public Object serialize() {
             Map<String, Object> serialized = Maps.newTreeMap();
 
-            for (Map.Entry<UUID, ConfigClientActivation> entry : activationById.entrySet()) {
-                UUID activationId = entry.getKey();
-                ConfigClientActivation activation = entry.getValue();
-
-                if (!activation.isDefault()) {
-                    serialized.put(activationId.toString(), toml.serialize(activation));
-                }
+            for (Map.Entry<String, ConfigClientActivation> entry : activationByName.entrySet()) {
+                serialized.put(entry.getKey(), toml.serialize(entry.getValue()));
             }
 
             return serialized;

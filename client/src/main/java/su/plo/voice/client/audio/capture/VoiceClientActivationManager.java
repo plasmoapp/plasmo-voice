@@ -64,7 +64,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
         activationById.put(activation.getId(), activation);
 
         if (activation.getId().equals(VoiceActivation.PROXIMITY_ID)) {
-            ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getId(), activation);
+            ConfigClientActivation activationConfig = config.getActivations().getOrCreateActivation(activation.getName());
 
             if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
                 BaseVoice.LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
@@ -83,7 +83,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
     public @NotNull ClientActivation register(@NotNull Activation activation) {
         VoiceClientConfig.Server serverConfig = getServerConfig();
 
-        ConfigClientActivation activationConfig = config.getActivations().getActivation(activation.getId(), activation);
+        ConfigClientActivation activationConfig = config.getActivations().getOrCreateActivation(activation.getName());
         IntConfigEntry activationDistance = serverConfig.getActivationDistance(activation.getId(), activation);
         activationDistance.setDefault(
                 activation.getDefaultDistance(),
@@ -217,7 +217,7 @@ public final class VoiceClientActivationManager implements ClientActivationManag
                 1
         );
 
-        ConfigClientActivation activationConfig = config.getActivations().getActivation(serverActivation.getId(), serverActivation);
+        ConfigClientActivation activationConfig = config.getActivations().getOrCreateActivation(serverActivation.getName());
         IntConfigEntry activationDistance = new IntConfigEntry(0, 0, 0);
         if (activationConfig.getConfigType().value() == ClientActivation.Type.INHERIT) {
             BaseVoice.LOGGER.warn("Proximity activation type cannot be INHERIT. Changed to PUSH_TO_TALK");
