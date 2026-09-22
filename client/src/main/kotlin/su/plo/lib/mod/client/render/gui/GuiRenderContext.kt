@@ -319,7 +319,8 @@ class GuiRenderContext(
         y: Int,
         color: Color,
         dropShadow: Boolean = true,
-    ): Int = drawString(RenderUtil.getFormattedString(text), x, y, color, dropShadow)
+        seeThrough: Boolean = false,
+    ): Int = drawString(RenderUtil.getFormattedString(text), x, y, color, dropShadow, seeThrough)
 
     @JvmOverloads
     fun drawString(
@@ -328,6 +329,7 @@ class GuiRenderContext(
         y: Int,
         color: Color,
         dropShadow: Boolean = true,
+        seeThrough: Boolean = false,
     ): Int {
         //#if MC>=12106
         //$$ mcContext.drawString(
@@ -341,7 +343,7 @@ class GuiRenderContext(
         //$$
         //$$ return RenderUtil.getStringX(text, x, dropShadow)
         //#else
-        return RenderUtil.drawString(stack, text, x, y, color.rgb, dropShadow)
+        return RenderUtil.drawString(stack, text, x, y, color.rgb, dropShadow, seeThrough)
         //#endif
     }
 

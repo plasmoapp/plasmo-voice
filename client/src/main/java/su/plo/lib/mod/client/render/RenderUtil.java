@@ -481,11 +481,16 @@ public class RenderUtil {
     }
 
     public static void drawStringInBatch(PoseStack stack, String text, int x, int y, int color, boolean shadow) {
+        drawStringInBatch(stack, text, x, y, color, shadow, false);
+    }
+
+    public static void drawStringInBatch(PoseStack stack, String text, int x, int y, int color, boolean shadow, boolean seeThrough) {
         //#if MC>=26.2
         //$$ throw new UnsupportedOperationException("drawStringInBatch is no longer supported in 26.2");
         //#else
+        Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : TEXT_LAYER_TYPE;
         MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
-        Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, TEXT_LAYER_TYPE, 0, 15728880);
+        Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, displayMode, 0, 15728880);
         irendertypebuffer$impl.endBatch();
         //#endif
 
@@ -563,6 +568,10 @@ public class RenderUtil {
     }
 
     public static int drawString(PoseStack stack, String string, int x, int y, int color, boolean dropShadow) {
+        return drawString(stack, string, x, y, color, dropShadow, false);
+    }
+
+    public static int drawString(PoseStack stack, String string, int x, int y, int color, boolean dropShadow, boolean seeThrough) {
         color = adjustColor(color);
 
         drawStringInBatch(
@@ -571,7 +580,8 @@ public class RenderUtil {
                 x,
                 y,
                 color,
-                dropShadow
+                dropShadow,
+                seeThrough
         );
 
         return getStringX(string, x, dropShadow);

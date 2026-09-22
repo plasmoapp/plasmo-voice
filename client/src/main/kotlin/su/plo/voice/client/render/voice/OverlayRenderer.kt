@@ -159,11 +159,6 @@ class OverlayRenderer(
             y += (ENTRY_HEIGHT + 1) * index
         }
 
-        //#if MC<12106
-        context.stack.pushPose()
-        context.stack.translate(0.0, 0.0, 1000.0)
-        //#endif
-
 //        int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
         val backgroundColor = BACKGROUND_COLOR
 
@@ -192,7 +187,7 @@ class OverlayRenderer(
             }
 
             context.fill(x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor, RenderPipelines.GUI_COLOR_OVERLAY)
-            context.drawString(sourceName, x + 4, y + 4, Colors.WHITE, false)
+            context.drawString(sourceName, x + 4, y + 4, Colors.WHITE, dropShadow = false, seeThrough = true)
 
             if (sourceInfo.activated && !position.isRight) {
                 x += textWidth + 1
@@ -210,10 +205,6 @@ class OverlayRenderer(
             context.fill(x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor, RenderPipelines.GUI_COLOR_OVERLAY)
             context.blit(iconLocation, x, y, 0f, 0f, 16, 16, 16, 16, RenderPipelines.GUI_TEXTURE_OVERLAY)
         }
-
-        //#if MC<12106
-        context.stack.popPose()
-        //#endif
     }
 
     private fun getSourceSenderName(

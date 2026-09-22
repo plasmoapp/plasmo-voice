@@ -88,11 +88,6 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
     private void renderIcon(@NotNull GuiRenderContext context, @NotNull ResourceLocation iconLocation) {
         IconPosition iconPosition = config.getOverlay().getActivationIconPosition().value();
 
-        //#if MC<12106
-        context.getStack().pushPose();
-        context.getStack().translate(0f, 0f, 1000f);
-        //#endif
-
         int offsetY;
         if (iconPosition == IconPosition.BOTTOM_CENTER &&
                 Minecraft.getInstance().gameMode != null &&
@@ -117,9 +112,6 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
                     RenderPipelines.GUI_TEXTURE_OVERLAY
             )
         );
-        //#if MC<12106
-        context.getStack().popPose();
-        //#endif
     }
 
     private int calcIconX(Integer x) {
