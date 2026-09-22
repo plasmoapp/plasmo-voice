@@ -40,6 +40,9 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 //#if MC>=1.21.6
 //$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
 //$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+//#elseif MC>=1.21.4
+//$$ import net.fabricmc.fabric.api.client.rendering.v1.HudLayerRegistrationCallback;
+//$$ import net.fabricmc.fabric.api.client.rendering.v1.IdentifiedLayer;
 //#else
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 //#endif
@@ -55,8 +58,8 @@ import su.plo.slib.mod.channel.ModChannelManager;
 //$$ import net.neoforged.bus.api.SubscribeEvent;
 //$$ import net.neoforged.fml.common.EventBusSubscriber;
 //$$ import net.neoforged.neoforge.client.event.ClientPlayerNetworkEvent;
+//$$ import net.neoforged.neoforge.client.event.RegisterGuiLayersEvent;
 //$$ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
-//$$ import net.neoforged.neoforge.client.event.RenderGuiLayerEvent;
 //$$ import net.neoforged.neoforge.client.gui.VanillaGuiLayers;
 //$$
 //#if MC>=26.2
@@ -158,7 +161,11 @@ public final class ModVoiceClient extends BaseVoiceClient
         //$$ HudElementRegistry.attachElementAfter(
         //$$         VanillaHudElements.CHAT,
         //$$         ModHudRenderer.KEY,
-        //$$         new ModHudRenderer()
+        //$$         ModHudRenderer::render
+        //$$ );
+        //#elseif MC>=1.21.4
+        //$$ HudLayerRegistrationCallback.EVENT.register((layers) ->
+        //$$         layers.attachLayerAfter(IdentifiedLayer.CHAT, ModHudRenderer.KEY, ModHudRenderer::render)
         //$$ );
         //#else
         HudRenderCallback.EVENT.register(ModHudRenderer::render);
@@ -253,13 +260,6 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$ }
     //$$
     //$$ @SubscribeEvent
-    //$$ public void onOverlayRender(@NotNull RenderGuiLayerEvent.Post event) {
-    //$$     if (!event.getName().equals(VanillaGuiLayers.CHAT)) return;
-    //$$
-    //$$     ModHudRenderer.render(event.getGuiGraphics(), event.getPartialTick());
-    //$$ }
-    //$$
-    //$$ @SubscribeEvent
     //$$ public void onDisconnect(ClientPlayerNetworkEvent.LoggingOut event) {
     //$$     onServerDisconnect();
     //$$ }
@@ -347,6 +347,11 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     @SubscribeEvent
     //$$     public static void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
     //$$         event.register(MENU_KEY);
+    //$$     }
+    //$$
+    //$$     @SubscribeEvent
+    //$$     public static void onGuiLayersRegister(RegisterGuiLayersEvent event) {
+    //$$         event.registerAbove(VanillaGuiLayers.CHAT, ModHudRenderer.KEY, ModHudRenderer::render);
     //$$     }
     //$$ }
     //$$

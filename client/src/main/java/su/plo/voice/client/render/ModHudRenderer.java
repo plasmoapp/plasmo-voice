@@ -1,38 +1,17 @@
 package su.plo.voice.client.render;
 
-import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.voice.client.event.HudRenderEvent;
 
-//#if MC>=1.21.6 && FABRIC
-//$$ import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElement;
-//$$ import net.minecraft.resources.ResourceLocation;
-//$$ import su.plo.lib.mod.client.ResourceLocationUtil;
-//#endif
-
-import net.minecraft.client.DeltaTracker;
-
-import net.minecraft.client.gui.GuiGraphics;
-
-//#if MC>=1.21.6 && FABRIC
-//$$ public final class ModHudRenderer implements HudElement {
-//$$     public static ResourceLocation KEY = ResourceLocationUtil.mod("hud");
-//$$
-//$$     @Override
-//$$     public void render(GuiGraphics graphics, DeltaTracker deltaTracker) {
-//$$         HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), deltaTracker.getRealtimeDeltaTicks());
-//$$     }
-//$$ }
-//#else
 public final class ModHudRenderer {
+    public static final ResourceLocation KEY = ResourceLocationUtil.mod("hud");
 
-    public static void render(@NotNull GuiGraphics graphics, DeltaTracker delta) {
-        render(graphics, delta.getRealtimeDeltaTicks());
-    }
-
-    public static void render(@NotNull GuiGraphics graphics, float delta) {
-        HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta);
+    public static void render(@NotNull GuiGraphics graphics, @NotNull DeltaTracker delta) {
+        HudRenderEvent.INSTANCE.getInvoker().onRender(new GuiRenderContext(graphics), delta.getRealtimeDeltaTicks());
     }
 }
-//#endif

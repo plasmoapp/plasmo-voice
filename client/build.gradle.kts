@@ -70,6 +70,7 @@ val shadowCommon = configurations.create("shadowCommon")
 
 val mcVersionsRange = project.property("mod.minecraft_versions") as String
 val neoForgeVersionRange = project.findProperty("mod.neoforge_version") as String? ?: ""
+val fabricApiVersionRange = project.findProperty("mod.fabric_api_version") as String? ?: "*"
 
 fun slibArtifact(): String {
     val mcSlug = project.findProperty("deps.slib") as String? ?: platform.mcVersionStr
@@ -201,6 +202,7 @@ tasks {
             listOf("fabric.mod.json"),
             "version" to version,
             "fabricDependencyName" to if (platform.mcVersion >= 260100) "fabric-api" else "fabric",
+            "fabricApiVersion" to fabricApiVersionRange,
             "mcVersions" to mcVersionsRange,
             "mixins" to mixins.joinToString(", ") { "\"$it\"" }.removeSurrounding("\""),
         )
