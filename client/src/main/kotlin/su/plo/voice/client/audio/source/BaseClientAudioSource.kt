@@ -493,6 +493,8 @@ abstract class BaseClientAudioSource<T>(
     }
 
     private suspend fun updateSource(distance: Double) {
+        if (getListener() == null) return
+
         // get source positions
         val playerPosition = getListenerPosition()
         val position = getPosition()
