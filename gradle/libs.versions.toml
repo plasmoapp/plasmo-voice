@@ -27,7 +27,7 @@ paper = "1.21.1-R0.1-SNAPSHOT"
 
 minestom = "39d445482f"
 
-opus-jni = "1.0.3"
+opus-jni = "1.0.5"
 opus-concentus = "1.0.0"
 rnnoise-jni = "1.0.2"
 
