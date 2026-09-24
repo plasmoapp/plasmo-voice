@@ -240,11 +240,16 @@ public abstract interface annotation class su/plo/voice/api/event/EventSubscribe
 	public abstract fun priority ()Lsu/plo/voice/api/event/EventPriority;
 }
 
-public final class su/plo/voice/api/logging/DebugLogger {
+public final class su/plo/voice/api/logging/DebugLogger : su/plo/slib/api/logging/McLogger {
 	public fun <init> (Lsu/plo/slib/api/logging/McLogger;)V
+	public fun debug (Ljava/lang/String;[Ljava/lang/Object;)V
 	public fun enabled ()Z
 	public fun enabled (Z)Lsu/plo/voice/api/logging/DebugLogger;
+	public fun error (Ljava/lang/String;[Ljava/lang/Object;)V
+	public fun getName ()Ljava/lang/String;
+	public fun info (Ljava/lang/String;[Ljava/lang/Object;)V
 	public fun log (Ljava/lang/String;[Ljava/lang/Object;)V
+	public fun trace (Ljava/lang/String;[Ljava/lang/Object;)V
 	public fun warn (Ljava/lang/String;[Ljava/lang/Object;)V
 }
 
