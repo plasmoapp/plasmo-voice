@@ -18,6 +18,8 @@ enum class Permission(
     LIST("pv.list", PermissionDefault.TRUE),
 
     ALLOW_FREECAM("pv.allow_freecam", PermissionDefault.TRUE),
+
+    PROXIMITY_ACTIVATION("pv.activation.proximity", PermissionDefault.TRUE),
 }
 
 fun McCommandSource.hasPermission(permission: Permission): Boolean =

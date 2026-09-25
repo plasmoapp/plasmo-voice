@@ -1,12 +1,12 @@
 package su.plo.voice.server.audio.capture
 
-import su.plo.slib.api.permission.PermissionDefault
 import su.plo.voice.api.event.EventSubscribe
 import su.plo.voice.api.server.PlasmoVoiceServer
 import su.plo.voice.api.server.audio.capture.ProximityServerActivationHelper
 import su.plo.voice.api.server.event.player.PlayerActivationDistanceUpdateEvent
 import su.plo.voice.proto.data.audio.capture.VoiceActivation
 import su.plo.voice.proto.data.audio.line.VoiceSourceLine
+import su.plo.voice.server.command.Permission
 import su.plo.voice.server.config.VoiceServerConfig
 
 class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
@@ -25,7 +25,7 @@ class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
             VoiceActivation.PROXIMITY_NAME,
             "pv.activation.proximity",
             "plasmovoice:textures/icons/microphone.png",
-            "pv.activation.proximity",
+            Permission.PROXIMITY_ACTIVATION.key,
             1
         )
         val activation = builder
@@ -34,7 +34,6 @@ class ProximityServerActivation(private val voiceServer: PlasmoVoiceServer) {
             .setProximity(true)
             .setTransitive(true)
             .setStereoSupported(false)
-            .setPermissionDefault(PermissionDefault.TRUE)
             .build()
 
         val sourceLine = voiceServer.sourceLineManager.createBuilder(

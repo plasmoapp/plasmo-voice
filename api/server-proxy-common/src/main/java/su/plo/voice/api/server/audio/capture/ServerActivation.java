@@ -3,6 +3,7 @@ package su.plo.voice.api.server.audio.capture;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.slib.api.entity.player.McPlayer;
+import su.plo.slib.api.event.permission.McPermissionsRegisterEvent;
 import su.plo.slib.api.permission.PermissionDefault;
 import su.plo.slib.api.permission.PermissionManager;
 import su.plo.voice.api.addon.AddonContainer;
@@ -264,19 +265,17 @@ public interface ServerActivation extends Activation {
          * Sets the default permission level to be used for permissions registration.
          *
          * <p>
-         *     Set this to null if you want to register permissions manually in {@link PermissionManager}.
-         * </p>
-         * <p>
-         *     All permissions will be automatically unregistered in {@link PermissionManager} after unregistering the activation in {@link ServerActivationManager}.
-         * </p>
-         *
-         * <p>
-         *     Default: {@link PermissionDefault#OP}
+         *     Permissions are registered in {@link PermissionManager} when the activation is built
+         *     and are not unregistered when the activation is unregistered.
          * </p>
          *
          * @param permissionDefault The default permission level.
          * @return The builder instance.
+         * @deprecated Permissions registered here are registered too late for some platforms
+         * (NeoForge's {@code PermissionAPI}), so permission handlers such as LuckPerms never see them.
+         * Register activation permissions in {@link McPermissionsRegisterEvent} instead.
          */
+        @Deprecated
         @NotNull Builder setPermissionDefault(@Nullable PermissionDefault permissionDefault);
 
         /**

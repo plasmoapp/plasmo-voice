@@ -32,7 +32,6 @@ import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket
 import su.plo.voice.server.player.BaseVoicePlayer
 import java.util.Optional
 import java.util.UUID
-import java.util.function.Consumer
 import kotlin.math.abs
 
 class VoiceServerActivationManager(
@@ -95,12 +94,6 @@ class VoiceServerActivationManager(
 
         ServerActivationUnregisterEvent(activation).also { event ->
             if (!voiceServer.eventBus.fire(event)) return false
-        }
-
-        activation.permissions.forEach { permission ->
-            voiceServer.minecraftServer
-                .permissionManager
-                .unregister(permission)
         }
 
         activationById.remove(id)
@@ -279,6 +272,7 @@ class VoiceServerActivationManager(
             permissions.add(permission)
         }
 
+        @Deprecated("ServerActivation#setPermissionDefault")
         override fun setPermissionDefault(permissionDefault: PermissionDefault?) = apply {
             this.permissionDefault = permissionDefault
         }
@@ -331,14 +325,12 @@ class VoiceServerActivationManager(
                 requirements
             )
 
-            if (permissionDefault != null) {
-                permissions.forEach(
-                    Consumer { permission: String? ->
-                        voiceServer.minecraftServer
-                            .permissionManager
-                            .register(permission!!, permissionDefault!!)
-                    }
-                )
+            permissionDefault?.let { permissionDefault ->
+                permissions.forEach { permission ->
+                    voiceServer.minecraftServer
+                        .permissionManager
+                        .register(permission, permissionDefault)
+                }
             }
 
             ServerActivationRegisterEvent(activation).also { event ->

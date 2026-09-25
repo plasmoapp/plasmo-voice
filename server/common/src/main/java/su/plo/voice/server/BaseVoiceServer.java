@@ -6,13 +6,10 @@ import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.provider.ConfigurationProvider;
 import su.plo.config.provider.toml.TomlConfiguration;
-import su.plo.slib.api.command.McCommand;
-import su.plo.slib.api.command.McCommandManager;
 import su.plo.slib.api.command.brigadier.McBrigadierRegistry;
 import su.plo.slib.api.event.command.McBrigadierCommandsRegisterEvent;
+import su.plo.slib.api.event.permission.McPermissionsRegisterEvent;
 import su.plo.slib.api.language.ServerTranslator;
-import su.plo.slib.api.permission.PermissionManager;
-import su.plo.slib.api.server.McServerLib;
 import su.plo.slib.api.server.channel.McServerChannelManager;
 import su.plo.slib.api.server.event.command.McServerCommandsRegisterEvent;
 import su.plo.voice.BaseVoice;
@@ -123,7 +120,14 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
         super(loader);
 
         ServerAddonsLoader.INSTANCE.setAddonManager(getAddonManager());
-        McServerCommandsRegisterEvent.INSTANCE.registerListener(this::registerPermissions);
+        McPermissionsRegisterEvent.INSTANCE.registerListener(permissions ->
+                Permission.getEntries().forEach(permission ->
+                        permissions.register(permission.getKey(), permission.getDefaultValue())
+                )
+        );
+        McServerCommandsRegisterEvent.INSTANCE.registerListener((commandManager, minecraftServer) ->
+                commandManager.setCommandNamespace("plasmovoice")
+        );
         McBrigadierCommandsRegisterEvent.INSTANCE.registerListener(this::registerCommands);
     }
 
@@ -375,18 +379,6 @@ public abstract class BaseVoiceServer extends BaseVoice implements PlasmoVoiceSe
                 }
             });
         }
-    }
-
-    protected void registerPermissions(
-            @NotNull McCommandManager<McCommand> commandManager,
-            @NotNull McServerLib minecraftServer
-    ) {
-        commandManager.setCommandNamespace("plasmovoice");
-
-        PermissionManager permissions = minecraftServer.getPermissionManager();
-        Permission.getEntries().forEach(permission ->
-                permissions.register(permission.getKey(), permission.getDefaultValue())
-        );
     }
 
     @Override
