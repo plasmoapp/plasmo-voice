@@ -164,6 +164,13 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
         });
     }
 
+    public void repositionElements() {
+        toggleMicrophoneButton.setX(parent.getWidth() - 52);
+        toggleVoiceButton.setX(parent.getWidth() - 28);
+
+        getActiveTab().ifPresent(TabWidget::repositionElements);
+    }
+
     public void removed() {
         if (aboutTabWidget != null) aboutTabWidget.removed();
         tabWidgets.forEach(TabWidget::removed);

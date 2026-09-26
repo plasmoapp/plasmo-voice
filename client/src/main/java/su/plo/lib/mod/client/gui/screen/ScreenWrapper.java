@@ -101,6 +101,16 @@ public final class ScreenWrapper
     }
 
     @Override
+    protected void repositionElements() {
+        screen.repositionElements();
+    }
+
+    @Override
+    public void rebuildWidgets() {
+        super.rebuildWidgets();
+    }
+
+    @Override
     public void removed() {
         ModVoiceClient.INSTANCE.getEventBus().unregister(
                 ModVoiceClient.INSTANCE,

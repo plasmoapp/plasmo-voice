@@ -37,9 +37,9 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     @Getter
     protected final int containerWidth;
     @Getter
-    protected final int width;
+    protected int width;
     @Getter
-    protected final int height;
+    protected int height;
 
     protected int y0;
     protected int y1;
@@ -47,8 +47,6 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     protected double scrollTop;
     protected boolean scrolling;
     protected @Nullable Entry hoveredEntry;
-
-    private int lastMaxScroll = 0;
 
     public AbstractScrollbar(P parent,
                              int containerWidth,
@@ -76,15 +74,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         int trackX1 = trackX0 + 6;
 
         int maxScroll = getMaxScroll();
-        if (lastMaxScroll != maxScroll) {
-            if (lastMaxScroll > 0) {
-                double scrollPercent = scrollTop / lastMaxScroll;
-                setScrollTop(maxScroll * scrollPercent);
-            } else {
-                setScrollTop(0.0D);
-            }
-        }
-        lastMaxScroll = maxScroll;
+        setScrollTop(scrollTop);
 
         // render list
         renderList(context, getContainerX0(), y0, mouseX, mouseY, delta);
@@ -250,6 +240,14 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         });
     }
 
+    protected void updateSize(int y0, int y1) {
+        this.width = parent.getWidth();
+        this.height = parent.getHeight();
+        this.y0 = y0;
+        this.y1 = y1;
+        setScrollTop(scrollTop);
+    }
+
     // ???
     public void setScrollTop(double scrollTop) {
         this.scrollTop = Mth.clamp(scrollTop, 0D, getMaxScroll());
@@ -359,6 +357,24 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         }
 
         return Optional.empty();
+    }
+
+    protected void scrollEntryToTop(@NotNull GuiWidgetListener element) {
+        int entryIndex = entries.indexOf(element);
+        if (entryIndex < 0) return;
+
+        setScrollTop(entryPositions.get(entryIndex).top);
+    }
+
+    protected int getEntryTop(@NotNull GuiWidgetListener element) {
+        int entryIndex = entries.indexOf(element);
+        if (entryIndex < 0) return -1;
+
+        return entryPositions.get(entryIndex).top;
+    }
+
+    protected int getViewportHeight() {
+        return y1 - y0;
     }
 
     protected void scrollToEntry(@NotNull GuiWidgetListener element) {

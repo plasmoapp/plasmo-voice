@@ -149,6 +149,10 @@ public abstract class GuiScreen extends AbstractScreenListener implements GuiWid
     public void removed() {
     }
 
+    public void repositionElements() {
+        screen.rebuildWidgets();
+    }
+
     // getters
     @Override
     public int getWidth() {

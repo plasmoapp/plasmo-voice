@@ -62,7 +62,6 @@ public final class VolumeTabWidget extends TabWidget {
         Collections.reverse(sourceLines);
         sourceLines.forEach(this::createSourceLineVolume);
 
-        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.volume.players"), 24));
         createPlayersSearch();
         refreshPlayerEntries();
     }
@@ -97,6 +96,9 @@ public final class VolumeTabWidget extends TabWidget {
     }
 
     private void createPlayersSearch() {
+        CategoryEntry categoryEntry = new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.volume.players"), 24);
+        addEntry(categoryEntry);
+
         TextFieldWidget textField = new TextFieldWidget(
                 0,
                 0,
@@ -110,7 +112,13 @@ public final class VolumeTabWidget extends TabWidget {
         textField.setResponder((value) -> {
             this.currentSearch = value.toLowerCase();
             refreshPlayerEntries();
-            scrollToEntry(entry);
+
+            int sourcesHeight = getEntryTop(categoryEntry);
+            if (sourcesHeight > getViewportHeight() / 2) {
+                scrollEntryToTop(categoryEntry);
+            } else {
+                setScrollTop(0);
+            }
         });
 
         addEntry(entry);

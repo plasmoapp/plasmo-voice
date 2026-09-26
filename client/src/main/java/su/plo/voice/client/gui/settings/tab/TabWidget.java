@@ -65,8 +65,11 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
     public void init() {
         clearEntries();
         this.setFocused(null);
-        this.y0 = parent.getNavigation().getHeight();
-        this.y1 = parent.getHeight();
+        repositionElements();
+    }
+
+    public void repositionElements() {
+        updateSize(parent.getNavigation().getHeight(), parent.getHeight());
     }
 
     public void removed() {

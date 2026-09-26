@@ -138,6 +138,11 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     }
 
     @Override
+    public void repositionElements() {
+        navigation.repositionElements();
+    }
+
+    @Override
     public void removed() {
         navigation.removed();
         testController.stop();
