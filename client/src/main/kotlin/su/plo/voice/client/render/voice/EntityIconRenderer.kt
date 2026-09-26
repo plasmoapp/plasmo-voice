@@ -8,7 +8,7 @@ import su.plo.lib.mod.client.render.Colors.withAlpha
 import su.plo.lib.mod.client.render.LazyGlState
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.VertexBuilder.Companion.create
-import su.plo.lib.mod.client.render.entity.LivingEntityRenderState
+import su.plo.lib.mod.client.render.entity.EntityRenderState
 
 //#if MC>=1.21.11
 //$$
@@ -48,7 +48,7 @@ object EntityIconRenderer {
     //#if MC>=1.21.11
     //$$ @JvmStatic
     //$$ fun render(
-    //$$     entityState: LivingEntityRenderState,
+    //$$     entityState: EntityRenderState,
     //$$     iconState: EntityVoiceIconState,
     //$$     cameraState: CameraRenderState,
     //$$     collector: SubmitNodeCollector,
@@ -62,7 +62,7 @@ object EntityIconRenderer {
     //#else
     @JvmStatic
     fun render(
-        entityState: LivingEntityRenderState,
+        entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
         poseStack: PoseStack,
     ) {
@@ -76,7 +76,7 @@ object EntityIconRenderer {
     //#endif
 
     private fun renderPercent(
-        entityState: LivingEntityRenderState,
+        entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
         //#if MC>=1.21.11
         //$$ cameraState: CameraRenderState,
@@ -180,7 +180,7 @@ object EntityIconRenderer {
     }
 
     private fun renderIcon(
-        entityState: LivingEntityRenderState,
+        entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
         //#if MC>=1.21.11
         //$$ cameraState: CameraRenderState,
@@ -251,7 +251,7 @@ object EntityIconRenderer {
     }
 
     private fun translateEntityMatrix(
-        entityState: LivingEntityRenderState,
+        entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
         //#if MC>=1.21.11
         //$$ cameraState: CameraRenderState,

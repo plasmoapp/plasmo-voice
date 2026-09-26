@@ -1,13 +1,13 @@
 package su.plo.voice.client.render.voice
 
 import net.minecraft.client.Minecraft
-import su.plo.lib.mod.extensions.isHudHidden
 import net.minecraft.client.player.LocalPlayer
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
-import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.phys.Vec3
+import su.plo.lib.mod.extensions.isHudHidden
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.line.ClientSourceLine
@@ -19,7 +19,6 @@ import su.plo.voice.proto.data.audio.source.SourceInfo
 import su.plo.voice.proto.data.config.PlayerIconVisibility
 import su.plo.voice.proto.data.player.VoicePlayerInfo
 import java.util.EnumSet
-import kotlin.collections.plus
 import kotlin.jvm.optionals.getOrNull
 import kotlin.math.roundToInt
 
@@ -32,7 +31,7 @@ object EntityIconStateExtractor {
     private val minecraft by lazy { Minecraft.getInstance() }
 
     @JvmStatic
-    fun extract(entity: LivingEntity): EntityVoiceIconState? {
+    fun extract(entity: Entity): EntityVoiceIconState? {
         if (isIconHidden(voiceClient, config)) return null
 
         val clientPlayer = minecraft.player ?: return null
@@ -46,12 +45,12 @@ object EntityIconStateExtractor {
         return if (entity.type == EntityType.PLAYER) {
             extractPlayer(entity, clientPlayer)
         } else {
-            extractLivingEntity(entity)
+            extractEntity(entity)
         }
     }
 
     private fun extractPlayer(
-        entity: LivingEntity,
+        entity: Entity,
         clientPlayer: LocalPlayer,
     ): EntityVoiceIconState? {
         val connection = voiceClient.serverConnection.orElse(null) ?: return null
@@ -63,7 +62,7 @@ object EntityIconStateExtractor {
 
         val entitySources = voiceClient.sourceManager.getEntitySources(entity.id)
         if (isFakePlayer && entitySources.isNotEmpty()) {
-            return extractLivingEntity(entity)
+            return extractEntity(entity)
         }
 
         if (entity.uuid == clientPlayer.uuid || isFakePlayer) {
@@ -88,7 +87,7 @@ object EntityIconStateExtractor {
         )
     }
 
-    private fun extractLivingEntity(entity: LivingEntity): EntityVoiceIconState? {
+    private fun extractEntity(entity: Entity): EntityVoiceIconState? {
         if (!voiceClient.serverConnection.isPresent) return null
 
         val sources = voiceClient.sourceManager.getEntitySources(entity.id)
@@ -108,7 +107,7 @@ object EntityIconStateExtractor {
     }
 
     private fun getPlayerIcon(
-        entity: LivingEntity,
+        entity: Entity,
         playerInfo: VoicePlayerInfo?,
     ): String? {
         val iconVisibility = getPlayerIconVisibility(entity)
@@ -156,7 +155,7 @@ object EntityIconStateExtractor {
     }
 
     private fun getPlayerIconBySource(
-        entity: LivingEntity,
+        entity: Entity,
         iconVisibility: Set<PlayerIconVisibility>,
     ): String? {
         if (iconVisibility.contains(PlayerIconVisibility.HIDE_SOURCE_ICON)) return null
@@ -190,14 +189,14 @@ object EntityIconStateExtractor {
         iconLocation: String,
     ): String? = if (iconVisibility.contains(target)) null else iconLocation
 
-    private fun getPlayerIconOffset(entity: LivingEntity): Vec3 {
+    private fun getPlayerIconOffset(entity: Entity): Vec3 {
         if (entity !is Player) return Vec3.ZERO
         val serverInfo = ModVoiceClient.INSTANCE.serverInfo.getOrNull() ?: return Vec3.ZERO
 
         return serverInfo.playerIconOffset.toVec3()
     }
 
-    private fun getPlayerIconVisibility(entity: LivingEntity): Set<PlayerIconVisibility> {
+    private fun getPlayerIconVisibility(entity: Entity): Set<PlayerIconVisibility> {
         if (entity !is Player) return PlayerIconVisibility.none()
 
         val serverInfo = ModVoiceClient.INSTANCE.serverInfo.getOrNull() ?: return PlayerIconVisibility.none()

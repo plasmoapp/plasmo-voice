@@ -3,11 +3,11 @@ package su.plo.lib.mod.client.render.entity
 import net.minecraft.network.chat.Component
 import net.minecraft.world.phys.Vec3
 //#if MC>=1.21.2
-//$$ import net.minecraft.client.renderer.entity.state.EntityRenderState
+//$$ import net.minecraft.client.renderer.entity.state.EntityRenderState as McEntityRenderState
 //$$ import net.minecraft.client.renderer.entity.state.PlayerRenderState
 //$$
-//$$ class LivingEntityRenderState(
-//$$     private val entityState: EntityRenderState,
+//$$ class EntityRenderState(
+//$$     private val entityState: McEntityRenderState,
 //#if MC<1.21.9
 //$$     val light: Int,
 //#endif
@@ -34,14 +34,14 @@ import net.minecraft.world.phys.Vec3
 //#else
 import net.minecraft.client.Minecraft
 import net.minecraft.client.renderer.entity.EntityRenderer
-import net.minecraft.world.entity.LivingEntity
+import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.player.Player
 import net.minecraft.world.scores.DisplaySlot
 import net.minecraft.world.scores.Scoreboard
 import su.plo.voice.client.extension.position
 import su.plo.voice.client.mixin.accessor.EntityRendererAccessor
 
-data class LivingEntityRenderState(
+data class EntityRenderState(
     val distanceToCameraSquared: Double,
     val isDiscrete: Boolean,
     val nameTag: Component?,
@@ -54,16 +54,16 @@ private fun Scoreboard.getObjectiveBelowName() =
     getDisplayObjective(DisplaySlot.BELOW_NAME)
 
 fun EntityRenderer<*>.createEntityRenderState(
-    entity: LivingEntity,
+    entity: Entity,
     light: Int,
-): LivingEntityRenderState {
+): EntityRenderState {
     val hasScoreboardText = (entity as? Player)?.level()?.scoreboard?.getObjectiveBelowName() != null
 
     val camera = Minecraft.getInstance().gameRenderer.mainCamera
     val distanceToCameraSquared = camera.position().distanceToSqr(entity.position())
 
     val rendererAccessor = this as EntityRendererAccessor
-    val entityRenderState = LivingEntityRenderState(
+    val entityRenderState = EntityRenderState(
         distanceToCameraSquared,
         entity.isDiscrete,
         if (rendererAccessor.plasmovoice_shouldShowName(entity))
