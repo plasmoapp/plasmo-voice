@@ -1,6 +1,7 @@
 package su.plo.voice.client.mixin;
 
 import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.renderer.entity.DisplayRenderer;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.world.entity.Entity;
 import org.spongepowered.asm.mixin.Mixin;
@@ -49,6 +50,8 @@ public class MixinEntityRenderer {
     //$$         CameraRenderState cameraRenderState,
     //$$         CallbackInfo ci
     //$$ ) {
+    //$$     if ((Object) this instanceof DisplayRenderer) return;
+    //$$
     //$$     EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) mcEntityRenderState;
     //$$     EntityVoiceIconState voiceIconState = entityRenderStateAccessor.plasmovoice_getEntityVoiceIconState();
     //$$
@@ -67,6 +70,8 @@ public class MixinEntityRenderer {
     //$$         int light,
     //$$         CallbackInfo ci
     //$$ ) {
+    //$$     if ((Object) this instanceof DisplayRenderer) return;
+    //$$
     //$$     EntityRenderStateAccessor entityRenderStateAccessor = (EntityRenderStateAccessor) mcEntityRenderState;
     //$$     EntityVoiceIconState voiceIconState = entityRenderStateAccessor.plasmovoice_getEntityVoiceIconState();
     //$$
@@ -89,6 +94,8 @@ public class MixinEntityRenderer {
             int light,
             CallbackInfo ci
     ) {
+        if ((Object) this instanceof DisplayRenderer) return;
+
         EntityVoiceIconState iconState = EntityIconStateExtractor.extract(entity);
         if (iconState == null) return;
 

@@ -39,3 +39,5 @@ net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext submitNodeC
 
 net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents
 net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents COLLECT_SUBMITS AFTER_ENTITIES
+
+com.mojang.math.Transformation translation() getTranslation()

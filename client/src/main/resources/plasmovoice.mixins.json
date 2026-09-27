@@ -12,7 +12,9 @@
         "MixinIntegratedServer",
 
         "MixinEntityRenderer",
-        "accessor.EntityRendererAccessor"
+        "MixinDisplayRenderer",
+        "accessor.EntityRendererAccessor",
+        "accessor.DisplayAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

@@ -8,4 +8,7 @@ data class EntityVoiceIconState(
     val iconLocation: ResourceLocation?,
     val iconOffset: Vec3,
     val percentText: McTextComponent?,
-)
+) {
+    fun withOffset(x: Double, y: Double, z: Double): EntityVoiceIconState =
+        copy(iconOffset = iconOffset.add(x, y, z))
+}
