@@ -271,6 +271,7 @@ public abstract interface class su/plo/voice/api/client/audio/line/ClientPlayerS
 }
 
 public abstract interface class su/plo/voice/api/client/audio/line/ClientSourceLine : su/plo/voice/api/client/audio/line/ClientPlayerSet, su/plo/voice/proto/data/audio/line/SourceLine {
+	public abstract fun getLastActivationTime ()J
 	public fun getTranslationComponent ()Lsu/plo/slib/api/chat/component/McTextComponent;
 	public abstract fun getVolume ()D
 	public abstract fun setVolume (D)V
@@ -383,6 +384,7 @@ public abstract interface class su/plo/voice/api/client/config/ClientConfig$Voic
 	public abstract fun getMicrophoneVolume ()Lsu/plo/config/entry/DoubleConfigEntry;
 	public abstract fun getNoiseSuppression ()Lsu/plo/config/entry/BooleanConfigEntry;
 	public abstract fun getOutputDevice ()Lsu/plo/config/entry/ConfigEntry;
+	public abstract fun getShowAllSourceLines ()Lsu/plo/config/entry/BooleanConfigEntry;
 	public abstract fun getSoundOcclusion ()Lsu/plo/config/entry/BooleanConfigEntry;
 	public abstract fun getStereoCapture ()Lsu/plo/config/entry/BooleanConfigEntry;
 	public abstract fun getUseJavaxInput ()Lsu/plo/config/entry/BooleanConfigEntry;
