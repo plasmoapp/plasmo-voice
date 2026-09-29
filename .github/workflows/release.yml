@@ -200,16 +200,7 @@ jobs:
 
     - name: Aggregate changelog
       run: |
-        {
-          sed -e 's|^### Client$|### Client (Fabric/Forge/NeoForge)|' \
-              -e 's|^### Server$|### Server (Paper/Minestom/Fabric/Forge/NeoForge)|' \
-              client/changelog.md
-          if [ -s proxy/changelog.md ]; then
-            echo
-            echo "### Proxy (Velocity/BungeeCord)"
-            cat proxy/changelog.md
-          fi
-        } > release-changelog.md
+        python3 .github/scripts/release-changelog.py > release-changelog.md
         cat release-changelog.md
 
     - name: Publish to GitHub
