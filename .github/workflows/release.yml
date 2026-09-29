@@ -209,6 +209,7 @@ jobs:
         github-token: ${{ secrets.GITHUB_TOKEN }}
         github-generate-changelog: false
         github-prerelease: ${{ inputs.release-type != 'release' }}
+        github-commitish: ${{ github.sha }}
         changelog-file: release-changelog.md
 
   dokka:
