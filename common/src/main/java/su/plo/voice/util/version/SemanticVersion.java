@@ -18,19 +18,25 @@ public final class SemanticVersion {
     // 2.0.0+ALPHA => 2.0.0 alpha
     // 2.0.0-SNAPSHOT.build => 2.0.0 alpha
     // 2.0.0-SNAPSHOT => 2.0.0 alpha
+    // spigot-2.0.0-beta.2 => 2.0.0 beta 2
     // 2.0.0 => 2.0.0
     private static final Pattern VERSION_PATTERN = Pattern.compile(".*((-)?(\\d+)\\.(\\d+)\\.(\\d+).*)");
+    private static final Pattern BETA_PATTERN = Pattern.compile("-beta(?:\\.(\\d+))?", Pattern.CASE_INSENSITIVE);
 
     public static SemanticVersion parse(@NonNull String strVersion) {
         Matcher matcher = VERSION_PATTERN.matcher(strVersion);
         if (!matcher.matches()) throw new IllegalArgumentException("Bad version. Valid format: X.X.X");
 
-        int major, minor, patch;
+        Matcher betaMatcher = BETA_PATTERN.matcher(matcher.group(1));
+        boolean beta = betaMatcher.find();
+
+        int major, minor, patch, betaNumber;
 
         try {
             major = Integer.parseInt(matcher.group(3));
             minor = Integer.parseInt(matcher.group(4));
             patch = Integer.parseInt(matcher.group(5));
+            betaNumber = beta && betaMatcher.group(1) != null ? Integer.parseInt(betaMatcher.group(1)) : 0;
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("Bad version. Valid format: X.X.X", e);
         }
@@ -38,14 +44,22 @@ public final class SemanticVersion {
             strVersion = strVersion.substring(0, strVersion.length() - "-SNAPSHOT".length());
         }
 
+        Branch branch;
+        if (strVersion.contains("+") || strVersion.toLowerCase().contains("snapshot")) {
+            branch = Branch.ALPHA;
+        } else if (beta) {
+            branch = Branch.BETA;
+        } else {
+            branch = Branch.RELEASE;
+        }
+
         return new SemanticVersion(
                 strVersion,
                 major,
                 minor,
                 patch,
-                strVersion.contains("+") || strVersion.toLowerCase().contains("snapshot")
-                        ? SemanticVersion.Branch.ALPHA
-                        : SemanticVersion.Branch.RELEASE
+                branch,
+                branch == Branch.BETA ? betaNumber : 0
         );
     }
 
@@ -55,6 +69,7 @@ public final class SemanticVersion {
     private final int minor;
     private final int patch;
     private final Branch branch;
+    private final int betaNumber;
 
     public boolean isOutdated(@NonNull SemanticVersion version) {
         if (major != version.major) {
@@ -63,8 +78,10 @@ public final class SemanticVersion {
             return minor < version.minor;
         } else if (patch != version.patch) {
             return patch < version.patch;
+        } else if (branch != version.branch) {
+            return branch.compareTo(version.branch) < 0;
         } else {
-            return branch == Branch.ALPHA && version.branch == Branch.RELEASE;
+            return branch == Branch.BETA && betaNumber < version.betaNumber;
         }
     }
 
@@ -103,7 +120,8 @@ public final class SemanticVersion {
     }
 
     public enum Branch {
-        RELEASE,
-        ALPHA
+        ALPHA,
+        BETA,
+        RELEASE
     }
 }

@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings;
 
 import com.mojang.blaze3d.platform.InputConstants;
+import kotlin.text.StringsKt;
 import su.plo.lib.mod.client.gui.TooltipData;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
@@ -16,6 +17,7 @@ import su.plo.lib.mod.client.gui.screen.TooltipScreen;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.language.LanguageUtil;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.voice.BuildConstants;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.event.EventSubscribe;
@@ -23,6 +25,7 @@ import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.ModVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.tab.*;
+import su.plo.voice.util.version.SemanticVersion;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -276,18 +279,18 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     }
 
     private McTextComponent getSettingsTitle() {
-        String[] versionSplit = voiceClient.getVersion().split("\\+");
+        SemanticVersion version = SemanticVersion.parse(BuildConstants.VERSION);
 
-        String version = versionSplit[0];
         McTextStyle versionColor = McTextStyle.WHITE;
-        if (versionSplit.length > 1) {
+        if (!version.isRelease()) {
             versionColor = McTextStyle.YELLOW;
         }
 
         McTextComponent title = McTextComponent.translatable(
                 "gui.plasmovoice.title",
                 McTextComponent.literal("Plasmo Voice"),
-                McTextComponent.literal(version).withStyle(versionColor)
+                McTextComponent.literal(StringsKt.substringBefore(version.toString(), "+", version.toString()))
+                        .withStyle(versionColor)
         );
 
         if (LanguageUtil.getOrDefault("gui.plasmovoice.title").split("%").length != 3) {
@@ -298,11 +301,11 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     }
 
     private TooltipData getVersionTooltip(int mouseX, int mouseY) {
-        String[] versionSplit = voiceClient.getVersion().split("\\+");
-        if (versionSplit.length < 2) return null;
+        SemanticVersion version = SemanticVersion.parse(BuildConstants.VERSION);
+        if (version.isRelease()) return null;
 
         return new TooltipData(
-                McTextComponent.literal("build+" + versionSplit[1]),
+                McTextComponent.literal("commit: " + BuildConstants.GIT_HASH),
                 mouseX,
                 mouseY
         );

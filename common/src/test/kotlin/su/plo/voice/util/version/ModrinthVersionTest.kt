@@ -72,6 +72,38 @@ class ModrinthVersionTest {
         assertNull(findUpdateLink("2.1.16", versions))
     }
 
+    @Test
+    fun betaSuggestsNewerBeta() {
+        val versions = versions(
+            version("spigot-2.1.17-beta.2", "beta", "- Fixed something"),
+            version("spigot-2.1.17-beta.1", "beta", "- Fixed other thing"),
+            version("spigot-2.1.16", "release", "- Fixed another thing")
+        )
+
+        assertEquals("spigot-2.1.17-beta.2.jar", findUpdateLink("2.1.17-beta.1", versions))
+    }
+
+    @Test
+    fun betaSuggestsReleaseOverNewerBeta() {
+        val versions = versions(
+            version("spigot-2.1.17", "release", ""),
+            version("spigot-2.1.17-beta.2", "beta", "- Fixed something"),
+            version("spigot-2.1.17-beta.1", "beta", "- Fixed other thing")
+        )
+
+        assertEquals("spigot-2.1.17.jar", findUpdateLink("2.1.17-beta.1", versions))
+    }
+
+    @Test
+    fun betaIgnoresAlpha() {
+        val versions = versions(
+            version("spigot-2.1.18+abcdef0", "alpha", "- Fixed something"),
+            version("spigot-2.1.17-beta.1", "beta", "- Fixed other thing")
+        )
+
+        assertNull(findUpdateLink("2.1.17-beta.1", versions))
+    }
+
     private fun findUpdateLink(currentVersion: String, versions: JsonArray): String? =
         ModrinthVersion.findUpdate(SemanticVersion.parse(currentVersion), versions)
             .map { it.downloadLink() }

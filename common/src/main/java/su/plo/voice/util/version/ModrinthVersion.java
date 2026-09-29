@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Accessors;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,8 +42,8 @@ public final class ModrinthVersion {
         for (JsonElement jsonElement : versions) {
             JsonObject version = jsonElement.getAsJsonObject();
 
-            String versionType = version.get("version_type").getAsString();
-            if (currentVersion.isRelease() && !versionType.equals("release")) continue;
+            SemanticVersion.Branch branch = parseVersionType(version.get("version_type").getAsString());
+            if (branch == null || branch.compareTo(currentVersion.branch()) < 0) continue;
 
             JsonArray files = version.get("files").getAsJsonArray();
             if (files.size() == 0) continue;
@@ -63,9 +64,22 @@ public final class ModrinthVersion {
         return anyNewerHasChangelog ? Optional.ofNullable(latestVersion) : Optional.empty();
     }
 
+    private static @Nullable SemanticVersion.Branch parseVersionType(@NonNull String versionType) {
+        switch (versionType) {
+            case "release":
+                return SemanticVersion.Branch.RELEASE;
+            case "beta":
+                return SemanticVersion.Branch.BETA;
+            case "alpha":
+                return SemanticVersion.Branch.ALPHA;
+            default:
+                return null;
+        }
+    }
+
     private static boolean isNewer(@NonNull SemanticVersion currentVersion, @NonNull SemanticVersion version) {
         return currentVersion.isOutdated(version) ||
-                (!currentVersion.isRelease() && !version.equals(currentVersion) && !version.isOutdated(currentVersion));
+                (currentVersion.branch() == SemanticVersion.Branch.ALPHA && !version.equals(currentVersion) && !version.isOutdated(currentVersion));
     }
 
     private static boolean hasChangelog(@NonNull JsonObject version) {

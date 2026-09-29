@@ -29,8 +29,8 @@ public final class AlUtil {
         SemanticVersion version = getAlSoftVersion();
         if (version == null) return false;
 
-        SemanticVersion firstBroken = new SemanticVersion("1.25.0", 1, 25, 0, SemanticVersion.Branch.RELEASE);
-        SemanticVersion firstFixed = new SemanticVersion("1.25.2", 1, 25, 2, SemanticVersion.Branch.RELEASE);
+        SemanticVersion firstBroken = new SemanticVersion("1.25.0", 1, 25, 0, SemanticVersion.Branch.RELEASE, 0);
+        SemanticVersion firstFixed = new SemanticVersion("1.25.2", 1, 25, 2, SemanticVersion.Branch.RELEASE, 0);
 
         return !version.isOutdated(firstBroken) && version.isOutdated(firstFixed);
     }
@@ -63,7 +63,7 @@ public final class AlUtil {
             int minor = Integer.parseInt(alVersionParts[1]);
             int patch = alVersionParts.length >= 3 ? Integer.parseInt(alVersionParts[2]) : 0;
 
-            return new SemanticVersion(alVersion, major, minor, patch, SemanticVersion.Branch.RELEASE);
+            return new SemanticVersion(alVersion, major, minor, patch, SemanticVersion.Branch.RELEASE, 0);
         } catch (NumberFormatException e) {
             return null;
         }

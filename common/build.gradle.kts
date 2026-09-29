@@ -1,6 +1,7 @@
 plugins {
     id("su.plo.voice.maven-publish")
     alias(libs.plugins.buildconfig)
+    alias(libs.plugins.grgit)
 }
 
 dependencies {
@@ -18,5 +19,6 @@ buildConfig {
     className("BuildConstants")
     useJavaOutput()
     buildConfigField("VERSION", project.version.toString())
+    buildConfigField("GIT_HASH", grgit.head().abbreviatedId.substring(0, 7))
     buildConfigField("GITHUB_CROWDIN_URL", "https://github.com/plasmoapp/plasmo-voice-crowdin/archive/refs/heads/pv.zip")
 }

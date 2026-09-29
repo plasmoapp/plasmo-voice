@@ -116,7 +116,7 @@ public abstract class BaseVoiceClient extends BaseVoice implements PlasmoVoiceCl
         httpExecutor.execute(() -> {
             try {
                 // don't check for updates in dev/alpha builds or if it disabled in the config
-                if (!SemanticVersion.parse(getVersion()).isRelease() || !config.getCheckForUpdates().value()) return;
+                if (SemanticVersion.parse(getVersion()).branch() == SemanticVersion.Branch.ALPHA || !config.getCheckForUpdates().value()) return;
 
                 ModrinthVersion.checkForUpdates(getVersion(), MinecraftUtil.getVersion(), loader)
                         .ifPresent(version -> {

@@ -21,7 +21,7 @@ plugins {
 
 if (properties.containsKey("snapshot")) {
     val gitCommitHash = grgit.head().abbreviatedId.substring(0, 7)
-    version = "$version+$gitCommitHash-SNAPSHOT"
+    version = "${version.toString().substringBefore("-")}+$gitCommitHash-SNAPSHOT"
 }
 
 subprojects {
