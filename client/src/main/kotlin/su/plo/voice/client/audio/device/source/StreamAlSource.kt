@@ -311,7 +311,7 @@ class StreamAlSource private constructor(
     }
 
     companion object {
-        private const val JITTER_MARGIN_MS = 10
+        private const val JITTER_MARGIN_MS = 20
         private const val MIN_SILENCE_FRAMES = 64
 
         @JvmStatic
