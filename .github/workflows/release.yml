@@ -106,6 +106,10 @@ jobs:
         split-releases: true
         files-primary: build/libs/*-@(Paper)-*.jar
 
+        loaders: |
+          paper
+          folia
+
         changelog-file: server/changelog.md
         version-type: ${{ inputs.release-type }}
 
