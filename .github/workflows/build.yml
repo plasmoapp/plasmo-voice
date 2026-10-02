@@ -130,7 +130,7 @@ jobs:
     - name: Build the microphone helper
       env:
         SNAPSHOT_ARG: ${{ inputs.snapshot && '-Psnapshot=true' || '' }}
-      run: ./gradlew :macos:helper:bundleZip --stacktrace -Ppv.mac.signIdentity="${{ steps.signing.outputs.identity }}" $SNAPSHOT_ARG
+      run: ./gradlew :macos:helper:bundleZip --stacktrace -Ppv.mac.signIdentity="${{ steps.signing.outputs.identity }}" -Pproject.client.disable=true $SNAPSHOT_ARG
 
     - name: Upload the bundle
       uses: actions/upload-artifact@v7.0.1
