@@ -50,6 +50,11 @@ import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import su.plo.slib.mod.channel.ByteArrayCodec;
 import su.plo.slib.mod.channel.ModChannelManager;
 
+//#if MC>=26.3
+//$$ import net.fabricmc.fabric.api.client.rendering.v1.FeatureRendererRegistry;
+//$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer;
+//#endif
+
 //#elseif NEOFORGE
 //$$
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
@@ -70,6 +75,11 @@ import su.plo.slib.mod.channel.ModChannelManager;
 //$$
 //#if MC>=1.21.11
 //$$ import net.neoforged.neoforge.client.event.ExtractLevelRenderStateEvent;
+//#endif
+//$$
+//#if MC>=26.3
+//$$ import net.neoforged.neoforge.client.event.RegisterFeatureRenderersEvent;
+//$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer;
 //#endif
 //$$
 //#endif
@@ -243,6 +253,10 @@ public final class ModVoiceClient extends BaseVoiceClient
         ClientPlayNetworking.registerGlobalReceiver(flagChannelCodec.getType(), (payload, context) -> {});
 
         KeyBindingHelper.registerKeyBinding(MENU_KEY);
+
+        //#if MC>=26.3
+        //$$ FeatureRendererRegistry.register(SeeThroughGeometryFeatureRenderer.TYPE, SeeThroughGeometryFeatureRenderer::new);
+        //#endif
     }
 
     //#elseif NEOFORGE
@@ -337,7 +351,7 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$         modid = "plasmovoice",
     //$$         value = Dist.CLIENT
     //$$ )
-    //$$ public static class ModBusEvents {
+    //$$ public static class ClientEvents {
     //$$
     //$$     @SubscribeEvent
     //$$     public static void onKeyMappingsRegister(RegisterKeyMappingsEvent event) {
@@ -348,6 +362,13 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     public static void onGuiLayersRegister(RegisterGuiLayersEvent event) {
     //$$         event.registerAbove(VanillaGuiLayers.CHAT, ModHudRenderer.KEY, ModHudRenderer::render);
     //$$     }
+    //#if MC>=26.3
+    //$$
+    //$$     @SubscribeEvent
+    //$$     public static void onFeatureRenderersRegister(RegisterFeatureRenderersEvent event) {
+    //$$         event.register(SeeThroughGeometryFeatureRenderer.TYPE, new SeeThroughGeometryFeatureRenderer());
+    //$$     }
+    //#endif
     //$$ }
     //$$
     //#endif

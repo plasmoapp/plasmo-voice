@@ -25,6 +25,10 @@ import su.plo.voice.client.extension.position
 //$$ import net.minecraft.client.renderer.feature.CustomFeatureRenderer
 //#endif
 
+//#if MC>=26.3
+//$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer
+//#endif
+
 class StaticSourceIconRenderer : LevelRenderEvent.Callback {
 
     override fun onRender(context: LevelRenderContext) {
@@ -95,18 +99,22 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
         //#endif
 
         //#if MC>=26.2
+        //$$ val geometry = SubmitNodeCollector.CustomGeometryRenderer { pose, buffer ->
+        //$$     vertex(pose, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
+        //$$     vertex(pose, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
+        //$$     vertex(pose, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
+        //$$     vertex(pose, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
+        //$$ }
+        //$$
+        //#if MC>=26.3
+        //$$ if (seeThrough) {
+        //$$     SeeThroughGeometryFeatureRenderer.submit(collector, stack.last().copy(), renderType, geometry)
+        //$$     return
+        //$$ }
+        //#endif
+        //$$
         //$$ val collection = collector.order(0) as SubmitNodeCollection
-        //$$ collection.afterTerrain.submit(
-        //$$     CustomFeatureRenderer.Submit(
-        //$$         stack.last().copy(),
-        //$$         renderType,
-        //$$     ) { pose, buffer ->
-        //$$         vertex(pose, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
-        //$$         vertex(pose, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
-        //$$         vertex(pose, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
-        //$$         vertex(pose, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
-        //$$     }
-        //$$ )
+        //$$ collection.afterTerrain.submit(CustomFeatureRenderer.Submit(stack.last().copy(), renderType, geometry))
         //#else
         val renderPipeline = RenderPipelines.fromRenderType(
             if (seeThrough) "text_see_through" else "text",

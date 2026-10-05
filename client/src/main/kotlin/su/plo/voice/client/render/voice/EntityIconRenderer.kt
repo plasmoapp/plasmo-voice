@@ -35,6 +35,10 @@ import su.plo.lib.mod.extensions.rotate
 //$$ import net.minecraft.client.renderer.LightTexture
 //#endif
 
+//#if MC>=26.3
+//$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer
+//#endif
+
 object EntityIconRenderer {
 
     private val glState = LazyGlState()
@@ -302,12 +306,22 @@ object EntityIconRenderer {
         //$$     else
         //$$         RenderTypes.text(iconLocation)
         //$$
-        //$$ collector.submitCustomGeometry(stack, renderType) { stack, buffer ->
+        //$$ val geometry = SubmitNodeCollector.CustomGeometryRenderer { stack, buffer ->
         //$$     vertex(stack, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
         //$$     vertex(stack, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
         //$$     vertex(stack, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
         //$$     vertex(stack, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
         //$$ }
+        //$$
+        //#if MC>=26.3
+        //$$ if (seeThrough) {
+        //$$     SeeThroughGeometryFeatureRenderer.submit(collector, stack.last().copy(), renderType, geometry)
+        //$$ } else {
+        //$$     collector.submitCustomGeometry(stack, renderType, geometry)
+        //$$ }
+        //#else
+        //$$ collector.submitCustomGeometry(stack, renderType, geometry)
+        //#endif
         //$$
         //#else
 
