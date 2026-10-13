@@ -20,6 +20,7 @@ import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 
 public final class DropDownWidget extends GuiAbstractWidget {
 
+    private final VoiceSettingsScreen parent;
     private final DropDownWidgetList list;
 
     private boolean open;
@@ -37,6 +38,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
     ) {
         super(x, y, width, height, message);
 
+        this.parent = parent;
         this.list = new DropDownWidgetList(
                 this,
                 elements,
@@ -140,8 +142,10 @@ public final class DropDownWidget extends GuiAbstractWidget {
         if (open) {
             this.open = false;
             list.setScrollTop(0.0D);
+            if (parent.getOverlay() == list) parent.setOverlay(null);
         } else {
             this.open = true;
+            parent.setOverlay(list);
         }
     }
 

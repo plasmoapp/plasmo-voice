@@ -65,6 +65,13 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     private final List<Runnable> deferredRenders = new ArrayList<>();
 
+    @Getter
+    private @Nullable GuiWidgetListener overlay;
+    @Getter
+    private int mouseX;
+    @Getter
+    private int mouseY;
+
     public VoiceSettingsScreen(@NotNull BaseVoiceClient voiceClient) {
         this.voiceClient = voiceClient;
         this.config = voiceClient.getConfig();
@@ -183,6 +190,13 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         if (renderCount < 5) renderCount++;
         this.tooltip = null;
+        this.mouseX = mouseX;
+        this.mouseY = mouseY;
+
+        if (overlay != null) {
+            mouseX = -1;
+            mouseY = -1;
+        }
 
         //#if MC<12105
         RenderSystem.defaultBlendFunc();
@@ -276,6 +290,10 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     public void deferredRender(@NotNull Runnable render) {
         deferredRenders.add(render);
+    }
+
+    public void setOverlay(@Nullable GuiWidgetListener overlay) {
+        this.overlay = overlay;
     }
 
     private McTextComponent getSettingsTitle() {

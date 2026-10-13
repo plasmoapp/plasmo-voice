@@ -63,6 +63,7 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
 
     @Override
     public void init() {
+        parent.setOverlay(null);
         clearEntries();
         this.setFocused(null);
         repositionElements();
