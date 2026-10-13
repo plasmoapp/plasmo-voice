@@ -3,6 +3,7 @@ package su.plo.voice.client.gui.settings;
 import com.mojang.blaze3d.platform.InputConstants;
 import kotlin.text.StringsKt;
 import su.plo.lib.mod.client.gui.TooltipData;
+import su.plo.lib.mod.client.gui.components.AbstractSlider;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -193,7 +194,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         this.mouseX = mouseX;
         this.mouseY = mouseY;
 
-        if (overlay != null) {
+        if (overlay != null || isSliderDragging()) {
             mouseX = -1;
             mouseY = -1;
         }
@@ -294,6 +295,13 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
 
     public void setOverlay(@Nullable GuiWidgetListener overlay) {
         this.overlay = overlay;
+    }
+
+    private boolean isSliderDragging() {
+        return navigation.getActiveTab()
+                .map(TabWidget::getFocusedWidget)
+                .filter(widget -> widget instanceof AbstractSlider && ((AbstractSlider) widget).isDragging())
+                .isPresent();
     }
 
     private McTextComponent getSettingsTitle() {

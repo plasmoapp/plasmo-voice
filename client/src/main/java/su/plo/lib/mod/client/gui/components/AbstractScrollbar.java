@@ -153,6 +153,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
         this.scrolling = false;
+        setDragging(false);
 
         if (getFocused() != null) {
             getFocused().mouseReleased(mouseX, mouseY, button);
@@ -163,17 +164,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     @Override
     public boolean mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY) {
-        boolean entryDragged = entries.stream()
-                .flatMap(entry -> entry.widgets().stream())
-                .filter(entry -> entry.isMouseOver(mouseX, mouseY))
-                .anyMatch(entry -> entry.mouseDragged(mouseX, mouseY, button, deltaX, deltaY));
-        if (entryDragged) {
-            return true;
-        }
-
-        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
-            return true;
-        } else if (button == InputConstants.MOUSE_BUTTON_LEFT && scrolling) {
+        if (button == InputConstants.MOUSE_BUTTON_LEFT && scrolling) {
             if (mouseY < y0) {
                 setScrollTop(0D);
             } else if (mouseY > y1) {
@@ -188,9 +179,16 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             }
 
             return true;
-        } else {
-            return false;
         }
+
+        if (super.mouseDragged(mouseX, mouseY, button, deltaX, deltaY)) {
+            return true;
+        }
+
+        return entries.stream()
+                .flatMap(entry -> entry.widgets().stream())
+                .filter(entry -> entry.isMouseOver(mouseX, mouseY))
+                .anyMatch(entry -> entry.mouseDragged(mouseX, mouseY, button, deltaX, deltaY));
     }
 
     @Override
