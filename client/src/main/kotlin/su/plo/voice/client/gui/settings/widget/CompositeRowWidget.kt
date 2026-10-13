@@ -39,8 +39,21 @@ class CompositeRowWidget(
         }
     }
 
-    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean =
-        widgets.any { it.mouseClicked(mouseX, mouseY, button) }
+    private var focused: GuiAbstractWidget? = null
+
+    private fun setFocused(widget: GuiAbstractWidget?) {
+        if (focused === widget) return
+
+        focused?.applyFocus(false)
+        focused = widget
+        widget?.applyFocus(true)
+    }
+
+    override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+        val clicked = widgets.firstOrNull { it.mouseClicked(mouseX, mouseY, button) }
+        setFocused(clicked)
+        return clicked != null
+    }
 
     override fun mouseReleased(mouseX: Double, mouseY: Double, button: Int): Boolean =
         widgets.any { it.mouseReleased(mouseX, mouseY, button) }
@@ -52,27 +65,42 @@ class CompositeRowWidget(
         widgets.any { it.mouseScrolled(mouseX, mouseY, delta) }
 
     override fun keyPressed(keyCode: Int, modifiers: Int): Boolean =
-        widgets.any { it.keyPressed(keyCode, modifiers) }
+        focused?.keyPressed(keyCode, modifiers) ?: false
 
     override fun charTyped(typedChar: Char, modifiers: Int): Boolean =
-        widgets.any { it.charTyped(typedChar, modifiers) }
+        focused?.charTyped(typedChar, modifiers) ?: false
 
     override fun keyReleased(keyCode: Int, typedChar: Char, modifiers: Int): Boolean =
-        widgets.any { it.keyReleased(keyCode, typedChar, modifiers) }
+        focused?.keyReleased(keyCode, typedChar, modifiers) ?: false
 
-    override fun changeFocus(lookForwards: Boolean): Boolean =
-        widgets.any { it.changeFocus(lookForwards) }
+    override fun changeFocus(lookForwards: Boolean): Boolean {
+        val current = focused
+        if (current != null && current.changeFocus(lookForwards)) return true
+
+        val currentIndex = widgets.indexOf(current)
+        val candidates =
+            when {
+                current == null && lookForwards -> widgets
+                current == null -> widgets.asReversed()
+                lookForwards -> widgets.drop(currentIndex + 1)
+                else -> widgets.take(currentIndex).asReversed()
+            }
+
+        val next = candidates.firstOrNull { it.changeFocus(lookForwards) }
+        setFocused(next)
+        return next != null
+    }
 
     override fun capturesInput(): Boolean =
-        widgets.any { it.capturesInput() }
+        focused?.capturesInput() ?: false
 
     override fun isMouseOver(mouseX: Double, mouseY: Double): Boolean =
         widgets.any { it.isMouseOver(mouseX, mouseY) }
 
     override fun applyFocus(focused: Boolean) {
-        widgets.forEach { it.applyFocus(focused) }
+        if (!focused) setFocused(null)
     }
 
     override fun isFocused(): Boolean =
-        widgets.any { it.isFocused }
+        focused != null
 }

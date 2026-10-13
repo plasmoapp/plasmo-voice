@@ -56,7 +56,7 @@ public final class ToggleButton extends GuiAbstractWidget {
 
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
-        if (!active || !visible) return false;
+        if (!active || !visible || !isFocused()) return false;
 
         if (keyCode != InputConstants.KEY_RETURN && keyCode != InputConstants.KEY_SPACE && keyCode != InputConstants.KEY_NUMPADENTER) return false;
 
