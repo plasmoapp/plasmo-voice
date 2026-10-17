@@ -61,8 +61,7 @@ class DropDownWidgetList(
             }
 
             //#if MC<12106
-            context.stack.pushPose()
-            context.stack.translate(0.0, 0.0, 10.0)
+            context.stack.popPose()
             //#endif
         }
     }
