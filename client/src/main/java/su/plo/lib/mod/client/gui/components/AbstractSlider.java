@@ -8,13 +8,10 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiCursor;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
 import java.awt.Color;
-
-//#if MC>=12109
-//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
-//#endif
 
 public abstract class AbstractSlider extends GuiAbstractWidget {
 
@@ -38,13 +35,11 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
         this.hovered = dragging || isHovered(mouseX, mouseY);
         renderButton(context, mouseX, mouseY, delta);
 
-        //#if MC>=12109
-        //$$ if (dragging) {
-        //$$     context.requestCursor(CursorTypes.RESIZE_EW);
-        //$$ } else if (hovered) {
-        //$$     context.requestCursor(CursorTypes.POINTING_HAND);
-        //$$ }
-        //#endif
+        if (dragging) {
+            context.requestCursor(GuiCursor.RESIZE_EW);
+        } else if (hovered) {
+            context.requestCursor(GuiCursor.POINTING_HAND);
+        }
     }
 
     @Override

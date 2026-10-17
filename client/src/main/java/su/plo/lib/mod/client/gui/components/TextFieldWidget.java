@@ -12,6 +12,7 @@ import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiCursor;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 
@@ -22,10 +23,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-
-//#if MC>=12109
-//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
-//#endif
 
 //#if MC>=26.3
 //$$ import com.mojang.blaze3d.platform.TextInputManager;
@@ -323,11 +320,9 @@ public class TextFieldWidget extends GuiAbstractWidget {
             }
         }
 
-        //#if MC>=12109
-        //$$ if (isHovered()) {
-        //$$     context.requestCursor(CursorTypes.IBEAM);
-        //$$ }
-        //#endif
+        if (isHovered()) {
+            context.requestCursor(GuiCursor.IBEAM);
+        }
     }
 
     private void renderHighlight(@NotNull GuiRenderContext context, int x0, int y0, int x1, int y1) {

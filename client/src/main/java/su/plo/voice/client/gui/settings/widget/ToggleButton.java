@@ -6,12 +6,9 @@ import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.ConfigEntry;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
+import su.plo.lib.mod.client.render.gui.GuiCursor;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
-
-//#if MC>=12109
-//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
-//#endif
 
 public final class ToggleButton extends GuiAbstractWidget {
 
@@ -74,11 +71,9 @@ public final class ToggleButton extends GuiAbstractWidget {
     public void render(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
         super.render(context, mouseX, mouseY, delta);
 
-        //#if MC>=12109
-        //$$ if (isHovered()) {
-        //$$     context.requestCursor(isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
-        //$$ }
-        //#endif
+        if (isHovered()) {
+            context.requestCursor(isActive() ? GuiCursor.POINTING_HAND : GuiCursor.NOT_ALLOWED);
+        }
     }
 
     @Override

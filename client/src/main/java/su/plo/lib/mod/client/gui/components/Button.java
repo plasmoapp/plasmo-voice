@@ -1,15 +1,12 @@
 package su.plo.lib.mod.client.gui.components;
 
+import su.plo.lib.mod.client.render.gui.GuiCursor;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
 
 import java.util.function.Consumer;
-
-//#if MC>=12109
-//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
-//#endif
 
 public class Button extends AbstractButton {
 
@@ -50,11 +47,9 @@ public class Button extends AbstractButton {
             renderToolTip(context, mouseX, mouseY);
         }
 
-        //#if MC>=12109
-        //$$ if (isHovered()) {
-        //$$     context.requestCursor(isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
-        //$$ }
-        //#endif
+        if (isHovered()) {
+            context.requestCursor(isActive() ? GuiCursor.POINTING_HAND : GuiCursor.NOT_ALLOWED);
+        }
     }
 
     @Override

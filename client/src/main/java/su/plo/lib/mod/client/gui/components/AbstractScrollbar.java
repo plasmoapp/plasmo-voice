@@ -14,6 +14,7 @@ import su.plo.lib.mod.client.gui.widget.GuiWidget;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.ScissorState;
+import su.plo.lib.mod.client.render.gui.GuiCursor;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 
 import java.awt.Color;
@@ -21,10 +22,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-
-//#if MC>=12109
-//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
-//#endif
 
 public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScreenListener implements GuiWidget {
 
@@ -97,11 +94,9 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             context.fill(trackX0, trackTop, trackX1 - 1, trackTop + trackBottom - 1, THUMB_COLOR);
         }
 
-        //#if MC>=12109
-        //$$ if (isMouseOverScrollbar(mouseX, mouseY)) {
-        //$$     context.requestCursor(scrolling ? CursorTypes.RESIZE_NS : CursorTypes.POINTING_HAND);
-        //$$ }
-        //#endif
+        if (isMouseOverScrollbar(mouseX, mouseY)) {
+            context.requestCursor(scrolling ? GuiCursor.RESIZE_NS : GuiCursor.POINTING_HAND);
+        }
     }
 
     // GuiScreenListener impl

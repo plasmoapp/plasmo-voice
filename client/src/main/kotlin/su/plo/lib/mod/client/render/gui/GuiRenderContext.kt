@@ -500,4 +500,10 @@ class GuiRenderContext(
     //$$     mcContext.requestCursor(cursorType)
     //$$ }
     //#endif
+
+    fun requestCursor(cursor: GuiCursor) {
+        //#if MC>=12109
+        //$$ mcContext.requestCursor(cursor.mc())
+        //#endif
+    }
 }

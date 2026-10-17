@@ -5,6 +5,7 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
+import su.plo.lib.mod.client.render.gui.GuiCursor;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -13,10 +14,6 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
-
-//#if MC>=12109
-//$$ import com.mojang.blaze3d.platform.cursor.CursorTypes;
-//#endif
 
 public final class DropDownWidget extends GuiAbstractWidget {
 
@@ -109,11 +106,9 @@ public final class DropDownWidget extends GuiAbstractWidget {
         renderArrow(context);
         renderText(context);
 
-        //#if MC>=12109
-        //$$ if (isMouseOver(mouseX, mouseY)) {
-        //$$     context.requestCursor(isActive() ? CursorTypes.POINTING_HAND : CursorTypes.NOT_ALLOWED);
-        //$$ }
-        //#endif
+        if (isMouseOver(mouseX, mouseY)) {
+            context.requestCursor(isActive() ? GuiCursor.POINTING_HAND : GuiCursor.NOT_ALLOWED);
+        }
 
         if (!open) return;
 
