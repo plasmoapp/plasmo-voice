@@ -506,6 +506,13 @@ public class TextFieldWidget extends GuiAbstractWidget {
         return offsetByCodepoints(value, cursorPosition, offset);
     }
 
+    @Override
+    public void setWidth(int width) {
+        super.setWidth(width);
+        this.displayPosition = 0;
+        setHighlightPos(highlightPosition);
+    }
+
     public int getInnerWidth() {
         return isBordered() ? width - 8 : width;
     }
