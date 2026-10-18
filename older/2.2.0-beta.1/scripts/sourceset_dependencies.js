@@ -1,0 +1,1 @@
+sourceset_dependencies = '{":api:proxy/main":[],":api:server/main":[],":protocol/main":[],":api:server-proxy-common/main":[],":api:common/main":[],":api:client/main":[]}'
