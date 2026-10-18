@@ -2,7 +2,6 @@ package su.plo.lib.mod.client.gui.components
 
 import com.mojang.blaze3d.platform.InputConstants
 import net.minecraft.client.Minecraft
-import net.minecraft.util.Mth
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.ScissorState
@@ -120,7 +119,7 @@ open class ScrollContainer(
             mouseY > y + height -> scrollTop = maxScroll.toDouble()
             else -> {
                 val maxScroll = max(1, maxScroll).toDouble()
-                val thumbHeight = Mth.clamp(height * height / max(1, content?.height ?: 0), MIN_THUMB_HEIGHT, height)
+                val thumbHeight = (height * height / max(1, content?.height ?: 0)).coerceIn(MIN_THUMB_HEIGHT, max(height, MIN_THUMB_HEIGHT))
                 val multiplier = max(1.0, maxScroll / max(1, height - thumbHeight).toDouble())
 
                 scrollTop += deltaY * multiplier
@@ -288,11 +287,8 @@ open class ScrollContainer(
         val trackHeight = trackY1 - trackY0
 
         val thumbHeight =
-            Mth.clamp(
-                trackHeight * trackHeight / max(1, content?.height ?: 0),
-                MIN_THUMB_HEIGHT,
-                trackHeight - 8,
-            )
+            (trackHeight * trackHeight / max(1, content?.height ?: 0))
+                .coerceIn(MIN_THUMB_HEIGHT, max(trackHeight - 8, MIN_THUMB_HEIGHT))
         val thumbTop = max(trackY0, scrollTop.toInt() * (trackHeight - thumbHeight) / maxScroll + trackY0)
 
         if (trackBackground) {
