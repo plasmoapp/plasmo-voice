@@ -64,7 +64,11 @@ public final class VoiceSettingsAboutFeature {
 
         SoundManager soundManager = Minecraft.getInstance().getSoundManager();
         soundManager.play(
+                //#if MC>=26.4
+                //$$ SimpleSoundInstance.forUI(SoundEvents.GRAVEL.hitSound().orElseThrow(), 1f, 1f)
+                //#else
                 SimpleSoundInstance.forUI(SoundEvents.GRAVEL_HIT, 1f, 1f)
+                //#endif
         );
 
         for (int i = 0; i < 2 + RandomUtil.randomInt(3); i++) {
