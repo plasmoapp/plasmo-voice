@@ -2,7 +2,6 @@ package su.plo.lib.mod.client.gui.components;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import lombok.Getter;
-import net.minecraft.util.Mth;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
@@ -132,7 +131,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
     private void setValue(double value) {
         double oldValue = this.value;
-        this.value = Mth.clamp(value, 0.0, 1.0);
+        this.value = Math.clamp(value, 0.0, 1.0);
         if (oldValue != this.value) applyValue();
 
         updateText();

@@ -25,7 +25,7 @@ private fun Display.interpolationProgress(): Float {
     if (duration <= 0) return 1f
 
     val elapsed = (tickCount - accessor.plasmovoice_getInterpolationStartClientTick()).toFloat() + 1f
-    return Mth.clamp(Mth.inverseLerp(elapsed, 0f, duration.toFloat()), 0f, 1f)
+    return Mth.inverseLerp(elapsed, 0f, duration.toFloat()).coerceIn(0f, 1f)
 }
 
 // same as DisplayRenderer#calculateOrientation

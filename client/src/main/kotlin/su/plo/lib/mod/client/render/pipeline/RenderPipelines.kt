@@ -31,6 +31,9 @@ object RenderPipelines {
             VertexFormatMode.QUADS,
         ) {
             blendFunc = BlendFunc.TRANSLUCENT
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
@@ -55,6 +58,9 @@ object RenderPipelines {
             VertexFormatMode.QUADS,
         ) {
             samplers += "Sampler0"
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
@@ -66,6 +72,9 @@ object RenderPipelines {
         ) {
             samplers += "Sampler0"
             blendFunc = BlendFunc.TRANSLUCENT
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
@@ -90,6 +99,9 @@ object RenderPipelines {
             VertexFormatMode.QUADS,
         ) {
             samplers += "Sampler0"
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
