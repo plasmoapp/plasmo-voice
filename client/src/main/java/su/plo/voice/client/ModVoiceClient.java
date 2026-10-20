@@ -347,9 +347,17 @@ public final class ModVoiceClient extends BaseVoiceClient
     //#endif
     //$$
     //$$
+    //#if MC<1.21.2
+    //$$ @SuppressWarnings("removal")
+    //#endif
     //$$ @EventBusSubscriber(
     //$$         modid = "plasmovoice",
+    //#if MC>=1.21.2
     //$$         value = Dist.CLIENT
+    //#else
+    //$$         value = Dist.CLIENT,
+    //$$         bus = EventBusSubscriber.Bus.MOD
+    //#endif
     //$$ )
     //$$ public static class ClientEvents {
     //$$
