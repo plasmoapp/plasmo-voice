@@ -311,7 +311,11 @@ data class RenderPipeline(
             //#if MC>=12111
             //$$     RenderTypeAccessor.plasmovoice_create(
             //$$         location.toString(),
+            //#if MC>=26.4
+            //$$         RenderSetup.nonOitBuilder(pipeline).createRenderSetup()
+            //#else
             //$$         RenderSetup.builder(pipeline).createRenderSetup()
+            //#endif
             //$$     )
             //#else
             //$$     RenderType.create(
