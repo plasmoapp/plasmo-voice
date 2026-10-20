@@ -118,6 +118,22 @@ public final class ScreenWrapper
         screen.removed();
     }
 
+    //#if MC>=26.4
+    //$$ @Override
+    //$$ public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+    //$$     lastMouseX = guiGraphics.mouseX();
+    //$$     lastMouseY = guiGraphics.mouseY();
+    //$$     lastPartialTicks = guiGraphics.partialTicks();
+    //$$     GuiRenderContext context = new GuiRenderContext(guiGraphics);
+    //$$     screen.render(context, lastMouseX, lastMouseY, lastPartialTicks);
+    //$$ }
+    //$$
+    //$$ public void renderBackground(@NotNull GuiRenderContext context) {
+    //$$     context.flush();
+    //$$     super.extractBackground(context.getMcContext());
+    //$$     context.flush();
+    //$$ }
+    //#else
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
         //#if MC<12105
@@ -140,6 +156,7 @@ public final class ScreenWrapper
         super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
         context.flush();
     }
+    //#endif
 
 //    @Override
 //    protected void updateNarratedWidget(@NotNull NarrationElementOutput narrationOutput) {
