@@ -73,6 +73,11 @@ public abstract class TabWidget extends AbstractScrollbar<VoiceSettingsScreen> {
         updateSize(parent.getNavigation().getHeight(), parent.getHeight());
     }
 
+    @Override
+    protected int getContentPadding() {
+        return 2;
+    }
+
     public void removed() {
         setScrollTop(0D);
     }

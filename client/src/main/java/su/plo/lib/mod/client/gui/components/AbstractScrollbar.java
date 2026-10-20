@@ -74,7 +74,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         setScrollTop(scrollTop);
 
         // render list
-        renderList(context, getContainerX0(), y0, mouseX, mouseY, delta);
+        renderList(context, getContainerX0(), getContentTop(), mouseX, mouseY, delta);
 
         if (maxScroll > 0) {
             int scrollbarY0 = y0 + getScrollbarPadding();
@@ -324,6 +324,14 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         return 4;
     }
 
+    protected int getContentPadding() {
+        return 0;
+    }
+
+    protected int getContentTop() {
+        return y0 + getContentPadding();
+    }
+
     protected boolean shouldRenderScrollbarBackground() {
         return true;
     }
@@ -339,7 +347,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
     protected Optional<Entry> getEntryAtPosition(double mouseX, double mouseY) {
         if (mouseX < getContainerX0() || mouseX > getContainerX1()) return Optional.empty();
 
-        double relativeY = mouseY - y0 + scrollTop;
+        double relativeY = mouseY - getContentTop() + scrollTop;
         if (relativeY < 0 || relativeY > scrollHeight) return Optional.empty();
 
         for (int index = 0; index < entries.size(); index++) {
@@ -378,10 +386,11 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
         if (isEntryVisible(position)) return;
 
         int visibleHeight = y1 - y0;
+        int padding = getContentPadding();
 
         boolean scrollingDown = position.top > scrollTop;
         int newScrollTop = scrollingDown
-                ? position.bottom - visibleHeight
+                ? position.bottom + padding * 2 - visibleHeight
                 : position.top;
 
         setScrollTop(newScrollTop);
@@ -389,13 +398,14 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     private boolean isEntryVisible(@NotNull EntryPosition position) {
         int visibleHeight = y1 - y0;
+        int padding = getContentPadding();
 
         return position.top >= scrollTop
-                && position.bottom <= scrollTop + visibleHeight;
+                && position.bottom + padding * 2 <= scrollTop + visibleHeight;
     }
 
     protected final int getMaxScroll() {
-        return Math.max(0, scrollHeight - (y1 - y0));
+        return Math.max(0, scrollHeight + getContentPadding() * 2 - (y1 - y0));
     }
 
     private @NotNull EntryPosition getLastEntryPosition() {
