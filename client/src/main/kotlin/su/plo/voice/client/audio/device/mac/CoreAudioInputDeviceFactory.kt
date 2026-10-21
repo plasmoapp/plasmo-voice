@@ -17,8 +17,6 @@ const val COREAUDIO_INPUT = "COREAUDIO_INPUT"
 private val LOGGER = BaseVoice.createLogger("CoreAudioInputDeviceFactory")
 
 private const val DEVICES_TTL_MS = 10_000L
-private const val MANUAL_GRANT_POLL_MS = 2_000L
-private const val MANUAL_GRANT_TIMEOUT_MS = 2 * 60_000L
 
 class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : DeviceFactory {
     private val supervisor = HelperSupervisor(::cache)
@@ -153,5 +151,10 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
         } finally {
             resolving.set(false)
         }
+    }
+
+    companion object {
+        const val MANUAL_GRANT_POLL_MS = 2_000L
+        const val MANUAL_GRANT_TIMEOUT_MS = 2 * 60_000L
     }
 }

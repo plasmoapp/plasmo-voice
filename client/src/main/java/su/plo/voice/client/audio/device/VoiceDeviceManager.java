@@ -16,10 +16,13 @@ import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.config.InputBackend;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactoryKt;
+import su.plo.voice.client.audio.device.mac.LauncherMicrophone;
+import su.plo.voice.client.audio.device.mac.MicrophonePermissionException;
 import su.plo.voice.client.audio.filter.GainFilter;
 import su.plo.voice.client.audio.filter.NoiseSuppressionFilter;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
+import su.plo.voice.mac.protocol.message.status.AuthStatus;
 import su.plo.voice.util.MacVersionKt;
 
 import javax.sound.sampled.AudioFormat;
@@ -237,10 +240,31 @@ public final class VoiceDeviceManager implements DeviceManager {
                     InputDevice device = openCoreAudioInputDevice(format);
                     if (device != null) return device;
                 } else if (backend == InputBackend.JAVAX) {
+                    if (MacVersionKt.isMac()) {
+                        if (LauncherMicrophone.request(this::reopenInputDevice)) {
+                            throw new MicrophonePermissionException(AuthStatus.NOT_DETERMINED);
+                        }
+
+                        AuthStatus refusal = LauncherMicrophone.getRefusal();
+                        if (refusal != null) throw new MicrophonePermissionException(refusal);
+
+                        if (LauncherMicrophone.getNeedsHelper()) {
+                            lastError = new MicrophonePermissionException(AuthStatus.DENIED);
+                            continue;
+                        }
+                    }
+
                     return openJavaxInputDevice(format);
                 } else if (backend == InputBackend.OPEN_AL) {
                     return openAlInputDevice(format);
                 }
+            } catch (MicrophonePermissionException e) {
+                // prompt is already open and waiting for response,
+                // opening another backend will cause another prompt to open, blocking this thread
+                if (e.getStatus() == AuthStatus.NOT_DETERMINED || backend == InputBackend.JAVAX) throw e;
+
+                lastError = e;
+                LOGGER.error("Failed to open the {} input device, falling back", backend, e);
             } catch (Exception e) {
                 lastError = e;
                 LOGGER.error("Failed to open the {} input device, falling back", backend, e);
@@ -250,7 +274,17 @@ public final class VoiceDeviceManager implements DeviceManager {
         throw new DeviceException("No input backend could open a device", lastError);
     }
 
-    private @Nullable InputDevice openCoreAudioInputDevice(@NotNull AudioFormat format) {
+    private synchronized void reopenInputDevice() {
+        try {
+            getInputDevice().ifPresent(InputDevice::close);
+            setInputDevice(openInputDevice(null));
+        } catch (Exception e) {
+            setInputDevice(null, e);
+            LOGGER.error("Failed to reopen the input device after the microphone prompt", e);
+        }
+    }
+
+    private @Nullable InputDevice openCoreAudioInputDevice(@NotNull AudioFormat format) throws MicrophonePermissionException {
         Optional<DeviceFactory> deviceFactory = voiceClient.getDeviceFactoryManager()
                 .getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT);
         if (!deviceFactory.isPresent()) return null;
@@ -260,6 +294,8 @@ public final class VoiceDeviceManager implements DeviceManager {
             String deviceName = deviceFactory.get().getDeviceNames().contains(configured) ? configured : null;
 
             return (InputDevice) deviceFactory.get().openDevice(format, deviceName);
+        } catch (MicrophonePermissionException e) {
+            throw e;
         } catch (Exception e) {
             LOGGER.error("Failed to open the macOS microphone helper, falling back", e);
             return null;
