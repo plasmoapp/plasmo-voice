@@ -15,7 +15,6 @@ import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
-import su.plo.voice.api.client.audio.device.DeviceManager;
 import su.plo.voice.api.client.audio.device.InputDevice;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.audio.capture.AudioCaptureEvent;
@@ -26,7 +25,8 @@ import su.plo.voice.api.client.event.audio.capture.AudioCaptureStopEvent;
 import su.plo.voice.api.encryption.Encryption;
 import su.plo.voice.api.encryption.EncryptionException;
 import su.plo.voice.api.util.AudioUtil;
-import su.plo.voice.client.audio.device.JavaxInputDeviceFactory;
+import su.plo.voice.client.BaseVoiceClient;
+import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.filter.StereoToMonoFilter;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.proto.data.audio.capture.CaptureInfo;
@@ -35,7 +35,6 @@ import su.plo.voice.proto.data.player.VoicePlayerInfo;
 import su.plo.voice.proto.packets.tcp.serverbound.PlayerAudioEndPacket;
 import su.plo.voice.proto.packets.udp.serverbound.PlayerAudioPacket;
 
-import javax.sound.sampled.AudioFormat;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -46,7 +45,7 @@ public final class VoiceAudioCapture implements AudioCapture {
     private static final McLogger LOGGER = BaseVoice.createLogger("VoiceAudioCapture");
 
     private final PlasmoVoiceClient voiceClient;
-    private final DeviceManager devices;
+    private final VoiceDeviceManager devices;
     private final ClientActivationManager activations;
     private final VoiceClientConfig config;
 
@@ -60,7 +59,7 @@ public final class VoiceAudioCapture implements AudioCapture {
 
     private Thread thread;
 
-    public VoiceAudioCapture(@NotNull PlasmoVoiceClient voiceClient,
+    public VoiceAudioCapture(@NotNull BaseVoiceClient voiceClient,
                              @NotNull VoiceClientConfig config) {
         this.voiceClient = voiceClient;
         this.devices = voiceClient.getDeviceManager();
@@ -94,21 +93,7 @@ public final class VoiceAudioCapture implements AudioCapture {
         voiceClient.getEventBus().fire(event);
         if (event.isCancelled()) return;
 
-        // initialize input device
-        AudioFormat format = serverInfo.getVoiceInfo().createFormat(
-                config.getVoice().getStereoCapture().value()
-        );
-
-        if (!getDevice().isPresent() && !config.getVoice().getDisableInputDevice().value()) {
-            try {
-                InputDevice inputDevice = devices.openInputDevice(format);
-                devices.setInputDevice(inputDevice);
-            } catch (Exception e) {
-                devices.setInputDevice(null, e);
-                LOGGER.error("Failed to open input device", e);
-                JavaxInputDeviceFactory.printSupportedLines();
-            }
-        }
+        if (!getDevice().isPresent()) devices.reloadInputDevice();
 
         // initialize encoder
         CaptureInfo capture = serverInfo.getVoiceInfo().getCaptureInfo();

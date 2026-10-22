@@ -83,17 +83,7 @@ fun createClothConfigMenu(parent: Screen): Screen =
 
         category(McTextComponent.translatable("clothconfig.plasmovoice.devices")) {
             fun reloadInputDevice() {
-                // todo: deduplicate?
-                if (config.voice.disableInputDevice.value()) return
-
-                val devices = voiceClient.deviceManager
-                try {
-                    devices.inputDevice.ifPresent { it.close() }
-                    val newDevice = devices.openInputDevice(null)
-                    devices.setInputDevice(newDevice)
-                } catch (e: Exception) {
-                    BaseVoice.LOGGER.error("Failed to open input device", e)
-                }
+                voiceClient.deviceManager.reloadInputDevice()
             }
 
             addEntry(

@@ -5,7 +5,6 @@ import su.plo.voice.BaseVoice
 import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AudioDevice
 import su.plo.voice.api.client.audio.device.DeviceFactory
-import su.plo.voice.api.client.audio.device.InputDevice
 import su.plo.voice.mac.protocol.audio.DeviceInfo
 import su.plo.voice.mac.protocol.message.Downstream
 import su.plo.voice.mac.protocol.message.status.AuthStatus
@@ -42,7 +41,6 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
         device
     } catch (e: Exception) {
         lastError = e
-        if ((e as? MicrophonePermissionException)?.status == AuthStatus.NOT_DETERMINED) prompt()
         throw e
     }
 
@@ -65,16 +63,6 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
 
     private fun permission(prompt: Boolean): AuthStatus = supervisor.session().permission(prompt)
 
-    private fun prompt() {
-        if (resolving.get()) return
-
-        thread(name = "Plasmo Voice Microphone Permission", isDaemon = true) {
-            withoutOverlap {
-                if (permission(prompt = true) == AuthStatus.AUTHORIZED) reopenInputDevice()
-            }
-        }
-    }
-
     private fun awaitManualGrant(): AuthStatus {
         val deadline = System.currentTimeMillis() + MANUAL_GRANT_TIMEOUT_MS
         var status = restartAndCheck()
@@ -93,14 +81,6 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
     } catch (e: Exception) {
         LOGGER.warn("Failed to restart the macOS microphone helper while waiting for permission", e)
         AuthStatus.UNKNOWN
-    }
-
-    private fun reopenInputDevice() = try {
-        val devices = client.deviceManager
-        devices.inputDevice.ifPresent(InputDevice::close)
-        devices.setInputDevice(devices.openInputDevice(null))
-    } catch (e: Exception) {
-        LOGGER.warn("Failed to reopen the input device after the microphone was granted", e)
     }
 
     private fun defaultDeviceName(): String {

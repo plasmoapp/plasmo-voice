@@ -38,7 +38,7 @@ internal class CoreAudioInputDevice(
         guardOpen()
 
         val session = supervisor.session()
-        val status = session.permission(prompt = false)
+        val status = session.permission(prompt = true)
         if (status != AuthStatus.AUTHORIZED) throw MicrophonePermissionException(status)
 
         session.onAudio = { if (started) samples.write(it) }

@@ -22,12 +22,11 @@ fun ClientConfig.Voice.inputBackends(): List<InputBackend> {
     return (listOf(preferred) + fallbacks).filter { it != InputBackend.AUTO }.distinct()
 }
 
-private fun macFallbacks(): List<InputBackend> =
-    if (LauncherMicrophone.needsHelper) {
-        listOf(InputBackend.COREAUDIO, InputBackend.JAVAX)
-    } else {
-        listOf(InputBackend.JAVAX, InputBackend.COREAUDIO)
-    }
+private fun macFallbacks(): List<InputBackend> = when {
+    LauncherMicrophone.needsHelper -> listOf(InputBackend.COREAUDIO, InputBackend.JAVAX)
+    LauncherMicrophone.refusal != null -> listOf(InputBackend.JAVAX)
+    else -> listOf(InputBackend.JAVAX, InputBackend.COREAUDIO)
+}
 
 /** The factory the player's choice points at. */
 fun DeviceFactoryManager.inputFactory(config: ClientConfig.Voice): DeviceFactory =

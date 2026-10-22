@@ -19,6 +19,7 @@ import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.device.InputBackendsKt;
+import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactory;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactoryKt;
 import su.plo.voice.client.audio.device.mac.LauncherMicrophone;
@@ -363,17 +364,8 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private void reloadInputDevice() {
-        if (config.getVoice().getDisableInputDevice().value()) return;
-
-        try {
-            devices.getInputDevice().ifPresent(InputDevice::close);
-            InputDevice newDevice = devices.openInputDevice(null);
-            devices.setInputDevice(newDevice);
-
-            Minecraft.getInstance().execute(this::init);
-        } catch (Exception e) {
-            BaseVoice.LOGGER.error("Failed to open input device", e);
-        }
+        ((VoiceDeviceManager) devices).reloadInputDevice()
+                .whenComplete((ignored, e) -> Minecraft.getInstance().execute(this::init));
     }
 
     private boolean hasMacMicrophoneError() {

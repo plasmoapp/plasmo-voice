@@ -14,7 +14,6 @@ private val LOGGER = BaseVoice.createLogger("LauncherMicrophone")
 private const val MICROPHONE_SETTINGS = "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
 
 internal object LauncherMicrophone {
-    private val asking = AtomicBoolean()
     private val resolving = AtomicBoolean()
 
     @Volatile
@@ -22,10 +21,6 @@ internal object LauncherMicrophone {
 
     private val status: AVAuthorizationStatus
         get() = AVCaptureDevice.authorizationStatus
-
-    @JvmStatic
-    val undecided: Boolean
-        get() = !promptless && status == AVAuthorizationStatus.NOT_DETERMINED
 
     @JvmStatic
     val needsHelper: Boolean
@@ -40,25 +35,19 @@ internal object LauncherMicrophone {
         }
 
     @JvmStatic
-    fun request(onAnswer: Runnable): Boolean {
-        if (!undecided) return false
-        if (!asking.compareAndSet(false, true)) return true
+    @Synchronized
+    fun ask() {
+        if (promptless || status != AVAuthorizationStatus.NOT_DETERMINED) return
 
-        thread(name = "Plasmo Voice Microphone Permission", isDaemon = true) {
-            try {
-                probe()
-            } catch (e: Exception) {
-                LOGGER.warn("Failed to probe the launcher's microphone permission", e)
-            }
-
-            val answer = status
-            LOGGER.info("Launcher microphone permission after the probe: {}", answer)
-            promptless = answer == AVAuthorizationStatus.NOT_DETERMINED
-            asking.set(false)
-            onAnswer.run()
+        try {
+            probe()
+        } catch (e: Exception) {
+            LOGGER.warn("Failed to probe the launcher's microphone permission", e)
         }
 
-        return true
+        val answer = status
+        LOGGER.info("Launcher microphone permission after the probe: {}", answer)
+        promptless = answer == AVAuthorizationStatus.NOT_DETERMINED
     }
 
     // AVCaptureDevice requestAccess can't be used to prompt,
