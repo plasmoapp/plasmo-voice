@@ -87,8 +87,7 @@ public final class ToggleButton extends GuiAbstractWidget {
             sprite = GuiWidgetTexture.BUTTON_DEFAULT;
         }
 
-        context.blitSprite(sprite, x0, y, 0, 0, 4, 20);
-        context.blitSprite(sprite, x0 + 4, y, sprite.getSpriteWidth() - 4, 0, 4, 20);
+        context.blitSprite(sprite, x0, y, 8, 20);
     }
 
     public void invertToggle() {

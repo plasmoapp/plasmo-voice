@@ -54,8 +54,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
         int width = getSliderWidth();
         GuiWidgetTexture sprite = getButtonTexture(isHoveredOrFocused());
 
-        context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
-        context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
+        context.blitSprite(sprite, x, y, width, height);
     }
 
     @Override
@@ -108,7 +107,7 @@ public abstract class AbstractSlider extends GuiAbstractWidget {
 
         GuiWidgetTexture sprite = isHoveredOrFocused() ? GuiWidgetTexture.SLIDER_HANDLE_ACTIVE : GuiWidgetTexture.SLIDER_HANDLE;
 
-        context.blitSprite(sprite, x0, y, 0, 0, 8, 20);
+        context.blitSprite(sprite, x0, y, 8, 20);
     }
 
     @Override

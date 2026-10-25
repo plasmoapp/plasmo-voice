@@ -10,7 +10,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.lib.mod.client.render.pipeline.RenderPipeline;
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -305,19 +304,6 @@ public class RenderUtil {
                 .end();
     }
 
-    public static void blitSprite(
-            @NotNull PoseStack stack,
-            @NotNull GuiWidgetTexture sprite,
-            int x,
-            int y,
-            int u,
-            int v,
-            int width,
-            int height
-    ) {
-        blit(stack, x, y, u + sprite.getU(), v + sprite.getV(), width, height, sprite.getTextureWidth(), sprite.getTextureHeight());
-    }
-
     public static void blit(PoseStack stack, int x, int y, int u, int v, int width, int height) {
         blit(stack, x, y, 0, (float) u, (float) v, width, height, 256, 256);
     }
@@ -387,21 +373,6 @@ public class RenderUtil {
         VertexBuilder.create(buffer).position(stack, (float) x0, (float) y0, (float) z).uv(u0, v0).end();
 
         drawBuffer(buffer, pipeline);
-    }
-
-    public static void blitColorSprite(
-            @NotNull PoseStack stack,
-            @NotNull RenderPipeline pipeline,
-            @NotNull GuiWidgetTexture sprite,
-            int x,
-            int y,
-            int u,
-            int v,
-            int width,
-            int height,
-            int red, int green, int blue, int alpha
-    ) {
-        blitColorWithPipeline(stack, pipeline, x, y, u + sprite.getU(), v + sprite.getV(), width, height, sprite.getTextureWidth(), sprite.getTextureHeight(), red, green, blue, alpha);
     }
 
     public static void blitColorWithPipeline(

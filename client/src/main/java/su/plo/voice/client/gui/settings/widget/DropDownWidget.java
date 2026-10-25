@@ -119,8 +119,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
     protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         GuiWidgetTexture sprite = isFocused() ? GuiWidgetTexture.TEXT_FIELD_ACTIVE : GuiWidgetTexture.TEXT_FIELD;
 
-        context.blitSprite(sprite, x, y, 0, 0, width / 2, height);
-        context.blitSprite(sprite, x + width / 2, y, sprite.getSpriteWidth() - width / 2, 0, width / 2, height);
+        context.blitSprite(sprite, x, y, width, height);
     }
 
     @Override

@@ -22,7 +22,12 @@ import java.awt.Color
 //$$ import net.minecraft.util.ARGB
 //$$ import su.plo.voice.client.mixin.accessor.GuiGraphicsAccessor
 //#else
+import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
+//#endif
+
+//#if MC>=12102 && MC<12106
+//$$ import net.minecraft.client.renderer.RenderType
 //#endif
 
 class GuiRenderContext(
@@ -236,79 +241,24 @@ class GuiRenderContext(
         //#endif
     }
 
-    @JvmOverloads
     fun blitSprite(
         sprite: GuiWidgetTexture,
         x: Int,
         y: Int,
-        u: Int,
-        v: Int,
         width: Int,
         height: Int,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_TEXTURE,
     ) {
         //#if MC>=12106
-        //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
-        //$$     sprite.location,
-        //$$     x,
-        //$$     y,
-        //$$     (u + sprite.u).toFloat(),
-        //$$     (v + sprite.v).toFloat(),
-        //$$     width,
-        //$$     height,
-        //$$     sprite.textureWidth,
-        //$$     sprite.textureHeight
-        //$$ )
+        //$$ mcContext.blitSprite(RenderPipelines.GUI_TEXTURE.mcRenderPipeline, sprite.location, x, y, width, height)
+        //#elseif MC>=12102
+        //$$ RenderSystem.setShaderColor(1F, 1F, 1F, 1F)
+        //$$ mcContext.blitSprite(RenderType::guiTextured, sprite.location, x, y, width, height)
+        //$$ mcContext.flush()
         //#else
-        RenderUtil.bindTexture(0, sprite.location)
-        RenderUtil.blitSprite(stack, sprite, x, y, u, v, width, height)
-        //#endif
-    }
-
-    @JvmOverloads
-    fun blitColorSprite(
-        sprite: GuiWidgetTexture,
-        x: Int,
-        y: Int,
-        u: Int,
-        v: Int,
-        width: Int,
-        height: Int,
-        color: Color,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_TEXTURE_COLOR,
-    ) {
-        //#if MC>=12106
-        //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
-        //$$     sprite.location,
-        //$$     x,
-        //$$     y,
-        //$$     (u + sprite.u).toFloat(),
-        //$$     (v + sprite.v).toFloat(),
-        //$$     width,
-        //$$     height,
-        //$$     sprite.textureWidth,
-        //$$     sprite.textureHeight,
-        //$$     ARGB.color(color.alpha, color.red, color.green, color.blue),
-        //$$ )
-        //#else
-        RenderUtil.bindTexture(0, sprite.location)
-        RenderUtil.blitColorSprite(
-            stack,
-            renderPipeline,
-            sprite,
-            x,
-            y,
-            u,
-            v,
-            width,
-            height,
-            color.red,
-            color.green,
-            color.blue,
-            color.alpha,
-        )
+        RenderSystem.setShaderColor(1F, 1F, 1F, 1F)
+        RenderSystem.enableBlend()
+        mcContext.blitSprite(sprite.location, x, y, width, height)
+        RenderSystem.disableBlend()
         //#endif
     }
 

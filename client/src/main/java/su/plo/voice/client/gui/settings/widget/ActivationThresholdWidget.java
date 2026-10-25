@@ -4,10 +4,10 @@ import com.google.common.collect.ImmutableList;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.DoubleConfigEntry;
+import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.gui.components.AbstractSlider;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.components.IconButton;
-import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -26,6 +26,8 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
     private static final ResourceLocation STOP_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu.png");
     private static final ResourceLocation START_ICON = ResourceLocation.tryParse("plasmovoice:textures/icons/speaker_menu_disabled.png");
     private static final McTextComponent NOT_AVAILABLE = McTextComponent.translatable("gui.plasmovoice.devices.not_available");
+
+    private static final ResourceLocation SLIDER_TEXTURE = ResourceLocationUtil.parse("textures/gui/sprites/widget/slider.png");
 
     private static final Color LEVEL_HIGH_COLOR = new Color(0xFF0000);
     private static final Color LEVEL_MEDIUM_COLOR = new Color(0xFFFF00);
@@ -131,14 +133,16 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
             color = LEVEL_LOW_COLOR;
         }
 
-        context.blitColorSprite(
-                GuiWidgetTexture.SLIDER,
+        context.blitColor(
+                SLIDER_TEXTURE,
                 x + 1,
                 y + 1,
-                1,
-                1,
+                1F,
+                1F,
                 (int) ((sliderWidth - 2) * controller.getMicrophoneValue()),
                 height - 2,
+                200,
+                20,
                 Colors.withAlpha(color, alpha)
         );
 
