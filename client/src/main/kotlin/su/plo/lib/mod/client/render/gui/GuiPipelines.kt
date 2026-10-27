@@ -3,7 +3,16 @@ package su.plo.lib.mod.client.render.gui
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.shader.SolidColorShader
 
-//#if MC>=1.21.6
+//#if MC>=26.4
+//$$ import com.mojang.blaze3d.pipeline.RenderPipeline
+//$$ import com.mojang.blaze3d.vertex.DefaultVertexFormat
+//$$ import com.mojang.renderpearl.api.pipeline.BlendFunction
+//$$ import com.mojang.renderpearl.api.pipeline.ColorTargetState
+//$$ import com.mojang.renderpearl.api.pipeline.PrimitiveTopology
+//$$ import net.minecraft.client.gui.GuiPipeline
+//$$ import net.minecraft.client.renderer.BindGroupLayouts
+//$$ import net.minecraft.client.renderer.pipeline.RenderPipelines
+//#elseif MC>=1.21.6
 //$$ import com.mojang.blaze3d.pipeline.RenderPipeline
 //$$ import net.minecraft.client.renderer.RenderPipelines
 //$$ import su.plo.voice.client.mixin.accessor.RenderPipelinesAccessor
@@ -24,7 +33,9 @@ import su.plo.lib.mod.client.render.shader.ShadersCache
 //#endif
 
 class GuiColorPipeline(
-    //#if MC>=1.21.6
+    //#if MC>=26.4
+    //$$ val mc: GuiPipeline,
+    //#elseif MC>=1.21.6
     //$$ val mc: RenderPipeline,
     //#else
     val mc: RenderType,
@@ -33,7 +44,9 @@ class GuiColorPipeline(
 
 //#if MC>=1.21.2
 //$$ class GuiTexturePipeline(
-//#if MC>=1.21.6
+//#if MC>=26.4
+//$$     val mc: GuiPipeline,
+//#elseif MC>=1.21.6
 //$$     val mc: RenderPipeline,
 //#else
 //$$     val mc: Function<ResourceLocation, RenderType>,
@@ -52,7 +65,27 @@ class GuiTexturePipeline(
 object GuiPipelines {
     private val SOLID_COLOR_LOCATION = ResourceLocationUtil.mod("pipeline/gui_texture_solid_color")
 
-    //#if MC>=1.21.6
+    //#if MC>=26.4
+    //$$ @JvmField val COLOR = GuiColorPipeline(GuiPipeline.DEFAULT)
+    //$$ @JvmField val COLOR_OVERLAY = COLOR
+    //$$ @JvmField val TEXTURE = GuiTexturePipeline(GuiPipeline.TEXTURED)
+    //$$ @JvmField val TEXTURE_OVERLAY = TEXTURE
+    //$$ @JvmField val TEXTURE_SOLID_COLOR = GuiTexturePipeline(
+    //$$     GuiPipeline.of {
+    //$$         RenderPipeline.builder(RenderPipelines.GLOBALS_SNIPPET)
+    //$$             .withLocation(SOLID_COLOR_LOCATION)
+    //$$             .withBindGroupLayout(BindGroupLayouts.PROJECTION)
+    //$$             .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+    //$$             .withBindGroupLayout(BindGroupLayouts.SAMPLER0)
+    //$$             .withVertexShader(SolidColorShader.LOCATION)
+    //$$             .withFragmentShader(SolidColorShader.LOCATION)
+    //$$             .withColorTargetState(ColorTargetState(BlendFunction.TRANSLUCENT))
+    //$$             .withVertexBinding(0, DefaultVertexFormat.POSITION_TEX_COLOR)
+    //$$             .withPrimitiveTopology(PrimitiveTopology.QUADS)
+    //$$             .build()
+    //$$     }
+    //$$ )
+    //#elseif MC>=1.21.6
     //$$ @JvmField val COLOR = GuiColorPipeline(RenderPipelines.GUI)
     //$$ @JvmField val COLOR_OVERLAY = COLOR
     //$$ @JvmField val TEXTURE = GuiTexturePipeline(RenderPipelines.GUI_TEXTURED)
