@@ -99,6 +99,7 @@ object RenderPipelines {
             DefaultVertexFormat.POSITION_COLOR,
             VertexFormatMode.TRIANGLE_STRIP,
         ) {
+            oit = true
             cull = false
             blendFunc =
                 BlendFunc(

@@ -39,11 +39,16 @@ import net.minecraft.client.renderer.GameRenderer
 //#else
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
+
 //#endif
 
 //#if MC>=12111
 //$$ import net.minecraft.client.renderer.rendertype.RenderSetup
 //$$ import su.plo.voice.client.mixin.accessor.RenderTypeAccessor
+//#endif
+
+//#if MC>=26.3
+//$$ import net.minecraft.client.renderer.oit.OitPipelineSet
 //#endif
 
 //#if MC>=12105
@@ -193,7 +198,7 @@ data class RenderPipeline(
         //$$ get() = mcRenderType.format()
         //#else
         get() = mcRenderType?.format() ?: vertexFormatInner
-        //#endif
+    //#endif
 
     class Builder(
         val location: ResourceLocation,
@@ -212,6 +217,8 @@ data class RenderPipeline(
         var depthMask: Boolean = true
         val samplers: MutableSet<String> = mutableSetOf()
 
+        var oit: Boolean = false
+
         //#if MC>=12105
         //$$ var mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline? = null
         //#endif
@@ -228,15 +235,7 @@ data class RenderPipeline(
             //$$     .withBindGroupLayout(BindGroupLayouts.GLOBALS)
             //$$     .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
             //$$     .withBindGroupLayout(BindGroupLayouts.PROJECTION)
-            //$$     .apply {
-            //$$         if (samplers.isNotEmpty()) {
-            //$$             withBindGroupLayout(
-            //$$                 BindGroupLayout.builder()
-            //$$                     .apply { samplers.forEach { withUniform(it, UniformType.COMBINED_IMAGE_SAMPLER) } }
-            //$$                     .build()
-            //$$             )
-            //$$         }
-            //$$     }
+            //$$     .apply { samplersBindGroupLayout()?.let(::withBindGroupLayout) }
             //#elseif MC>=26.2
             //$$     .withBindGroupLayout(BindGroupLayouts.GLOBALS)
             //$$     .withBindGroupLayout(BindGroupLayouts.MATRICES_PROJECTION)
@@ -311,7 +310,11 @@ data class RenderPipeline(
             //#if MC>=12111
             //$$     RenderTypeAccessor.plasmovoice_create(
             //$$         location.toString(),
-            //$$         RenderSetup.builder(pipeline).createRenderSetup()
+            //$$         RenderSetup.builder(pipeline)
+            //#if MC>=26.3
+            //$$             .apply { if (oit) setOitPipelines(oitPipelineSet()) }
+            //#endif
+            //$$             .createRenderSetup()
             //$$     )
             //#else
             //$$     RenderType.create(
@@ -345,5 +348,32 @@ data class RenderPipeline(
                 depthMask,
             )
         }
+        //#if MC>=26.3
+        //$$
+        //$$ private fun samplersBindGroupLayout(): BindGroupLayout? =
+        //$$     if (samplers.isEmpty()) {
+        //$$         null
+        //$$     } else {
+        //$$         BindGroupLayout.builder()
+        //$$             .apply { samplers.forEach { withUniform(it, UniformType.COMBINED_IMAGE_SAMPLER) } }
+        //$$             .build()
+        //$$     }
+        //$$
+        //$$ private fun oitPipelineSet(): OitPipelineSet =
+        //$$     OitPipelineSet
+        //$$         .builder(
+        //$$             "${location.namespace}/${location.path}",
+        //$$             com.mojang.renderpearl.api.pipeline.RenderPipeline.builder()
+        //$$                 .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+        //$$                 .apply { samplersBindGroupLayout()?.let(::withBindGroupLayout) }
+        //$$                 .withVertexShader(vertexShader)
+        //$$                 .withFragmentShader(fragmentShader)
+        //$$                 .withVertexBinding(0, vertexFormat)
+        //$$                 .withPrimitiveTopology(vertexFormatMode.toMc())
+        //$$                 .withCull(cull),
+        //$$         )
+        //$$         .apply { if (depthTestFunc == AlphaFunc.ALWAYS) withoutDepthTest() }
+        //$$         .build()
+        //#endif
     }
 }
