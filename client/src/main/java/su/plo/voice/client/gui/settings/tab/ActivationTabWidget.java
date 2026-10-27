@@ -7,11 +7,12 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
 import su.plo.lib.mod.client.ResourceLocationUtil;
+import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
+import su.plo.lib.mod.client.gui.components.CompositeRowWidget;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -30,11 +31,11 @@ import su.plo.voice.client.config.capture.ConfigClientActivation;
 import su.plo.voice.client.config.hotkey.HotkeyConfigEntry;
 import su.plo.voice.client.extension.TextKt;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
-import su.plo.voice.client.gui.settings.widget.CompositeRowWidget;
 import su.plo.voice.client.gui.settings.widget.DistanceSliderWidget;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.HotKeyWidget;
 import su.plo.voice.client.gui.settings.widget.NumberTextFieldWidget;
+import su.plo.voice.client.gui.settings.widget.OptionWidget;
 import su.plo.voice.proto.data.audio.capture.Activation;
 import su.plo.voice.proto.data.audio.capture.VoiceActivation;
 
@@ -177,15 +178,15 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         IntConfigEntry activationDistance = serverConfig.getActivationDistance(activation.getId())
                 .orElseThrow(() -> new IllegalStateException("Activation distance config is empty"));
 
-        addEntry(new CategoryEntry(McTextComponent.translatable(activation.getTranslation())));
-        addEntry(createActivationType(activation, activationConfig, canInherit));
-        addEntry(createActivationButton((VoiceClientActivation) activation));
+        CompositeColumnWidget category = addCategory(McTextComponent.translatable(activation.getTranslation()));
+        category.add(createActivationType(activation, activationConfig, canInherit));
+        category.add(createActivationButton((VoiceClientActivation) activation));
         if (activation.getDistances().size() > 0) {
-            createDistance(activation, activationDistance);
+            category.add(createDistance(activation, activationDistance));
         }
     }
 
-    private OptionEntry<?> createActivationType(
+    private OptionWidget<?> createActivationType(
             @NotNull ClientActivation activation,
             @NotNull ConfigClientActivation activationConfig,
             boolean canInherit
@@ -224,28 +225,29 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         }
 
         CompositeRowWidget row = new CompositeRowWidget(
-                0,
-                0,
+                ELEMENT_GAP,
                 activation.getType() == ClientActivation.Type.PUSH_TO_TALK
                         ? ELEMENT_WIDTH
                         : ELEMENT_WIDTH - 24,
-                20,
-                4,
                 dropdown,
                 warningIcon
         );
 
-        return new ActivationToggleStateEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.activation.type"),
                 row,
-                McTextComponent.translatable(activation.getTranslation()),
                 activationConfig.getConfigType(),
-                activationConfig.getConfigToggle(),
                 null,
                 (btn, element) -> {
                     dropdown.setText(TYPES.get(activation.getType().ordinal()));
                     init();
-                }
+                },
+                createToggleStateButtons(
+                        McTextComponent.translatable(activation.getTranslation()),
+                        activationConfig.getConfigType(),
+                        activationConfig.getConfigToggle()
+                )
         );
     }
 
@@ -287,7 +289,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         return icon;
     }
 
-    private OptionEntry<HotKeyWidget> createActivationButton(@NotNull VoiceClientActivation activation) {
+    private OptionWidget<HotKeyWidget> createActivationButton(@NotNull VoiceClientActivation activation) {
         String translatable = "gui.plasmovoice.activation.toggle_button";
         HotkeyConfigEntry entry = activation.getToggleConfigEntry();
 
@@ -306,20 +308,18 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
         );
     }
 
-    private void createDistance(
+    private OptionWidget<?> createDistance(
             @NotNull ClientActivation activation,
             @NotNull IntConfigEntry activationDistance
     ) {
-        if (activation.getDistances().size() == 0) return;
-
         if (activation.getMinDistance() == -1) {
-            addEntry(createDistanceText(activation, activationDistance));
+            return createDistanceText(activation, activationDistance);
         } else {
-            addEntry(createDistanceSlider(activation, activationDistance));
+            return createDistanceSlider(activation, activationDistance);
         }
     }
 
-    private OptionEntry<DistanceSliderWidget> createDistanceSlider(
+    private OptionWidget<DistanceSliderWidget> createDistanceSlider(
             @NotNull ClientActivation activation,
             @NotNull IntConfigEntry activationDistance
     ) {
@@ -332,14 +332,15 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 20
         );
 
-        return new OptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.activation.distance", McTextComponent.translatable(activation.getTranslation())),
                 sliderWidget,
                 activationDistance
         );
     }
 
-    private OptionEntry<NumberTextFieldWidget> createDistanceText(
+    private OptionWidget<NumberTextFieldWidget> createDistanceText(
             @NotNull ClientActivation activation,
             @NotNull IntConfigEntry activationDistance
     ) {
@@ -351,90 +352,84 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 20
         );
 
-        return new OptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.activation.distance", McTextComponent.translatable(activation.getTranslation())),
                 textField,
                 activationDistance
         );
     }
 
-    private class ActivationToggleStateEntry<W extends GuiAbstractWidget> extends ButtonOptionEntry<W> {
+    private List<GuiAbstractWidget> createToggleStateButtons(
+            @NotNull McTextComponent activationName,
+            @NotNull EnumConfigEntry<ClientActivation.Type> entry,
+            @NotNull BooleanConfigEntry stateEntry
+    ) {
+        if (entry.value() == ClientActivation.Type.PUSH_TO_TALK) return Collections.emptyList();
 
-        public ActivationToggleStateEntry(
-                @NotNull McTextComponent text,
-                @NotNull W widget,
-                @NotNull McTextComponent activationName,
-                @NotNull EnumConfigEntry<ClientActivation.Type> entry,
-                @NotNull BooleanConfigEntry stateEntry,
-                @Nullable McTextComponent tooltip,
-                @Nullable OptionResetAction<W> resetAction
-        ) {
-            super(text, widget, Lists.newArrayList(), entry, tooltip, resetAction);
+        List<GuiAbstractWidget> buttons = Lists.newArrayList();
 
-            if (entry.value() == ClientActivation.Type.PUSH_TO_TALK) return;
+        IconButton disableToggleState = new IconButton(
+                0,
+                0,
+                20,
+                20,
+                (button) -> {
+                    buttons.get(0).setVisible(false);
+                    buttons.get(1).setVisible(true);
 
-            IconButton disableToggleState = new IconButton(
-                    parent.getWidth() - 52,
-                    8,
-                    20,
-                    20,
-                    (button) -> {
-                        buttons.get(0).setVisible(false);
-                        buttons.get(1).setVisible(true);
+                    stateEntry.set(true);
+                },
+                (button, mouseX, mouseY) -> {
+                    parent.setTooltip(
+                            McTextComponent.translatable(
+                                    "gui.plasmovoice.activation.toggle",
+                                    activationName,
+                                    McTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                            McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN)
+                                    ).withStyle(McTextStyle.GRAY)
+                            ),
+                            mouseX,
+                            mouseY
+                    );
+                },
+                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
+                true
+        );
+        IconButton enableToggleState = new IconButton(
+                0,
+                0,
+                20,
+                20,
+                (button) -> {
+                    buttons.get(0).setVisible(true);
+                    buttons.get(1).setVisible(false);
 
-                        stateEntry.set(true);
-                    },
-                    (button, mouseX, mouseY) -> {
-                        parent.setTooltip(
-                                McTextComponent.translatable(
-                                        "gui.plasmovoice.activation.toggle",
-                                        activationName,
-                                        McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                                McTextComponent.translatable("gui.plasmovoice.toggle.enabled").withStyle(McTextStyle.GREEN)
-                                        ).withStyle(McTextStyle.GRAY)
-                                ),
-                                mouseX,
-                                mouseY
-                        );
-                    },
-                    ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu.png"),
-                    true
-            );
-            IconButton enableToggleState = new IconButton(
-                    parent.getWidth() - 52,
-                    8,
-                    20,
-                    20,
-                    (button) -> {
-                        buttons.get(0).setVisible(true);
-                        buttons.get(1).setVisible(false);
+                    stateEntry.set(false);
+                },
+                (button, mouseX, mouseY) -> {
+                    parent.setTooltip(
+                            McTextComponent.translatable(
+                                    "gui.plasmovoice.activation.toggle",
+                                    activationName,
+                                    McTextComponent.translatable("gui.plasmovoice.toggle.currently",
+                                            McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
+                                    ).withStyle(McTextStyle.GRAY)
+                            ),
+                            mouseX,
+                            mouseY
+                    );
+                },
+                ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
+                true
+        );
 
-                        stateEntry.set(false);
-                    },
-                    (button, mouseX, mouseY) -> {
-                        parent.setTooltip(
-                                McTextComponent.translatable(
-                                        "gui.plasmovoice.activation.toggle",
-                                        activationName,
-                                        McTextComponent.translatable("gui.plasmovoice.toggle.currently",
-                                                McTextComponent.translatable("gui.plasmovoice.toggle.disabled").withStyle(McTextStyle.RED)
-                                        ).withStyle(McTextStyle.GRAY)
-                                ),
-                                mouseX,
-                                mouseY
-                        );
-                    },
-                    ResourceLocation.tryParse("plasmovoice:textures/icons/microphone_menu_disabled.png"),
-                    true
-            );
+        disableToggleState.setVisible(!stateEntry.value());
+        enableToggleState.setVisible(stateEntry.value());
 
-            disableToggleState.setVisible(!stateEntry.value());
-            enableToggleState.setVisible(stateEntry.value());
+        buttons.add(disableToggleState);
+        buttons.add(enableToggleState);
 
-            buttons.add(disableToggleState);
-            buttons.add(enableToggleState);
-
-            widgets.addAll(buttons);
-        }
+        return buttons;
     }
 }

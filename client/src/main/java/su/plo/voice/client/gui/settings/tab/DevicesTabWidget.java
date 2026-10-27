@@ -7,6 +7,8 @@ import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.MinecraftUtil;
 import su.plo.lib.mod.client.ResourceLocationUtil;
+import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
+import su.plo.lib.mod.client.gui.components.CompositeRowWidget;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.voice.client.gui.GuiUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -20,8 +22,8 @@ import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.ActivationThresholdWidget;
-import su.plo.voice.client.gui.settings.widget.CompositeRowWidget;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
+import su.plo.voice.client.gui.settings.widget.OptionWidget;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
 import su.plo.voice.client.mac.AVAuthorizationStatus;
 import su.plo.voice.client.mac.AVCaptureDevice;
@@ -54,22 +56,22 @@ public final class DevicesTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.devices.microphone")));
-        addEntry(createThresholdEntry());
-        addEntry(createMicrophoneEntry());
-        addEntry(createVolumeSlider(
+        CompositeColumnWidget microphone = addCategory(McTextComponent.translatable("gui.plasmovoice.devices.microphone"));
+        microphone.add(createThresholdEntry());
+        microphone.add(createMicrophoneEntry());
+        microphone.add(createVolumeSlider(
                 McTextComponent.translatable("gui.plasmovoice.devices.microphone_volume"),
                 McTextComponent.translatable("gui.plasmovoice.devices.volume.tooltip"),
                 config.getVoice().getMicrophoneVolume(),
                 "%"
         ));
-        addEntry(createToggleEntry(
+        microphone.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.devices.noise_suppression"),
                 McTextComponent.translatable("gui.plasmovoice.devices.noise_suppression.tooltip"),
                 config.getVoice().getNoiseSuppression()
         ));
-        addEntry(createStereoCaptureEntry());
-        addEntry(createToggleEntry(
+        microphone.add(createStereoCaptureEntry());
+        microphone.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.devices.disable_input_device"),
                 McTextComponent.translatable("gui.plasmovoice.devices.disable_input_device.tooltip"),
                 config.getVoice().getDisableInputDevice(),
@@ -82,9 +84,9 @@ public final class DevicesTabWidget extends TabWidget {
                 }
         ));
 
-        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.devices.output")));
-        addEntry(createOutputDeviceEntry());
-        addEntry(createVolumeSlider(
+        CompositeColumnWidget output = addCategory(McTextComponent.translatable("gui.plasmovoice.devices.output"));
+        output.add(createOutputDeviceEntry());
+        output.add(createVolumeSlider(
                 McTextComponent.translatable("gui.plasmovoice.devices.volume"),
                 McTextComponent.translatable("gui.plasmovoice.devices.volume.tooltip"),
                 config.getVoice().getVolume(),
@@ -95,17 +97,17 @@ public final class DevicesTabWidget extends TabWidget {
 //                "gui.plasmovoice.devices.compressor.tooltip",
 //                config.getVoice().getCompressorLimiter()
 //        ));
-        addEntry(createToggleEntry(
+        output.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.devices.occlusion"),
                 McTextComponent.translatable("gui.plasmovoice.devices.occlusion.tooltip"),
                 config.getVoice().getSoundOcclusion()
         ));
-        addEntry(createToggleEntry(
+        output.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.devices.directional_sources"),
                 McTextComponent.translatable("gui.plasmovoice.devices.directional_sources.tooltip"),
                 config.getVoice().getDirectionalSources()
         ));
-        addEntry(createHrtfEntry());
+        output.add(createHrtfEntry());
     }
 
     @EventSubscribe
@@ -118,7 +120,7 @@ public final class DevicesTabWidget extends TabWidget {
         Minecraft.getInstance().execute(this::init);
     }
 
-    private ButtonOptionEntry<ActivationThresholdWidget> createThresholdEntry() {
+    private OptionWidget<ActivationThresholdWidget> createThresholdEntry() {
         if (threshold != null) voiceClient.getEventBus().unregister(voiceClient, threshold);
         this.threshold = new ActivationThresholdWidget(
                 parent,
@@ -133,17 +135,18 @@ public final class DevicesTabWidget extends TabWidget {
         );
         voiceClient.getEventBus().register(voiceClient, threshold);
 
-        return new ButtonOptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.devices.activation_threshold"),
                 threshold,
-                threshold.getButtons(),
                 config.getVoice().getActivationThreshold(),
                 McTextComponent.translatable("gui.plasmovoice.devices.activation_threshold.tooltip"),
-                null
+                null,
+                threshold.getButtons()
         );
     }
 
-    private OptionEntry<CompositeRowWidget> createMicrophoneEntry() {
+    private OptionWidget<CompositeRowWidget> createMicrophoneEntry() {
         Optional<DeviceFactory> deviceFactory;
 
         if (config.getVoice().getUseJavaxInput().value()) {
@@ -230,19 +233,18 @@ public final class DevicesTabWidget extends TabWidget {
         dropdown.setActive(!inputDeviceNames.isEmpty() && !config.getVoice().getDisableInputDevice().value());
 
         CompositeRowWidget row = new CompositeRowWidget(
-                0,
-                0,
+                ELEMENT_GAP,
                 ELEMENT_WIDTH,
-                20,
-                4,
                 dropdown,
                 inputNotAvailable
         );
 
-        return new OptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.devices.microphone"),
                 row,
                 config.getVoice().getInputDevice(),
+                null,
                 (button, element) -> {
                     dropdown.setText(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadInputDevice();
@@ -250,7 +252,7 @@ public final class DevicesTabWidget extends TabWidget {
         );
     }
 
-    private OptionEntry<ToggleButton> createStereoCaptureEntry() {
+    private OptionWidget<ToggleButton> createStereoCaptureEntry() {
         Runnable onUpdate = () -> {
             reloadInputDevice();
             testController.restart();
@@ -265,7 +267,8 @@ public final class DevicesTabWidget extends TabWidget {
                 (toggled) -> onUpdate.run()
         );
 
-        return new OptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.devices.stereo_capture"),
                 toggleButton,
                 config.getVoice().getStereoCapture(),
@@ -274,7 +277,7 @@ public final class DevicesTabWidget extends TabWidget {
         );
     }
 
-    private OptionEntry<DropDownWidget> createOutputDeviceEntry() {
+    private OptionWidget<DropDownWidget> createOutputDeviceEntry() {
         Optional<DeviceFactory> deviceFactory = deviceFactories.getDeviceFactory("AL_OUTPUT");
         if (!deviceFactory.isPresent()) throw new IllegalStateException("Al Output device factory not initialized");
 
@@ -305,10 +308,12 @@ public final class DevicesTabWidget extends TabWidget {
 
         dropdown.setActive(!outputDeviceNames.isEmpty());
 
-        return new OptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.devices.output_device"),
                 dropdown,
                 config.getVoice().getOutputDevice(),
+                null,
                 (button, element) -> {
                     element.setText(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
                     reloadOutputDevice();
@@ -316,7 +321,7 @@ public final class DevicesTabWidget extends TabWidget {
         );
     }
 
-    private OptionEntry<ToggleButton> createHrtfEntry() {
+    private OptionWidget<ToggleButton> createHrtfEntry() {
         Consumer<Boolean> onUpdate = (toggled) -> {
             devices.getOutputDevice().ifPresent(device -> {
                 try {
@@ -337,7 +342,8 @@ public final class DevicesTabWidget extends TabWidget {
                 onUpdate::accept
         );
 
-        return new OptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 McTextComponent.translatable("gui.plasmovoice.devices.hrtf"),
                 toggleButton,
                 config.getVoice().getHrtf(),

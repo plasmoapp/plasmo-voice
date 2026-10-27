@@ -1,5 +1,6 @@
 package su.plo.voice.client.gui.settings.tab;
 
+import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.DeviceManager;
@@ -24,37 +25,37 @@ public final class AdvancedTabWidget extends TabWidget {
     public void init() {
         super.init();
 
-        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.visual")));
-        addEntry(createToggleEntry(
+        CompositeColumnWidget visual = addCategory(McTextComponent.translatable("gui.plasmovoice.advanced.visual"));
+        visual.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance"),
                 null,
                 config.getAdvanced().getVisualizeVoiceDistance()
         ));
-        addEntry(createToggleEntry(
+        visual.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.visualize_voice_distance_on_join"),
                 null,
                 config.getAdvanced().getVisualizeVoiceDistanceOnJoin()
         ));
 
-        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.audio_engine")));
-        addEntry(createIntSliderWidget(
+        CompositeColumnWidget audioEngine = addCategory(McTextComponent.translatable("gui.plasmovoice.advanced.audio_engine"));
+        audioEngine.add(createIntSliderWidget(
                 McTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle"),
                 McTextComponent.translatable("gui.plasmovoice.advanced.directional_sources_angle.tooltip"),
                 config.getAdvanced().getDirectionalSourcesAngle(),
                 ""
         ));
-        addEntry(createToggleEntry(
+        audioEngine.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono"),
                 McTextComponent.translatable("gui.plasmovoice.advanced.stereo_sources_to_mono.tooltip"),
                 config.getAdvanced().getStereoSourcesToMono(),
                 toggled -> devices.getOutputDevice().ifPresent(OutputDevice::closeSourcesAsync)
         ));
-        addEntry(createToggleEntry(
+        audioEngine.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.panning"),
                 null,
                 config.getAdvanced().getPanning()
         ));
-        addEntry(createDropDownEntry(
+        audioEngine.add(createDropDownEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.source_types_overlap"),
                 McTextComponent.translatable("gui.plasmovoice.advanced.source_types_overlap.tooltip"),
                 OverlappingSourceTypes.class,
@@ -63,13 +64,15 @@ public final class AdvancedTabWidget extends TabWidget {
                 false
         ));
 
-        addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")));
-        addEntry(createToggleEntry(
+        CompositeColumnWidget exponentialVolume = addCategory(
+                McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume")
+        );
+        exponentialVolume.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.volume_slider"),
                 null,
                 config.getAdvanced().getExponentialVolumeSlider()
         ));
-        addEntry(createToggleEntry(
+        exponentialVolume.add(createToggleEntry(
                 McTextComponent.translatable("gui.plasmovoice.advanced.exponential_volume.distance_gain"),
                 null,
                 config.getAdvanced().getExponentialDistanceGain()

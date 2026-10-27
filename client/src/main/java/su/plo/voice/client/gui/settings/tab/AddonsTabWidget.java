@@ -4,12 +4,14 @@ import org.jetbrains.annotations.NotNull;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.DoubleConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
+import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.client.BaseVoiceClient;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.config.addon.VoiceAddonConfig;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
+import su.plo.voice.client.gui.settings.widget.OptionWidget;
 
 import java.util.stream.Collectors;
 
@@ -36,12 +38,12 @@ public final class AddonsTabWidget extends TabWidget {
     }
 
     private void createAddonEntry(@NotNull VoiceAddonConfig addonConfig) {
-        addEntry(new CategoryEntry(McTextComponent.translatable(addonConfig.getAddon().getName())));
+        CompositeColumnWidget category = addCategory(McTextComponent.translatable(addonConfig.getAddon().getName()));
 
         addonConfig.getWidgets().forEach((widget) -> {
             switch (widget.getType()) {
                 case INT_SLIDER:
-                    addEntry(createIntSliderWidget(
+                    category.add(createIntSliderWidget(
                             widget.getLabel(),
                             widget.getTooltip(),
                             (IntConfigEntry) widget.getConfigEntry(),
@@ -49,7 +51,7 @@ public final class AddonsTabWidget extends TabWidget {
                     ));
                     break;
                 case VOLUME_SLIDER:
-                    addEntry(createVolumeSlider(
+                    category.add(createVolumeSlider(
                             widget.getLabel(),
                             widget.getTooltip(),
                             (DoubleConfigEntry) widget.getConfigEntry(),
@@ -57,20 +59,20 @@ public final class AddonsTabWidget extends TabWidget {
                     ));
                     break;
                 case TOGGLE:
-                    addEntry(createToggleEntry(
+                    category.add(createToggleEntry(
                             widget.getLabel(),
                             widget.getTooltip(),
                             (BooleanConfigEntry) widget.getConfigEntry()
                     ));
                     break;
                 case DROPDOWN:
-                    addEntry(createDropDownEntry((VoiceAddonConfig.ConfigDropDownWidget) widget));
+                    category.add(createDropDownEntry((VoiceAddonConfig.ConfigDropDownWidget) widget));
                     break;
             }
         });
     }
 
-    private OptionEntry<DropDownWidget> createDropDownEntry(VoiceAddonConfig.ConfigDropDownWidget widget) {
+    private OptionWidget<DropDownWidget> createDropDownEntry(VoiceAddonConfig.ConfigDropDownWidget widget) {
         IntConfigEntry configEntry = (IntConfigEntry) widget.getConfigEntry();
 
         DropDownWidget dropdown = new DropDownWidget(
@@ -88,10 +90,12 @@ public final class AddonsTabWidget extends TabWidget {
                 configEntry::set
         );
 
-        return new OptionEntry<>(
+        return new OptionWidget<>(
+                parent,
                 widget.getLabel(),
                 dropdown,
                 configEntry,
+                null,
                 (button, element) -> element.setText(McTextComponent.translatable(widget.getElements().get(configEntry.value())))
         );
     }

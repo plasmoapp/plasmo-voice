@@ -2,7 +2,9 @@ package su.plo.voice.client.gui.settings.widget
 
 import net.minecraft.client.Minecraft
 import su.plo.lib.mod.client.Inputs
-import su.plo.lib.mod.client.gui.components.AbstractScrollbar
+import su.plo.lib.mod.client.gui.components.CompositeColumnWidget
+import su.plo.lib.mod.client.gui.components.ScrollContainer
+import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
@@ -15,29 +17,27 @@ import kotlin.math.min
 class DropDownWidgetList(
     private val dropDownWidget: DropDownWidget,
     private val elements: List<McTextComponent>,
-    parent: VoiceSettingsScreen,
-    width: Int,
+    private val parent: VoiceSettingsScreen,
     private val enableTooltip: Boolean,
     private val onSelect: Consumer<Int>,
-) : AbstractScrollbar<VoiceSettingsScreen>(parent, width, 0, 0) {
+) : ScrollContainer(ELEMENT_HEIGHT) {
+    override val trackBackground: Boolean = false
 
     init {
-        init()
-    }
-
-    override fun init() {
-        clearEntries()
-        elements.mapIndexed(::Entry).forEach(::addEntry)
+        content = CompositeColumnWidget(0).apply {
+            elements.forEachIndexed { index, element -> add(Item(index, element)) }
+        }
     }
 
     override fun render(context: GuiRenderContext, mouseX: Int, mouseY: Int, delta: Float) {
-        val windowHeight = Minecraft.getInstance().window.guiScaledHeight
+        x = dropDownWidget.x
+        width = dropDownWidget.width
         if (shouldRenderToTop()) {
-            this.y1 = dropDownWidget.y
-            this.y0 = y1 - (elementHeight * min(elements.size, maxElements))
+            height = ELEMENT_HEIGHT * min(elements.size, VISIBLE_ELEMENTS)
+            y = dropDownWidget.y - height
         } else {
-            this.y0 = dropDownWidget.y + dropDownWidget.height
-            this.y1 = min(y0 + (elementHeight * maxElements), windowHeight)
+            y = dropDownWidget.y + dropDownWidget.height
+            height = min(ELEMENT_HEIGHT * VISIBLE_ELEMENTS, Minecraft.getInstance().window.guiScaledHeight - y)
         }
 
         parent.deferredRender {
@@ -49,12 +49,12 @@ class DropDownWidgetList(
             super.render(context, parent.mouseX, parent.mouseY, delta)
 
             if (maxScroll > 0) {
-                val lineY = if (shouldRenderToTop()) y0 else y1
+                val lineY = if (shouldRenderToTop()) y else y + height
 
                 context.fill(
-                    containerX0,
+                    x,
                     lineY - 1,
-                    containerX1,
+                    x + width,
                     lineY,
                     frameColor,
                 )
@@ -66,19 +66,13 @@ class DropDownWidgetList(
         }
     }
 
-    override fun getContainerX0(): Int =
-        dropDownWidget.x
-
-    override fun getScrollbarPosition(): Int =
-        containerX1 - 11
-
-    override fun shouldRenderScrollbarBackground(): Boolean =
-        false
+    override fun scrollbarX(): Int =
+        x + width - 11
 
     private fun shouldRenderToTop(): Boolean {
         val scaledHeight = Minecraft.getInstance().window.guiScaledHeight
 
-        val maxListHeight = elementHeight * min(elements.size, maxElements)
+        val maxListHeight = ELEMENT_HEIGHT * min(elements.size, VISIBLE_ELEMENTS)
 
         val dropDownFullHeightYDown = dropDownWidget.y + dropDownWidget.height + 1 + maxListHeight
         val dropDownFullHeightYUp = dropDownWidget.y - 1 - maxListHeight
@@ -87,69 +81,53 @@ class DropDownWidgetList(
         return dropDownFullHeightYDown > scaledHeight && dropDownFullHeightYUp > navBottom
     }
 
-    inner class Entry(
+    private inner class Item(
         private val index: Int,
         private val element: McTextComponent,
-    ) : AbstractScrollbar<VoiceSettingsScreen>.Entry(elementHeight) {
-
-        private var focused = false
-
-        override fun changeFocus(lookForwards: Boolean): Boolean = !focused
-
-        override fun applyFocus(focused: Boolean) {
-            this.focused = focused
-        }
+    ) : GuiAbstractWidget(0, 0, 0, ELEMENT_HEIGHT) {
 
         override fun mouseClicked(mouseX: Double, mouseY: Double, button: Int): Boolean {
+            if (!isMouseOver(mouseX, mouseY)) return false
+
             onSelect.accept(index)
             return true
         }
 
-        override fun render(
-            context: GuiRenderContext,
-            index: Int,
-            x: Int,
-            y: Int,
-            entryWidth: Int,
-            mouseX: Int,
-            mouseY: Int,
-            hovered: Boolean,
-            delta: Float,
-        ) {
+        override fun renderButton(context: GuiRenderContext, mouseX: Int, mouseY: Int, delta: Float) {
             val yOffset = if (shouldRenderToTop()) 1 else 0
 
-            context.fill(x, y, x + entryWidth, y + height, frameColor)
-            context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, Colors.BLACK)
+            context.fill(x, y, x + width, y + height, frameColor)
+            context.fill(x + 1, y + yOffset, x + width - 1, y + height - 1 + yOffset, Colors.BLACK)
 
             val hasScroll = maxScroll > 0
             val entryPaddingRight = if (hasScroll) 23 else 10
 
-            if (hovered || focused) {
-                if (enableTooltip && RenderUtil.getTextWidth(element) > (entryWidth - entryPaddingRight) &&
+            if (hovered || isFocused) {
+                if (enableTooltip && RenderUtil.getTextWidth(element) > (width - entryPaddingRight) &&
                     !isMouseOverScrollbar(mouseX.toDouble(), mouseY.toDouble())
                 ) {
                     if (hovered) {
                         parent.setTooltip(element, mouseX, mouseY)
-                    } else if (focused && Inputs.isLastInputKeyboard()) {
+                    } else if (Inputs.isLastInputKeyboard()) {
                         parent.setTooltip(element, x, y + height * 2)
                     }
                 }
-                context.fill(x + 1, y + yOffset, x + entryWidth - 1, y + height - 1 + yOffset, hoverColor)
+                context.fill(x + 1, y + yOffset, x + width - 1, y + height - 1 + yOffset, hoverColor)
             }
 
             context.drawOrderedString(
-                    element,
-                    entryWidth - entryPaddingRight,
-                    x + 5,
-                    y + height / 2 - RenderUtil.getFontHeight() / 2 + yOffset,
-                    Colors.TEXT
+                element,
+                width - entryPaddingRight,
+                x + 5,
+                y + height / 2 - RenderUtil.getFontHeight() / 2 + yOffset,
+                Colors.TEXT
             )
         }
     }
 
     companion object {
-        private val elementHeight = 17
-        private val maxElements = 5
+        private const val ELEMENT_HEIGHT = 17
+        private const val VISIBLE_ELEMENTS = 5
 
         private val frameColor = Color(0x464646)
         private val hoverColor = Color(0x323232)

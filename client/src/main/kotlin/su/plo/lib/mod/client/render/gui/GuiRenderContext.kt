@@ -58,7 +58,7 @@ class GuiRenderContext(
         //$$     mcContext.disableScissor()
         //$$ }
         //#else
-        ScissorState.applyScissorState(state)
+        ScissorState.applyScissorState(scissorStack.lastOrNull())
         //#endif
     }
 

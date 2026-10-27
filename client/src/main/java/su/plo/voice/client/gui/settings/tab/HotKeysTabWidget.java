@@ -1,6 +1,7 @@
 package su.plo.voice.client.gui.settings.tab;
 
 import com.google.common.collect.Lists;
+import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
@@ -45,16 +46,19 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
         if (activation.getDistances().size() == 0 || activation.getDistances().get(0) == -1)
             return;
 
-        addEntry(new CategoryEntry(McTextComponent.translatable("key.plasmovoice.distance", McTextComponent.translatable(activation.getTranslation()))));
+        CompositeColumnWidget category = addCategory(McTextComponent.translatable(
+                "key.plasmovoice.distance",
+                McTextComponent.translatable(activation.getTranslation())
+        ));
 
         VoiceClientActivation clientActivation = (VoiceClientActivation) activation;
 
-        addEntry(createHotKey(
+        category.add(createHotKey(
                 "key.plasmovoice.distance.increase",
                 null,
                 clientActivation.getDistanceIncreaseConfigEntry()
         ));
-        addEntry(createHotKey(
+        category.add(createHotKey(
                 "key.plasmovoice.distance.decrease",
                 null,
                 clientActivation.getDistanceDecreaseConfigEntry()
@@ -64,10 +68,10 @@ public final class HotKeysTabWidget extends AbstractHotKeysTabWidget {
     private void createCategory(String category, Collection<HotkeyConfigEntry> list) {
         if (category.equals("hidden")) return;
 
-        addEntry(new CategoryEntry(McTextComponent.translatable(category)));
+        CompositeColumnWidget column = addCategory(McTextComponent.translatable(category));
 
         list.forEach(entry ->
-                addEntry(createHotKey(
+                column.add(createHotKey(
                         entry.value().getName(),
                         null,
                         entry

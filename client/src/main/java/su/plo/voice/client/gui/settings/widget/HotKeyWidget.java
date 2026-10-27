@@ -137,6 +137,11 @@ public final class HotKeyWidget extends Button implements UpdatableWidget {
     }
 
     @Override
+    public boolean capturesInput() {
+        return isActiveHotkey();
+    }
+
+    @Override
     protected void renderText(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
         Color textColor = Colors.withAlpha(active ? Colors.WHITE : Colors.GRAY, alpha);
 

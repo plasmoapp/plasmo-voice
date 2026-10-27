@@ -40,7 +40,6 @@ public final class DropDownWidget extends GuiAbstractWidget {
                 this,
                 elements,
                 parent,
-                width,
                 tooltip,
                 index -> {
                     this.text = elements.get(index);
@@ -67,6 +66,12 @@ public final class DropDownWidget extends GuiAbstractWidget {
         switchOpen();
         playDownSound();
         return true;
+    }
+
+    @Override
+    public boolean mouseReleased(double mouseX, double mouseY, int button) {
+        return open && list.mouseReleased(mouseX, mouseY, button) ||
+                super.mouseReleased(mouseX, mouseY, button);
     }
 
     @Override
@@ -98,6 +103,11 @@ public final class DropDownWidget extends GuiAbstractWidget {
         }
 
         return super.changeFocus(lookForwards);
+    }
+
+    @Override
+    public boolean capturesInput() {
+        return open;
     }
 
     @Override

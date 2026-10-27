@@ -1,15 +1,18 @@
 package su.plo.voice.client.gui.settings.tab;
 
-import com.google.common.collect.ImmutableList;
 import net.minecraft.resources.ResourceLocation;
 import su.plo.lib.mod.client.MinecraftUtil;
+import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
+import su.plo.lib.mod.client.gui.components.CompositeRowWidget;
+import su.plo.lib.mod.client.gui.components.CompositeWidget;
+import su.plo.lib.mod.client.gui.components.DisplayWidget;
+import su.plo.lib.mod.client.gui.components.MultilineTextWidget;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.gui.components.Button;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
-import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.language.LanguageUtil;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins;
@@ -41,53 +44,36 @@ public final class AboutTabWidget extends TabWidget {
         super.init();
         loadSkins();
 
-        addEntry(new CategoryEntry(madeBy(), 24));
+        CompositeColumnWidget developers = addCategory(madeBy());
         PlasmoVoiceMeta.Companion.getMETA().getDevelopers()
-                .forEach(developer -> addEntry(new DeveloperEntry(developer)));
+                .forEach(developer -> developers.add(new DeveloperCard(developer)));
 
-        addEntry(new CategoryEntry(links(), 24));
-        addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, McTextComponent.literal("Github"), button -> {
-                    openLink("https://github.com/plasmoapp/plasmo-voice");
-                }, (button, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://github.com/plasmoapp/plasmo-voice"), mouseX, mouseY);
-                }),
-                new Button(0, 0, 0, 20, McTextComponent.literal("Discord"), button -> {
-                    openLink("https://discord.com/invite/uueEqzwCJJ");
-                }, (button, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://discord.com/invite/uueEqzwCJJ"), mouseX, mouseY);
-                })
-        )));
-        this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, McTextComponent.literal("Modrinth"), button -> {
-                    openLink("https://modrinth.com/mod/plasmo-voice");
-                }, (button, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://modrinth.com/mod/plasmo-voice"), mouseX, mouseY);
-                }),
-                new Button(0, 0, 0, 20, McTextComponent.literal("Spigot"), button -> {
-                    openLink("https://www.spigotmc.org/resources/plasmo-voice-server.91064/");
-                }, (button, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://www.spigotmc.org/resources/plasmo-voice-server.91064/"), mouseX, mouseY);
-                })
-        )));
-        this.addEntry(new ListEntry(ImmutableList.of(
-                new Button(0, 0, 0, 20, McTextComponent.literal("Patreon"), button -> {
-                    openLink("https://www.patreon.com/plasmomc");
-                }, (button, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://www.patreon.com/plasmomc"), mouseX, mouseY);
-                }),
-                new Button(0, 0, 0, 20, McTextComponent.literal("Boosty"), button -> {
-                    openLink("https://boosty.to/plasmo");
-                }, (button, mouseX, mouseY) -> {
-                    setTooltip(McTextComponent.literal("https://boosty.to/plasmo"), mouseX, mouseY);
-                })
-        )));
-        this.addEntry(new TextEntry(McTextComponent.translatable("gui.plasmovoice.about.copyright")));
+        CompositeColumnWidget linkRows = addCategory(links());
+        linkRows.add(new CompositeRowWidget(
+                ELEMENT_GAP,
+                linkButton("Github", "https://github.com/plasmoapp/plasmo-voice"),
+                linkButton("Discord", "https://discord.com/invite/uueEqzwCJJ")
+        ));
+        linkRows.add(new CompositeRowWidget(
+                ELEMENT_GAP,
+                linkButton("Modrinth", "https://modrinth.com/mod/plasmo-voice"),
+                linkButton("Spigot", "https://www.spigotmc.org/resources/plasmo-voice-server.91064/")
+        ));
+        linkRows.add(new CompositeRowWidget(
+                ELEMENT_GAP,
+                linkButton("Patreon", "https://www.patreon.com/plasmomc"),
+                linkButton("Boosty", "https://boosty.to/plasmo")
+        ));
+
+        addSection().add(new MultilineTextWidget(
+                McTextComponent.translatable("gui.plasmovoice.about.copyright"),
+                Colors.TEXT_MUTED
+        ));
 
         if (PlasmoVoiceMeta.Companion.getMETA().getPatrons().size() > 0) {
-            addEntry(new CategoryEntry(McTextComponent.translatable("gui.plasmovoice.about.support"), 24));
+            CompositeColumnWidget patrons = addCategory(McTextComponent.translatable("gui.plasmovoice.about.support"));
             PlasmoVoiceMeta.Companion.getMETA().getPatrons()
-                    .forEach(patron -> addEntry(new PatronEntry(patron)));
+                    .forEach(patron -> patrons.add(new PatronCard(patron)));
         }
     }
 
@@ -107,6 +93,18 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         return links;
+    }
+
+    private Button linkButton(@NotNull String name, @NotNull String link) {
+        return new Button(
+                0,
+                0,
+                0,
+                20,
+                McTextComponent.literal(name),
+                button -> openLink(link),
+                (button, mouseX, mouseY) -> setTooltip(McTextComponent.literal(link), mouseX, mouseY)
+        );
     }
 
     private void openLink(@NotNull String link) {
@@ -131,14 +129,26 @@ public final class AboutTabWidget extends TabWidget {
         );
     }
 
-    class DeveloperEntry extends Entry {
+    private void renderCardBackground(@NotNull GuiRenderContext context, int x, int y, int width, int height) {
+        context.blit(
+                Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
+                x,
+                y,
+                0.0F,
+                0.0F,
+                width,
+                height,
+                32,
+                32
+        );
+    }
+
+    class DeveloperCard extends CompositeWidget {
 
         private final Developer developer;
         private final Button link;
 
-        public DeveloperEntry(@NotNull Developer developer) {
-            super(44);
-
+        public DeveloperCard(@NotNull Developer developer) {
             this.developer = developer;
             this.link = new Button(
                     0,
@@ -153,8 +163,13 @@ public final class AboutTabWidget extends TabWidget {
         }
 
         @Override
-        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            renderBackground(context, x, y, entryWidth);
+        public @NotNull List<GuiAbstractWidget> getWidgets() {
+            return Collections.singletonList(link);
+        }
+
+        @Override
+        protected void renderBackground(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
+            renderCardBackground(context, x, y, width, height);
 
             ResourceLocation skinLocation = ModPlayerSkins.getSkin(developer.getUuid(), developer.getName());
 
@@ -163,49 +178,33 @@ public final class AboutTabWidget extends TabWidget {
 
             context.drawString(developer.getName(), x + 40, y + 11, Colors.WHITE);
             context.drawString(developer.getRole().getTranslatable(), x + 40, y + 21, GRAY_TEXT_COLOR);
-
-            if (link != null) {
-                link.setX(x + entryWidth - 62);
-                link.setY(y + 10);
-                link.render(context, mouseX, mouseY, delta);
-            }
-        }
-
-        public void renderBackground(@NotNull GuiRenderContext context, int x, int y, int entryWidth) {
-            int height = this.height - 4;
-
-            context.blit(
-                    Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
-                    x,
-                    y,
-                    0.0F,
-                    0.0F,
-                    entryWidth,
-                    height,
-                    32,
-                    32
-            );
         }
 
         @Override
-        public List<? extends GuiWidgetListener> widgets() {
-            return ImmutableList.of(link);
+        public void measure() {
+            this.height = 40;
+        }
+
+        @Override
+        public void place() {
+            link.setX(x + width - 62);
+            link.setY(y + 10);
         }
     }
 
-    class PatronEntry extends Entry {
+    class PatronCard extends DisplayWidget {
 
         private final Patron patron;
 
-        public PatronEntry(@NotNull Patron patron) {
-            super(22);
+        public PatronCard(@NotNull Patron patron) {
+            super(0, 20);
 
             this.patron = patron;
         }
 
         @Override
-        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            renderBackground(context, x, y, entryWidth);
+        public void renderButton(@NotNull GuiRenderContext context, int mouseX, int mouseY, float delta) {
+            renderCardBackground(context, x, y, width, height);
 
             ResourceLocation skinLocation = ModPlayerSkins.getSkin(patron.getUuid(), patron.getName());
 
@@ -217,103 +216,10 @@ public final class AboutTabWidget extends TabWidget {
             McTextComponent tier = McTextComponent.literal(patron.getTier());
             context.drawString(
                     tier,
-                    x + entryWidth - RenderUtil.getTextWidth(tier) - 6,
+                    x + width - RenderUtil.getTextWidth(tier) - 6,
                     y + 6,
                     GRAY_TEXT_COLOR
             );
-        }
-
-        public void renderBackground(@NotNull GuiRenderContext context, int x, int y, int entryWidth) {
-            int height = this.height - 2;
-
-            context.blit(
-                    Minecraft.getInstance().level == null ? MENU_LIST_BACKGROUND_LOCATION : INWORLD_MENU_LIST_BACKGROUND_LOCATION,
-                    x,
-                    y,
-                    0.0F,
-                    0.0F,
-                    entryWidth,
-                    height,
-                    32,
-                    32
-            );
-        }
-
-        @Override
-        public List<? extends GuiWidgetListener> widgets() {
-            return Collections.emptyList();
-        }
-    }
-
-    class ListEntry extends Entry {
-
-        private final List<GuiAbstractWidget> widgets;
-
-        public ListEntry(List<GuiAbstractWidget> widgets) {
-            super(24);
-
-            this.widgets = widgets;
-        }
-
-        @Override
-        public List<? extends GuiWidgetListener> widgets() {
-            return widgets;
-        }
-
-        @Override
-        public void updatePosition(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            int gap = 4;
-            int elementWidth = entryWidth / widgets.size() - ((widgets.size() - 1) * (gap / 2));
-            if (elementWidth % 2 == 1) {
-                elementWidth += 1;
-                gap = (entryWidth - (elementWidth * widgets.size())) / (widgets.size() - 1);
-
-            }
-            int elementX = x;
-
-            for (GuiAbstractWidget element : widgets) {
-                element.setX(elementX);
-                element.setY(y);
-                element.setWidth(elementWidth);
-
-                elementX += elementWidth + gap;
-            }
-        }
-
-        @Override
-        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            for (GuiAbstractWidget element : widgets) {
-                element.render(context, mouseX, mouseY, delta);
-            }
-        }
-    }
-
-    class TextEntry extends Entry {
-
-        private final McTextComponent text;
-
-        public TextEntry(@NotNull McTextComponent text) {
-            super(28);
-
-            this.text = text;
-        }
-
-        @Override
-        public void render(@NotNull GuiRenderContext context, int index, int x, int y, int entryWidth, int mouseX, int mouseY, boolean hovered, float delta) {
-            int lines = context.drawStringMultiLine(
-                    text,
-                    x,
-                    y,
-                    Colors.TEXT_MUTED,
-                    entryWidth
-            );
-
-            setHeight(lines * RenderUtil.getFontHeight() + 10);
-        }
-
-        @Override
-        public boolean changeFocus(boolean lookForwards) {
-            return false;
         }
     }
 }
