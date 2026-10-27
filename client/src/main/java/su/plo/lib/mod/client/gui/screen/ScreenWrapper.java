@@ -120,7 +120,22 @@ public final class ScreenWrapper
         screen.removed();
     }
 
-    //#if MC>=12106
+    //#if MC>=26.4
+    //$$ @Override
+    //$$ public void extractRenderState(GuiGraphicsExtractor guiGraphics) {
+    //$$     lastMouseX = guiGraphics.mouseX();
+    //$$     lastMouseY = guiGraphics.mouseY();
+    //$$     lastPartialTicks = guiGraphics.partialTicks();
+    //$$     GuiRenderContext context = new GuiRenderContext(guiGraphics);
+    //$$     screen.render(context, lastMouseX, lastMouseY, lastPartialTicks);
+    //$$ }
+    //$$
+    //$$ public void renderBackground(@NotNull GuiRenderContext context) {
+    //$$     context.flush();
+    //$$     super.extractBackground(context.getMcContext());
+    //$$     context.flush();
+    //$$ }
+    //#elseif MC>=12106
     //$$ @Override
     //$$ public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
     //#if MC<12105

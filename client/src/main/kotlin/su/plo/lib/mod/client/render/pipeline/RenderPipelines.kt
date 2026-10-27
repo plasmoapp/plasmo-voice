@@ -16,6 +16,10 @@ import su.plo.lib.mod.client.render.shader.SolidColorShader
 //$$ import com.mojang.renderpearl.api.pipeline.ShaderType
 //#endif
 
+//#if MC>=26.4
+//$$ import su.plo.voice.client.mixin.accessor.RenderTypeAccessor
+//#endif
+
 //#if MC>=12105
 //$$ import net.minecraft.resources.ResourceLocation
 //#else
@@ -31,6 +35,9 @@ object RenderPipelines {
             VertexFormatMode.QUADS,
         ) {
             blendFunc = BlendFunc.TRANSLUCENT
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
@@ -55,6 +62,9 @@ object RenderPipelines {
             VertexFormatMode.QUADS,
         ) {
             samplers += "Sampler0"
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
@@ -66,6 +76,9 @@ object RenderPipelines {
         ) {
             samplers += "Sampler0"
             blendFunc = BlendFunc.TRANSLUCENT
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
@@ -90,6 +103,9 @@ object RenderPipelines {
             VertexFormatMode.QUADS,
         ) {
             samplers += "Sampler0"
+            //#if MC>=26.4
+            //$$ depthTestFunc = AlphaFunc.ALWAYS
+            //#endif
         }
 
     @JvmField
@@ -142,7 +158,9 @@ object RenderPipelines {
 
     //#if MC>=12105
     //$$ private fun RenderType.renderPipeline(): com.mojang.blaze3d.pipeline.RenderPipeline =
-        //#if MC>=12109
+        //#if MC>=26.4
+        //$$ (this as RenderTypeAccessor).plasmovoice_getNonOitPipeline()
+        //#elseif MC>=12109
         //$$ this.pipeline()
         //#elseif MC>=12106
         //$$ (this as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline()

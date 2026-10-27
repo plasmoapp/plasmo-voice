@@ -490,7 +490,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
     }
 
     public void setCursorPosition(int position) {
-        this.cursorPosition = Mth.clamp(position, 0, value.length());
+        this.cursorPosition = Math.clamp(position, 0, value.length());
     }
 
     public void moveCursor(int offset) {
@@ -522,7 +522,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
 
     public void setHighlightPos(int position) {
         int valueLength = value.length();
-        this.highlightPosition = Mth.clamp(position, 0, valueLength);
+        this.highlightPosition = Math.clamp(position, 0, valueLength);
 
         if (displayPosition > valueLength) {
             this.displayPosition = valueLength;
@@ -541,7 +541,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
             this.displayPosition -= displayPosition - highlightPosition;
         }
 
-        this.displayPosition = Mth.clamp(displayPosition, 0, valueLength);
+        this.displayPosition = Math.clamp(displayPosition, 0, valueLength);
     }
 
     public void moveCursorToStart() {

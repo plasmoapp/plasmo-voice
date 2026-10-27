@@ -2,7 +2,6 @@ package su.plo.lib.mod.client.gui.components;
 
 import com.google.common.collect.Lists;
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.util.Mth;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.ToString;
@@ -81,7 +80,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             int scrollbarY1 = y1 - getScrollbarPadding();
 
             int trackBottom = (int) ((float) ((scrollbarY1 - scrollbarY0) * (scrollbarY1 - scrollbarY0)) / (float) scrollHeight);
-            trackBottom = Mth.clamp(trackBottom, 32, scrollbarY1 - scrollbarY0 - 8);
+            trackBottom = Math.clamp(trackBottom, 32, Math.max(scrollbarY1 - scrollbarY0 - 8, 32));
             int trackTop = (int) scrollTop * (scrollbarY1 - scrollbarY0 - trackBottom) / maxScroll + scrollbarY0;
             if (trackTop < scrollbarY0) {
                 trackTop = scrollbarY0;
@@ -167,7 +166,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
             } else {
                 double maxScroll = Math.max(1, getMaxScroll());
                 int diff = y1 - y0;
-                int scrollStep = Mth.clamp((int)((float)(diff * diff) / (float)scrollHeight), 32, diff);
+                int scrollStep = Math.clamp((int)((float)(diff * diff) / (float)scrollHeight), 32, Math.max(diff, 32));
                 double multiplier = Math.max(1, maxScroll / (double)(diff - scrollStep));
 
                 setScrollTop(scrollTop + deltaY * multiplier);
@@ -243,7 +242,7 @@ public abstract class AbstractScrollbar<P extends GuiScreen> extends AbstractScr
 
     // ???
     public void setScrollTop(double scrollTop) {
-        this.scrollTop = Mth.clamp(scrollTop, 0D, getMaxScroll());
+        this.scrollTop = Math.clamp(scrollTop, 0D, getMaxScroll());
     }
 
     protected void renderList(@NotNull GuiRenderContext context, int x, int y, int mouseX, int mouseY, float delta) {
