@@ -194,7 +194,7 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         this.mouseX = mouseX;
         this.mouseY = mouseY;
 
-        if (overlay != null || isSliderDragging()) {
+        if (overlay != null || isSliderDragging() || isTabScrolling()) {
             mouseX = -1;
             mouseY = -1;
         }
@@ -301,6 +301,12 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
         return navigation.getActiveTab()
                 .map(TabWidget::getFocusedWidget)
                 .filter(widget -> widget instanceof AbstractSlider && ((AbstractSlider) widget).isDragging())
+                .isPresent();
+    }
+
+    private boolean isTabScrolling() {
+        return navigation.getActiveTab()
+                .filter(TabWidget::isScrolling)
                 .isPresent();
     }
 

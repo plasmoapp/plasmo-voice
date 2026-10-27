@@ -43,7 +43,8 @@ open class ScrollContainer(
 
     protected open val trackBackground: Boolean = true
 
-    private var scrolling = false
+    var isScrolling = false
+        private set
 
     override fun render(
         context: GuiRenderContext,
@@ -57,8 +58,10 @@ open class ScrollContainer(
         renderContent(context, mouseX, mouseY, delta)
         renderScrollbar(context)
 
-        if (isMouseOverScrollbar(mouseX.toDouble(), mouseY.toDouble())) {
-            context.requestCursor(if (scrolling) GuiCursor.RESIZE_NS else GuiCursor.POINTING_HAND)
+        if (isScrolling) {
+            context.requestCursor(GuiCursor.RESIZE_NS)
+        } else if (isMouseOverScrollbar(mouseX.toDouble(), mouseY.toDouble())) {
+            context.requestCursor(GuiCursor.POINTING_HAND)
         }
     }
 
@@ -67,8 +70,8 @@ open class ScrollContainer(
         mouseY: Double,
         button: Int,
     ): Boolean {
-        scrolling = button == InputConstants.MOUSE_BUTTON_LEFT && isMouseOverScrollbar(mouseX, mouseY)
-        if (scrolling) return true
+        isScrolling = button == InputConstants.MOUSE_BUTTON_LEFT && isMouseOverScrollbar(mouseX, mouseY)
+        if (isScrolling) return true
 
         val content = content ?: return false
         val inside = isHovered(mouseX, mouseY)
@@ -93,8 +96,8 @@ open class ScrollContainer(
         mouseY: Double,
         button: Int,
     ): Boolean {
-        if (scrolling) {
-            scrolling = false
+        if (isScrolling) {
+            isScrolling = false
             return true
         }
 
@@ -108,7 +111,7 @@ open class ScrollContainer(
         deltaX: Double,
         deltaY: Double,
     ): Boolean {
-        if (button != InputConstants.MOUSE_BUTTON_LEFT || !scrolling) {
+        if (button != InputConstants.MOUSE_BUTTON_LEFT || !isScrolling) {
             return content?.mouseDragged(mouseX, mouseY, button, deltaX, deltaY) ?: false
         }
 
@@ -261,7 +264,7 @@ open class ScrollContainer(
 
         context.applyScissorState(scissor)
 
-        val inside = hovered
+        val inside = hovered && !isScrolling
         content.render(
             context,
             if (inside) mouseX else -1,
