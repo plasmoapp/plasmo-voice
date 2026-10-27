@@ -31,19 +31,27 @@ import net.minecraft.client.renderer.GameRenderer
 //#endif
 //$$
 //#if MC>=26.2
-//$$ import com.mojang.blaze3d.GpuFormat
 //$$ import com.mojang.blaze3d.pipeline.BindGroupLayout
 //$$ import net.minecraft.client.renderer.BindGroupLayouts
+//#endif
+//$$
+//#if MC>=26.2 && MC<26.4
+//$$ import com.mojang.blaze3d.GpuFormat
 //#endif
 //$$
 //#else
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import net.minecraft.client.renderer.ShaderInstance
+
 //#endif
 
 //#if MC>=12111
 //$$ import net.minecraft.client.renderer.rendertype.RenderSetup
 //$$ import su.plo.voice.client.mixin.accessor.RenderTypeAccessor
+//#endif
+
+//#if MC>=26.4
+//$$ import net.minecraft.client.gui.GuiPipeline
 //#endif
 
 //#if MC>=12105
@@ -188,12 +196,19 @@ data class RenderPipeline(
         //#endif
     }
 
+    //#if MC>=26.4
+    //$$ val mcGuiPipeline: GuiPipeline by lazy { GuiPipeline.of { mcRenderPipeline } }
+    //#elseif MC>=12106
+    //$$ val mcGuiPipeline: com.mojang.blaze3d.pipeline.RenderPipeline
+    //$$     get() = mcRenderPipeline
+    //#endif
+
     val vertexFormat: VertexFormat
         //#if MC>=12105
         //$$ get() = mcRenderType.format()
         //#else
         get() = mcRenderType?.format() ?: vertexFormatInner
-        //#endif
+    //#endif
 
     class Builder(
         val location: ResourceLocation,
@@ -285,7 +300,7 @@ data class RenderPipeline(
             //$$     .withCull(cull)
             //$$     .withColorTargetState(ColorTargetState(
             //$$         Optional.ofNullable(if (blendFunc != null) blendFunc!!.mc() else null),
-            //#if MC>=26.2
+            //#if MC>=26.2 && MC<26.4
             //$$         GpuFormat.RGBA8_UNORM,
             //#endif
             //$$         ColorTargetState.WRITE_COLOR or ColorTargetState.WRITE_ALPHA
