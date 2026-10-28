@@ -10,6 +10,7 @@ import java.awt.Color
 class MultilineTextWidget @JvmOverloads constructor(
     private val text: McTextComponent,
     private val color: Color = Colors.WHITE,
+    private val centered: Boolean = false,
 ) : DisplayWidget(0, 0),
     Measurable {
     private var wrappedWidth = -1
@@ -22,7 +23,13 @@ class MultilineTextWidget @JvmOverloads constructor(
         delta: Float,
     ) {
         lines.forEachIndexed { index, line ->
-            context.drawString(line, x, y + index * RenderUtil.getFontHeight(), color)
+            val lineY = y + index * RenderUtil.getFontHeight()
+
+            if (centered) {
+                context.drawCenteredString(line, x + width / 2, lineY, color)
+            } else {
+                context.drawString(line, x, lineY, color)
+            }
         }
     }
 
