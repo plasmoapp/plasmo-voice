@@ -24,15 +24,20 @@ internal object LauncherMicrophone {
 
     @JvmStatic
     val needsHelper: Boolean
-        get() = promptless && status == AVAuthorizationStatus.NOT_DETERMINED
+        get() = when (status) {
+            AVAuthorizationStatus.RESTRICTED -> true
+            AVAuthorizationStatus.NOT_DETERMINED -> promptless
+            else -> false
+        }
 
     @JvmStatic
     val refusal: AuthStatus?
-        get() = when (status) {
-            AVAuthorizationStatus.DENIED -> AuthStatus.DENIED
-            AVAuthorizationStatus.RESTRICTED -> AuthStatus.RESTRICTED
-            else -> null
-        }
+        get() =
+            if (status == AVAuthorizationStatus.DENIED) {
+                AuthStatus.DENIED
+            } else {
+                null
+            }
 
     @JvmStatic
     @Synchronized
