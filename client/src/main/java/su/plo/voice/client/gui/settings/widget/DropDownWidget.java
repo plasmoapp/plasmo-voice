@@ -2,6 +2,7 @@ package su.plo.voice.client.gui.settings.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.RenderUtil;
@@ -12,6 +13,7 @@ import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.IntFunction;
 
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture;
 
@@ -30,7 +32,22 @@ public final class DropDownWidget extends GuiAbstractWidget {
             int height,
             @NotNull McTextComponent message,
             @NotNull List<McTextComponent> elements,
-            boolean tooltip,
+            boolean tooltipOnOverflow,
+            @NotNull Consumer<Integer> onSelect
+    ) {
+        this(parent, x, y, width, height, message, elements, tooltipOnOverflow, null, onSelect);
+    }
+
+    public DropDownWidget(
+            @NotNull VoiceSettingsScreen parent,
+            int x,
+            int y,
+            int width,
+            int height,
+            @NotNull McTextComponent message,
+            @NotNull List<McTextComponent> elements,
+            boolean tooltipOnOverflow,
+            @Nullable IntFunction<McTextComponent> tooltips,
             @NotNull Consumer<Integer> onSelect
     ) {
         super(x, y, width, height, message);
@@ -40,7 +57,8 @@ public final class DropDownWidget extends GuiAbstractWidget {
                 this,
                 elements,
                 parent,
-                tooltip,
+                tooltipOnOverflow,
+                tooltips,
                 index -> {
                     this.text = elements.get(index);
                     switchOpen();

@@ -7,6 +7,7 @@ import com.google.common.collect.Sets;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import su.plo.config.entry.BooleanConfigEntry;
 import su.plo.config.entry.EnumConfigEntry;
 import su.plo.config.entry.IntConfigEntry;
@@ -15,6 +16,7 @@ import su.plo.lib.mod.client.gui.components.CompositeColumnWidget;
 import su.plo.lib.mod.client.gui.components.CompositeRowWidget;
 import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiAbstractWidget;
+import su.plo.lib.mod.client.language.LanguageUtil;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -211,6 +213,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 TYPES.get(activation.getType().ordinal()),
                 canInherit ? TYPES : NO_INHERIT_TYPES,
                 false,
+                (index) -> createTypeTooltip(ClientActivation.Type.values()[index]),
                 (index) -> {
                     activationConfig.getConfigType().set(
                             ClientActivation.Type.values()[index]
@@ -249,6 +252,38 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                         activationConfig.getConfigToggle()
                 )
         );
+    }
+
+    private @Nullable McTextComponent createTypeTooltip(@NotNull ClientActivation.Type type) {
+        if (type != ClientActivation.Type.INHERIT) return null;
+
+        return activations.getParentActivation()
+                .map(parent -> McTextComponent.translatable(
+                        "gui.plasmovoice.activation.type_inherit.tooltip",
+                        McTextComponent.translatable(parent.getTranslation()),
+                        McTextComponent.translatable(
+                                "gui.plasmovoice.toggle.currently",
+                                createTypeName(parent)
+                        ).withStyle(McTextStyle.GRAY)
+                ))
+                .orElse(null);
+    }
+
+    private McTextComponent createTypeName(@NotNull ClientActivation activation) {
+        McTextComponent type = TYPES.get(activation.getType().ordinal());
+        if (activation.getType() != ClientActivation.Type.PUSH_TO_TALK) return type;
+
+        Set<Hotkey.Key> keys = activation.getPttKey().getKeys();
+        McTextComponent key = keys.isEmpty()
+                ? McTextComponent.translatable("gui.none")
+                : TextKt.join(
+                        keys.stream()
+                                .map(LanguageUtil::getKeyDisplayName)
+                                .collect(Collectors.toList()),
+                        McTextComponent.literal(" + ")
+                );
+
+        return McTextComponent.translatable("gui.plasmovoice.activation.type_ptt_key", key);
     }
 
     private IconButton createConflictIcon(@NotNull ClientActivation activation, @NotNull Set<UUID> conflicts) {

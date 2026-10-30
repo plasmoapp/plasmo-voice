@@ -116,7 +116,7 @@ public abstract class TabWidget extends ScrollContainer {
             @NotNull Class<E> enumClass,
             @NotNull List<McTextComponent> elements,
             @NotNull EnumConfigEntry<E> entry,
-            boolean elementTooltip
+            boolean tooltipOnOverflow
     ) {
         DropDownWidget dropdown = new DropDownWidget(
                 parent,
@@ -126,7 +126,7 @@ public abstract class TabWidget extends ScrollContainer {
                 20,
                 elements.get(entry.value().ordinal()),
                 elements,
-                elementTooltip,
+                tooltipOnOverflow,
                 selected -> entry.set(enumClass.getEnumConstants()[selected])
         );
 

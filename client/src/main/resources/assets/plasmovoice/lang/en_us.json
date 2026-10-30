@@ -54,8 +54,10 @@
 
     "gui.plasmovoice.activation.type": "Activation Type",
     "gui.plasmovoice.activation.type_ptt": "Push-To-Talk",
+    "gui.plasmovoice.activation.type_ptt_key": "Push-To-Talk (%s)",
     "gui.plasmovoice.activation.type_voice": "Voice",
     "gui.plasmovoice.activation.type_inherit": "Inherit",
+    "gui.plasmovoice.activation.type_inherit.tooltip": "Activates together with \"%s\"\n%s",
     "gui.plasmovoice.activation.ptt_button": "Push-To-Talk Button",
     "gui.plasmovoice.activation.toggle_button": "Toggle Button",
     "gui.plasmovoice.activation.toggle": "Toggle \"%s\"\n%s",

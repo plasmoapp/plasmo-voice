@@ -12,13 +12,15 @@ import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen
 import java.awt.Color
 import java.util.function.Consumer
+import java.util.function.IntFunction
 import kotlin.math.min
 
 class DropDownWidgetList(
     private val dropDownWidget: DropDownWidget,
     private val elements: List<McTextComponent>,
     private val parent: VoiceSettingsScreen,
-    private val enableTooltip: Boolean,
+    private val tooltipOnOverflow: Boolean,
+    private val tooltips: IntFunction<McTextComponent?>?,
     private val onSelect: Consumer<Int>,
 ) : ScrollContainer(ELEMENT_HEIGHT) {
     override val trackBackground: Boolean = false
@@ -103,13 +105,14 @@ class DropDownWidgetList(
             val entryPaddingRight = if (hasScroll) 23 else 10
 
             if (hovered || isFocused) {
-                if (enableTooltip && RenderUtil.getTextWidth(element) > (width - entryPaddingRight) &&
-                    !isMouseOverScrollbar(mouseX.toDouble(), mouseY.toDouble())
-                ) {
+                val tooltip = tooltips?.apply(index)
+                    ?: element.takeIf { tooltipOnOverflow && RenderUtil.getTextWidth(element) > (width - entryPaddingRight) }
+
+                if (tooltip != null && !isMouseOverScrollbar(mouseX.toDouble(), mouseY.toDouble())) {
                     if (hovered) {
-                        parent.setTooltip(element, mouseX, mouseY)
+                        parent.setTooltip(tooltip, mouseX, mouseY)
                     } else if (Inputs.isLastInputKeyboard()) {
-                        parent.setTooltip(element, x, y + height * 2)
+                        parent.setTooltip(tooltip, x, y + height * 2)
                     }
                 }
                 context.fill(x + 1, y + yOffset, x + width - 1, y + height - 1 + yOffset, hoverColor)
