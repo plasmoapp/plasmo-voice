@@ -12,7 +12,6 @@ import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.event.socket.UdpClientClosedEvent;
-import su.plo.voice.api.client.event.socket.UdpClientConnectedEvent;
 import su.plo.voice.api.client.event.socket.UdpClientTimedOutEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.BaseVoiceClient;
@@ -100,6 +99,13 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
         super.render(context, mouseX, mouseY, delta);
     }
 
+    @Override
+    public void tick() {
+        if (voiceClient.getUdpClientManager().isConnected() && voiceClient.getServerInfo().isPresent()) {
+            VoiceScreens.INSTANCE.openSettings(voiceClient);
+        }
+    }
+
     public void setNotAvailable() {
         this.message = McTextComponent.translatable("gui.plasmovoice.not_available");
     }
@@ -120,17 +126,8 @@ public final class VoiceNotAvailableScreen extends GuiScreen {
     }
 
     @EventSubscribe
-    public void onConnect(@NotNull UdpClientConnectedEvent event) {
-        VoiceScreens.INSTANCE.openSettings(voiceClient);
-    }
-
-    @EventSubscribe
     public void onTimedOut(@NotNull UdpClientTimedOutEvent event) {
-        if (event.isTimedOut()) {
-            setConnecting();
-        } else {
-            VoiceScreens.INSTANCE.openNotAvailable(voiceClient);
-        }
+        if (event.isTimedOut()) setConnecting();
     }
 
     @EventSubscribe
