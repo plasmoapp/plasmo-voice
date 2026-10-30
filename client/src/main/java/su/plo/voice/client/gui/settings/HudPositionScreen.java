@@ -49,7 +49,6 @@ public abstract class HudPositionScreen<E extends Enum<E>> extends GuiScreen {
     @Override
     public boolean keyPressed(int keyCode, int modifiers) {
         if (keyCode == InputConstants.KEY_ESCAPE) {
-            parent.setPreventEscClose(true);
             ScreenWrapper.openScreen(parent);
             return true;
         }

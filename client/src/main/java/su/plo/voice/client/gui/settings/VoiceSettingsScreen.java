@@ -59,9 +59,6 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Setter
     private @Nullable TooltipData tooltip;
 
-    @Setter
-    private boolean preventEscClose;
-
     private int renderCount;
 
     private final List<Runnable> deferredRenders = new ArrayList<>();
@@ -174,16 +171,6 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
     @Override
     public @NotNull McTextComponent getTitle() {
         return title;
-    }
-
-    @Override
-    public boolean shouldCloseOnEsc() {
-        if (preventEscClose) {
-            this.preventEscClose = false;
-            return false;
-        }
-
-        return true;
     }
 
     // GuiWidget impl
