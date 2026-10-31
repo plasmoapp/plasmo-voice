@@ -14,6 +14,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.lib.mod.client.render.entity.EntityRenderState;
 import su.plo.voice.client.render.voice.EntityIconRenderer;
+import su.plo.voice.client.render.voice.EntityIconRenderContext;
 import su.plo.voice.client.render.voice.EntityVoiceIconState;
 
 //#if MC>=1.21.2
@@ -29,6 +30,7 @@ import su.plo.voice.client.render.voice.EntityIconStateExtractor;
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector;
 //$$ import net.minecraft.client.renderer.state.CameraRenderState;
 //#else
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 //#endif
 
@@ -54,7 +56,8 @@ public abstract class MixinDisplayRenderer {
     //$$     if (iconState == null) return;
     //$$
     //$$     EntityRenderState entityRenderState = new EntityRenderState(displayState);
-    //$$     EntityIconRenderer.render(entityRenderState, iconState, cameraRenderState, submitNodeCollector, poseStack);
+    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, cameraRenderState, submitNodeCollector);
+    //$$     EntityIconRenderer.render(entityRenderState, iconState, context);
     //$$ }
     //#else
     //$$ @Inject(method = "render(Lnet/minecraft/client/renderer/entity/state/DisplayEntityRenderState;Lcom/mojang/blaze3d/vertex/PoseStack;Lnet/minecraft/client/renderer/MultiBufferSource;I)V", at = @At("RETURN"))
@@ -69,7 +72,8 @@ public abstract class MixinDisplayRenderer {
     //$$     if (iconState == null) return;
     //$$
     //$$     EntityRenderState entityRenderState = new EntityRenderState(displayState, light);
-    //$$     EntityIconRenderer.render(entityRenderState, iconState, poseStack);
+    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera());
+    //$$     EntityIconRenderer.render(entityRenderState, iconState, context);
     //$$ }
     //#endif
     //$$
@@ -118,7 +122,8 @@ public abstract class MixinDisplayRenderer {
                 light
         );
 
-        EntityIconRenderer.render(entityRenderState, iconState, poseStack);
+        EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera());
+        EntityIconRenderer.render(entityRenderState, iconState, context);
     }
     //#endif
 

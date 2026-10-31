@@ -10,30 +10,12 @@ import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.VertexBuilder.Companion.create
 import su.plo.lib.mod.client.render.entity.EntityRenderState
 
-//#if MC>=1.21.11
-//$$
-//$$ import net.minecraft.client.gui.Font
-//$$ import net.minecraft.client.renderer.SubmitNodeCollector
-//$$ import net.minecraft.client.renderer.rendertype.RenderTypes
-//$$ import net.minecraft.client.renderer.state.CameraRenderState
-//$$
-//#else
-
-import net.minecraft.client.Camera
-import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.RenderType
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines.fromRenderType
+//#if MC<1.21.11
 import su.plo.lib.mod.extensions.rotate
-
 //#endif
 
 //#if MC>=12103
 //$$ import net.minecraft.client.renderer.LightTexture
-//#endif
-
-//#if MC>=26.3
-//$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer
 //#endif
 
 object EntityIconRenderer {
@@ -46,61 +28,29 @@ object EntityIconRenderer {
     private val PERCENT_TEXT_COLOR = Colors.WHITE.withAlpha(0.13f).rgb
     //#endif
 
-    //#if MC>=1.21.11
-    //$$ @JvmStatic
-    //$$ fun render(
-    //$$     entityState: EntityRenderState,
-    //$$     iconState: EntityVoiceIconState,
-    //$$     cameraState: CameraRenderState,
-    //$$     collector: SubmitNodeCollector,
-    //$$     poseStack: PoseStack,
-    //$$ ) {
-    //$$     if (entityState.distanceToCameraSquared > 4096.0) return
-    //$$
-    //$$     renderPercent(entityState, iconState, cameraState, collector, poseStack)
-    //$$     renderIcon(entityState, iconState, cameraState, collector, poseStack)
-    //$$ }
-    //#else
     @JvmStatic
     fun render(
         entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
-        poseStack: PoseStack,
+        context: EntityIconRenderContext,
     ) {
-        val camera = Minecraft.getInstance().gameRenderer.mainCamera
-
         if (entityState.distanceToCameraSquared > 4096.0) return
 
-        renderPercent(entityState, iconState, camera, poseStack)
-        renderIcon(entityState, iconState, camera, poseStack)
+        renderPercent(entityState, iconState, context)
+        renderIcon(entityState, iconState, context)
     }
-    //#endif
 
     private fun renderPercent(
         entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
-        //#if MC>=1.21.11
-        //$$ cameraState: CameraRenderState,
-        //$$ collector: SubmitNodeCollector,
-        //#else
-        camera: Camera,
-        //#endif
-        stack: PoseStack,
+        context: EntityIconRenderContext,
     ) {
         val text = iconState.percentText ?: return
+        val stack = context.stack
 
         stack.pushPose()
 
-        translateEntityMatrix(
-            entityState,
-            iconState,
-            //#if MC>=1.21.11
-            //$$ cameraState,
-            //#else
-            camera,
-            //#endif
-            stack,
-        )
+        translateEntityMatrix(entityState, iconState, context)
 
         val backgroundColor = (0.25f * 255.0f).toInt() shl 24
         val xOffset = -RenderUtil.getTextWidth(text) / 2
@@ -112,62 +62,24 @@ object EntityIconRenderer {
         //#endif
 
         glState.withState {
-            //#if MC>=1.21.11
-            //$$ val charSequence = RenderUtil.getVisualOrderText(text)
-            //$$
-            //$$ if (!entityState.isDiscrete) {
-            //$$    collector.submitText(
-            //$$        stack,
-            //$$        xOffset.toFloat(), 0f,
-            //$$        charSequence,
-            //$$        false,
-            //$$        Font.DisplayMode.NORMAL,
-            //$$        lightWithEmission,
-            //$$        -1,
-            //$$        0,
-            //$$        0,
-            //$$    )
-            //$$ }
-            //$$
-            //$$ collector.submitText(
-            //$$     stack,
-            //$$     xOffset.toFloat(), 0f,
-            //$$     charSequence,
-            //$$     false,
-            //$$     if (entityState.isDiscrete) Font.DisplayMode.NORMAL else Font.DisplayMode.SEE_THROUGH,
-            //$$     entityState.light,
-            //$$     PERCENT_TEXT_COLOR,
-            //$$     backgroundColor,
-            //$$     0,
-            //$$ )
-            //#else
-
-            RenderUtil.drawStringLight(
-                stack,
+            context.submitText(
                 text,
-                xOffset,
-                0,
+                xOffset, 0,
                 PERCENT_TEXT_COLOR,
                 backgroundColor,
                 entityState.light,
-                !entityState.isDiscrete,
-                false
+                seeThrough = !entityState.isDiscrete,
             )
 
             if (!entityState.isDiscrete) {
-                RenderUtil.drawStringLight(
-                    stack,
+                context.submitText(
                     text,
-                    xOffset,
-                    0,
-                    -1,
-                    0,
+                    xOffset, 0,
+                    -1, 0,
                     lightWithEmission,
-                    false,
-                    false,
+                    seeThrough = false,
                 )
             }
-            //#endif
         }
 
         stack.popPose()
@@ -176,42 +88,19 @@ object EntityIconRenderer {
     private fun renderIcon(
         entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
-        //#if MC>=1.21.11
-        //$$ cameraState: CameraRenderState,
-        //$$ collector: SubmitNodeCollector,
-        //#else
-        camera: Camera,
-        //#endif
-        stack: PoseStack,
+        context: EntityIconRenderContext,
     ) {
         val iconLocation = iconState.iconLocation ?: return
+        val stack = context.stack
 
         stack.pushPose()
 
         if (iconState.percentText != null) stack.translate(0.0, 0.3, 0.0)
-        translateEntityMatrix(
-            entityState,
-            iconState,
-            //#if MC>=1.21.11
-            //$$ cameraState,
-            //#else
-            camera,
-            //#endif
-            stack,
-        )
+        translateEntityMatrix(entityState, iconState, context)
         stack.translate(-5.0, 0.0, 0.0)
 
         if (entityState.isDiscrete) {
-            vertices(
-                //#if MC>=1.21.11
-                //$$ collector,
-                //#endif
-                stack,
-                40,
-                entityState.light,
-                iconLocation,
-                false,
-            )
+            vertices(context, 40, entityState.light, iconLocation, false)
         } else {
             //#if MC>=1.21.3
             //$$ val lightWithEmission = LightTexture.lightCoordsWithEmission(entityState.light, 2)
@@ -219,26 +108,8 @@ object EntityIconRenderer {
             val lightWithEmission = entityState.light
             //#endif
 
-            vertices(
-                //#if MC>=1.21.11
-                //$$ collector,
-                //#endif
-                stack,
-                40,
-                entityState.light,
-                iconLocation,
-                true,
-            )
-            vertices(
-                //#if MC>=1.21.11
-                //$$ collector,
-                //#endif
-                stack,
-                255,
-                lightWithEmission,
-                iconLocation,
-                false,
-            )
+            vertices(context, 40, entityState.light, iconLocation, true)
+            vertices(context, 255, lightWithEmission, iconLocation, false)
         }
 
         stack.popPose()
@@ -247,13 +118,9 @@ object EntityIconRenderer {
     private fun translateEntityMatrix(
         entityState: EntityRenderState,
         iconState: EntityVoiceIconState,
-        //#if MC>=1.21.11
-        //$$ cameraState: CameraRenderState,
-        //#else
-        camera: Camera,
-        //#endif
-        stack: PoseStack,
+        context: EntityIconRenderContext,
     ) {
+        val stack = context.stack
         val nameTagAttachment = entityState.nameTagAttachment.add(iconState.iconOffset)
 
         if (entityState.nameTag != null) {
@@ -267,11 +134,11 @@ object EntityIconRenderer {
         stack.translate(nameTagAttachment.x(), nameTagAttachment.y() + 0.5, nameTagAttachment.z())
 
         //#if MC>=1.21.11
-        //$$ stack.mulPose(cameraState.orientation)
+        //$$ stack.mulPose(context.camera.orientation)
         //$$ stack.scale(0.025f, -0.025f, 0.025f)
         //#else
-        stack.rotate(-camera.yRot, 0f, 1f, 0f)
-        stack.rotate(camera.xRot, 1f, 0f, 0f)
+        stack.rotate(-context.camera.yRot, 0f, 1f, 0f)
+        stack.rotate(context.camera.xRot, 1f, 0f, 0f)
         stack.scale(-0.025f, -0.025f, 0.025f)
         //#endif
 
@@ -279,80 +146,35 @@ object EntityIconRenderer {
     }
 
     private fun vertices(
-        //#if MC>=1.21.11
-        //$$ collector: SubmitNodeCollector,
-        //#endif
-        stack: PoseStack,
+        context: EntityIconRenderContext,
         alpha: Int,
         light: Int,
         iconLocation: ResourceLocation,
         seeThrough: Boolean,
     ) {
-        //#if MC>=1.21.11
-        //$$
-        //$$ val renderType =
-        //$$     if (seeThrough)
-        //$$         RenderTypes.textSeeThrough(iconLocation)
-        //$$     else
-        //$$         RenderTypes.text(iconLocation)
-        //$$
-        //$$ val geometry = SubmitNodeCollector.CustomGeometryRenderer { stack, buffer ->
-        //$$     vertex(stack, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
-        //$$     vertex(stack, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
-        //$$     vertex(stack, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
-        //$$     vertex(stack, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
-        //$$ }
-        //$$
-        //#if MC>=26.3
-        //$$ if (seeThrough) {
-        //$$     SeeThroughGeometryFeatureRenderer.submit(collector, stack.last().copy(), renderType, geometry)
-        //$$ } else {
-        //$$     collector.submitCustomGeometry(stack, renderType, geometry)
-        //$$ }
-        //#else
-        //$$ collector.submitCustomGeometry(stack, renderType, geometry)
-        //#endif
-        //$$
-        //#else
+        context.submitTexturedGeometry(iconLocation, seeThrough) { pose, buffer ->
+            quad(pose, buffer, alpha, light)
+        }
+    }
 
-        val renderType =
-            if (seeThrough)
-                RenderType.textSeeThrough(iconLocation)
-            else
-                RenderType.text(iconLocation)
-
-        val renderPipeline = fromRenderType(
-            if (seeThrough) "text_see_through" else "text",
-            renderType
-        )
-
-        val buffer = RenderUtil.beginBuffer(renderPipeline)
-
-        vertex(stack, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
-        vertex(stack, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
-        vertex(stack, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
-        vertex(stack, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
-
-        renderType.draw(buffer.build())
-
-        //#endif
+    private fun quad(pose: PoseStack.Pose, buffer: VertexConsumer, alpha: Int, light: Int) {
+        vertex(pose, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
+        vertex(pose, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
+        vertex(pose, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
+        vertex(pose, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
     }
 
     private fun vertex(
-        //#if MC>=1.21.11
-        //$$ stack: PoseStack.Pose,
-        //#else
-        stack: PoseStack,
-        //#endif
+        pose: PoseStack.Pose,
         buffer: VertexConsumer,
         x: Float, y: Float, z: Float, u: Float, v: Float, alpha: Int, light: Int,
     ) {
         create(buffer)
-            .position(stack, x, y, z)
+            .position(pose, x, y, z)
             .color(255, 255, 255, alpha)
             .uv(u, v)
             .light(light)
-            .normal(stack, 0f, 0f, -1f)
+            .normal(pose, 0f, 0f, -1f)
             .end()
     }
 }

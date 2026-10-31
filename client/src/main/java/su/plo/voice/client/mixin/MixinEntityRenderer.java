@@ -11,6 +11,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import su.plo.lib.mod.client.render.entity.EntityRenderState;
 import su.plo.voice.client.render.voice.EntityIconStateExtractor;
 import su.plo.voice.client.render.voice.EntityIconRenderer;
+import su.plo.voice.client.render.voice.EntityIconRenderContext;
 import su.plo.voice.client.render.voice.EntityVoiceIconState;
 
 //#if MC>=12102
@@ -27,6 +28,7 @@ import su.plo.lib.mod.client.render.entity.EntityRenderStateKt;
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector;
 //$$ import net.minecraft.client.renderer.state.CameraRenderState;
 //#else
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
 //#endif
 
@@ -59,7 +61,8 @@ public class MixinEntityRenderer {
     //$$
     //$$     EntityRenderState entityRenderState = new EntityRenderState(mcEntityRenderState);
     //$$
-    //$$     EntityIconRenderer.render(entityRenderState, voiceIconState, cameraRenderState, submitNodeCollector, poseStack);
+    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, cameraRenderState, submitNodeCollector);
+    //$$     EntityIconRenderer.render(entityRenderState, voiceIconState, context);
     //$$ }
     //#else
     //$$ @Inject(method = "render", at = @At("RETURN"))
@@ -79,7 +82,8 @@ public class MixinEntityRenderer {
     //$$
     //$$     EntityRenderState entityRenderState = new EntityRenderState(mcEntityRenderState, light);
     //$$
-    //$$     EntityIconRenderer.render(entityRenderState, voiceIconState, poseStack);
+    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera());
+    //$$     EntityIconRenderer.render(entityRenderState, voiceIconState, context);
     //$$ }
     //#endif
     //$$
@@ -105,7 +109,8 @@ public class MixinEntityRenderer {
                 light
         );
 
-        EntityIconRenderer.render(entityRenderState, iconState, poseStack);
+        EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera());
+        EntityIconRenderer.render(entityRenderState, iconState, context);
     }
     //#endif
 }
