@@ -2,6 +2,7 @@ package su.plo.voice.client.render.voice
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
+import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.Colors.withAlpha
@@ -18,15 +19,13 @@ import su.plo.lib.mod.extensions.rotate
 //$$ import net.minecraft.client.renderer.LightTexture
 //#endif
 
+//#if MC>=26.3
+//$$ import net.minecraft.util.ARGB
+//#endif
+
 object EntityIconRenderer {
 
     private val glState = LazyGlState()
-
-    //#if MC>=12103
-    //$$ private val PERCENT_TEXT_COLOR = Colors.WHITE.withAlpha(0.5f).rgb
-    //#else
-    private val PERCENT_TEXT_COLOR = Colors.WHITE.withAlpha(0.13f).rgb
-    //#endif
 
     @JvmStatic
     fun render(
@@ -52,7 +51,7 @@ object EntityIconRenderer {
 
         translateEntityMatrix(entityState, iconState, context)
 
-        val backgroundColor = (0.25f * 255.0f).toInt() shl 24
+        val backgroundColor = Minecraft.getInstance().options.getBackgroundColor(0.25f)
         val xOffset = -RenderUtil.getTextWidth(text) / 2
 
         //#if MC>=1.21.3
@@ -65,7 +64,7 @@ object EntityIconRenderer {
             context.submitText(
                 text,
                 xOffset, 0,
-                PERCENT_TEXT_COLOR,
+                percentTextColor(),
                 backgroundColor,
                 entityState.light,
                 seeThrough = !entityState.isDiscrete,
@@ -84,6 +83,15 @@ object EntityIconRenderer {
 
         stack.popPose()
     }
+
+    private fun percentTextColor(): Int =
+        //#if MC>=26.3
+        //$$ ARGB.white(maxOf((Minecraft.getInstance().options.getBackgroundOpacity(0.25f) + 0.75f) * 0.5f, 0.5f))
+        //#elseif MC>=1.21.3
+        //$$ Colors.WHITE.withAlpha(0.5f).rgb
+        //#else
+        Colors.WHITE.withAlpha(0.13f).rgb
+        //#endif
 
     private fun renderIcon(
         entityState: EntityRenderState,

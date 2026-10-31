@@ -8,7 +8,6 @@ import net.minecraft.util.StringDecomposer
 import su.plo.lib.mod.extensions.isHudHidden
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.Colors
-import su.plo.lib.mod.client.render.Colors.withAlpha
 import su.plo.lib.mod.client.render.LazyGlState
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
@@ -161,8 +160,7 @@ class OverlayRenderer(
             y += (ENTRY_HEIGHT + 1) * index
         }
 
-//        int backgroundColor = minecraft.getOptions().getBackgroundColor(Integer.MIN_VALUE);
-        val backgroundColor = BACKGROUND_COLOR
+        val backgroundColor = Color(Minecraft.getInstance().options.getBackgroundColor(0.25f), true)
 
         // render helm
         if (overlayStyle.hasSkin) {
@@ -326,8 +324,6 @@ class OverlayRenderer(
     companion object {
         private const val ENTRY_HEIGHT = 16
         private const val MAX_TEXT_WIDTH = 40
-
-        private val BACKGROUND_COLOR = Color.BLACK.withAlpha(0.25f)
     }
 }
 
