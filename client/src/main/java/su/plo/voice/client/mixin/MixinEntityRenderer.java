@@ -82,7 +82,7 @@ public class MixinEntityRenderer {
     //$$
     //$$     EntityRenderState entityRenderState = new EntityRenderState(mcEntityRenderState, light);
     //$$
-    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera());
+    //$$     EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera(), multiBufferSource);
     //$$     EntityIconRenderer.render(entityRenderState, voiceIconState, context);
     //$$ }
     //#endif
@@ -109,7 +109,7 @@ public class MixinEntityRenderer {
                 light
         );
 
-        EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera());
+        EntityIconRenderContext context = new EntityIconRenderContext(poseStack, Minecraft.getInstance().gameRenderer.getMainCamera(), multiBufferSource);
         EntityIconRenderer.render(entityRenderState, iconState, context);
     }
     //#endif

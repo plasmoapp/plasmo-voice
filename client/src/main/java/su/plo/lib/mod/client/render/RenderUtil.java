@@ -607,47 +607,6 @@ public class RenderUtil {
         return drawString(stack, getVisualOrderText(text), x, y, color, dropShadow, false);
     }
 
-    public static int drawStringLight(
-            PoseStack stack,
-            McTextComponent text,
-            int x,
-            int y,
-            int color,
-            int backgroundColor,
-            int light,
-            boolean seeThrough,
-            boolean dropShadow
-    ) {
-        color = adjustColor(color);
-
-        FormattedCharSequence formattedText = getVisualOrderText(text);
-
-        Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;
-
-        //#if MC>=26.2
-        //$$ throw new UnsupportedOperationException("drawStringLight is no longer supported in 26.2");
-        //#else
-        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
-        Minecraft.getInstance().font.drawInBatch(
-                formattedText,
-                (float) x,
-                (float) y,
-                color,
-                dropShadow,
-                stack.last().pose(),
-                irendertypebuffer$impl,
-                displayMode,
-                backgroundColor,
-                light
-        );
-        irendertypebuffer$impl.endBatch();
-        //#endif
-
-        //#if MC<26.2
-        return getStringX(formattedText, x, dropShadow);
-        //#endif
-    }
-
     public static int drawStringMultiLine(PoseStack stack, McTextComponent text, int x, int y, int color, int width) {
         return drawStringMultiLine(stack, text, x, y, color, width, true);
     }

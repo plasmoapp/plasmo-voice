@@ -2,17 +2,19 @@ package su.plo.voice.client.render.voice
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
+import net.minecraft.client.gui.Font
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.slib.api.chat.component.McTextComponent
 
 //#if MC>=1.21.11
-//$$ import net.minecraft.client.gui.Font
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector
 //$$ import net.minecraft.client.renderer.rendertype.RenderTypes
 //$$ import net.minecraft.client.renderer.state.CameraRenderState
 //#else
 import net.minecraft.client.Camera
+import net.minecraft.client.Minecraft
+import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.RenderType
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 //#endif
@@ -28,6 +30,7 @@ class EntityIconRenderContext(
     //$$ val collector: SubmitNodeCollector,
     //#else
     val camera: Camera,
+    val bufferSource: MultiBufferSource,
     //#endif
 )
 
@@ -68,19 +71,32 @@ fun EntityIconRenderContext.submitText(
     light: Int,
     seeThrough: Boolean,
 ) {
+    val charSequence = RenderUtil.getVisualOrderText(text)
+    val displayMode = if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL
+
     //#if MC>=1.21.11
     //$$ collector.submitText(
     //$$     stack,
     //$$     x.toFloat(), y.toFloat(),
-    //$$     RenderUtil.getVisualOrderText(text),
+    //$$     charSequence,
     //$$     false,
-    //$$     if (seeThrough) Font.DisplayMode.SEE_THROUGH else Font.DisplayMode.NORMAL,
+    //$$     displayMode,
     //$$     light,
     //$$     color,
     //$$     backgroundColor,
     //$$     0,
     //$$ )
     //#else
-    RenderUtil.drawStringLight(stack, text, x, y, color, backgroundColor, light, seeThrough, false)
+    Minecraft.getInstance().font.drawInBatch(
+        charSequence,
+        x.toFloat(), y.toFloat(),
+        color,
+        false,
+        stack.last().pose(),
+        bufferSource,
+        displayMode,
+        backgroundColor,
+        light,
+    )
     //#endif
 }
