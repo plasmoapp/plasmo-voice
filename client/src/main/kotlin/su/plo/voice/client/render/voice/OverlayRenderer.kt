@@ -4,6 +4,7 @@ import com.google.common.collect.Lists
 import com.google.common.collect.Maps
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
+import net.minecraft.util.StringDecomposer
 import su.plo.lib.mod.extensions.isHudHidden
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.Colors
@@ -21,6 +22,7 @@ import su.plo.voice.api.client.config.overlay.OverlayPosition
 import su.plo.voice.api.client.config.overlay.OverlaySourceState
 import su.plo.voice.client.config.VoiceClientConfig
 import su.plo.voice.client.event.HudRenderEvent
+import su.plo.voice.client.extension.toMinecraft
 import su.plo.voice.proto.data.audio.source.DirectSourceInfo
 import su.plo.voice.proto.data.audio.source.PlayerSourceInfo
 import su.plo.voice.proto.data.audio.source.SourceInfo
@@ -181,7 +183,7 @@ class OverlayRenderer(
         }
 
         // render text
-        if (overlayStyle.hasName && RenderUtil.getFormattedString(sourceName).isNotBlank()) {
+        if (overlayStyle.hasName && StringDecomposer.getPlainText(sourceName.toMinecraft()).isNotBlank()) {
             if (position.isRight) {
                 x -= textWidth + 1
             }

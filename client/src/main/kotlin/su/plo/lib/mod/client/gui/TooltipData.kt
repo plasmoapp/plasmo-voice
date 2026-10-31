@@ -1,8 +1,8 @@
 package su.plo.lib.mod.client.gui
 
+import net.minecraft.util.FormattedCharSequence
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.slib.api.chat.component.McTextComponent
-import su.plo.voice.client.extension.getStringSplitToWidth
 
 data class TooltipData(
     val text: List<McTextComponent>,
@@ -13,14 +13,12 @@ data class TooltipData(
         text: McTextComponent,
         x: Int,
         y: Int,
-    ) : this(
-        getStringSplitToWidth(
-            RenderUtil.getFormattedString(text),
-            180.0f,
-            true,
-            true,
-        ).map { McTextComponent.literal(it) },
-        x,
-        y,
-    )
+    ) : this(listOf(text), x, y)
+
+    val lines: List<FormattedCharSequence>
+        get() = text.flatMap { RenderUtil.splitLines(it, MAX_WIDTH) }
+
+    companion object {
+        private const val MAX_WIDTH = 180
+    }
 }

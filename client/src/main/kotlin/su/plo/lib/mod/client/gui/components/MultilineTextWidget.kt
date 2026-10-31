@@ -1,10 +1,10 @@
 package su.plo.lib.mod.client.gui.components
 
+import net.minecraft.util.FormattedCharSequence
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
 import su.plo.slib.api.chat.component.McTextComponent
-import su.plo.voice.client.extension.getStringSplitToWidth
 import java.awt.Color
 
 class MultilineTextWidget @JvmOverloads constructor(
@@ -21,7 +21,7 @@ class MultilineTextWidget @JvmOverloads constructor(
     ) : this(listOf(text), color, centered)
 
     private var wrappedWidth = -1
-    private var lines: List<String> = emptyList()
+    private var lines: List<FormattedCharSequence> = emptyList()
 
     override fun renderButton(
         context: GuiRenderContext,
@@ -43,14 +43,7 @@ class MultilineTextWidget @JvmOverloads constructor(
     override fun measure() {
         if (width != wrappedWidth) {
             wrappedWidth = width
-            lines = texts.flatMap { text ->
-                getStringSplitToWidth(
-                    RenderUtil.getFormattedString(text),
-                    width.toFloat(),
-                    ensureSpaceAtEndOfLines = true,
-                    processColorCodes = true,
-                )
-            }
+            lines = texts.flatMap { RenderUtil.splitLines(it, width) }
         }
 
         height = (lines.size * RenderUtil.getFontHeight() - 1).coerceAtLeast(0)

@@ -2,13 +2,13 @@ package su.plo.lib.mod.client.render.gui
 
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.util.FormattedCharSequence
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.ScissorState
 import su.plo.lib.mod.client.render.pipeline.RenderPipeline
 import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.slib.api.chat.component.McTextComponent
-import su.plo.voice.client.extension.getStringSplitToWidth
 
 import java.awt.Color
 
@@ -270,7 +270,32 @@ class GuiRenderContext(
         color: Color,
         dropShadow: Boolean = true,
         seeThrough: Boolean = false,
-    ): Int = drawString(RenderUtil.getFormattedString(text), x, y, color, dropShadow, seeThrough)
+    ): Int = drawString(RenderUtil.getVisualOrderText(text), x, y, color, dropShadow, seeThrough)
+
+    @JvmOverloads
+    fun drawString(
+        text: FormattedCharSequence,
+        x: Int,
+        y: Int,
+        color: Color,
+        dropShadow: Boolean = true,
+        seeThrough: Boolean = false,
+    ): Int {
+        //#if MC>=12106
+        //$$ mcContext.drawString(
+        //$$     Minecraft.getInstance().font,
+        //$$     text,
+        //$$     x,
+        //$$     y,
+        //$$     color.rgb,
+        //$$     dropShadow
+        //$$ )
+        //$$
+        //$$ return RenderUtil.getStringX(text, x, dropShadow)
+        //#else
+        return RenderUtil.drawString(stack, text, x, y, color.rgb, dropShadow, seeThrough)
+        //#endif
+    }
 
     @JvmOverloads
     fun drawString(
@@ -304,7 +329,7 @@ class GuiRenderContext(
         y: Int,
         color: Color,
         dropShadow: Boolean = true,
-    ): Int = drawCenteredString(RenderUtil.getFormattedString(text), x, y, color, dropShadow)
+    ): Int = drawCenteredString(RenderUtil.getVisualOrderText(text), x, y, color, dropShadow)
 
     @JvmOverloads
     fun drawCenteredString(
@@ -322,6 +347,21 @@ class GuiRenderContext(
     )
 
     @JvmOverloads
+    fun drawCenteredString(
+        text: FormattedCharSequence,
+        x: Int,
+        y: Int,
+        color: Color,
+        dropShadow: Boolean = true,
+    ): Int = drawString(
+        text,
+        x - RenderUtil.getTextWidth(text) / 2,
+        y,
+        color,
+        dropShadow,
+    )
+
+    @JvmOverloads
     fun drawStringMultiLineCentered(
         text: McTextComponent,
         width: Int,
@@ -330,17 +370,15 @@ class GuiRenderContext(
         color: Color,
         dropShadow: Boolean = true,
     ): Int {
-        val formattedText = RenderUtil.getFormattedString(text)
-
-        val lines = getStringSplitToWidth(formattedText, width.toFloat(), true, true)
+        val lines = RenderUtil.splitLines(text, width)
         val lineHeight = RenderUtil.getFontHeight()
 
-        lines.forEachIndexed { index, lineText ->
+        lines.forEachIndexed { index, line ->
             val lineY = (lineHeight + yGap) * index
 
-            drawString(
-                lineText,
-                width / 2 - RenderUtil.getStringWidth(lineText) / 2,
+            drawCenteredString(
+                line,
+                width / 2,
                 y + lineY + lineHeight,
                 color,
                 dropShadow
@@ -359,16 +397,14 @@ class GuiRenderContext(
         width: Int,
         dropShadow: Boolean = true,
     ): Int  {
-        val formattedText = RenderUtil.getFormattedString(text)
-
-        val lines = getStringSplitToWidth(formattedText, width.toFloat(), true, true)
+        val lines = RenderUtil.splitLines(text, width)
         val lineHeight = RenderUtil.getFontHeight()
 
-        lines.forEachIndexed { index, lineText ->
+        lines.forEachIndexed { index, line ->
             val lineY = lineHeight * index
 
             drawString(
-                lineText,
+                line,
                 x,
                 y + lineY + lineHeight - 1,
                 color,
@@ -389,7 +425,7 @@ class GuiRenderContext(
         dropShadow: Boolean = true,
     ) {
         drawString(
-            RenderUtil.getOrderedString(text, width),
+            RenderUtil.getTruncatedText(text, width),
             x,
             y,
             color,
@@ -407,7 +443,7 @@ class GuiRenderContext(
         dropShadow: Boolean = true,
     ) {
         drawCenteredString(
-            RenderUtil.getOrderedString(text, width),
+            RenderUtil.getTruncatedText(text, width),
             x,
             y,
             color,

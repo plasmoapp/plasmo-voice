@@ -195,7 +195,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
             int inputX = Mth.floor(mouseX) - x;
             if (bordered) inputX -= 4;
 
-            String visibileString = RenderUtil.stringToWidth(value.substring(displayPosition), getInnerWidth());
+            String visibileString = RenderUtil.stringToWidth(value.substring(displayPosition), getInnerWidth(), false, "");
             moveCursorTo(RenderUtil.stringToWidth(visibileString, inputX, false, "").length() + displayPosition);
             return true;
         } else {
@@ -258,7 +258,7 @@ public class TextFieldWidget extends GuiAbstractWidget {
         String visibleText = isCursorVisible ? text.substring(0, cursorIndex) : text;
 
         if (!text.isEmpty()) {
-            currentX = RenderUtil.getStringX(RenderUtil.getFormattedString(formatter.apply(visibleText, displayPosition)), textX, true);
+            currentX = textX + RenderUtil.getTextWidth(formatter.apply(visibleText, displayPosition)) + 1;
         }
 
         boolean shouldDrawCursor = cursorPosition < value.length() || value.length() >= maxLength;
@@ -528,10 +528,10 @@ public class TextFieldWidget extends GuiAbstractWidget {
         }
 
         int innerWidth = getInnerWidth();
-        String string = RenderUtil.stringToWidth(value.substring(displayPosition), innerWidth);
+        String string = RenderUtil.stringToWidth(value.substring(displayPosition), innerWidth, false, "");
         int l = string.length() + displayPosition;
         if (highlightPosition == displayPosition) {
-            this.displayPosition -= RenderUtil.stringToWidth(value, innerWidth, true).length();
+            this.displayPosition -= RenderUtil.stringToWidth(value, innerWidth, true, "").length();
         }
 
         if (highlightPosition > l) {

@@ -6,15 +6,18 @@ import me.shedaniel.clothconfig2.api.ConfigCategory
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder
 import me.shedaniel.clothconfig2.impl.builders.BooleanToggleBuilder
 import me.shedaniel.clothconfig2.impl.builders.IntFieldBuilder
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.screens.Screen
+import net.minecraft.network.chat.Component
+import net.minecraft.network.chat.FormattedText
+import net.minecraft.network.chat.Style
 import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.IntConfigEntry
-import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.voice.BaseVoice
 import su.plo.voice.client.ModVoiceClient
-import su.plo.voice.client.extension.getStringSplitToWidth
 import su.plo.voice.client.extension.toMinecraft
+import java.util.Optional
 
 private fun BooleanConfigEntry.entryBuilder(
     entryBuilder: ConfigEntryBuilder,
@@ -30,16 +33,23 @@ private fun BooleanConfigEntry.entryBuilder(
 
 private fun BooleanToggleBuilder.tooltip(
     text: McTextComponent,
-) = setTooltip(
-    *getStringSplitToWidth(
-        RenderUtil.getFormattedString(text),
-        180f,
-        true,
-        true
-    )
-        .map { McTextComponent.literal(it).toMinecraft() }
-        .toTypedArray()
-)
+) = setTooltip(*text.splitToWidth(180).toTypedArray())
+
+private fun McTextComponent.splitToWidth(width: Int): List<Component> =
+    Minecraft.getInstance().font.splitter
+        .splitLines(toMinecraft(), width, Style.EMPTY)
+        .map { it.toComponent() }
+
+private fun FormattedText.toComponent(): Component {
+    val component = Component.empty()
+
+    visit({ style, contents ->
+        component.append(Component.literal(contents).withStyle(style))
+        Optional.empty<Unit>()
+    }, Style.EMPTY)
+
+    return component
+}
 
 private fun IntConfigEntry.entryBuilder(
     entryBuilder: ConfigEntryBuilder,

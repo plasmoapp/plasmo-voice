@@ -4,10 +4,13 @@ import net.minecraft.client.gui.Font;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
-import gg.essential.universal.TextBuilder;
 import net.minecraft.client.Minecraft;
+import net.minecraft.locale.Language;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.FormattedText;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.FormattedCharSequence;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.pipeline.RenderPipeline;
@@ -466,12 +469,37 @@ public class RenderUtil {
         //#endif
 
         //#if MC<12105
+        resetTextGlState();
+        //#endif
+    }
+
+    public static void drawStringInBatch(PoseStack stack, FormattedCharSequence text, int x, int y, int color, boolean shadow) {
+        drawStringInBatch(stack, text, x, y, color, shadow, false);
+    }
+
+    public static void drawStringInBatch(PoseStack stack, FormattedCharSequence text, int x, int y, int color, boolean shadow, boolean seeThrough) {
+        //#if MC>=26.2
+        //$$ throw new UnsupportedOperationException("drawStringInBatch is no longer supported in 26.2");
+        //#else
+        Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : TEXT_LAYER_TYPE;
+        MultiBufferSource.BufferSource irendertypebuffer$impl = Minecraft.getInstance().renderBuffers().bufferSource();
+        Minecraft.getInstance().font.drawInBatch(text, x, y, color, shadow, stack.last().pose(), irendertypebuffer$impl, displayMode, 0, 15728880);
+        irendertypebuffer$impl.endBatch();
+        //#endif
+
+        //#if MC<12105
+        resetTextGlState();
+        //#endif
+    }
+
+    //#if MC<12105
+    private static void resetTextGlState() {
         if (CURRENT_GL_STATE != null) {
             CURRENT_GL_STATE.setDepthFunc(null);
             CURRENT_GL_STATE.setBlendFunc(null);
         }
-        //#endif
     }
+    //#endif
 
     public static int drawCenteredString(PoseStack stack, String string, int x, int y, int color) {
         return drawCenteredString(stack, string, x, y, color, true);
@@ -494,8 +522,25 @@ public class RenderUtil {
         return getStringX(string, centeredX, dropShadow);
     }
 
+    public static int drawCenteredString(PoseStack stack, FormattedCharSequence text, int x, int y, int color, boolean dropShadow) {
+        color = adjustColor(color);
+
+        int centeredX = x - getTextWidth(text) / 2;
+
+        drawStringInBatch(
+                stack,
+                text,
+                centeredX,
+                y,
+                color,
+                dropShadow
+        );
+
+        return getStringX(text, centeredX, dropShadow);
+    }
+
     public static int drawCenteredString(PoseStack stack, McTextComponent text, int x, int y, int color) {
-        return drawCenteredString(stack, getFormattedString(text), x, y, color);
+        return drawCenteredString(stack, getVisualOrderText(text), x, y, color, true);
     }
 
     public static void drawCenteredOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color) {
@@ -503,18 +548,7 @@ public class RenderUtil {
     }
 
     public static void drawCenteredOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color, boolean dropShadow) {
-        color = adjustColor(color);
-
-        String orderedText = getOrderedString(text, width);
-
-        drawStringInBatch(
-                stack,
-                orderedText,
-                x - getStringWidth(orderedText) / 2,
-                y,
-                color,
-                dropShadow
-        );
+        drawCenteredString(stack, getTruncatedText(text, width), x, y, color, dropShadow);
     }
 
     public static void drawOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color) {
@@ -522,16 +556,7 @@ public class RenderUtil {
     }
 
     public static void drawOrderedString(PoseStack stack, McTextComponent text, int width, int x, int y, int color, boolean dropShadow) {
-        color = adjustColor(color);
-
-        drawStringInBatch(
-                stack,
-                getOrderedString(text, width),
-                x,
-                y,
-                color,
-                dropShadow
-        );
+        drawString(stack, getTruncatedText(text, width), x, y, color, dropShadow, false);
     }
 
     public static int drawString(PoseStack stack, String string, int x, int y, int color) {
@@ -558,25 +583,28 @@ public class RenderUtil {
         return getStringX(string, x, dropShadow);
     }
 
+    public static int drawString(PoseStack stack, FormattedCharSequence text, int x, int y, int color, boolean dropShadow, boolean seeThrough) {
+        color = adjustColor(color);
+
+        drawStringInBatch(
+                stack,
+                text,
+                x,
+                y,
+                color,
+                dropShadow,
+                seeThrough
+        );
+
+        return getStringX(text, x, dropShadow);
+    }
+
     public static int drawString(PoseStack stack, McTextComponent text, int x, int y, int color) {
         return drawString(stack, text, x, y, color, true);
     }
 
     public static int drawString(PoseStack stack, McTextComponent text, int x, int y, int color, boolean dropShadow) {
-        color = adjustColor(color);
-
-        String formattedText = getFormattedString(text);
-
-        drawStringInBatch(
-                stack,
-                formattedText,
-                x,
-                y,
-                color,
-                dropShadow
-        );
-
-        return getStringX(formattedText, x, dropShadow);
+        return drawString(stack, getVisualOrderText(text), x, y, color, dropShadow, false);
     }
 
     public static int drawStringLight(
@@ -592,7 +620,7 @@ public class RenderUtil {
     ) {
         color = adjustColor(color);
 
-        String formattedText = getFormattedString(text);
+        FormattedCharSequence formattedText = getVisualOrderText(text);
 
         Font.DisplayMode displayMode = seeThrough ? Font.DisplayMode.SEE_THROUGH : Font.DisplayMode.NORMAL;
 
@@ -627,13 +655,11 @@ public class RenderUtil {
     public static int drawStringMultiLine(PoseStack stack, McTextComponent text, int x, int y, int color, int width, boolean dropShadow) {
         color = adjustColor(color);
 
-        String string = getFormattedString(text);
-
-        List<String> lines = su.plo.voice.client.extension.TextKt.getStringSplitToWidth(string, width, true, true);
+        List<FormattedCharSequence> lines = splitLines(text, width);
         int lineHeight = getFontHeight();
 
-        for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight) {
-            String orderedText = line.next();
+        for (Iterator<FormattedCharSequence> line = lines.iterator(); line.hasNext(); y += lineHeight) {
+            FormattedCharSequence orderedText = line.next();
 
             drawStringInBatch(
                     stack,
@@ -655,18 +681,16 @@ public class RenderUtil {
     public static int drawStringMultiLineCentered(PoseStack stack, McTextComponent text, int width, int y, int yGap, int color, boolean dropShadow) {
         color = adjustColor(color);
 
-        String string = getFormattedString(text);
-
-        List<String> lines = su.plo.voice.client.extension.TextKt.getStringSplitToWidth(string, width, true, true);
+        List<FormattedCharSequence> lines = splitLines(text, width);
         int lineHeight = getFontHeight();
 
-        for (Iterator<String> line = lines.iterator(); line.hasNext(); y += lineHeight + yGap) {
-            String orderedText = line.next();
+        for (Iterator<FormattedCharSequence> line = lines.iterator(); line.hasNext(); y += lineHeight + yGap) {
+            FormattedCharSequence orderedText = line.next();
 
             drawStringInBatch(
                     stack,
                     orderedText,
-                    width / 2 - getStringWidth(orderedText) / 2,
+                    width / 2 - getTextWidth(orderedText) / 2,
                     y + lineHeight,
                     color,
                     dropShadow
@@ -680,6 +704,10 @@ public class RenderUtil {
         return x + getStringWidth(string) + (dropShadow ? 1 : 0);
     }
 
+    public static int getStringX(FormattedCharSequence text, int x, boolean dropShadow) {
+        return x + getTextWidth(text) + (dropShadow ? 1 : 0);
+    }
+
     public static int adjustColor(int color) {
         return (color & -67108864) == 0 ? color | -16777216 : color;
     }
@@ -689,16 +717,11 @@ public class RenderUtil {
     }
 
     public static String stringToWidth(String string, int width, boolean tail, String trimmedTextSuffix) {
-        List<String> lines = su.plo.voice.client.extension.TextKt.splitStringToWidthTruncated(
-                string,
-                width,
-                1,
-                false,
-                true,
-                trimmedTextSuffix
-        );
+        Font font = Minecraft.getInstance().font;
+        if (font.width(string) <= width) return string;
 
-        return lines.get(tail ? lines.size() - 1 : 0);
+        String trimmed = font.plainSubstrByWidth(string, width - font.width(trimmedTextSuffix), tail);
+        return tail ? trimmedTextSuffix + trimmed : trimmed + trimmedTextSuffix;
     }
 
     public static String stringToWidth(String string, int width) {
@@ -706,20 +729,28 @@ public class RenderUtil {
     }
 
     public static int getTextWidth(McTextComponent text) {
-        return getStringWidth(getFormattedString(text));
+        return Minecraft.getInstance().font.width(getTextConverter().convert(text));
     }
 
-    public static String getOrderedString(McTextComponent text, int width) {
-        return su.plo.voice.client.extension.TextKt.getTruncatedString(getFormattedString(text), width, "...");
+    public static int getTextWidth(FormattedCharSequence text) {
+        return Minecraft.getInstance().font.width(text);
     }
 
-    public static String getFormattedString(McTextComponent text) {
+    public static FormattedCharSequence getVisualOrderText(McTextComponent text) {
+        return getTextConverter().convert(text).getVisualOrderText();
+    }
+
+    public static FormattedCharSequence getTruncatedText(McTextComponent text, int width) {
+        Font font = Minecraft.getInstance().font;
         Component component = getTextConverter().convert(text);
+        if (font.width(component) <= width) return component.getVisualOrderText();
 
-        TextBuilder textBuilder = new TextBuilder(true);
-        component.getVisualOrderText().accept(textBuilder);
+        FormattedText truncated = font.substrByWidth(component, width - font.width(CommonComponents.ELLIPSIS));
+        return Language.getInstance().getVisualOrder(FormattedText.composite(truncated, CommonComponents.ELLIPSIS));
+    }
 
-        return textBuilder.getString();
+    public static List<FormattedCharSequence> splitLines(McTextComponent text, int width) {
+        return Minecraft.getInstance().font.split(getTextConverter().convert(text), width);
     }
 
     public static int getStringWidth(String string) {

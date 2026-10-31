@@ -32,8 +32,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static su.plo.voice.client.extension.TextKt.getStringSplitToWidth;
-
 //#if MC<12105
 import com.mojang.blaze3d.systems.RenderSystem;
 //#endif

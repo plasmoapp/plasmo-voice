@@ -16,9 +16,6 @@ import su.plo.lib.mod.client.render.entity.EntityRenderState
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector
 //$$ import net.minecraft.client.renderer.rendertype.RenderTypes
 //$$ import net.minecraft.client.renderer.state.CameraRenderState
-//$$ import net.minecraft.network.chat.Style
-//$$ import net.minecraft.util.FormattedCharSequence
-//$$ import net.minecraft.util.StringDecomposer
 //$$
 //#else
 
@@ -116,14 +113,7 @@ object EntityIconRenderer {
 
         glState.withState {
             //#if MC>=1.21.11
-            //$$ val formattedString = RenderUtil.getFormattedString(iconState.percentText)
-            //$$ val charSequence =
-            //$$     if (formattedString.isEmpty())
-            //$$         FormattedCharSequence.EMPTY
-            //$$     else
-            //$$         FormattedCharSequence {
-            //$$             StringDecomposer.iterateFormatted(formattedString, Style.EMPTY, it)
-            //$$         }
+            //$$ val charSequence = RenderUtil.getVisualOrderText(text)
             //$$
             //$$ if (!entityState.isDiscrete) {
             //$$    collector.submitText(
