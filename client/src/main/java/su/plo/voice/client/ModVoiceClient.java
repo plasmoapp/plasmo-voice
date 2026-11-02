@@ -55,6 +55,10 @@ import su.plo.slib.mod.channel.ModChannelManager;
 //$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer;
 //#endif
 
+//#if MC<=1.21.1
+import net.fabricmc.fabric.api.client.rendering.v1.CoreShaderRegistrationCallback;
+//#endif
+
 //#elseif NEOFORGE
 //$$
 //$$ import su.plo.slib.mod.channel.ModChannelManager;
@@ -82,10 +86,22 @@ import su.plo.slib.mod.channel.ModChannelManager;
 //$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer;
 //#endif
 //$$
+//#if MC<=1.21.1
+//$$ import net.minecraft.client.renderer.ShaderInstance;
+//$$ import net.neoforged.neoforge.client.event.RegisterShadersEvent;
+//$$
+//$$ import java.io.IOException;
+//#endif
+//$$
 //#endif
 
 //#if MC>=12109
 //$$ import su.plo.lib.mod.client.ResourceLocationUtil;
+//#endif
+
+//#if MC<=1.21.4
+import su.plo.lib.mod.client.render.shader.ShadersCache;
+import su.plo.lib.mod.client.render.shader.SolidColorShader;
 //#endif
 
 import java.io.File;
@@ -133,6 +149,10 @@ public final class ModVoiceClient extends BaseVoiceClient
 
         INSTANCE = this;
         RenderUtil.getTextConverter().setLanguageSupplier(createLanguageSupplier());
+
+        //#if MC>=1.21.2 && MC<1.21.5
+        //$$ ShadersCache.put(SolidColorShader.LOCATION, SolidColorShader.PROGRAM);
+        //#endif
     }
 
     @Override
@@ -257,6 +277,16 @@ public final class ModVoiceClient extends BaseVoiceClient
         //#if MC>=26.3
         //$$ FeatureRendererRegistry.register(SeeThroughGeometryFeatureRenderer.TYPE, SeeThroughGeometryFeatureRenderer::new);
         //#endif
+
+        //#if MC<=1.21.1
+        CoreShaderRegistrationCallback.EVENT.register(context -> {
+            context.register(
+                    SolidColorShader.LOCATION,
+                    SolidColorShader.VERTEX_FORMAT,
+                    (shader) -> ShadersCache.put(SolidColorShader.LOCATION, shader)
+            );
+        });
+        //#endif
     }
 
     //#elseif NEOFORGE
@@ -375,6 +405,24 @@ public final class ModVoiceClient extends BaseVoiceClient
     //$$     @SubscribeEvent
     //$$     public static void onFeatureRenderersRegister(RegisterFeatureRenderersEvent event) {
     //$$         event.register(SeeThroughGeometryFeatureRenderer.TYPE, new SeeThroughGeometryFeatureRenderer());
+    //$$     }
+    //#endif
+    //#if MC<=1.21.1
+    //$$
+    //$$     @SubscribeEvent
+    //$$     public static void onRegisterShaders(RegisterShadersEvent event) {
+    //$$         try {
+    //$$             event.registerShader(
+    //$$                     new ShaderInstance(
+    //$$                             event.getResourceProvider(),
+    //$$                             SolidColorShader.LOCATION,
+    //$$                             SolidColorShader.VERTEX_FORMAT
+    //$$                     ),
+    //$$                     shader -> ShadersCache.put(SolidColorShader.LOCATION, shader)
+    //$$             );
+    //$$         } catch (IOException e) {
+    //$$             LOGGER.error("Failed to register shaders", e);
+    //$$         }
     //$$     }
     //#endif
     //$$ }

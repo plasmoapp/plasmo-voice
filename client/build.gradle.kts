@@ -199,6 +199,14 @@ tasks {
     }
 
     processResources {
+        if (platform.mcVersion >= 12102) {
+            exclude("assets/plasmovoice/shaders/core/*.json")
+        }
+
+        if (platform.mcVersion !in 12102..12104) {
+            exclude("assets/plasmovoice/shaders/*.json")
+        }
+
         expandMatching(
             listOf("META-INF/neoforge.mods.toml"),
             "version" to version,

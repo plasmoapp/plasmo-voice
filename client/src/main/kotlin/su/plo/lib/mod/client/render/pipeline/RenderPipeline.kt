@@ -13,6 +13,7 @@ import su.plo.lib.mod.client.render.shader.ShadersCache
 //#if MC>=12102
 //$$ import net.minecraft.client.Minecraft
 //$$ import net.minecraft.client.renderer.CoreShaders
+//$$ import net.minecraft.client.renderer.ShaderDefines
 //$$ import net.minecraft.client.renderer.ShaderProgram
 //#else
 import net.minecraft.client.renderer.GameRenderer
@@ -126,7 +127,7 @@ fun renderPipeline(
         //$$ shader,
         //$$ shader,
         //#else
-        { ShadersCache.getOrLoad(shader, vertexFormat) },
+        { ShadersCache.getOrThrow(shader) },
         //#endif
         vertexFormat,
         vertexFormatMode,
