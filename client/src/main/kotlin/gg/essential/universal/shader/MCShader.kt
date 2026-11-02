@@ -86,7 +86,9 @@ internal class MCShader(
                 Optional.of(Resource(DummyPack, content::byteInputStream))
             }
 
-            val shaderVertexFormat = if (vertexFormat != null) {
+            val shaderVertexFormat = if (vertexFormat != null && transformer.attributes.isEmpty()) {
+                vertexFormat
+            } else if (vertexFormat != null) {
                 // Shader calls glBindAttribLocation using the names in the VertexFormat, not the shader json...
                 // Easiest way to work around this is to construct a custom VertexFormat with our prefixed names.
                 VertexFormat.builder()
