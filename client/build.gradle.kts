@@ -1,3 +1,4 @@
+import com.replaymod.gradle.preprocess.PreprocessTask
 import gg.essential.gradle.multiversion.excludeKotlinDefaultImpls
 import gg.essential.gradle.multiversion.mergePlatformSpecifics
 import gg.essential.gradle.util.noServerRunConfigs
@@ -45,6 +46,15 @@ if (platform.mcVersion in 12106..12108) {
 
 if (platform.mcVersion >= 12111) {
     mixins.add("plasmovoice-1.21.11.mixins.json")
+}
+
+preprocess {
+    keywords.putAll(
+        keywords.get() + mapOf(
+            ".fsh" to PreprocessTask.DEFAULT_KEYWORDS,
+            ".vsh" to PreprocessTask.DEFAULT_KEYWORDS,
+        )
+    )
 }
 
 loom {
@@ -244,18 +254,6 @@ tasks {
             relocate("gg.essential.universal", "su.plo.voice.universal")
 
             exclude(dependency("org.slf4j:slf4j-api"))
-
-            if (platform.mcVersion >= 260300) {
-                exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
-            } else {
-                exclude("assets/plasmovoice/shaders/position_tex_solid_color_26_3.*")
-            }
-
-            if (platform.mcVersion >= 12106) {
-                exclude("assets/plasmovoice/shaders/position_tex_solid_color.*")
-            } else {
-                exclude("assets/plasmovoice/shaders/position_tex_solid_color_1_21_6.*")
-            }
 
             if (platform.isNeoForge) {
                 exclude("fabric.mod.json")
