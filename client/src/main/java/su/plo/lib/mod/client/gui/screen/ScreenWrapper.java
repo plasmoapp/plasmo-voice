@@ -118,52 +118,28 @@ public final class ScreenWrapper
         screen.removed();
     }
 
-    //#if MC>=12106
-    //$$ @Override
-    //$$ public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-    //#if MC<12105
-    //$$     RenderUtil.preserveGlState();
-    //#endif
-    //$$     lastMouseX = mouseX;
-    //$$     lastMouseY = mouseY;
-    //$$     lastPartialTicks = partialTicks;
-    //$$     GuiRenderContext context = new GuiRenderContext(guiGraphics);
-    //$$     screen.render(context, mouseX, mouseY, partialTicks);
-    //#if MC<12105
-    //$$     RenderUtil.restoreGlState();
-    //#endif
-    //$$ }
-    //$$
-    //$$ public void renderBackground(@NotNull GuiRenderContext context) {
-    //$$
-    //#if MC>=12106
-    //$$     context.flush();
-    //#endif
-    //$$
-    //$$     super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
-    //$$
-    //#if MC>=12102
-    //$$     context.flush();
-    //#endif
-    //$$
-    //$$ }
-    //#else
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
+        //#if MC<12105
         RenderUtil.preserveGlState();
+        //#endif
         lastMouseX = mouseX;
         lastMouseY = mouseY;
         lastPartialTicks = partialTicks;
         GuiRenderContext context = new GuiRenderContext(guiGraphics);
         screen.render(context, mouseX, mouseY, partialTicks);
+        //#if MC<12105
         RenderUtil.restoreGlState();
+        //#endif
     }
 
     public void renderBackground(@NotNull GuiRenderContext context) {
+        //#if MC>=12106
+        //$$ context.flush();
+        //#endif
         super.renderBackground(context.getMcContext(), lastMouseX, lastMouseY, lastPartialTicks);
-        RenderUtil.restoreGlState(true);
+        context.flush();
     }
-    //#endif
 
 //    @Override
 //    protected void updateNarratedWidget(@NotNull NarrationElementOutput narrationOutput) {
