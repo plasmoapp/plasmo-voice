@@ -11,35 +11,28 @@
 //$$
 //$$ layout(location = 0) out vec2 texCoord0;
 //$$ layout(location = 1) out vec4 vertexColor;
-//#elseif MC>=1.21.6
-//$$ #version 150
-//$$
+//#else
+#version 150
+
+//#if MC>=1.21.6
 //$$ #moj_import <minecraft:dynamictransforms.glsl>
 //$$ #moj_import <minecraft:projection.glsl>
-//$$
-//$$ in vec3 Position;
-//$$ in vec2 UV0;
-//$$ in vec4 Color;
-//$$
-//$$ out vec2 texCoord0;
-//$$ out vec4 vertexColor;
 //#else
-#version 110
+uniform mat4 ModelViewMat;
+uniform mat4 ProjMat;
+//#endif
 
-varying vec2 texCoord0;
-varying vec4 vertexColor;
+in vec3 Position;
+in vec2 UV0;
+in vec4 Color;
+
+out vec2 texCoord0;
+out vec4 vertexColor;
 //#endif
 
 void main() {
-    //#if MC>=1.21.6
-    //$$ gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
-    //$$
-    //$$ texCoord0 = UV0;
-    //$$ vertexColor = Color;
-    //#else
-    gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
+    gl_Position = ProjMat * ModelViewMat * vec4(Position, 1.0);
 
-    texCoord0 = gl_MultiTexCoord0.st;
-    vertexColor = gl_Color;
-    //#endif
+    texCoord0 = UV0;
+    vertexColor = Color;
 }
