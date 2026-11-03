@@ -16,6 +16,7 @@ plugins {
     id("gg.essential.multi-version")
     id("gg.essential.defaults")
     id("su.plo.voice.shadow")
+    alias(ft.plugins.relocate)
 }
 
 if (isMainProject) {
@@ -32,23 +33,13 @@ configurations["remapKotlinCompilerClasspath"].resolutionStrategy
     .force("org.jetbrains.kotlin:kotlin-compiler-embeddable:2.3.10")
 
 val mixins = mutableListOf("plasmovoice.mixins.json", "slib.mixins.json")
-if (platform.mcVersion >= 12102) {
-    mixins.add("plasmovoice-1.21.2.mixins.json")
-}
-
-if (platform.mcVersion >= 12106) {
-    mixins.add("plasmovoice-1.21.6.mixins.json")
-}
-
-if (platform.mcVersion >= 12111) {
-    mixins.add("plasmovoice-1.21.11.mixins.json")
-}
 
 preprocess {
     keywords.putAll(
         keywords.get() + mapOf(
             ".fsh" to PreprocessTask.DEFAULT_KEYWORDS,
             ".vsh" to PreprocessTask.DEFAULT_KEYWORDS,
+            ".json5" to PreprocessTask.DEFAULT_KEYWORDS,
         )
     )
 }
@@ -58,6 +49,15 @@ loom {
         getByName("client") {
             programArgs("--username", "GNOME__")
             property("plasmovoice.debug", "true")
+        }
+    }
+}
+
+fletchingTable {
+    relocate.configure(sourceSets.main) {
+        matching("(*).json5") {
+            into("$1.json")
+            with(Json5ToJson(jsonIndent = "    "))
         }
     }
 }
@@ -247,9 +247,6 @@ tasks {
 
     shadowJar {
         configurations = listOf(shadowCommon)
-
-        // drop mixin configs that aren't referenced for this version
-        exclude { it.name.endsWith(".mixins.json") && it.name !in mixins }
 
         if (platform.mcVersion >= 260100) {
             exclude("fabric.mod.json")

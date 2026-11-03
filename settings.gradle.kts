@@ -1,5 +1,15 @@
 import org.gradle.kotlin.dsl.support.listFilesOrdered
 
+dependencyResolutionManagement {
+    repositories {
+        maven("https://maven.kikugie.dev/snapshots")
+    }
+
+    versionCatalogs {
+        create("ft") { from("dev.kikugie.fletching-table:fletching-table.catalog:0.2-SNAPSHOT") }
+    }
+}
+
 pluginManagement {
     includeBuild("build-logic")
 
@@ -17,6 +27,7 @@ pluginManagement {
         maven("https://maven.minecraftforge.net")
         maven("https://repo.plasmoverse.com/releases")
         maven("https://repo.plasmoverse.com/snapshots")
+        maven("https://maven.kikugie.dev/snapshots")
     }
 
     plugins {
