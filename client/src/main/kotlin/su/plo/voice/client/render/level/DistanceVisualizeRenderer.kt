@@ -2,17 +2,21 @@ package su.plo.voice.client.render.level
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.VertexBuilder.Companion.create
 import su.plo.lib.mod.client.render.level.LevelRenderContext
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.voice.client.event.LevelRenderEvent
 import su.plo.voice.client.extension.position
 import kotlin.math.cos
 import kotlin.math.sin
 
+//#if MC>=1.21.11
+//$$ import net.minecraft.client.renderer.rendertype.RenderTypes
+//#else
+import net.minecraft.client.renderer.RenderType
+//#endif
+
 private const val SPHERE_STACK = 18
-private const val SPHERE_SLICE = 36
+private const val SPHERE_SLICE = 72
 
 class DistanceVisualizeRenderer : LevelRenderEvent.Callback {
 
@@ -40,69 +44,53 @@ class DistanceVisualizeRenderer : LevelRenderEvent.Callback {
             entry.z - cameraPosition.z,
         )
 
-        //#if MC>=26.2
-        //$$ context.submitGeometry(RenderPipelines.DISTANCE_SPHERE.mcRenderType) { pose, buffer ->
-        //$$     buildVertices(entry, pose, buffer)
-        //$$ }
+        //#if MC>=1.21.11
+        //$$ val renderType = RenderTypes.debugQuads()
         //#else
-        val buffer = RenderUtil.beginBuffer(RenderPipelines.DISTANCE_SPHERE)
-        buildVertices(entry, stack.last(), buffer)
-        RenderUtil.drawBuffer(buffer, RenderPipelines.DISTANCE_SPHERE)
+        val renderType = RenderType.debugQuads()
         //#endif
+
+        context.submitGeometry(renderType) { pose, buffer ->
+            buildVertices(entry, pose, buffer)
+        }
 
         stack.popPose()
     }
 
     private fun buildVertices(
         entry: DistanceVisualizeState.Entry,
-        stack: PoseStack.Pose,
-        buffer: VertexConsumer
+        pose: PoseStack.Pose,
+        buffer: VertexConsumer,
     ) {
         val alpha = (entry.color shr 24) and 0xff
         val red = (entry.color shr 16) and 0xFF
         val green = (entry.color shr 8) and 0xFF
         val blue = entry.color and 0xFF
 
-        val stackStep = (Math.PI / SPHERE_STACK).toFloat()
-        val sliceStep = (Math.PI / SPHERE_SLICE).toFloat()
+        val stackStep = Math.PI / SPHERE_STACK
+        val sliceStep = 2 * Math.PI / SPHERE_SLICE
 
-        var r0: Float
-        var r1: Float
-        var alpha0: Float
-        var alpha1: Float
-        var x0: Float
-        var x1: Float
-        var y0: Float
-        var y1: Float
-        var z0: Float
-        var z1: Float
-        var beta: Float
+        fun vertex(radius: Float, y: Float, slice: Int) {
+            val beta = slice * sliceStep
+            create(buffer)
+                .position(pose, radius * cos(beta).toFloat(), y, -radius * sin(beta).toFloat())
+                .color(red, green, blue, alpha)
+                .end()
+        }
 
         for (i in 0..<SPHERE_STACK) {
-            alpha0 = (-Math.PI / 2 + i * stackStep).toFloat()
-            alpha1 = alpha0 + stackStep
-            r0 = (entry.radius * cos(alpha0.toDouble())).toFloat()
-            r1 = (entry.radius * cos(alpha1.toDouble())).toFloat()
+            val alpha0 = -Math.PI / 2 + i * stackStep
+            val alpha1 = alpha0 + stackStep
+            val r0 = (entry.radius * cos(alpha0)).toFloat()
+            val r1 = (entry.radius * cos(alpha1)).toFloat()
+            val y0 = (entry.radius * sin(alpha0)).toFloat()
+            val y1 = (entry.radius * sin(alpha1)).toFloat()
 
-            y0 = (entry.radius * sin(alpha0.toDouble())).toFloat()
-            y1 = (entry.radius * sin(alpha1.toDouble())).toFloat()
-
-            for (j in 0..<(SPHERE_SLICE shl 1)) {
-                beta = j * sliceStep
-                x0 = (r0 * cos(beta.toDouble())).toFloat()
-                x1 = (r1 * cos(beta.toDouble())).toFloat()
-
-                z0 = (-r0 * sin(beta.toDouble())).toFloat()
-                z1 = (-r1 * sin(beta.toDouble())).toFloat()
-
-                create(buffer)
-                    .position(stack, x0, y0, z0)
-                    .color(red, green, blue, alpha)
-                    .end()
-                create(buffer)
-                    .position(stack, x1, y1, z1)
-                    .color(red, green, blue, alpha)
-                    .end()
+            for (j in 0..<SPHERE_SLICE) {
+                vertex(r0, y0, j)
+                vertex(r1, y1, j)
+                vertex(r1, y1, j + 1)
+                vertex(r0, y0, j + 1)
             }
         }
     }

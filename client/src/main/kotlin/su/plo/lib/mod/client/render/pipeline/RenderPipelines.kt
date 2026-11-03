@@ -2,8 +2,6 @@ package su.plo.lib.mod.client.render.pipeline
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
 import su.plo.lib.mod.client.ResourceLocationUtil
-import su.plo.lib.mod.client.render.DestFactor
-import su.plo.lib.mod.client.render.SourceFactor
 import su.plo.lib.mod.client.render.VertexFormatMode
 import su.plo.lib.mod.client.render.shader.SolidColorShader
 
@@ -75,23 +73,5 @@ object RenderPipelines {
             VertexFormatMode.QUADS,
         ) {
             samplers += "Sampler0"
-        }
-
-    @JvmField
-    val DISTANCE_SPHERE =
-        renderPipeline(
-            ResourceLocationUtil.mod("pipeline/distance_sphere"),
-            DefaultVertexFormat.POSITION_COLOR,
-            VertexFormatMode.TRIANGLE_STRIP,
-        ) {
-            oit = true
-            cull = false
-            blendFunc =
-                BlendFunc(
-                    SourceFactor.SRC_ALPHA,
-                    DestFactor.ONE_MINUS_SRC_ALPHA,
-                    SourceFactor.ONE,
-                    DestFactor.ZERO
-                )
         }
 }

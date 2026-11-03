@@ -48,10 +48,6 @@ import net.minecraft.client.renderer.ShaderInstance
 //$$ import su.plo.voice.client.mixin.accessor.RenderTypeAccessor
 //#endif
 
-//#if MC>=26.3
-//$$ import net.minecraft.client.renderer.oit.OitPipelineSet
-//#endif
-
 //#if MC>=12105
 //$$ private fun defaultShader(vertexFormat: VertexFormat): ResourceLocation? =
 //$$     when (vertexFormat) {
@@ -218,8 +214,6 @@ data class RenderPipeline(
         var depthMask: Boolean = true
         val samplers: MutableSet<String> = mutableSetOf()
 
-        var oit: Boolean = false
-
         //#if MC>=12105
         //$$ var mcRenderPipeline: com.mojang.blaze3d.pipeline.RenderPipeline? = null
         //#endif
@@ -312,9 +306,6 @@ data class RenderPipeline(
             //$$     RenderTypeAccessor.plasmovoice_create(
             //$$         location.toString(),
             //$$         RenderSetup.builder(pipeline)
-            //#if MC>=26.3
-            //$$             .apply { if (oit) setOitPipelines(oitPipelineSet()) }
-            //#endif
             //$$             .createRenderSetup()
             //$$     )
             //#else
@@ -359,22 +350,6 @@ data class RenderPipeline(
         //$$             .apply { samplers.forEach { withUniform(it, UniformType.COMBINED_IMAGE_SAMPLER) } }
         //$$             .build()
         //$$     }
-        //$$
-        //$$ private fun oitPipelineSet(): OitPipelineSet =
-        //$$     OitPipelineSet
-        //$$         .builder(
-        //$$             "${location.namespace}/${location.path}",
-        //$$             com.mojang.renderpearl.api.pipeline.RenderPipeline.builder()
-        //$$                 .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
-        //$$                 .apply { samplersBindGroupLayout()?.let(::withBindGroupLayout) }
-        //$$                 .withVertexShader(vertexShader)
-        //$$                 .withFragmentShader(fragmentShader)
-        //$$                 .withVertexBinding(0, vertexFormat)
-        //$$                 .withPrimitiveTopology(vertexFormatMode.toMc())
-        //$$                 .withCull(cull),
-        //$$         )
-        //$$         .apply { if (depthTestFunc == AlphaFunc.ALWAYS) withoutDepthTest() }
-        //$$         .build()
         //#endif
     }
 }

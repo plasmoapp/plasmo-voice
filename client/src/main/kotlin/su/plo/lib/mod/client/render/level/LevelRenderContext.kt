@@ -17,7 +17,8 @@ import net.minecraft.client.multiplayer.ClientLevel
 //$$ import net.minecraft.client.renderer.SubmitNodeCollector
 //$$ import net.minecraft.client.renderer.feature.CustomFeatureRenderer
 //#else
-import net.minecraft.client.Minecraft
+import com.mojang.blaze3d.vertex.ByteBufferBuilder
+import net.minecraft.client.renderer.MultiBufferSource
 //#endif
 
 data class LevelRenderContext(
@@ -43,9 +44,17 @@ data class LevelRenderContext(
         //$$     CustomFeatureRenderer.Submit(stack.last().copy(), renderType) { pose, buffer -> write(pose, buffer) }
         //$$ )
         //#else
-        val bufferSource = Minecraft.getInstance().renderBuffers().bufferSource()
         write(stack.last(), bufferSource.getBuffer(renderType))
         bufferSource.endBatch(renderType)
         //#endif
     }
+    //#if MC<26.2
+
+    private companion object {
+        // mc's `renderBuffers().bufferSource()` can't be used here,
+        // because Iris replaces it with FullyBufferedMultiBufferSource that defers the draw,
+        // breaking transparency for sphere renderer
+        private val bufferSource = MultiBufferSource.immediate(ByteBufferBuilder(1536))
+    }
+    //#endif
 }
