@@ -12,7 +12,8 @@ import su.plo.lib.mod.client.gui.components.IconButton;
 import su.plo.lib.mod.client.gui.widget.GuiWidgetListener;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import su.plo.slib.api.chat.style.McTextStyle;
 import su.plo.voice.api.client.PlasmoVoiceClient;
@@ -237,7 +238,8 @@ public final class VoiceSettingsNavigation implements GuiWidgetListener {
                 2,
                 32,
                 2,
-                RenderPipelines.GUI_TEXTURE_OVERLAY
+                Colors.WHITE,
+                GuiPipelines.TEXTURE_OVERLAY
         );
     }
 

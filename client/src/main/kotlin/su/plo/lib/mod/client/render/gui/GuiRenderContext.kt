@@ -1,15 +1,14 @@
 package su.plo.lib.mod.client.render.gui
 
-import net.minecraft.resources.ResourceLocation
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FormattedCharSequence
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture
+import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.ScissorState
-import su.plo.lib.mod.client.render.pipeline.RenderPipeline
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines
 import su.plo.slib.api.chat.component.McTextComponent
-
+import su.plo.voice.client.mixin.accessor.GuiGraphicsAccessor
 import java.awt.Color
 
 //#if MC>=12109
@@ -19,15 +18,12 @@ import java.awt.Color
 //#if MC>=12106
 //$$ import org.joml.Matrix3x2fStack
 //$$ import net.minecraft.client.Minecraft
-//$$ import net.minecraft.util.ARGB
-//$$ import su.plo.voice.client.mixin.accessor.GuiGraphicsAccessor
 //#else
-import com.mojang.blaze3d.systems.RenderSystem
 import com.mojang.blaze3d.vertex.PoseStack
 //#endif
 
-//#if MC>=12102 && MC<12106
-//$$ import net.minecraft.client.renderer.RenderType
+//#if MC<1.21.2
+import com.mojang.blaze3d.systems.RenderSystem
 //#endif
 
 class GuiRenderContext(
@@ -58,6 +54,7 @@ class GuiRenderContext(
         //$$     mcContext.disableScissor()
         //$$ }
         //#else
+        mcContext.flush()
         ScissorState.applyScissorState(scissorStack.lastOrNull())
         //#endif
     }
@@ -84,37 +81,23 @@ class GuiRenderContext(
         height: Int,
         textureWidth: Int,
         textureHeight: Int,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_TEXTURE,
-    ) {
-        //#if MC>=12106
-        //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
-        //$$     textureLocation,
-        //$$     x,
-        //$$     y,
-        //$$     u,
-        //$$     v,
-        //$$     width,
-        //$$     height,
-        //$$     textureWidth,
-        //$$     textureHeight
-        //$$ )
-        //#else
-        RenderUtil.bindTexture(0, textureLocation)
-        RenderUtil.blitWithPipeline(
-            stack,
-            renderPipeline,
-            x,
-            y,
-            u,
-            v,
-            width,
-            height,
-            textureWidth,
-            textureHeight
-        )
-        //#endif
-    }
+        color: Color = Colors.WHITE,
+        pipeline: GuiTexturePipeline = GuiPipelines.TEXTURE,
+    ) = blit(
+        textureLocation,
+        x,
+        y,
+        width,
+        height,
+        u,
+        v,
+        width,
+        height,
+        textureWidth,
+        textureHeight,
+        color,
+        pipeline,
+    )
 
     @JvmOverloads
     fun blit(
@@ -129,82 +112,24 @@ class GuiRenderContext(
         regionHeight: Int,
         textureWidth: Int,
         textureHeight: Int,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_TEXTURE,
-    ) {
-        //#if MC>=12106
-        //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
-        //$$     textureLocation,
-        //$$     x,
-        //$$     y,
-        //$$     u,
-        //$$     v,
-        //$$     width,
-        //$$     height,
-        //$$     regionWidth,
-        //$$     regionHeight,
-        //$$     textureWidth,
-        //$$     textureHeight
-        //$$ )
-        //#else
-        RenderUtil.bindTexture(0, textureLocation)
-        RenderUtil.blitWithPipeline(
-            stack,
-            renderPipeline,
-            x,
-            y,
-            width,
-            height,
-            u,
-            v,
-            regionWidth,
-            regionHeight,
-            textureWidth,
-            textureHeight
-        )
-        //#endif
-    }
+        color: Color = Colors.WHITE,
+        pipeline: GuiTexturePipeline = GuiPipelines.TEXTURE,
+    ) = blitUv(
+        textureLocation,
+        x,
+        x + width,
+        y,
+        y + height,
+        u / textureWidth,
+        (u + regionWidth) / textureWidth,
+        v / textureHeight,
+        (v + regionHeight) / textureHeight,
+        color,
+        pipeline,
+    )
 
     @JvmOverloads
-    fun blitColor(
-        textureLocation: ResourceLocation,
-        x: Int,
-        y: Int,
-        u: Float,
-        v: Float,
-        width: Int,
-        height: Int,
-        textureWidth: Int,
-        textureHeight: Int,
-        color: Color,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_TEXTURE_COLOR,
-    ) {
-        //#if MC>=12106
-        //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
-        //$$     textureLocation,
-        //$$     x,
-        //$$     y,
-        //$$     u,
-        //$$     v,
-        //$$     width,
-        //$$     height,
-        //$$     textureWidth,
-        //$$     textureHeight,
-        //$$     ARGB.color(color.alpha, color.red, color.green, color.blue),
-        //$$ )
-        //#else
-        RenderUtil.bindTexture(0, textureLocation)
-        RenderUtil.blitColorWithPipeline(
-            stack,
-            renderPipeline,
-            x, y, u, v, width, height, textureWidth, textureHeight, color.red, color.green, color.blue, color.alpha
-        )
-        //#endif
-    }
-
-    @JvmOverloads
-    fun blitColor(
+    fun blitUv(
         textureLocation: ResourceLocation,
         x0: Int,
         x1: Int,
@@ -214,30 +139,35 @@ class GuiRenderContext(
         u1: Float,
         v0: Float,
         v1: Float,
-        color: Color,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_TEXTURE_COLOR,
+        color: Color = Colors.WHITE,
+        pipeline: GuiTexturePipeline = GuiPipelines.TEXTURE,
     ) {
-        //#if MC>=12106
-        //$$ (mcContext as GuiGraphicsAccessor).plasmovoice_innerBlit(
-        //$$     renderPipeline.mcRenderPipeline,
-        //$$     textureLocation,
-        //$$     x0,
-        //$$     x1,
-        //$$     y0,
-        //$$     y1,
-        //$$     u0,
-        //$$     u1,
-        //$$     v0,
-        //$$     v1,
-        //$$     ARGB.color(color.alpha, color.red, color.green, color.blue),
-        //$$ )
+        val accessor = mcContext as GuiGraphicsAccessor
+        //#if MC>=1.21.2
+        //$$ accessor.plasmovoice_innerBlit(pipeline.mc, textureLocation, x0, x1, y0, y1, u0, u1, v0, v1, color.rgb)
         //#else
-        RenderUtil.bindTexture(0, textureLocation)
-        RenderUtil.blitColorWithPipeline(
-            stack,
-            renderPipeline,
-            x0, x1, y0, y1, 0, u0, u1, v0, v1, color.red, color.green, color.blue, color.alpha
+        val renderType = pipeline.mc?.apply(textureLocation)
+        if (renderType != null) {
+            val pose = stack.last().pose()
+            val buffer = mcContext.bufferSource().getBuffer(renderType)
+
+            buffer.addVertex(pose, x0.toFloat(), y0.toFloat(), 0f).setUv(u0, v0).setColor(color.rgb)
+            buffer.addVertex(pose, x0.toFloat(), y1.toFloat(), 0f).setUv(u0, v1).setColor(color.rgb)
+            buffer.addVertex(pose, x1.toFloat(), y1.toFloat(), 0f).setUv(u1, v1).setColor(color.rgb)
+            buffer.addVertex(pose, x1.toFloat(), y0.toFloat(), 0f).setUv(u1, v0).setColor(color.rgb)
+
+            mcContext.bufferSource().endBatch(renderType)
+            return
+        }
+
+        if (!pipeline.depthTest) RenderSystem.disableDepthTest()
+        accessor.plasmovoice_innerBlit(
+            textureLocation,
+            x0, x1, y0, y1, 0,
+            u0, u1, v0, v1,
+            color.red / 255f, color.green / 255f, color.blue / 255f, color.alpha / 255f,
         )
+        if (!pipeline.depthTest) RenderSystem.enableDepthTest()
         //#endif
     }
 
@@ -248,14 +178,9 @@ class GuiRenderContext(
         width: Int,
         height: Int,
     ) {
-        //#if MC>=12106
-        //$$ mcContext.blitSprite(RenderPipelines.GUI_TEXTURE.mcRenderPipeline, sprite.location, x, y, width, height)
-        //#elseif MC>=12102
-        //$$ RenderSystem.setShaderColor(1F, 1F, 1F, 1F)
-        //$$ mcContext.blitSprite(RenderType::guiTextured, sprite.location, x, y, width, height)
-        //$$ mcContext.flush()
+        //#if MC>=1.21.2
+        //$$ mcContext.blitSprite(GuiPipelines.TEXTURE.mc, sprite.location, x, y, width, height)
         //#else
-        RenderSystem.setShaderColor(1F, 1F, 1F, 1F)
         RenderSystem.enableBlend()
         mcContext.blitSprite(sprite.location, x, y, width, height)
         RenderSystem.disableBlend()
@@ -458,27 +383,20 @@ class GuiRenderContext(
         x1: Int,
         y1: Int,
         color: Color,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_COLOR,
+        pipeline: GuiColorPipeline = GuiPipelines.COLOR,
     ) {
-        //#if MC>=12106
-        //$$ mcContext.fill(renderPipeline.mcRenderPipeline, x0, y0, x1, y1, color.rgb)
-        //#else
-        RenderUtil.fill(stack, renderPipeline, x0, y0, x1, y1, color.rgb)
-        //#endif
+        mcContext.fill(pipeline.mc, x0, y0, x1, y1, color.rgb)
     }
 
-    @JvmOverloads
     fun fillGradient(
-        startX: Int, startY: Int, endX: Int, endY: Int,
-        startRed: Int, startBlue: Int, startGreen: Int, startAlpha: Int,
-        endRed: Int, endBlue: Int, endGreen: Int, endAlpha: Int,
-        z: Int,
-        renderPipeline: RenderPipeline = RenderPipelines.GUI_COLOR,
+        x0: Int,
+        y0: Int,
+        x1: Int,
+        y1: Int,
+        startColor: Color,
+        endColor: Color,
     ) {
-        // not used anyway in 1.20+
-        //#if MC<12106
-        RenderUtil.fillGradientWithPipeline(stack, renderPipeline, startX, startY, endX, endY, startRed, startBlue, startGreen, startAlpha, endRed, endBlue, endGreen, endAlpha, z)
-        //#endif
+        mcContext.fillGradient(x0, y0, x1, y1, startColor.rgb, endColor.rgb)
     }
 
     //#if MC>=12109

@@ -92,7 +92,7 @@ class BlockDustParticle2D(
         val renderX = Mth.lerp(tickDelta.toDouble(), prevX, x).toFloat()
         val renderY = Mth.lerp(tickDelta.toDouble(), prevY, y).toFloat()
 
-        context.blitColor(
+        context.blitUv(
             textureLocation,
             (renderX - scale).toInt(),
             (renderX + scale).toInt(),

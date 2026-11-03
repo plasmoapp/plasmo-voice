@@ -8,10 +8,9 @@ import net.minecraft.util.StringDecomposer
 import su.plo.lib.mod.extensions.isHudHidden
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.Colors
-import su.plo.lib.mod.client.render.LazyGlState
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.gui.GuiRenderContext
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines
+import su.plo.lib.mod.client.render.gui.GuiPipelines
 import su.plo.lib.mod.client.render.texture.ModPlayerSkins
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.slib.api.entity.player.McGameProfile
@@ -34,9 +33,6 @@ class OverlayRenderer(
     private val voiceClient: PlasmoVoiceClient,
     private val config: VoiceClientConfig,
 ) : HudRenderEvent.Callback {
-
-    private val glState = LazyGlState()
-
     override fun onRender(context: GuiRenderContext, delta: Float) {
         if (!voiceClient.serverInfo.isPresent ||
             !voiceClient.udpClientManager.client.isPresent ||
@@ -130,10 +126,8 @@ class OverlayRenderer(
 
             if (toRender.isEmpty()) continue
 
-            glState.withState {
-                for ((_, sourceInfo) in toRender) {
-                    renderEntry(context, sourceLine, position, renderedIndex++, sourceInfo)
-                }
+            for ((_, sourceInfo) in toRender) {
+                renderEntry(context, sourceLine, position, renderedIndex++, sourceInfo)
             }
         }
     }
@@ -171,8 +165,8 @@ class OverlayRenderer(
 
                 val skinLocation = loadSkin(it)
 
-                context.blit(skinLocation, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64, RenderPipelines.GUI_TEXTURE_OVERLAY)
-                context.blit(skinLocation, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64, RenderPipelines.GUI_TEXTURE_OVERLAY)
+                context.blit(skinLocation, x, y, 16, 16, 8f, 8f, 8, 8, 64, 64, pipeline = GuiPipelines.TEXTURE_OVERLAY)
+                context.blit(skinLocation, x, y, 16, 16, 40f, 8f, 8, 8, 64, 64, pipeline = GuiPipelines.TEXTURE_OVERLAY)
 
                 if (!position.isRight) {
                     x += 16 + 1
@@ -186,7 +180,7 @@ class OverlayRenderer(
                 x -= textWidth + 1
             }
 
-            context.fill(x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor, RenderPipelines.GUI_COLOR_OVERLAY)
+            context.fill(x, y, x + textWidth, y + ENTRY_HEIGHT, backgroundColor, GuiPipelines.COLOR_OVERLAY)
             context.drawString(sourceName, x + 4, y + 4, Colors.WHITE, dropShadow = false, seeThrough = true)
 
             if (sourceInfo.activated && !position.isRight) {
@@ -202,8 +196,8 @@ class OverlayRenderer(
 
             val iconLocation = ResourceLocationUtil.parse(sourceLine.icon)
 
-            context.fill(x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor, RenderPipelines.GUI_COLOR_OVERLAY)
-            context.blit(iconLocation, x, y, 0f, 0f, 16, 16, 16, 16, RenderPipelines.GUI_TEXTURE_OVERLAY)
+            context.fill(x, y, x + 16, y + ENTRY_HEIGHT, backgroundColor, GuiPipelines.COLOR_OVERLAY)
+            context.blit(iconLocation, x, y, 0f, 0f, 16, 16, 16, 16, pipeline = GuiPipelines.TEXTURE_OVERLAY)
         }
     }
 

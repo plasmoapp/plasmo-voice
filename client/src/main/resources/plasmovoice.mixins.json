@@ -14,7 +14,8 @@
         "MixinEntityRenderer",
         "MixinDisplayRenderer",
         "accessor.EntityRendererAccessor",
-        "accessor.DisplayAccessor"
+        "accessor.DisplayAccessor",
+        "accessor.GuiGraphicsAccessor"
     ],
     "injectors": {
         "defaultRequire": 1

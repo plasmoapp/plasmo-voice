@@ -8,9 +8,9 @@ import net.minecraft.world.level.GameType;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.extensions.MinecraftKt;
-import su.plo.lib.mod.client.render.LazyGlState;
+import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
+import su.plo.lib.mod.client.render.gui.GuiPipelines;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.capture.ClientActivation;
 import su.plo.voice.api.client.config.IconPosition;
@@ -37,7 +37,6 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
     private final VoiceClientConfig config;
 
     // in most cases state should be the same, so let's hope it works
-    private final @NotNull LazyGlState glState = new LazyGlState();
 
     @Override
     public void onRender(@NotNull GuiRenderContext context, float delta) {
@@ -98,19 +97,18 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
             offsetY = 0;
         }
 
-        glState.withState(() ->
-            context.blit(
-                    iconLocation,
-                    calcIconX(iconPosition.getX()),
-                    calcIconY(iconPosition.getY()) + offsetY,
-                    0,
-                    0,
-                    16,
-                    16,
-                    16,
-                    16,
-                    RenderPipelines.GUI_TEXTURE_OVERLAY
-            )
+        context.blit(
+                iconLocation,
+                calcIconX(iconPosition.getX()),
+                calcIconY(iconPosition.getY()) + offsetY,
+                0,
+                0,
+                16,
+                16,
+                16,
+                16,
+                Colors.WHITE,
+                GuiPipelines.TEXTURE_OVERLAY
         );
     }
 
