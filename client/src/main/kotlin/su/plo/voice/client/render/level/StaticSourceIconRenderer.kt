@@ -2,31 +2,14 @@ package su.plo.voice.client.render.level
 
 import com.mojang.blaze3d.vertex.PoseStack
 import com.mojang.blaze3d.vertex.VertexConsumer
-import net.minecraft.client.renderer.RenderType
-import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.VertexBuilder.Companion.create
 import su.plo.lib.mod.client.render.level.LevelRenderContext
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines
-import su.plo.lib.mod.extensions.rotate
+import su.plo.lib.mod.client.render.submitTexturedGeometry
 import su.plo.voice.client.event.LevelRenderEvent
 import su.plo.voice.client.extension.position
 
-//#if MC>=12111
-//$$ import net.minecraft.client.renderer.rendertype.RenderTypes
-//#endif
-
-//#if MC>=12103 && MC<26.1
-//$$ import net.minecraft.client.renderer.LightTexture
-//#endif
-
-//#if MC>=26.2
-//$$ import net.minecraft.client.renderer.SubmitNodeCollection
-//$$ import net.minecraft.client.renderer.SubmitNodeCollector
-//$$ import net.minecraft.client.renderer.feature.CustomFeatureRenderer
-//#endif
-
-//#if MC>=26.3
-//$$ import su.plo.lib.mod.client.render.feature.SeeThroughGeometryFeatureRenderer
+//#if MC<1.21.11
+import su.plo.lib.mod.extensions.rotate
 //#endif
 
 class StaticSourceIconRenderer : LevelRenderEvent.Callback {
@@ -66,89 +49,40 @@ class StaticSourceIconRenderer : LevelRenderEvent.Callback {
 
         stack.translate(-5.0, -5.0, 0.0)
 
-        //#if MC>=26.2
-        //$$ val collector = context.submitNodeCollector
-        //$$ vertices(collector, stack, 255, entry.light, entry, false)
-        //$$ vertices(collector, stack, 40, entry.light, entry, true)
-        //#else
-        vertices(stack, 255, entry.light, entry, false)
-        vertices(stack, 40, entry.light, entry, true)
-        //#endif
+        vertices(context, 255, entry.light, entry, false)
+        vertices(context, 40, entry.light, entry, true)
 
         stack.popPose()
     }
 
     private fun vertices(
-        //#if MC>=26.2
-        //$$ collector: SubmitNodeCollector,
-        //#endif
-        stack: PoseStack,
+        context: LevelRenderContext,
         alpha: Int,
         light: Int,
         entry: StaticSourceIconState.Entry,
         seeThrough: Boolean,
     ) {
-        //#if MC>=12111
-        //$$ val renderType =
-        //$$     if (seeThrough) RenderTypes.textSeeThrough(entry.iconLocation)
-        //$$     else RenderTypes.text(entry.iconLocation)
-        //#else
-        val renderType =
-            if (seeThrough) RenderType.textSeeThrough(entry.iconLocation)
-            else RenderType.text(entry.iconLocation)
-        //#endif
-
-        //#if MC>=26.2
-        //$$ val geometry = SubmitNodeCollector.CustomGeometryRenderer { pose, buffer ->
-        //$$     vertex(pose, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
-        //$$     vertex(pose, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
-        //$$     vertex(pose, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
-        //$$     vertex(pose, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
-        //$$ }
-        //$$
-        //#if MC>=26.3
-        //$$ if (seeThrough) {
-        //$$     SeeThroughGeometryFeatureRenderer.submit(collector, stack.last().copy(), renderType, geometry)
-        //$$     return
-        //$$ }
-        //#endif
-        //$$
-        //$$ val collection = collector.order(0) as SubmitNodeCollection
-        //$$ collection.afterTerrain.submit(CustomFeatureRenderer.Submit(stack.last().copy(), renderType, geometry))
-        //#else
-        val renderPipeline = RenderPipelines.fromRenderType(
-            if (seeThrough) "text_see_through" else "text",
-            renderType,
-        )
-
-        val buffer = RenderUtil.beginBuffer(renderPipeline)
-
-        vertex(stack, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
-        vertex(stack, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
-        vertex(stack, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
-        vertex(stack, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
-
-        renderType.draw(buffer.buildOrThrow())
-        //#endif
+        context.submitTexturedGeometry(entry.iconLocation, seeThrough) { pose, buffer ->
+            vertex(pose, buffer, 0f, 10f, 0f, 0f, 1f, alpha, light)
+            vertex(pose, buffer, 10f, 10f, 0f, 1f, 1f, alpha, light)
+            vertex(pose, buffer, 10f, 0f, 0f, 1f, 0f, alpha, light)
+            vertex(pose, buffer, 0f, 0f, 0f, 0f, 0f, alpha, light)
+        }
     }
 
     private fun vertex(
-        //#if MC>=26.2
-        //$$ stack: PoseStack.Pose,
-        //#else
-        stack: PoseStack,
-        //#endif
+        pose: PoseStack.Pose,
         buffer: VertexConsumer,
         x: Float, y: Float, z: Float,
         u: Float, v: Float,
         alpha: Int, light: Int,
     ) {
         create(buffer)
-            .position(stack, x, y, z)
+            .position(pose, x, y, z)
             .color(255, 255, 255, alpha)
             .uv(u, v)
             .light(light)
-            .normal(stack, 0f, 0f, -1f)
+            .normal(pose, 0f, 0f, -1f)
             .end()
     }
 }
