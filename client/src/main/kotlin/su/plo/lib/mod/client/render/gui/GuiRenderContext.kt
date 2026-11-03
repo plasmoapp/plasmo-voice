@@ -1,6 +1,9 @@
 package su.plo.lib.mod.client.render.gui
 
+import net.minecraft.client.Minecraft
 import net.minecraft.client.gui.GuiGraphics
+import net.minecraft.locale.Language
+import net.minecraft.network.chat.FormattedText
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FormattedCharSequence
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture
@@ -17,9 +20,11 @@ import java.awt.Color
 
 //#if MC>=12106
 //$$ import org.joml.Matrix3x2fStack
-//$$ import net.minecraft.client.Minecraft
 //#else
 import com.mojang.blaze3d.vertex.PoseStack
+import net.minecraft.client.gui.Font
+import net.minecraft.client.renderer.LightTexture
+import net.minecraft.client.renderer.MultiBufferSource
 //#endif
 
 //#if MC<1.21.2
@@ -206,20 +211,31 @@ class GuiRenderContext(
         dropShadow: Boolean = true,
         seeThrough: Boolean = false,
     ): Int {
+        val font = Minecraft.getInstance().font
         //#if MC>=12106
-        //$$ mcContext.drawString(
-        //$$     Minecraft.getInstance().font,
-        //$$     text,
-        //$$     x,
-        //$$     y,
-        //$$     color.rgb,
-        //$$     dropShadow
-        //$$ )
-        //$$
-        //$$ return RenderUtil.getStringX(text, x, dropShadow)
+        //$$ mcContext.drawString(font, text, x, y, color.rgb, dropShadow)
         //#else
-        return RenderUtil.drawString(stack, text, x, y, color.rgb, dropShadow, seeThrough)
+        if (seeThrough) {
+            drawSeeThrough { bufferSource ->
+                font.drawInBatch(
+                    text,
+                    x.toFloat(),
+                    y.toFloat(),
+                    color.rgb,
+                    dropShadow,
+                    stack.last().pose(),
+                    bufferSource,
+                    Font.DisplayMode.SEE_THROUGH,
+                    0,
+                    LightTexture.FULL_BRIGHT,
+                )
+            }
+        } else {
+            mcContext.drawString(font, text, x, y, color.rgb, dropShadow)
+        }
         //#endif
+
+        return RenderUtil.getStringX(text, x, dropShadow)
     }
 
     @JvmOverloads
@@ -230,22 +246,14 @@ class GuiRenderContext(
         color: Color,
         dropShadow: Boolean = true,
         seeThrough: Boolean = false,
-    ): Int {
-        //#if MC>=12106
-        //$$ mcContext.drawString(
-        //$$     Minecraft.getInstance().font,
-        //$$     text,
-        //$$     x,
-        //$$     y,
-        //$$     color.rgb,
-        //$$     dropShadow
-        //$$ )
-        //$$
-        //$$ return RenderUtil.getStringX(text, x, dropShadow)
-        //#else
-        return RenderUtil.drawString(stack, text, x, y, color.rgb, dropShadow, seeThrough)
-        //#endif
-    }
+    ): Int = drawString(
+        Language.getInstance().getVisualOrder(FormattedText.of(text)),
+        x,
+        y,
+        color,
+        dropShadow,
+        seeThrough,
+    )
 
     @JvmOverloads
     fun drawCenteredString(
@@ -410,4 +418,15 @@ class GuiRenderContext(
         //$$ mcContext.requestCursor(cursor.mc())
         //#endif
     }
+
+    //#if MC<1.21.6
+    private fun drawSeeThrough(draw: (MultiBufferSource) -> Unit) {
+        //#if MC>=1.21.2
+        //$$ mcContext.drawSpecial { draw(it) }
+        //#else
+        draw(mcContext.bufferSource())
+        mcContext.flush()
+        //#endif
+    }
+    //#endif
 }
