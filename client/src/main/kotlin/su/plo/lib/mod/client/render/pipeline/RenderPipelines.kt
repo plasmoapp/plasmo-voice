@@ -1,26 +1,11 @@
 package su.plo.lib.mod.client.render.pipeline
 
 import com.mojang.blaze3d.vertex.DefaultVertexFormat
-import net.minecraft.client.renderer.RenderType
 import su.plo.lib.mod.client.ResourceLocationUtil
 import su.plo.lib.mod.client.render.DestFactor
 import su.plo.lib.mod.client.render.SourceFactor
 import su.plo.lib.mod.client.render.VertexFormatMode
 import su.plo.lib.mod.client.render.shader.SolidColorShader
-
-//#if MC>=12106 && MC<12109
-//$$ import su.plo.voice.client.mixin.accessor.CompositeRenderTypeAccessor
-//#endif
-
-//#if MC>=26.3
-//$$ import com.mojang.renderpearl.api.pipeline.ShaderType
-//#endif
-
-//#if MC>=12105
-//$$ import net.minecraft.resources.ResourceLocation
-//#else
-import com.mojang.blaze3d.vertex.VertexFormatElement
-//#endif
 
 object RenderPipelines {
     @JvmField
@@ -109,46 +94,4 @@ object RenderPipelines {
                     DestFactor.ZERO
                 )
         }
-
-    private val renderTypes: MutableMap<RenderType, RenderPipeline> = HashMap()
-
-    @JvmStatic
-    fun fromRenderType(name: String, renderType: RenderType) =
-        renderTypes.computeIfAbsent(renderType) {
-            renderPipeline(
-                ResourceLocationUtil.mod("pipeline/render_type_$name"),
-                //#if MC>=26.3
-                //$$ renderType.renderPipeline().shaders[ShaderType.VERTEX]!!,
-                //$$ renderType.renderPipeline().shaders[ShaderType.FRAGMENT]!!,
-                //#elseif MC>=12105
-                //$$ renderType.renderPipeline().vertexShader,
-                //$$ renderType.renderPipeline().fragmentShader,
-                //#endif
-                renderType.format(),
-                VertexFormatMode.from(renderType.mode())
-            ) {
-                //#if MC>=12105
-                //$$ mcRenderPipeline = renderType.renderPipeline()
-                //#endif
-
-                mcRenderType = renderType
-
-                //#if MC<12105
-                if (renderType.format().elements.any { it.usage == VertexFormatElement.Usage.UV }) {
-                    samplers += "Sampler0"
-                }
-                //#endif
-            }
-        }
-
-    //#if MC>=12105
-    //$$ private fun RenderType.renderPipeline(): com.mojang.blaze3d.pipeline.RenderPipeline =
-        //#if MC>=12109
-        //$$ this.pipeline()
-        //#elseif MC>=12106
-        //$$ (this as CompositeRenderTypeAccessor).plasmovoice_getRenderPipeline()
-        //#else
-        //$$ this.renderPipeline
-        //#endif
-    //#endif
 }
