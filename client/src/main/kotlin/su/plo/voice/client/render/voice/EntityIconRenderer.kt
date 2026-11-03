@@ -9,6 +9,7 @@ import su.plo.lib.mod.client.render.Colors.withAlpha
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.VertexBuilder.Companion.create
 import su.plo.lib.mod.client.render.entity.EntityRenderState
+import su.plo.lib.mod.client.render.submitTexturedGeometry
 
 //#if MC<1.21.11
 import su.plo.lib.mod.extensions.rotate
