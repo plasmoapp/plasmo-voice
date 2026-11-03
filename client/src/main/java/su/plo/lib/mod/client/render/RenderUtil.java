@@ -1,6 +1,5 @@
 package su.plo.lib.mod.client.render;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -14,34 +13,10 @@ import su.plo.slib.api.chat.component.McTextComponent;
 
 import java.util.List;
 
-//#if MC>=1.21.6
-//$$ import org.jetbrains.annotations.Nullable;
-//#endif
-
 @UtilityClass
 public class RenderUtil {
 
     private static final ClientTextConverter TEXT_CONVERTER = new ClientTextConverter();
-
-    //#if MC>=12106
-    //$$ private static @Nullable ScissorState SCISSOR_STATE;
-    //#endif
-
-    public static void enableScissor(int x, int y, int width, int height) {
-        //#if MC>=12106
-        //$$ SCISSOR_STATE = new ScissorState(x, y, width, height);
-        //#else
-        RenderSystem.enableScissor(x, y, width, height);
-        //#endif
-    }
-
-    public static void disableScissor() {
-        //#if MC>=12106
-        //$$ SCISSOR_STATE = null;
-        //#else
-        RenderSystem.disableScissor();
-        //#endif
-    }
 
     public static int getStringX(String string, int x, boolean dropShadow) {
         return x + getStringWidth(string) + (dropShadow ? 1 : 0);
