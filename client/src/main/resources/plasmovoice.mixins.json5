@@ -10,12 +10,24 @@
         "MixinSkinManager",
         "MixinPlayerListEntry",
         "MixinIntegratedServer",
-
         "MixinEntityRenderer",
         "MixinDisplayRenderer",
+
+        //#if MC>=1.21.2
+        //$$ "MixinEntityRenderState",
+        //#endif
+
         "accessor.EntityRendererAccessor",
         "accessor.DisplayAccessor",
-        "accessor.GuiGraphicsAccessor"
+        "accessor.GuiGraphicsAccessor",
+
+        //#if MC>=1.21.6
+        //$$ "accessor.RenderPipelinesAccessor",
+        //#endif
+
+        //#if MC>=1.21.11
+        //$$ "accessor.RenderTypeAccessor",
+        //#endif
     ],
     "injectors": {
         "defaultRequire": 1

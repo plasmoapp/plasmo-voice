@@ -17,6 +17,8 @@ plugins {
     kotlin("kapt") version(libs.versions.kotlin.get())
 
     id("gg.essential.multi-version.root") apply(false)
+
+    alias(ft.plugins.relocate) apply(false)
 }
 
 if (properties.containsKey("snapshot")) {
