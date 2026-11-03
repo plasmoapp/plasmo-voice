@@ -3,13 +3,11 @@ package su.plo.lib.mod.client.gui.components;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.lib.mod.client.render.gui.GuiPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
-import su.plo.lib.mod.client.render.shader.SolidColorShader;
 import java.awt.Color;
 import java.util.function.Supplier;
 
@@ -74,45 +72,17 @@ public final class IconButton extends Button {
 
         ResourceLocation iconLocation = this.iconLocation.get();
 
-        if (hasShadow() && SolidColorShader.isAvailable()) {
-            Color shadowColor = active ? this.shadowColor : Colors.GRAY;
-
-            context.blit(
-                    iconLocation,
-                    x + 2,
-                    y + 3,
-                    0.0F,
-                    0.0F,
-                    16,
-                    16,
-                    16,
-                    16,
-                    Colors.times(shadowColor, 0.25),
-                    GuiPipelines.TEXTURE_SOLID_COLOR
-            );
-        }
-
         Color iconColor = this.iconColor;
-        if (iconColor == null && !active) {
-            iconColor = Colors.GRAY;
+        if (iconColor == null) {
+            iconColor = active ? Colors.WHITE : Colors.GRAY;
         }
 
-        if (iconColor != null) {
-            context.blit(
-                    iconLocation,
-                    x + 2,
-                    y + 2,
-                    0.0F,
-                    0.0F,
-                    16,
-                    16,
-                    16,
-                    16,
-                    iconColor
-            );
-        } else {
-            context.blit(iconLocation, x + 2, y + 2, 0, 0, 16, 16, 16, 16);
+        Color shadowColor = null;
+        if (hasShadow()) {
+            shadowColor = active ? this.shadowColor : Colors.GRAY;
         }
+
+        context.blitIcon(iconLocation, x + 2, y + 2, 16, 16, iconColor, shadowColor, 0, 1);
     }
 
     public boolean hasShadow() {
