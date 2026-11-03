@@ -120,17 +120,11 @@ public final class ScreenWrapper
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTicks) {
-        //#if MC<12105
-        RenderUtil.preserveGlState();
-        //#endif
         lastMouseX = mouseX;
         lastMouseY = mouseY;
         lastPartialTicks = partialTicks;
         GuiRenderContext context = new GuiRenderContext(guiGraphics);
         screen.render(context, mouseX, mouseY, partialTicks);
-        //#if MC<12105
-        RenderUtil.restoreGlState();
-        //#endif
     }
 
     public void renderBackground(@NotNull GuiRenderContext context) {

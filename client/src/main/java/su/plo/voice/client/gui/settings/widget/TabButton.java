@@ -3,7 +3,7 @@ package su.plo.voice.client.gui.settings.widget;
 import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
+import su.plo.lib.mod.client.render.gui.GuiPipelines;
 import su.plo.lib.mod.client.render.shader.SolidColorShader;
 import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -60,7 +60,7 @@ public final class TabButton extends Button {
         if (shadow && SolidColorShader.isAvailable()) {
             Color shadowColor = active ? this.shadowColor : Colors.GRAY;
 
-            context.blitColor(
+            context.blit(
                     getIconLocation(),
                     x + 7,
                     y + 7,
@@ -71,7 +71,7 @@ public final class TabButton extends Button {
                     8,
                     8,
                     Colors.times(shadowColor, 0.25),
-                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR
+                    GuiPipelines.TEXTURE_SOLID_COLOR
             );
         }
 

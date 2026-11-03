@@ -133,7 +133,7 @@ public final class ActivationThresholdWidget extends AbstractSlider implements U
             color = LEVEL_LOW_COLOR;
         }
 
-        context.blitColor(
+        context.blit(
                 SLIDER_TEXTURE,
                 x + 1,
                 y + 1,

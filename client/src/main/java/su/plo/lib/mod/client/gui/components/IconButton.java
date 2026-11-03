@@ -3,7 +3,7 @@ package su.plo.lib.mod.client.gui.components;
 import org.jetbrains.annotations.Nullable;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.lib.mod.client.render.pipeline.RenderPipelines;
+import su.plo.lib.mod.client.render.gui.GuiPipelines;
 import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
@@ -77,7 +77,7 @@ public final class IconButton extends Button {
         if (hasShadow() && SolidColorShader.isAvailable()) {
             Color shadowColor = active ? this.shadowColor : Colors.GRAY;
 
-            context.blitColor(
+            context.blit(
                     iconLocation,
                     x + 2,
                     y + 3,
@@ -88,7 +88,7 @@ public final class IconButton extends Button {
                     16,
                     16,
                     Colors.times(shadowColor, 0.25),
-                    RenderPipelines.GUI_TEXTURE_SOLID_COLOR
+                    GuiPipelines.TEXTURE_SOLID_COLOR
             );
         }
 
@@ -98,7 +98,7 @@ public final class IconButton extends Button {
         }
 
         if (iconColor != null) {
-            context.blitColor(
+            context.blit(
                     iconLocation,
                     x + 2,
                     y + 2,
