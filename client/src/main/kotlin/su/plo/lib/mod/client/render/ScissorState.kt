@@ -2,6 +2,10 @@ package su.plo.lib.mod.client.render
 
 import net.minecraft.client.Minecraft
 
+//#if MC<1.21.6
+import com.mojang.blaze3d.systems.RenderSystem
+//#endif
+
 data class ScissorState(
     val x: Int,
     val y: Int,
@@ -30,13 +34,15 @@ data class ScissorState(
             )
         }
 
+        //#if MC<1.21.6
         fun applyScissorState(state: ScissorState?) {
             if (state == null) {
-                RenderUtil.disableScissor()
+                RenderSystem.disableScissor()
                 return
             }
 
-            RenderUtil.enableScissor(state.x, state.y, state.width, state.height)
+            RenderSystem.enableScissor(state.x, state.y, state.width, state.height)
         }
+        //#endif
     }
 }
