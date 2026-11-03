@@ -3,8 +3,6 @@ package su.plo.voice.client.gui.settings.widget;
 import su.plo.lib.mod.client.ResourceLocationUtil;
 import su.plo.lib.mod.client.render.Colors;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.lib.mod.client.render.gui.GuiPipelines;
-import su.plo.lib.mod.client.render.shader.SolidColorShader;
 import su.plo.slib.api.chat.component.McTextComponent;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
@@ -57,25 +55,12 @@ public final class TabButton extends Button {
 
     @Override
     protected void renderText(@NotNull GuiRenderContext context, int mouseX, int mouseY) {
-        if (shadow && SolidColorShader.isAvailable()) {
-            Color shadowColor = active ? this.shadowColor : Colors.GRAY;
-
-            context.blit(
-                    getIconLocation(),
-                    x + 7,
-                    y + 7,
-                    0.0F,
-                    0.0F,
-                    8,
-                    8,
-                    8,
-                    8,
-                    Colors.times(shadowColor, 0.25),
-                    GuiPipelines.TEXTURE_SOLID_COLOR
-            );
+        Color shadowColor = null;
+        if (shadow) {
+            shadowColor = active ? this.shadowColor : Colors.GRAY;
         }
 
-        context.blit(getIconLocation(), x + 6, y + 6, 0, 0, 8, 8, 8, 8);
+        context.blitIcon(getIconLocation(), x + 6, y + 6, 8, 8, Colors.WHITE, shadowColor);
 
         Color textColor = active ? Colors.WHITE : Colors.GRAY;
         context.drawString(

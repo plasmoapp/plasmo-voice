@@ -8,8 +8,10 @@ import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.FormattedCharSequence
 import su.plo.lib.mod.client.gui.widget.GuiWidgetTexture
 import su.plo.lib.mod.client.render.Colors
+import su.plo.lib.mod.client.render.Colors.times
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.ScissorState
+import su.plo.lib.mod.client.render.shader.SolidColorShader
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.voice.client.mixin.accessor.GuiGraphicsAccessor
 import java.awt.Color
@@ -30,6 +32,8 @@ import net.minecraft.client.renderer.MultiBufferSource
 //#if MC<1.21.2
 import com.mojang.blaze3d.systems.RenderSystem
 //#endif
+
+private const val ICON_SHADOW_BRIGHTNESS = 0.25
 
 class GuiRenderContext(
     val mcContext: GuiGraphics,
@@ -174,6 +178,34 @@ class GuiRenderContext(
         )
         if (!pipeline.depthTest) RenderSystem.enableDepthTest()
         //#endif
+    }
+
+    @JvmOverloads
+    fun blitIcon(
+        icon: ResourceLocation,
+        x: Int,
+        y: Int,
+        width: Int,
+        height: Int = width,
+        color: Color = Colors.WHITE,
+        shadowColor: Color? = color,
+        shadowOffsetX: Int = 1,
+        shadowOffsetY: Int = 1,
+    ) {
+        if (shadowColor != null && SolidColorShader.isAvailable()) {
+            blitUv(
+                icon,
+                x + shadowOffsetX,
+                x + shadowOffsetX + width,
+                y + shadowOffsetY,
+                y + shadowOffsetY + height,
+                0f, 1f, 0f, 1f,
+                shadowColor * ICON_SHADOW_BRIGHTNESS,
+                GuiPipelines.TEXTURE_SOLID_COLOR,
+            )
+        }
+
+        blitUv(icon, x, x + width, y, y + height, 0f, 1f, 0f, 1f, color)
     }
 
     fun blitSprite(
