@@ -53,12 +53,15 @@ fun EntityIconRenderContext.submitTexturedGeometry(
     //$$ collector.submitCustomGeometry(stack, renderType, geometry)
     //#endif
     //#else
-    val renderType = if (seeThrough) RenderType.textSeeThrough(texture) else RenderType.text(texture)
-    val pipeline = RenderPipelines.fromRenderType(if (seeThrough) "text_see_through" else "text", renderType)
+    val renderType =
+        if (seeThrough) {
+            RenderType.textSeeThrough(texture)
+        } else {
+            RenderType.text(texture)
+        }
 
-    val buffer = RenderUtil.beginBuffer(pipeline)
+    val buffer = bufferSource.getBuffer(renderType)
     write(stack.last(), buffer)
-    renderType.draw(buffer.build())
     //#endif
 }
 

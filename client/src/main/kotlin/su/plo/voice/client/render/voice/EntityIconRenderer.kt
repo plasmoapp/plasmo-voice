@@ -6,7 +6,6 @@ import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
 import su.plo.lib.mod.client.render.Colors
 import su.plo.lib.mod.client.render.Colors.withAlpha
-import su.plo.lib.mod.client.render.LazyGlState
 import su.plo.lib.mod.client.render.RenderUtil
 import su.plo.lib.mod.client.render.VertexBuilder.Companion.create
 import su.plo.lib.mod.client.render.entity.EntityRenderState
@@ -24,9 +23,6 @@ import su.plo.lib.mod.extensions.rotate
 //#endif
 
 object EntityIconRenderer {
-
-    private val glState = LazyGlState()
-
     @JvmStatic
     fun render(
         entityState: EntityRenderState,
@@ -60,25 +56,23 @@ object EntityIconRenderer {
         val lightWithEmission = entityState.light
         //#endif
 
-        glState.withState {
+        context.submitText(
+            text,
+            xOffset, 0,
+            percentTextColor(),
+            backgroundColor,
+            entityState.light,
+            seeThrough = !entityState.isDiscrete,
+        )
+
+        if (!entityState.isDiscrete) {
             context.submitText(
                 text,
                 xOffset, 0,
-                percentTextColor(),
-                backgroundColor,
-                entityState.light,
-                seeThrough = !entityState.isDiscrete,
+                -1, 0,
+                lightWithEmission,
+                seeThrough = false,
             )
-
-            if (!entityState.isDiscrete) {
-                context.submitText(
-                    text,
-                    xOffset, 0,
-                    -1, 0,
-                    lightWithEmission,
-                    seeThrough = false,
-                )
-            }
         }
 
         stack.popPose()
