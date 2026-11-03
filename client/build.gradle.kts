@@ -203,6 +203,13 @@ tasks {
             exclude("assets/plasmovoice/shaders/*.json")
         }
 
+        filesMatching(listOf("**/*.vsh", "**/*.fsh")) {
+            filter { line ->
+                val trimmed = line.trimStart()
+                line.takeUnless { trimmed.startsWith("//#") || trimmed.startsWith("//$$") }
+            }
+        }
+
         expandMatching(
             listOf("META-INF/neoforge.mods.toml"),
             "version" to version,
