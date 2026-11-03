@@ -40,10 +40,6 @@ if (platform.mcVersion >= 12106) {
     mixins.add("plasmovoice-1.21.6.mixins.json")
 }
 
-if (platform.mcVersion in 12106..12108) {
-    mixins.add("plasmovoice-1.21.6-rendertype.mixins.json")
-}
-
 if (platform.mcVersion >= 12111) {
     mixins.add("plasmovoice-1.21.11.mixins.json")
 }
