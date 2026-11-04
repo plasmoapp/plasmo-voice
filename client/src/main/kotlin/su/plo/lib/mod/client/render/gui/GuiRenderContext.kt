@@ -88,7 +88,7 @@ class GuiRenderContext(
     ) {
         //#if MC>=12106
         //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
+        //$$     renderPipeline.mcGuiPipeline,
         //$$     textureLocation,
         //$$     x,
         //$$     y,
@@ -133,7 +133,7 @@ class GuiRenderContext(
     ) {
         //#if MC>=12106
         //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
+        //$$     renderPipeline.mcGuiPipeline,
         //$$     textureLocation,
         //$$     x,
         //$$     y,
@@ -181,7 +181,7 @@ class GuiRenderContext(
     ) {
         //#if MC>=12106
         //$$ mcContext.blit(
-        //$$     renderPipeline.mcRenderPipeline,
+        //$$     renderPipeline.mcGuiPipeline,
         //$$     textureLocation,
         //$$     x,
         //$$     y,
@@ -219,7 +219,7 @@ class GuiRenderContext(
     ) {
         //#if MC>=12106
         //$$ (mcContext as GuiGraphicsAccessor).plasmovoice_innerBlit(
-        //$$     renderPipeline.mcRenderPipeline,
+        //$$     renderPipeline.mcGuiPipeline,
         //$$     textureLocation,
         //$$     x0,
         //$$     x1,
@@ -249,7 +249,7 @@ class GuiRenderContext(
         height: Int,
     ) {
         //#if MC>=12106
-        //$$ mcContext.blitSprite(RenderPipelines.GUI_TEXTURE.mcRenderPipeline, sprite.location, x, y, width, height)
+        //$$ mcContext.blitSprite(RenderPipelines.GUI_TEXTURE.mcGuiPipeline, sprite.location, x, y, width, height)
         //#elseif MC>=12102
         //$$ RenderSystem.setShaderColor(1F, 1F, 1F, 1F)
         //$$ mcContext.blitSprite(RenderType::guiTextured, sprite.location, x, y, width, height)
@@ -461,7 +461,7 @@ class GuiRenderContext(
         renderPipeline: RenderPipeline = RenderPipelines.GUI_COLOR,
     ) {
         //#if MC>=12106
-        //$$ mcContext.fill(renderPipeline.mcRenderPipeline, x0, y0, x1, y1, color.rgb)
+        //$$ mcContext.fill(renderPipeline.mcGuiPipeline, x0, y0, x1, y1, color.rgb)
         //#else
         RenderUtil.fill(stack, renderPipeline, x0, y0, x1, y1, color.rgb)
         //#endif

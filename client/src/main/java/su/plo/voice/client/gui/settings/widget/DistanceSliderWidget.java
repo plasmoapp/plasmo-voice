@@ -54,7 +54,7 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
 
     private int calculateValue(double value) {
         double index = Mth.lerp(
-                Mth.clamp(value, 0.0D, 1.0D),
+                Math.clamp(value, 0.0D, 1.0D),
                 0,
                 activation.getDistances().size() - 1
         );
@@ -65,7 +65,7 @@ public final class DistanceSliderWidget extends AbstractSlider implements Updata
     }
 
     private double adjust(double value) {
-        return Mth.clamp(value, 0, activation.getDistances().size() - 1);
+        return Math.clamp(value, 0, activation.getDistances().size() - 1);
     }
 
 }

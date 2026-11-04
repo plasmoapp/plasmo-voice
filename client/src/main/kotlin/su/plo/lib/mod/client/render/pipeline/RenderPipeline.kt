@@ -31,9 +31,12 @@ import net.minecraft.client.renderer.GameRenderer
 //#endif
 //$$
 //#if MC>=26.2
-//$$ import com.mojang.blaze3d.GpuFormat
 //$$ import com.mojang.blaze3d.pipeline.BindGroupLayout
 //$$ import net.minecraft.client.renderer.BindGroupLayouts
+//#endif
+//$$
+//#if MC>=26.2 && MC<26.4
+//$$ import com.mojang.blaze3d.GpuFormat
 //#endif
 //$$
 //#else
@@ -47,8 +50,14 @@ import net.minecraft.client.renderer.ShaderInstance
 //$$ import su.plo.voice.client.mixin.accessor.RenderTypeAccessor
 //#endif
 
-//#if MC>=26.3
+//#if MC>=26.3 && MC<26.4
 //$$ import net.minecraft.client.renderer.oit.OitPipelineSet
+//#endif
+
+//#if MC>=26.4
+//$$ import net.minecraft.client.gui.GuiPipeline
+//$$ import net.minecraft.client.renderer.oit.OitStage
+//$$ import net.minecraft.client.renderer.pipeline.RenderPipelines as McRenderPipelines
 //#endif
 
 //#if MC>=12105
@@ -193,6 +202,13 @@ data class RenderPipeline(
         //#endif
     }
 
+    //#if MC>=26.4
+    //$$ val mcGuiPipeline: GuiPipeline by lazy { GuiPipeline.of { mcRenderPipeline } }
+    //#elseif MC>=12106
+    //$$ val mcGuiPipeline: com.mojang.blaze3d.pipeline.RenderPipeline
+    //$$     get() = mcRenderPipeline
+    //#endif
+
     val vertexFormat: VertexFormat
         //#if MC>=12105
         //$$ get() = mcRenderType.format()
@@ -284,7 +300,7 @@ data class RenderPipeline(
             //$$     .withCull(cull)
             //$$     .withColorTargetState(ColorTargetState(
             //$$         Optional.ofNullable(if (blendFunc != null) blendFunc!!.mc() else null),
-            //#if MC>=26.2
+            //#if MC>=26.2 && MC<26.4
             //$$         GpuFormat.RGBA8_UNORM,
             //#endif
             //$$         ColorTargetState.WRITE_COLOR or ColorTargetState.WRITE_ALPHA
@@ -310,11 +326,20 @@ data class RenderPipeline(
             //#if MC>=12111
             //$$     RenderTypeAccessor.plasmovoice_create(
             //$$         location.toString(),
+            //#if MC>=26.4
+            //$$         if (oit) {
+            //$$             val oitPipelines = oitPipelines()
+            //$$             RenderSetup.builder { stage -> stage?.let(oitPipelines::getValue) ?: pipeline }
+            //$$         } else {
+            //$$             RenderSetup.nonOitBuilder(pipeline)
+            //$$         }.createRenderSetup()
+            //#else
             //$$         RenderSetup.builder(pipeline)
             //#if MC>=26.3
             //$$             .apply { if (oit) setOitPipelines(oitPipelineSet()) }
             //#endif
             //$$             .createRenderSetup()
+            //#endif
             //$$     )
             //#else
             //$$     RenderType.create(
@@ -359,21 +384,40 @@ data class RenderPipeline(
         //$$             .build()
         //$$     }
         //$$
+        //$$ private fun oitPipelineBuilder() =
+        //$$     com.mojang.renderpearl.api.pipeline.RenderPipeline.builder()
+        //$$         .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
+        //$$         .apply { samplersBindGroupLayout()?.let(::withBindGroupLayout) }
+        //$$         .withVertexShader(vertexShader)
+        //$$         .withFragmentShader(fragmentShader)
+        //$$         .withVertexBinding(0, vertexFormat)
+        //$$         .withPrimitiveTopology(vertexFormatMode.toMc())
+        //$$         .withCull(cull)
+        //#if MC>=26.4
+        //$$
+        //$$ private fun oitPipelines() =
+        //$$     OitStage.entries.associateWith { stage ->
+        //$$         oitPipelineBuilder()
+        //$$             .withSnippet(stage.snippet())
+        //$$             .apply { if (depthTestFunc == AlphaFunc.ALWAYS) withDepthStencilState(Optional.empty()) }
+        //$$             .withLocation("pipeline/oit_${stage.name.lowercase()}_${location.namespace}/${location.path}")
+        //$$             .build()
+        //$$     }
+        //$$
+        //$$ private fun OitStage.snippet() =
+        //$$     when (this) {
+        //$$         OitStage.DEPTH_BOUNDS -> McRenderPipelines.OIT_DEPTH_BOUNDS_SNIPPET
+        //$$         OitStage.TRANSMITTANCE -> McRenderPipelines.OIT_TRANSMITTANCE_SNIPPET
+        //$$         OitStage.ACCUMULATE -> McRenderPipelines.OIT_ACCUMULATE_SNIPPET
+        //$$     }
+        //#else
+        //$$
         //$$ private fun oitPipelineSet(): OitPipelineSet =
         //$$     OitPipelineSet
-        //$$         .builder(
-        //$$             "${location.namespace}/${location.path}",
-        //$$             com.mojang.renderpearl.api.pipeline.RenderPipeline.builder()
-        //$$                 .withBindGroupLayout(BindGroupLayouts.DYNAMIC_TRANSFORMS)
-        //$$                 .apply { samplersBindGroupLayout()?.let(::withBindGroupLayout) }
-        //$$                 .withVertexShader(vertexShader)
-        //$$                 .withFragmentShader(fragmentShader)
-        //$$                 .withVertexBinding(0, vertexFormat)
-        //$$                 .withPrimitiveTopology(vertexFormatMode.toMc())
-        //$$                 .withCull(cull),
-        //$$         )
+        //$$         .builder("${location.namespace}/${location.path}", oitPipelineBuilder())
         //$$         .apply { if (depthTestFunc == AlphaFunc.ALWAYS) withoutDepthTest() }
         //$$         .build()
+        //#endif
         //#endif
     }
 }

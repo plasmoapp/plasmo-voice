@@ -3,11 +3,16 @@ package su.plo.lib.mod.client.render
 import com.google.common.base.Charsets
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
-import net.minecraft.client.renderer.texture.DynamicTexture
 import net.minecraft.resources.ResourceLocation
 import org.lwjgl.system.MemoryStack
 import java.nio.ByteBuffer
 import java.util.Base64
+
+//#if MC>=26.4
+//$$ import net.minecraft.client.renderer.texture.TextureResources
+//#else
+import net.minecraft.client.renderer.texture.DynamicTexture
+//#endif
 
 fun registerBase64Texture(
     texture: String,
@@ -15,6 +20,14 @@ fun registerBase64Texture(
 ): ResourceLocation {
     // register base64 icon in minecraft resources
     Minecraft.getInstance().execute {
+        //#if MC>=26.4
+        //$$ getNativeImageFromBase64(texture).use { image ->
+        //$$     Minecraft.getInstance().textureManager.register(
+        //$$         textureLocation,
+        //$$         TextureResources.from2dImage({ textureLocation.toDebugFileName() }, image)
+        //$$     )
+        //$$ }
+        //#else
         Minecraft.getInstance().textureManager.register(
             textureLocation,
             DynamicTexture(
@@ -29,6 +42,7 @@ fun registerBase64Texture(
                 }
                 //#endif
         )
+        //#endif
     }
 
     return textureLocation
