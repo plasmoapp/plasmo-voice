@@ -36,8 +36,6 @@ public final class HudIconRenderer implements HudRenderEvent.Callback {
     private final PlasmoVoiceClient voiceClient;
     private final VoiceClientConfig config;
 
-    // in most cases state should be the same, so let's hope it works
-
     @Override
     public void onRender(@NotNull GuiRenderContext context, float delta) {
         if (!voiceClient.getServerInfo().isPresent() ||
