@@ -16,7 +16,6 @@ private val WATCHED = listOf(kAudioHardwarePropertyDevices, kAudioHardwareProper
 internal object DeviceRegistry {
     private var listener: StableRef<() -> Unit>? = null
 
-    /** List of devices. */
     fun devices(): List<DeviceInfo> = deviceIds()
         .filter { it.inputChannels() > 0 }
         .mapNotNull { id ->

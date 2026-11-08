@@ -20,7 +20,7 @@ internal interface FrameSink {
 /**
  * Sends everything through a single queue.
  *
- * Permission answers arrive on a system thread and audio on the render thread.
+ * Permission answers arrive on a system thread and audio on the AudioQueue callback thread.
  */
 internal class SerialWriter(
     private val writer: FrameWriter,

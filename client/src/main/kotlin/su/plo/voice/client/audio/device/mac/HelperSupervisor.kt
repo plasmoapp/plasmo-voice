@@ -58,7 +58,7 @@ internal class HelperSupervisor(private val onDevices: (Devices) -> Unit) {
         val app = HelperInstaller.ensureInstalled()
         val token = UUID.randomUUID().toString()
 
-        // Everything there is readable by every user through ps
+        // Command-line arguments are visible to every user through ps, so the token goes through an owner-only file
         val tokenFile = Files.createTempFile("pvmic", ".token", TOKEN_OWNER_ONLY)
         Files.write(tokenFile, token.toByteArray())
 

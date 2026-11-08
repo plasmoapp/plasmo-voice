@@ -12,9 +12,6 @@ private const val BITS_PER_SAMPLE = 16
 private const val BYTES_PER_SAMPLE = BITS_PER_SAMPLE / 8
 private const val BUFFER_COUNT = 3
 
-/**
- * Records from the system default microphone.
- */
 @OptIn(ExperimentalForeignApi::class)
 internal class AudioQueueMicrophone : Microphone {
     private var queue: AudioQueueRef? = null
@@ -106,8 +103,8 @@ internal class AudioQueueMicrophone : Microphone {
              * AudioQueueStop()
              * https://developer.apple.com/documentation/audiotoolbox/audioqueuestop(_:_:)
              */
-
             AudioQueueStop(it, true)
+
             /*
              * AudioQueueDispose()
              * https://developer.apple.com/documentation/audiotoolbox/audioqueuedispose(_:_:)

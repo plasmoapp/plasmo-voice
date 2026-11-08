@@ -40,9 +40,7 @@ sealed interface Frame {
  */
 class FrameWriter(private val sink: Sink) {
     /**
-     * Header and payload leave in one flush on purpose. Permission answers come from a system queue
-     * and audio from the render thread, so two frames going out at once must not end up shredded
-     * into each other.
+     * Not thread-safe, callers must ensure thread-safety themselves.
      */
     fun write(frame: Frame) {
         sink.writeByte(frame.type.code)
