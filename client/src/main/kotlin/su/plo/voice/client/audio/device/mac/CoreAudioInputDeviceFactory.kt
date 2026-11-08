@@ -6,7 +6,7 @@ import su.plo.voice.api.client.PlasmoVoiceClient
 import su.plo.voice.api.client.audio.device.AudioDevice
 import su.plo.voice.api.client.audio.device.DeviceFactory
 import su.plo.voice.mac.protocol.audio.DeviceInfo
-import su.plo.voice.mac.protocol.message.Downstream
+import su.plo.voice.mac.protocol.message.Devices
 import su.plo.voice.mac.protocol.message.status.AuthStatus
 import java.util.concurrent.atomic.AtomicBoolean
 import javax.sound.sampled.AudioFormat
@@ -114,7 +114,7 @@ class CoreAudioInputDeviceFactory(private val client: PlasmoVoiceClient) : Devic
         }
     }
 
-    private fun cache(message: Downstream.Devices) {
+    private fun cache(message: Devices) {
         devices = message.devices
         defaultId = message.defaultId
         listedAt = System.currentTimeMillis()

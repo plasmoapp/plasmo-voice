@@ -2,7 +2,7 @@ package su.plo.voice.client.audio.device.mac
 
 import su.plo.voice.BaseVoice
 import su.plo.voice.api.client.audio.device.DeviceException
-import su.plo.voice.mac.protocol.message.Downstream
+import su.plo.voice.mac.protocol.message.Devices
 import java.net.InetAddress
 import java.net.ServerSocket
 import java.nio.file.Files
@@ -18,7 +18,7 @@ private val TOKEN_OWNER_ONLY = PosixFilePermissions.asFileAttribute(PosixFilePer
 /**
  * Keeps at most one helper process around, and backs off when it will not start.
  */
-internal class HelperSupervisor(private val onDevices: (Downstream.Devices) -> Unit) {
+internal class HelperSupervisor(private val onDevices: (Devices) -> Unit) {
     private val logger = BaseVoice.createLogger("HelperSupervisor")
     private var session: HelperSession? = null
     private var failures = 0

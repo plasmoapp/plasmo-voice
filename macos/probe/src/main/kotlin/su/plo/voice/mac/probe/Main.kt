@@ -1,9 +1,10 @@
 package su.plo.voice.mac.probe
 
-import su.plo.voice.mac.protocol.audio.*
-import su.plo.voice.mac.protocol.frame.*
-import su.plo.voice.mac.protocol.message.*
-import su.plo.voice.mac.protocol.message.wire.*
+import su.plo.voice.mac.protocol.audio.CaptureFormat
+import su.plo.voice.mac.protocol.frame.Frame
+import su.plo.voice.mac.protocol.message.Request
+import su.plo.voice.mac.protocol.message.Response
+import su.plo.voice.mac.protocol.message.wire.decode
 import java.io.ByteArrayOutputStream
 import java.io.File
 import kotlin.time.Duration.Companion.seconds
@@ -41,15 +42,12 @@ fun main(args: Array<String>) {
 
 private fun HelperConnection.permission(prompt: Boolean) {
     timeout = (if (prompt) 120 else 10).seconds
-    send(Upstream.Permission(prompt))
-
-    println(await<Downstream.Permission>())
+    println(await<Response.Permission>(send(Request.Permission(prompt))))
 }
 
 private fun HelperConnection.record(seconds: Int, file: File) {
     timeout = 10.seconds
-    send(Upstream.Open(CAPTURE_FORMAT))
-    println("${await<Downstream.Opened>()}, recording $seconds s")
+    println("${await<Response.Opened>(send(Request.Open(CAPTURE_FORMAT)))}, recording $seconds s")
 
     val targetBytes = CAPTURE_FORMAT.sampleRate * CAPTURE_FORMAT.channels * BYTES_PER_SAMPLE * seconds
     val samples = ByteArrayOutputStream(targetBytes)
@@ -57,26 +55,26 @@ private fun HelperConnection.record(seconds: Int, file: File) {
 
     while (samples.size() < targetBytes) {
         val frame = read() ?: error("The helper went away mid recording.")
-        if (frame.type != FrameType.AUDIO) continue
+        if (frame !is Frame.Audio) continue
 
         samples.write(frame.payload)
         frames++
     }
 
-    send(Upstream.Close())
+    send(Request.Close)
     WavFile.write(file, CAPTURE_FORMAT, samples.toByteArray())
     println("Wrote $frames frames to $file.")
 }
 
-private inline fun <reified T : Downstream> HelperConnection.await(): T {
+private inline fun <reified T : Response> HelperConnection.await(requestId: Int): T {
     while (true) {
         val frame = read() ?: error("The helper went away.")
-        if (frame.type != FrameType.CONTROL) continue
+        if (frame !is Frame.Response || frame.requestId != requestId) continue
 
-        when (val message = frame.toDownstream()) {
-            is T -> return message
-            is Downstream.Failure -> error("${message.code}: ${message.message}")
-            else -> Unit
+        return when (val response = frame.decode()) {
+            is T -> response
+            is Response.Failure -> error("${response.code}: ${response.message}")
+            else -> error("The helper answered with an unexpected $response.")
         }
     }
 }

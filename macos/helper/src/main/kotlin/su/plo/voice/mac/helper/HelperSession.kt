@@ -9,10 +9,15 @@ import su.plo.voice.mac.helper.permission.MicrophoneAccess
 import su.plo.voice.mac.protocol.audio.CaptureFormat
 import su.plo.voice.mac.protocol.frame.Frame
 import su.plo.voice.mac.protocol.frame.FrameReader
-import su.plo.voice.mac.protocol.frame.FrameType
-import su.plo.voice.mac.protocol.message.*
-import su.plo.voice.mac.protocol.message.status.*
-import su.plo.voice.mac.protocol.message.wire.*
+import su.plo.voice.mac.protocol.message.Devices
+import su.plo.voice.mac.protocol.message.Event
+import su.plo.voice.mac.protocol.message.Request
+import su.plo.voice.mac.protocol.message.Response
+import su.plo.voice.mac.protocol.message.status.AuthStatus
+import su.plo.voice.mac.protocol.message.status.FailureCode
+import su.plo.voice.mac.protocol.message.wire.PROTOCOL_VERSION
+import su.plo.voice.mac.protocol.message.wire.decode
+import su.plo.voice.mac.protocol.message.wire.toFrame
 
 /**
  * One connection to the mod, from hello to close.
@@ -27,7 +32,7 @@ internal class HelperSession(
     /**
      * Starts the session and blocks the calling thread until the mod disconnects.
      *
-     * Sends an initial [Downstream.Hello] with the [token] and process PID, then continuously
+     * Sends an initial [Event.Hello] with the [token] and process PID, then continuously
      * dispatches incoming frames from [reader].
      *
      * Guarantees that [microphone] resources are cleaned up when the loop finishes or fails.
@@ -37,58 +42,59 @@ internal class HelperSession(
          * getpid()
          * https://pubs.opengroup.org/onlinepubs/9699919799/functions/getpid.html
          */
-        send(Downstream.Hello(token, getpid(), PROTOCOL_VERSION))
-        DeviceRegistry.onChange { sendDevices() }
+        emit(Event.Hello(token, getpid(), PROTOCOL_VERSION))
+        DeviceRegistry.onChange { emit(devices()) }
         generateSequence { reader.read() }.forEach(::dispatch)
     } finally {
         DeviceRegistry.stopListening()
         microphone.close()
     }
 
-    private fun dispatch(frame: Frame) = when (frame.type) {
-        FrameType.CONTROL -> dispatch(frame.toUpstream())
-        FrameType.PING -> sink.send(frame)
-        FrameType.AUDIO -> Unit
+    private fun dispatch(frame: Frame) = when (frame) {
+        is Frame.Request -> dispatch(frame.decode()) { sink.send(it.toFrame(frame.requestId)) }
+        Frame.Ping -> sink.send(frame)
+        is Frame.Response, is Frame.Event, is Frame.Audio -> Unit
     }
 
-    private fun dispatch(message: Upstream) = when (message) {
-        is Upstream.Permission -> permission(message.prompt, message.requestId)
-        is Upstream.Open -> open(message.format, message.deviceId, message.requestId)
-        Upstream.OpenSettings -> access.settings()
-        is Upstream.ListDevices -> sendDevices(message.requestId)
-        is Upstream.Close -> close(message.requestId)
+    private fun dispatch(request: Request, respond: (Response) -> Unit) = when (request) {
+        is Request.Permission -> permission(request.prompt, respond)
+        is Request.Open -> respond(open(request.format, request.deviceId))
+        Request.OpenSettings -> respond(openSettings())
+        Request.ListDevices -> respond(devices())
+        Request.Close -> respond(close())
     }
 
-    private fun permission(prompt: Boolean, requestId: Int) = if (prompt) {
-        access.request { send(Downstream.Permission(it, requestId)) }
+    private fun permission(prompt: Boolean, respond: (Response) -> Unit) = if (prompt) {
+        access.request { respond(Response.Permission(it)) }
     } else {
-        send(Downstream.Permission(access.status, requestId))
+        respond(Response.Permission(access.status))
     }
 
-    private fun sendDevices(requestId: Int? = null) =
-        send(Downstream.Devices(DeviceRegistry.devices(), DeviceRegistry.defaultId(), requestId))
-
-    private fun open(format: CaptureFormat, deviceId: String?, requestId: Int) {
+    private fun open(format: CaptureFormat, deviceId: String?): Response {
         if (access.status != AuthStatus.AUTHORIZED) {
-            return fail(FailureCode.PERMISSION_DENIED, "Microphone access is ${access.status}.", requestId)
+            return Response.Failure(FailureCode.PERMISSION_DENIED, "Microphone access is ${access.status}.")
         }
 
-        try {
-            val frameSamples = microphone.open(format, deviceId) { sink.send(Frame(FrameType.AUDIO, it)) }
-            send(Downstream.Opened(format, frameSamples, requestId))
+        return try {
+            val frameSamples = microphone.open(format, deviceId) { sink.send(Frame.Audio(it)) }
+            Response.Opened(format, frameSamples)
         } catch (e: MicrophoneException) {
-            fail(e.error.code, e.message, requestId)
+            Response.Failure(e.error.code, e.message)
         }
     }
 
-    private fun close(requestId: Int) {
-        microphone.close()
-        send(Downstream.Closed(requestId))
+    private fun openSettings(): Response {
+        access.settings()
+        return Response.SettingsOpened
     }
 
-    private fun fail(code: FailureCode, message: String, requestId: Int?) =
-        send(Downstream.Failure(code, message, requestId))
+    private fun close(): Response {
+        microphone.close()
+        return Response.Closed
+    }
 
-    private fun send(message: Downstream) =
-        sink.send(message.toFrame())
+    private fun devices() = Devices(DeviceRegistry.devices(), DeviceRegistry.defaultId())
+
+    private fun emit(event: Event) =
+        sink.send(event.toFrame())
 }

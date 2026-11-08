@@ -3,9 +3,13 @@ package su.plo.voice.mac.probe
 import kotlinx.io.asSink
 import kotlinx.io.asSource
 import kotlinx.io.buffered
-import su.plo.voice.mac.protocol.frame.*
-import su.plo.voice.mac.protocol.message.*
-import su.plo.voice.mac.protocol.message.wire.*
+import su.plo.voice.mac.protocol.frame.Frame
+import su.plo.voice.mac.protocol.frame.FrameReader
+import su.plo.voice.mac.protocol.frame.FrameWriter
+import su.plo.voice.mac.protocol.message.Event
+import su.plo.voice.mac.protocol.message.Request
+import su.plo.voice.mac.protocol.message.wire.decode
+import su.plo.voice.mac.protocol.message.wire.toFrame
 import java.io.Closeable
 import java.net.Socket
 import kotlin.time.Duration
@@ -21,7 +25,9 @@ class HelperConnection private constructor(
     private val writer: FrameWriter,
     val pid: Int,
 ) : Closeable {
-    fun send(message: Upstream) = writer.write(message.toFrame())
+    private var nextRequestId = 0
+
+    fun send(request: Request): Int = (++nextRequestId).also { writer.write(request.toFrame(it)) }
 
     fun read(): Frame? = reader.read()
 
@@ -40,7 +46,7 @@ class HelperConnection private constructor(
             val reader = FrameReader(socket.getInputStream().asSource().buffered())
             val writer = FrameWriter(socket.getOutputStream().asSink().buffered())
 
-            val hello = reader.read()?.toDownstream() as? Downstream.Hello
+            val hello = (reader.read() as? Frame.Event)?.decode() as? Event.Hello
                 ?: error("The helper did not say hello.")
             require(hello.token == token) { "The helper's token does not match." }
 
