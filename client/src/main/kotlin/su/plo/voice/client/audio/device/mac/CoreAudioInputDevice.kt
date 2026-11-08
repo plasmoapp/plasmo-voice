@@ -14,7 +14,10 @@ private val LOGGER = BaseVoice.createLogger("CoreAudioInputDevice")
 private const val BUFFER_MILLIS = 500
 
 /**
- * Reads from the microphone the helper owns, as if it were any other input device.
+ * Input device whose audio is captured by the helper process and pushed over its socket.
+ *
+ * [open] can block until the player answers the macOS permission prompt.
+ * [close] only releases the microphone, the helper keeps running for the next open.
  */
 internal class CoreAudioInputDevice(
     client: PlasmoVoiceClient,

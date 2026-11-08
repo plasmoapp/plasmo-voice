@@ -2,9 +2,6 @@ package su.plo.voice.mac.helper.exception
 
 import su.plo.voice.mac.protocol.message.status.FailureCode
 
-/**
- * Every way [MicrophoneException] gets raised, with the wire code the mod should hear about it as.
- */
 internal enum class MicrophoneError(val code: FailureCode) {
     QUEUE_CREATION_FAILED(FailureCode.INTERNAL),
     CORE_AUDIO_STATUS(FailureCode.INTERNAL),

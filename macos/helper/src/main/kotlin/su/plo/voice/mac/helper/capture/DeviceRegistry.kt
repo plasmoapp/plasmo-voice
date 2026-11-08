@@ -9,9 +9,6 @@ import su.plo.voice.mac.protocol.audio.DeviceInfo
 
 private val WATCHED = listOf(kAudioHardwarePropertyDevices, kAudioHardwarePropertyDefaultInputDevice)
 
-/**
- * The input devices `CoreAudio` knows about.
- */
 @OptIn(ExperimentalForeignApi::class)
 internal object DeviceRegistry {
     private var listener: StableRef<() -> Unit>? = null
@@ -23,7 +20,6 @@ internal object DeviceRegistry {
             DeviceInfo(uid, id.stringProperty(kAudioObjectPropertyName) ?: uid)
         }
 
-    /** The input macOS would pick on its own, so the mod does not have to guess. */
     fun defaultId(): String? {
         val device = memScoped {
             val value = alloc<AudioDeviceIDVar>()
@@ -119,7 +115,6 @@ internal object DeviceRegistry {
         (0 until count).map { ids[it] }
     }
 
-    /// Zero means the device can only play, so the player has no business seeing it in the list
     private fun AudioDeviceID.inputChannels(): Int = memScoped {
         val property = address(kAudioDevicePropertyStreamConfiguration, kAudioObjectPropertyScopeInput)
         val size = alloc<UIntVar>()

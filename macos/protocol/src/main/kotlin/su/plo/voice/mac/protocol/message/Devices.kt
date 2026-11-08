@@ -7,8 +7,6 @@ import su.plo.voice.mac.protocol.audio.DeviceInfo
 /**
  * Sent as a response to [Request.ListDevices] and again as an [Event] whenever macOS reports a
  * device being plugged in or pulled out.
- *
- * [defaultId] is the system default.
  */
 @Serializable
 @SerialName("devices")

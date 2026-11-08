@@ -19,9 +19,6 @@ import su.plo.voice.mac.protocol.message.wire.PROTOCOL_VERSION
 import su.plo.voice.mac.protocol.message.wire.decode
 import su.plo.voice.mac.protocol.message.wire.toFrame
 
-/**
- * One connection to the mod, from hello to close.
- */
 internal class HelperSession(
     private val token: String,
     private val reader: FrameReader,
@@ -30,12 +27,7 @@ internal class HelperSession(
     private val microphone: Microphone,
 ) {
     /**
-     * Starts the session and blocks the calling thread until the mod disconnects.
-     *
-     * Sends an initial [Event.Hello] with the [token] and process PID, then continuously
-     * dispatches incoming frames from [reader].
-     *
-     * Guarantees that [microphone] resources are cleaned up when the loop finishes or fails.
+     * Blocks the calling thread until the mod disconnects.
      */
     fun run() = try {
         /*

@@ -16,9 +16,6 @@ import su.plo.voice.mac.protocol.frame.FrameReader
 import su.plo.voice.mac.protocol.frame.FrameWriter
 import kotlin.system.exitProcess
 
-/**
- * Entry point of the microphone helper.
- */
 fun main(args: Array<String>) {
     val port = args.option("--port")?.toIntOrNull() ?: quit("--port is missing.")
     val tokenFile = args.option("--token-file") ?: quit("--token-file is missing.")
@@ -79,12 +76,6 @@ fun main(args: Array<String>) {
 private fun Array<String>.option(name: String): String? =
     indexOf(name).takeIf { it >= 0 && it + 1 < size }?.let { get(it + 1) }
 
-/**
- * Without a port and a token there is nobody to report to.
- *
- * The message only reaches a terminal when someone runs the helper by hand, which is exactly the
- * moment they are trying to work out what the arguments should have been.
- */
 private fun quit(message: String): Nothing {
     println(message)
     exitProcess(1)

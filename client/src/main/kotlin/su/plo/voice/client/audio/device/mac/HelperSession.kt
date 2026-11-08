@@ -32,10 +32,9 @@ private const val PING_INTERVAL_MS = 5_000L
 private const val WEDGE_TIMEOUT_MS = 15_000L
 
 /**
- * A live connection to one helper process.
+ * A live connection to helper process.
  *
- * Audio arrives on a reader thread and is handed to [onAudio], device list changes to
- * [onDevices]. Everything else is just request / response.
+ * [onAudio] and [onDevices] are called on the reader thread.
  */
 internal class HelperSession(private val socket: Socket, token: String) : Closeable {
     private val frames = FrameReader(socket.getInputStream().asSource().buffered())

@@ -55,9 +55,6 @@ class FrameWriter(private val sink: Sink) {
     }
 }
 
-/**
- * Reads frames written by [FrameWriter].
- */
 class FrameReader(private val source: Source) {
     /**
      * Returns null once the other side is gone.

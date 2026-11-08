@@ -16,7 +16,8 @@ private const val MAX_RETRY_DELAY_MS = 60_000L
 private val TOKEN_OWNER_ONLY = PosixFilePermissions.asFileAttribute(PosixFilePermissions.fromString("rw-------"))
 
 /**
- * Keeps at most one helper process around, and backs off when it will not start.
+ * Owns the single helper process shared by the factory and every device it opens.
+ * [session] starts it on demand and again after it dies. Failed starts back off exponentially until [restart].
  */
 internal class HelperSupervisor(private val onDevices: (Devices) -> Unit) {
     private val logger = BaseVoice.createLogger("HelperSupervisor")

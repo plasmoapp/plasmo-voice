@@ -2,11 +2,7 @@ package su.plo.voice.mac.helper.permission
 
 import su.plo.voice.mac.protocol.message.status.AuthStatus
 
-/**
- * The permission side of macOS, behind a door the session can knock on.
- */
 internal interface MicrophoneAccess {
-    /** Status of the microphone access. */
     val status: AuthStatus
 
     /**

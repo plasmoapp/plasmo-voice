@@ -19,14 +19,11 @@ sealed interface Response {
     @SerialName("permission")
     data class Permission(val status: AuthStatus) : Response
 
-    /** macOS was asked to open system settings on the microphone page. */
     @Serializable
     @SerialName("settings_opened")
     data object SettingsOpened : Response
 
     /**
-     * Audio is on its way.
-     *
      * [frameSamples] is how much every audio frame carries, which the mod needs before it can size
      * the buffer it reads from.
      */
@@ -39,12 +36,6 @@ sealed interface Response {
     @SerialName("closed")
     data object Closed : Response
 
-    /**
-     * Said out loud on purpose.
-     *
-     * The bug this whole helper exists for is a microphone that fails silently and hands back
-     * digital silence, so anything going wrong here is worth showing the player instead.
-     */
     @Serializable
     @SerialName("failure")
     data class Failure(val code: FailureCode, val message: String) : Response

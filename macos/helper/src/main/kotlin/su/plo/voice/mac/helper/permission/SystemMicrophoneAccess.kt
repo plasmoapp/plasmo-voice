@@ -11,8 +11,6 @@ import su.plo.voice.mac.protocol.message.status.AuthStatus
 private const val MICROPHONE_SETTINGS = "x-apple.systempreferences:com.apple.preference.security?Privacy_Microphone"
 
 /**
- * System microphone accessor.
- *
  * macOS grants the microphone to a signed bundle that declares `NSMicrophoneUsageDescription`.
  * Minecraft doesn't have this permission, so here we are.
  */

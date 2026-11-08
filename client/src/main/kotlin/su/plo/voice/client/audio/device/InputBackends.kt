@@ -9,9 +9,6 @@ import su.plo.voice.util.isMac
 
 /**
  * Turns the configured backend into the factories to try, best first.
- *
- * Everything after the first entry is a fallback, so a machine whose preferred backend is missing
- * or broken still ends up with a working microphone.
  */
 fun ClientConfig.Voice.inputBackends(): List<InputBackend> {
     migrateJavaxInput()
@@ -28,7 +25,6 @@ private fun macFallbacks(): List<InputBackend> = when {
     else -> listOf(InputBackend.JAVAX, InputBackend.COREAUDIO)
 }
 
-/** The factory the player's choice points at. */
 fun DeviceFactoryManager.inputFactory(config: ClientConfig.Voice): DeviceFactory =
     config.inputBackends().firstNotNullOfOrNull { getDeviceFactory(it.factoryName).orElse(null) }
         ?: throw IllegalStateException("No input device factory is registered")

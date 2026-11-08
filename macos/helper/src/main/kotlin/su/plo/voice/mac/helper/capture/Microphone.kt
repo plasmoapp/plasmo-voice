@@ -4,9 +4,6 @@ import su.plo.voice.mac.protocol.audio.CaptureFormat
 
 internal const val FRAME_MILLIS = 20
 
-/**
- * A source of ready to send audio frames.
- */
 internal interface Microphone {
     /**
      * Starts capturing in [format] and calls [onFrame] once per frame, on whichever thread the
@@ -18,9 +15,6 @@ internal interface Microphone {
      */
     fun open(format: CaptureFormat, deviceId: String?, onFrame: (ByteArray) -> Unit): Int
 
-    /**
-     * Closes capturing.
-     */
     fun close()
 }
 

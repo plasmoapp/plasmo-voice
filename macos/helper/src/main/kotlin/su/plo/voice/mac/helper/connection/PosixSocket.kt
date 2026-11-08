@@ -10,9 +10,6 @@ import platform.darwin.inet_addr
 import platform.posix.*
 import su.plo.voice.mac.helper.exception.ConnectionLostException
 
-/**
- * A raw loopback socket, readable and writable.
- */
 @OptIn(ExperimentalForeignApi::class, UnsafeIoApi::class)
 internal class PosixSocket(private val descriptor: Int) : RawSource, RawSink {
     override fun readAtMostTo(sink: Buffer, byteCount: Long): Long {
