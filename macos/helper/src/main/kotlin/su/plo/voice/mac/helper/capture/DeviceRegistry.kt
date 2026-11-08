@@ -181,7 +181,7 @@ private fun CFStringRef.asString(): String = memScoped {
      * https://developer.apple.com/documentation/corefoundation/cfstringgetlength(_:)
      */
     val length = CFStringGetLength(this@asString)
-    val capacity = length * 4 + 1 // Worst case
+    val capacity = CFStringGetMaximumSizeForEncoding(length, kCFStringEncodingUTF8) + 1
     val bytes = allocArray<ByteVar>(capacity)
 
     /*
