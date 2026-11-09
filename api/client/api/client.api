@@ -379,6 +379,7 @@ public abstract interface class su/plo/voice/api/client/config/ClientConfig$Voic
 	public abstract fun getDisableInputDevice ()Lsu/plo/config/entry/BooleanConfigEntry;
 	public abstract fun getDisabled ()Lsu/plo/config/entry/BooleanConfigEntry;
 	public abstract fun getHrtf ()Lsu/plo/config/entry/BooleanConfigEntry;
+	public abstract fun getInputBackend ()Lsu/plo/config/entry/EnumConfigEntry;
 	public abstract fun getInputDevice ()Lsu/plo/config/entry/ConfigEntry;
 	public abstract fun getMicrophoneDisabled ()Lsu/plo/config/entry/BooleanConfigEntry;
 	public abstract fun getMicrophoneVolume ()Lsu/plo/config/entry/DoubleConfigEntry;
@@ -417,6 +418,17 @@ public final class su/plo/voice/api/client/config/IconPosition : java/lang/Enum 
 	public final fun getY ()Ljava/lang/Integer;
 	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/IconPosition;
 	public static fun values ()[Lsu/plo/voice/api/client/config/IconPosition;
+}
+
+public final class su/plo/voice/api/client/config/InputBackend : java/lang/Enum {
+	public static final field AUTO Lsu/plo/voice/api/client/config/InputBackend;
+	public static final field COREAUDIO Lsu/plo/voice/api/client/config/InputBackend;
+	public static final field JAVAX Lsu/plo/voice/api/client/config/InputBackend;
+	public static final field OPEN_AL Lsu/plo/voice/api/client/config/InputBackend;
+	public static fun getEntries ()Lkotlin/enums/EnumEntries;
+	public final fun getFactoryName ()Ljava/lang/String;
+	public static fun valueOf (Ljava/lang/String;)Lsu/plo/voice/api/client/config/InputBackend;
+	public static fun values ()[Lsu/plo/voice/api/client/config/InputBackend;
 }
 
 public final class su/plo/voice/api/client/config/OverlappingSourceTypes : java/lang/Enum {

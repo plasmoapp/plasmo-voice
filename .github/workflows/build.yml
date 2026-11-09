@@ -6,6 +6,9 @@ on:
       snapshot:
         type: boolean
         default: false
+      require-signing:
+        type: boolean
+        default: false
 
 jobs:
   discover:
@@ -73,8 +76,71 @@ jobs:
             ~/.gradle/wrapper
           key: ${{ steps.key.outputs.key }}
 
+  mic-helper:
+    runs-on: macos-26
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: Set up JDK
+      uses: actions/setup-java@v5.7.0
+      with:
+        distribution: temurin
+        java-version: 21
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v6.3.0
+
+    - name: Import the signing certificate
+      id: signing
+      env:
+        CERTIFICATE: ${{ secrets.MACOS_SIGNING_P12 }}
+        CERTIFICATE_PASSWORD: ${{ secrets.MACOS_SIGNING_PASSWORD }}
+        REQUIRE_SIGNING: ${{ inputs.require-signing }}
+      run: |
+        if [ -z "$CERTIFICATE" ]; then
+          if [ "$REQUIRE_SIGNING" = "true" ]; then
+            echo "::error::no signing certificate."
+            exit 1
+          fi
+          echo "::warning::no signing certificate, the helper will be signed ad-hoc and the microphone grant will not survive an update."
+          exit 0
+        fi
+
+        KEYCHAIN="$RUNNER_TEMP/signing.keychain-db"
+        CERTIFICATE_FILE="$RUNNER_TEMP/certificate.p12"
+        trap 'rm -f "$CERTIFICATE_FILE"' EXIT
+
+        echo "$CERTIFICATE" | base64 -d > "$CERTIFICATE_FILE"
+        security create-keychain -p "" "$KEYCHAIN"
+        security set-keychain-settings "$KEYCHAIN"
+        security unlock-keychain -p "" "$KEYCHAIN"
+        security import "$CERTIFICATE_FILE" -k "$KEYCHAIN" -P "$CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+        security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "" "$KEYCHAIN" > /dev/null
+        security list-keychains -d user -s "$KEYCHAIN" $(security list-keychains -d user | tr -d '"')
+
+        IDENTITY=$(security find-identity -p codesigning "$KEYCHAIN" | grep -o '[0-9A-F]\{40\}' | head -1)
+        if [ -z "$IDENTITY" ]; then
+          echo "::error::the certificate holds no code signing identity."
+          exit 1
+        fi
+        echo "identity=$IDENTITY" >> "$GITHUB_OUTPUT"
+
+    - name: Build the microphone helper
+      env:
+        SNAPSHOT_ARG: ${{ inputs.snapshot && '-Psnapshot=true' || '' }}
+      run: ./gradlew :macos:helper:bundleZip --stacktrace -Ppv.mac.signIdentity="${{ steps.signing.outputs.identity }}" -Pproject.client.disable=true $SNAPSHOT_ARG
+
+    - name: Upload the bundle
+      uses: actions/upload-artifact@v7.0.1
+      with:
+        name: mic-helper
+        path: macos/helper/build/distributions/PVMicHelper.zip
+        if-no-files-found: error
+
   build-client:
-    needs: [discover, build-shared-cache]
+    needs: [discover, build-shared-cache, mic-helper]
     name: build-client (${{ matrix.chain.leaf }})
     runs-on: ubuntu-latest
     permissions:
@@ -106,10 +172,16 @@ jobs:
         key: ${{ steps.key.outputs.key }}
         restore-keys: ${{ steps.key.outputs.restore_key }}
 
+    - name: Download the microphone helper
+      uses: actions/download-artifact@v8.0.1
+      with:
+        name: mic-helper
+        path: build/mic-helper
+
     - name: Build ${{ matrix.chain.leaf }} chain with Gradle
       env:
         SNAPSHOT_ARG: ${{ inputs.snapshot && '-Psnapshot=true' || '' }}
-      run: ./gradlew ${{ matrix.chain.tasks }} --stacktrace -Pproject.client.only=${{ matrix.chain.leaf }} $SNAPSHOT_ARG
+      run: ./gradlew ${{ matrix.chain.tasks }} --stacktrace -Pproject.client.only=${{ matrix.chain.leaf }} -Ppv.mac.helperZip="$GITHUB_WORKSPACE/build/mic-helper/PVMicHelper.zip" $SNAPSHOT_ARG
 
     - name: Save Essential loom cache
       if: github.ref_name == github.event.repository.default_branch

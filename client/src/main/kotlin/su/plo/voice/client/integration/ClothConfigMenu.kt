@@ -15,6 +15,7 @@ import su.plo.config.entry.BooleanConfigEntry
 import su.plo.config.entry.IntConfigEntry
 import su.plo.slib.api.chat.component.McTextComponent
 import su.plo.voice.BaseVoice
+import su.plo.voice.api.client.config.InputBackend
 import su.plo.voice.client.ModVoiceClient
 import su.plo.voice.client.extension.toMinecraft
 import java.util.Optional
@@ -82,17 +83,7 @@ fun createClothConfigMenu(parent: Screen): Screen =
 
         category(McTextComponent.translatable("clothconfig.plasmovoice.devices")) {
             fun reloadInputDevice() {
-                // todo: deduplicate?
-                if (config.voice.disableInputDevice.value()) return
-
-                val devices = voiceClient.deviceManager
-                try {
-                    devices.inputDevice.ifPresent { it.close() }
-                    val newDevice = devices.openInputDevice(null)
-                    devices.setInputDevice(newDevice)
-                } catch (e: Exception) {
-                    BaseVoice.LOGGER.error("Failed to open input device", e)
-                }
+                voiceClient.deviceManager.reloadInputDevice()
             }
 
             addEntry(
@@ -100,7 +91,8 @@ fun createClothConfigMenu(parent: Screen): Screen =
                     .entryBuilder(
                         entryBuilder(),
                         McTextComponent.translatable("clothconfig.plasmovoice.devices.use_javax_input")
-                    ) { _ ->
+                    ) { javax ->
+                        config.voice.inputBackend.set(if (javax) InputBackend.JAVAX else InputBackend.AUTO)
                         reloadInputDevice()
                     }
                     .tooltip(McTextComponent.translatable("clothconfig.plasmovoice.devices.use_javax_input.tooltip"))

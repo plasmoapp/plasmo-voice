@@ -18,6 +18,12 @@ import su.plo.voice.api.client.audio.device.*;
 import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.event.EventSubscribe;
+import su.plo.voice.client.audio.device.InputBackendsKt;
+import su.plo.voice.client.audio.device.VoiceDeviceManager;
+import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactory;
+import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactoryKt;
+import su.plo.voice.client.audio.device.mac.LauncherMicrophone;
+import su.plo.voice.client.audio.device.mac.MicrophonePermissionException;
 import su.plo.voice.client.config.VoiceClientConfig;
 import su.plo.voice.client.gui.settings.MicrophoneTestController;
 import su.plo.voice.client.gui.settings.VoiceSettingsScreen;
@@ -25,12 +31,12 @@ import su.plo.voice.client.gui.settings.widget.ActivationThresholdWidget;
 import su.plo.voice.client.gui.settings.widget.DropDownWidget;
 import su.plo.voice.client.gui.settings.widget.OptionWidget;
 import su.plo.voice.client.gui.settings.widget.ToggleButton;
-import su.plo.voice.client.mac.AVAuthorizationStatus;
-import su.plo.voice.client.mac.AVCaptureDevice;
+import su.plo.voice.mac.protocol.message.status.AuthStatus;
 
 import su.plo.lib.mod.client.render.Colors;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public final class DevicesTabWidget extends TabWidget {
@@ -38,6 +44,7 @@ public final class DevicesTabWidget extends TabWidget {
     private final MicrophoneTestController testController;
     private final DeviceManager devices;
     private final DeviceFactoryManager deviceFactories;
+    private final AtomicBoolean resolvingMacPermission = new AtomicBoolean(false);
 
     private ActivationThresholdWidget threshold;
 
@@ -147,61 +154,52 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private OptionWidget<CompositeRowWidget> createMicrophoneEntry() {
-        Optional<DeviceFactory> deviceFactory;
-
-        if (config.getVoice().getUseJavaxInput().value()) {
-            deviceFactory = deviceFactories.getDeviceFactory("JAVAX_INPUT");
-            if (!deviceFactory.isPresent())
-                throw new IllegalStateException("Javax Input device factory not initialized");
-        } else {
-            deviceFactory = deviceFactories.getDeviceFactory("AL_INPUT");
-            if (!deviceFactory.isPresent()) throw new IllegalStateException("Al Input device factory not initialized");
-        }
+        Optional<DeviceFactory> deviceFactory = Optional.of(
+                InputBackendsKt.inputFactory(deviceFactories, config.getVoice())
+        );
 
         ImmutableList<String> inputDeviceNames = deviceFactory.get().getDeviceNames();
         Optional<InputDevice> inputDevice = this.devices.getInputDevice();
 
         IconButton inputNotAvailable = null;
-        if (devices.getInputDeviceError().isPresent()) {
+        if (devices.getInputDeviceError().isPresent() || hasMacMicrophoneError()) {
             inputNotAvailable = new IconButton(
                     0,
                     0,
                     20,
                     20,
-                    button -> MinecraftUtil.openUri("https://plasmovoice.com/docs/client/microphone-not-available"),
-                    (button, mouseX, mouseY) -> {
+                    button -> {
                         if (Platform.isMac()) {
-                            AVAuthorizationStatus authorizationStatus = AVCaptureDevice.INSTANCE.getAuthorizationStatus();
-                            if (authorizationStatus == AVAuthorizationStatus.RESTRICTED) {
-                                parent.setTooltip(
-                                        McTextComponent.translatable(
-                                                "message.plasmovoice.macos_incompatible_launcher",
-                                                McTextComponent.literal("Prism Launcher")
-                                        ),
-                                        mouseX,
-                                        mouseY
-                                );
-                                return;
-                            }
+                            resolveMacMicrophonePermission();
+                        } else {
+                            MinecraftUtil.openUri("https://plasmovoice.com/docs/client/microphone-not-available");
+                        }
+                    },
+                    (button, mouseX, mouseY) -> {
+                        AuthStatus macPermission = macMicrophonePermissionStatus();
+
+                        McTextComponent tooltip;
+                        if (macPermission != null) {
+                            tooltip = McTextComponent.translatable(
+                                    "gui.plasmovoice.devices.mac_microphone_permission_denied.tooltip"
+                            );
+                        } else {
+                            String configInputDevice = config.getVoice().getInputDevice().value();
+
+                            McTextComponent currentDeviceName = GuiUtil.formatDeviceName(
+                                    configInputDevice.isEmpty()
+                                            ? deviceFactory.get().getDefaultDeviceName()
+                                            : configInputDevice,
+                                    deviceFactory.get()
+                            );
+
+                            tooltip = McTextComponent.translatable(
+                                    "gui.plasmovoice.devices.failed_to_initialize_microphone.tooltip",
+                                    currentDeviceName
+                            );
                         }
 
-                        String configInputDevice = config.getVoice().getInputDevice().value();
-
-                        McTextComponent currentDeviceName = GuiUtil.formatDeviceName(
-                                configInputDevice.isEmpty()
-                                        ? deviceFactory.get().getDefaultDeviceName()
-                                        : configInputDevice,
-                                deviceFactory.get()
-                        );
-
-                        parent.setTooltip(
-                                McTextComponent.translatable(
-                                        "gui.plasmovoice.devices.failed_to_initialize_microphone.tooltip",
-                                        currentDeviceName
-                                ),
-                                mouseX,
-                                mouseY
-                        );
+                        parent.setTooltip(tooltip, mouseX, mouseY);
                     },
                     ResourceLocationUtil.mod("textures/icons/warning.png"),
                     false
@@ -366,16 +364,64 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private void reloadInputDevice() {
-        if (config.getVoice().getDisableInputDevice().value()) return;
+        ((VoiceDeviceManager) devices).reloadInputDevice()
+                .whenComplete((ignored, e) -> Minecraft.getInstance().execute(this::init));
+    }
 
-        try {
-            devices.getInputDevice().ifPresent(InputDevice::close);
-            InputDevice newDevice = devices.openInputDevice(null);
-            devices.setInputDevice(newDevice);
+    private boolean hasMacMicrophoneError() {
+        if (!Platform.isMac()) return false;
 
-            Minecraft.getInstance().execute(this::init);
-        } catch (Exception e) {
-            BaseVoice.LOGGER.error("Failed to open input device", e);
+        DeviceFactory factory = deviceFactories.getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT).orElse(null);
+        return factory instanceof CoreAudioInputDeviceFactory
+                && ((CoreAudioInputDeviceFactory) factory).getLastError() != null;
+    }
+
+    private boolean isLauncherMicrophoneRefused() {
+        return devices.getInputDeviceError().orElse(null) instanceof MicrophonePermissionException
+                && LauncherMicrophone.getRefusal() != null;
+    }
+
+    private AuthStatus macMicrophonePermissionStatus() {
+        if (!Platform.isMac()) return null;
+
+        if (isLauncherMicrophoneRefused()) return LauncherMicrophone.getRefusal();
+
+        DeviceFactory factory = deviceFactories.getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT).orElse(null);
+        if (!(factory instanceof CoreAudioInputDeviceFactory)) return null;
+
+        Throwable lastError = ((CoreAudioInputDeviceFactory) factory).getLastError();
+        return lastError instanceof MicrophonePermissionException
+                ? ((MicrophonePermissionException) lastError).getStatus()
+                : null;
+    }
+
+    private void resolveMacMicrophonePermission() {
+        if (isLauncherMicrophoneRefused()) {
+            LauncherMicrophone.resolve(() -> Minecraft.getInstance().execute(this::reloadInputDevice));
+            return;
         }
+
+        DeviceFactory factory = deviceFactories.getDeviceFactory(CoreAudioInputDeviceFactoryKt.COREAUDIO_INPUT).orElse(null);
+        if (!(factory instanceof CoreAudioInputDeviceFactory)) {
+            MinecraftUtil.openUri("https://plasmovoice.com/docs/client/microphone-not-available");
+            return;
+        }
+
+        if (!resolvingMacPermission.compareAndSet(false, true)) return;
+
+        CoreAudioInputDeviceFactory coreAudio = (CoreAudioInputDeviceFactory) factory;
+        Thread thread = new Thread(() -> {
+            try {
+                if (coreAudio.resolvePermission() == AuthStatus.AUTHORIZED) {
+                    Minecraft.getInstance().execute(this::reloadInputDevice);
+                }
+            } catch (Exception e) {
+                BaseVoice.LOGGER.error("Failed to resolve the macOS microphone permission", e);
+            } finally {
+                resolvingMacPermission.set(false);
+            }
+        }, "Plasmo Voice Permission");
+        thread.setDaemon(true);
+        thread.start();
     }
 }

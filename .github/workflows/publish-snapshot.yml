@@ -12,6 +12,7 @@ concurrency:
 jobs:
   build:
     uses: ./.github/workflows/build.yml
+    secrets: inherit
     with:
       snapshot: true
 

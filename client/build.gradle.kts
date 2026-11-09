@@ -73,6 +73,11 @@ if (isMainProject) {
 
 val shadowCommon = configurations.create("shadowCommon")
 
+val macHelper = configurations.create("macHelper")
+val macHelperZip: String? = providers.gradleProperty("pv.mac.helperZip").orNull
+val buildMacHelperLocally = providers.gradleProperty("pv.mac.buildLocal").isPresent ||
+        org.gradle.internal.os.OperatingSystem.current().isMacOsX
+
 val mcVersionsRange = project.property("mod.minecraft_versions") as String
 val neoForgeVersionRange = project.findProperty("mod.neoforge_version") as String? ?: ""
 val fabricApiVersionRange = project.findProperty("mod.fabric_api_version") as String? ?: "*"
@@ -165,7 +170,8 @@ dependencies {
         ":server:common",
         ":server-proxy-common",
         ":common",
-        ":protocol"
+        ":protocol",
+        ":macos:protocol"
     )
 
     includedProjects.forEach {
@@ -174,6 +180,12 @@ dependencies {
     }
 
     shadowCommon(libs.rnnoise.jni)
+
+    if (macHelperZip != null) {
+        macHelper(files(macHelperZip))
+    } else if (buildMacHelperLocally) {
+        macHelper(project(path = ":macos:helper", configuration = "macHelperBundle"))
+    }
 
     // slib
     slibPlatform(
@@ -194,6 +206,11 @@ tasks {
     }
 
     processResources {
+        from(macHelper) {
+            into("natives/macos")
+            rename { "helper.zip" }
+        }
+
         if (platform.mcVersion >= 12102) {
             exclude("assets/plasmovoice/shaders/core/*.json")
         }
