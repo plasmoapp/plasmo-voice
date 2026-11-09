@@ -71,7 +71,7 @@ public final class ClientLoopbackSource implements LoopbackSource {
 
     @Override
     public void write(short[] samples) {
-        if (source == null) return; // not initialized yet
+        if (isClosed()) return;
 
         if (!relative) {
             LocalPlayer player = Minecraft.getInstance().player;
