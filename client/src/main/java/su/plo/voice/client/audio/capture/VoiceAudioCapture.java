@@ -376,6 +376,8 @@ public final class VoiceAudioCapture implements AudioCapture {
         if (activation.getTranslation().equals("pv.activation.parent")) return;
 
         activationStreams.remove(activation.getId());
+        activation.getMonoEncoder().ifPresent(AudioEncoder::reset);
+        activation.getStereoEncoder().ifPresent(AudioEncoder::reset);
         resetDefaultEncoders(activation);
 
         voiceClient.getServerConnection().ifPresent(connection ->
