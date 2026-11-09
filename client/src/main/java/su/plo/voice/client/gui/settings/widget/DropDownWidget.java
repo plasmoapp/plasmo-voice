@@ -23,6 +23,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
     private final DropDownWidgetList list;
 
     private boolean open;
+    private int currentElementIndex = 0;
 
     public DropDownWidget(
             @NotNull VoiceSettingsScreen parent,
@@ -61,11 +62,13 @@ public final class DropDownWidget extends GuiAbstractWidget {
                 tooltips,
                 index -> {
                     this.text = elements.get(index);
+                    this.currentElementIndex = index;
                     switchOpen();
                     playDownSound();
                     onSelect.accept(index);
                 }
         );
+        this.currentElementIndex = Math.clamp(elements.indexOf(message), 0, elements.size() - 1);
     }
 
     @Override
@@ -138,7 +141,17 @@ public final class DropDownWidget extends GuiAbstractWidget {
             context.requestCursor(isActive() ? GuiCursor.POINTING_HAND : GuiCursor.NOT_ALLOWED);
         }
 
-        if (!open) return;
+        if (!open) {
+            if (super.isMouseOver(mouseX, mouseY)) {
+                parent.setTooltip(
+                        list.elementTooltip(currentElementIndex, elementTextWidth()),
+                        mouseX,
+                        mouseY
+                );
+            }
+
+            return;
+        }
 
         list.render(context, mouseX, mouseY, delta);
     }
@@ -171,10 +184,14 @@ public final class DropDownWidget extends GuiAbstractWidget {
         }
     }
 
+    private int elementTextWidth() {
+        return active ? (width - 23) : (width - 5);
+    }
+
     private void renderText(@NotNull GuiRenderContext context) {
         context.drawOrderedString(
                 getText(),
-                active ? (width - 23) : (width - 5),
+                elementTextWidth(),
                 x + 5,
                 y + (height / 2) - (RenderUtil.getFontHeight() / 2),
                 active ? Colors.TEXT : Colors.TEXT_DISABLED

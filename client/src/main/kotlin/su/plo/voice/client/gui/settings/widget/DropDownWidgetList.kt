@@ -71,6 +71,13 @@ class DropDownWidgetList(
     override fun scrollbarX(): Int =
         x + width - 11
 
+    fun elementTooltip(elementIndex: Int, containerWidth: Int): McTextComponent? {
+        val element = elements.getOrNull(elementIndex) ?: return null
+
+        return tooltips?.apply(elementIndex)
+            ?: element.takeIf { tooltipOnOverflow && RenderUtil.getTextWidth(element) > containerWidth }
+    }
+
     private fun shouldRenderToTop(): Boolean {
         val scaledHeight = Minecraft.getInstance().window.guiScaledHeight
 
@@ -105,8 +112,7 @@ class DropDownWidgetList(
             val entryPaddingRight = if (hasScroll) 23 else 10
 
             if (hovered || isFocused) {
-                val tooltip = tooltips?.apply(index)
-                    ?: element.takeIf { tooltipOnOverflow && RenderUtil.getTextWidth(element) > (width - entryPaddingRight) }
+                val tooltip = elementTooltip(index, width - entryPaddingRight)
 
                 if (tooltip != null && !isMouseOverScrollbar(mouseX.toDouble(), mouseY.toDouble())) {
                     if (hovered) {
