@@ -9,6 +9,7 @@ import su.plo.slib.api.logging.McLogger;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.PlasmoVoiceClient;
 import su.plo.voice.api.client.audio.device.AlContextOutputDevice;
+import su.plo.voice.api.client.audio.device.AudioDevice;
 import su.plo.voice.api.client.audio.device.DeviceException;
 import su.plo.voice.api.client.audio.device.DeviceFactory;
 import su.plo.voice.api.client.audio.device.DeviceManager;
@@ -49,14 +50,13 @@ public final class VoiceDeviceManager implements DeviceManager {
 
     private ScheduledFuture<?> job;
 
-    private final ExecutorService inputExecutor = Executors.newSingleThreadExecutor(runnable -> {
-        Thread thread = new Thread(runnable, "Plasmo Voice Input Device");
-        thread.setDaemon(true);
-        return thread;
-    });
-    private volatile CompletableFuture<Void> inputReload = CompletableFuture.completedFuture(null);
+    private final ExecutorService outputExecutor = newDeviceExecutor("Plasmo Voice Output Device");
+    private volatile CompletableFuture<AlContextOutputDevice> outputReload = CompletableFuture.completedFuture(null);
 
-    private String failedOutputDevices = "";
+    private final ExecutorService inputExecutor = newDeviceExecutor("Plasmo Voice Input Device");
+    private volatile CompletableFuture<InputDevice> inputReload = CompletableFuture.completedFuture(null);
+
+    private volatile String failedOutputDevices = "";
     private volatile String failedInputDevices = "";
 
     @Override
@@ -194,28 +194,25 @@ public final class VoiceDeviceManager implements DeviceManager {
                 voiceClient.getDeviceFactoryManager(), config.getVoice()
         );
 
-        if (outputDevice == null) {
-            List<String> deviceNames = outputFactory.getDeviceNames();
-            String deviceNamesString = String.join("\n", deviceNames);
+        if (outputReload.isDone()) {
+            if (outputDevice == null) {
+                List<String> deviceNames = outputFactory.getDeviceNames();
+                String deviceNamesString = String.join("\n", deviceNames);
 
-            if (deviceNames.size() > 0 && !deviceNamesString.equals(failedOutputDevices)) {
-                try {
-                    setOutputDevice(openOutputDevice(null));
-                    failedOutputDevices = "";
-                } catch (Exception e) {
-                    LOGGER.error("Failed to open primary OpenAL output device", e);
-                    failedOutputDevices = deviceNamesString;
+                if (deviceNames.size() > 0 && !deviceNamesString.equals(failedOutputDevices)) {
+                    reloadOutputDevice().whenComplete((ignored, e) -> {
+                        failedOutputDevices = e == null ? "" : deviceNamesString;
+                        voiceClient.getSourceManager().clear();
+                    });
+
+                    if (!voiceClient.getAudioCapture().isActive() && inputDevice != null) {
+                        voiceClient.getAudioCapture().start();
+                    }
                 }
-
-                if (!voiceClient.getAudioCapture().isActive() && inputDevice != null) {
-                    voiceClient.getAudioCapture().start();
-                }
-
-                voiceClient.getSourceManager().clear();
+            } else if (!outputDevice.isOpen()) {
+                outputDevice.close();
+                setOutputDevice(null);
             }
-        } else if (!outputDevice.isOpen()) {
-            outputDevice.close();
-            setOutputDevice(null);
         }
 
         if (inputDevice == null) {
@@ -274,11 +271,39 @@ public final class VoiceDeviceManager implements DeviceManager {
         throw new DeviceException("No input backend could open a device", lastError);
     }
 
-    public synchronized @NotNull CompletableFuture<Void> reloadInputDevice() {
+    @Override
+    public synchronized @NotNull CompletableFuture<@Nullable AlContextOutputDevice> reloadOutputDevice() {
+        this.outputReload = CompletableFuture.supplyAsync(() -> {
+            getOutputDevice().ifPresent(this::closeLogging);
+
+            AlContextOutputDevice device;
+            try {
+                device = openOutputDevice(null);
+            } catch (Exception e) {
+                setOutputDevice(null);
+                LOGGER.error("Failed to open primary OpenAL output device", e);
+                throw new CompletionException(e);
+            }
+
+            if (!voiceClient.getServerInfo().isPresent()) {
+                device.close();
+                setOutputDevice(null);
+                return null;
+            }
+
+            setOutputDevice(device);
+            return device;
+        }, outputExecutor);
+
+        return outputReload;
+    }
+
+    @Override
+    public synchronized @NotNull CompletableFuture<@Nullable InputDevice> reloadInputDevice() {
         if (config.getVoice().getDisableInputDevice().value()) return CompletableFuture.completedFuture(null);
 
-        this.inputReload = CompletableFuture.runAsync(() -> {
-            getInputDevice().ifPresent(InputDevice::close);
+        this.inputReload = CompletableFuture.supplyAsync(() -> {
+            getInputDevice().ifPresent(this::closeLogging);
 
             InputDevice device;
             try {
@@ -293,10 +318,11 @@ public final class VoiceDeviceManager implements DeviceManager {
             if (!voiceClient.getServerInfo().isPresent()) {
                 device.close();
                 setInputDevice(null);
-                return;
+                return null;
             }
 
             setInputDevice(device);
+            return device;
         }, inputExecutor);
 
         return inputReload;
@@ -347,5 +373,22 @@ public final class VoiceDeviceManager implements DeviceManager {
         }
 
         return deviceName;
+    }
+
+    private void closeLogging(@NotNull AudioDevice device) {
+        try {
+            device.close();
+        } catch (Exception e) {
+            LOGGER.error("Failed to close device {}", device.getName(), e);
+            throw new CompletionException(e);
+        }
+    }
+
+    private @NotNull ExecutorService newDeviceExecutor(@NotNull String threadName) {
+        return Executors.newSingleThreadExecutor(runnable -> {
+            Thread thread = new Thread(runnable, threadName);
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 }

@@ -19,7 +19,6 @@ import su.plo.voice.api.client.event.audio.device.DeviceClosedEvent;
 import su.plo.voice.api.client.event.audio.device.DeviceOpenEvent;
 import su.plo.voice.api.event.EventSubscribe;
 import su.plo.voice.client.audio.device.InputBackendsKt;
-import su.plo.voice.client.audio.device.VoiceDeviceManager;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactory;
 import su.plo.voice.client.audio.device.mac.CoreAudioInputDeviceFactoryKt;
 import su.plo.voice.client.audio.device.mac.LauncherMicrophone;
@@ -37,7 +36,6 @@ import su.plo.lib.mod.client.render.Colors;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 public final class DevicesTabWidget extends TabWidget {
 
@@ -320,15 +318,8 @@ public final class DevicesTabWidget extends TabWidget {
     }
 
     private OptionWidget<ToggleButton> createHrtfEntry() {
-        Consumer<Boolean> onUpdate = (toggled) -> {
-            devices.getOutputDevice().ifPresent(device -> {
-                try {
-                    device.reload();
-                } catch (DeviceException e) {
-                    BaseVoice.LOGGER.warn("Failed to reload device: {}", e.getMessage());
-                    e.printStackTrace();
-                }
-            });
+        Runnable onUpdate = () -> {
+            if (devices.getOutputDevice().isPresent()) reloadOutputDevice();
         };
 
         ToggleButton toggleButton = new ToggleButton(
@@ -337,7 +328,7 @@ public final class DevicesTabWidget extends TabWidget {
                 0,
                 ELEMENT_WIDTH,
                 20,
-                onUpdate::accept
+                (toggled) -> onUpdate.run()
         );
 
         return new OptionWidget<>(
@@ -346,25 +337,20 @@ public final class DevicesTabWidget extends TabWidget {
                 toggleButton,
                 config.getVoice().getHrtf(),
                 McTextComponent.translatable("gui.plasmovoice.devices.hrtf.tooltip"),
-                (button, element) -> onUpdate.accept(config.getVoice().getHrtf().value())
+                (button, element) -> onUpdate.run()
         );
     }
 
     private void reloadOutputDevice() {
-        try {
-            devices.getOutputDevice().ifPresent(AlContextOutputDevice::close);
-            AlContextOutputDevice newDevice = devices.openOutputDevice(null);
-            devices.setOutputDevice(newDevice);
-
-            testController.restart();
-            Minecraft.getInstance().execute(this::init);
-        } catch (Exception e) {
-            BaseVoice.LOGGER.error("Failed to open primary OpenAL output device", e);
-        }
+        devices.reloadOutputDevice()
+                .whenComplete((ignored, e) -> Minecraft.getInstance().execute(() -> {
+                    if (e == null) testController.restart();
+                    init();
+                }));
     }
 
     private void reloadInputDevice() {
-        ((VoiceDeviceManager) devices).reloadInputDevice()
+        devices.reloadInputDevice()
                 .whenComplete((ignored, e) -> Minecraft.getInstance().execute(this::init));
     }
 

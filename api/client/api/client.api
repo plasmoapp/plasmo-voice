@@ -131,6 +131,8 @@ public abstract interface class su/plo/voice/api/client/audio/device/DeviceManag
 	public abstract fun getOutputDevice ()Ljava/util/Optional;
 	public abstract fun openInputDevice (Ljavax/sound/sampled/AudioFormat;)Lsu/plo/voice/api/client/audio/device/InputDevice;
 	public abstract fun openOutputDevice (Ljavax/sound/sampled/AudioFormat;)Lsu/plo/voice/api/client/audio/device/AlContextOutputDevice;
+	public abstract fun reloadInputDevice ()Ljava/util/concurrent/CompletableFuture;
+	public abstract fun reloadOutputDevice ()Ljava/util/concurrent/CompletableFuture;
 	public fun setInputDevice (Lsu/plo/voice/api/client/audio/device/InputDevice;)V
 	public abstract fun setInputDevice (Lsu/plo/voice/api/client/audio/device/InputDevice;Ljava/lang/Throwable;)V
 	public abstract fun setOutputDevice (Lsu/plo/voice/api/client/audio/device/AlContextOutputDevice;)V

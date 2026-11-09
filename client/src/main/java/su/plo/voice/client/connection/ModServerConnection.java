@@ -14,9 +14,7 @@ import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.voice.BaseVoice;
 import su.plo.voice.api.client.audio.capture.AudioCapture;
 import su.plo.voice.api.client.audio.capture.ClientActivationManager;
-import su.plo.voice.api.client.audio.device.AlContextOutputDevice;
 import su.plo.voice.api.client.audio.line.ClientSourceLineManager;
-import su.plo.voice.api.client.audio.source.ClientSourceManager;
 import su.plo.voice.api.client.connection.ServerConnection;
 import su.plo.voice.api.client.connection.ServerInfo;
 import su.plo.voice.api.client.event.connection.*;
@@ -43,7 +41,6 @@ import su.plo.voice.proto.packets.tcp.serverbound.PlayerInfoPacket;
 import su.plo.voice.server.ModVoiceServer;
 
 import javax.crypto.Cipher;
-import javax.sound.sampled.AudioFormat;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.KeyPair;
@@ -324,22 +321,7 @@ public final class ModServerConnection implements ServerConnection {
         audioCapture.start();
         audioCapture.initialize(serverInfo);
 
-        // clear & initialize primary output device
-        AudioFormat format = new AudioFormat(
-                (float) serverInfo.getVoiceInfo().getCaptureInfo().getSampleRate(),
-                16,
-                1,
-                true,
-                false
-        );
-
-        try {
-            AlContextOutputDevice outputDevice = voiceClient.getDeviceManager().openOutputDevice(format);
-            voiceClient.getDeviceManager().setOutputDevice(outputDevice);
-        } catch (Exception e) {
-            LOGGER.error("Failed to open primary OpenAL output device", e);
-        }
-
+        voiceClient.getDeviceManager().reloadOutputDevice();
         voiceClient.getDeviceManager().startJob();
 
         ServerInfoInitializedEvent event = new ServerInfoInitializedEvent(serverInfo, packet);

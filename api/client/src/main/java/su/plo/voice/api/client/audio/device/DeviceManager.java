@@ -6,6 +6,7 @@ import su.plo.voice.api.client.connection.ServerInfo;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Optional;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Manages audio devices.
@@ -94,4 +95,31 @@ public interface DeviceManager {
      * @throws DeviceException If there is an issue with opening an output device.
      */
     @NotNull AlContextOutputDevice openOutputDevice(@Nullable AudioFormat format) throws DeviceException;
+
+    /**
+     * Closes the current output device and opens a new one in the background,
+     * using the configured device name and the current {@link ServerInfo} voice format.
+     * </br>
+     * Reloads run one at a time, in the order they were requested.
+     * The new device is set in the manager before the returned future completes.
+     * If the player disconnects while the device is opening, the device is closed and not set.
+     *
+     * @return A future that completes with the new device, or with null if the player disconnected,
+     * or completes exceptionally if a new device couldn't be opened.
+     */
+    @NotNull CompletableFuture<@Nullable AlContextOutputDevice> reloadOutputDevice();
+
+    /**
+     * Closes the current input device and opens a new one in the background,
+     * using the configured device name, input backend and the current {@link ServerInfo} voice format.
+     * </br>
+     * Reloads run one at a time, in the order they were requested.
+     * The new device is set in the manager before the returned future completes.
+     * If the player disconnects while the device is opening, the device is closed and not set.
+     * Does nothing if the input device is disabled in the config.
+     *
+     * @return A future that completes with the new device, or with null if the player disconnected
+     * or the input device is disabled, or completes exceptionally if a new device couldn't be opened.
+     */
+    @NotNull CompletableFuture<@Nullable InputDevice> reloadInputDevice();
 }
