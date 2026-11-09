@@ -78,6 +78,7 @@ class AlOutputDevice
 
     private var hasDisconnectEXT = false
     private var disconnected = false
+    private val closing = AtomicBoolean(false)
     private val closed = AtomicBoolean(false)
 
     private val mutex = Mutex()
@@ -103,17 +104,20 @@ class AlOutputDevice
     }
 
     override fun close() {
-        if (!closed.compareAndSet(false, true)) return
+        if (!closing.compareAndSet(false, true)) return
 
-        if (devicePointer != 0L) {
-            runBlocking(coroutineScope.coroutineContext) {
-                mutex.withLock {
-                    closeSync()
+        try {
+            if (devicePointer != 0L) {
+                runBlocking(coroutineScope.coroutineContext) {
+                    mutex.withLock {
+                        closeSync()
+                    }
                 }
             }
+        } finally {
+            closed.set(true)
+            dispatcher.close()
         }
-
-        dispatcher.close()
     }
 
     override fun isOpen(): Boolean {
@@ -207,7 +211,7 @@ class AlOutputDevice
 
     @EventSubscribe(priority = EventPriority.LOWEST)
     fun onSourceClosed(event: AlSourceClosedEvent) {
-        if (closed.get()) return
+        if (closing.get()) return
         coroutineScope.launch {
             mutex.withLock {
                 sources.remove(event.source)
