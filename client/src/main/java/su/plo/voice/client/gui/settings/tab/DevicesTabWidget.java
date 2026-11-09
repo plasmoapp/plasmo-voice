@@ -213,6 +213,7 @@ public final class DevicesTabWidget extends TabWidget {
                 20,
                 GuiUtil.formatDeviceName(inputDevice.orElse(null), deviceFactory.get()),
                 GuiUtil.formatDeviceNames(inputDeviceNames, deviceFactory.get()),
+                inputDevice.map(device -> inputDeviceNames.indexOf(device.getName())).orElse(-1),
                 true,
                 (index) -> {
                     String deviceName = inputDeviceNames.get(index);
@@ -242,7 +243,10 @@ public final class DevicesTabWidget extends TabWidget {
                 config.getVoice().getInputDevice(),
                 null,
                 (button, element) -> {
-                    dropdown.setText(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
+                    dropdown.setSelected(
+                            inputDeviceNames.indexOf(deviceFactory.get().getDefaultDeviceName()),
+                            GuiUtil.formatDeviceName((String) null, deviceFactory.get())
+                    );
                     reloadInputDevice();
                 }
         );
@@ -288,6 +292,7 @@ public final class DevicesTabWidget extends TabWidget {
                 20,
                 GuiUtil.formatDeviceName(outputDevice.orElse(null), deviceFactory.get()),
                 GuiUtil.formatDeviceNames(outputDeviceNames, deviceFactory.get()),
+                outputDevice.map(device -> outputDeviceNames.indexOf(device.getName())).orElse(-1),
                 true,
                 (index) -> {
                     String deviceName = outputDeviceNames.get(index);
@@ -311,7 +316,10 @@ public final class DevicesTabWidget extends TabWidget {
                 config.getVoice().getOutputDevice(),
                 null,
                 (button, element) -> {
-                    element.setText(GuiUtil.formatDeviceName((String) null, deviceFactory.get()));
+                    element.setSelected(
+                            outputDeviceNames.indexOf(deviceFactory.get().getDefaultDeviceName()),
+                            GuiUtil.formatDeviceName((String) null, deviceFactory.get())
+                    );
                     reloadOutputDevice();
                 }
         );

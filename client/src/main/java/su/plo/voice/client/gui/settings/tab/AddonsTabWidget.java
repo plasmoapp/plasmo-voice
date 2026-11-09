@@ -86,6 +86,7 @@ public final class AddonsTabWidget extends TabWidget {
                         .stream()
                         .map(McTextComponent::translatable)
                         .collect(Collectors.toList()),
+                configEntry.value(),
                 widget.isElementTooltip(),
                 configEntry::set
         );
@@ -96,7 +97,10 @@ public final class AddonsTabWidget extends TabWidget {
                 dropdown,
                 configEntry,
                 null,
-                (button, element) -> element.setText(McTextComponent.translatable(widget.getElements().get(configEntry.value())))
+                (button, element) -> element.setSelected(
+                        configEntry.value(),
+                        McTextComponent.translatable(widget.getElements().get(configEntry.value()))
+                )
         );
     }
 }

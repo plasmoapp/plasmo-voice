@@ -126,6 +126,7 @@ public abstract class TabWidget extends ScrollContainer {
                 20,
                 elements.get(entry.value().ordinal()),
                 elements,
+                entry.value().ordinal(),
                 tooltipOnOverflow,
                 selected -> entry.set(enumClass.getEnumConstants()[selected])
         );
@@ -136,7 +137,10 @@ public abstract class TabWidget extends ScrollContainer {
                 dropdown,
                 entry,
                 tooltip,
-                (button, element) -> element.setText(elements.get(entry.getDefault().ordinal()))
+                (button, element) -> {
+                    int defaultIndex = entry.getDefault().ordinal();
+                    element.setSelected(defaultIndex, elements.get(defaultIndex));
+                }
         );
     }
 

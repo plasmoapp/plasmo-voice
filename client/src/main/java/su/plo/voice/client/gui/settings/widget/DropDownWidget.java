@@ -23,7 +23,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
     private final DropDownWidgetList list;
 
     private boolean open;
-    private int currentElementIndex = 0;
+    private int currentElementIndex;
 
     public DropDownWidget(
             @NotNull VoiceSettingsScreen parent,
@@ -33,10 +33,11 @@ public final class DropDownWidget extends GuiAbstractWidget {
             int height,
             @NotNull McTextComponent message,
             @NotNull List<McTextComponent> elements,
+            int selectedIndex,
             boolean tooltipOnOverflow,
             @NotNull Consumer<Integer> onSelect
     ) {
-        this(parent, x, y, width, height, message, elements, tooltipOnOverflow, null, onSelect);
+        this(parent, x, y, width, height, message, elements, selectedIndex, tooltipOnOverflow, null, onSelect);
     }
 
     public DropDownWidget(
@@ -47,6 +48,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
             int height,
             @NotNull McTextComponent message,
             @NotNull List<McTextComponent> elements,
+            int selectedIndex,
             boolean tooltipOnOverflow,
             @Nullable IntFunction<McTextComponent> tooltips,
             @NotNull Consumer<Integer> onSelect
@@ -68,7 +70,7 @@ public final class DropDownWidget extends GuiAbstractWidget {
                     onSelect.accept(index);
                 }
         );
-        this.currentElementIndex = Math.clamp(elements.indexOf(message), 0, elements.size() - 1);
+        this.currentElementIndex = selectedIndex;
     }
 
     @Override
@@ -171,6 +173,11 @@ public final class DropDownWidget extends GuiAbstractWidget {
     @Override
     public boolean isMouseOver(double mouseX, double mouseY) {
         return (open && list.isMouseOver(mouseX, mouseY)) || super.isMouseOver(mouseX, mouseY);
+    }
+
+    public void setSelected(int index, @NotNull McTextComponent text) {
+        this.currentElementIndex = index;
+        setText(text);
     }
 
     private void switchOpen() {

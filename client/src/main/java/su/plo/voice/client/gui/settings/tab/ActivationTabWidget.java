@@ -212,6 +212,7 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 20,
                 TYPES.get(activation.getType().ordinal()),
                 canInherit ? TYPES : NO_INHERIT_TYPES,
+                activation.getType().ordinal(),
                 false,
                 (index) -> createTypeTooltip(ClientActivation.Type.values()[index]),
                 (index) -> {
@@ -243,7 +244,10 @@ public final class ActivationTabWidget extends AbstractHotKeysTabWidget {
                 activationConfig.getConfigType(),
                 null,
                 (btn, element) -> {
-                    dropdown.setText(TYPES.get(activation.getType().ordinal()));
+                    dropdown.setSelected(
+                            activation.getType().ordinal(),
+                            TYPES.get(activation.getType().ordinal())
+                    );
                     init();
                 },
                 createToggleStateButtons(

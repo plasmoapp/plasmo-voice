@@ -124,6 +124,7 @@ public final class OverlayTabWidget extends TabWidget {
                     20,
                     OVERLAY_DISPLAYS.get(overlayDisplayIndex(configEntry.value())),
                     OVERLAY_DISPLAYS,
+                    overlayDisplayIndex(configEntry.value()),
                     true,
                     (index) -> {
                         switch (index) {
@@ -146,7 +147,7 @@ public final class OverlayTabWidget extends TabWidget {
                     widget,
                     configEntry,
                     null,
-                    (button, element) -> element.setText(OVERLAY_DISPLAYS.get(0))
+                    (button, element) -> element.setSelected(0, OVERLAY_DISPLAYS.get(0))
             );
         }
     }
@@ -178,6 +179,7 @@ public final class OverlayTabWidget extends TabWidget {
                 20,
                 ICONS_LIST.get(config.getOverlay().getShowSourceIcons().value()),
                 ICONS_LIST,
+                config.getOverlay().getShowSourceIcons().value(),
                 true,
                 (index) -> config.getOverlay().getShowSourceIcons().set(index)
         );
@@ -188,7 +190,10 @@ public final class OverlayTabWidget extends TabWidget {
                 dropdown,
                 config.getOverlay().getShowSourceIcons(),
                 null,
-                (button, element) -> element.setText(ICONS_LIST.get(config.getOverlay().getShowSourceIcons().value()))
+                (button, element) -> {
+                    int index = config.getOverlay().getShowSourceIcons().value();
+                    element.setSelected(index, ICONS_LIST.get(index));
+                }
         );
     }
 
@@ -242,6 +247,7 @@ public final class OverlayTabWidget extends TabWidget {
                 Arrays.stream(OverlayStyle.values())
                         .map(OverlayStyle::getTranslatable)
                         .collect(Collectors.toList()),
+                configEntry.value().ordinal(),
                 false,
                 (index) -> configEntry.set(OverlayStyle.Companion.fromOrdinal(index))
         );
@@ -252,7 +258,10 @@ public final class OverlayTabWidget extends TabWidget {
                 dropDown,
                 configEntry,
                 null,
-                (btn, element) -> element.setText(configEntry.value().getTranslatable())
+                (btn, element) -> element.setSelected(
+                        configEntry.value().ordinal(),
+                        configEntry.value().getTranslatable()
+                )
         );
     }
 
