@@ -326,7 +326,6 @@ public final class VoiceAudioCapture implements AudioCapture {
         } else if (result == ClientActivation.Result.END) {
             if (encodedData != null) sendVoicePacket(activation, isStereo, encodedData);
             sendVoiceEndPacket(activation);
-            activationStreams.remove(activation.getId());
         }
     }
 
@@ -376,8 +375,8 @@ public final class VoiceAudioCapture implements AudioCapture {
     private void sendVoiceEndPacket(ClientActivation activation) {
         if (activation.getTranslation().equals("pv.activation.parent")) return;
 
-        if (monoEncoder != null) monoEncoder.reset();
-        if (stereoEncoder != null) stereoEncoder.reset();
+        activationStreams.remove(activation.getId());
+        resetDefaultEncoders(activation);
 
         voiceClient.getServerConnection().ifPresent(connection ->
                 connection.sendPacket(new PlayerAudioEndPacket(
@@ -386,6 +385,21 @@ public final class VoiceAudioCapture implements AudioCapture {
                         (short) activation.getDistance()
                 ))
         );
+    }
+
+    private void resetDefaultEncoders(@NotNull ClientActivation endedActivation) {
+        if (usesOwnEncoder(endedActivation)) return;
+
+        boolean defaultEncoderInUse = activations.getActivations().stream()
+                .anyMatch(activation -> activationStreams.contains(activation.getId()) && !usesOwnEncoder(activation));
+        if (defaultEncoderInUse) return;
+
+        if (monoEncoder != null) monoEncoder.reset();
+        if (stereoEncoder != null) stereoEncoder.reset();
+    }
+
+    private boolean usesOwnEncoder(@NotNull ClientActivation activation) {
+        return activation.getMonoEncoder().isPresent() || activation.getStereoEncoder().isPresent();
     }
 
     private long getSequenceNumber(@NotNull ClientActivation activation) {
