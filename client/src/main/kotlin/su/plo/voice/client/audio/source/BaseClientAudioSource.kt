@@ -102,6 +102,8 @@ abstract class BaseClientAudioSource<T>(
     private val activated = AtomicBoolean(false)
     private val canHear = AtomicBoolean(false)
 
+    private var writeSuppressed = false
+
     @Volatile
     final override var effectiveVolume: Float = 0f
         private set
@@ -367,24 +369,19 @@ abstract class BaseClientAudioSource<T>(
         // so we need to make sure that source is not closed rn
         if (closed.get()) return@withLock
 
-        if (shouldWrite()) {
-            // decrypt & decode samples
-            try {
-                val decrypted = encryption?.decrypt(packet.data) ?: packet.data
-                val decoded = decoder?.decode(decrypted) ?: AudioUtil.bytesToShorts(decrypted)
+        try {
+            val decrypted = encryption?.decrypt(packet.data) ?: packet.data
+            val decoded = decoder?.decode(decrypted) ?: AudioUtil.bytesToShorts(decrypted)
 
-                if (sourceInfo.isStereo && config.advanced.stereoSourcesToMono.value()) {
-                    write(AudioUtil.convertToMonoShorts(decoded), packet.sequenceNumber)
-                } else {
-                    write(decoded, packet.sequenceNumber)
-                }
-            } catch (e: EncryptionException) {
-                debugLogger.warn("Failed to decrypt source audio", e)
-            } catch (e: CodecException) {
-                debugLogger.warn("Failed to decode source audio", e)
+            if (sourceInfo.isStereo && config.advanced.stereoSourcesToMono.value()) {
+                write(AudioUtil.convertToMonoShorts(decoded), packet.sequenceNumber)
+            } else {
+                write(decoded, packet.sequenceNumber)
             }
-        } else {
-            source.updateLastBufferTime()
+        } catch (e: EncryptionException) {
+            debugLogger.warn("Failed to decrypt source audio", e)
+        } catch (e: CodecException) {
+            debugLogger.warn("Failed to decode source audio", e)
         }
 
         lastSequenceNumber = packet.sequenceNumber
@@ -423,6 +420,7 @@ abstract class BaseClientAudioSource<T>(
         if (!resetted.compareAndSet(false, true)) return
 
         decoder?.reset()
+        writeSuppressed = false
         canHear.set(false)
         effectiveVolume = 0f
 
@@ -483,15 +481,36 @@ abstract class BaseClientAudioSource<T>(
     }
 
     private fun write(samples: ShortArray, sequenceNumber: Long) {
+        if (!shouldWrite()) {
+            suppressWrite(samples, sequenceNumber)
+            return
+        }
+
+        val resumed = writeSuppressed
+        writeSuppressed = false
+
         if (!voiceClient.eventBus.fire(AudioSourceWriteEvent(this, sequenceNumber, samples))) return
 
-        if (!activated.get()) {
+        if (!activated.get() || resumed) {
             source.write(AudioUtil.fadeIn(samples, source.channels))
         } else if (sequenceNumber + 1 == endSequenceNumber) {
             source.write(AudioUtil.fadeOut(samples, source.channels))
         } else {
             source.write(samples)
         }
+    }
+
+    private fun suppressWrite(samples: ShortArray, sequenceNumber: Long) {
+        if (writeSuppressed || !activated.get()) {
+            writeSuppressed = true
+            source.updateLastBufferTime()
+            return
+        }
+
+        writeSuppressed = true
+
+        if (!voiceClient.eventBus.fire(AudioSourceWriteEvent(this, sequenceNumber, samples))) return
+        source.write(AudioUtil.fadeOut(samples, source.channels))
     }
 
     private suspend fun updateSource(distance: Double) {
