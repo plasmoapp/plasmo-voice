@@ -1,0 +1,11 @@
+project_id_env: CROWDIN_PROJECT_ID
+api_token_env: CROWDIN_PERSONAL_TOKEN
+preserve_hierarchy: true
+
+files:
+  - source: client/src/main/resources/assets/plasmovoice/lang/en_us.json
+    dest: /client.json
+    translation: /%locale%/client.json
+  - source: server/common/src/main/resources/languages/en_us.toml
+    dest: /server.toml
+    translation: /%locale%/server.toml

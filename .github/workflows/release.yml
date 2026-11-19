@@ -219,6 +219,28 @@ jobs:
         github-commitish: ${{ github.sha }}
         changelog-file: release-changelog.md
 
+  crowdin:
+    needs: build
+    if: ${{ inputs.release-type == 'release' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v7.0.1
+    - name: Upload sources to Crowdin
+      uses: crowdin/github-action@v3.6.0
+      with:
+        upload_sources: true
+        upload_translations: false
+        download_translations: false
+        push_translations: false
+        create_pull_request: false
+      env:
+        CROWDIN_PROJECT_ID: ${{ secrets.CROWDIN_PROJECT_ID }}
+        CROWDIN_PERSONAL_TOKEN: ${{ secrets.CROWDIN_PERSONAL_TOKEN }}
+
   dokka:
     needs: build
     if: ${{ inputs.publish-dokka }}
