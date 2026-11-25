@@ -1,32 +1,41 @@
 package su.plo.lib.mod.client.render
 
-import com.google.common.base.Charsets
 import com.mojang.blaze3d.platform.NativeImage
 import net.minecraft.client.Minecraft
 import net.minecraft.resources.ResourceLocation
-import org.lwjgl.system.MemoryStack
-import java.nio.ByteBuffer
+import su.plo.voice.BaseVoice
 import java.util.Base64
 
 //#if MC>=26.4
-//$$ import net.minecraft.client.renderer.texture.TextureResources
+//$$ import net.minecraft.client.renderer.texture.Base64TextureProvider2d
 //#else
 import net.minecraft.client.renderer.texture.DynamicTexture
 //#endif
+
+private val LOGGER = BaseVoice.createLogger("TextureUtil")
 
 fun registerBase64Texture(
     texture: String,
     textureLocation: ResourceLocation,
 ): ResourceLocation {
+    val base64string = texture.substringAfter("base64;").replace("\n", "")
+
     // register base64 icon in minecraft resources
     Minecraft.getInstance().execute {
+        val image =
+            try {
+                readBase64Image(base64string)
+            } catch (e: Exception) {
+                LOGGER.warn("Failed to decode base64 texture {}", textureLocation, e)
+                return@execute
+            }
+
         //#if MC>=26.4
-        //$$ getNativeImageFromBase64(texture).use { image ->
-        //$$     Minecraft.getInstance().textureManager.register(
-        //$$         textureLocation,
-        //$$         TextureResources.from2dImage({ textureLocation.toDebugFileName() }, image)
-        //$$     )
-        //$$ }
+        //$$ image.close()
+        //$$ Minecraft.getInstance().textureManager.registerProvider(
+        //$$     textureLocation,
+        //$$     Base64TextureProvider2d(base64string)
+        //$$ )
         //#else
         Minecraft.getInstance().textureManager.register(
             textureLocation,
@@ -34,7 +43,7 @@ fun registerBase64Texture(
                 //#if MC>=12105
                 //$$ { textureLocation.toDebugFileName() },
                 //#endif
-                getNativeImageFromBase64(texture)
+                image
             )
                 //#if MC<12111
                 .also { texture ->
@@ -48,17 +57,5 @@ fun registerBase64Texture(
     return textureLocation
 }
 
-fun getNativeImageFromBase64(texture: String): NativeImage {
-    val base64string = texture.substringAfter("base64;")
-    val base64bytes = Base64.getDecoder().decode(
-        base64string.replace("\n".toRegex(), "").toByteArray(Charsets.UTF_8)
-    )
-
-    MemoryStack.stackPush().use { memoryStack ->
-        val byteBuffer: ByteBuffer = memoryStack.malloc(base64bytes.size)
-        byteBuffer.put(base64bytes)
-        byteBuffer.rewind()
-
-        return NativeImage.read(byteBuffer)
-    }
-}
+private fun readBase64Image(base64string: String): NativeImage =
+    NativeImage.read(Base64.getDecoder().decode(base64string))

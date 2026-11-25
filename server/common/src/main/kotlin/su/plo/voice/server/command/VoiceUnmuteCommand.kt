@@ -14,8 +14,8 @@ fun voiceUnmuteCommand(
     minecraftServer: () -> McServerLib,
     config: () -> ServerConfig,
 ) =
-    literalCommand<McBrigadierSource>("vunmute") {
-        requires { it.source.hasPermission(Permission.UNMUTE) }
+    literalCommand("vunmute") {
+        requires(Permission.UNMUTE.requirement())
 
         val targets by argument("targets", UnmuteTargetsType(muteManager, minecraftServer))
 

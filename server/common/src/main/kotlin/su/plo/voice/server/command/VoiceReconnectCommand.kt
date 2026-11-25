@@ -2,7 +2,6 @@ package su.plo.voice.server.command
 
 import dev.apehum.mcdsl.command.literalCommand
 import su.plo.slib.api.chat.component.McTextComponent
-import su.plo.slib.api.command.brigadier.McBrigadierSource
 import su.plo.slib.api.server.entity.player.McServerPlayer
 import su.plo.voice.api.server.connection.TcpServerPacketManager
 import su.plo.voice.api.server.connection.UdpServerConnectionManager
@@ -15,8 +14,8 @@ fun voiceReconnectCommand(
     udpConnectionManager: () -> UdpServerConnectionManager,
     tcpPacketManager: () -> TcpServerPacketManager,
 ) =
-    literalCommand<McBrigadierSource>("vrc") {
-        requires { it.source.hasPermission(Permission.RECONNECT) }
+    literalCommand("vrc") {
+        requires(Permission.RECONNECT.requirement())
 
         executes {
             val player = source.executor as? McServerPlayer

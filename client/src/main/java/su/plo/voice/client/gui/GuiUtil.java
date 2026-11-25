@@ -1,5 +1,9 @@
 package su.plo.voice.client.gui;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.resources.sounds.SimpleSoundInstance;
+import net.minecraft.client.sounds.SoundManager;
+import net.minecraft.sounds.SoundEvents;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import su.plo.slib.api.chat.component.McTextComponent;
@@ -37,6 +41,21 @@ public final class GuiUtil {
         }
 
         return list;
+    }
+
+    public static void playUiClickSound() {
+        SoundManager soundManager = Minecraft.getInstance().getSoundManager();
+        soundManager.play(
+                SimpleSoundInstance.forUI(
+                        //#if MC>=26.4
+                        //$$ SoundEvents.UI_BUTTON_CLICK,
+                        //#else
+                        SoundEvents.UI_BUTTON_CLICK.value(),
+                        //#endif
+                        1.0f,
+                        0.25f
+                )
+        );
     }
 
     private GuiUtil() {

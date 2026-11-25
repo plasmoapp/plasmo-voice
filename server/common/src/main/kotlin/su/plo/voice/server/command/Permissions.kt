@@ -1,7 +1,9 @@
 package su.plo.voice.server.command
 
-import su.plo.slib.api.command.McCommandSource
+import su.plo.slib.api.command.brigadier.McBrigadierSource
+import su.plo.slib.api.command.brigadier.McRequirements
 import su.plo.slib.api.permission.PermissionDefault
+import java.util.function.Predicate
 
 enum class Permission(
     val key: String,
@@ -22,5 +24,4 @@ enum class Permission(
     PROXIMITY_ACTIVATION("pv.activation.proximity", PermissionDefault.TRUE),
 }
 
-fun McCommandSource.hasPermission(permission: Permission): Boolean =
-    hasPermission(permission.key)
+fun Permission.requirement(): Predicate<McBrigadierSource> = McRequirements.permission(key)

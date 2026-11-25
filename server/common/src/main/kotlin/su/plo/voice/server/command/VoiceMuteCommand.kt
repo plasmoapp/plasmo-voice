@@ -16,8 +16,8 @@ fun voiceMuteCommand(
     muteManager: () -> VoiceMuteManager,
     config: () -> ServerConfig,
 ) =
-    literalCommand<McBrigadierSource>("vmute") {
-        requires { it.source.hasPermission(Permission.MUTE) }
+    literalCommand("vmute") {
+        requires(Permission.MUTE.requirement())
 
         val target by argument("targets", McArgumentTypes.players())
         val duration by argumentOr("duration", MuteDurationType(), MuteDuration.Permanent)

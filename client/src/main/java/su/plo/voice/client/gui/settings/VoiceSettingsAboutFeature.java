@@ -5,13 +5,13 @@ import lombok.RequiredArgsConstructor;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.world.level.block.Blocks;
 import org.jetbrains.annotations.NotNull;
 import su.plo.lib.mod.client.render.RenderUtil;
 import su.plo.lib.mod.client.render.gui.GuiRenderContext;
 import su.plo.lib.mod.client.render.particle.BlockDustParticle2D;
+import su.plo.voice.client.gui.GuiUtil;
 import su.plo.voice.util.RandomUtil;
 
 import java.util.List;
@@ -47,15 +47,7 @@ public final class VoiceSettingsAboutFeature {
             this.lastClick = 0L;
             this.clickCount = 0;
 
-            SoundManager soundManager = Minecraft.getInstance().getSoundManager();
-            soundManager.play(
-                    SimpleSoundInstance.forUI(
-                            SoundEvents.UI_BUTTON_CLICK.value(),
-                            1.0f,
-                            0.25f
-                    )
-            );
-
+            GuiUtil.playUiClickSound();
             return;
         }
 
