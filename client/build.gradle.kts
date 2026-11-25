@@ -111,6 +111,13 @@ repositories {
             includeModule("net.neoforged", "testframework")
         }
     }
+
+    if (platform.mcVersion >= 260100) {
+        maven("https://repo.maven.apache.org/maven2/") {
+            name = "MavenCentralLWJGL"
+            content { includeGroup("org.lwjgl") }
+        }
+    }
 }
 
 dependencies {
