@@ -152,10 +152,12 @@ dependencies {
             modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:$fabricApiVersion")
         }
 
-        val fabricPermissionsApi = "me.lucko:fabric-permissions-api:$fabricPermissionsApiVersion"
-        "include"(fabricPermissionsApi)
-        modImplementation(fabricPermissionsApi) {
-            isTransitive = false
+        if (fabricPermissionsApiVersion.isNotBlank()) {
+            val fabricPermissionsApi = "me.lucko:fabric-permissions-api:$fabricPermissionsApiVersion"
+            "include"(fabricPermissionsApi)
+            modImplementation(fabricPermissionsApi) {
+                isTransitive = false
+            }
         }
 
         modImplementation("me.shedaniel.cloth:cloth-config-fabric:$clothConfigVersion") {

@@ -2,15 +2,14 @@ package su.plo.voice.server.command
 
 import dev.apehum.mcdsl.command.literalCommand
 import su.plo.slib.api.chat.component.McTextComponent
-import su.plo.slib.api.command.brigadier.McBrigadierSource
 import su.plo.slib.api.server.entity.player.McServerPlayer
 import su.plo.voice.api.server.player.VoicePlayerManager
 
 fun voiceListCommand(
     playerManager: () -> VoicePlayerManager<*>,
 ) =
-    literalCommand<McBrigadierSource>("vlist") {
-        requires { it.source.hasPermission(Permission.LIST) }
+    literalCommand("vlist") {
+        requires(Permission.LIST.requirement())
 
         executes {
             val visiblePlayers =

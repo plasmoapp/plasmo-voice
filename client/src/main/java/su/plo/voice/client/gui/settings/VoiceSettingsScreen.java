@@ -228,7 +228,9 @@ public final class VoiceSettingsScreen extends GuiScreen implements GuiWidgetLis
             return false;
         }
 
-        //#if MC>=12109
+        //#if MC>=26.4
+        //$$ if (ModVoiceClient.MENU_KEY.matches(new KeyEvent(keyCode, 0, modifiers, false))) {
+        //#elseif MC>=12109
         //$$ if (ModVoiceClient.MENU_KEY.matches(new KeyEvent(keyCode, 0, modifiers))) {
         //#else
         if (ModVoiceClient.MENU_KEY.matches(keyCode, 0)) {

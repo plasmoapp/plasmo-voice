@@ -2,7 +2,6 @@ package su.plo.voice.server.command
 
 import dev.apehum.mcdsl.command.literalCommand
 import su.plo.slib.api.chat.component.McTextComponent
-import su.plo.slib.api.command.brigadier.McBrigadierSource
 import su.plo.slib.api.server.McServerLib
 import su.plo.voice.api.server.language.ServerLanguages
 import su.plo.voice.server.mute.VoiceMuteManager
@@ -14,8 +13,8 @@ fun voiceMuteListCommand(
     minecraftServer: () -> McServerLib,
     languages: () -> ServerLanguages,
 ) =
-    literalCommand<McBrigadierSource>("vmutelist") {
-        requires { it.source.hasPermission(Permission.MUTE_LIST) }
+    literalCommand("vmutelist") {
+        requires(Permission.MUTE_LIST.requirement())
 
         executes {
             val muteManager = muteManager()

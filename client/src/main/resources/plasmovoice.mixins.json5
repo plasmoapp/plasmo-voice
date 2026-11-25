@@ -21,7 +21,7 @@
         "accessor.DisplayAccessor",
         "accessor.GuiGraphicsAccessor",
 
-        //#if MC>=1.21.6
+        //#if MC>=1.21.6 && MC<26.4
         //$$ "accessor.RenderPipelinesAccessor",
         //#endif
 

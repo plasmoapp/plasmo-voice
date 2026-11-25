@@ -1,18 +1,15 @@
 package su.plo.lib.mod.client.gui.widget;
 
 import com.mojang.blaze3d.platform.InputConstants;
-import net.minecraft.client.Minecraft;
-import net.minecraft.client.resources.sounds.SimpleSoundInstance;
-import net.minecraft.client.sounds.SoundManager;
-import net.minecraft.sounds.SoundEvents;
-import su.plo.lib.mod.client.Inputs;
-import su.plo.lib.mod.client.render.Colors;
-import su.plo.lib.mod.client.render.gui.GuiRenderContext;
-import su.plo.slib.api.chat.component.McTextComponent;
 import lombok.Getter;
 import lombok.Setter;
 import org.jetbrains.annotations.NotNull;
+import su.plo.lib.mod.client.Inputs;
 import su.plo.lib.mod.client.gui.narration.NarrationOutput;
+import su.plo.lib.mod.client.render.Colors;
+import su.plo.lib.mod.client.render.gui.GuiRenderContext;
+import su.plo.slib.api.chat.component.McTextComponent;
+import su.plo.voice.client.gui.GuiUtil;
 
 import java.awt.Color;
 
@@ -194,14 +191,7 @@ public abstract class GuiAbstractWidget implements GuiWidget, GuiNarrationWidget
     }
 
     protected void playDownSound() {
-        SoundManager soundManager = Minecraft.getInstance().getSoundManager();
-        soundManager.play(
-                SimpleSoundInstance.forUI(
-                        SoundEvents.UI_BUTTON_CLICK.value(),
-                        1.0f,
-                        0.25f
-                )
-        );
+        GuiUtil.playUiClickSound();
     }
 
     protected void defaultButtonNarrationText(NarrationOutput narrationElementOutput) {
