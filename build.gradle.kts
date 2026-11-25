@@ -119,7 +119,6 @@ allprojects {
         mavenLocal()
         mavenCentral()
 
-        maven("https://repo.plo.su")
         maven("https://repo.plasmoverse.com/snapshots")
         maven("https://repo.plasmoverse.com/releases")
         maven("https://repo.plasmoverse.com/prs")
